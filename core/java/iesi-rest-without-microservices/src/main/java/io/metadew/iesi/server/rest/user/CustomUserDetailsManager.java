@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.configuration.security.jwt;
+package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.metadata.definition.user.Group;
 import io.metadew.iesi.metadata.definition.user.GroupKey;
@@ -99,9 +99,18 @@ public class CustomUserDetailsManager implements UserDetailsManager, GroupManage
                             + "for current user.");
         }
 
+        if (oldPassword.equals(newPassword)) {
+            throw new AccessDeniedException("old password cannot be the same as new password");
+
+        }
+
         String username = currentUser.getName();
         User user = userService.get(username)
                 .orElseThrow(() -> new RuntimeException("Could not find user with name " + username));
+        if (!user.getPassword().equals(oldPassword)) {
+            throw new AccessDeniedException("old password does not match existing password");
+        }
+
         user.setPassword(newPassword);
         userService.update(user);
 

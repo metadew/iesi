@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @Tag(name = "scripts", description = "Everything about scripts")
 @RequestMapping("/scripts")
+@CrossOrigin
 public class ScriptController {
 
     private IScriptService scriptService;

@@ -1,5 +1,7 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
+import io.metadew.iesi.server.rest.user.CustomUserDetailsManager;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +16,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 @Configuration
 @Profile("security")
+@Log4j2
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -60,18 +66,25 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        System.out.println("Security enabled");
+        log.info("IESI REST endpoint security enabled");
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .cors().and()
                 .csrf().disable()
-                .cors().disable()
                 .authorizeRequests()
                 .mvcMatchers("/users/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
 //                .httpBasic(withDefaults())
                 .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
     }
 
 }

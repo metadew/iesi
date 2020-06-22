@@ -24,6 +24,7 @@ Feel free to get in touch via our [Github](https://github.com/metadew/iesi) or o
 * Gerrit Van Gelder
 * Peter Billen
 * Francois Heliodore
+* Kimberly Raskin
 
 # Past committers
 

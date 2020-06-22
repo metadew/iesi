@@ -61,7 +61,7 @@ public class AssemblyService {
             String sourcePath = parts[1].replace("#GIT_REPO#", repository);
             sourcePath = sourcePath.replace("#VERSION#", version);
             String targetPath = versionHome.toString() + parts[2] + File.separator + parts[0];
-            log.debug("Copying " + sourcePath + " to " + targetPath);
+            log.info("Copying " + sourcePath + " to " + targetPath);
             Files.copy(Paths.get(sourcePath), Paths.get(targetPath));
             //FileTools.copyFromFileToFile(sourcePath, targetPath);
         }

@@ -110,8 +110,7 @@ public class DataCompareDataset {
 
 
         long errorsDetected = 0;
-        MappingConfiguration mappingConfiguration = new MappingConfiguration();
-        Mapping mapping = mappingConfiguration.getMapping(mappingName);
+        Mapping mapping = MappingConfiguration.getInstance().getMapping(mappingName);
         for (Transformation transformation : mapping.getTransformations()) {
 
             Optional<DataType> leftFieldValue = DatasetHandler.getInstance().getDataItem(leftDataset, transformation.getLeftField(), executionControl.getExecutionRuntime());

@@ -40,7 +40,8 @@ public class DatasetMetadataService {
                         .resolve("datasets")
                         .resolve(datasetName)
                         .resolve("metadata")
-                        .resolve("metadata.db3"))));
+                        .resolve("metadata.db3"),
+                null)));
     }
 
 
@@ -84,7 +85,8 @@ public class DatasetMetadataService {
                     .getAbsolutePath().resolve("datasets")
                     .resolve(datasetMetadata.getDatasetName())
                     .resolve("data")
-                    .resolve(cachedRowSetFileTable.getString("DATASET_FILE_NM"))));
+                    .resolve(cachedRowSetFileTable.getString("DATASET_FILE_NM")),
+                    null));
             cachedRowSetFileTable.close();
             return database;
         } catch (SQLException e) {

@@ -39,7 +39,7 @@ public class MetadataConfiguration {
 
 
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) ||
+        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
                 (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map);
     }
 

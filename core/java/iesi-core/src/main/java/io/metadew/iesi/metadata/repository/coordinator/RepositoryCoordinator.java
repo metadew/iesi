@@ -78,7 +78,8 @@ public class RepositoryCoordinator {
 
     public void shutdown() {
         for (Database database : databases.values()) {
-            DatabaseHandler.getInstance().shutdown(database);
+            DatabaseHandler.getInstance()
+                    .shutdown(database);
         }
     }
 }

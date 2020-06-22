@@ -109,7 +109,7 @@ public class KeyValueDatasetService extends DatasetService<KeyValueDataset> impl
             throw new RuntimeException(e);
         }
         DatasetMetadataService.getInstance().insertDatasetDatabaseInformation(datasetMetadata, nextInventoryId, datasetFilename, tableName);
-        Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath.toString()));
+        Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath.toString(), null));
         DatabaseHandler.getInstance().createTable(database, metadataTable);
         // String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(tableName) + " (key TEXT, value TEXT)";
         // DatabaseHandlerImpl.getInstance().executeUpdate(database, create);

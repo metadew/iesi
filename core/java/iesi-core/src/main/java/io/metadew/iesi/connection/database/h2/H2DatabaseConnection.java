@@ -11,12 +11,12 @@ public class H2DatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "h2";
 
-    public H2DatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword, null);
+    public H2DatabaseConnection(String connectionURL, String userName, String userPassword, String initSql) {
+        super(type, connectionURL, userName, userPassword, initSql);
     }
 
-    public H2DatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, null, schema);
+    public H2DatabaseConnection(String connectionURL, String userName, String userPassword, String initSql, String schema) {
+        super(type, connectionURL, userName, userPassword, initSql, schema);
     }
 
 }

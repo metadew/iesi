@@ -28,7 +28,7 @@ public class IterationConfiguration {
         this.executionControl = executionControl;
         this.runCacheFolderName = runCacheFolderName;
         // Create database
-        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", "", null));
         createIterationExecTable();
 
     }

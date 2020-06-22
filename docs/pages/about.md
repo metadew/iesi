@@ -24,9 +24,9 @@ Feel free to get in touch via our [Github](https://github.com/metadew/iesi) or o
 * Gerrit Van Gelder
 * Peter Billen
 * Kimberly Raskin
+* Francois Heliodore
 
 # Past committers
 
 * Jonas Joostens
 * Sam Roose
-* Francois Heliodore

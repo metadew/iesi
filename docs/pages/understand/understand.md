@@ -26,7 +26,7 @@ The execution of an automation script can be associated with the following statu
 
 |Status|Description|
 |------|-----------|
-|ACTIVE|Script is running|
+|RUNNING|Script is running|
 |ERROR|All actions in the script have ended in error|
 |STOPPED|Script has stoppped due to an error in an action that is configured to stop on error|
 |SUCCESS|All actions in the script have been executed successfully|
@@ -85,12 +85,10 @@ The configuration data can be divided in different categories.
 |Category|Description|
 |--------|-----------|
 |Connectivity|Connectivity configuration to automate actions. This can include parameters that are resolved during execution.|
-|Control|Control configuration to organize access to automation objects.|
 |Design|Automation configuration as designed by the automation engineer. This can include parameters and other reusable constructs that are resolved during execution.|
 |Execution|In-process information to drive executions.|
 |Result|The technical outcome for the different actions as executed by the framework.|
 |Trace|The resolution of the automation configuration design as it has been executed by the framework. All parameters and reusable constructs are replaced by actual values.|
-|Reporting|The interpretation of the technical outcome using reporting views to give context to the execution.|
 
 ### Data Objects
 
@@ -118,8 +116,7 @@ The framework is built around 3 users having access to the configuration reposit
 ### Tables
 
 * Table name structure: IESI_[instance]_[prefix]_[name]
-* The instance part is available to allow multiple logical instances to run inside a single physical instance. 
-The instance is defined in the appropriate configuration file that is stored in the `conf` folder. 
+* The instance part is available to allow multiple logical instances to run inside a single physical instance. The instance part is defined in the metadata repository configuration file.
 * The prefix is specific for a given type of configuration data. It allows to group tables based on this configuration data type.
 * Detailed tables (e.g. parameters) reuse the table name that they extend adding a specific suffix (e.g. _PAR)
 
@@ -127,7 +124,6 @@ Prefixes:
 
 |Prefix|Description|
 |------|-----------|
-|CTL|Control tables|
 |CXN|Connectivity tables|
 |DES|Design tables|
 |EXE|Execution tables|
@@ -140,8 +136,7 @@ The data model for the solution is stored in the `metadata/def` folder. To suppo
 For each category a file `[Category]Tables.json` can be found here. The file `[Category]Objects.json` contains the relevant object definitions for the category. 
 More information on the data models for the different categories can be found by clicking on the appropriate link below:
 
-* [Connectivity](/{{site.repository}}/pages/understand/datamodel/connectivity.html)
-* [Control](/{{site.repository}}/pages/understand/datamodel/control.html)
+* [connectivity](/{{site.repository}}/pages/understand/datamodel/connectivity.html)
 * [design](/{{site.repository}}/pages/understand/datamodel/design.html)
 * [execution](/{{site.repository}}/pages/understand/datamodel/execution.html)
 * [result](/{{site.repository}}/pages/understand/datamodel/result.html)
@@ -168,27 +163,6 @@ Very simplisticly, it is a big loop over all actions:
     * Is [stop on error](/{{site.repository}}/pages/design/stoponerror.html) relevant? If so, stop the execution
     * Has a retry number been specified? If so, re-execute the action
 * End the execution
-
-### Folder structure
-
-The automation framework has the following folder structure:
-
-<table>
-<thead>
-<tr class="header">
-<th>Path</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-{% for type in site.data.framework.FrameworkFolders %}
-<tr>
-<td markdown="span">{{ type.data.path }}</td>
-<td markdown="span">{{ type.data.description }}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
 
 ### File extensions
 
@@ -224,26 +198,7 @@ Variables are always available as **key-value pairs**
   * The variable name needs to be unique within the script execution context
   * If a same variable name is loaded in the execution context, the previous value is overwritten. 
   Therefore, naming the variables appropriately is very important.
-  * Variables are loaded according to a specific hierarchy:
-    * Parameter file
-	* Parameter list
-	* Action execution
   * At the end of the execution, the variables are no longer available
 * There are some restrictions:
   * A variable name can never be the same as a configuration setting name. 
   The framework will always keep the value of the configuration setting.
-  
-**Variable resolution within an action**
-
-Where the definition of variables is already providing a great means of writing generic scripts, 
-variable resolution within an action is allowing to make a reference to any action parameter value. 
-In this way, parameter values can easily be reused in the action without needing to duplicate their definition or logic. 
-* A variable from another action parameter value is identified with the `[]` symbols: `[parameterName]`
-* As a standard variable, this definition is reolved during execution, but after the standard variable resolution
-* The variable resolution is only valid **for the action execution context**
-
-**Variable resolution across actions**
-
-The framework caches action details so that they can be reused in another action easily.
-
-We are working providing more details on this.

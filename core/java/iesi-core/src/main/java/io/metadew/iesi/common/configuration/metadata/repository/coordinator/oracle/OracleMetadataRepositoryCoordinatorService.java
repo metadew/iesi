@@ -70,7 +70,8 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
             databaseConnection = new OracleDatabaseConnection(
                     oracleRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    oracleRepositoryCoordinatorDefinition.getInitSql());
             oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
         } else {
             switch (oracleRepositoryCoordinatorDefinition.getMode()) {
@@ -80,7 +81,8 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
                             oracleRepositoryCoordinatorDefinition.getPort(),
                             oracleRepositoryCoordinatorDefinition.getTnsAlias(),
                             metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                            oracleRepositoryCoordinatorDefinition.getInitSql());
                     oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                     break;
                 case "service":
@@ -89,7 +91,8 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
                             oracleRepositoryCoordinatorDefinition.getPort(),
                             oracleRepositoryCoordinatorDefinition.getService(),
                             metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                            oracleRepositoryCoordinatorDefinition.getInitSql());
                     oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                     break;
                 default:

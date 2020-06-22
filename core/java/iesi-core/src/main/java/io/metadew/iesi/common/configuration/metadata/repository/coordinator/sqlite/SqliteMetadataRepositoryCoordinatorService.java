@@ -44,9 +44,12 @@ public class SqliteMetadataRepositoryCoordinatorService implements IMetadataRepo
             return new SqliteDatabaseConnection(
                     FrameworkControl.getInstance().resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getConnection().get()),
                     "",
-                    "");
+                    "",
+                    sqLiteRepositoryCoordinatorDefinition.getInitSql());
         } else {
-            return new SqliteDatabaseConnection(FrameworkControl.getInstance().resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getFile()));
+            return new SqliteDatabaseConnection(
+                    FrameworkControl.getInstance().resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getFile()),
+                    sqLiteRepositoryCoordinatorDefinition.getInitSql());
         }
     }
 

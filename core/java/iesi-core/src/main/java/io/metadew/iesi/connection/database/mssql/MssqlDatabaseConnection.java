@@ -12,18 +12,18 @@ public class MssqlDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "mssql";
 
-    public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword, null);
+    public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword, String initSql) {
+        super(type, connectionURL, userName, userPassword, initSql);
     }
 
 
-    public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, schema);
+    public MssqlDatabaseConnection(String connectionURL, String userName, String userPassword, String initSql, String schema) {
+        super(type, connectionURL, userName, userPassword, initSql, schema);
     }
 
     public MssqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
-                                   String userPassword, String schema) {
-        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword, schema);
+                                   String userPassword, String initSql, String schema) {
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword, initSql, schema);
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {

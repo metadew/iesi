@@ -41,7 +41,7 @@ public class PluginConfiguration {
 
 
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(PluginConfiguration.pluginsKey) ||
+        return Configuration.getInstance().getProperties().containsKey(PluginConfiguration.pluginsKey) &&
                 (Configuration.getInstance().getProperties().get(PluginConfiguration.pluginsKey) instanceof Map);
     }
 

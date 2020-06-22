@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action.result;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.result.ActionResult;
@@ -52,7 +53,7 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                     cachedRowSet.getLong("SCRIPT_PRC_ID"),
                     cachedRowSet.getString("ACTION_NM"),
                     cachedRowSet.getString("ENV_NM"),
-                    cachedRowSet.getString("ST_NM"),
+                    ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
         } catch (SQLException e) {
@@ -75,7 +76,7 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                         cachedRowSet.getLong("SCRIPT_PRC_ID"),
                         cachedRowSet.getString("ACTION_NM"),
                         cachedRowSet.getString("ENV_NM"),
-                        cachedRowSet.getString("ST_NM"),
+                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
             }
@@ -117,7 +118,7 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                 + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getActionId()) + ","
                 + SQLTools.GetStringForSQL(actionResult.getActionName()) + ","
                 + SQLTools.GetStringForSQL(actionResult.getEnvironment()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getStatus()) + ","
+                + SQLTools.GetStringForSQL(actionResult.getStatus().value()) + ","
                 + SQLTools.GetStringForSQL(actionResult.getStartTimestamp()) + ","
                 + SQLTools.GetStringForSQL(actionResult.getEndTimestamp()) + ");";
     }
@@ -135,7 +136,7 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                 "ACTION_ID = " + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getActionId()) + "," +
                 "ACTION_NM = " + SQLTools.GetStringForSQL(actionResult.getActionName()) + "," +
                 "ENV_NM = " + SQLTools.GetStringForSQL(actionResult.getEnvironment()) + "," +
-                "ST_NM = " + SQLTools.GetStringForSQL(actionResult.getStatus()) + "," +
+                "ST_NM = " + SQLTools.GetStringForSQL(actionResult.getStatus().value()) + "," +
                 "STRT_TMS = " + SQLTools.GetStringForSQL(actionResult.getStartTimestamp()) + "," +
                 "END_TMS = " + SQLTools.GetStringForSQL(actionResult.getEndTimestamp()) +
                 "WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getRunId()) +

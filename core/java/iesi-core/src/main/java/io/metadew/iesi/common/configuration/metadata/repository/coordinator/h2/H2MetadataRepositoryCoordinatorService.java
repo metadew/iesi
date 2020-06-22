@@ -1,14 +1,10 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.h2;
 
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
-import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.h2.H2Database;
-import io.metadew.iesi.connection.database.h2.H2DatabaseConnection;
-import io.metadew.iesi.connection.database.h2.H2EmbeddedDatabaseConnection;
-import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
-import io.metadew.iesi.connection.database.h2.H2ServerDatabaseConnection;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.h2.*;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;
@@ -25,7 +21,8 @@ public class H2MetadataRepositoryCoordinatorService implements IMetadataReposito
         return INSTANCE;
     }
 
-    private H2MetadataRepositoryCoordinatorService() {}
+    private H2MetadataRepositoryCoordinatorService() {
+    }
 
     @Override
     public RepositoryCoordinator convert(H2MetadataRepositoryCoordinatorDefinition h2RepositoryCoordinatorDefinition) {
@@ -65,19 +62,23 @@ public class H2MetadataRepositoryCoordinatorService implements IMetadataReposito
 
     public H2DatabaseConnection getDatabaseConnection(H2MetadataRepositoryCoordinatorDefinition h2RepositoryCoordinatorDefinition,
                                                       MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
+        H2DatabaseConnection databaseConnection;
         if (h2RepositoryCoordinatorDefinition.getConnection().isPresent()) {
-            return new H2DatabaseConnection(
+            databaseConnection = new H2DatabaseConnection(
                     h2RepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    h2RepositoryCoordinatorDefinition.getInitSql());
+            h2RepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
+            return databaseConnection;
         }
 
-        H2DatabaseConnection databaseConnection;
         switch (h2RepositoryCoordinatorDefinition.getMode()) {
             case "embedded":
                 databaseConnection = new H2EmbeddedDatabaseConnection(h2RepositoryCoordinatorDefinition.getFile(),
                         metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                        h2RepositoryCoordinatorDefinition.getInitSql());
                 h2RepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                 break;
             case "server":
@@ -85,13 +86,15 @@ public class H2MetadataRepositoryCoordinatorService implements IMetadataReposito
                         h2RepositoryCoordinatorDefinition.getPort(),
                         h2RepositoryCoordinatorDefinition.getFile(),
                         metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                        h2RepositoryCoordinatorDefinition.getInitSql());
                 h2RepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                 break;
             case "memory":
                 databaseConnection = new H2MemoryDatabaseConnection(h2RepositoryCoordinatorDefinition.getDatabaseName(),
                         metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                        h2RepositoryCoordinatorDefinition.getInitSql());
                 h2RepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                 break;
             default:

@@ -34,7 +34,7 @@ public class StageOperation {
         FolderTools.createFolder(stageFolderName);
         this.setStageFileName(this.getStageName() + ".db3");
         this.setStageFilePath(FilenameUtils.normalize(stageFolderName + File.separator + this.getStageFileName()));
-        this.setStageConnection(new SqliteDatabaseConnection(this.getStageFilePath()));
+        this.setStageConnection(new SqliteDatabaseConnection(this.getStageFilePath(), null));
     }
 
     public void doCleanup() {

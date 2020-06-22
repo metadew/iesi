@@ -21,7 +21,7 @@ public class IterationVariableConfiguration {
     // Constructors
     public IterationVariableConfiguration(String runCacheFolderName, boolean initialize)  {
         // Create database
-        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", "", null));
 
         // Initialize
         if (initialize) {

@@ -27,3 +27,4 @@ You can contribute in many ways:
 ## Getting started
 
 * [How to setup a development machine](/{{site.repository}}/pages/contribute/development.html)
+* [Way of working for contributions](/{{site.repository}}/pages/contribute/wayofworking.html)

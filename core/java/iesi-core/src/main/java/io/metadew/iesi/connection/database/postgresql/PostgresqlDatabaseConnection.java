@@ -13,17 +13,22 @@ public class PostgresqlDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "postgresql";
 
-    public PostgresqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword, null);
+    public PostgresqlDatabaseConnection(String connectionURL, String userName, String userPassword, String initSql) {
+        super(type, connectionURL, userName, userPassword, initSql);
     }
 
-    public PostgresqlDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, null, schema);
+    public PostgresqlDatabaseConnection(String connectionURL, String userName, String userPassword, String initSql, String schema) {
+        super(type, connectionURL, userName, userPassword, initSql, schema);
     }
 
     public PostgresqlDatabaseConnection(String hostName, int portNumber, String databaseName, String userName,
-                                        String userPassword) {
-        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword);
+                                        String userPassword, String initSql) {
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword, initSql);
+    }
+
+    public PostgresqlDatabaseConnection(String hostName, int portNumber, String databaseName, String schema, String userName,
+                                        String userPassword, String initSql) {
+        this(getConnectionUrl(hostName, portNumber, databaseName), userName, userPassword, initSql, schema);
     }
 
     public static String getConnectionUrl(String hostName, int portNumber, String databaseName) {

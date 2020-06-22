@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -101,14 +102,15 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     }
 
     private String insertStatement(ActionResultOutput actionResultOutput) {
-        return "INSERT INTO "
-                + getMetadataRepository().getTableNameByLabel("ActionResultOutputs")
-                + " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL) VALUES ("
-                + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getRunId()) + ","
-                + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) + ","
-                + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + ","
-                + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + ","
-                + SQLTools.GetStringForSQL(actionResultOutput.getValue()) + ");";
+        return "INSERT INTO " +
+                getMetadataRepository().getTableNameByLabel("ActionResultOutputs") +
+                " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL) VALUES (" +
+                SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getRunId()) + "," +
+                SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) + "," +
+                SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + "," +
+                SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + "," +
+                SQLTools.GetStringForSQL(MetadataFieldService.getInstance()
+                        .truncateAccordingToConfiguration("ActionResultOutputs", "OUT_VAL", actionResultOutput.getValue())) + ");";
     }
 
     @Override
@@ -121,7 +123,8 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     private String updateStatement(ActionResultOutput actionResultOutput) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultOutputs") +
                 " SET ACTION_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + ", " +
-                "OUT_VAL = " + SQLTools.GetStringForSQL(actionResultOutput.getValue()) +
+                "OUT_VAL = " + SQLTools.GetStringForSQL(MetadataFieldService.getInstance()
+                    .truncateAccordingToConfiguration("ActionResultOutputs", "OUT_VAL", actionResultOutput.getValue())) +
                 " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) +
                 " AND OUT_NM = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + ";";

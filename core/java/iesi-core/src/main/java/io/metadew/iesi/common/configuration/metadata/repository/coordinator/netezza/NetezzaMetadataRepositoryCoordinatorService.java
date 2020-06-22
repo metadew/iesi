@@ -58,20 +58,26 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
 
     @Override
     public NetezzaDatabaseConnection getDatabaseConnection(NetezzaMetadataRepositoryCoordinatorDefinition netezzaRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
+        NetezzaDatabaseConnection netezzaDatabaseConnection;
         if (netezzaRepositoryCoordinatorDefinition.getConnection().isPresent()) {
-            return new NetezzaDatabaseConnection(
+            netezzaDatabaseConnection = new NetezzaDatabaseConnection(
                     netezzaRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    netezzaRepositoryCoordinatorDefinition.getInitSql());
+            netezzaRepositoryCoordinatorDefinition.getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
         } else {
-            return new NetezzaDatabaseConnection(
+            netezzaDatabaseConnection = new NetezzaDatabaseConnection(
                     netezzaRepositoryCoordinatorDefinition.getHost(),
                     netezzaRepositoryCoordinatorDefinition.getPort(),
                     netezzaRepositoryCoordinatorDefinition.getDatabase(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword())
+                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    netezzaRepositoryCoordinatorDefinition.getInitSql()
             );
+            netezzaRepositoryCoordinatorDefinition.getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
         }
+        return netezzaDatabaseConnection;
     }
 
     @Override

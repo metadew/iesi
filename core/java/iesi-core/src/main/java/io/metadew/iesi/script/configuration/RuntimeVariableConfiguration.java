@@ -19,7 +19,7 @@ public class RuntimeVariableConfiguration {
 
     // Constructors
     public RuntimeVariableConfiguration(String runCacheFolderName) {
-        database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+        database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", "", null));
         String query = "CREATE TABLE " + PRC_RUN_VAR + " (" +
                 "RUN_ID VARCHAR(200) NOT NULL," +
                 "PRC_ID INT NOT NULL," +

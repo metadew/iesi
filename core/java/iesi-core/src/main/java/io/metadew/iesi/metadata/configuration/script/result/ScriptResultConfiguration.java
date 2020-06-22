@@ -1,5 +1,7 @@
 package io.metadew.iesi.metadata.configuration.script.result;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
@@ -53,7 +55,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                     cachedRowSet.getString("SCRIPT_NM"),
                     cachedRowSet.getLong("SCRIPT_VRS_NB"),
                     cachedRowSet.getString("ENV_NM"),
-                    cachedRowSet.getString("ST_NM"),
+                    ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))
             ));
@@ -78,7 +80,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                         cachedRowSet.getString("SCRIPT_NM"),
                         cachedRowSet.getLong("SCRIPT_VRS_NB"),
                         cachedRowSet.getString("ENV_NM"),
-                        cachedRowSet.getString("ST_NM"),
+                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
             }
@@ -120,7 +122,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                 SQLTools.GetStringForSQL(scriptResult.getScriptName()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getScriptVersion()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getEnvironment()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getStatus()) + "," +
+                SQLTools.GetStringForSQL(scriptResult.getStatus().value()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
                 SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) + ");";
     }
@@ -141,14 +143,91 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                 "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptResult.getScriptName()) + "," +
                 "SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptResult.getScriptVersion()) + "," +
                 "ENV_NM = " + SQLTools.GetStringForSQL(scriptResult.getEnvironment()) + "," +
-                "ST_NM = " + SQLTools.GetStringForSQL(scriptResult.getStatus()) + "," +
+                "ST_NM = " + SQLTools.GetStringForSQL(scriptResult.getStatus().value()) + "," +
                 "STRT_TMS = " + SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
                 "END_TMS = " + SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) +
                 " WHERE " +
                 "RUN_ID = " + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getProcessId()) + ";";
+    }
 
+    public Optional<ScriptResult> getMostRecentScriptResult(String environment, String scriptName, Long scriptVersion) {
+        try {
 
+            String query = "SELECT * FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " where (SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, STRT_TMS) in (" +
+                    " SELECT SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, MAX(STRT_TMS)" +
+                    " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " where SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + "," +
+                    " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersion) + "," +
+                    " ENV_NM = " + SQLTools.GetStringForSQL(environment) +
+                    " group by SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM)" + ");";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            if (cachedRowSet.size() == 0) {
+                return Optional.empty();
+            }
+            cachedRowSet.next();
+            return Optional.of(new ScriptResult(
+                    new ScriptResultKey(cachedRowSet.getString("RUN_ID"), cachedRowSet.getLong("PRC_ID")),
+                    cachedRowSet.getLong("PARENT_PRC_ID"),
+                    cachedRowSet.getString("SCRIPT_ID"),
+                    cachedRowSet.getString("SCRIPT_NM"),
+                    cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                    cachedRowSet.getString("ENV_NM"),
+                    ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))
+            ));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<ScriptResult> getMostRecentScriptResults() {
+        try {
+            List<ScriptResult> scriptResults = new ArrayList<>();
+            String query = "SELECT * FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " where (SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, STRT_TMS) in (" +
+                    " SELECT SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, MAX(STRT_TMS)" +
+                    " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " group by SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM)" + ");";
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                scriptResults.add(new ScriptResult(new ScriptResultKey(
+                        cachedRowSet.getString("RUN_ID"),
+                        cachedRowSet.getLong("PRC_ID")),
+                        cachedRowSet.getLong("PARENT_PRC_ID"),
+                        cachedRowSet.getString("SCRIPT_ID"),
+                        cachedRowSet.getString("SCRIPT_NM"),
+                        cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                        cachedRowSet.getString("ENV_NM"),
+                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+            }
+            return scriptResults;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Long getCount(String environment, String scriptName, Long scriptVersion) {
+        try {
+            String query = "SELECT COUNT(*) as total_executions from " +
+                    MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
+                    " WHERE " +
+                    "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + "," +
+                    "SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersion) + "," +
+                    "ENV_NM = " + SQLTools.GetStringForSQL(environment) + ";";
+            CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
+            if (crs.next()) {
+                return Long.parseLong(crs.getString("total_executions"));
+            } else {
+                return 0L;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

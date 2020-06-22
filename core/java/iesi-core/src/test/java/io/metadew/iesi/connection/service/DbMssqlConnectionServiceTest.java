@@ -50,7 +50,7 @@ public class DbMssqlConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
-        MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "password", "schema"), "schema");
+        MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "password", null, "schema"), "schema");
         assertEquals(mssqlDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
@@ -66,7 +66,7 @@ public class DbMssqlConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
-        MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "encrypted_password", "schema"), "schema");
+        MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "encrypted_password", null, "schema"), "schema");
         assertEquals(mssqlDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 

@@ -22,13 +22,13 @@ public class OracleDatabaseConnection extends SchemaDatabaseConnection {
 
     private static String type = "oracle";
 
-    public OracleDatabaseConnection(String connectionURL, String userName, String userPassword) {
-        super(type, connectionURL, userName, userPassword, "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'");
+    public OracleDatabaseConnection(String connectionURL, String userName, String userPassword, String initSql) {
+        super(type, connectionURL, userName, userPassword, initSql);
         System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
     }
 
-    public OracleDatabaseConnection(String connectionURL, String userName, String userPassword, String schema) {
-        super(type, connectionURL, userName, userPassword, "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' current_schema=" + schema, schema);
+    public OracleDatabaseConnection(String connectionURL, String userName, String userPassword, String initSql, String schema) {
+        super(type, connectionURL, userName, userPassword, initSql, schema);
         System.getProperties().setProperty("oracle.jdbc.J2EE13Compliant", "true");
     }
 

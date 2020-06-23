@@ -14,7 +14,7 @@ import java.util.List;
 public class Template extends Metadata<TemplateKey> implements DataType {
 
     private final String name;
-    private final List<Matcher> matchers;
+    private List<Matcher> matchers;
 
     @Builder
     public Template(TemplateKey metadataKey, String name, List<Matcher> matchers) {
@@ -26,6 +26,10 @@ public class Template extends Metadata<TemplateKey> implements DataType {
     @Override
     public String toString() {
         return "{{^template(" + name + "}}";
+    }
+
+    public void addMatcher(Matcher matcher) {
+        this.matchers.add(matcher);
     }
 
 }

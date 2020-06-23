@@ -18,12 +18,8 @@ iesi:
 #            user: "sa"
 #            password: ""
 
-          type: oracle
-          connection: "jdbc:oracle:thin:localhost:1521"
-          schema: GETA
-          owner:
-            user: GETA
-            password: GETA
+          type: sqlite
+          file: "./test"
 
 
 #          type: h2

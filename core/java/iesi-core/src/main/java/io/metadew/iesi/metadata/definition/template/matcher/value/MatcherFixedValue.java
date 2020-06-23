@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.definition.template.matcher.value;
 
+import io.metadew.iesi.metadata.definition.template.matcher.MatcherKey;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,8 +14,8 @@ public class MatcherFixedValue extends MatcherValue {
     private final String value;
 
     @Builder
-    public MatcherFixedValue(MatcherValueKey metadataKey, String value) {
-        super(metadataKey);
+    public MatcherFixedValue(MatcherValueKey metadataKey, MatcherKey matcherKey, String value) {
+        super(metadataKey, matcherKey);
         this.value = value;
     }
 

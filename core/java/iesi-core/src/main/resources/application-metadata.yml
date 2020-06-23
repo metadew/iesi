@@ -427,6 +427,7 @@ iesi:
             type: string
             length: 255
             nullable: false
+            unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
@@ -468,7 +469,7 @@ iesi:
             defaultTimestamp: true
 
       - name: DES_MATCH_VAL
-        label: Matchers
+        label: MatcherValues
         description: Design metadata for value matchers
         category: design
         fields:
@@ -494,7 +495,7 @@ iesi:
             defaultTimestamp: true
 
       - name: DES_MATCH_VAL_ANY
-        label: Matchers
+        label: AnyMatcherValues
         description: Design metadata for any value matchers
         category: design
         fields:
@@ -514,7 +515,7 @@ iesi:
             defaultTimestamp: true
 
       - name: DES_MATCH_VAL_FIX
-        label: Matchers
+        label: FixedMatcherValues
         description: Design metadata for fixed value matchers
         category: design
         fields:
@@ -540,7 +541,7 @@ iesi:
             defaultTimestamp: true
 
       - name: DES_MATCH_VAL_TEMPL
-        label: Matchers
+        label: TemplateMatcherValues
         description: Design metadata for template value matchers
         category: design
         fields:
@@ -551,7 +552,7 @@ iesi:
             length: 255
             nullable: false
             primaryKey: true
-          TEMPLATE_NAM:
+          TEMPLATE_NAME:
             description: Unique name of the template
             order: 1
             type: string

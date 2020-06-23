@@ -409,6 +409,162 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+      - name: DES_TEMPL
+        label: Templates
+        description: Design metadata for templates
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the template
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          NAME:
+            description: Unique name for the template
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: DES_MATCH
+        label: Matchers
+        description: Design metadata for matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the matcher
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          KEY:
+            description: key to match the matcher against
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+          TEMPLATE_ID:
+            description: foreign key reference to the matcher
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: DES_MATCH_VAL
+        label: MatcherValues
+        description: Design metadata for value matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the value matcher
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          MATCHER_ID:
+            description: foreign key reference to the matcher
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: DES_MATCH_VAL_ANY
+        label: AnyMatcherValues
+        description: Design metadata for any value matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the value matcher
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: DES_MATCH_VAL_FIX
+        label: FixedMatcherValues
+        description: Design metadata for fixed value matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the value matcher
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          VALUE:
+            description: Unique identifier for the matcher
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: DES_MATCH_VAL_TEMPL
+        label: TemplateMatcherValues
+        description: Design metadata for template value matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the value matcher
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          TEMPLATE_NAME:
+            description: Unique name of the template
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
       - name: TRC_DES_SCRIPT_LBL
         label: ScriptLabelDesignTraces
         description: Design metadata for script parameters

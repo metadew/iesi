@@ -26,6 +26,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@CrossOrigin
 @Tag(name = "environments", description = "Everything about environments")
 @RequestMapping("/environments")
 public class EnvironmentsController {

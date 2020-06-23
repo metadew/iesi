@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@CrossOrigin
 @Tag(name = "execution requests", description = "Everything about execution requests")
 @RequestMapping("/execution_request")
 public class ExecutionRequestController {

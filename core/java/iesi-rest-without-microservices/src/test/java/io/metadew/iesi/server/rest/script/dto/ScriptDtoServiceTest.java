@@ -5,6 +5,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
@@ -17,7 +18,6 @@ import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionInformat
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,15 +49,14 @@ class ScriptDtoServiceTest {
     @Autowired
     private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
+    @Autowired
+    private ScriptResultConfiguration scriptResultConfiguration;
+
     @BeforeEach
     void setup() {
         metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
         //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
         //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void teardown() {
     }
 
     @Test
@@ -67,6 +66,17 @@ class ScriptDtoServiceTest {
 
     @Test
     void getAllSimpleTest() {
+        ScriptResult scriptResult = new ScriptResult(new ScriptResultKey("123", 1L), 1L, " ", "", 1L, "", ScriptRunStatus.SUCCESS, LocalDateTime.now(), LocalDateTime.now());
+        ScriptResult scriptResult1 = ScriptResult.builder().scriptResultKey(
+                ScriptResultKey.builder()
+                        .runId("azeaz")
+                        .processId(1L).build())
+                .scriptId("azraze")
+                .build();
+
+        scriptResultConfiguration.insert(scriptResult);
+
+
         Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
         assertEquals(1, scriptDtoService.getAll().size());

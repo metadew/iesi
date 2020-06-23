@@ -1,116 +1,43 @@
 package io.metadew.iesi.metadata.definition.user;
 
-public class User {
+import io.metadew.iesi.metadata.definition.Metadata;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-    private String name;
-    private String type;
-    private String firstName;
-    private String lastName;
-    private String active;
-    private String passwordHash;
-    private String expired;
-    private Long cumulativeLoginFails;
-    private Long individualLoginFails;
-    private String locked;
+import java.util.ArrayList;
+import java.util.List;
 
-    //Constructors
-    public User(String name, String type, String firstName, String lastName, String active, String passwordHash,
-                String expired, Long cumulativeLoginFails, Long individualLoginFails, String locked) {
-        this.name = name;
-        this.type = type;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.active = active;
-        this.passwordHash = passwordHash;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class User extends Metadata<UserKey> {
+
+    private String username;
+    private String password;
+    private boolean enabled;
+    private boolean expired;
+    private boolean credentialsExpired;
+    private boolean locked;
+
+    @Builder
+    public User(UserKey userKey, String username, String password, boolean enabled, boolean expired,
+                boolean credentialsExpired, boolean locked) {
+        super(userKey);
+        this.username = username;
+        this.password = password;
+        this.enabled = enabled;
         this.expired = expired;
-        this.cumulativeLoginFails = cumulativeLoginFails;
-        this.individualLoginFails = individualLoginFails;
+        this.credentialsExpired = credentialsExpired;
         this.locked = locked;
     }
 
-    public User() {
-
+    //TODO: Lazy loading of authorities and groups. When moving to Spring add as lazy loading
+    public List<Authority> getAuthorities() {
+        return new ArrayList<>();
     }
 
-    //Getters and Setters
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getActive() {
-        return active;
-    }
-
-    public void setActive(String active) {
-        this.active = active;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public String getExpired() {
-        return expired;
-    }
-
-    public void setExpired(String expired) {
-        this.expired = expired;
-    }
-
-    public Long getCumulativeLoginFails() {
-        return cumulativeLoginFails;
-    }
-
-    public void setCumulativeLoginFails(Long cumulativeLoginFails) {
-        this.cumulativeLoginFails = cumulativeLoginFails;
-    }
-
-    public Long getIndividualLoginFails() {
-        return individualLoginFails;
-    }
-
-    public void setIndividualLoginFails(Long individualLoginFails) {
-        this.individualLoginFails = individualLoginFails;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getLocked() {
-        return locked;
-    }
-
-    public void setLocked(String locked) {
-        this.locked = locked;
+    public List<Group> getGroups() {
+        return new ArrayList<>();
     }
 
 }

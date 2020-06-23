@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.configuration;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.metadata.configuration.UserConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
@@ -13,6 +12,10 @@ import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRe
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
+import io.metadew.iesi.metadata.service.user.AuthorityService;
+import io.metadew.iesi.metadata.service.user.GroupService;
+import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -90,7 +93,25 @@ public class IesiConfiguration {
     @Bean
     @DependsOn("frameworkInstance")
     public UserConfiguration userConfiguration() {
-        return new UserConfiguration();
+        return UserConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public UserService userService() {
+        return UserService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public GroupService groupService() {
+        return GroupService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public AuthorityService authorityService() {
+        return AuthorityService.getInstance();
     }
 
     @Bean

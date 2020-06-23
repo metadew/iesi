@@ -6,8 +6,7 @@ This page guide you through creating the tutorial environment.
 An environment is a group of connectivity end points that belong together. 
 Systems will be set up to communicate and work with each other. 
 In order to implement functionalities and verify that these are working fine, new instances are created. 
-The environment concept in the automation framework allows to make and abstraction of these instances and identify on which one an script needs to be executed.
-
+The environment concept in the automation framework allows to abstract these instances and to identify which one a particular script needs to be executed on.
 The environment that will be set up for the different tutorials will be named `tutorial`.
 
 ## Pre-requisites
@@ -32,11 +31,16 @@ data:
 
 Next, we will load the tutorial environment configuration file into the configuration repository:
 * Copy the configuration file to the `metadata/in/new` folder
-* Navigate to the `bin` folder
-* Load the configuration file via the `bin/iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
+* Navigate to the `bin` folder and open the terminal (or command prompt on windows) in this folder
+* Load the configuration file via the `./iesi-metadata.sh` (or `iesi-metadata.cmd` on Windows) command [![info](/{{site.repository}}/images/icons/question-dot.png)](/{{site.repository}}/pages/operate/operate.html)
 
+Linux/Mac
 ```bash
-bin/iesi-metadata.sh -load -type general
+./iesi-metadata.sh -load -type general
+```
+Windows
+```bash
+./iesi-metadata.cmd -load -type general
 ```
 
 ## Recap
@@ -44,8 +48,13 @@ bin/iesi-metadata.sh -load -type general
 We have now created an environment for our tutorials named `tutorial`. 
 When we will execute scripts we can make reference to this environment name.
 
+Linux/Mac
 ```bash
-bin/iesi-launch.sh -script <arg> -env tutorial
+./iesi-launch.sh -script <arg> -env tutorial
+```
+Windows
+```bash
+./iesi-launch.cmd -script <arg> -env tutorial
 ```
 
 ## Continue?

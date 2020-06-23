@@ -53,7 +53,7 @@ Windows
 ./iesi-metadata.cmd -load -type general
 ```
 
-This command saves your new `HelloWorldScript` script in the database in the backend. You will now be able to access it with the next command(s).
+This allows you to store/load your created 'HelloWorld'-script in the configured central repository. You will now be able to execute your script with the next command(s).
 
 ## Execute the script
 

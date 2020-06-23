@@ -16,7 +16,7 @@ public class MetadataConnectionTypesConfiguration {
     private static MetadataConnectionTypesConfiguration INSTANCE;
     private static final String actionsKey = "connection-types";
 
-    private Map<String, ConnectionType> componentTypeMap;
+    private Map<String, ConnectionType> connectionTypeMap;
 
     public synchronized static MetadataConnectionTypesConfiguration getInstance() {
         if (INSTANCE == null) {
@@ -27,14 +27,14 @@ public class MetadataConnectionTypesConfiguration {
 
     @SuppressWarnings("unchecked")
     private MetadataConnectionTypesConfiguration() {
-        componentTypeMap = new HashMap<>();
+        connectionTypeMap = new HashMap<>();
         if (containsConfiguration()) {
             Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
                     .get(MetadataConfiguration.configurationKey))
                     .get(actionsKey);
             ObjectMapper objectMapper = new ObjectMapper();
             for (Map.Entry<String, Object> entry : frameworkSettingConfigurations.entrySet()) {
-                componentTypeMap.put(entry.getKey(), objectMapper.convertValue(entry.getValue(), ConnectionType.class));
+                connectionTypeMap.put(entry.getKey(), objectMapper.convertValue(entry.getValue(), ConnectionType.class));
             }
         } else {
             log.warn("no connection type configurations found on system variable, classpath or filesystem");
@@ -43,7 +43,11 @@ public class MetadataConnectionTypesConfiguration {
     }
 
     public Optional<ConnectionType> getConnectionType(String connectionType) {
-        return Optional.ofNullable(componentTypeMap.get(connectionType));
+        return Optional.ofNullable(connectionTypeMap.get(connectionType));
+    }
+
+    public Map<String, ConnectionType> getConnectionTypes() {
+        return connectionTypeMap;
     }
 
     @SuppressWarnings("unchecked")

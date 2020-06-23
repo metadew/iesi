@@ -9,14 +9,18 @@ import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceC
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
 import io.metadew.iesi.script.execution.ActionExecution;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 public class ActionParameterTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -33,12 +37,24 @@ public class ActionParameterTraceService {
             actionParameterTraces.addAll(getActionParameterTraces(actionExecution, prefix + actionParameterEntry.getKey(), actionParameterEntry.getValue()));
             // trace(actionExecution, prefix + actionParameterEntry.getKey(), actionParameterEntry.getValue());
         }
-        ActionParameterTraceConfiguration.getInstance().insert(actionParameterTraces);
+        try {
+            ActionParameterTraceConfiguration.getInstance().insert(actionParameterTraces);
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            log.warn("unable to trace " + prefix + ":" + actionParameterMap.toString() + " due to " + stackTrace.toString());
+        }
     }
 
     public void trace(ActionExecution actionExecution, String key, DataType value) {
-        List<ActionParameterTrace> actionParameterTraces = getActionParameterTraces(actionExecution, key, value);
-        ActionParameterTraceConfiguration.getInstance().insert(actionParameterTraces);
+        try {
+            List<ActionParameterTrace> actionParameterTraces = getActionParameterTraces(actionExecution, key, value);
+            ActionParameterTraceConfiguration.getInstance().insert(actionParameterTraces);
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            log.warn("unable to trace " + key + ":" + value.toString() + " due to " + stackTrace.toString());
+        }
     }
 
     private List<ActionParameterTrace> getActionParameterTraces(ActionExecution actionExecution, String key, DataType value) {

@@ -6,11 +6,13 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.action.fwk.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
+import lombok.ToString;
 import org.apache.logging.log4j.Level;
 
 import java.util.*;
 import java.util.concurrent.*;
 
+@ToString
 public abstract class ScriptExecution {
 	private RootingStrategy rootingStrategy;
 	private Script script;

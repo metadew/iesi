@@ -54,7 +54,6 @@ public class MetadataLauncher {
         // Define the exit behaviour
         boolean exit = !line.hasOption("exit") || line.getOptionValue("exit").equalsIgnoreCase("y") || line.getOptionValue("exit").equalsIgnoreCase("true");
 
-        System.out.println("initialize framework");
         Configuration.getInstance();
         // FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("metadata", "")));
 
@@ -98,45 +97,45 @@ public class MetadataLauncher {
 
         // Drop
         if (line.hasOption("drop")) {
+            writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-
-                writeHeaderMessage();
                 System.out.println("Option -drop (drop) selected");
                 System.out.println();
                 metadataRepository.dropAllTables();
-                writeFooterMessage();
             }
+            writeFooterMessage();
         }
 
         // DDL
         if (line.hasOption("ddl")) {
+            writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
                 System.out.println(metadataRepository.generateDDL());
             }
+            writeFooterMessage();
         }
 
         // Create
         if (line.hasOption("create")) {
+            writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                writeHeaderMessage();
                 System.out.println("Option -create (create) selected");
                 System.out.println();
                 System.out.println(MessageFormat.format("Creating metadata repository {0}", metadataRepository.getCategory()));
                 metadataRepository.createAllTables();
-                writeFooterMessage();
             }
+            writeFooterMessage();
         }
 
         // clean
         if (line.hasOption("clean")) {
+            writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                writeHeaderMessage();
                 System.out.println("Option -clean (clean) selected");
                 System.out.println();
                 metadataRepository.cleanAllTables();
-                writeFooterMessage();
             }
-
+            writeFooterMessage();
         }
 
         // load
@@ -154,9 +153,9 @@ public class MetadataLauncher {
             writeFooterMessage();
         }
 
+        FrameworkInstance.getInstance().shutdown();
         System.out.println();
         System.out.println("metadata.launcher.end");
-        FrameworkInstance.getInstance().shutdown();
         endLauncher(0, exit);
     }
 

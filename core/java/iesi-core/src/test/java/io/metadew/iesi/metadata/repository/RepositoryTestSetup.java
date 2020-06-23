@@ -23,13 +23,9 @@ public class RepositoryTestSetup {
     private static final String DB_NAME = "test;DB_CLOSE_DELAY=-1";
     private static final String DB_USER = "";
     private static final String DB_PASSWORD = "";
-    private static final String DESIGN_TABLES = "io.metadew.iesi.metadata/DesignTables.json";
-    private static final String DESIGN_OBJECTS = "io.metadew.iesi.metadata/DesignObjects.json";
-    private static final String CONNECTIVITY_TABLES = "io.metadew.iesi.metadata/ConnectivityTables.json";
-    private static final String CONNECTIVITY_OBJECTS = "io.metadew.iesi.metadata/ConnectivityObjects.json";
 
     public static DesignMetadataRepository getDesignMetadataRepository() {
-        Configuration.getInstance();
+        Configuration configuration = Configuration.getInstance();
 //        DesignMetadataRepository designMetadataRepository = new DesignMetadataRepository("", getRepositoryCoordinator(), "", "",
 //                getMetadataObjects(DESIGN_OBJECTS), getMetadataTables(DESIGN_TABLES));
 //        designMetadataRepository.createAllTables();
@@ -89,7 +85,7 @@ public class RepositoryTestSetup {
     }
 
     private static Database getDatabase() {
-        return new H2Database(new H2MemoryDatabaseConnection(DB_NAME, DB_USER, DB_PASSWORD));
+        return new H2Database(new H2MemoryDatabaseConnection(DB_NAME, DB_USER, DB_PASSWORD, null, null));
     }
 
 }

@@ -11,16 +11,19 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionR
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
+import lombok.extern.log4j.Log4j2;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionRequest> {
 
     private static ScriptNameExecutor INSTANCE;
@@ -68,10 +71,9 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
                         scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(),
                         ScriptRunStatus.RUNNING, LocalDateTime.now(), null);
         ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
-
         scriptExecution.execute();
         scriptExecution1.updateScriptRunStatus(ScriptResultConfiguration.getInstance().get(new ScriptResultKey(scriptExecution1.getRunId(), -1L))
-                .map(scriptResult -> ScriptRunStatus.valueOf(scriptResult.getStatus()))
+                .map(ScriptResult::getStatus)
                 .orElseThrow(() -> new RuntimeException("Cannot find result of run id: " + scriptExecution1.getRunId())));
         scriptExecution1.setEndTimestamp(LocalDateTime.now());
         ScriptExecutionConfiguration.getInstance().update(scriptExecution1);

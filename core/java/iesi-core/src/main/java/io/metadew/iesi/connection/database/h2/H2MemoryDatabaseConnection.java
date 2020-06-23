@@ -9,11 +9,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class H2MemoryDatabaseConnection extends H2DatabaseConnection {
 
-    public H2MemoryDatabaseConnection(String databaseName, String userName, String userPassword) {
-        super("jdbc:h2:mem:" + databaseName, userName, userPassword);
+    public H2MemoryDatabaseConnection(String databaseName, String userName, String userPassword, String initSql) {
+        super("jdbc:h2:mem:" + databaseName, userName, userPassword, initSql);
     }
 
-    public H2MemoryDatabaseConnection(String databaseName, String userName, String userPassword, String schema) {
-        super("jdbc:h2:mem:" + databaseName, userName, userPassword, schema);
+    public H2MemoryDatabaseConnection(String databaseName, String userName, String userPassword, String initSql, String schema) {
+        super("jdbc:h2:mem:" + databaseName, userName, userPassword, initSql, schema);
     }
 }

@@ -22,6 +22,7 @@ import io.metadew.iesi.connection.database.teradata.TeradataDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
@@ -32,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+@Log4j2
 public class DatabaseHandler implements IDatabaseHandler {
 
     private Map<ClassStringPair, IDatabaseService> databaseServiceMap;
@@ -95,6 +96,7 @@ public class DatabaseHandler implements IDatabaseHandler {
 
     @SuppressWarnings("unchecked")
     public void shutdown(Database database) {
+        log.debug("shutting down " + database.toString());
         getDatabaseService(database).shutdown(database);
     }
 

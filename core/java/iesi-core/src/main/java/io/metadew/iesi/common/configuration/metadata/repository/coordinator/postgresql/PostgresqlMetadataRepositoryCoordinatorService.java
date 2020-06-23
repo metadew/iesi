@@ -62,14 +62,18 @@ public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadata
             return new PostgresqlDatabaseConnection(
                     postgresqlRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()));
+                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    postgresqlRepositoryCoordinatorDefinition.getInitSql(),
+                    postgresqlRepositoryCoordinatorDefinition.getSchema().orElse(null));
         } else {
             return new PostgresqlDatabaseConnection(
                     postgresqlRepositoryCoordinatorDefinition.getHost(),
                     postgresqlRepositoryCoordinatorDefinition.getPort(),
                     postgresqlRepositoryCoordinatorDefinition.getDatabase(),
+                    postgresqlRepositoryCoordinatorDefinition.getSchema().orElse(null),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword())
+                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    postgresqlRepositoryCoordinatorDefinition.getInitSql()
             );
         }
     }

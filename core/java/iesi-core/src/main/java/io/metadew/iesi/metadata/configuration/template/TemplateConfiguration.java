@@ -9,6 +9,13 @@ import java.util.Optional;
 
 public class TemplateConfiguration extends Configuration<Template, TemplateKey> {
 
+    private static final String fetchSingleQuery = "";
+    private static final String fetchAllQuery = "";
+    private static final String deleteSingleQuery = "";
+    private static final String deleteAllQuery = "";
+    private static final String updateSingleQuery = "";
+    private static final String updateAllQuery = "";
+
     private static TemplateConfiguration INSTANCE;
 
     public synchronized static TemplateConfiguration getInstance() {

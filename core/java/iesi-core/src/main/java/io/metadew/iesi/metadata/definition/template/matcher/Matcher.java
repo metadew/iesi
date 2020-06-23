@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.template.matcher;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValue;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -16,6 +17,7 @@ public class Matcher extends Metadata<MatcherKey> {
     private final String key;
     private final MatcherValue matcherValue;
 
+    @Builder
     public Matcher(MatcherKey matcherKey, TemplateKey templateKey, String key, MatcherValue matcherValue) {
         super(matcherKey);
         this.templateKey = templateKey;

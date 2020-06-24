@@ -141,10 +141,10 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     }
 
     @Override
-    public List<Template> getAll() {
+    public List<Template> getAll() throws SQLException {
         List<Template> templates = new ArrayList<>();
         Map<UUID, Template> templateMap = new HashMap<>();
-        try {
+        //try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(fetchAllQuery, "reader");
             Template template;
             while (cachedRowSet.next()) {
@@ -158,9 +158,9 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                 addMapping(template, cachedRowSet);
             }
             return templates;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        //} catch (SQLException e) {
+        //    throw new RuntimeException(e);
+        //}
     }
 
     @Override

@@ -10,15 +10,15 @@ iesi:
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
-#          type: h2
-#          mode: memory
-#          database: test;DB_CLOSE_DELAY=-1
-#          owner:
-#            user: ""
-#            password: ""
+          type: h2
+          mode: embedded
+          file: ./test;DB_CLOSE_DELAY=-1;ALIAS_COLUMN_NAME=true  #;DB_CLOSE_ON_EXIT=FALSE
+          owner:
+            user: ""
+            password: ""
 
-          type: sqlite
-          file: "./test.db3"
+#          type: sqlite
+#          file: "./test.db3"
 
 #          type: h2
 #          mode: embedded

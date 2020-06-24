@@ -5,6 +5,8 @@
 /src/main/resources/encryption.key
 
 /metadata/out/ddl
+/test.*.db
+/test.db3
 
 ### Eclipse template
 .metadata

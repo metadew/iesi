@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplat
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
 import org.junit.jupiter.api.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -115,13 +116,13 @@ class TemplateConfigurationTest {
     }
 
     @Test
-    void testGetAllEmpty() {
+    void testGetAllEmpty() throws SQLException {
         assertThat(TemplateConfiguration.getInstance().getAll())
                 .isEmpty();
     }
 
     @Test
-    void testGetAll() {
+    void testGetAll() throws SQLException {
         MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
         MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template2);
         assertThat(TemplateConfiguration.getInstance().getAll())

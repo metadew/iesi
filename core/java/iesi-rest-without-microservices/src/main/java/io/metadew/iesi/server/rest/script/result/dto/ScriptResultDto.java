@@ -29,6 +29,7 @@ public class ScriptResultDto extends RepresentationModel<ScriptResultDto> {
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
 
+
     public ScriptResultDto(ScriptResult scriptResult) {
         this.runID = scriptResult.getMetadataKey().getRunId();
         this.processId = scriptResult.getMetadataKey().getProcessId();

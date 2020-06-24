@@ -365,8 +365,8 @@ public class ScriptResultServiceTest {
                 .scriptVersion((long) n)
                 .environment(nString)
                 .status(ScriptRunStatus.SUCCESS)
-                .startTimestamp(LocalDateTime.of(2000, nMonth, nDay, nHours, nMin))
-                .endTimestamp(LocalDateTime.of(2000, nMonth, nDay, nHours, nMin))
+                .startTimestamp(LocalDateTime.now())
+                .endTimestamp(LocalDateTime.now())
                 .build();
     }
 

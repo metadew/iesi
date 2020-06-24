@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,17 +44,6 @@ class ScriptResultControllerTest {
     private ScriptResultService scriptResultService;
 
     @Test
-    void getAllStatus200() throws Exception {
-        // Mock Service
-        List<ScriptResult> scriptResultList = new ArrayList<>();
-        scriptResultList.add(createADummyScriptResult(1));
-        given(scriptResultService.getAll()).willReturn(scriptResultList);
-
-        mvc.perform(get("/scriptResult").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void getAllNoResult() throws Exception {
         // Mock Service
         List<ScriptResult> scriptResultList = new ArrayList<>();
@@ -62,7 +52,7 @@ class ScriptResultControllerTest {
         mvc.perform(get("/scriptResult")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$", anEmptyMap())); // do we want an Empty map response or a "null" value ?
+                .andExpect(jsonPath("$", anEmptyMap()));
     }
 
     @Test
@@ -92,6 +82,10 @@ class ScriptResultControllerTest {
                 .andExpect(jsonPath("$[\"_embedded\"]", hasSize(3)));
     }
 
+    void getAllScriptResultDataIntegrityTest() throws Exception {
+
+    }
+
     @Test
     void getByRunIdNoResult() throws Exception {
         // Mock Service
@@ -117,7 +111,7 @@ class ScriptResultControllerTest {
         mvc.perform(get("/scriptResult/sameId")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$[\"_embedded\"]", hasSize(3)));
+                .andExpect(jsonPath("$._embedded", hasSize(3)));
     }
 
     @Test
@@ -137,13 +131,13 @@ class ScriptResultControllerTest {
                 .andExpect(jsonPath("$.scriptVersion", is((int) ((long) scriptResult.getScriptVersion()))))
                 .andExpect(jsonPath("$.environment", is(scriptResult.getEnvironment())))
                 .andExpect(jsonPath("$.status", is(String.valueOf(scriptResult.getStatus()))))
-                .andExpect(jsonPath("$.startTimestamp", is(scriptResult.getStartTimestamp() + ":00")))
-                .andExpect(jsonPath("$.endTimestamp", is(scriptResult.getEndTimestamp() + ":00")))
+                .andExpect(jsonPath("$.startTimestamp", is(scriptResult.getStartTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSSSSSS")))))
+                .andExpect(jsonPath("$.endTimestamp", is(scriptResult.getEndTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSSSSSS")))))
                 .andExpect(jsonPath("$._links.self.href", is("http://localhost/scriptResult/" + scriptResult.getMetadataKey().getRunId() + "/" + scriptResult.getMetadataKey().getProcessId())));
     }
 
     @Test
-    void getByRunIdAndProcessIdNoResultThrowException() {
+    void getByRunIdAndProcessIdNoResultThrowMetadataDoesNotExistException() {
         // Mock Service
         Optional<ScriptResult> optionalScriptResult = Optional.empty();
         given(scriptResultService.getByRunIdAndProcessId("Id", 1L)).willReturn(optionalScriptResult);
@@ -168,8 +162,8 @@ class ScriptResultControllerTest {
                 .scriptVersion((long) n)
                 .environment(nString)
                 .status(ScriptRunStatus.SUCCESS)
-                .startTimestamp(LocalDateTime.of(2000, nMonth, nDay, nHours, nMin))
-                .endTimestamp(LocalDateTime.of(2000, nMonth, nDay, nHours, nMin))
+                .startTimestamp(LocalDateTime.now())
+                .endTimestamp(LocalDateTime.now())
                 .build();
     }
 

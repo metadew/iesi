@@ -29,7 +29,6 @@ public class ScriptResultService implements IScriptResultService {
 
     @Override
     public Optional<ScriptResult> getByRunIdAndProcessId(String runId, Long processId) {
-        ScriptResultKey scriptResultKey = new ScriptResultKey(runId, processId);
-        return scriptResultConfiguration.get(scriptResultKey);
+        return scriptResultConfiguration.get(new ScriptResultKey(runId, processId));
     }
 }

@@ -1,13 +1,11 @@
 package io.metadew.iesi.server.rest.script.result;
 
-import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
-import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
-import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
+import io.metadew.iesi.server.rest.builder.scriptresult.ScriptResultBuilder;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,9 +54,9 @@ public class ScriptResultServiceTest {
 
     @Test
     void getAll3ResultsTest() {
-        ScriptResult insertedScriptResult0 = createAndInsertADummyScriptResultN(0);
-        ScriptResult insertedScriptResult1 = createAndInsertADummyScriptResultN(1);
-        ScriptResult insertedScriptResult2 = createAndInsertADummyScriptResultN(2);
+        ScriptResult insertedScriptResult0 = createAndInsertSimpleScriptResultN(0);
+        ScriptResult insertedScriptResult1 = createAndInsertSimpleScriptResultN(1);
+        ScriptResult insertedScriptResult2 = createAndInsertSimpleScriptResultN(2);
         List<ScriptResult> scriptResultList = scriptResultService.getAll();
 
         assertThat(scriptResultList.size())
@@ -68,7 +65,7 @@ public class ScriptResultServiceTest {
 
         assertThat(scriptResultList)
                 .as("getAll method should retrieve the exact same data that were inserted")
-                .containsOnly(insertedScriptResult0,insertedScriptResult1,insertedScriptResult2);
+                .containsOnly(insertedScriptResult0, insertedScriptResult1, insertedScriptResult2);
 
         assertThat(scriptResultList.get(0))
                 .as("getAll method should retrieve the exact same data that were inserted")
@@ -97,9 +94,9 @@ public class ScriptResultServiceTest {
 
     @Test
     void getByRunId2IDTest() {
-        ScriptResult scriptResultId1n1 = createAndInsertADummyScriptResultN(1,"Id1");
-        ScriptResult scriptResultId1n2 = createAndInsertADummyScriptResultN(2,"Id1");
-        ScriptResult scriptResultId2n1 = createAndInsertADummyScriptResultN(3,"Id2");
+        ScriptResult scriptResultId1n1 = createAndInsertSimpleScriptResultN(1, "Id1");
+        ScriptResult scriptResultId1n2 = createAndInsertSimpleScriptResultN(2, "Id1");
+        ScriptResult scriptResultId2n1 = createAndInsertSimpleScriptResultN(3, "Id2");
 
         List<ScriptResult> scriptResultListId1 = scriptResultService.getByRunId("Id1");
         List<ScriptResult> scriptResultListId2 = scriptResultService.getByRunId("Id2");
@@ -132,9 +129,8 @@ public class ScriptResultServiceTest {
 
     @Test
     void getByRunIdAndProcessIdTest() {
-        ScriptResult scriptResult1 = createAndInsertADummyScriptResultN(1);
-        ScriptResult scriptResult2 = createAndInsertADummyScriptResultN(2);
-        ScriptResult scriptResult3 = createAndInsertADummyScriptResultN(3);
+        ScriptResult scriptResult1 = createAndInsertSimpleScriptResultN(1);
+        ScriptResult scriptResult2 = createAndInsertSimpleScriptResultN(2);
 
         assertThat(scriptResultService.getByRunIdAndProcessId("notPresentRunId", 1L).isPresent())
                 .as("No ScriptResult should be found")
@@ -161,31 +157,14 @@ public class ScriptResultServiceTest {
                 .isEqualTo(scriptResult2);
     }
 
-    ScriptResult createAndInsertADummyScriptResultN(long n, String runId) {
-        ScriptResult scriptResultN = createADummyScriptResult(n, runId);
+    ScriptResult createAndInsertSimpleScriptResultN(long n, String runId) {
+        ScriptResult scriptResultN = ScriptResultBuilder.simpleScriptResult(n, runId);
         scriptResultConfiguration.insert(scriptResultN);
         return scriptResultN;
     }
 
-    ScriptResult createAndInsertADummyScriptResultN(long n) {
-        return createAndInsertADummyScriptResultN(n, String.format("%s", n));
+    ScriptResult createAndInsertSimpleScriptResultN(long n) {
+        return createAndInsertSimpleScriptResultN(n, String.format("%s", n));
     }
 
-    ScriptResult createADummyScriptResult(long n, String runId) {
-        return ScriptResult.builder()
-                .scriptResultKey(new ScriptResultKey(runId, n))
-                .parentProcessId(n)
-                .scriptId(Long.toString(n))
-                .scriptName(Long.toString(n))
-                .scriptVersion(n)
-                .environment(Long.toString(n))
-                .status(ScriptRunStatus.SUCCESS)
-                .startTimestamp(LocalDateTime.now())
-                .endTimestamp(LocalDateTime.now())
-                .build();
-    }
-
-    ScriptResult createADummyScriptResult(long n) {
-        return createADummyScriptResult(n, String.format("%s", n));
-    }
 }

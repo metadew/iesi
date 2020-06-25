@@ -1,9 +1,8 @@
 package io.metadew.iesi.server.rest.script.result;
 
-import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
-import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import io.metadew.iesi.server.rest.builder.scriptresult.ScriptResultBuilder;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDto;
 import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDtoModelAssembler;
@@ -18,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,8 +56,8 @@ class ScriptResultControllerTest {
     @Test
     void getAllScript2ResultsTest() throws Exception {
         List<ScriptResult> scriptResultList = new ArrayList<>();
-        ScriptResult scriptResult1 = createADummyScriptResult(1);
-        ScriptResult scriptResult2 = createADummyScriptResult(2);
+        ScriptResult scriptResult1 = ScriptResultBuilder.simpleScriptResult(1);
+        ScriptResult scriptResult2 = ScriptResultBuilder.simpleScriptResult(2);
         scriptResultList.add(scriptResult1);
         scriptResultList.add(scriptResult2);
         given(scriptResultService.getAll()).willReturn(scriptResultList);
@@ -128,8 +126,8 @@ class ScriptResultControllerTest {
     void getByRunId2Results() throws Exception {
         // Mock Service
         List<ScriptResult> scriptResultList = new ArrayList<>();
-        ScriptResult scriptResult1 = createADummyScriptResult(1, "sameId");
-        ScriptResult scriptResult2 = createADummyScriptResult(2, "sameId");
+        ScriptResult scriptResult1 = ScriptResultBuilder.simpleScriptResult(1, "sameId");
+        ScriptResult scriptResult2 = ScriptResultBuilder.simpleScriptResult(2, "sameId");
         scriptResultList.add(scriptResult1);
         scriptResultList.add(scriptResult2);
         given(scriptResultService.getByRunId("sameId")).willReturn(scriptResultList);
@@ -165,7 +163,7 @@ class ScriptResultControllerTest {
     @Test
     void getByRunIdAndProcessIdSuccessfulTest() throws Exception {
         // Mock Service
-        Optional<ScriptResult> optionalScriptResult = Optional.of(createADummyScriptResult(1));
+        Optional<ScriptResult> optionalScriptResult = Optional.of(ScriptResultBuilder.simpleScriptResult(1));
         given(scriptResultService.getByRunIdAndProcessId("sameId", 1L)).willReturn(optionalScriptResult);
         ScriptResult scriptResult = optionalScriptResult.get();
         // Request
@@ -191,23 +189,5 @@ class ScriptResultControllerTest {
         given(scriptResultService.getByRunIdAndProcessId("Id", 1L)).willReturn(optionalScriptResult);
         mvc.perform(get("/scriptResult/Id/1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-    }
-
-    ScriptResult createADummyScriptResult(long n, String runId) {
-        return ScriptResult.builder()
-                .scriptResultKey(new ScriptResultKey(runId, n))
-                .parentProcessId(n)
-                .scriptId(Long.toString(n))
-                .scriptName(Long.toString(n))
-                .scriptVersion(n)
-                .environment(Long.toString(n))
-                .status(ScriptRunStatus.SUCCESS)
-                .startTimestamp(LocalDateTime.now())
-                .endTimestamp(LocalDateTime.now())
-                .build();
-    }
-
-    ScriptResult createADummyScriptResult(long n) {
-        return createADummyScriptResult(n, String.format("%s", n));
     }
 }

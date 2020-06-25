@@ -1,9 +1,10 @@
 package io.metadew.iesi.server.rest.script.result;
 
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDto;
 import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDtoModelAssembler;
 import org.junit.jupiter.api.Test;
@@ -18,12 +19,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(ScriptResultController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = {ScriptResultController.class, ScriptResultDtoModelAssembler.class, ScriptResultDto.class})
+@ContextConfiguration(classes = {ScriptResultController.class, ScriptResultDtoModelAssembler.class, ScriptResultDto.class, CustomGlobalExceptionHandler.class})
 class ScriptResultControllerTest {
 
     @Autowired
@@ -43,8 +42,9 @@ class ScriptResultControllerTest {
     @MockBean
     private ScriptResultService scriptResultService;
 
+
     @Test
-    void getAllNoResult() throws Exception {
+    void getAllNoResultTest() throws Exception {
         // Mock Service
         List<ScriptResult> scriptResultList = new ArrayList<>();
         given(scriptResultService.getAll()).willReturn(scriptResultList);
@@ -56,38 +56,63 @@ class ScriptResultControllerTest {
     }
 
     @Test
-    void getAll1Result() throws Exception {
-        // Mock Service
+    void getAllScript2ResultsTest() throws Exception {
         List<ScriptResult> scriptResultList = new ArrayList<>();
-        scriptResultList.add(createADummyScriptResult(1));
+        ScriptResult scriptResult1 = createADummyScriptResult(1);
+        ScriptResult scriptResult2 = createADummyScriptResult(2);
+        scriptResultList.add(scriptResult1);
+        scriptResultList.add(scriptResult2);
         given(scriptResultService.getAll()).willReturn(scriptResultList);
+
         // Request
         mvc.perform(get("/scriptResult")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$[\"_embedded\"]", hasSize(1)));
+                .andExpect(jsonPath("$._embedded", hasSize(2)))
+                .andExpect(jsonPath("$._embedded[0].runID",
+                        is(scriptResult1.getMetadataKey().getRunId())))
+                .andExpect(jsonPath("$._embedded[0].processId",
+                        is((int) ((long) scriptResult1.getMetadataKey().getProcessId()))))
+                .andExpect(jsonPath("$._embedded[0].scriptId",
+                        is(scriptResult1.getScriptId())))
+                .andExpect(jsonPath("$._embedded[0].scriptName",
+                        is(scriptResult1.getScriptName())))
+                .andExpect(jsonPath("$._embedded[0].scriptVersion",
+                        is((int) ((long) scriptResult1.getScriptVersion()))))
+                .andExpect(jsonPath("$._embedded[0].environment",
+                        is(scriptResult1.getEnvironment())))
+                .andExpect(jsonPath("$._embedded[0].status",
+                        is(String.valueOf(scriptResult1.getStatus()))))
+                .andExpect(jsonPath("$._embedded[0].startTimestamp",
+                        is(scriptResult1.getStartTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$._embedded[0].endTimestamp",
+                        is(scriptResult1.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$._embedded[0]._links.self.href",
+                        is("http://localhost/scriptResult/" + scriptResult1.getMetadataKey().getRunId() + "/" + scriptResult1.getMetadataKey().getProcessId())))
+                .andExpect(jsonPath("$._embedded[1].runID",
+                        is(scriptResult2.getMetadataKey().getRunId())))
+                .andExpect(jsonPath("$._embedded[1].processId",
+                        is((int) ((long) scriptResult2.getMetadataKey().getProcessId()))))
+                .andExpect(jsonPath("$._embedded[1].scriptId",
+                        is(scriptResult2.getScriptId())))
+                .andExpect(jsonPath("$._embedded[1].scriptName",
+                        is(scriptResult2.getScriptName())))
+                .andExpect(jsonPath("$._embedded[1].scriptVersion",
+                        is((int) ((long) scriptResult2.getScriptVersion()))))
+                .andExpect(jsonPath("$._embedded[1].environment",
+                        is(scriptResult2.getEnvironment())))
+                .andExpect(jsonPath("$._embedded[1].status",
+                        is(String.valueOf(scriptResult2.getStatus()))))
+                .andExpect(jsonPath("$._embedded[1].startTimestamp",
+                        is(scriptResult2.getStartTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$._embedded[1].endTimestamp",
+                        is(scriptResult2.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$._embedded[1]._links.self.href",
+                        is("http://localhost/scriptResult/" + scriptResult2.getMetadataKey().getRunId() + "/" + scriptResult2.getMetadataKey().getProcessId())));
     }
 
     @Test
-    void getAll3Results() throws Exception {
-        // Mock Service
-        List<ScriptResult> scriptResultList = new ArrayList<>();
-        for (int i = 1; i <= 3; i++)
-            scriptResultList.add(createADummyScriptResult(i));
-        given(scriptResultService.getAll()).willReturn(scriptResultList);
-        // Request
-        mvc.perform(get("/scriptResult")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
-                .andExpect(jsonPath("$[\"_embedded\"]", hasSize(3)));
-    }
-
-    void getAllScriptResultDataIntegrityTest() throws Exception {
-
-    }
-
-    @Test
-    void getByRunIdNoResult() throws Exception {
+    void getByRunIdNoResultTest() throws Exception {
         // Mock Service
         List<ScriptResult> scriptResultList = new ArrayList<>();
         given(scriptResultService.getByRunId("notTheSameId")).willReturn(scriptResultList);
@@ -100,22 +125,45 @@ class ScriptResultControllerTest {
     }
 
     @Test
-    void getByRunId3Results() throws Exception {
+    void getByRunId2Results() throws Exception {
         // Mock Service
         List<ScriptResult> scriptResultList = new ArrayList<>();
-        for (int i = 1; i <= 3; i++)
-            scriptResultList.add(createADummyScriptResult(i, "sameId"));
+        ScriptResult scriptResult1 = createADummyScriptResult(1, "sameId");
+        ScriptResult scriptResult2 = createADummyScriptResult(2, "sameId");
+        scriptResultList.add(scriptResult1);
+        scriptResultList.add(scriptResult2);
         given(scriptResultService.getByRunId("sameId")).willReturn(scriptResultList);
 
         // Request
         mvc.perform(get("/scriptResult/sameId")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded", hasSize(3)));
+                .andExpect(jsonPath("$._embedded", hasSize(2)))
+                .andExpect(jsonPath("$._embedded[0].runID", is(scriptResult1.getMetadataKey().getRunId())))
+                .andExpect(jsonPath("$._embedded[0].processId", is((int) ((long) scriptResult1.getMetadataKey().getProcessId()))))
+                .andExpect(jsonPath("$._embedded[0].scriptId", is(scriptResult1.getScriptId())))
+                .andExpect(jsonPath("$._embedded[0].scriptName", is(scriptResult1.getScriptName())))
+                .andExpect(jsonPath("$._embedded[0].scriptVersion", is((int) ((long) scriptResult1.getScriptVersion()))))
+                .andExpect(jsonPath("$._embedded[0].environment", is(scriptResult1.getEnvironment())))
+                .andExpect(jsonPath("$._embedded[0].status", is(String.valueOf(scriptResult1.getStatus()))))
+                .andExpect(jsonPath("$._embedded[0].startTimestamp", is(scriptResult1.getStartTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$._embedded[0].endTimestamp", is(scriptResult1.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/scriptResult/" + scriptResult1.getMetadataKey().getRunId() + "/" + scriptResult1.getMetadataKey().getProcessId())))
+                .andExpect(jsonPath("$._embedded", hasSize(2)))
+                .andExpect(jsonPath("$._embedded[1].runID", is(scriptResult2.getMetadataKey().getRunId())))
+                .andExpect(jsonPath("$._embedded[1].processId", is((int) ((long) scriptResult2.getMetadataKey().getProcessId()))))
+                .andExpect(jsonPath("$._embedded[1].scriptId", is(scriptResult2.getScriptId())))
+                .andExpect(jsonPath("$._embedded[1].scriptName", is(scriptResult2.getScriptName())))
+                .andExpect(jsonPath("$._embedded[1].scriptVersion", is((int) ((long) scriptResult2.getScriptVersion()))))
+                .andExpect(jsonPath("$._embedded[1].environment", is(scriptResult2.getEnvironment())))
+                .andExpect(jsonPath("$._embedded[1].status", is(String.valueOf(scriptResult2.getStatus()))))
+                .andExpect(jsonPath("$._embedded[1].startTimestamp", is(scriptResult2.getStartTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$._embedded[1].endTimestamp", is(scriptResult2.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/scriptResult/" + scriptResult2.getMetadataKey().getRunId() + "/" + scriptResult2.getMetadataKey().getProcessId())));
     }
 
     @Test
-    void getByRunIdAndProcessIdSuccessful() throws Exception {
+    void getByRunIdAndProcessIdSuccessfulTest() throws Exception {
         // Mock Service
         Optional<ScriptResult> optionalScriptResult = Optional.of(createADummyScriptResult(1));
         given(scriptResultService.getByRunIdAndProcessId("sameId", 1L)).willReturn(optionalScriptResult);
@@ -131,43 +179,35 @@ class ScriptResultControllerTest {
                 .andExpect(jsonPath("$.scriptVersion", is((int) ((long) scriptResult.getScriptVersion()))))
                 .andExpect(jsonPath("$.environment", is(scriptResult.getEnvironment())))
                 .andExpect(jsonPath("$.status", is(String.valueOf(scriptResult.getStatus()))))
-                .andExpect(jsonPath("$.startTimestamp", is(scriptResult.getStartTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSSSSSS")))))
-                .andExpect(jsonPath("$.endTimestamp", is(scriptResult.getEndTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSSSSSS")))))
+                .andExpect(jsonPath("$.startTimestamp", is(scriptResult.getStartTimestamp().format(SQLTools.defaultDateTimeFormatter))))
+                .andExpect(jsonPath("$.endTimestamp", is(scriptResult.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
                 .andExpect(jsonPath("$._links.self.href", is("http://localhost/scriptResult/" + scriptResult.getMetadataKey().getRunId() + "/" + scriptResult.getMetadataKey().getProcessId())));
     }
 
     @Test
-    void getByRunIdAndProcessIdNoResultThrowMetadataDoesNotExistException() {
+    void getByRunIdAndProcessIdNoResultTest() throws Exception {
         // Mock Service
         Optional<ScriptResult> optionalScriptResult = Optional.empty();
         given(scriptResultService.getByRunIdAndProcessId("Id", 1L)).willReturn(optionalScriptResult);
-
-        assertThatThrownBy(() -> mvc.perform(get("/scriptResult/Id/1").contentType(MediaType.APPLICATION_JSON)))
-                .hasCauseInstanceOf(MetadataDoesNotExistException.class);
+        mvc.perform(get("/scriptResult/Id/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
-    ScriptResult createADummyScriptResult(int n, String runId) {
-        String nString = String.valueOf(n);
-        LocalDateTime now = LocalDateTime.now();
-        int nMonth = now.getMonthValue();
-        int nDay = now.getDayOfMonth();
-        int nHours = now.getHour();
-        int nMin = now.getMinute();
-
+    ScriptResult createADummyScriptResult(long n, String runId) {
         return ScriptResult.builder()
-                .scriptResultKey(new ScriptResultKey("id" + runId, (long) n))
-                .parentProcessId((long) n)
-                .scriptId(nString)
-                .scriptName("Script" + nString)
-                .scriptVersion((long) n)
-                .environment(nString)
+                .scriptResultKey(new ScriptResultKey(runId, n))
+                .parentProcessId(n)
+                .scriptId(Long.toString(n))
+                .scriptName(Long.toString(n))
+                .scriptVersion(n)
+                .environment(Long.toString(n))
                 .status(ScriptRunStatus.SUCCESS)
                 .startTimestamp(LocalDateTime.now())
                 .endTimestamp(LocalDateTime.now())
                 .build();
     }
 
-    ScriptResult createADummyScriptResult(int n) {
+    ScriptResult createADummyScriptResult(long n) {
         return createADummyScriptResult(n, String.format("%s", n));
     }
 }

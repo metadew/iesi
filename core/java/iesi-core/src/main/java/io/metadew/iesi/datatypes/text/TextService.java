@@ -40,7 +40,13 @@ public class TextService implements IDataTypeService<Text> {
 
     @Override
     public boolean equals(Text _this, Text other, ExecutionRuntime executionRuntime) {
-        return _this.getString().equals(other.getString());
+        if (_this.getString() == null && other.getString() == null) {
+            return true;
+        } else if (_this.getString() != null) {
+            return _this.getString().equals(other.getString());
+        } else {
+            return false;
+        }
     }
 
     public Text resolve(ValueNode jsonNode) {

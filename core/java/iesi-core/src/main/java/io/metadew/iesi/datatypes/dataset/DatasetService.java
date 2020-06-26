@@ -12,16 +12,22 @@ public abstract class DatasetService<T extends Dataset> implements IDatasetServi
 
     @Override
     public boolean equals(T _this, T other, ExecutionRuntime executionRuntime) {
+        if (_this == null && other == null) {
+            return true;
+        }
+        if (_this == null || other == null) {
+            return false;
+        }
         if (!_this.getClass().equals(other.getClass())) {
             return false;
         }
-        Map<String, DataType> thisDataItems = getDataItems(_this, executionRuntime);
-        Map<String, DataType> otherDataItems = getDataItems(_this, executionRuntime);
+        Map<String, DataType> thisDataItems = DatasetHandler.getInstance().getDataItems(_this, executionRuntime);
+        Map<String, DataType> otherDataItems = DatasetHandler.getInstance().getDataItems(other, executionRuntime);
         if (!thisDataItems.keySet().equals(otherDataItems.keySet())) {
             return false;
         }
         for (Map.Entry<String, DataType> thisDataItem : thisDataItems.entrySet()) {
-            if(!DatasetHandler.getInstance().getDataItem(other, thisDataItem.getKey(), executionRuntime)
+            if (!DatasetHandler.getInstance().getDataItem(other, thisDataItem.getKey(), executionRuntime)
                     .map(dataType -> DataTypeHandler.getInstance().equals(dataType, thisDataItem.getValue(), executionRuntime))
                     .orElse(false)) {
                 return false;

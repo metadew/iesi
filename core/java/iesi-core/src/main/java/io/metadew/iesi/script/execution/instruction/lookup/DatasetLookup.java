@@ -5,11 +5,14 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.definition.template.Template;
+import io.metadew.iesi.metadata.service.template.TemplateService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -48,13 +51,30 @@ public class DatasetLookup implements LookupInstruction {
 
         String[] arguments = splitInput(parameters);
         Dataset dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
-        Optional<DataType> dataItem = DatasetHandler.getInstance().getDataItem(dataset, arguments[1].trim(), executionRuntime);
+        DataType lookupVariable = convertLookupVariable(arguments[1].trim());
+        Optional<DataType> matchedDataItem = Optional.empty();
+        if (lookupVariable instanceof Text) {
+            matchedDataItem = DatasetHandler.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);
+        } else if (lookupVariable instanceof Template) {
+            for (Map.Entry<String, DataType> dataItem : DatasetHandler.getInstance().getDataItems(dataset, executionRuntime).entrySet()) {
+                if (TemplateService.getInstance().matches(dataItem.getValue(), (Template) lookupVariable, executionRuntime)) {
+                    matchedDataItem = Optional.of(dataItem.getValue());
+                    break;
+                }
+            }
+        } else {
+            throw new IllegalArgumentException(MessageFormat.format("Cannot lookup {0} in dataset {1}", lookupVariable, dataset.toString()));
+        }
 
-        if (!dataItem.isPresent()) {
+        if (!matchedDataItem.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", arguments[1], dataset.toString()));
         } else {
-            return dataItem.get().toString();
+            return matchedDataItem.get().toString();
         }
+    }
+
+    private DataType convertLookupVariable(String lookupVariable) {
+        return null;
     }
 
     private Dataset getDataset(DataType dataset) {

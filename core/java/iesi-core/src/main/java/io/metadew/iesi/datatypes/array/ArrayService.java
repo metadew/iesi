@@ -51,6 +51,12 @@ public class ArrayService implements IDataTypeService<Array> {
 
     @Override
     public boolean equals(Array _this, Array other, ExecutionRuntime executionRuntime) {
+        if (_this == null && other == null) {
+            return true;
+        }
+        if (_this == null || other == null) {
+            return false;
+        }
         if (_this.getList().size() != other.getList().size()) {
             return false;
         }

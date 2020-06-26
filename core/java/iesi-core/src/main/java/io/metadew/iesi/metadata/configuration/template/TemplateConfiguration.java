@@ -52,6 +52,10 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " fixed_matcher_value on matcher_value.id=fixed_matcher_value.id " +
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " templ_matcher_value on matcher_value.id=templ_matcher_value.id ";
 
+    private static final String existsByNameQuery = "SELECT template.id " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " " +
+            "WHERE template.name={0};";
+
     private static final String deleteMatcherValuesByTemplateQuery = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " " +
             "WHERE id in (select matcher_value.id " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " template " +
@@ -120,6 +124,15 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
         }
     }
 
+    public boolean exists(String name) {
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                MessageFormat.format(existsByNameQuery,
+                        SQLTools.GetStringForSQL(name)
+                ),
+                "reader");
+        return cachedRowSet.size() >= 1;
+    }
+
     public Optional<Template> getByName(String name) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
@@ -141,10 +154,10 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     }
 
     @Override
-    public List<Template> getAll() throws SQLException {
+    public List<Template> getAll() {
         List<Template> templates = new ArrayList<>();
         Map<UUID, Template> templateMap = new HashMap<>();
-        //try {
+        try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(fetchAllQuery, "reader");
             Template template;
             while (cachedRowSet.next()) {
@@ -158,9 +171,9 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                 addMapping(template, cachedRowSet);
             }
             return templates;
-        //} catch (SQLException e) {
-        //    throw new RuntimeException(e);
-        //}
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -189,6 +202,38 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                 MessageFormat.format(deleteByTemplateIdQuery,
                         SQLTools.GetStringForSQL(metadataKey.getId())
                 ));
+    }
+
+    public void deleteByName(String templateName) {
+        getByName(templateName).ifPresent(
+                template -> {
+                    getMetadataRepository().executeUpdate(
+                            MessageFormat.format(deleteMatcherAnyValuesByTemplateQuery,
+                                    SQLTools.GetStringForSQL(template.getMetadataKey().getId())
+                            ));
+                    getMetadataRepository().executeUpdate(
+                            MessageFormat.format(deleteMatcherFixedValuesByTemplateQuery,
+                                    SQLTools.GetStringForSQL(template.getMetadataKey().getId())
+                            ));
+                    getMetadataRepository().executeUpdate(
+                            MessageFormat.format(deleteMatcherTemplateValuesByTemplateQuery,
+                                    SQLTools.GetStringForSQL(template.getMetadataKey().getId())
+                            ));
+                    getMetadataRepository().executeUpdate(
+                            MessageFormat.format(deleteMatcherValuesByTemplateQuery,
+                                    SQLTools.GetStringForSQL(template.getMetadataKey().getId())
+                            ));
+                    getMetadataRepository().executeUpdate(
+                            MessageFormat.format(deleteMatchersByTemplateIdQuery,
+                                    SQLTools.GetStringForSQL(template.getMetadataKey().getId())
+                            ));
+                    getMetadataRepository().executeUpdate(
+                            MessageFormat.format(deleteByTemplateIdQuery,
+                                    SQLTools.GetStringForSQL(template.getMetadataKey().getId())
+                            ));
+                }
+        );
+
     }
 
     @Override

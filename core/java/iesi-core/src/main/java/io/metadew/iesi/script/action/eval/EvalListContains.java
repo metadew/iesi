@@ -1,9 +1,8 @@
 package io.metadew.iesi.script.action.eval;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.service.template.TemplateService;
@@ -91,22 +90,13 @@ public class EvalListContains {
                 }
             }
             return false;
-        } else if (element instanceof Text) {
+        } else {
             for (DataType dataType : list.getList()) {
-                if (dataType.toString().equalsIgnoreCase(((Text) element).getString())) {
+                if (DataTypeHandler.getInstance().equals(dataType, element, executionControl.getExecutionRuntime())) {
                     return true;
                 }
             }
             return false;
-        } else if (element instanceof Dataset) {
-            // TODO
-            return false;
-        } else if (element instanceof Array) {
-            // TODO
-            return false;
-        } else {
-            // TODO
-            throw new RuntimeException();
         }
     }
 

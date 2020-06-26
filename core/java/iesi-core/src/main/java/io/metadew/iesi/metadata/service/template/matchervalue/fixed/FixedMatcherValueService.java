@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.service.template.matchervalue.fixed;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.service.template.matchervalue.IMatcherValueService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -18,7 +19,9 @@ public class FixedMatcherValueService implements IMatcherValueService<MatcherFix
 
     @Override
     public boolean matches(MatcherFixedValue matcherValue, DataType dataType, ExecutionRuntime executionRuntime) {
-        return dataType.toString().equals(matcherValue.getValue());
+        return DataTypeHandler.getInstance().equals(dataType,
+                DataTypeHandler.getInstance().resolve(matcherValue.getValue(), executionRuntime),
+                executionRuntime);
     }
 
     @Override

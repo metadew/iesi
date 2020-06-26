@@ -72,6 +72,11 @@ public class DataTypeHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public boolean equals(DataType _this, DataType other, ExecutionRuntime executionRuntime) {
+        return getDataTypeService(_this.getClass()).equals(_this, other, executionRuntime);
+    }
+
     public IDataTypeService getDataTypeService(String key) {
         return dataTypeServiceMap.entrySet().stream()
                 .filter(entry -> entry.getKey().keyword.equals(key))

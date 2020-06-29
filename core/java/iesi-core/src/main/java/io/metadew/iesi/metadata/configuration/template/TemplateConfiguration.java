@@ -328,7 +328,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
         MatcherValue matcherValue;
         if (cachedRowSet.getString("any_matcher_value_id") != null) {
             matcherValue = MatcherAnyValue.builder()
-                    .metadataKey(MatcherValueKey.builder()
+                    .matcherValueKey(MatcherValueKey.builder()
                             .id(UUID.fromString(cachedRowSet.getString("any_matcher_value_id")))
                             .build())
                     .matcherKey(matcherKey)

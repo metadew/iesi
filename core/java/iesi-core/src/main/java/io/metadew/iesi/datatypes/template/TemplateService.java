@@ -98,7 +98,7 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
                 return false;
             }
         }
-        return false;
+        return true;
     }
 
     private boolean equals(MatcherValue _this, MatcherValue other, ExecutionRuntime executionRuntime) {

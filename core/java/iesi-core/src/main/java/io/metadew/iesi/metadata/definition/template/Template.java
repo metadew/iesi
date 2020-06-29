@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.definition.template;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@JsonDeserialize(using = TemplateJsonComponent.Deserializer.class)
 public class Template extends Metadata<TemplateKey> implements DataType {
 
     private final String name;

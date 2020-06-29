@@ -66,6 +66,4 @@ class TextServiceTest {
         assertThat(TextService.getInstance().equals(new Text(null), new Text("Test1"), executionRuntime))
                 .isFalse();
     }
-
-
 }

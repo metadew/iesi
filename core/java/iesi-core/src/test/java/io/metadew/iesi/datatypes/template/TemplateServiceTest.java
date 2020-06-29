@@ -1,7 +1,10 @@
-package io.metadew.iesi.metadata.configuration.template;
+package io.metadew.iesi.datatypes.template;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.datatypes.dataset.DatasetHandler;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
@@ -10,24 +13,32 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.powermock.reflect.Whitebox;
 
-import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class TemplateConfigurationTest {
+@ExtendWith(MockitoExtension.class)
+class TemplateServiceTest {
 
     private Template template1;
     private UUID templateUuid1;
 
     private Template template2;
     private UUID templateUuid2;
-
 
     @BeforeAll
     static void prepare() {
@@ -53,7 +64,7 @@ class TemplateConfigurationTest {
                 .matchers(Stream.of(
                         Matcher.builder()
                                 .matcherKey(matcherKey11)
-                                .key("a")
+                                .key("key1")
                                 .templateKey(templateKey1)
                                 .matcherValue(MatcherAnyValue.builder()
                                         .matcherValueKey(MatcherValueKey.builder().id(UUID.randomUUID()).build())
@@ -62,12 +73,12 @@ class TemplateConfigurationTest {
                                 .build(),
                         Matcher.builder()
                                 .matcherKey(matcherKey12)
-                                .key("b")
+                                .key("key2")
                                 .templateKey(templateKey1)
                                 .matcherValue(MatcherFixedValue.builder()
                                         .metadataKey(MatcherValueKey.builder().id(UUID.randomUUID()).build())
                                         .matcherKey(matcherKey12)
-                                        .value("value1")
+                                        .value("value2")
                                         .build())
                                 .build()
                 ).collect(Collectors.toList()))
@@ -86,7 +97,7 @@ class TemplateConfigurationTest {
                 .matchers(Stream.of(
                         Matcher.builder()
                                 .matcherKey(matcherKey21)
-                                .key("c")
+                                .key("key3")
                                 .templateKey(templateKey2)
                                 .matcherValue(MatcherAnyValue.builder()
                                         .matcherValueKey(MatcherValueKey.builder().id(UUID.randomUUID()).build())
@@ -95,7 +106,7 @@ class TemplateConfigurationTest {
                                 .build(),
                         Matcher.builder()
                                 .matcherKey(matcherKey22)
-                                .key("d")
+                                .key("key4")
                                 .templateKey(templateKey2)
                                 .matcherValue(MatcherTemplate.builder()
                                         .metadataKey(MatcherValueKey.builder().id(UUID.randomUUID()).build())
@@ -121,75 +132,84 @@ class TemplateConfigurationTest {
     }
 
     @Test
-    void testGetAllEmpty() throws SQLException {
-        assertThat(TemplateConfiguration.getInstance().getAll())
-                .isEmpty();
+    void equalsTest() {
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+
+        assertThat(TemplateService.getInstance().equals(null, null, executionRuntime))
+                .isTrue();
+        assertThat(TemplateService.getInstance().equals(template1, null, executionRuntime))
+                .isFalse();
+        assertThat(TemplateService.getInstance().equals(null, template2, executionRuntime))
+                .isFalse();
+        assertThat(TemplateService.getInstance().equals(template1, template2, executionRuntime))
+                .isFalse();
+        assertThat(TemplateService.getInstance().equals(template1, template1, executionRuntime))
+                .isTrue();
+        assertThat(TemplateService.getInstance().equals(template2, template2, executionRuntime))
+                .isTrue();
     }
 
     @Test
-    void testGetAll() throws SQLException {
+    void resolveTest() {
         MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template2);
-        assertThat(TemplateConfiguration.getInstance().getAll())
-                .containsOnly(template1, template2);
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+        when(executionRuntime.resolveVariables(anyString()))
+                .thenReturn("template1, 1")
+                .thenReturn("template1")
+                .thenReturn("1");
+
+        assertThat(TemplateService.getInstance().resolve("template1, 1", executionRuntime))
+                .isEqualTo(template1);
+        assertThatThrownBy(() -> TemplateService.getInstance().resolve("template1, 2", executionRuntime))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> TemplateService.getInstance().resolve("template1", executionRuntime))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void testGetByTemplateId() {
+    void matchesSuccessfulTest() {
         MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template2);
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+        when(executionRuntime.resolveVariables(anyString()))
+                .thenReturn("value2");
 
-        assertThat(TemplateConfiguration.getInstance().get(template1.getMetadataKey()))
-                .hasValue(template1);
-        assertThat(TemplateConfiguration.getInstance().get(template2.getMetadataKey()))
-                .hasValue(template2);
+        DatasetHandler datasetHandler = DatasetHandler.getInstance();
+        DatasetHandler datasetHandlerSpy = Mockito.spy(datasetHandler);
+        Whitebox.setInternalState(DatasetHandler.class, "INSTANCE", datasetHandlerSpy);
+
+        KeyValueDataset dataset1 = mock(KeyValueDataset.class);
+        KeyValueDataset dataset2 = mock(KeyValueDataset.class);
+//        Mockito
+//                .doReturn(Stream.of(
+//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("test")),
+//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value2"))
+//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+//                .when(datasetHandlerSpy).getDataItems(dataset1, executionRuntime);
+        Mockito
+                .doReturn(Optional.of(new Text("test")))
+                .when(datasetHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
+        Mockito
+                .doReturn(Optional.of(new Text("value2")))
+                .when(datasetHandlerSpy).getDataItem(dataset1, "key2", executionRuntime);
+//        Mockito
+//                .doReturn(Stream.of(
+//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Text("test")),
+//                        new AbstractMap.SimpleEntry<String, DataType>("key4", dataset1)
+//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+//                .when(datasetHandlerSpy).getDataItems(dataset1, executionRuntime);
+        Mockito
+                .doReturn(Optional.of(new Text("test")))
+                .when(datasetHandlerSpy).getDataItem(dataset2, "key3", executionRuntime);
+        Mockito
+                .doReturn(Optional.of(dataset1))
+                .when(datasetHandlerSpy).getDataItem(dataset2, "key4", executionRuntime);
+
+        assertThat(TemplateService.getInstance().matches(dataset1, template1, executionRuntime))
+                .isTrue();
+        assertThat(TemplateService.getInstance().matches(dataset2, template2, executionRuntime))
+                .isTrue();
+
+        Whitebox.setInternalState(DatasetHandler.class, "INSTANCE", (DatasetHandler) null);
     }
-
-    @Test
-    void testGetByTemplateIdEmpty() {
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
-
-        assertThat(TemplateConfiguration.getInstance().get(TemplateKey.builder().id(UUID.randomUUID()).build()))
-                .isEmpty();
-    }
-
-    @Test
-    void testInsert() {
-        TemplateConfiguration.getInstance().insert(template1);
-
-        assertThat(TemplateConfiguration.getInstance().get(template1.getMetadataKey()))
-                .hasValue(template1);
-    }
-
-    @Test
-    void testInsertAlreadyExists() {
-        TemplateConfiguration.getInstance().insert(template1);
-
-        assertThatThrownBy(() -> TemplateConfiguration.getInstance().insert(template1))
-                .isInstanceOf(RuntimeException.class);
-    }
-
-    @Test
-    void testUpdate() {
-        TemplateConfiguration.getInstance().insert(template1);
-        MatcherKey matcherKey = MatcherKey.builder().id(UUID.randomUUID()).build();
-        template1.setMatchers(Stream.of(
-                Matcher.builder()
-                        .matcherKey(matcherKey)
-                        .key("f")
-                        .templateKey(template1.getMetadataKey())
-                        .matcherValue(MatcherFixedValue.builder()
-                                .metadataKey(MatcherValueKey.builder().id(UUID.randomUUID()).build())
-                                .matcherKey(matcherKey)
-                                .value("test")
-                                .build())
-                        .build()
-        ).collect(Collectors.toList()));
-        TemplateConfiguration.getInstance().update(template1);
-
-        assertThat(TemplateConfiguration.getInstance().get(template1.getMetadataKey()))
-                .hasValue(template1);
-    }
-
 
 }

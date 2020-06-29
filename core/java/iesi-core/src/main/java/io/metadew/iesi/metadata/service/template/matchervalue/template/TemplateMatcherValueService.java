@@ -23,7 +23,7 @@ public class TemplateMatcherValueService implements IMatcherValueService<Matcher
                 .matches(dataType,
                         TemplateService.getInstance()
                                 .get(matcherValue.getTemplateName(), matcherValue.getTemplateVersion())
-                                .orElseThrow(() -> new RuntimeException("Could not find template " + matcherValue.getTemplateName())),
+                                .orElseThrow(() -> new RuntimeException("Could not find template " + matcherValue.getTemplateName() + "-" + matcherValue.getTemplateVersion())),
                         executionRuntime);
     }
 

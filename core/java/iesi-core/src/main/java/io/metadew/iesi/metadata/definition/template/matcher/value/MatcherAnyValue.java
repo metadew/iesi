@@ -12,8 +12,8 @@ import lombok.ToString;
 public class MatcherAnyValue extends MatcherValue {
 
     @Builder
-    public MatcherAnyValue(MatcherValueKey metadataKey, MatcherKey matcherKey) {
-        super(metadataKey, matcherKey);
+    public MatcherAnyValue(MatcherValueKey matcherValueKey, MatcherKey matcherKey) {
+        super(matcherValueKey, matcherKey);
     }
 
 }

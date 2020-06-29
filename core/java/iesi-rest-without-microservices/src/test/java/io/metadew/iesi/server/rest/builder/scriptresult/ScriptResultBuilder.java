@@ -24,6 +24,24 @@ public class ScriptResultBuilder {
         this.processId = processId;
     }
 
+    public static ScriptResult simpleScriptResult(long n, String runId) {
+        return ScriptResult.builder()
+                .scriptResultKey(new ScriptResultKey(runId, n))
+                .parentProcessId(n)
+                .scriptId(Long.toString(n))
+                .scriptName(Long.toString(n))
+                .scriptVersion(n)
+                .environment(Long.toString(n))
+                .status(ScriptRunStatus.SUCCESS)
+                .startTimestamp(LocalDateTime.now())
+                .endTimestamp(LocalDateTime.now())
+                .build();
+    }
+
+    public static ScriptResult simpleScriptResult(long n) {
+        return simpleScriptResult(n, String.format("%s", n));
+    }
+
 
     public ScriptResultBuilder scriptName(String scriptName) {
         this.scriptName = scriptName;

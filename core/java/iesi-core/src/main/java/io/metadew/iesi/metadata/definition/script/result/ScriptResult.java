@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.script.result;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -24,6 +25,7 @@ public class ScriptResult extends Metadata<ScriptResultKey> {
 	private LocalDateTime endTimestamp;
 
 	// Constructors
+	@Builder
 	public ScriptResult(ScriptResultKey scriptResultKey, Long parentProcessId, String scriptId, String scriptName,
 						Long scriptVersion, String environment, ScriptRunStatus status, LocalDateTime startTimestamp,
 						LocalDateTime endTimestamp) {

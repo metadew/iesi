@@ -12,12 +12,14 @@ import lombok.ToString;
 public class MatcherTemplate extends MatcherValue {
 
     private final String templateName;
+    private final Long templateVersion;
 
     @Builder
-    public MatcherTemplate(MatcherValueKey metadataKey, MatcherKey matcherKey, String templateName) {
+    public MatcherTemplate(MatcherValueKey metadataKey, MatcherKey matcherKey, String templateName, Long templateVersion) {
         super(metadataKey, matcherKey
         );
         this.templateName = templateName;
+        this.templateVersion = templateVersion;
     }
 
 }

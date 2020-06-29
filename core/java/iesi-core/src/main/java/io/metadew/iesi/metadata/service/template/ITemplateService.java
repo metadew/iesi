@@ -20,13 +20,13 @@ public interface ITemplateService {
 
     public Optional<Template> get(TemplateKey templateKey);
 
-    public Optional<Template> get(String templateName);
+    public Optional<Template> get(String templatename, long version);
 
     public void update(Template template);
 
     public void delete(TemplateKey templateKey);
 
-    public void delete(String templateName);
+    public void delete(String name, long version);
 
     public boolean matches(DataType dataType, Template template, ExecutionRuntime executionRuntime);
 

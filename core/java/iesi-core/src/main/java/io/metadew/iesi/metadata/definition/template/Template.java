@@ -14,18 +14,22 @@ import java.util.List;
 public class Template extends Metadata<TemplateKey> implements DataType {
 
     private final String name;
+    private final Long version;
+    private final String description;
     private List<Matcher> matchers;
 
     @Builder
-    public Template(TemplateKey metadataKey, String name, List<Matcher> matchers) {
+    public Template(TemplateKey metadataKey, String name, Long version, String description, List<Matcher> matchers) {
         super(metadataKey);
         this.name = name;
+        this.version = version;
+        this.description = description;
         this.matchers = matchers;
     }
 
     @Override
     public String toString() {
-        return "{{^template(" + name + "}}";
+        return "{{^template(" + name + ", " + version + "}}";
     }
 
     public void addMatcher(Matcher matcher) {

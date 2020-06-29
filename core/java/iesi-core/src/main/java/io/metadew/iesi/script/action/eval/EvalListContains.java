@@ -3,9 +3,9 @@ package io.metadew.iesi.script.action.eval;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.template.Template;
-import io.metadew.iesi.metadata.service.template.TemplateService;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -20,7 +20,6 @@ import java.util.Map;
 
 @Log4j2
 public class EvalListContains {
-
 
     private static final String LIST_KEY = "list";
     private static final String TEMPLATE_KEY = "template";

@@ -48,6 +48,8 @@ class TemplateConfigurationTest {
         template1 = Template.builder()
                 .metadataKey(templateKey1)
                 .name("template1")
+                .version(1L)
+                .description("description")
                 .matchers(Stream.of(
                         Matcher.builder()
                                 .matcherKey(matcherKey11)
@@ -79,6 +81,8 @@ class TemplateConfigurationTest {
         template2 = Template.builder()
                 .metadataKey(templateKey2)
                 .name("template2")
+                .version(1L)
+                .description("description")
                 .matchers(Stream.of(
                         Matcher.builder()
                                 .matcherKey(matcherKey21)
@@ -97,6 +101,7 @@ class TemplateConfigurationTest {
                                         .metadataKey(MatcherValueKey.builder().id(UUID.randomUUID()).build())
                                         .matcherKey(matcherKey22)
                                         .templateName("template1")
+                                        .templateVersion(1L)
                                         .build())
                                 .build()
                 ).collect(Collectors.toList()))

@@ -19,10 +19,10 @@ import java.util.*;
 @Log4j2
 public class TemplateConfiguration extends Configuration<Template, TemplateKey> {
 
-    private static final String fetchSingleQuery = "SELECT template.id as template_id, template.name as template_name, matcher.id as matcher_id, " +
+    private static final String fetchSingleQuery = "SELECT template.id as template_id, template.name as template_name, template.version as template_version, template.description as template_description, matcher.id as matcher_id, " +
             "matcher.key as matcher_key, matcher_value.id as matcher_value_id, any_matcher_value.id as any_matcher_value_id, " +
             "fixed_matcher_value.id as fixed_matcher_value_id, fixed_matcher_value.value as fixed_matcher_value_value, " +
-            "templ_matcher_value.id as templ_matcher_value_id, templ_matcher_value.template_name as templ_matcher_value_templ_name " +
+            "templ_matcher_value.id as templ_matcher_value_id, templ_matcher_value.template_name as templ_matcher_value_templ_name, templ_matcher_value.template_version as templ_matcher_value_templ_vrs " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " template " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " matcher on template.id=matcher.template_id " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " matcher_value on matcher.id=matcher_value.matcher_id " +
@@ -30,21 +30,21 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " fixed_matcher_value on matcher_value.id=fixed_matcher_value.id " +
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " templ_matcher_value on matcher_value.id=templ_matcher_value.id " +
             "WHERE template.id={0};";
-    private static final String fetchByNameQuery = "SELECT template.id as template_id, template.name as template_name, matcher.id as matcher_id, " +
+    private static final String fetchByNameQuery = "SELECT template.id as template_id, template.name as template_name, template.version as template_version, template.description as template_description, matcher.id as matcher_id, " +
             "matcher.key as matcher_key, matcher_value.id as matcher_value_id, any_matcher_value.id as any_matcher_value_id, " +
             "fixed_matcher_value.id as fixed_matcher_value_id, fixed_matcher_value.value as fixed_matcher_value_value, " +
-            "templ_matcher_value.id as templ_matcher_value_id, templ_matcher_value.template_name as templ_matcher_value_templ_name " +
+            "templ_matcher_value.id as templ_matcher_value_id, templ_matcher_value.template_name as templ_matcher_value_templ_name, templ_matcher_value.template_version as templ_matcher_value_templ_vrs " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " template " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " matcher on template.id=matcher.template_id " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " matcher_value on matcher.id=matcher_value.matcher_id " +
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AnyMatcherValues").getName() + " any_matcher_value on matcher_value.id=any_matcher_value.id " +
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " fixed_matcher_value on matcher_value.id=fixed_matcher_value.id " +
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " templ_matcher_value on matcher_value.id=templ_matcher_value.id " +
-            "WHERE template.name={0};";
-    private static final String fetchAllQuery = "SELECT template.id as template_id, template.name as template_name, matcher.id as matcher_id, " +
+            "WHERE template.name={0} and template.version={1};";
+    private static final String fetchAllQuery = "SELECT template.id as template_id, template.name as template_name, template.version as template_version, template.description as template_description, matcher.id as matcher_id, " +
             "matcher.key as matcher_key, matcher_value.id as matcher_value_id, any_matcher_value.id as any_matcher_value_id, " +
             "fixed_matcher_value.id as fixed_matcher_value_id, fixed_matcher_value.value as fixed_matcher_value_value, " +
-            "templ_matcher_value.id as templ_matcher_value_id, templ_matcher_value.template_name as templ_matcher_value_templ_name " +
+            "templ_matcher_value.id as templ_matcher_value_id, templ_matcher_value.template_name as templ_matcher_value_templ_name, templ_matcher_value.template_version as templ_matcher_value_templ_vrs " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " template " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " matcher on template.id=matcher.template_id " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " matcher_value on matcher.id=matcher_value.matcher_id " +
@@ -80,15 +80,15 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     private static final String deleteMatchersByTemplateIdQuery = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " where template_id={0};";
     private static final String deleteByTemplateIdQuery = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " where id={0});";
 
-    private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " (ID, NAME) VALUES ({0}, {1});";
+    private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " (ID, NAME, VERSION, DESCRIPTION) VALUES ({0}, {1}, {2}, {3});";
     private static final String insertMatcherQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " (ID, KEY, TEMPLATE_ID) VALUES ({0}, {1}, {2});";
     private static final String insertMatcherValueQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " (ID, MATCHER_ID) VALUES ({0}, {1});";
     private static final String insertMatcherAnyValueQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AnyMatcherValues").getName() + " (ID) VALUES ({0});";
     private static final String insertMatcherFixedValueQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " (ID, VALUE) VALUES ({0}, {1});";
-    private static final String insertMatcherTemplateValueQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " (ID, TEMPLATE_NAME) VALUES ({0}, {1});";
+    private static final String insertMatcherTemplateValueQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " (ID, TEMPLATE_NAME, TEMPLATE_VERSION) VALUES ({0}, {1}, {2});";
 
     private static final String updateQuery = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " " +
-            "SET NAME={0} WHERE ID={1};";
+            "SET NAME={0}, VERSION={1}, DESCRIPTION={2} WHERE ID={3};";
 
     private static TemplateConfiguration INSTANCE;
 
@@ -133,11 +133,12 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
         return cachedRowSet.size() >= 1;
     }
 
-    public Optional<Template> getByName(String name) {
+    public Optional<Template> getByNameAndVersion(String name, Long version) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(fetchByNameQuery,
-                            SQLTools.GetStringForSQL(name)
+                            SQLTools.GetStringForSQL(name),
+                            SQLTools.GetStringForSQL(version)
                     ),
                     "reader");
             Template template = null;
@@ -204,8 +205,8 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                 ));
     }
 
-    public void deleteByName(String templateName) {
-        getByName(templateName).ifPresent(
+    public void deleteByNameAndVersion(String name, long version) {
+        getByNameAndVersion(name, version).ifPresent(
                 template -> {
                     getMetadataRepository().executeUpdate(
                             MessageFormat.format(deleteMatcherAnyValuesByTemplateQuery,
@@ -239,8 +240,11 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     @Override
     public void insert(Template template) {
         getMetadataRepository().executeUpdate(
-                MessageFormat.format(insertQuery, SQLTools.GetStringForSQL(template.getMetadataKey().getId()),
-                        SQLTools.GetStringForSQL(template.getName())));
+                MessageFormat.format(insertQuery,
+                        SQLTools.GetStringForSQL(template.getMetadataKey().getId()),
+                        SQLTools.GetStringForSQL(template.getName()),
+                        SQLTools.GetStringForSQL(template.getVersion()),
+                        SQLTools.GetStringForSQL(template.getDescription())));
         for (Matcher matcher : template.getMatchers()) {
             insert(matcher);
         }
@@ -248,7 +252,8 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
 
     public void insert(Matcher matcher) {
         getMetadataRepository().executeUpdate(
-                MessageFormat.format(insertMatcherQuery, SQLTools.GetStringForSQL(matcher.getMetadataKey().getId()),
+                MessageFormat.format(insertMatcherQuery,
+                        SQLTools.GetStringForSQL(matcher.getMetadataKey().getId()),
                         SQLTools.GetStringForSQL(matcher.getKey()), SQLTools.GetStringForSQL(matcher.getTemplateKey().getId())));
         MatcherValue matcherValue = matcher.getMatcherValue();
         if (matcherValue instanceof MatcherAnyValue) {
@@ -260,8 +265,10 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                             SQLTools.GetStringForSQL(((MatcherFixedValue) matcherValue).getValue())));
         } else if (matcherValue instanceof MatcherTemplate) {
             getMetadataRepository().executeUpdate(
-                    MessageFormat.format(insertMatcherTemplateValueQuery, SQLTools.GetStringForSQL(matcherValue.getMetadataKey().getId()),
-                            SQLTools.GetStringForSQL(((MatcherTemplate) matcherValue).getTemplateName())));
+                    MessageFormat.format(insertMatcherTemplateValueQuery,
+                            SQLTools.GetStringForSQL(matcherValue.getMetadataKey().getId()),
+                            SQLTools.GetStringForSQL(((MatcherTemplate) matcherValue).getTemplateName()),
+                            SQLTools.GetStringForSQL(((MatcherTemplate) matcherValue).getTemplateVersion())));
         } else {
             throw new RuntimeException("");
         }
@@ -271,7 +278,10 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
 
     public void update(Template template) {
         getMetadataRepository().executeUpdate(
-                MessageFormat.format(updateQuery, SQLTools.GetStringForSQL(template.getName()),
+                MessageFormat.format(updateQuery,
+                        SQLTools.GetStringForSQL(template.getName()),
+                        SQLTools.GetStringForSQL(template.getVersion()),
+                        SQLTools.GetStringForSQL(template.getDescription()),
                         SQLTools.GetStringForSQL(template.getMetadataKey().getId())));
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteMatcherAnyValuesByTemplateQuery,
@@ -305,6 +315,8 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                                 .id(UUID.fromString(cachedRowSet.getString("template_id")))
                                 .build())
                 .name(cachedRowSet.getString("template_name"))
+                .version(Long.parseLong(cachedRowSet.getString("template_version")))
+                .description(cachedRowSet.getString("template_description"))
                 .matchers(new ArrayList<>())
                 .build();
     }
@@ -335,6 +347,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                             .id(UUID.fromString(cachedRowSet.getString("templ_matcher_value_id")))
                             .build())
                     .templateName(cachedRowSet.getString("templ_matcher_value_templ_name"))
+                    .templateVersion(cachedRowSet.getLong("templ_matcher_value_templ_vrs"))
                     .matcherKey(matcherKey)
                     .build();
         } else {

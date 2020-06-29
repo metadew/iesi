@@ -24,7 +24,6 @@ public class ScriptResult extends Metadata<ScriptResultKey> {
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
 
-    // Constructors
     @Builder
     public ScriptResult(ScriptResultKey scriptResultKey, Long parentProcessId, String scriptId, String scriptName,
                         Long scriptVersion, String environment, ScriptRunStatus status, LocalDateTime startTimestamp,

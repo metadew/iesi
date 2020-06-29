@@ -15,14 +15,14 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
 
 @Log4j2
-@Component
+@Repository
 public class ScriptDtoRepository implements IScriptDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;

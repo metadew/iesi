@@ -5,10 +5,10 @@ import java.util.Optional;
 
 public interface IScriptDtoRepository {
 
-    public List<ScriptDto> getAll(List<String> expansions);
+    List<ScriptDto> getAll(List<String> expansions, Boolean isLatestOnly);
 
-    public List<ScriptDto> getByName(String name, List<String> expansions);
+    List<ScriptDto> getByName(String name, List<String> expansions);
 
-    public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions);
+    Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions);
 
 }

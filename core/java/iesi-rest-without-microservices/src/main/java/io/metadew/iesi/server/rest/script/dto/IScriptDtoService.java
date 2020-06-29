@@ -7,20 +7,22 @@ import java.util.Optional;
 
 public interface IScriptDtoService {
 
-    public Script convertToEntity(ScriptDto scriptDto);
+    Script convertToEntity(ScriptDto scriptDto);
 
-    public ScriptDto convertToDto(Script script);
+    ScriptDto convertToDto(Script script);
 
-    public List<ScriptDto> getAll();
+    List<ScriptDto> getAll();
 
-    public List<ScriptDto> getAll(List<String> expansions);
+    List<ScriptDto> getAll(List<String> expansions);
 
-    public List<ScriptDto> getByName(String name);
+    List<ScriptDto> getAll(List<String> expansions, Boolean isLatestOnly);
 
-    public List<ScriptDto> getByName(String name, List<String> expansions);
+    List<ScriptDto> getByName(String name);
 
-    public Optional<ScriptDto> getByNameAndVersion(String name, long version);
+    List<ScriptDto> getByName(String name, List<String> expansions);
 
-    public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions);
+    Optional<ScriptDto> getByNameAndVersion(String name, long version);
+
+    Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions);
 
 }

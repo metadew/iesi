@@ -28,6 +28,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +46,9 @@ class ScriptDtoServiceTest {
 
     @Autowired
     private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private ScriptDtoModelAssembler scriptDtoModelAssembler;
 
     @BeforeEach
     void setup() {
@@ -317,6 +321,57 @@ class ScriptDtoServiceTest {
                                 new ScriptLabelDto("label1", "value1")
                         ).collect(Collectors.toList()),
                         null, null));
+    }
+
+    @Test
+    void getAllLastVersionExecutionExpansionDisabledTest() {
+        // Test 1: 1 script : 2 versions
+        Script script1V1 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 0);
+        Script script1V2 = ScriptBuilder.simpleScript("script0", 1, 2, 2, 0);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1V1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1V2);
+        List<ScriptDto> queryResult = scriptDtoService.getAll(new ArrayList<>(), true);
+
+        assertThat(queryResult.size())
+                .as("Only one ScriptDto should be return")
+                .isEqualTo(1);
+
+        assertThat(queryResult)
+                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
+                .containsOnly(scriptDtoModelAssembler.toModel(script1V2));
+
+        // Test 2: 2 script : 2 versions
+        Script script2V1 = ScriptBuilder.simpleScript("script1", 0, 2, 2, 0);
+        Script script2V2 = ScriptBuilder.simpleScript("script1", 1, 2, 2, 0);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
+
+        queryResult = scriptDtoService.getAll(new ArrayList<>(), true);
+        assertThat(queryResult.size())
+                .as("Only 2 ScriptDto should be return")
+                .isEqualTo(2);
+
+        assertThat(queryResult)
+                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
+                .containsOnly(scriptDtoModelAssembler.toModel(script1V2), scriptDtoModelAssembler.toModel(script2V2));
+
+    }
+
+    // Todo: add insert some related ScriptResult to make a correct expansion test
+    void getAllLastVersionExecutionExpansionEnabledTest() {
+//        Script scriptV1 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 0);
+//        Script scriptV2 = ScriptBuilder.simpleScript("script0", 1, 2, 2, 0);
+//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptV1);
+//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptV2);
+//        List<ScriptDto> queryResult = scriptDtoService.getAll(Stream.of("execution").collect(Collectors.toList()), true);
+//
+//        assertThat(queryResult.size())
+//                .as("Only one ScriptDto should be return")
+//                .isEqualTo(1);
+//
+//        assertThat(queryResult)
+//                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
+//                .containsOnly(scriptDtoModelAssembler.toModel(scriptV2));
     }
 
     @Test

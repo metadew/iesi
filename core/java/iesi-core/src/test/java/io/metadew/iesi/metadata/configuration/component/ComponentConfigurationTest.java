@@ -3,12 +3,16 @@ package io.metadew.iesi.metadata.configuration.component;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
+import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
+import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
@@ -208,6 +212,51 @@ class ComponentConfigurationTest {
         assertEquals("dummy", fetchedComponentVersion3.get().getDescription());
     }
 
+    @Test
+    void componentUpdateParametersTest() {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        ComponentConfiguration.getInstance().insert(component3);
+
+        ComponentParameter componentParameter1;
+        ComponentParameter componentParameter2;
+        ComponentParameter componentParameter3;
+        ComponentParameter componentParameter3Bis;
+        List<ComponentParameter> componentParameters1 = new ArrayList<ComponentParameter>();
+        List<ComponentParameter> componentParameters2 = new ArrayList<ComponentParameter>();
+        List<ComponentParameter> componentParameters3 = new ArrayList<ComponentParameter>();
+        componentParameter1 = new ComponentParameterBuilder("1", 1, "newParameter1")
+                .value("newValue1")
+                .build();
+        componentParameter2 = new ComponentParameterBuilder("1", 2, "newParameter2")
+                .value("newValue2")
+                .build();
+        componentParameter3 = new ComponentParameterBuilder("2", 1, "newParameter3")
+                .value("newValue3")
+                .build();
+        componentParameter3Bis = new ComponentParameterBuilder("2", 1, "newParameter3Bis")
+                .value("newValue3Bis")
+                .build();
+
+        componentParameters1.add(componentParameter1);
+        componentParameters2.add(componentParameter2);
+        componentParameters3.add(componentParameter3);
+        componentParameters3.add(componentParameter3Bis);
+
+        component1.setParameters(componentParameters1);
+        component2.setParameters(componentParameters2);
+        component3.setParameters(componentParameters3);
+
+        ComponentConfiguration.getInstance().update(component1);
+        ComponentConfiguration.getInstance().update(component2);
+        ComponentConfiguration.getInstance().update(component3);
+
+        assertEquals(componentParameters1, component1.getParameters());
+        assertEquals(componentParameters2, component2.getParameters());
+        assertEquals(componentParameters3, component3.getParameters());
+        assertEquals(2, component3.getParameters().size());
+    }
+
 //    @Test
 //    void componentGetByComponentId1Test() {
 //        ComponentConfiguration.getInstance().insert(component1);
@@ -279,4 +328,4 @@ class ComponentConfigurationTest {
         assertTrue(fetchedComponent.isPresent());
         assertEquals(component2, fetchedComponent.get());
     }
-    }
+}

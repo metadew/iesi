@@ -154,6 +154,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
 
 
     public boolean exists(ComponentKey componentKey) {
+        System.out.println(componentKey);
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
                 + getMetadataRepository().getTableNameByLabel("Components")
                 + " where COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId());
@@ -242,12 +243,13 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             throw new MetadataDoesNotExistException(component.getMetadataKey());
         }
 
-        ComponentVersionConfiguration.getInstance().update(component.getVersion());
+        ComponentParameterConfiguration.getInstance().deleteByComponent(component.getMetadataKey());
+        ComponentAttributeConfiguration.getInstance().deleteByComponent(component.getMetadataKey());
         for (ComponentParameter componentParameter : component.getParameters()) {
-            ComponentParameterConfiguration.getInstance().update(componentParameter);
+            ComponentParameterConfiguration.getInstance().insert(componentParameter);
         }
         for (ComponentAttribute componentAttribute : component.getAttributes()) {
-            ComponentAttributeConfiguration.getInstance().update(componentAttribute);
+            ComponentAttributeConfiguration.getInstance().insert(componentAttribute);
         }
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Components") +
                 " SET COMP_TYP_NM = " + SQLTools.GetStringForSQL(component.getType()) + "," +

@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.configuration.component;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;

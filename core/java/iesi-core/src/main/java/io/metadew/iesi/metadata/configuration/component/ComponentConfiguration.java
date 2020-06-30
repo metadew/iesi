@@ -154,7 +154,6 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
 
 
     public boolean exists(ComponentKey componentKey) {
-        System.out.println(componentKey);
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
                 + getMetadataRepository().getTableNameByLabel("Components")
                 + " where COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId());

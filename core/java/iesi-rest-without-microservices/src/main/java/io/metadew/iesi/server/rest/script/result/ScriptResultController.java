@@ -7,16 +7,14 @@ import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDto;
 import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDtoModelAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "scriptResult", description = "Everything about scriptResults")
-@RequestMapping("/scriptResult")
+@RequestMapping("/scriptResults")
+@CrossOrigin
 public class ScriptResultController {
     private final IScriptResultService scriptResultService;
     private final ScriptResultDtoModelAssembler scriptResultDtoModelAssembler;

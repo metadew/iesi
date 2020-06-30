@@ -47,7 +47,7 @@ class ScriptResultControllerTest {
         List<ScriptResult> scriptResultList = new ArrayList<>();
         given(scriptResultService.getAll()).willReturn(scriptResultList);
 
-        mvc.perform(get("/scriptResult")
+        mvc.perform(get("/scriptResults")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$", anEmptyMap()));
@@ -63,7 +63,7 @@ class ScriptResultControllerTest {
         given(scriptResultService.getAll()).willReturn(scriptResultList);
 
         // Request
-        mvc.perform(get("/scriptResult")
+        mvc.perform(get("/scriptResults")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded", hasSize(2)))
@@ -86,7 +86,7 @@ class ScriptResultControllerTest {
                 .andExpect(jsonPath("$._embedded[0].endTimestamp",
                         is(scriptResult1.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
                 .andExpect(jsonPath("$._embedded[0]._links.self.href",
-                        is("http://localhost/scriptResult/" + scriptResult1.getMetadataKey().getRunId() + "/" + scriptResult1.getMetadataKey().getProcessId())))
+                        is("http://localhost/scriptResults/" + scriptResult1.getMetadataKey().getRunId() + "/" + scriptResult1.getMetadataKey().getProcessId())))
                 .andExpect(jsonPath("$._embedded[1].runID",
                         is(scriptResult2.getMetadataKey().getRunId())))
                 .andExpect(jsonPath("$._embedded[1].processId",
@@ -106,7 +106,7 @@ class ScriptResultControllerTest {
                 .andExpect(jsonPath("$._embedded[1].endTimestamp",
                         is(scriptResult2.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
                 .andExpect(jsonPath("$._embedded[1]._links.self.href",
-                        is("http://localhost/scriptResult/" + scriptResult2.getMetadataKey().getRunId() + "/" + scriptResult2.getMetadataKey().getProcessId())));
+                        is("http://localhost/scriptResults/" + scriptResult2.getMetadataKey().getRunId() + "/" + scriptResult2.getMetadataKey().getProcessId())));
     }
 
     @Test
@@ -116,7 +116,7 @@ class ScriptResultControllerTest {
         given(scriptResultService.getByRunId("notTheSameId")).willReturn(scriptResultList);
 
         // Request
-        mvc.perform(get("/scriptResult/notTheSameId")
+        mvc.perform(get("/scriptResults/notTheSameId")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$", anEmptyMap()));
@@ -133,7 +133,7 @@ class ScriptResultControllerTest {
         given(scriptResultService.getByRunId("sameId")).willReturn(scriptResultList);
 
         // Request
-        mvc.perform(get("/scriptResult/sameId")
+        mvc.perform(get("/scriptResults/sameId")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded", hasSize(2)))
@@ -146,7 +146,7 @@ class ScriptResultControllerTest {
                 .andExpect(jsonPath("$._embedded[0].status", is(String.valueOf(scriptResult1.getStatus()))))
                 .andExpect(jsonPath("$._embedded[0].startTimestamp", is(scriptResult1.getStartTimestamp().format(SQLTools.defaultDateTimeFormatter))))
                 .andExpect(jsonPath("$._embedded[0].endTimestamp", is(scriptResult1.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
-                .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/scriptResult/" + scriptResult1.getMetadataKey().getRunId() + "/" + scriptResult1.getMetadataKey().getProcessId())))
+                .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/scriptResults/" + scriptResult1.getMetadataKey().getRunId() + "/" + scriptResult1.getMetadataKey().getProcessId())))
                 .andExpect(jsonPath("$._embedded", hasSize(2)))
                 .andExpect(jsonPath("$._embedded[1].runID", is(scriptResult2.getMetadataKey().getRunId())))
                 .andExpect(jsonPath("$._embedded[1].processId", is((int) ((long) scriptResult2.getMetadataKey().getProcessId()))))
@@ -157,7 +157,7 @@ class ScriptResultControllerTest {
                 .andExpect(jsonPath("$._embedded[1].status", is(String.valueOf(scriptResult2.getStatus()))))
                 .andExpect(jsonPath("$._embedded[1].startTimestamp", is(scriptResult2.getStartTimestamp().format(SQLTools.defaultDateTimeFormatter))))
                 .andExpect(jsonPath("$._embedded[1].endTimestamp", is(scriptResult2.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
-                .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/scriptResult/" + scriptResult2.getMetadataKey().getRunId() + "/" + scriptResult2.getMetadataKey().getProcessId())));
+                .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/scriptResults/" + scriptResult2.getMetadataKey().getRunId() + "/" + scriptResult2.getMetadataKey().getProcessId())));
     }
 
     @Test
@@ -167,7 +167,7 @@ class ScriptResultControllerTest {
         given(scriptResultService.getByRunIdAndProcessId("sameId", 1L)).willReturn(optionalScriptResult);
         ScriptResult scriptResult = optionalScriptResult.get();
         // Request
-        mvc.perform(get("/scriptResult/sameId/1")
+        mvc.perform(get("/scriptResults/sameId/1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$.runID", is(scriptResult.getMetadataKey().getRunId())))
@@ -179,7 +179,7 @@ class ScriptResultControllerTest {
                 .andExpect(jsonPath("$.status", is(String.valueOf(scriptResult.getStatus()))))
                 .andExpect(jsonPath("$.startTimestamp", is(scriptResult.getStartTimestamp().format(SQLTools.defaultDateTimeFormatter))))
                 .andExpect(jsonPath("$.endTimestamp", is(scriptResult.getEndTimestamp().format(SQLTools.defaultDateTimeFormatter))))
-                .andExpect(jsonPath("$._links.self.href", is("http://localhost/scriptResult/" + scriptResult.getMetadataKey().getRunId() + "/" + scriptResult.getMetadataKey().getProcessId())));
+                .andExpect(jsonPath("$._links.self.href", is("http://localhost/scriptResults/" + scriptResult.getMetadataKey().getRunId() + "/" + scriptResult.getMetadataKey().getProcessId())));
     }
 
     @Test
@@ -187,7 +187,7 @@ class ScriptResultControllerTest {
         // Mock Service
         Optional<ScriptResult> optionalScriptResult = Optional.empty();
         given(scriptResultService.getByRunIdAndProcessId("Id", 1L)).willReturn(optionalScriptResult);
-        mvc.perform(get("/scriptResult/Id/1").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/scriptResults/Id/1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 }

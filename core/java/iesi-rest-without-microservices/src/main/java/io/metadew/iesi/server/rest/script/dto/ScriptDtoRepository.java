@@ -247,22 +247,8 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         );
     }
 
-    private String getTableName(String tableLabel){
-        return MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(tableLabel).getName();
-    }
-
-    private String scriptAndScriptVersionJoinedTable(Boolean isLatestVersion) {
-        return ("Select script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
-                (isLatestVersion ? "max(script_version.SCRIPT_VRS_NB) SCRIPT_VRS_NB, " : "script_version.SCRIPT_VRS_NB SCRIPT_VRS_NB, ") +
-                "script_version.SCRIPT_VRS_DSC " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
-                "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version on script.SCRIPT_ID = script_version.SCRIPT_ID " +
-                (isLatestVersion ? "group by script.SCRIPT_ID " : ""));
-    }
-
     private String getSQLQueryGetAll(List<String> expansions, Boolean isLatestVersion) {
-
-        String query = "Select subTable1.SCRIPT_ID, subTable1.SCRIPT_NM, subTable1.SCRIPT_DSC, " +
+        return "Select subTable1.SCRIPT_ID, subTable1.SCRIPT_NM, subTable1.SCRIPT_DSC, " +
                 "subTable1.SCRIPT_TYP_NM, subTable1.SCRIPT_VRS_NB, subTable1.SCRIPT_VRS_DSC, " +
                 "0 INFO_TYPE, " +
                 // join 0 : labels
@@ -295,40 +281,15 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                 // Expansion
                 (expansions != null && expansions.contains("execution") ? getExpansionExecutionUnionForGetAll(isLatestVersion) : "") +
                 ";";
-        return query;
+    }
 
-//      Previous Query
-//      "Select " +
-//      "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
-//      (isLatestVersionOnly ? "max(script_version.SCRIPT_VRS_NB)" : "script_version.SCRIPT_VRS_NB") + ", script_version.SCRIPT_VRS_DSC, 0 INFO_TYPE, " +
-//      "script_label.NAME LABEL_NAME, script_label.VALUE LABEL_VALUE, " +
-//      "null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, null ACTION_TYP_NM, " +
-//      "null CONDITION_VAL, null EXP_ERR_FL, null STOP_ERR_FL, null ACTION_PAR_NM, null ACTION_PAR_VAL, " +
-//      "null RUN_ID, null PRC_ID, null ENV_NM, null ST_NM, null STRT_TMS, null END_TMS " +
-//      "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName()+ " script " +
-//      "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName()+ " script_version " +
-//      "on script.SCRIPT_ID=script_version.SCRIPT_ID " +
-//      "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName()+ " script_label " +
-//      "on script.SCRIPT_ID = script_label.SCRIPT_ID and script_version.SCRIPT_VRS_NB = script_label.SCRIPT_VRS_NB " +
-//      getWhereClause(null, null).orElse("") +
-//      (isLatestVersionOnly ? "group by script.SCRIPT_ID " : "") +
-//      "union all Select " +
-//      "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
-//      (isLatestVersionOnly ? "max(script_version.SCRIPT_VRS_NB)" : "script_version.SCRIPT_VRS_NB") + ", script_version.SCRIPT_VRS_DSC, 1 INFO_TYPE, " +
-//      "null LABEL_NAME, null LABEL_VALUE, " +
-//      "action.ACTION_ID, action.ACTION_NM, action.ACTION_NB, action.ACTION_DSC, action.ACTION_TYP_NM, action.CONDITION_VAL, action.EXP_ERR_FL, action.STOP_ERR_FL, " +
-//      "action_parameter.ACTION_PAR_NM, action_parameter.ACTION_PAR_VAL, " +
-//      "null RUN_ID, null PRC_ID, null ENV_NM, null ST_NM, null STRT_TMS, null END_TMS " +
-//      "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName()+ " script " +
-//      "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName()+ " script_version " +
-//      "on script.SCRIPT_ID=script_version.SCRIPT_ID " +
-//      "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions").getName()+ " action " +
-//      "on script.SCRIPT_ID = action.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action.SCRIPT_VRS_NB " +
-//      "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName()+ " action_parameter " +
-//      "on script.SCRIPT_ID = action_parameter.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action_parameter.SCRIPT_VRS_NB and action.ACTION_ID = action_parameter.ACTION_ID " +
-//      getWhereClause(null, null).orElse("") +
-//      (isLatestVersionOnly ? "group by script.SCRIPT_ID " : "") +
-//      (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(null, null) : "") + ";";
+    private String scriptAndScriptVersionJoinedTable(Boolean isLatestVersion) {
+        return ("Select script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
+                (isLatestVersion ? "max(script_version.SCRIPT_VRS_NB) SCRIPT_VRS_NB, " : "script_version.SCRIPT_VRS_NB SCRIPT_VRS_NB, ") +
+                "script_version.SCRIPT_VRS_DSC " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
+                "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version on script.SCRIPT_ID = script_version.SCRIPT_ID " +
+                (isLatestVersion ? "group by script.SCRIPT_ID " : ""));
     }
 
     private String getExpansionExecutionUnionForGetAll(Boolean isLatestVersion) {

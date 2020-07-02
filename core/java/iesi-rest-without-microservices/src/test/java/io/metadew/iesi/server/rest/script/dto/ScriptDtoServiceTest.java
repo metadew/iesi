@@ -325,53 +325,97 @@ class ScriptDtoServiceTest {
 
     @Test
     void getAllLastVersionExecutionExpansionDisabledTest() {
-        // Test 1: 1 script : 2 versions
         Script script1V1 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 0);
         Script script1V2 = ScriptBuilder.simpleScript("script0", 1, 2, 2, 0);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1V1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1V2);
-        List<ScriptDto> queryResult = scriptDtoService.getAll(new ArrayList<>(), true);
-
-        assertThat(queryResult.size())
-                .as("Only one ScriptDto should be return")
-                .isEqualTo(1);
-
-        assertThat(queryResult)
-                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .containsOnly(scriptDtoModelAssembler.toModel(script1V2));
-
-        // Test 2: 2 script : 2 versions
         Script script2V1 = ScriptBuilder.simpleScript("script1", 0, 2, 2, 0);
         Script script2V2 = ScriptBuilder.simpleScript("script1", 1, 2, 2, 0);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
 
-        queryResult = scriptDtoService.getAll(new ArrayList<>(), true);
+        List<ScriptDto> queryResult = scriptDtoService.getAll(new ArrayList<>(), true);
         assertThat(queryResult.size())
                 .as("Only 2 ScriptDto should be return")
                 .isEqualTo(2);
 
         assertThat(queryResult)
-                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
+                .as("The retrieved list of ScriptDto should contain these 2 scriptDto")
                 .containsOnly(scriptDtoModelAssembler.toModel(script1V2), scriptDtoModelAssembler.toModel(script2V2));
+
+        assertThat(queryResult.get(0))
+                .as("The first retrieved ScriptDto should be exactly equal to the processed ScriptDto")
+                .isEqualTo(scriptDtoModelAssembler.toModel(script2V2));
+
+        assertThat(queryResult.get(1))
+                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
+                .isEqualTo(scriptDtoModelAssembler.toModel(script1V2));
+
+        // This isn't working because the link aren't added for the getAll method -> shouldn't it be ?
+//        assertThat(queryResult.get(0))
+//                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
+//                .isEqualToComparingFieldByField(scriptDtoModelAssembler.toModel(script2V2));
+//
+//        assertThat(queryResult.get(1))
+//                .as("The retrieved ScriptDto should be exactly equal field by field  to the processed ScriptDto")
+//                .isEqualToComparingFieldByField(scriptDtoModelAssembler.toModel(script1V2));
 
     }
 
-    // Todo: add insert some related ScriptResult to make a correct expansion test
-    void getAllLastVersionExecutionExpansionEnabledTest() {
-//        Script scriptV1 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 0);
-//        Script scriptV2 = ScriptBuilder.simpleScript("script0", 1, 2, 2, 0);
-//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptV1);
-//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptV2);
-//        List<ScriptDto> queryResult = scriptDtoService.getAll(Stream.of("execution").collect(Collectors.toList()), true);
-//
-//        assertThat(queryResult.size())
-//                .as("Only one ScriptDto should be return")
-//                .isEqualTo(1);
-//
-//        assertThat(queryResult)
-//                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-//                .containsOnly(scriptDtoModelAssembler.toModel(scriptV2));
+    @Test
+    void getAllLastVersionSingleExecutionExecutionExpansionEnabledTest() {
+        Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
+        Script script22 = ScriptBuilder.simpleScript("script0", 1, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script22);
+        String runId = UUID.randomUUID().toString();
+        ScriptResult scriptResult = new ScriptResultBuilder(runId, 0)
+                .scriptName("script0")
+                .scriptVersion(1L)
+                .parentProcessId(0L)
+                .environment("test")
+                .status(ScriptRunStatus.SUCCESS)
+                .startTimestamp(LocalDateTime.parse("2020-05-20T10:10:10"))
+                .endTimestamp(LocalDateTime.parse("2020-05-20T10:10:20"))
+                .build();
+        ScriptResultConfiguration.getInstance().insert(scriptResult);
+
+        assertThat(scriptDtoService.getAll(Stream.of("execution").collect(Collectors.toList()),true).size())
+                .as("There should be only one ScriptDto")
+                .isEqualTo(1);
+
+        assertThat(scriptDtoService.getAll(Stream.of("execution").collect(Collectors.toList()),true).get(0))
+                .as("The retrieved ScriptDto should be equal to this ScriptDto")
+                .isEqualTo(new ScriptDto("script0", "dummy script",
+                        new ScriptVersionDto(1, "dummy version"), new ArrayList<>(),
+                        Stream.of(
+                                new ActionDto(0, "action0", "fwk.dummy",
+                                        "dummy action", null, null, null, false, false,
+                                        0,
+                                        Stream.of(
+                                                new ActionParameterDto("parameter0", "value0"),
+                                                new ActionParameterDto("parameter1", "value1"))
+                                                .collect(Collectors.toList())),
+                                new ActionDto(1, "action1", "fwk.dummy",
+                                        "dummy action", null, null, null, false, false,
+                                        0,
+                                        Stream.of(
+                                                new ActionParameterDto("parameter0", "value0"),
+                                                new ActionParameterDto("parameter1", "value1"))
+                                                .collect(Collectors.toList()))
+                        ).collect(Collectors.toList()),
+                        Stream.of(
+                                new ScriptLabelDto("label0", "value0"),
+                                new ScriptLabelDto("label1", "value1")
+                        ).collect(Collectors.toList()),
+                        new ScriptExecutionInformation(null, Stream.of(
+                                new ScriptExecutionDto(
+                                        runId,
+                                        "test",
+                                        ScriptRunStatus.SUCCESS,
+                                        LocalDateTime.parse("2020-05-20T10:10:10"),
+                                        LocalDateTime.parse("2020-05-20T10:10:20"))
+                        ).collect(Collectors.toList())), null));
     }
 
     @Test

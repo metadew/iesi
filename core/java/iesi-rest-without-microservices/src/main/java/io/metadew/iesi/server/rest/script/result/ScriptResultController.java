@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
 @RestController
-@Tag(name = "scriptResult", description = "Everything about scriptResults")
-@RequestMapping("/scriptResult")
+@Tag(name = "scriptResults", description = "Everything about scriptResults")
+@RequestMapping("/scriptResults")
 public class ScriptResultController {
     private final IScriptResultService scriptResultService;
     private final ScriptResultDtoModelAssembler scriptResultDtoModelAssembler;

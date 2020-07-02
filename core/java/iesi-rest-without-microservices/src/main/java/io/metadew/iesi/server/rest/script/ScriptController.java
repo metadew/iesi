@@ -39,7 +39,7 @@ public class ScriptController {
     @GetMapping("")
     public HalMultipleEmbeddedResource<ScriptDto> getAll(@RequestParam(required = false, name = "expand") List<String> expansions,
                                                          @RequestParam(required = false, name = "version") String version) {
-        List<ScriptDto> scripts = scriptDtoService.getAll(expansions, version.toLowerCase().equals("latest"));
+        List<ScriptDto> scripts = scriptDtoService.getAll(expansions, version != null && version.toLowerCase().equals("latest"));
         return new HalMultipleEmbeddedResource<>(scripts);
     }
 

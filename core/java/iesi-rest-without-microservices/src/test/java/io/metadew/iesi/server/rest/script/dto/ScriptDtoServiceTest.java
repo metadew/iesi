@@ -429,6 +429,22 @@ class ScriptDtoServiceTest {
         assertThat(queryResult.size())
                 .as("Only 2 ScriptDto should be return")
                 .isEqualTo(2);
+
+        assertThat(queryResult.get(0))
+                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
+                .isEqualTo(scriptDtoService.convertToDto(script2V2));
+
+        assertThat(queryResult.get(1))
+                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
+                .isEqualTo(scriptDtoService.convertToDto(script1V2));
+
+        assertThat(queryResult.get(0))
+                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
+                .isEqualToComparingFieldByField(scriptDtoService.convertToDto(script2V2));
+
+        assertThat(queryResult.get(1))
+                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
+                .isEqualToComparingFieldByField(scriptDtoService.convertToDto(script1V2));
     }
 
     @Test

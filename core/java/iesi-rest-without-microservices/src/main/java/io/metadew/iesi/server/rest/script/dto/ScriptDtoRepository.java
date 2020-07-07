@@ -202,8 +202,9 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     }
 
     private String getExecutionExpansionUnion(String scriptName, Long scriptVersion) {
-        return getExecutionExpansionUnion(scriptName,scriptVersion,false);
+        return getExecutionExpansionUnion(scriptName, scriptVersion, false);
     }
+
     private String getExecutionExpansionUnion(String scriptName, Long scriptVersion, Boolean isLatestVersion) {
         return " union all select " +
                 "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 2 INFO_TYPE, " +

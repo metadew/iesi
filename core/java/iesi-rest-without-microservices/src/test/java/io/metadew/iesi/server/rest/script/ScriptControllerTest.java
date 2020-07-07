@@ -1,22 +1,15 @@
 package io.metadew.iesi.server.rest.script;
 
-import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.server.rest.builder.script.ScriptDtoBuilder;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoModelAssembler;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoService;
 import io.metadew.iesi.server.rest.script.dto.ScriptPostDtoService;
-import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
-import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.action.ScriptActionDtoService;
-import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
-import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionInformation;
-import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDtoService;
-import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDtoService;
-import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDtoService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +22,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,32 +48,29 @@ class ScriptControllerTest {
     @MockBean
     private ScriptDtoService scriptDtoService;
 
-    @MockBean
-    private IScriptService scriptService;
-
     @Test
     void getAllNoResult() throws Exception {
         // Mock Service
         List<ScriptDto> scriptDtoList = new ArrayList<>();
         given(scriptDtoService.getAll(null, false)).willReturn(scriptDtoList);
 
-        mvc.perform(get("/scripts")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
+        mvc.perform(get("/scripts").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // Check Json format and data
                 .andExpect(jsonPath("$", anEmptyMap()));
     }
 
     @Test
     void getAll2ResultsAndSerializationTest() throws Exception {
         // Mock Service
-        ScriptDto scriptDto0 = simpleScriptDto("1stScript", 0);
-        ScriptDto scriptDto1 = simpleScriptDto("1stScript", 1);
+        ScriptDto scriptDto0 = ScriptDtoBuilder.simpleScriptDto("1stScript", 0);
+        ScriptDto scriptDto1 = ScriptDtoBuilder.simpleScriptDto("1stScript", 1);
         List<ScriptDto> scriptDtoList = Stream.of(scriptDto0, scriptDto1).collect(Collectors.toList());
         given(scriptDtoService.getAll(null, false)).willReturn(scriptDtoList);
 
-        mvc.perform(get("/scripts")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
+        mvc.perform(get("/scripts").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded[0].name", is(scriptDto0.getName())))
@@ -167,14 +156,14 @@ class ScriptControllerTest {
     @Test
     void getAllLastVersion() throws Exception {
         // Mock Service
-        ScriptDto scriptDto0 = simpleScriptDto("1Script", 2);
-        ScriptDto scriptDto1 = simpleScriptDto("AnotherScript", 3);
+        ScriptDto scriptDto0 = ScriptDtoBuilder.simpleScriptDto("1Script", 2);
+        ScriptDto scriptDto1 = ScriptDtoBuilder.simpleScriptDto("AnotherScript", 3);
         List<ScriptDto> scriptDtoList = Stream.of(scriptDto0, scriptDto1).collect(Collectors.toList());
         given(scriptDtoService.getAll(null, true)).willReturn(scriptDtoList);
 
-        mvc.perform(get("/scripts?version=latest")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
+        mvc.perform(get("/scripts?version=latest").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded[0].name", is(scriptDto0.getName())))
@@ -293,65 +282,4 @@ class ScriptControllerTest {
         // Todo: Write Test
     }
 
-    ScriptDto simpleScriptDto(String name, long n) {
-        return ScriptDto.builder()
-                .name(name)
-                .description(name + " desc")
-                .version(new ScriptVersionDto(n, name + " " + Long.toString(n)))
-                .parameters(
-                        Stream.of(
-                                new ScriptParameterDto("Param1", Long.toString(n)),
-                                new ScriptParameterDto("Param2", Long.toString(n))
-                        ).collect(Collectors.toList())
-                )
-                .actions(
-                        Stream.of(
-                                ActionDto.builder()
-                                        .number(n)
-                                        .name("Action1")
-                                        .type("Dummy")
-                                        .description("DummyAction")
-                                        .component("DummyComponent")
-                                        .condition("DummyCondition")
-                                        .iteration("DummyIteration")
-                                        .errorExpected(false)
-                                        .errorStop(false)
-                                        .retries(0)
-                                        .parameters(
-                                                Stream.of(
-                                                        new ActionParameterDto("ActionParameter1", "ActionParameterValue1"),
-                                                        new ActionParameterDto("ActionParameter2", "ActionParameterValue2")
-                                                ).collect(Collectors.toList())
-                                        )
-                                        .build()
-                        ).collect(Collectors.toList())
-                )
-                .labels(
-                        Stream.of(
-                                new ScriptLabelDto("Label1", "Label1Value"),
-                                new ScriptLabelDto("Label2", "Label2Value")
-                        ).collect(Collectors.toList())
-                )
-                .scriptExecutionInformation(new ScriptExecutionInformation(
-                                2L,
-                                Stream.of(
-                                        new ScriptExecutionDto(
-                                                "runId1",
-                                                "test_env",
-                                                ScriptRunStatus.SUCCESS,
-                                                LocalDateTime.now().minusMinutes(2),
-                                                LocalDateTime.now()
-                                        ),
-                                        new ScriptExecutionDto(
-                                                "runId2",
-                                                "test_env",
-                                                ScriptRunStatus.SUCCESS,
-                                                LocalDateTime.now(),
-                                                LocalDateTime.now().plusMinutes(2)
-                                        )
-                                ).collect(Collectors.toList())
-                        )
-                )
-                .build();
-    }
 }

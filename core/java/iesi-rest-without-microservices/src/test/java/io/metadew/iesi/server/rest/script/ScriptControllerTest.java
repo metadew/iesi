@@ -1,20 +1,17 @@
 package io.metadew.iesi.server.rest.script;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoModelAssembler;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoService;
-
 import io.metadew.iesi.server.rest.script.dto.ScriptPostDtoService;
 import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
 import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.action.ScriptActionDtoService;
 import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
 import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionInformation;
-import io.metadew.iesi.server.rest.script.dto.expansions.ScriptSchedulingInformation;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
@@ -31,7 +28,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,7 +35,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.anEmptyMap;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -262,8 +259,8 @@ class ScriptControllerTest {
 
     @Test
     void getByName() {
-        // Todo: Write Test with JsonSchema validation
-        
+        // Todo: Write Test
+
     }
 
     @Test

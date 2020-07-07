@@ -7,13 +7,15 @@ import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDto;
 import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDtoModelAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "scriptResult", description = "Everything about scriptResults")
-@RequestMapping("/scriptResults")
+@RequestMapping("/script_results")
 @CrossOrigin
 public class ScriptResultController {
     private final IScriptResultService scriptResultService;
@@ -27,6 +29,7 @@ public class ScriptResultController {
 
     @GetMapping
     public HalMultipleEmbeddedResource<ScriptResultDto> getAll() {
+        Pageable pageable;
         return new HalMultipleEmbeddedResource<>(scriptResultService.getAll().stream()
                 .map(scriptResultDtoModelAssembler::toModel)
                 .collect(Collectors.toList()));

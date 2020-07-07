@@ -3,10 +3,7 @@ package io.metadew.iesi.server.rest.connectiontypes;
 import io.metadew.iesi.common.configuration.metadata.connectiontypes.MetadataConnectionTypesConfiguration;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +11,7 @@ import java.util.stream.Collectors;
 @RestController
 @Tag(name = "connectionTypes", description = "Everything about connection types")
 @RequestMapping("/connection_types")
+@CrossOrigin
 public class ConnectionTypeController {
 
     private IConnectionTypeDtoService connectionTypeDtoService;

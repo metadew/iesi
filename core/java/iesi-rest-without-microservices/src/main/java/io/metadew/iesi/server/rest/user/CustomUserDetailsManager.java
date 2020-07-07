@@ -55,17 +55,16 @@ public class CustomUserDetailsManager implements UserDetailsManager, GroupManage
 
     @PostConstruct
     public void init() {
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username("robbe.berrevoets@belfius.be")
-                .disabled(false)
-                .accountExpired(false)
-                .password(passwordEncoder.encode("XrMd445a&8"))
-                .accountLocked(false)
-                .credentialsExpired(false)
-                .authorities(new ArrayList<>())
-                .build();
-
-        createUser(userDetails);
+//        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+//                .username("robbe.berrevoets@belfius.be")
+//                .disabled(false)
+//                .accountExpired(false)
+//                .password(passwordEncoder.encode("XrMd445a&8"))
+//                .accountLocked(false)
+//                .credentialsExpired(false)
+//                .authorities(new ArrayList<>())
+//                .build();
+//        createUser(userDetails);
     }
 
     @Override

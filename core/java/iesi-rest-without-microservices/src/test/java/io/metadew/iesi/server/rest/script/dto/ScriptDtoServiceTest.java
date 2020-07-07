@@ -47,9 +47,6 @@ class ScriptDtoServiceTest {
     @Autowired
     private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    @Autowired
-    private ScriptDtoModelAssembler scriptDtoModelAssembler;
-
     @BeforeEach
     void setup() {
         metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
@@ -341,24 +338,23 @@ class ScriptDtoServiceTest {
 
         assertThat(queryResult)
                 .as("The retrieved list of ScriptDto should contain these 2 scriptDto")
-                .containsOnly(scriptDtoModelAssembler.toModel(script1V2), scriptDtoModelAssembler.toModel(script2V2));
+                .containsOnly(scriptDtoService.convertToDto(script1V2), scriptDtoService.convertToDto(script2V2));
 
         assertThat(queryResult.get(0))
                 .as("The first retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.toModel(script2V2));
+                .isEqualTo(scriptDtoService.convertToDto(script2V2));
 
         assertThat(queryResult.get(1))
                 .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.toModel(script1V2));
+                .isEqualTo(scriptDtoService.convertToDto(script1V2));
 
-        // This isn't working because the link aren't added for the getAll method -> shouldn't it be ?
-//        assertThat(queryResult.get(0))
-//                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
-//                .isEqualToComparingFieldByField(scriptDtoModelAssembler.toModel(script2V2));
-//
-//        assertThat(queryResult.get(1))
-//                .as("The retrieved ScriptDto should be exactly equal field by field  to the processed ScriptDto")
-//                .isEqualToComparingFieldByField(scriptDtoModelAssembler.toModel(script1V2));
+        assertThat(queryResult.get(0))
+                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
+                .isEqualToComparingFieldByField(scriptDtoService.convertToDto(script2V2));
+
+        assertThat(queryResult.get(1))
+                .as("The retrieved ScriptDto should be exactly equal field by field  to the processed ScriptDto")
+                .isEqualToComparingFieldByField(scriptDtoService.convertToDto(script1V2));
 
     }
 
@@ -380,11 +376,11 @@ class ScriptDtoServiceTest {
                 .build();
         ScriptResultConfiguration.getInstance().insert(scriptResult);
 
-        assertThat(scriptDtoService.getAll(Stream.of("execution").collect(Collectors.toList()),true).size())
+        assertThat(scriptDtoService.getAll(Stream.of("execution").collect(Collectors.toList()), true).size())
                 .as("There should be only one ScriptDto")
                 .isEqualTo(1);
 
-        assertThat(scriptDtoService.getAll(Stream.of("execution").collect(Collectors.toList()),true).get(0))
+        assertThat(scriptDtoService.getAll(Stream.of("execution").collect(Collectors.toList()), true).get(0))
                 .as("The retrieved ScriptDto should be equal to this ScriptDto")
                 .isEqualTo(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(1, "dummy version"), new ArrayList<>(),
@@ -416,6 +412,23 @@ class ScriptDtoServiceTest {
                                         LocalDateTime.parse("2020-05-20T10:10:10"),
                                         LocalDateTime.parse("2020-05-20T10:10:20"))
                         ).collect(Collectors.toList())), null));
+    }
+
+    @Test
+    void getAllLatestVersionNoExpansionSpecified() {
+        Script script1V1 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 0);
+        Script script1V2 = ScriptBuilder.simpleScript("script0", 1, 2, 2, 0);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1V1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1V2);
+        Script script2V1 = ScriptBuilder.simpleScript("script1", 0, 2, 2, 0);
+        Script script2V2 = ScriptBuilder.simpleScript("script1", 1, 2, 2, 0);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
+
+        List<ScriptDto> queryResult = scriptDtoService.getAll(null, true);
+        assertThat(queryResult.size())
+                .as("Only 2 ScriptDto should be return")
+                .isEqualTo(2);
     }
 
     @Test

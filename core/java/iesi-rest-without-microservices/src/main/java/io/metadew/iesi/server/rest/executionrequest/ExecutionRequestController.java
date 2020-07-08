@@ -2,7 +2,9 @@ package io.metadew.iesi.server.rest.executionrequest;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
@@ -14,15 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@CrossOrigin
 @Tag(name = "execution requests", description = "Everything about execution requests")
-@RequestMapping("/execution_request")
+@RequestMapping("/execution_requests")
 public class ExecutionRequestController {
 
     private final ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler;
@@ -48,14 +50,14 @@ public class ExecutionRequestController {
     public ExecutionRequestDto getById(@PathVariable String id) {
         return executionRequestService.getById(id)
                 .map(executionRequestDtoResourceAssembler::toModel)
-                .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find ExecutionRequest {0}", id)));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ExecutionRequestKey(id)));
     }
 
     @PostMapping("")
     public ExecutionRequestDto post(@RequestBody ExecutionRequestDto executionRequestDto) throws MetadataAlreadyExistsException {
         try {
-            executionRequestService.createExecutionRequest(executionRequestDto);
-            return executionRequestDtoResourceAssembler.toModel(executionRequestDto.convertToNewEntity());
+            ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(executionRequestDto);
+            return executionRequestDtoResourceAssembler.toModel(executionRequest);
         } catch (ExecutionRequestBuilderException e) {
             throw new RuntimeException(e);
         }

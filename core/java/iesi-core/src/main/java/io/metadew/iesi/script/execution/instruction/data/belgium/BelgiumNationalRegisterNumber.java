@@ -61,8 +61,10 @@ public class BelgiumNationalRegisterNumber implements DataInstruction {
             throw new IllegalArgumentException(
                     MessageFormat.format("Illegal arguments provided to national registernumber for sex parameter: {0}", sex));
         }
-        BigInteger baseNumber = BigInteger.valueOf(yearRepresentation).add(BigInteger.valueOf(monthRepresentation))
-                .add(BigInteger.valueOf(dayRepresentation)).add(BigInteger.valueOf(maleFemaleRepresentation));
+        BigInteger baseNumber = BigInteger.valueOf(yearRepresentation)
+                .add(BigInteger.valueOf(monthRepresentation))
+                .add(BigInteger.valueOf(dayRepresentation))
+                .add(BigInteger.valueOf(maleFemaleRepresentation));
 
         // National Register Number: Rules based on birth date (2)
         BigInteger number = baseNumber;

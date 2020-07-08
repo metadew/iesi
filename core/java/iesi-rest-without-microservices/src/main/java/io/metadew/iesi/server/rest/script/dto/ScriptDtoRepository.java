@@ -63,7 +63,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(null, null) : "") + ";";
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-                mapRow(cachedRowSet, scriptDtos, actionDtos);
+                mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
             }
             return new ArrayList<>(scriptDtos.values());
         } catch (SQLException e) {
@@ -106,7 +106,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     ";";
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-                mapRow(cachedRowSet, scriptDtos, actionDtos);
+                mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
             }
             return new ArrayList<>(scriptDtos.values());
         } catch (SQLException e) {
@@ -146,7 +146,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     ";";
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-                mapRow(cachedRowSet, scriptDtos, actionDtos);
+                mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
             }
             if (scriptDtos.size() > 1) {
                 log.warn("found multiple script for script " + name + "-" + version);
@@ -224,12 +224,15 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         return Optional.of(" where " + String.join(" and ", conditions) + " ");
     }
 
-    private void mapRow(CachedRowSet cachedRowSet, Map<ScriptKey, ScriptDto> scriptDtos, Map<ActionKey, ActionDto> actionDtos) throws SQLException {
+    private void mapRow(CachedRowSet cachedRowSet, Map<ScriptKey, ScriptDto> scriptDtos, Map<ActionKey, ActionDto> actionDtos, List<String> expansions) throws SQLException {
         ScriptKey scriptKey = new ScriptKey(cachedRowSet.getString("SCRIPT_NM"), cachedRowSet.getLong("SCRIPT_VRS_NB"));
         ScriptDto scriptDto = scriptDtos.get(scriptKey);
         if (scriptDto == null) {
             scriptDto = mapScriptDto(cachedRowSet);
             scriptDtos.put(scriptKey, scriptDto);
+        }
+        if (expansions.contains("execution")) {
+            scriptDto.setScriptExecutionInformation(new ScriptExecutionInformation());
         }
         int infoType = cachedRowSet.getInt("INFO_TYPE");
         if (infoType == 0) {

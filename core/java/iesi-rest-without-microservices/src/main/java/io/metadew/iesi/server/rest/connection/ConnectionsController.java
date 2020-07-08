@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 
 @RestController
+@CrossOrigin
 @Tag(name = "connections", description = "Everything about connections")
 @RequestMapping("/connections")
 public class ConnectionsController {

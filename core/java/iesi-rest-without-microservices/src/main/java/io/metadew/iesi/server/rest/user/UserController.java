@@ -40,10 +40,9 @@ public class UserController {
 
     @PostMapping("/login")
     public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
-        log.info("authenticating " + authenticationRequest.getUsername());
+        log.trace("authenticating " + authenticationRequest.getUsername());
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-            log.info("authenticated " + authentication.getPrincipal());
             return jwtService.generateAuthenticationResponse(authentication);
         } catch (Exception e) {
             StringWriter StackTrace = new StringWriter();

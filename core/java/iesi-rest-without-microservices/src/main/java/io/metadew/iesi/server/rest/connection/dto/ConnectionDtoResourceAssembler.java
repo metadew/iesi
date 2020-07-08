@@ -4,8 +4,6 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.server.rest.connection.ConnectionsController;
 import io.metadew.iesi.server.rest.environment.EnvironmentsController;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionParameterDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;

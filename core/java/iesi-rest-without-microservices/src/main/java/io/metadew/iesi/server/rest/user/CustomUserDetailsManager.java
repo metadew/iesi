@@ -17,13 +17,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.GroupManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,29 +40,9 @@ public class CustomUserDetailsManager implements UserDetailsManager, GroupManage
         this.groupService = groupService;
     }
 
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
     //TODO: move to Spring, extend JDBCUserDetailsManager. Override getXSql() methods to adhere to custom data model
     private UserService userService;
     private GroupService groupService;
-    private PasswordEncoder passwordEncoder;
-
-    @PostConstruct
-    public void init() {
-//        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-//                .username("robbe.berrevoets@belfius.be")
-//                .disabled(false)
-//                .accountExpired(false)
-//                .password(passwordEncoder.encode("XrMd445a&8"))
-//                .accountLocked(false)
-//                .credentialsExpired(false)
-//                .authorities(new ArrayList<>())
-//                .build();
-//        createUser(userDetails);
-    }
 
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {

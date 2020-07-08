@@ -436,7 +436,7 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
 
-        List<ScriptDto> queryResult = scriptDtoService.getAll(null, true);
+        List<ScriptDto> queryResult = scriptDtoService.getAll(new ArrayList<>(), true);
         assertThat(queryResult.size())
                 .as("Only 2 ScriptDto should be return")
                 .isEqualTo(2);

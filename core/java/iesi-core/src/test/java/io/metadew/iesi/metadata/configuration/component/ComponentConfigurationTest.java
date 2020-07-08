@@ -221,9 +221,9 @@ class ComponentConfigurationTest {
         ComponentParameter componentParameter2;
         ComponentParameter componentParameter3;
         ComponentParameter componentParameter3Bis;
-        List<ComponentParameter> componentParameters1 = new ArrayList<ComponentParameter>();
-        List<ComponentParameter> componentParameters2 = new ArrayList<ComponentParameter>();
-        List<ComponentParameter> componentParameters3 = new ArrayList<ComponentParameter>();
+        List<ComponentParameter> componentParameters1 = new ArrayList<>();
+        List<ComponentParameter> componentParameters2 = new ArrayList<>();
+        List<ComponentParameter> componentParameters3 = new ArrayList<>();
         componentParameter1 = new ComponentParameterBuilder("1", 1, "newParameter1")
                 .value("newValue1")
                 .build();

@@ -11,19 +11,12 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
-#          type: h2
-#          mode: memory
-#          database: test;DB_CLOSE_DELAY=-1
-#          owner:
-#            user: "sa"
-#            password: ""
-
-          type: oracle
-          schema: GETA
-          connection: "jdbc:ruiazir"
+          type: h2
+          mode: memory
+          database: test;DB_CLOSE_DELAY=-1
           owner:
-            user: test
-            password: test
+            user: "sa"
+            password: ""
 
 
 #          type: h2

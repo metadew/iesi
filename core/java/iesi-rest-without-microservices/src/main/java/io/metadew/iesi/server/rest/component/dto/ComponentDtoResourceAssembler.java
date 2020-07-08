@@ -4,10 +4,6 @@ import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.server.rest.component.ComponentsController;
-import io.metadew.iesi.server.rest.component.dto.ComponentAttributeDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentParameterDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentVersionDto;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 

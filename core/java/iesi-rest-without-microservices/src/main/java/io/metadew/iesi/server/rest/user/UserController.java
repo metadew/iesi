@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,13 +14,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.stream.Collectors;
+
 
 @RestController
 @Profile("security")
 @Tag(name = "users", description = "Everything about users")
 @RequestMapping("/users")
 @CrossOrigin
+@Log4j2
 public class UserController {
 
     private final AuthenticationManager authenticationManager;
@@ -36,8 +41,16 @@ public class UserController {
 
     @PostMapping("/login")
     public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-        return jwtService.generateAuthenticationResponse(authentication);
+        log.trace("authenticating " + authenticationRequest.getUsername());
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            return jwtService.generateAuthenticationResponse(authentication);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+            log.info(StackTrace.toString());
+            throw e;
+        }
     }
 
     @PostMapping("/create")

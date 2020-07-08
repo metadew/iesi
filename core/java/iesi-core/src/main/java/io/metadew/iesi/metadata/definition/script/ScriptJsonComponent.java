@@ -51,6 +51,7 @@ public class ScriptJsonComponent {
         @Override
         public Script deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+            // needs to be a predictable key (hash) to ensure they can be loaded from filesystem
             String scriptId = IdentifierTools.getScriptIdentifier(node.get(Field.NAME_KEY.value()).asText());
             ScriptVersion scriptVersion;
 
@@ -113,6 +114,7 @@ public class ScriptJsonComponent {
             if (node.hasNonNull(Field.LABELS_KEY.value())) {
                 for (JsonNode scriptLabelNode : node.get(Field.LABELS_KEY.value())) {
                     String name = scriptLabelNode.get(ScriptLabelJsonComponent.Field.NAME_KEY.value()).asText();
+                    // needs to be a predictable key (hash) to ensure they can be loaded from filesystem
                     scriptLabels.add(new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId + versionNumber + name)), scriptKey, name,
                             scriptLabelNode.get(ScriptLabelJsonComponent.Field.VALUE.value()).asText()));
                 }

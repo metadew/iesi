@@ -44,7 +44,6 @@ public abstract class Database {
         this.maximalPoolSize = maximalPoolSize;
         if (DatabaseHandler.getInstance().isInitializeConnectionPool(this)) {
             this.connectionPool = DatabaseHandler.getInstance().createConnectionPool(this, databaseConnection);
-            ;
         }
     }
 

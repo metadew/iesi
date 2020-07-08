@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.component;
 
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;

@@ -14,6 +14,7 @@ import org.springframework.hateoas.RepresentationModel;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -31,8 +32,8 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
     private String context;
     private String email;
     private ExecutionRequestStatus executionRequestStatus;
-    private List<ScriptExecutionRequestDto> scriptExecutionRequests;
-    private List<ExecutionRequestLabelDto> executionRequestLabels;
+    private List<ScriptExecutionRequestDto> scriptExecutionRequests = new ArrayList<>();
+    private List<ExecutionRequestLabelDto> executionRequestLabels = new ArrayList<>();
 
     public ExecutionRequest convertToEntity() {
         return new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(executionRequestId), requestTimestamp, name,
@@ -45,7 +46,9 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
     }
 
     public ExecutionRequest convertToNewEntity() throws ExecutionRequestBuilderException {
+        String newExecutionRequestId = executionRequestId == null ? UUID.randomUUID().toString() : executionRequestId;
         ExecutionRequest executionRequest = new ExecutionRequestBuilder()
+                .id(newExecutionRequestId)
                 .name(name)
                 .context(context)
                 .description(description)

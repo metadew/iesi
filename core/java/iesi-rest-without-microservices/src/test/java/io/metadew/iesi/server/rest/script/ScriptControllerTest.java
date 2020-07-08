@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.script;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.server.rest.builder.script.ScriptDtoBuilder;
+import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoModelAssembler;
@@ -39,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {ScriptController.class, CustomGlobalExceptionHandler.class, ScriptDtoModelAssembler.class,
         ScriptPostDtoService.class, ScriptParameterDtoService.class, ScriptLabelDtoService.class, ScriptActionDtoService.class,
-        ScriptVersionDtoService.class})
+        ScriptVersionDtoService.class, ScriptService.class, IesiConfiguration.class})
 class ScriptControllerTest {
 
     @Autowired
@@ -66,7 +67,7 @@ class ScriptControllerTest {
         ScriptDto scriptDto0 = ScriptDtoBuilder.simpleScriptDto("1stScript", 0);
         ScriptDto scriptDto1 = ScriptDtoBuilder.simpleScriptDto("1stScript", 1);
         List<ScriptDto> scriptDtoList = Stream.of(scriptDto0, scriptDto1).collect(Collectors.toList());
-        given(scriptDtoService.getAll(null, false)).willReturn(scriptDtoList);
+        given(scriptDtoService.getAll(new ArrayList<>(), false)).willReturn(scriptDtoList);
 
         mvc.perform(get("/scripts").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -159,7 +160,7 @@ class ScriptControllerTest {
         ScriptDto scriptDto0 = ScriptDtoBuilder.simpleScriptDto("1Script", 2);
         ScriptDto scriptDto1 = ScriptDtoBuilder.simpleScriptDto("AnotherScript", 3);
         List<ScriptDto> scriptDtoList = Stream.of(scriptDto0, scriptDto1).collect(Collectors.toList());
-        given(scriptDtoService.getAll(null, true)).willReturn(scriptDtoList);
+        given(scriptDtoService.getAll(new ArrayList<>(), true)).willReturn(scriptDtoList);
 
         mvc.perform(get("/scripts?version=latest").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

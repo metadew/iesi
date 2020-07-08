@@ -3,8 +3,6 @@ package io.metadew.iesi.server.rest.impersonation.dto;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.server.rest.impersonation.ImpersonationController;
-import io.metadew.iesi.server.rest.impersonation.dto.ImpersonationDto;
-import io.metadew.iesi.server.rest.impersonation.dto.ImpersonationParameterDto;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;

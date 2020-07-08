@@ -60,6 +60,202 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+      - name: CTL_USERS
+        label: Users
+        description: User data
+        category: control
+        fields:
+          ID:
+            description: Unique short name for the impersonation
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          USERNAME:
+            description: user name of the user
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          PASSWORD:
+            description: hashed password of the user
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+          ENABLED:
+            description: Boolean determining if the user is activated or not
+            order: 3
+            type: string
+            length: 255
+            nullable: false
+          EXPIRED:
+            description: Boolean determining if the user is activated or not
+            order: 3
+            type: string
+            length: 255
+            nullable: false
+          CREDENTIALS_EXPIRED:
+            description: Boolean determining if the user is activated or not
+            order: 3
+            type: string
+            length: 255
+            nullable: false
+          LOCKED:
+            description: Boolean determining if the user is activated or not
+            order: 3
+            type: string
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: CTL_GROUPS
+        label: Groups
+        description: Group data
+        category: control
+        fields:
+          ID:
+            description: Unique short name for the impersonation
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          GROUP_NAME:
+            description: name of the group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: CTL_AUTHORITIES
+        label: Authorities
+        description: authority data
+        category: control
+        fields:
+          ID:
+            description: id
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+            primaryKey: true
+          AUTHORITY:
+            description: name of the authority
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: CTL_USER_AUTHORITIES
+        label: UserAuthorities
+        description: authorities linked to users
+        category: control
+        fields:
+          USER_ID:
+            description: user id
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+            primaryKey: true
+          AUTHORITY_ID:
+            description: authority id
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: CTL_GROUP_AUTHORITIES
+        label: GroupAuthorities
+        description: Link authorities to groups
+        category: control
+        fields:
+          GROUP_ID:
+            description: Id of the group
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+            primaryKey: true
+          AUTHORITY_ID:
+            description: Id of the authority
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+
+      - name: CTL_GROUP_MEMBERS
+        label: GroupMembers
+        description: Link users to groups
+        category: control
+        fields:
+          GROUP_ID:
+            description: Id of the group
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+            primaryKey: true
+          USER_ID:
+            description: Id of the user
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
       - name: CXN_CONN_IMP_PAR
         label: ImpersonationParameters
         description: Design metadata for connection impersonation parameters
@@ -721,7 +917,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: SCRPT_EXEC_REQ_PAR
+      - name: EXE_SCRPT_EXEC_REQ_PAR
         label: ScriptExecutionRequestParameters
         description: In-process runtime script requests for execution
         category: execution

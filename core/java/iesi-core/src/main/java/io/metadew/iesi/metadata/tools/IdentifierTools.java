@@ -18,9 +18,6 @@ public final class IdentifierTools {
         return DigestUtils.sha256Hex(input);
     }
 
-    public static String getExecutionRequestIdentifier() {
-        return UUID.randomUUID().toString();
-    }
     public static String getScriptExecutionRequestIdentifier() {
         return UUID.randomUUID().toString();
     }

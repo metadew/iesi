@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.environment;
 
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDto;

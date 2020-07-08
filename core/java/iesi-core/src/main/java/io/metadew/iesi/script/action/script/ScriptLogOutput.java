@@ -97,7 +97,6 @@ public class ScriptLogOutput {
                 scriptExecution.getScript().getMetadataKey().getScriptId(),
                 value);
         ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
-        //executionControl.logExecutionOutput(actionExecution.getScriptExecution(), name, value);
 
         actionExecution.getActionControl().increaseSuccessCount();
         return true;

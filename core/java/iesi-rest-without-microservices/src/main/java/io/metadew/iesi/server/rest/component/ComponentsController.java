@@ -24,6 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@CrossOrigin
 @Tag(name = "components", description = "Everything about components")
 @RequestMapping("/components")
 public class ComponentsController {

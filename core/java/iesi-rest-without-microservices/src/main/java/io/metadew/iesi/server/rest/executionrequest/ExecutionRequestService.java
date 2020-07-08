@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,9 +27,10 @@ public class ExecutionRequestService implements IExecutionRequestService {
         return executionRequestConfiguration.get(new ExecutionRequestKey(id));
     }
 
-    public void createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException {
+    public ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException {
         ExecutionRequest executionRequest = executionRequestDto.convertToNewEntity();
         executionRequestConfiguration.insert(executionRequest);
+        return executionRequest;
     }
 
     public void updateExecutionRequest(ExecutionRequestDto executionRequestDto) {

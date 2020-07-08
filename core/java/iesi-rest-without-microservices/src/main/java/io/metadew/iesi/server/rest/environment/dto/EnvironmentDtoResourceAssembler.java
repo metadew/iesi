@@ -3,8 +3,6 @@ package io.metadew.iesi.server.rest.environment.dto;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.server.rest.environment.EnvironmentsController;
-import io.metadew.iesi.server.rest.environment.dto.EnvironmentDto;
-import io.metadew.iesi.server.rest.environment.dto.EnvironmentParameterDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;

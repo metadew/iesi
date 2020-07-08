@@ -13,7 +13,7 @@ public interface IExecutionRequestService {
 
     public Optional<ExecutionRequest> getById(String id);
 
-    public void createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
+    public ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
 
     public void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
 

@@ -43,18 +43,39 @@ public class HttpRequestComponentService {
         DataType uri = request.getParameters().stream()
                 .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equalsIgnoreCase("url"))
                 .findFirst()
-                .map(componentParameter -> HttpRequestComponentParameterService.getInstance().getParameterValue(componentParameter, request.getAttributes(), actionExecution, executionControl))
+                .map(componentParameter -> {
+                    try {
+                        return HttpRequestComponentParameterService.getInstance().getParameterValue(componentParameter, request.getAttributes(), actionExecution, executionControl);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
                 .orElseThrow(() -> new RuntimeException("No url defined in http request"));
 
         Map<String, DataType> headers = request.getParameters().stream()
                 .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().startsWith("header"))
-                .map(componentParameter -> HttpRequestComponentParameterService.getInstance().getHeader(componentParameter, request.getAttributes(), actionExecution, executionControl))
+                .map(componentParameter -> {
+                    try {
+                        return HttpRequestComponentParameterService.getInstance().getHeader(componentParameter, request.getAttributes(), actionExecution, executionControl);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
                 .flatMap(m->m.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Map<String, DataType> queryParameters = request.getParameters().stream()
                 .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().startsWith("queryparam"))
-                .map(componentParameter -> HttpRequestComponentParameterService.getInstance().getQueryParameter(componentParameter, request.getAttributes(), actionExecution, executionControl))
+                .map(componentParameter -> {
+                    try {
+                        return HttpRequestComponentParameterService.getInstance().getQueryParameter(componentParameter, request.getAttributes(), actionExecution, executionControl);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
                 .flatMap(m->m.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 

@@ -26,7 +26,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
     }
 
     @Override
-    public RepositoryCoordinator convert(NetezzaMetadataRepositoryCoordinatorDefinition mssqlRepositoryCoordinatorDefinition) {
+    public RepositoryCoordinator convert(NetezzaMetadataRepositoryCoordinatorDefinition mssqlRepositoryCoordinatorDefinition) throws Exception {
         Map<String, Database> databases = new HashMap<>();
         if (mssqlRepositoryCoordinatorDefinition.getOwner() != null) {
             NetezzaDatabaseConnection mssqlDatabaseConnection = getDatabaseConnection(mssqlRepositoryCoordinatorDefinition,
@@ -57,7 +57,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
     }
 
     @Override
-    public NetezzaDatabaseConnection getDatabaseConnection(NetezzaMetadataRepositoryCoordinatorDefinition netezzaRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
+    public NetezzaDatabaseConnection getDatabaseConnection(NetezzaMetadataRepositoryCoordinatorDefinition netezzaRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) throws Exception {
         NetezzaDatabaseConnection netezzaDatabaseConnection;
         if (netezzaRepositoryCoordinatorDefinition.getConnection().isPresent()) {
             netezzaDatabaseConnection = new NetezzaDatabaseConnection(

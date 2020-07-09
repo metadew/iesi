@@ -28,7 +28,7 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
     }
 
     @Override
-    public RepositoryCoordinator convert(OracleMetadataRepositoryCoordinatorDefinition oracleRepositoryCoordinatorDefinition) {
+    public RepositoryCoordinator convert(OracleMetadataRepositoryCoordinatorDefinition oracleRepositoryCoordinatorDefinition) throws Exception {
         Map<String, Database> databases = new HashMap<>();
         if (oracleRepositoryCoordinatorDefinition.getOwner() != null) {
             OracleDatabaseConnection databaseConnection = getDatabaseConnection(oracleRepositoryCoordinatorDefinition,
@@ -64,7 +64,7 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
     }
 
     public OracleDatabaseConnection getDatabaseConnection(OracleMetadataRepositoryCoordinatorDefinition oracleRepositoryCoordinatorDefinition,
-                                                          MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
+                                                          MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) throws Exception {
         OracleDatabaseConnection databaseConnection;
         if (oracleRepositoryCoordinatorDefinition.getConnection().isPresent()) {
             databaseConnection = new OracleDatabaseConnection(

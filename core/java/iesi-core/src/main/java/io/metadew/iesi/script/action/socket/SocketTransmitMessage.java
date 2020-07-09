@@ -53,7 +53,7 @@ public class SocketTransmitMessage {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         ActionParameterOperation socketActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), socketKey);
         ActionParameterOperation messageActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), messageKey);

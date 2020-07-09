@@ -9,7 +9,7 @@ import org.apache.commons.lang3.SystemUtils;
 
 public final class HostConnectionTools {
 
-    public static boolean isOnLocalhost(String connectionName, String environmentName) {
+    public static boolean isOnLocalhost(String connectionName, String environmentName) throws Exception {
         boolean isOnLocalhost = true;
 
         if (connectionName.isEmpty()) {

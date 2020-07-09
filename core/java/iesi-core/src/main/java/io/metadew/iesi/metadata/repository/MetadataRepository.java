@@ -115,7 +115,7 @@ public abstract class MetadataRepository {
         return MetadataTableService.getInstance().getByLabel(label).getName();
     }
 
-    public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;
+    public abstract void save(DataObject dataObject) throws Exception;
 
     public void shutdown() {
         LOGGER.debug("shutting down metadata repository " + getCategory());

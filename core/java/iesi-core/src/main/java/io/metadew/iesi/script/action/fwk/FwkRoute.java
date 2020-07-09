@@ -49,7 +49,7 @@ public class FwkRoute {
         this.setRouteOperationMap(new HashMap<String, RouteOperation>());
     }
 
-    public void prepare()  {
+    public void prepare()  throws Exception {
         // Reset Parameters
         this.setDestination(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination"));

@@ -5,7 +5,7 @@ import io.metadew.iesi.script.operation.ActionSelectOperation;
 
 public interface RootingStrategy {
 
-    public void prepareExecution(ScriptExecution scriptExecution);
+    public void prepareExecution(ScriptExecution scriptExecution) throws Exception;
 
     public boolean executionAllowed(ActionSelectOperation actionSelectOperation, Action action);
 

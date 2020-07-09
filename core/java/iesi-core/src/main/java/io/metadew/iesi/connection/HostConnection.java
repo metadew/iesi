@@ -345,6 +345,8 @@ public class HostConnection {
             this.sessionDisconnect(sessions);
         } catch (IOException | JSchException e) {
             throw new RuntimeException(e.getMessage(), e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (rc == 0) {
@@ -495,6 +497,8 @@ public class HostConnection {
             this.sessionDisconnect(sessions);
         } catch (IOException | JSchException e) {
             throw new RuntimeException(e.getMessage(), e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (rc == 0) {

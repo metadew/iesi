@@ -13,8 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ConfigurationTest {
 
     @Test
-    void initTest() {
+    void initTest() throws Exception {
         Configuration configuration = Configuration.getInstance();
+
         io.metadew.iesi.common.configuration.framework.FrameworkConfiguration conf = io.metadew.iesi.common.configuration.framework.FrameworkConfiguration.getInstance();
         MetadataConfiguration metadataRepositoryConfiguration = MetadataConfiguration.getInstance();
         assertTrue(true);

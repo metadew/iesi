@@ -241,7 +241,14 @@ public class DatabaseHandler implements IDatabaseHandler {
                 .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
                 .findFirst()
                 .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
-                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue))
+                .map(connectionParameterValue -> {
+                    try {
+                        return FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Connection {0} does not contain mandatory parameter ''{1}''", connection, key)));
 
     }
@@ -251,7 +258,14 @@ public class DatabaseHandler implements IDatabaseHandler {
                 .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
                 .findFirst()
                 .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
-                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue));
+                .map(connectionParameterValue -> {
+                    try {
+                        return FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return connectionParameterValue;
+                });
     }
 
     private IDatabaseService getDatabaseService(Database database) {

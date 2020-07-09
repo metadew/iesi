@@ -38,7 +38,7 @@ public class SqlExecuteStatement {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare()  {
+    public void prepare()  throws Exception {
         // Set Parameters
         this.sqlStatement = new ActionParameterOperation(executionControl,
                 actionExecution, actionExecution.getAction().getType(), "statement");

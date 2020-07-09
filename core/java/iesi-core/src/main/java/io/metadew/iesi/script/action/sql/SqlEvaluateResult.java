@@ -52,7 +52,7 @@ public class SqlEvaluateResult {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setSqlQuery(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "query"));

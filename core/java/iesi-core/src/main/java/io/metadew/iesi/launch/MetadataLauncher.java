@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MetadataLauncher {
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException, IOException {
+    public static void main(String[] args) throws Exception {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(new Option("help", "print this message"))

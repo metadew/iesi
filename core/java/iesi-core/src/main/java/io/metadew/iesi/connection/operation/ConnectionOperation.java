@@ -28,7 +28,7 @@ public class ConnectionOperation {
     }
 
 
-    public HostConnection getHostConnection(Connection connection) {
+    public HostConnection getHostConnection(Connection connection) throws Exception {
         this.setMissingMandatoryFieldsList(new ArrayList<>());
 
         HostConnection hostConnection = null;
@@ -187,7 +187,7 @@ public class ConnectionOperation {
         return hostConnection;
     }
 
-    public ArtifactoryConnection getArtifactoryConnection(Connection connection) {
+    public ArtifactoryConnection getArtifactoryConnection(Connection connection) throws Exception {
         this.setMissingMandatoryFieldsList(new ArrayList<>());
 
         ArtifactoryConnection artifactoryConnection = null;

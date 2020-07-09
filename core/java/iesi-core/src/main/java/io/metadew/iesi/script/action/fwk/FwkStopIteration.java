@@ -25,7 +25,7 @@ public class FwkStopIteration {
         this.setActionParameterOperationMap(new HashMap<>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setStartActionName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "START_STEP_NM"));

@@ -28,7 +28,7 @@ class ComponentConfigurationTest {
 
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         component1 = new ComponentBuilder("1", 1)
                 .numberOfAttributes(2)
                 .numberOfParameters(3)

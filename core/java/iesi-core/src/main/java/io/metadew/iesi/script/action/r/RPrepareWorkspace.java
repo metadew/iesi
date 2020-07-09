@@ -35,7 +35,7 @@ public class RPrepareWorkspace {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         ActionParameterOperation scriptActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), scriptKey);
         ActionParameterOperation workspaceReferenceNameActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), workspaceReferenceNameKey);
 

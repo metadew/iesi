@@ -49,7 +49,7 @@ public class FwkExitScript {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setStatus(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "status"));
@@ -84,7 +84,7 @@ public class FwkExitScript {
 
     }
 
-    private boolean executeOperation() throws InterruptedException {
+    private boolean executeOperation() throws Exception {
         Optional<String> status = convertStatus(getStatus().getValue());
         // Verify if the status is empty
         if (status.map(status1 -> status1.trim().isEmpty()).orElse(false)) {

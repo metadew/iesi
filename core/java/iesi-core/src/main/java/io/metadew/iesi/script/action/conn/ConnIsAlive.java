@@ -50,7 +50,7 @@ public class ConnIsAlive {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception{
         // Reset Parameters
         this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));

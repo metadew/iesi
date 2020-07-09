@@ -26,7 +26,7 @@ class EnvironmentParameterConfigurationTest {
     private EnvironmentParameter environmentParameter2;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
         connectivityMetadataRepository.createAllTables();
         environmentParameter11 = new EnvironmentParameterBuilder("env1", "parameter name 1")

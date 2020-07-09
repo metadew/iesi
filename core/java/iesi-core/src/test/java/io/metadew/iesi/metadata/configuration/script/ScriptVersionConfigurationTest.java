@@ -25,7 +25,7 @@ class ScriptVersionConfigurationTest {
     private ScriptVersion scriptVersion3;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         designMetadataRepository.createAllTables();
         scriptVersion1 = new ScriptVersionBuilder("1", 1)

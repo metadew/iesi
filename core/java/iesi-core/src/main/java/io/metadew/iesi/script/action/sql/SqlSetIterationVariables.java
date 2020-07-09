@@ -49,7 +49,7 @@ public class SqlSetIterationVariables {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setListName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "list"));

@@ -74,7 +74,7 @@ public class ExecutionControl {
         }
     }
 
-    public void setEnvironment(ActionExecution actionExecution, String environmentName) {
+    public void setEnvironment(ActionExecution actionExecution, String environmentName) throws Exception {
         this.envName = environmentName;
 
         // Set environment variables
@@ -245,7 +245,7 @@ public class ExecutionControl {
         return status;
     }
 
-    public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, String outputValue) {
+    public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, String outputValue) throws Exception {
         // Redact any encrypted values
         outputValue = FrameworkCrypto.getInstance().redact(outputValue);
         ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getMetadataKey().getScriptId(), outputValue);

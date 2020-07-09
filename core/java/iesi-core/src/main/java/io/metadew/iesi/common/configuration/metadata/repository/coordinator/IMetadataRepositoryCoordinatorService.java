@@ -5,8 +5,8 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 public interface IMetadataRepositoryCoordinatorService<T extends MetadataRepositoryCoordinatorDefinition, V extends DatabaseConnection> {
 
-    public RepositoryCoordinator convert(T t);
-    public V getDatabaseConnection(T t, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition);
+    public RepositoryCoordinator convert(T t) throws Exception;
+    public V getDatabaseConnection(T t, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) throws Exception;
     public Class<T> appliesTo();
 
 }

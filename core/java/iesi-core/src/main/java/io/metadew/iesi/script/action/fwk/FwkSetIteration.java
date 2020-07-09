@@ -52,7 +52,7 @@ public class FwkSetIteration {
         this.setActionParameterOperationMap(new HashMap<>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // TODO: based on type a different class should be defined? e.g. fwk.setIteration.list or fwk.setIteration.range or fwk.setIteration.values
         // Reset Parameters
         this.setIterationName(new ActionParameterOperation(this.getExecutionControl(),

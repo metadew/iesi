@@ -17,14 +17,14 @@ public class MetadataConfiguration {
     private static MetadataConfiguration INSTANCE;
     public static final String configurationKey = "metadata";
 
-    public synchronized static MetadataConfiguration getInstance() {
+    public synchronized static MetadataConfiguration getInstance() throws Exception {
         if (INSTANCE == null) {
             INSTANCE = new MetadataConfiguration();
         }
         return INSTANCE;
     }
 
-    private MetadataConfiguration() {
+    private MetadataConfiguration() throws Exception {
         if (containsConfiguration()) {
             MetadataActionTypesConfiguration.getInstance();
             MetadataComponentTypesConfiguration.getInstance();

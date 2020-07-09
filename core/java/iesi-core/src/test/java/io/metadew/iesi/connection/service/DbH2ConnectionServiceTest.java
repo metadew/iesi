@@ -91,7 +91,7 @@ public class DbH2ConnectionServiceTest {
     }
 
     @Test
-    void getDatabaseWithEncryptedPasswordTest() {
+    void getDatabaseWithEncryptedPasswordTest() throws Exception {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.h2",
                 "description",

@@ -54,7 +54,7 @@ public class DdlGenerateFromFile {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Set Parameters
         this.setInputPath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "inputPath"));

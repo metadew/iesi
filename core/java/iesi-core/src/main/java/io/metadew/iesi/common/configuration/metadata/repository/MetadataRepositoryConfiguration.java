@@ -19,7 +19,7 @@ public class MetadataRepositoryConfiguration {
     private List<MetadataRepositoryDefinition> metadataRepositoryDefinitions;
     private List<MetadataRepository> metadataRepositories;
 
-    public synchronized static MetadataRepositoryConfiguration getInstance() {
+    public synchronized static MetadataRepositoryConfiguration getInstance() throws Exception {
         if (INSTANCE == null) {
             INSTANCE = new MetadataRepositoryConfiguration();
         }
@@ -68,7 +68,7 @@ public class MetadataRepositoryConfiguration {
                 .orElseThrow(() -> new RuntimeException("ExecutionServerMetadataRepository not configured"));
     }
 
-    private MetadataRepositoryConfiguration() {
+    private MetadataRepositoryConfiguration() throws Exception {
         metadataRepositories = new ArrayList<>();
         metadataRepositoryDefinitions = new ArrayList<>();
         if (containsConfiguration()) {
@@ -79,7 +79,7 @@ public class MetadataRepositoryConfiguration {
         }
     }
 
-    private void convertConfigurations() {
+    private void convertConfigurations() throws Exception {
         for (MetadataRepositoryDefinition metadataRepositoryDefinition : metadataRepositoryDefinitions) {
             metadataRepositories.addAll(MetadataRepositoryService.getInstance().convert(metadataRepositoryDefinition));
         }

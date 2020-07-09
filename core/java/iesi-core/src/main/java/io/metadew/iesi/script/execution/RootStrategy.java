@@ -17,7 +17,7 @@ public class RootStrategy implements RootingStrategy {
     public RootStrategy() {}
 
     @Override
-    public void prepareExecution(ScriptExecution scriptExecution) {
+    public void prepareExecution(ScriptExecution scriptExecution) throws Exception {
         scriptExecution.getExecutionControl().getExecutionRuntime().setRuntimeVariablesFromList(scriptExecution, MetadataRepositoryConfiguration.getInstance()
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "

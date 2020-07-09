@@ -64,7 +64,7 @@ public class WfaExecuteFilePing {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Set Parameters
         this.setFilePath(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "filePath"));
@@ -135,7 +135,7 @@ public class WfaExecuteFilePing {
 
     }
 
-    private boolean executeFilePing(String filePath, String fileName, boolean hasResult, boolean setRuntimeVariables, String connectionName, int waitInterval, int timeoutInterval) throws InterruptedException {
+    private boolean executeFilePing(String filePath, String fileName, boolean hasResult, boolean setRuntimeVariables, String connectionName, int waitInterval, int timeoutInterval) throws Exception {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
@@ -277,7 +277,7 @@ public class WfaExecuteFilePing {
         }
     }
 
-    private boolean doneWaiting(Connection connection, boolean connectionIsLocalHost, String filePath, String fileName, boolean hasResult, boolean setRuntimeVariables) {
+    private boolean doneWaiting(Connection connection, boolean connectionIsLocalHost, String filePath, String fileName, boolean hasResult, boolean setRuntimeVariables) throws Exception {
         List<FileConnection> connectionsFound;
         if (connectionIsLocalHost) {
             connectionsFound = this.checkLocalFolder(filePath, fileName);
@@ -356,7 +356,7 @@ public class WfaExecuteFilePing {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private List<FileConnection> checkRemoteFolder(Connection connection, String filePath, String fileName) {
+    private List<FileConnection> checkRemoteFolder(Connection connection, String filePath, String fileName) throws Exception {
         List<FileConnection> connectionsFound = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection hostConnection = connectionOperation.getHostConnection(connection);

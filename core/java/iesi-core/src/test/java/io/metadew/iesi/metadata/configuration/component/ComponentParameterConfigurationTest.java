@@ -28,7 +28,7 @@ class ComponentParameterConfigurationTest {
 
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         componentParameter11 = new ComponentParameterBuilder("1", 1, "parameter name 1")
                 .value("value")

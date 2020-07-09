@@ -25,7 +25,7 @@ class ConnectionParameterConfigurationTest {
     private ConnectionParameter connectionParameter3;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         this.connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
         connectivityMetadataRepository.createAllTables();
         connectionParameter11 = new ConnectionParameterBuilder("connection1", "env1", "parameter name 1")

@@ -28,7 +28,7 @@ class ComponentAttributeConfigurationTest {
     private ComponentAttribute componentAttribute5;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         designMetadataRepository.createAllTables();
         componentAttribute1 = new ComponentAttributeBuilder("1", 1, "env1",

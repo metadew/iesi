@@ -45,7 +45,7 @@ public class DataOutputDataset {
         this.actionParameterOperationMap =  new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         datasetName = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "name");
         datasetLabels = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "labels");

@@ -16,7 +16,7 @@ public class ControlMetadataRepository extends MetadataRepository {
     }
 
     @Override
-    public void save(DataObject dataObject) {
+    public void save(DataObject dataObject) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         //if (dataObject.getType().equalsIgnoreCase("user")) {
         //    User user = objectMapper.convertValue(dataObject, User.class);

@@ -5,8 +5,8 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 public interface IMetadataRepositoryCoordinatorHandler {
 
-    public RepositoryCoordinator convert(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition);
+    public RepositoryCoordinator convert(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition) throws Exception;
 
-    public DatabaseConnection getDatabaseConnection(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition);
+    public DatabaseConnection getDatabaseConnection(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) throws Exception;
 
 }

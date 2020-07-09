@@ -59,7 +59,7 @@ public class CliExecuteCommand {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.shellPath = new ActionParameterOperation(executionControl,
                 actionExecution, actionExecution.getAction().getType(), shellPathKey);
@@ -132,7 +132,7 @@ public class CliExecuteCommand {
 
     }
 
-    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) throws InterruptedException{
+    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) throws Exception {
         // Get Connection
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, executionControl.getEnvName());

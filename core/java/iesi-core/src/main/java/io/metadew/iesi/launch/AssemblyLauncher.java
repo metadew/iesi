@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class AssemblyLauncher {
 
-    public static void main(String[] args) throws IOException, ParseException {
+    public static void main(String[] args) throws Exception {
         Options options = new Options()
                 .addOption(Option.builder("help").desc("print this message").build())
                 .addOption(Option.builder("repository").hasArg().desc("set repository location").required().build())

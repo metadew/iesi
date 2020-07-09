@@ -31,7 +31,7 @@ public class FwkStartIteration {
         this.setActionParameterOperationMap(new HashMap<>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setTypeName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "TYPE_NM"));

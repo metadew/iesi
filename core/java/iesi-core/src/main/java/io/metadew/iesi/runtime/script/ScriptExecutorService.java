@@ -34,7 +34,7 @@ public class ScriptExecutorService {
     }
 
     @SuppressWarnings("unchecked")
-    public void execute(ScriptExecutionRequest scriptExecutionRequest) {
+    public void execute(ScriptExecutionRequest scriptExecutionRequest) throws Exception {
         ScriptExecutor scriptExecutor = scriptExecutorMap.get(scriptExecutionRequest.getClass());
 
         scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.SUBMITTED);

@@ -22,7 +22,7 @@ public class SubroutineParameterConfiguration {
     }
 
     // Insert
-    public String getInsertStatement(String subroutineName) {
+    public String getInsertStatement(String subroutineName) throws Exception {
         String sql = "";
 
         sql += "INSERT INTO " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
@@ -40,7 +40,7 @@ public class SubroutineParameterConfiguration {
         return sql;
     }
 
-    public SubroutineParameter getSubroutineParameter(String subroutineName, String subroutineParameterName) {
+    public SubroutineParameter getSubroutineParameter(String subroutineName, String subroutineParameterName) throws Exception {
         SubroutineParameter subroutineParameter = new SubroutineParameter();
         CachedRowSet crsSubroutineParameter = null;
         String querySubroutineParameter = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")

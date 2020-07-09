@@ -53,7 +53,7 @@ public class DataSetDatasetConnection {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setReferenceName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));

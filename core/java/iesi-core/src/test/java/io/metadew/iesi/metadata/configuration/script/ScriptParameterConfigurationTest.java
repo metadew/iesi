@@ -20,7 +20,7 @@ class ScriptParameterConfigurationTest {
     private ScriptParameter scriptParameter2;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         designMetadataRepository.createAllTables();
         scriptParameter1 = new ScriptParameterBuilder("1", 1, "parameter1")

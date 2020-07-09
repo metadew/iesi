@@ -91,7 +91,7 @@ class DbOracleConnectionServiceTest {
     }
 
     @Test
-    void getDatabaseTnsWithEncryptedPasswordTest() {
+    void getDatabaseTnsWithEncryptedPasswordTest() throws Exception {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.oracle",
                 "description",
@@ -109,7 +109,7 @@ class DbOracleConnectionServiceTest {
     }
 
     @Test
-    void getDatabaseServiceWithEncryptedPasswordTest() {
+    void getDatabaseServiceWithEncryptedPasswordTest() throws Exception {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.oracle",
                 "description",
@@ -127,7 +127,7 @@ class DbOracleConnectionServiceTest {
     }
 
     @Test
-    void getDatabaseConnectionUrlWithEncryptedPasswordTest() {
+    void getDatabaseConnectionUrlWithEncryptedPasswordTest() throws Exception {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.oracle",
                 "description",

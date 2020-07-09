@@ -27,7 +27,7 @@ public class AttributeOperation {
     private String name;
 
     // Constructors
-    public AttributeOperation(ExecutionControl executionControl, ActionExecution actionExecution, String type, String name) {
+    public AttributeOperation(ExecutionControl executionControl, ActionExecution actionExecution, String type, String name) throws Exception {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setType(type);

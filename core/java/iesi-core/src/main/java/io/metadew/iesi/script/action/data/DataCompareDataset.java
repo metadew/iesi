@@ -54,7 +54,7 @@ public class DataCompareDataset {
         this.setActionParameterOperationMap(new HashMap<>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setLeftDatasetName(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "leftDataset"));

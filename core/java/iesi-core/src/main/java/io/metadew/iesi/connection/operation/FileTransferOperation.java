@@ -29,7 +29,7 @@ public class FileTransferOperation {
     @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     public FileTransferResult transferLocalToRemote(String sourceFilePath, String sourceFileName,
                                                     Connection sourceConnection, String targetFilePath, String targetFileName,
-                                                    Connection targetConnection) {
+                                                    Connection targetConnection) throws Exception {
 
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
@@ -130,7 +130,7 @@ public class FileTransferOperation {
     @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     public FileTransferResult transferRemoteToLocal(String sourceFilePath, String sourceFileName,
                                                     Connection sourceConnection, String targetFilePath, String targetFileName,
-                                                    Connection targetConnection) {
+                                                    Connection targetConnection) throws Exception {
 
         List<FileTransfered> fileTransferedList = new ArrayList();
         ConnectionOperation connectionOperation = new ConnectionOperation();
@@ -272,7 +272,7 @@ public class FileTransferOperation {
 
     public FileTransferResult transferLocalToLocal(String sourceFilePath, String sourceFileName,
                                                    Connection sourceConnection, String targetFilePath, String targetFileName,
-                                                   Connection targetConnection) {
+                                                   Connection targetConnection) throws Exception {
 
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);

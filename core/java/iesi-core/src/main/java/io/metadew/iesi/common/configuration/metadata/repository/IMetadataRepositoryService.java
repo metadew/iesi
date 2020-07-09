@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IMetadataRepositoryService {
 
-    public List<MetadataRepository> convert(MetadataRepositoryDefinition metadataRepositoryDefinition);
+    public List<MetadataRepository> convert(MetadataRepositoryDefinition metadataRepositoryDefinition) throws Exception;
 
 }

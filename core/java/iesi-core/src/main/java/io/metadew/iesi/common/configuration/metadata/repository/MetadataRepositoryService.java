@@ -24,7 +24,7 @@ public class MetadataRepositoryService implements IMetadataRepositoryService {
 
 
     @Override
-    public List<MetadataRepository> convert(MetadataRepositoryDefinition metadataRepositoryDefinition) {
+    public List<MetadataRepository> convert(MetadataRepositoryDefinition metadataRepositoryDefinition) throws Exception {
         // TODO: generate mist of MetadataRepositories, parse categories as list
         List<MetadataRepository> metadataRepositories = new ArrayList<>();
         for (String category : metadataRepositoryDefinition.getCategories()) {

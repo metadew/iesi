@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class ServerLauncher {
 
-    public static void main(String[] args) throws ParseException, IOException {
+    public static void main(String[] args) throws Exception {
         ThreadContext.clearAll();
         Options options = new Options()
                 .addOption(Option.builder("help")
@@ -38,7 +38,7 @@ public class ServerLauncher {
                 executionRequestListener.shutdown();
                 frameworkInstance.shutdown();
                 mainThread.join(1000);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }));

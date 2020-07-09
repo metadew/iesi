@@ -43,7 +43,7 @@ public class ScriptLogOutput {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.outputName = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "name");
         this.outputValue = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "value");
@@ -81,7 +81,7 @@ public class ScriptLogOutput {
 
     }
 
-    private boolean executeOperation() throws InterruptedException {
+    private boolean executeOperation() throws Exception {
         String name = convertOutputName(outputName.getValue());
         String value = convertOutputValue(outputValue.getValue());
 

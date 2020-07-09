@@ -44,7 +44,7 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
     }
 
     @Override
-    public void execute(ScriptNameExecutionRequest scriptExecutionRequest) {
+    public void execute(ScriptNameExecutionRequest scriptExecutionRequest) throws Exception {
 
         Script script = scriptExecutionRequest.getScriptVersion()
                 .map(scriptVersion -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()), scriptVersion)))

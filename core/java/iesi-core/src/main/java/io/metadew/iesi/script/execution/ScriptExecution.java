@@ -44,7 +44,7 @@ public abstract class ScriptExecution {
 		this.rootingStrategy = rootingStrategy;
 	}
 
-	public void execute() {
+	public void execute() throws Exception {
 		executionControl.setEnvName(environment);
 		impersonations.forEach((key, value) -> executionControl.getExecutionRuntime().getImpersonationOperation().setImpersonation(key, value));
 

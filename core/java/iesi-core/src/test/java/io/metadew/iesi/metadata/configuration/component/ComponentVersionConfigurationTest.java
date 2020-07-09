@@ -27,7 +27,7 @@ class ComponentVersionConfigurationTest {
 
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         designMetadataRepository.createAllTables();
         componentVersion1 = new ComponentVersionBuilder("1", 1)

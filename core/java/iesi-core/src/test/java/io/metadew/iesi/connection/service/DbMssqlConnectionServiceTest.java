@@ -55,7 +55,7 @@ public class DbMssqlConnectionServiceTest {
     }
 
     @Test
-    void getDatabaseWithEncryptedPasswordTest() {
+    void getDatabaseWithEncryptedPasswordTest() throws Exception {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.mssql",
                 "description",

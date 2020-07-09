@@ -31,7 +31,7 @@ import java.util.UUID;
  */
 public class ScriptLauncher {
 
-    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException, IOException {
+    public static void main(String[] args) throws Exception {
         ThreadContext.clearAll();
 
         Options options = new Options()

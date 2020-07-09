@@ -32,7 +32,7 @@ class ActionConfigurationTest {
     private ActionParameter actionParameter22;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         designMetadataRepository.createAllTables();
 

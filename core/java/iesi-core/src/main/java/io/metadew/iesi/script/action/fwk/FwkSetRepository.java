@@ -52,7 +52,7 @@ public class FwkSetRepository {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare()  {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setRepositoryReferenceName(
                 new ActionParameterOperation(this.getExecutionControl(),

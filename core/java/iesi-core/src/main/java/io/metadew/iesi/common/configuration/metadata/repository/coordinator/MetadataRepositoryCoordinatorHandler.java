@@ -40,13 +40,13 @@ public class MetadataRepositoryCoordinatorHandler implements IMetadataRepository
 
     @Override
     @SuppressWarnings("unchecked")
-    public RepositoryCoordinator convert(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition) {
+    public RepositoryCoordinator convert(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition) throws Exception {
         return metadataRepositoryCoordinatorServiceMap.get(metadataRepositoryCoordinatorDefinition.getClass()).convert(metadataRepositoryCoordinatorDefinition);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public DatabaseConnection getDatabaseConnection(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
+    public DatabaseConnection getDatabaseConnection(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) throws Exception {
         return metadataRepositoryCoordinatorServiceMap.get(metadataRepositoryCoordinatorDefinition.getClass()).getDatabaseConnection(metadataRepositoryCoordinatorDefinition, metadataRepositoryCoordinatorProfileDefinition);
     }
 

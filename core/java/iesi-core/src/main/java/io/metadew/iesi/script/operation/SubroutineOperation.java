@@ -20,13 +20,13 @@ public class SubroutineOperation {
     private ArrayList<String> subroutineTypeList = null;
 
     // Constructors
-    public SubroutineOperation(String input) {
+    public SubroutineOperation(String input) throws Exception {
         this.initializeSubroutineTypeList();
         this.setInput(input);
     }
 
     // Methods
-    private void resolveFunction() {
+    private void resolveFunction() throws Exception {
 
         if (input == null) input = "";
         input = input.trim();
@@ -76,7 +76,7 @@ public class SubroutineOperation {
         }
     }
 
-    public void setInput(String input) {
+    public void setInput(String input) throws Exception {
         this.input = input;
         this.resolveFunction();
         ;
@@ -103,7 +103,7 @@ public class SubroutineOperation {
         return valid;
     }
 
-    public void setValid(boolean valid) {
+    public void setValid(boolean valid) throws Exception {
         if (valid) {
             SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration();
             this.setSubroutine(subroutineConfiguration.getSubroutine(this.getName()));

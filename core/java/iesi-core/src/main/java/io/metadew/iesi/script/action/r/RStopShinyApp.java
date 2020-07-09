@@ -33,7 +33,7 @@ public class RStopShinyApp {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         ActionParameterOperation workspaceReferenceNameActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), workspaceReferenceNameKey);
 
         // Get Parameters

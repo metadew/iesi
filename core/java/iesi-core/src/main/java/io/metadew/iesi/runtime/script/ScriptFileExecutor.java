@@ -44,7 +44,7 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
     }
 
     @Override
-    public void execute(ScriptFileExecutionRequest scriptExecutionRequest) {
+    public void execute(ScriptFileExecutionRequest scriptExecutionRequest) throws Exception {
         File file = new File(scriptExecutionRequest.getFileName());
         Script script = null;
         if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {

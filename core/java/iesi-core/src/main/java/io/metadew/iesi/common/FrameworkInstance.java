@@ -23,7 +23,7 @@ public class FrameworkInstance {
     }
 
 
-    public void shutdown() {
+    public void shutdown() throws Exception {
         log.debug("closing framework instance");
         for (MetadataRepository metadataRepository : MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()) {
             if (metadataRepository != null) {

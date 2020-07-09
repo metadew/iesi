@@ -25,7 +25,7 @@ class EnvironmentConfigurationTest {
     private Environment environment2;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
         connectivityMetadataRepository.createAllTables();
         environment1 = new EnvironmentBuilder("env1")

@@ -52,7 +52,7 @@ public class FwkExecuteScript {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setScriptName(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "script"));
         this.setScriptVersion(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "version"));
@@ -120,7 +120,7 @@ public class FwkExecuteScript {
         }
     }
 
-    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) throws ScriptExecutionBuildException, InterruptedException {
+    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) throws Exception {
         // Check on Running a script in a loop
         if (scriptExecution.getScript().getName().equals(scriptName)) {
             throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, scriptExecution.getScript().getName()));

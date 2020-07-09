@@ -34,7 +34,7 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
     }
 
     @Override
-    public void execute(AuthenticatedExecutionRequest executionRequest) {
+    public void execute(AuthenticatedExecutionRequest executionRequest) throws Exception {
         if (authenticationEnabled) {
             checkUserAccess(executionRequest);
         } else {
@@ -49,7 +49,12 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
 
     }
 
+<<<<<<< HEAD
+    private void checkUserAccess(AuthenticatedExecutionRequest executionRequest) throws Exception {
+        UserAccess userAccess = userAccessConfiguration.doUserLogin(executionRequest.getUser(), executionRequest.getPassword());
+=======
     private void checkUserAccess(AuthenticatedExecutionRequest executionRequest) {
+>>>>>>> 8a45560172030c8b38e3f30c0ea2cc97f9ba0888
 
     }
 }

@@ -24,7 +24,7 @@ class ConnectionConfigurationTest {
     private ConnectivityMetadataRepository connectivityMetadataRepository;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         connection1 = new ConnectionBuilder("conn1", "env1")
                 .description("desc")
                 .numberOfParameters(2)

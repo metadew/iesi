@@ -31,7 +31,7 @@ public class RSetWorkspace {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         ActionParameterOperation pathActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), pathKey);
         ActionParameterOperation referenceNameActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), referenceNameKey);
 

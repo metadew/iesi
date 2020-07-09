@@ -25,7 +25,7 @@ public class SubroutineConfiguration {
     }
 
     // Insert
-    public String getInsertStatement() {
+    public String getInsertStatement() throws Exception {
         String sql = "";
 
         if (this.exists()) {
@@ -61,7 +61,7 @@ public class SubroutineConfiguration {
         return sql;
     }
 
-    private String getParameterInsertStatements() {
+    private String getParameterInsertStatements() throws Exception {
         String result = "";
 
         for (SubroutineParameter subroutineParameter : this.getSubroutine().getParameters()) {
@@ -76,7 +76,7 @@ public class SubroutineConfiguration {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public Subroutine getSubroutine(String subroutineName) {
+    public Subroutine getSubroutine(String subroutineName) throws Exception {
         Subroutine subroutine = new Subroutine();
         CachedRowSet crsSubroutine = null;
         String querySubroutine = "select SRT_NM, SRT_TYP_NM, SRT_DSC from " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines") + " where SRT_NM = '" + subroutineName + "'";

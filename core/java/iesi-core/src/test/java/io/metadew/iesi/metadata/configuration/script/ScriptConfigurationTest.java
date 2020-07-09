@@ -29,7 +29,7 @@ class ScriptConfigurationTest {
     private Script script2;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
 designMetadataRepository.createAllTables();
         script11 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 1)

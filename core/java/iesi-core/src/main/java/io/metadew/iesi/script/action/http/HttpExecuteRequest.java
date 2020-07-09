@@ -83,7 +83,7 @@ public class HttpExecuteRequest {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, MetadataDoesNotExistException {
+    public void prepare() throws Exception {
         // Reset Parameters
         ActionParameterOperation requestTypeActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), typeKey);
         ActionParameterOperation requestNameActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), requestKey);

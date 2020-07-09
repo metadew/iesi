@@ -60,23 +60,37 @@ public class MysqlMetadataRepositoryCoordinatorService implements IMetadataRepos
     public MysqlDatabaseConnection getDatabaseConnection(MysqlMetadataRepositoryCoordinatorDefinition mysqlRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
         if (mysqlRepositoryCoordinatorDefinition.getConnection().isPresent()) {
             return mysqlRepositoryCoordinatorDefinition.getSchema()
-                    .map(schema -> new MysqlDatabaseConnection(
-                            mysqlRepositoryCoordinatorDefinition.getConnection().get(),
-                            metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
-                            mysqlRepositoryCoordinatorDefinition.getInitSql(),
-                            schema))
+                    .map(schema -> {
+                        try {
+                            return new MysqlDatabaseConnection(
+                                    mysqlRepositoryCoordinatorDefinition.getConnection().get(),
+                                    metadataRepositoryCoordinatorProfileDefinition.getUser(),
+                                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                                    mysqlRepositoryCoordinatorDefinition.getInitSql(),
+                                    schema);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    })
                     .orElseThrow(RuntimeException::new);
         } else {
             return mysqlRepositoryCoordinatorDefinition.getSchema().
-                    map(s -> new MysqlDatabaseConnection(
-                            mysqlRepositoryCoordinatorDefinition.getHost(),
-                            mysqlRepositoryCoordinatorDefinition.getPort(),
-                            s,
-                            metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
-                            mysqlRepositoryCoordinatorDefinition.getInitSql()
-                    ))
+                    map(s -> {
+                        try {
+                            return new MysqlDatabaseConnection(
+                                    mysqlRepositoryCoordinatorDefinition.getHost(),
+                                    mysqlRepositoryCoordinatorDefinition.getPort(),
+                                    s,
+                                    metadataRepositoryCoordinatorProfileDefinition.getUser(),
+                                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                                    mysqlRepositoryCoordinatorDefinition.getInitSql()
+                            );
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    })
                     .orElseThrow(() -> new RuntimeException("Mysql database connection needs a schema"));
         }
     }

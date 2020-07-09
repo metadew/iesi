@@ -25,7 +25,7 @@ public class H2MetadataRepositoryCoordinatorService implements IMetadataReposito
     }
 
     @Override
-    public RepositoryCoordinator convert(H2MetadataRepositoryCoordinatorDefinition h2RepositoryCoordinatorDefinition) {
+    public RepositoryCoordinator convert(H2MetadataRepositoryCoordinatorDefinition h2RepositoryCoordinatorDefinition) throws Exception {
         Map<String, Database> databases = new HashMap<>();
         if (h2RepositoryCoordinatorDefinition.getOwner() != null) {
             H2DatabaseConnection h2DatabaseConnection = getDatabaseConnection(h2RepositoryCoordinatorDefinition,
@@ -61,7 +61,7 @@ public class H2MetadataRepositoryCoordinatorService implements IMetadataReposito
     }
 
     public H2DatabaseConnection getDatabaseConnection(H2MetadataRepositoryCoordinatorDefinition h2RepositoryCoordinatorDefinition,
-                                                      MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
+                                                      MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) throws Exception {
         H2DatabaseConnection databaseConnection;
         if (h2RepositoryCoordinatorDefinition.getConnection().isPresent()) {
             databaseConnection = new H2DatabaseConnection(

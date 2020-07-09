@@ -62,7 +62,7 @@ public class FhoDeleteFolder {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setFolderPath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
@@ -112,7 +112,7 @@ public class FhoDeleteFolder {
 
     }
 
-    private boolean execute(String path, String folder, String connectionName) throws InterruptedException {
+    private boolean execute(String path, String folder, String connectionName) throws Exception {
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 

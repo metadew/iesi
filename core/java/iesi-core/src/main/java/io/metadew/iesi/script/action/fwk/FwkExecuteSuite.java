@@ -71,7 +71,7 @@ public class FwkExecuteSuite {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setComponentName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "COMP_NM"));
@@ -168,7 +168,7 @@ public class FwkExecuteSuite {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) throws InterruptedException, ScriptExecutionBuildException {
+	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) throws Exception {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(repositoryConnectionName, this.getExecutionControl().getEnvName()))

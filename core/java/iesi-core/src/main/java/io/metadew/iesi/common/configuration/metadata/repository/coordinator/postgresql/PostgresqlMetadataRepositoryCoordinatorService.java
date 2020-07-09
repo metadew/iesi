@@ -26,7 +26,7 @@ public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadata
     }
 
     @Override
-    public RepositoryCoordinator convert(PostgresqlMetadataRepositoryCoordinatorDefinition postgresqlRepositoryCoordinatorDefinition) {
+    public RepositoryCoordinator convert(PostgresqlMetadataRepositoryCoordinatorDefinition postgresqlRepositoryCoordinatorDefinition) throws Exception {
         Map<String, Database> databases = new HashMap<>();
         if (postgresqlRepositoryCoordinatorDefinition.getOwner() != null) {
             PostgresqlDatabaseConnection databaseConnection = getDatabaseConnection(postgresqlRepositoryCoordinatorDefinition,
@@ -57,7 +57,7 @@ public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadata
     }
 
     @Override
-    public PostgresqlDatabaseConnection getDatabaseConnection(PostgresqlMetadataRepositoryCoordinatorDefinition postgresqlRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
+    public PostgresqlDatabaseConnection getDatabaseConnection(PostgresqlMetadataRepositoryCoordinatorDefinition postgresqlRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) throws Exception {
         if (postgresqlRepositoryCoordinatorDefinition.getConnection().isPresent()) {
             return new PostgresqlDatabaseConnection(
                     postgresqlRepositoryCoordinatorDefinition.getConnection().get(),

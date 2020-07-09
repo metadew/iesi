@@ -39,7 +39,7 @@ public class SqlSetRuntimeVariables {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare() {
+    public void prepare()  throws Exception{
         // Reset Parameters
         this.sqlQuery = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "query");
         this.connectionName = new ActionParameterOperation(this.executionControl, actionExecution, actionExecution.getAction().getType(), "connection");

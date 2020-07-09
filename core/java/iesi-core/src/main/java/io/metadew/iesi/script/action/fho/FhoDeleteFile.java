@@ -62,7 +62,7 @@ public class FhoDeleteFile {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.setFilePath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
@@ -111,7 +111,7 @@ public class FhoDeleteFile {
         }
     }
 
-    private boolean execute(String path, String fileName, String connectionName) throws InterruptedException {
+    private boolean execute(String path, String fileName, String connectionName) throws Exception {
         System.out.println("Deleting " + path + " " + fileName + " on " + connectionName);
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());

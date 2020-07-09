@@ -28,7 +28,7 @@ public class HttpRequestComponentParameterService {
     private HttpRequestComponentParameterService() {
     }
 
-    private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl)  {
+    private DataType getParameterValue(String value, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl) throws Exception {
         // Resolve attributes
         value = executionControl.getExecutionRuntime().resolveComponentTypeVariables(value, componentAttributes, executionControl.getEnvName());
         // Resolve concept lookups
@@ -41,7 +41,7 @@ public class HttpRequestComponentParameterService {
         return DataTypeHandler.getInstance().resolve(value, executionControl.getExecutionRuntime());
     }
 
-    public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl)  {
+    public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl) throws Exception {
         executionControl.logMessage("component.param " + componentParameter.getMetadataKey().getParameterName() + ": " + componentParameter.getValue(), Level.DEBUG);
         return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution, executionControl);
     }
@@ -54,7 +54,7 @@ public class HttpRequestComponentParameterService {
         return componentParameter.getMetadataKey().getParameterName().startsWith("queryparam");
     }
 
-    public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl)  {
+    public Map<String, DataType> getHeader(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl) throws Exception {
         Map<String, DataType> header = new HashMap<>();
         if (isHeader(componentParameter)) {
             header.put(componentParameter.getValue().split(",", 2)[0],
@@ -65,7 +65,7 @@ public class HttpRequestComponentParameterService {
         }
     }
 
-    public Map<String, DataType> getQueryParameter(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl)  {
+    public Map<String, DataType> getQueryParameter(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution, ExecutionControl executionControl) throws Exception {
         Map<String, DataType> header = new HashMap<>();
         if (isQueryParameter(componentParameter)) {
             header.put(componentParameter.getValue().split(",", 2)[0],

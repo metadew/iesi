@@ -33,7 +33,7 @@ public class EvalAssertEquals {
         this.actionParameterOperationMap = new HashMap<>();
     }
 
-    public void prepare()  {
+    public void prepare() throws Exception {
         // Reset Parameters
         this.expectedValue = new ActionParameterOperation(executionControl,
                 actionExecution, actionExecution.getAction().getType(), "expected");

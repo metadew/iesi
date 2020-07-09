@@ -55,7 +55,7 @@ public class DbDb2ConnectionServiceTest {
     }
 
     @Test
-    void getDatabaseWithEncryptedPasswordTest() {
+    void getDatabaseWithEncryptedPasswordTest() throws Exception {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
                 "db.db2",
                 "description",

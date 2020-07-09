@@ -40,7 +40,7 @@ public class ActionParameterOperation {
     }
 
     public ActionParameterOperation(ExecutionControl executionControl,
-                                    String actionTypeName, String name, String value) {
+                                    String actionTypeName, String name, String value) throws Exception {
         actionTypeParameterConfiguration = new ActionTypeParameterConfiguration();
         this.executionControl = executionControl;
         this.name = name;
@@ -49,7 +49,7 @@ public class ActionParameterOperation {
         this.setInputValue(value, executionControl.getExecutionRuntime());
     }
 
-    private String lookupSubroutine(String input) {
+    private String lookupSubroutine(String input) throws Exception {
         if (actionTypeParameter.getSubroutine() == null || actionTypeParameter.getSubroutine().equalsIgnoreCase(""))
             return input;
         SubroutineOperation subroutineOperation = new SubroutineOperation(input);
@@ -75,7 +75,7 @@ public class ActionParameterOperation {
         return value;
     }
 
-    public void setInputValue(String inputValue, ExecutionRuntime executionRuntime) {
+    public void setInputValue(String inputValue, ExecutionRuntime executionRuntime) throws Exception {
         if (inputValue == null) inputValue = "";
         // TODO: list resolvement to a data type
         // Keep input value with orginal entry

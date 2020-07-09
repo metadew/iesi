@@ -55,7 +55,7 @@ public class FhoExecuteFileTransfer {
         this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Set Parameters
         this.setSourceFilePath(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "sourceFilePath"));
@@ -124,7 +124,7 @@ public class FhoExecuteFileTransfer {
 
     }
 
-    private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) throws InterruptedException {
+    private boolean execute(String sourceFilePath, String sourceFileName, String sourceConnectionName, String targetFilePath, String targetFileName, String targetConnectionName) throws Exception {
         // Get Connections
         Connection sourceConnection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))

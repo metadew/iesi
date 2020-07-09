@@ -26,7 +26,7 @@ public class MssqlMetadataRepositoryCoordinatorService implements IMetadataRepos
     }
 
     @Override
-    public RepositoryCoordinator convert(MssqlMetadataRepositoryCoordinatorDefinition mssqlRepositoryCoordinatorDefinition) {
+    public RepositoryCoordinator convert(MssqlMetadataRepositoryCoordinatorDefinition mssqlRepositoryCoordinatorDefinition) throws Exception {
         Map<String, Database> databases = new HashMap<>();
         if (mssqlRepositoryCoordinatorDefinition.getOwner() != null) {
             MssqlDatabaseConnection mssqlDatabaseConnection = getDatabaseConnection(mssqlRepositoryCoordinatorDefinition,
@@ -57,7 +57,7 @@ public class MssqlMetadataRepositoryCoordinatorService implements IMetadataRepos
     }
 
     @Override
-    public MssqlDatabaseConnection getDatabaseConnection(MssqlMetadataRepositoryCoordinatorDefinition mssqlRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
+    public MssqlDatabaseConnection getDatabaseConnection(MssqlMetadataRepositoryCoordinatorDefinition mssqlRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) throws Exception {
         if (mssqlRepositoryCoordinatorDefinition.getConnection().isPresent()) {
             return new MssqlDatabaseConnection(
                     mssqlRepositoryCoordinatorDefinition.getConnection().get(),

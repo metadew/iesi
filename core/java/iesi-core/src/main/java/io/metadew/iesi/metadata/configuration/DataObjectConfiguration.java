@@ -89,6 +89,8 @@ public class DataObjectConfiguration {
                 metadataRepository.save(dataObject);
             } catch (MetadataRepositorySaveException e) {
                 LOGGER.warn(MessageFormat.format("Failed to save {0} to repository", dataObject.getType()));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

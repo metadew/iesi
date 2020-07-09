@@ -58,7 +58,7 @@ public class WfaExecuteQueryPing {
         this.setActionParameterOperationMap(new HashMap<>());
     }
 
-    public void prepare() {
+    public void prepare() throws Exception {
         // Set Parameters
         this.setSqlQuery(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "query"));

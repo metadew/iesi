@@ -6,7 +6,7 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 public class ComponentAttributeOperation extends AttributeOperation {
 
     // Constructors
-    public ComponentAttributeOperation(ExecutionControl executionControl, ActionExecution actionExecution, String componentName) {
+    public ComponentAttributeOperation(ExecutionControl executionControl, ActionExecution actionExecution, String componentName) throws Exception {
         super(executionControl, actionExecution, "component", componentName);
     }
 

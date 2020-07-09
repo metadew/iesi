@@ -33,7 +33,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     }
 
     @Override
-    public List<ScriptDto> getAll(List<String> expansions, Boolean isLatestVersionOnly) {
+    public List<ScriptDto> getAll(List<String> expansions, boolean isLatestVersionOnly) {
         try {
             Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
             Map<ActionKey, ActionDto> actionDtos = new HashMap<>();
@@ -295,4 +295,3 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     }
 
 }
-

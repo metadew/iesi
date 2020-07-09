@@ -15,7 +15,7 @@ public interface IScriptDtoService {
 
     List<ScriptDto> getAll(List<String> expansions);
 
-    List<ScriptDto> getAll(List<String> expansions, Boolean isLatestOnly);
+    List<ScriptDto> getAll(List<String> expansions, boolean isLatestOnly);
 
     List<ScriptDto> getByName(String name);
 

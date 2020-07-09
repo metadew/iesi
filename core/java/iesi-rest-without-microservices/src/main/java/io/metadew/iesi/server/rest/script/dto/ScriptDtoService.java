@@ -74,7 +74,7 @@ public class ScriptDtoService implements IScriptDtoService {
     }
 
     @Override
-    public List<ScriptDto> getAll(List<String> expansions, Boolean isLatestOnly) {
+    public List<ScriptDto> getAll(List<String> expansions, boolean isLatestOnly) {
         return scriptDtoRepository.getAll(expansions, isLatestOnly);
     }
 

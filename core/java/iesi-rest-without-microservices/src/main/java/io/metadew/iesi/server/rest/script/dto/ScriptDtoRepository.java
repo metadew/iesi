@@ -228,7 +228,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         return getWhereClause(scriptName, scriptVersion, false);
     }
 
-    private Optional<String> getWhereClause(String scriptName, Long scriptVersion, Boolean isLatestVersion) {
+    private Optional<String> getWhereClause(String scriptName, Long scriptVersion, boolean isLatestVersion) {
         List<String> conditions = new ArrayList<>();
         if (scriptName != null) {
             conditions.add(" script.SCRIPT_NM=" + SQLTools.GetStringForSQL(scriptName));

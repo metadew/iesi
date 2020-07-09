@@ -19,7 +19,7 @@ public class FrameworkCryptoTest {
     @Test
     public void testJavaKeystore() throws Exception {
         Configuration configuration = Configuration.getInstance();
-        if (configuration.getProperty("iesi.security.encryption.type").isPresent()) {
+        if (configuration.getProperty("iesi.security.encryption.alias").isPresent()) {
             String password = "foobar";
             System.setIn(new ByteArrayInputStream(password.getBytes()));
             Scanner scanner = new Scanner(System.in);
@@ -33,7 +33,7 @@ public class FrameworkCryptoTest {
     @Test
     public void testJavaKeystoreWrongPassword() {
         Configuration configuration = Configuration.getInstance();
-        if (configuration.getProperty("iesi.security.encryption.type").isPresent()) {
+        if (configuration.getProperty("iesi.security.encryption.alias").get() != null) {
             String password = "fooar";
             System.setIn(new ByteArrayInputStream(password.getBytes()));
             Scanner scanner = new Scanner(System.in);
@@ -49,7 +49,7 @@ public class FrameworkCryptoTest {
     @Test
     public void testKeyInConf() {
         Configuration configuration = Configuration.getInstance();
-        if (configuration.getProperty("iesi.security.encryption.key").isPresent()) {
+        if (configuration.getProperty("iesi.security.encryption.key").get() != null) {
             assertEquals("c7c1e47391154a6a", configuration.getProperty("iesi.security.encryption.key").get().toString());
         }
     }

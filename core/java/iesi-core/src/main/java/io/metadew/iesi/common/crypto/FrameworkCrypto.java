@@ -31,9 +31,9 @@ public class FrameworkCrypto {
 
     private FrameworkCrypto() throws Exception {
         Configuration configuration = Configuration.getInstance();
-        if (configuration.getProperty("iesi.security.encryption.key").isPresent()) {
+        if (configuration.getProperty("iesi.security.encryption.key").get() != null) {
             this.aes = new AESEncryptBasic(configuration.getProperty("iesi.security.encryption.key").get().toString());
-        } else if (configuration.getProperty("iesi.security.encryption.type").isPresent()) {
+        } else if (configuration.getProperty("iesi.security.encryption.alias").get() != null) {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Enter your password: ");
             String password = br.readLine();

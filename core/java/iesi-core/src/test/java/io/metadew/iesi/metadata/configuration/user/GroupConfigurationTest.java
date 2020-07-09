@@ -27,7 +27,7 @@ class GroupConfigurationTest {
     private Authority authority3;
 
     @BeforeAll
-    static void prepare() {
+    static void prepare() throws Exception {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getControlMetadataRepository()
@@ -103,55 +103,55 @@ class GroupConfigurationTest {
     }
 
     @AfterEach
-    void clearDatabase() {
+    void clearDatabase() throws Exception {
         MetadataRepositoryConfiguration.getInstance()
                 .getControlMetadataRepository().cleanAllTables();
     }
 
     @AfterAll
-    static void teardown() {
+    static void teardown() throws Exception {
         MetadataRepositoryConfiguration.getInstance()
                 .getControlMetadataRepository().dropAllTables();
     }
 
     @Test
-    void groupDoesNotExistsTest() {
+    void groupDoesNotExistsTest() throws Exception {
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1))).isFalse();
     }
 
     @Test
-    void groupByNameDoesNotExistsTest() {
+    void groupByNameDoesNotExistsTest() throws Exception {
         assertThat(GroupConfiguration.getInstance().exists(group1.getGroupName())).isFalse();
     }
 
     @Test
-    void groupExistsTest() {
+    void groupExistsTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1))).isTrue();
     }
 
     @Test
-    void groupExistsByNameTest() {
+    void groupExistsByNameTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().exists(group1.getGroupName())).isTrue();
     }
 
     @Test
-    void groupGetDoesNotExistsTest() {
+    void groupGetDoesNotExistsTest() throws Exception {
         assertThat(GroupConfiguration.getInstance().get(new GroupKey(uuid1))).isEmpty();
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().get(new GroupKey(uuid2))).isEmpty();
     }
 
     @Test
-    void groupGetByNameDoesNotExistsTest() {
+    void groupGetByNameDoesNotExistsTest() throws Exception {
         assertThat(GroupConfiguration.getInstance().get(group1.getGroupName())).isEmpty();
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().get(group2.getGroupName())).isEmpty();
     }
 
     @Test
-    void groupGetExistsTest() {
+    void groupGetExistsTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().get(new GroupKey(uuid1)))
                 .isPresent()
@@ -159,7 +159,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void groupGetByNameExistsTest() {
+    void groupGetByNameExistsTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().get(group1.getGroupName()))
                 .isPresent()
@@ -167,7 +167,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void groupInsertTest() {
+    void groupInsertTest() throws Exception {
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
                 .isFalse();
         GroupConfiguration.getInstance().insert(group1);
@@ -179,14 +179,14 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void groupInsertAlreadyExistingTest() {
+    void groupInsertAlreadyExistingTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         assertThatThrownBy(() -> GroupConfiguration.getInstance().insert(group1))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
-    void groupInsertMultipleUsersTest() {
+    void groupInsertMultipleUsersTest() throws Exception {
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
                 .isFalse();
         GroupConfiguration.getInstance().insert(group1);
@@ -209,17 +209,17 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void groupDeleteDoesNotExistTest() {
+    void groupDeleteDoesNotExistTest() throws Exception {
         GroupConfiguration.getInstance().delete(group1.getMetadataKey());
     }
 
     @Test
-    void groupDeleteByNameDoesNotExistTest() {
+    void groupDeleteByNameDoesNotExistTest() throws Exception {
         GroupConfiguration.getInstance().delete(group1.getGroupName());
     }
 
     @Test
-    void groupDeleteTest() {
+    void groupDeleteTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
                 .isTrue();
@@ -230,7 +230,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void groupDeleteByNameTest() {
+    void groupDeleteByNameTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         assertThat(GroupConfiguration.getInstance().exists(new GroupKey(uuid1)))
                 .isTrue();
@@ -241,7 +241,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void userUpdateTest() {
+    void userUpdateTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         Optional<Group> user = GroupConfiguration.getInstance().get(new GroupKey(uuid1));
         assertThat(user)
@@ -259,7 +259,7 @@ class GroupConfigurationTest {
 
 
     @Test
-    void groupUpdateMultipleTest() {
+    void groupUpdateMultipleTest() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         Optional<Group> fetchedUser1 = GroupConfiguration.getInstance().get(new GroupKey(uuid1));
@@ -285,7 +285,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void getUsers() {
+    void getUsers() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         UserConfiguration.getInstance().insert(user1);
@@ -302,7 +302,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void getUsersByGroupName() {
+    void getUsersByGroupName() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         UserConfiguration.getInstance().insert(user1);
@@ -319,7 +319,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void removeUser() {
+    void removeUser() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         UserConfiguration.getInstance().insert(user1);
@@ -343,7 +343,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void removeUserByName() {
+    void removeUserByName() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         UserConfiguration.getInstance().insert(user1);
@@ -367,7 +367,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void removeNonExistingUser() {
+    void removeNonExistingUser() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         UserConfiguration.getInstance().insert(user1);
         GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
@@ -376,7 +376,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void removeNonExistingUserByName() {
+    void removeNonExistingUserByName() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         UserConfiguration.getInstance().insert(user1);
         GroupConfiguration.getInstance().addUser(group1.getGroupName(), user1.getUsername());
@@ -385,7 +385,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void addAlreadyMemberUser() {
+    void addAlreadyMemberUser() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         UserConfiguration.getInstance().insert(user1);
         GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
@@ -395,7 +395,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void addAlreadyMemberUserByName() {
+    void addAlreadyMemberUserByName() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         UserConfiguration.getInstance().insert(user1);
         GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
@@ -405,7 +405,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void getAuthorities() {
+    void getAuthorities() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         AuthorityConfiguration.getInstance().insert(authority1);
@@ -422,7 +422,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void getAuthoritiesByName() {
+    void getAuthoritiesByName() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         AuthorityConfiguration.getInstance().insert(authority1);
@@ -439,7 +439,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void removeAuthority() {
+    void removeAuthority() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         AuthorityConfiguration.getInstance().insert(authority1);
@@ -463,7 +463,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void removeAuthorityByName() {
+    void removeAuthorityByName() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         GroupConfiguration.getInstance().insert(group2);
         AuthorityConfiguration.getInstance().insert(authority1);
@@ -487,7 +487,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void removeNonExistingAuthority() {
+    void removeNonExistingAuthority() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         AuthorityConfiguration.getInstance().insert(authority1);
         GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());
@@ -496,7 +496,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void removeNonExistingAuthorityByName() {
+    void removeNonExistingAuthorityByName() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         AuthorityConfiguration.getInstance().insert(authority1);
         GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());
@@ -505,7 +505,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void addAlreadyAuthority() {
+    void addAlreadyAuthority() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         AuthorityConfiguration.getInstance().insert(authority1);
         GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());
@@ -515,7 +515,7 @@ class GroupConfigurationTest {
     }
 
     @Test
-    void addAlreadyAuthorityByName() {
+    void addAlreadyAuthorityByName() throws Exception {
         GroupConfiguration.getInstance().insert(group1);
         AuthorityConfiguration.getInstance().insert(authority1);
         GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority1.getMetadataKey());

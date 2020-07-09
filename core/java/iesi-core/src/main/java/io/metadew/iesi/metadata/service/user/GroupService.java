@@ -20,87 +20,87 @@ public class GroupService {
     private GroupService() {
     }
 
-    public boolean exists(GroupKey groupKey) {
+    public boolean exists(GroupKey groupKey) throws Exception {
         return GroupConfiguration.getInstance().exists(groupKey);
     }
 
-    public boolean exists(String groupName) {
+    public boolean exists(String groupName) throws Exception {
         return GroupConfiguration.getInstance().exists(groupName);
     }
 
-    public List<Group> getAll() {
+    public List<Group> getAll() throws Exception {
         return GroupConfiguration.getInstance().getAll();
     }
 
-    public void addGroup(Group group) {
+    public void addGroup(Group group) throws Exception {
         GroupConfiguration.getInstance().insert(group);
     }
 
-    public Optional<Group> get(GroupKey groupKey) {
+    public Optional<Group> get(GroupKey groupKey) throws Exception {
         return GroupConfiguration.getInstance().get(groupKey);
     }
 
-    public Optional<Group> get(String groupName) {
+    public Optional<Group> get(String groupName) throws Exception {
         return GroupConfiguration.getInstance().get(groupName);
     }
 
-    public void update(Group group) {
+    public void update(Group group) throws Exception {
         GroupConfiguration.getInstance().update(group);
     }
 
-    public void delete(GroupKey groupKey) {
+    public void delete(GroupKey groupKey) throws Exception {
         GroupConfiguration.getInstance().delete(groupKey);
     }
 
-    public void delete(String groupName) {
+    public void delete(String groupName) throws Exception {
         GroupConfiguration.getInstance().delete(groupName);
     }
 
-    public List<Authority> getAuthorities(GroupKey groupKey) {
+    public List<Authority> getAuthorities(GroupKey groupKey) throws Exception {
         return GroupConfiguration.getInstance().getAuthorities(groupKey);
     }
 
-    public List<Authority> getAuthorities(String groupName) {
+    public List<Authority> getAuthorities(String groupName) throws Exception {
         return GroupConfiguration.getInstance().getAuthorities(groupName);
     }
 
-    public List<User> getUsers(GroupKey groupKey) {
+    public List<User> getUsers(GroupKey groupKey) throws Exception {
         return GroupConfiguration.getInstance().getUsers(groupKey);
     }
 
-    public List<User> getUsers(String groupName) {
+    public List<User> getUsers(String groupName) throws Exception {
         return GroupConfiguration.getInstance().getUsers(groupName);
     }
 
-    public void addAuthority(GroupKey groupKey, AuthorityKey authorityKey) {
+    public void addAuthority(GroupKey groupKey, AuthorityKey authorityKey) throws Exception {
         GroupConfiguration.getInstance().addAuthority(groupKey, authorityKey);
     }
 
-    public void addAuthority(String groupName, String authority) {
+    public void addAuthority(String groupName, String authority) throws Exception {
         GroupConfiguration.getInstance().addAuthority(groupName, authority);
     }
 
-    public void removeAuthority(GroupKey groupKey, AuthorityKey authorityKey) {
+    public void removeAuthority(GroupKey groupKey, AuthorityKey authorityKey) throws Exception {
         GroupConfiguration.getInstance().removeAuthority(groupKey, authorityKey);
     }
 
-    public void removeAuthority(String groupName, String authority) {
+    public void removeAuthority(String groupName, String authority) throws Exception {
         GroupConfiguration.getInstance().removeAuthority(groupName, authority);
     }
 
-    public void addUser(GroupKey groupKey, UserKey userKey) {
+    public void addUser(GroupKey groupKey, UserKey userKey) throws Exception {
         GroupConfiguration.getInstance().addUser(groupKey, userKey);
     }
 
-    public void addUser(String groupName, String username) {
+    public void addUser(String groupName, String username) throws Exception {
         GroupConfiguration.getInstance().addUser(groupName, username);
     }
 
-    public void removeUser(GroupKey groupKey, UserKey userKey) {
+    public void removeUser(GroupKey groupKey, UserKey userKey) throws Exception {
         GroupConfiguration.getInstance().removeUser(groupKey, userKey);
     }
 
-    public void removeUser(String groupName, String username) {
+    public void removeUser(String groupName, String username) throws Exception {
         GroupConfiguration.getInstance().removeUser(groupName, username);
     }
 

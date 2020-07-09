@@ -31,7 +31,7 @@ public class FrameworkCryptoTest {
     }
 
     @Test
-    public void testJavaKeystoreWrongPassword() throws Exception {
+    public void testJavaKeystoreWrongPassword() {
         Configuration configuration = Configuration.getInstance();
         if (configuration.getProperty("iesi.security.encryption.type").isPresent()) {
             String password = "fooar";

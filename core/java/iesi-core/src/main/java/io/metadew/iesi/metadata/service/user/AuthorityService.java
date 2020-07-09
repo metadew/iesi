@@ -21,27 +21,27 @@ public class AuthorityService {
     private AuthorityService() {
     }
 
-    public List<Authority> getAll() {
+    public List<Authority> getAll() throws Exception {
         return AuthorityConfiguration.getInstance().getAll();
     }
 
-    public void addAuthority(Authority authority) {
+    public void addAuthority(Authority authority) throws Exception {
         AuthorityConfiguration.getInstance().insert(authority);
     }
 
-    public Optional<Authority> get(AuthorityKey authorityKey) {
+    public Optional<Authority> get(AuthorityKey authorityKey) throws Exception {
         return AuthorityConfiguration.getInstance().get(authorityKey);
     }
 
-    public void update(Authority authority) {
+    public void update(Authority authority) throws Exception {
         AuthorityConfiguration.getInstance().update(authority);
     }
 
-    public void delete(AuthorityKey authorityKey) {
+    public void delete(AuthorityKey authorityKey) throws Exception {
         AuthorityConfiguration.getInstance().delete(authorityKey);
     }
 
-    public void delete(String authority) {
+    public void delete(String authority) throws Exception {
         AuthorityConfiguration.getInstance().delete(authority);
     }
 

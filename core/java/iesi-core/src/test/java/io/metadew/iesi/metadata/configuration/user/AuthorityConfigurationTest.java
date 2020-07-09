@@ -20,7 +20,7 @@ class AuthorityConfigurationTest {
     private Authority authority2;
 
     @BeforeAll
-    static void prepare() {
+    static void prepare() throws Exception {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getControlMetadataRepository()
@@ -46,50 +46,50 @@ class AuthorityConfigurationTest {
     }
 
     @AfterEach
-    void clearDatabase() {
+    void clearDatabase() throws Exception{
         MetadataRepositoryConfiguration.getInstance()
                 .getControlMetadataRepository().cleanAllTables();
     }
 
     @AfterAll
-    static void teardown() {
+    static void teardown() throws Exception{
         MetadataRepositoryConfiguration.getInstance()
                 .getControlMetadataRepository().dropAllTables();
     }
 
     @Test
-    void userDoesNotExistsTest() {
+    void userDoesNotExistsTest() throws Exception{
         assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1))).isFalse();
     }
 
     @Test
-    void userExistsTest() {
+    void userExistsTest() throws Exception{
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1))).isTrue();
     }
 
     @Test
-    void userExistsByNameTest() {
+    void userExistsByNameTest() throws Exception{
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().exists(authority1.getAuthority())).isTrue();
     }
 
     @Test
-    void userGetDoesNotExistsTest() {
+    void userGetDoesNotExistsTest() throws Exception{
         assertThat(AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid1))).isEmpty();
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid2))).isEmpty();
     }
 
     @Test
-    void userGetByNameDoesNotExistsTest() {
+    void userGetByNameDoesNotExistsTest() throws Exception{
         assertThat(AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid1))).isEmpty();
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().get(authority2.getAuthority())).isEmpty();
     }
 
     @Test
-    void userGetExistsTest() {
+    void userGetExistsTest() throws Exception{
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid1)))
                 .isPresent()
@@ -97,7 +97,7 @@ class AuthorityConfigurationTest {
     }
 
     @Test
-    void userGetByNameExistsTest() {
+    void userGetByNameExistsTest() throws Exception{
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().get(authority1.getAuthority()))
                 .isPresent()
@@ -105,7 +105,7 @@ class AuthorityConfigurationTest {
     }
 
     @Test
-    void userInsertTest() {
+    void userInsertTest()throws Exception {
         assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1)))
                 .isFalse();
         AuthorityConfiguration.getInstance().insert(authority1);
@@ -117,14 +117,14 @@ class AuthorityConfigurationTest {
     }
 
     @Test
-    void userInsertAlreadyExistingTest() {
+    void userInsertAlreadyExistingTest() throws Exception{
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThatThrownBy(() -> AuthorityConfiguration.getInstance().insert(authority1))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
-    void userInsertMultipleUsersTest() {
+    void userInsertMultipleUsersTest() throws Exception{
         assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1)))
                 .isFalse();
         AuthorityConfiguration.getInstance().insert(authority1);
@@ -147,17 +147,17 @@ class AuthorityConfigurationTest {
     }
 
     @Test
-    void userDeleteDoesNotExistTest() {
+    void userDeleteDoesNotExistTest()throws Exception {
         AuthorityConfiguration.getInstance().delete(authority1.getMetadataKey());
     }
 
     @Test
-    void userDeleteByNameDoesNotExistTest() {
+    void userDeleteByNameDoesNotExistTest()throws Exception {
         AuthorityConfiguration.getInstance().delete(authority1.getAuthority());
     }
 
     @Test
-    void userDeleteTest() {
+    void userDeleteTest() throws Exception{
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1)))
                 .isTrue();
@@ -168,7 +168,7 @@ class AuthorityConfigurationTest {
     }
 
     @Test
-    void userDeleteByNameTest() {
+    void userDeleteByNameTest() throws Exception{
         AuthorityConfiguration.getInstance().insert(authority1);
         assertThat(AuthorityConfiguration.getInstance().exists(new AuthorityKey(uuid1)))
                 .isTrue();
@@ -179,7 +179,7 @@ class AuthorityConfigurationTest {
     }
 
     @Test
-    void userUpdateTest() {
+    void userUpdateTest()throws Exception {
         AuthorityConfiguration.getInstance().insert(authority1);
         Optional<Authority> user = AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid1));
         assertThat(user)
@@ -197,7 +197,7 @@ class AuthorityConfigurationTest {
 
 
     @Test
-    void userUpdateMultipleTest() {
+    void userUpdateMultipleTest() throws Exception{
         AuthorityConfiguration.getInstance().insert(authority1);
         AuthorityConfiguration.getInstance().insert(authority2);
         Optional<Authority> fetchedUser1 = AuthorityConfiguration.getInstance().get(new AuthorityKey(uuid1));

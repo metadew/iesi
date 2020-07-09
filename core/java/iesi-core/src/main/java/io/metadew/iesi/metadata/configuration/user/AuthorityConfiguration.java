@@ -20,14 +20,14 @@ import java.util.UUID;
 public class AuthorityConfiguration extends Configuration<Authority, AuthorityKey> {
     private static AuthorityConfiguration INSTANCE;
 
-    public synchronized static AuthorityConfiguration getInstance() {
+    public synchronized static AuthorityConfiguration getInstance() throws Exception {
         if (INSTANCE == null) {
             INSTANCE = new AuthorityConfiguration();
         }
         return INSTANCE;
     }
 
-    private AuthorityConfiguration() {
+    private AuthorityConfiguration() throws Exception {
         setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
     }
 

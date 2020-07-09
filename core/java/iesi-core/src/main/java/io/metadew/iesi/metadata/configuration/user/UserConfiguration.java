@@ -20,14 +20,14 @@ public class UserConfiguration extends Configuration<User, UserKey> {
 
     private static UserConfiguration INSTANCE;
 
-    public synchronized static UserConfiguration getInstance() {
+    public synchronized static UserConfiguration getInstance() throws Exception {
         if (INSTANCE == null) {
             INSTANCE = new UserConfiguration();
         }
         return INSTANCE;
     }
 
-    private UserConfiguration() {
+    private UserConfiguration() throws Exception {
         setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
     }
 
@@ -124,6 +124,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return groups;
     }
@@ -144,11 +146,13 @@ public class UserConfiguration extends Configuration<User, UserKey> {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return groups;
     }
 
-    public List<Authority> getAuthorities(UserKey userKey) {
+    public List<Authority> getAuthorities(UserKey userKey) throws Exception {
         List<Authority> authorities = new ArrayList<>();
         try {
             String queryScript = "select authorities.ID, authorities.AUTHORITY " +
@@ -200,6 +204,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return authorities;
     }

@@ -9,10 +9,11 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 public class FrameworkCrypto {
@@ -30,14 +31,14 @@ public class FrameworkCrypto {
 
     private FrameworkCrypto() throws Exception {
         Configuration configuration = Configuration.getInstance();
-        if (configuration.getProperty("iesi.security.encryption.typ").isPresent()) {
+        if (configuration.getProperty("iesi.security.encryption.key").isPresent()) {
+            this.aes = new AESEncryptBasic(configuration.getProperty("iesi.security.encryption.key").get().toString());
+        } else if (configuration.getProperty("iesi.security.encryption.type").isPresent()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Enter your password: ");
             String password = br.readLine();
             String keyJKS = new JavaKeystore().loadKey(password);
             this.aes = new AESEncryptBasic(keyJKS);
-        } else if (configuration.getProperty("iesi.security.encryption.key").isPresent()) {
-            this.aes = new AESEncryptBasic(configuration.getProperty("iesi.security.encryption.key").get().toString());
         } else {
             this.aes = new AESEncryptBasic("c7c1e47391154a6a");
         }

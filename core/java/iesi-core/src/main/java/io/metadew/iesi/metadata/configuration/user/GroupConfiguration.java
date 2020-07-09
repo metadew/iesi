@@ -20,14 +20,14 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
 
     private static GroupConfiguration INSTANCE;
 
-    public synchronized static GroupConfiguration getInstance() {
+    public synchronized static GroupConfiguration getInstance() throws Exception {
         if (INSTANCE == null) {
             INSTANCE = new GroupConfiguration();
         }
         return INSTANCE;
     }
 
-    private GroupConfiguration() {
+    private GroupConfiguration() throws Exception {
         setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
     }
 
@@ -117,6 +117,8 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return users;
     }
@@ -137,6 +139,8 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return users;
     }
@@ -155,6 +159,8 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return authorities;
     }
@@ -175,6 +181,8 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return authorities;
     }

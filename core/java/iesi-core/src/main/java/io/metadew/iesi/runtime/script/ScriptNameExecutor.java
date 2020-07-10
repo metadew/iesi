@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionR
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -72,7 +73,7 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
         ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
         scriptExecution.execute();
         scriptExecution1.updateScriptRunStatus(ScriptResultConfiguration.getInstance().get(new ScriptResultKey(scriptExecution1.getRunId(), -1L))
-                .map(scriptResult -> ScriptRunStatus.valueOf(scriptResult.getStatus()))
+                .map(ScriptResult::getStatus)
                 .orElseThrow(() -> new RuntimeException("Cannot find result of run id: " + scriptExecution1.getRunId())));
         scriptExecution1.setEndTimestamp(LocalDateTime.now());
         ScriptExecutionConfiguration.getInstance().update(scriptExecution1);

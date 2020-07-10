@@ -16,5 +16,6 @@ public class MetadataField {
     private boolean nullable = true;
     private boolean defaultTimestamp = false;
     private boolean primaryKey = false;
+    private boolean unique = false;
 
 }

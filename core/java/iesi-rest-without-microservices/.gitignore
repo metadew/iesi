@@ -2,6 +2,9 @@ src/main/resources/iesi.p12
 src/main/resources/iesikey.p12
 /logs/
 
+/test.mv.db
+/token.trace.db
+
 HELP.md
 /target/
 /out/
@@ -46,3 +49,4 @@ iesi-home.conf
 /src/test/resources/iesi_instance/
 /src/test/resources/iesi_instance.zip
 /src/main/resources/public.txt
+token.mv.db

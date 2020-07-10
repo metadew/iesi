@@ -11,6 +11,7 @@ import io.metadew.iesi.script.execution.instruction.data.person.PersonEmail;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonFirstName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonLastName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonPhoneNumber;
+import io.metadew.iesi.script.execution.instruction.data.text.TextSubstring;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeFormat;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeNow;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeTravel;
@@ -50,8 +51,11 @@ public class DataInstructionRepository {
         BelgiumNationalRegisterNumber belgiumNationalRegisterNumber = new BelgiumNationalRegisterNumber();
         dataInstructions.put(belgiumNationalRegisterNumber.getKeyword(), belgiumNationalRegisterNumber);
 
-        NumberBetween numberBetween = new NumberBetween(generationObjectExecution);
+        NumberBetween numberBetween = new NumberBetween();
         dataInstructions.put(numberBetween.getKeyword(), numberBetween);
+
+        TextSubstring textSubstring = new TextSubstring();
+        dataInstructions.put(textSubstring.getKeyword(), textSubstring);
 
         return dataInstructions;
     }

@@ -117,12 +117,7 @@ public class MetadataRepositoryOperation {
                                             String errorFolder, String regex) {
         final File folder = new File(FilenameUtils.normalize(inputFolder));
         final String file_filter = regex;
-        final File[] files = folder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return name.matches(file_filter);
-            }
-        });
+        final File[] files = folder.listFiles((dir, name) -> name.matches(file_filter));
 
         if (files != null) {
             for (final File file : files) {

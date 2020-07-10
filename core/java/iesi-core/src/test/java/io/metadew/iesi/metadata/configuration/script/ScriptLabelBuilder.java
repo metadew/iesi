@@ -28,6 +28,7 @@ public class ScriptLabelBuilder {
     }
 
     public ScriptLabel build() {
+        // needs to be a predictable key (hash) to ensure they can be loaded from filesystem
         return new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId+ scriptVersionNumber +name)), new ScriptKey(scriptId, scriptVersionNumber) , name, getValue().orElse("dummy"));
     }
 

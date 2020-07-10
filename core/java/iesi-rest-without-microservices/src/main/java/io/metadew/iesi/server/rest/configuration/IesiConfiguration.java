@@ -2,14 +2,20 @@ package io.metadew.iesi.server.rest.configuration;
 
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.metadata.configuration.UserConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
+import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
+import io.metadew.iesi.metadata.service.user.AuthorityService;
+import io.metadew.iesi.metadata.service.user.GroupService;
+import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +33,13 @@ public class IesiConfiguration {
         io.metadew.iesi.common.configuration.Configuration.getInstance();
         MetadataConfiguration.getInstance();
         return FrameworkInstance.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    @Order(0)
+    public MetadataRepositoryConfiguration metadataRepositoryConfiguration() {
+        return MetadataRepositoryConfiguration.getInstance();
     }
 
     @Bean
@@ -58,8 +71,20 @@ public class IesiConfiguration {
     public ScriptConfiguration scriptConfiguration() {
         return ScriptConfiguration.getInstance();
     }
-    @Bean
 
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ScriptResultConfiguration scriptResultConfiguration() {
+        return ScriptResultConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration() {
+        return ScriptExecutionRequestConfiguration.getInstance();
+    }
+
+    @Bean
     @DependsOn("frameworkInstance")
     public ScriptExecutionConfiguration scriptExecutionConfiguration() {
         return ScriptExecutionConfiguration.getInstance();
@@ -68,7 +93,25 @@ public class IesiConfiguration {
     @Bean
     @DependsOn("frameworkInstance")
     public UserConfiguration userConfiguration() {
-        return new UserConfiguration();
+        return UserConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public UserService userService() {
+        return UserService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public GroupService groupService() {
+        return GroupService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public AuthorityService authorityService() {
+        return AuthorityService.getInstance();
     }
 
     @Bean

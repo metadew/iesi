@@ -1,0 +1,45 @@
+package io.metadew.iesi.server.rest.script.dto;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
+import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionInformation;
+import io.metadew.iesi.server.rest.script.dto.expansions.ScriptSchedulingInformation;
+import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
+import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
+import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Builder
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
+public class ScriptDto extends RepresentationModel<ScriptDto> {
+
+    private String name;
+    private String description;
+    private ScriptVersionDto version;
+    private List<ScriptParameterDto> parameters = new ArrayList<>();
+    private List<ActionDto> actions = new ArrayList<>();
+    private List<ScriptLabelDto> labels = new ArrayList<>();
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("execution")
+    private ScriptExecutionInformation scriptExecutionInformation;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("scheduling")
+    private ScriptSchedulingInformation scriptSchedulingInformation;
+
+    public void addActionDto(ActionDto actionDto) {
+        actions.add(actionDto);
+    }
+
+    public void addScriptLabelDto(ScriptLabelDto scriptLabelDto) {
+        labels.add(scriptLabelDto);
+    }
+
+}

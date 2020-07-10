@@ -18,10 +18,9 @@ import java.security.spec.InvalidKeySpecException;
 //keytool -importpass -storetype pkcs12 -alias mypass -keystore Desktop/myks.p12
 public class JavaKeystore {
 
-    public String loadKey(String keyStorePassword) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableEntryException, InvalidKeySpecException, IOException, CertificateException {
+    public String loadKey(String keyStorePassword, String keystoreLocation) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableEntryException, InvalidKeySpecException, IOException, CertificateException {
         Configuration configuration = Configuration.getInstance();
         KeyStore ks = KeyStore.getInstance("PKCS12");
-        String keystoreLocation = configuration.getProperty("iesi.security.encryption.keystore-path").get().toString();
         String alias = configuration.getProperty("iesi.security.encryption.alias").get().toString();
 
         File fIn = FileUtils.getFile(keystoreLocation);

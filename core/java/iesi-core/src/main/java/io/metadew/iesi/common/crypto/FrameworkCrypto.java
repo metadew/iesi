@@ -37,9 +37,11 @@ public class FrameworkCrypto {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Enter your password: ");
             String password = br.readLine();
-            String keyJKS = new JavaKeystore().loadKey(password);
+            String keystoreLocation = configuration.getProperty("iesi.security.encryption.keystore-path").get().toString();
+            String keyJKS = new JavaKeystore().loadKey(password, keystoreLocation);
             this.aes = new AESEncryptBasic(keyJKS);
         } else {
+            System.out.println("Warning");
             this.aes = new AESEncryptBasic("c7c1e47391154a6a");
         }
     }

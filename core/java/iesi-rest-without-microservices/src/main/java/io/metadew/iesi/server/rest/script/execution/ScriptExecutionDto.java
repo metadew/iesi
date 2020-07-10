@@ -5,13 +5,17 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.execution.ActionExecution.ActionExecutionDto;
 import io.metadew.iesi.server.rest.script.execution.inputParameter.InputParametersDto;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> {
 
     private String runId;

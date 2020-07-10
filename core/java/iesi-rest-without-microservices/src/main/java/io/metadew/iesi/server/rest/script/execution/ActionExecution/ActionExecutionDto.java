@@ -1,25 +1,26 @@
 package io.metadew.iesi.server.rest.script.execution.ActionExecution;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
+import io.metadew.iesi.server.rest.script.execution.inputParameter.InputParametersDto;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
 public class ActionExecutionDto {
 
-    //    "actions": [
-//    {
-//        "runId": "string",
-//            "processId": 0,
-//            "type": "string",
-//            "name": "string",
-//            "description": "string",
-//            "condition": "string",
-//            "stopOnError": true,
-//            "expectedError": true,
-//            "status": "string",
-//            "startTimestamp": "2020-07-08T13:43:59.209Z",
-//            "endTimestamp": "2020-07-08T13:43:59.209Z",
-//            "inputParameters": [
-//        {
-//            "name": "string",
-//                "rawValue": "string",
-//                "resolvedValue": "string"
-//        }
-//      ],
+    private String runId;
+    private Long processId;
+    private String type;
+    private String name;
+    private String description;
+    private String condition;
+    private boolean errorStop;
+    private boolean errorExpected;
+    private ScriptRunStatus status;
+    private LocalDateTime startTimestamp;
+    private LocalDateTime endTimestamp;
+    private List<InputParametersDto> inputParameters;
+
 }

@@ -49,7 +49,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             System.out.println("subroutine");
         } else if (dataObject.getType().equalsIgnoreCase("template")) {
-            Template template = objectMapper.convertValue(dataObject, Template.class);
+            Template template = objectMapper.convertValue(dataObject.getData(), Template.class);
             save(template);
         } else {
             LOGGER.trace(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()));

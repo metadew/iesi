@@ -22,15 +22,15 @@ import java.util.Map;
 public class EvalListContains {
 
     private static final String LIST_KEY = "list";
-    private static final String TEMPLATE_KEY = "template";
+    private static final String TEMPLATE_KEY = "value";
 
     private ActionExecution actionExecution;
     private ExecutionControl executionControl;
 
     // Parameters
-    private DataType template;
     private Array list;
     private Map<String, ActionParameterOperation> actionParameterOperationMap;
+    private DataType value;
 
     public EvalListContains(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -41,29 +41,32 @@ public class EvalListContains {
 
     public void prepare() {
         ActionParameterOperation listActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), LIST_KEY);
-        ActionParameterOperation templateActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), TEMPLATE_KEY);
+        ActionParameterOperation valueActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), TEMPLATE_KEY);
 
         // Get Parameters
         for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(LIST_KEY)) {
                 listActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(TEMPLATE_KEY)) {
-                templateActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                valueActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
             }
         }
 
         //template = convertTemplate(templateActionParameterOperation.getValue());
         list = convertList(listActionParameterOperation.getValue());
-
+        value = valueActionParameterOperation.getValue();
         // Create parameter list
         actionParameterOperationMap.put(LIST_KEY, listActionParameterOperation);
-        actionParameterOperationMap.put(TEMPLATE_KEY, templateActionParameterOperation);
+        actionParameterOperationMap.put(TEMPLATE_KEY, valueActionParameterOperation);
     }
 
     public boolean execute() throws InterruptedException {
         try {
-
-            return executeOperation(list, template);
+            boolean result = executeOperation(list, value);
+            if (!result) {
+                actionExecution.getActionControl().increaseErrorCount();
+            }
+            return result;
             //return compare(expected, actual);
         } catch (InterruptedException e) {
             throw e;

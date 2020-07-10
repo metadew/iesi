@@ -1,5 +1,5 @@
 #!/bin/bash
-current_dir=$(pwd)
+current_dir=$(dirname "${BASH_SOURCE[0]}")
 lib_dir=$current_dir/../lib
 
 classpath="*"

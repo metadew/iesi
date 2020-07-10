@@ -63,24 +63,31 @@ public class ScriptDtoService implements IScriptDtoService {
                 null);
     }
 
-
+    @Override
     public List<ScriptDto> getAll() {
         return getAll(new ArrayList<>());
     }
 
     @Override
     public List<ScriptDto> getAll(List<String> expansions) {
-        return scriptDtoRepository.getAll(expansions);
+        return getAll(expansions, false);
     }
 
+    @Override
+    public List<ScriptDto> getAll(List<String> expansions, boolean isLatestOnly) {
+        return scriptDtoRepository.getAll(expansions, isLatestOnly);
+    }
+
+    @Override
     public List<ScriptDto> getByName(String name) {
         return getByName(name, new ArrayList<>());
     }
 
+    @Override
     public List<ScriptDto> getByName(String name, List<String> expansions) {
         return scriptDtoRepository.getByName(name, expansions);
     }
-
+    @Override
     public Optional<ScriptDto> getByNameAndVersion(String name, long version) {
         return getByNameAndVersion(name, version, new ArrayList<>());
     }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.stream.Collectors;
 
 @RestController
-@Tag(name = "scriptResult", description = "Everything about scriptResults")
+@Tag(name = "scriptResults", description = "Everything about scriptResults")
 @RequestMapping("/script_results")
 @CrossOrigin
 public class ScriptResultController {
@@ -28,7 +28,6 @@ public class ScriptResultController {
 
     @GetMapping
     public HalMultipleEmbeddedResource<ScriptResultDto> getAll() {
-        Pageable pageable;
         return new HalMultipleEmbeddedResource<>(scriptResultService.getAll().stream()
                 .map(scriptResultDtoModelAssembler::toModel)
                 .collect(Collectors.toList()));

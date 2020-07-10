@@ -8,15 +8,13 @@ import io.metadew.iesi.server.rest.script.dto.expansions.ScriptSchedulingInforma
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor

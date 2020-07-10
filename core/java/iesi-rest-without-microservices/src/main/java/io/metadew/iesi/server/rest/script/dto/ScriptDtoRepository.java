@@ -15,14 +15,14 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
 
 @Log4j2
-@Component
+@Repository
 public class ScriptDtoRepository implements IScriptDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
@@ -32,13 +32,16 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    public List<ScriptDto> getAll(List<String> expansions) {
+    @Override
+    public List<ScriptDto> getAll(List<String> expansions, boolean isLatestVersionOnly) {
         try {
             Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
             Map<ActionKey, ActionDto> actionDtos = new HashMap<>();
             String query = "Select " +
-                    "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 0 INFO_TYPE, " +
-                    "script_label.NAME LABEL_NAME, script_label.VALUE LABEL_VALUE, null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, null ACTION_TYP_NM, " +
+                    "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
+                    "script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 0 INFO_TYPE, " +
+                    "script_label.NAME LABEL_NAME, script_label.VALUE LABEL_VALUE, " +
+                    "null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, null ACTION_TYP_NM, " +
                     "null CONDITION_VAL, null EXP_ERR_FL, null STOP_ERR_FL, null ACTION_PAR_NM, null ACTION_PAR_VAL, " +
                     "null RUN_ID, null PRC_ID, null ENV_NM, null ST_NM, null STRT_TMS, null END_TMS " +
                     "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
@@ -46,10 +49,13 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     "on script.SCRIPT_ID=script_version.SCRIPT_ID " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_label " +
                     "on script.SCRIPT_ID = script_label.SCRIPT_ID and script_version.SCRIPT_VRS_NB = script_label.SCRIPT_VRS_NB " +
-                    getWhereClause(null, null).orElse("") +
+                    getWhereClause(null, null, isLatestVersionOnly).orElse("") +
                     "union all " +
-                    "Select " + "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 1 INFO_TYPE, " +
-                    "null LABEL_NAME, null LABEL_VALUE, action.ACTION_ID, action.ACTION_NM, action.ACTION_NB, action.ACTION_DSC, action.ACTION_TYP_NM, action.CONDITION_VAL, action.EXP_ERR_FL, action.STOP_ERR_FL, " +
+                    "Select " + "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
+                    "script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 1 INFO_TYPE, " +
+                    "null LABEL_NAME, null LABEL_VALUE, " +
+                    "action.ACTION_ID, action.ACTION_NM, action.ACTION_NB, action.ACTION_DSC, action.ACTION_TYP_NM, " +
+                    "action.CONDITION_VAL, action.EXP_ERR_FL, action.STOP_ERR_FL, " +
                     "action_parameter.ACTION_PAR_NM, action_parameter.ACTION_PAR_VAL, " +
                     "null RUN_ID, null PRC_ID, null ENV_NM, null ST_NM, null STRT_TMS, null END_TMS " +
                     "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
@@ -59,8 +65,9 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     "on script.SCRIPT_ID = action.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action.SCRIPT_VRS_NB " +
                     "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() + " action_parameter " +
                     "on script.SCRIPT_ID = action_parameter.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action_parameter.SCRIPT_VRS_NB and action.ACTION_ID = action_parameter.ACTION_ID" +
-                    getWhereClause(null, null).orElse("") +
-                    (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(null, null) : "") + ";";
+                    getWhereClause(null, null, isLatestVersionOnly).orElse("") +
+                    (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(null, null, isLatestVersionOnly) : "") +
+                    ";";
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
@@ -71,7 +78,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         }
     }
 
-
+    @Override
     public List<ScriptDto> getByName(String name, List<String> expansions) {
         try {
             Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
@@ -114,6 +121,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         }
     }
 
+    @Override
     public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions) {
         try {
             Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
@@ -194,6 +202,10 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     }
 
     private String getExecutionExpansionUnion(String scriptName, Long scriptVersion) {
+        return getExecutionExpansionUnion(scriptName, scriptVersion, false);
+    }
+
+    private String getExecutionExpansionUnion(String scriptName, Long scriptVersion, Boolean isLatestVersion) {
         return " union all select " +
                 "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC, 2 INFO_TYPE, " +
                 "null LABEL_NAME, null LABEL_VALUE, null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, null ACTION_TYP_NM, " +
@@ -204,20 +216,30 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version " +
                 "on script.SCRIPT_ID=script_version.SCRIPT_ID " +
                 "inner join (select * from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() +
-                " where (SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, STRT_TMS) in (" +
-                "SELECT SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, MAX(STRT_TMS) " +
+                " where (SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, STRT_TMS) " +
+                "in (SELECT SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, MAX(STRT_TMS) " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " " +
                 "group by SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM)) script_result " +
                 "on script.SCRIPT_ID = script_result.SCRIPT_ID and script_version.SCRIPT_VRS_NB = script_result.SCRIPT_VRS_NB" +
-                getWhereClause(scriptName, scriptVersion).orElse("") + "";
+                getWhereClause(scriptName, scriptVersion, isLatestVersion).orElse("") + "";
     }
 
     private Optional<String> getWhereClause(String scriptName, Long scriptVersion) {
+        return getWhereClause(scriptName, scriptVersion, false);
+    }
+
+    private Optional<String> getWhereClause(String scriptName, Long scriptVersion, boolean isLatestVersion) {
         List<String> conditions = new ArrayList<>();
         if (scriptName != null) {
             conditions.add(" script.SCRIPT_NM=" + SQLTools.GetStringForSQL(scriptName));
         }
-        if (scriptVersion != null) {
+        if (isLatestVersion) {
+            conditions.add(
+                    " (script.SCRIPT_ID, script_version.SCRIPT_VRS_NB) in (select script.SCRIPT_ID, max(script_version.SCRIPT_VRS_NB) SCRIPT_VRS_NB " +
+                            "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
+                            "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+                            " script_version on script.SCRIPT_ID = script_version.SCRIPT_ID group by script.SCRIPT_ID)");
+        } else if (scriptVersion != null) {
             conditions.add(" script_version.SCRIPT_VRS_NB=" + SQLTools.GetStringForSQL(scriptVersion));
         }
         if (conditions.isEmpty()) return Optional.empty();
@@ -231,10 +253,10 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             scriptDto = mapScriptDto(cachedRowSet);
             scriptDtos.put(scriptKey, scriptDto);
         }
+        int infoType = cachedRowSet.getInt("INFO_TYPE");
         if (expansions.contains("execution")) {
             scriptDto.setScriptExecutionInformation(new ScriptExecutionInformation());
         }
-        int infoType = cachedRowSet.getInt("INFO_TYPE");
         if (infoType == 0) {
             scriptDto.addScriptLabelDto(mapScriptLabelDto(cachedRowSet));
         } else if (infoType == 1) {

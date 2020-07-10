@@ -26,6 +26,8 @@ This action allows you to compare two datasets.
 Mapping allows to circumvent any mismatch in keys between the two datasets.
 
 ## Examples
+
+```yaml
 ---
 type: Script
 data:
@@ -72,3 +74,4 @@ data:
       value : "actual"
     - name: "mapping"
       value : "datasetCompare.1"
+```

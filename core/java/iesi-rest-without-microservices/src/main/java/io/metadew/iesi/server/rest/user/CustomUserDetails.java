@@ -9,44 +9,46 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
 
     private User user;
+    private Collection<? extends GrantedAuthority> grantedAuthorities;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(User user, Collection<? extends GrantedAuthority> grantedAuthorities) {
         this.user = user;
+        this.grantedAuthorities = grantedAuthorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return grantedAuthorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getPasswordHash();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getName();
+        return user.getUsername();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return user.getActive().equalsIgnoreCase("y");
+        return !user.isExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return !user.getLocked().equalsIgnoreCase("y");
+        return !user.isLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return !user.getExpired().equalsIgnoreCase("y");
+        return !user.isCredentialsExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return user.getActive().equalsIgnoreCase("y");
+        return user.isEnabled();
     }
 
 }

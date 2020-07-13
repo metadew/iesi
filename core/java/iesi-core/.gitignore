@@ -4,6 +4,11 @@
 *.iml
 /src/main/resources/encryption.key
 
+/metadata/out/ddl
+test.db3
+test.mv.db
+test.trace.db
+
 ### Eclipse template
 .metadata
 bin/

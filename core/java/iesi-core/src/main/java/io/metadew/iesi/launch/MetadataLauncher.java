@@ -1,9 +1,10 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.common.FrameworkRuntime;
 import io.metadew.iesi.common.FrameworkInstance;
+import io.metadew.iesi.common.FrameworkRuntime;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;
@@ -11,6 +12,8 @@ import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -110,7 +113,20 @@ public class MetadataLauncher {
         if (line.hasOption("ddl")) {
             writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                System.out.println(metadataRepository.generateDDL());
+                Files.deleteIfExists(FrameworkConfiguration.getInstance()
+                        .getMandatoryFrameworkFolder("metadata.out.ddl")
+                        .getAbsolutePath()
+                        .resolve("ddl_" + metadataRepository.getCategory() + ".sql"));
+                Files.createFile(FrameworkConfiguration.getInstance()
+                        .getMandatoryFrameworkFolder("metadata.out.ddl")
+                        .getAbsolutePath()
+                        .resolve("ddl_" + metadataRepository.getCategory() + ".sql"));
+
+                Files.write(FrameworkConfiguration.getInstance()
+                                .getMandatoryFrameworkFolder("metadata.out.ddl")
+                                .getAbsolutePath()
+                                .resolve("ddl_" + metadataRepository.getCategory() + ".sql"),
+                        metadataRepository.generateDDL().getBytes(StandardCharsets.UTF_8));
             }
             writeFooterMessage();
         }

@@ -1,0 +1,5 @@
+iesi:
+  security:
+    jwt:
+      secret: secret
+      expiry-date: 10

@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.script;
 
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
 
 import java.util.List;

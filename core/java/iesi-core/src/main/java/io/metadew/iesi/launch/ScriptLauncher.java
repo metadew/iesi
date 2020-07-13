@@ -17,11 +17,12 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.apache.commons.cli.*;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.UUID;
 
 /**
  * The execution launcher is entry point to launch all automation scripts.
@@ -130,9 +131,10 @@ public class ScriptLauncher {
             System.out.println("Option -paramlist (parameter list) value = " + Arrays.toString(line.getOptionValues("paramlist")));
             for (String parameter : line.getOptionValues("paramlist")) {
                 scriptExecutionRequestBuilder.parameter(new ScriptExecutionRequestParameter(
-                        new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(scriptExecutionRequestKey.getId() + parameter.split("=")[0])),
+                        new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()),
                         scriptExecutionRequestKey,
-                        parameter.split("=")[0], parameter.split("=")[1]));
+                        parameter.split("=")[0],
+                        parameter.split("=")[1]));
             }
         }
 
@@ -141,7 +143,7 @@ public class ScriptLauncher {
             System.out.println("Option -impersonations (impersonations) value = " + Arrays.toString(line.getOptionValues("impersonations")));
             for (String impersonation : line.getOptionValues("impersonation")) {
                 scriptExecutionRequestBuilder.impersonations(new ScriptExecutionRequestImpersonation(
-                        new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(scriptExecutionRequestKey.getId()+impersonation)),
+                        new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()),
                         scriptExecutionRequestKey,
                         new ImpersonationKey(impersonation)));
             }
@@ -163,9 +165,10 @@ public class ScriptLauncher {
             System.out.println("Option -labels (labels) value = " + Arrays.toString(line.getOptionValues("labels")));
             for (String label : line.getOptionValues("labels")) {
                 executionRequestBuilder.executionRequestLabel(new ExecutionRequestLabel(
-                        new ExecutionRequestLabelKey(DigestUtils.sha256Hex(executionRequestId+label.split("=")[0])),
+                        new ExecutionRequestLabelKey(UUID.randomUUID().toString()),
                         new ExecutionRequestKey(executionRequestId),
-                        label.split("=")[0], label.split("=")[1]));
+                        label.split("=")[0],
+                        label.split("=")[1]));
             }
         }
 

@@ -15,29 +15,28 @@ import java.time.LocalDateTime;
 @ToString(callSuper = true)
 public class ScriptResult extends Metadata<ScriptResultKey> {
 
-	private final Long parentProcessId;
-	private final String scriptId;
-	private final String scriptName;
-	private final Long scriptVersion;
-	private final String environment;
-	private ScriptRunStatus status;
-	private LocalDateTime startTimestamp;
-	private LocalDateTime endTimestamp;
+    private final Long parentProcessId;
+    private final String scriptId;
+    private final String scriptName;
+    private final Long scriptVersion;
+    private final String environment;
+    private ScriptRunStatus status;
+    private LocalDateTime startTimestamp;
+    private LocalDateTime endTimestamp;
 
-	// Constructors
-	@Builder
-	public ScriptResult(ScriptResultKey scriptResultKey, Long parentProcessId, String scriptId, String scriptName,
-						Long scriptVersion, String environment, ScriptRunStatus status, LocalDateTime startTimestamp,
-						LocalDateTime endTimestamp) {
-		super(scriptResultKey);
-		this.parentProcessId = parentProcessId;
-		this.scriptId = scriptId;
-		this.scriptName = scriptName;
-		this.scriptVersion = scriptVersion;
-		this.environment = environment;
-		this.status = status;
-		this.startTimestamp = startTimestamp;
-		this.endTimestamp = endTimestamp;
-	}
+    @Builder
+    public ScriptResult(ScriptResultKey scriptResultKey, Long parentProcessId, String scriptId, String scriptName,
+                        Long scriptVersion, String environment, ScriptRunStatus status, LocalDateTime startTimestamp,
+                        LocalDateTime endTimestamp) {
+        super(scriptResultKey);
+        this.parentProcessId = parentProcessId;
+        this.scriptId = scriptId;
+        this.scriptName = scriptName;
+        this.scriptVersion = scriptVersion;
+        this.environment = environment;
+        this.status = status;
+        this.startTimestamp = startTimestamp;
+        this.endTimestamp = endTimestamp;
+    }
 
 }

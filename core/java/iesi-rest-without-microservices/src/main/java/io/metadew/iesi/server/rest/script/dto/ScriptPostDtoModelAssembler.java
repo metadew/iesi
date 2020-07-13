@@ -3,8 +3,6 @@ package io.metadew.iesi.server.rest.script.dto;
 
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.script.ScriptController;
-import io.metadew.iesi.server.rest.script.dto.IScriptPostDtoService;
-import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;

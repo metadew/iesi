@@ -14,7 +14,7 @@ public class ScriptExecutionDtoService implements IScriptExecutionDtoService {
     }
 
     @Override
-    public ScriptExecutionDto getByRunIdAndProcessId(String runId, String processId) {
+    public ScriptExecutionDto getByRunIdAndProcessId(String runId, Long processId) {
         return scriptExecutionDtoRepository.getByRunIdAndProcessId(runId, processId);
     }
 

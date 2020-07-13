@@ -16,7 +16,7 @@ public class ScriptExecutionDtoController {
     }
 
     @GetMapping("/{runId}/{processId}")
-    public ScriptExecutionDto getByRunIdAndProcessId(@PathVariable String runId, @PathVariable String processId){
+    public ScriptExecutionDto getByRunIdAndProcessId(@PathVariable String runId, @PathVariable Long processId){
         return scriptExecutionService.getByRunIdAndProcessId(runId,processId);
     }
 

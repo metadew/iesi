@@ -1,11 +1,11 @@
-package io.metadew.iesi.server.rest.script.result;
+package io.metadew.iesi.server.rest.scriptResultDto;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.server.rest.builder.scriptresult.ScriptResultBuilder;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
-import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDto;
-import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDtoModelAssembler;
+import io.metadew.iesi.server.rest.scriptResultDto.dto.ScriptResultDto;
+import io.metadew.iesi.server.rest.scriptResultDto.dto.ScriptResultDtoModelAssembler;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
-package io.metadew.iesi.server.rest.script.execution.ActionExecution;
+package io.metadew.iesi.server.rest.scriptExecutionDto.ActionExecution;
 
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
-import io.metadew.iesi.server.rest.script.execution.inputParameter.InputParametersDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.inputParameter.InputParametersDto;
 import lombok.Data;
 
 import java.time.LocalDateTime;

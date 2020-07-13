@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.script.execution;
+package io.metadew.iesi.server.rest.scriptExecutionDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
-package io.metadew.iesi.server.rest.script.result.dto;
+package io.metadew.iesi.server.rest.scriptResultDto.dto;
 
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
-import io.metadew.iesi.server.rest.script.result.ScriptResultController;
+import io.metadew.iesi.server.rest.scriptResultDto.ScriptResultController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;

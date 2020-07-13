@@ -1,7 +1,6 @@
-package io.metadew.iesi.server.rest.script.execution;
+package io.metadew.iesi.server.rest.scriptExecutionDto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

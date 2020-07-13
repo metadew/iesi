@@ -1,10 +1,10 @@
-package io.metadew.iesi.server.rest.script.execution;
+package io.metadew.iesi.server.rest.scriptExecutionDto;
 
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
-import io.metadew.iesi.server.rest.script.execution.ActionExecution.ActionExecutionDto;
-import io.metadew.iesi.server.rest.script.execution.inputParameter.InputParametersDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.ActionExecution.ActionExecutionDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.inputParameter.InputParametersDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

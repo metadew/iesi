@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.script.execution.inputParameter;
+package io.metadew.iesi.server.rest.scriptExecutionDto.inputParameter;
 
 import lombok.AllArgsConstructor;
 

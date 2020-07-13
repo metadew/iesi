@@ -1,13 +1,12 @@
-package io.metadew.iesi.server.rest.script.result;
+package io.metadew.iesi.server.rest.scriptResultDto;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDto;
-import io.metadew.iesi.server.rest.script.result.dto.ScriptResultDtoModelAssembler;
+import io.metadew.iesi.server.rest.scriptResultDto.dto.ScriptResultDto;
+import io.metadew.iesi.server.rest.scriptResultDto.dto.ScriptResultDtoModelAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;

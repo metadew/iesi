@@ -1,6 +1,5 @@
-package io.metadew.iesi.server.rest.script.execution;
+package io.metadew.iesi.server.rest.scriptExecutionDto;
 
-import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

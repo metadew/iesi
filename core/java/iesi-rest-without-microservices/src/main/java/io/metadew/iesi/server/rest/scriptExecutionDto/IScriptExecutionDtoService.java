@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.script.execution;
+package io.metadew.iesi.server.rest.scriptExecutionDto;
 
 public interface IScriptExecutionDtoService {
 

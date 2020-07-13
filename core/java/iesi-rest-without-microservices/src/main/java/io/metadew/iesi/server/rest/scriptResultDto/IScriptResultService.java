@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.script.result;
+package io.metadew.iesi.server.rest.scriptResultDto;
 
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 

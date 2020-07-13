@@ -1,8 +1,8 @@
 package io.metadew.iesi.script.configuration;
 
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.database.H2Database;
-import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.h2.H2Database;
+import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 
 import javax.sql.rowset.CachedRowSet;
@@ -18,7 +18,7 @@ public class RuntimeActionCacheConfiguration {
 
     // Constructors
     public RuntimeActionCacheConfiguration(String runCacheFolderName) {
-        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", "", null));
         String query = "CREATE TABLE " + PRC_RUN_CACHE + " (" +
                 "RUN_ID VARCHAR(200) NOT NULL," +
                 "PRC_ID INT NOT NULL," +
@@ -26,7 +26,7 @@ public class RuntimeActionCacheConfiguration {
                 "CACHE_NM VARCHAR(200) NOT NULL," +
                 "CACHE_VAL VARCHAR("+RUNTIME_VAR_VALUE_MAX_LENGTH+")" +
                 ");";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+        DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     private String truncateRuntimeVariableValue(String value) {
@@ -41,7 +41,7 @@ public class RuntimeActionCacheConfiguration {
         // Verify if name already exists
         value = truncateRuntimeVariableValue(value);
         try {
-            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database,
+            CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database,
                     "select run_id, prc_id, cache_typ_nm, cache_nm, cache_val from " + PRC_RUN_CACHE +
                             " where run_id = " + SQLTools.GetStringForSQL(runId) +
                             " and prc_id = " + SQLTools.GetStringForSQL(processId) +
@@ -50,7 +50,7 @@ public class RuntimeActionCacheConfiguration {
 
             // if so, the previous values will be deleted
             if (crs.size() > 0) {
-                DatabaseHandlerImpl.getInstance().executeUpdate(database, "delete from " + PRC_RUN_CACHE +
+                DatabaseHandler.getInstance().executeUpdate(database, "delete from " + PRC_RUN_CACHE +
                         " where run_id = " + SQLTools.GetStringForSQL(runId) +
                         " and cache_typ_nm = " + SQLTools.GetStringForSQL(type) +
                         " and prc_id = " + SQLTools.GetStringForSQL(processId) +
@@ -62,7 +62,7 @@ public class RuntimeActionCacheConfiguration {
         }
 
         // new values can be stored
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, "INSERT INTO " + PRC_RUN_CACHE + "(run_id, prc_id, cache_typ_nm, cache_nm, cache_val) VALUES (" +
+        DatabaseHandler.getInstance().executeUpdate(database, "INSERT INTO " + PRC_RUN_CACHE + "(run_id, prc_id, cache_typ_nm, cache_nm, cache_val) VALUES (" +
                 SQLTools.GetStringForSQL(runId) + "," +
                 SQLTools.GetStringForSQL(processId) + "," +
                 SQLTools.GetStringForSQL(type) + "," +
@@ -77,7 +77,7 @@ public class RuntimeActionCacheConfiguration {
                 + " and prc_id = " + SQLTools.GetStringForSQL(processId)
                 + " and cache_typ_nm = " + SQLTools.GetStringForSQL(type)
                 + " and cache_nm = " + SQLTools.GetStringForSQL(name) + ";";
-        CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
+        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
         String value = "";
         try {
             while (crs.next()) {
@@ -91,7 +91,7 @@ public class RuntimeActionCacheConfiguration {
     }
 
     public void shutdown() {
-        DatabaseHandlerImpl.getInstance().shutdown(database);
+        DatabaseHandler.getInstance().shutdown(database);
     }
 
 }

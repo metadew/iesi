@@ -19,7 +19,7 @@ import java.text.MessageFormat;
 public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ConnectivityMetadataRepository(String name, String instanceName, RepositoryCoordinator repositoryCoordinator) {
+    public ConnectivityMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(instanceName, repositoryCoordinator);
         ConnectionConfiguration.getInstance().init(this);
         EnvironmentConfiguration.getInstance().init(this);

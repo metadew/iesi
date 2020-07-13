@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.sql;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -86,7 +86,7 @@ public class SqlExecuteStatement {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, executionControl.getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Cannot find connection " + connectionName));
-        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
+        Database database = DatabaseHandler.getInstance().getDatabase(connection);
         if (database == null) {
             throw new RuntimeException("Error establishing DB connection");
         }
@@ -97,7 +97,7 @@ public class SqlExecuteStatement {
             sqlStatement = sqlStatement + ";";
         }
 
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, sqlStatement);
+        DatabaseHandler.getInstance().executeUpdate(database, sqlStatement);
 
         // Evaluate result
 //        actionExecution.getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());

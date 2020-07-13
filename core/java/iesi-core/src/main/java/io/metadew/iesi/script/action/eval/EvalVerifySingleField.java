@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.action.eval;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -155,7 +155,7 @@ public class EvalVerifySingleField {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
 
-        Database database = DatabaseHandlerImpl.getInstance().getDatabase(connection);
+        Database database = DatabaseHandler.getInstance().getDatabase(connection);
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, checkName, checkValue);
         long successTotal = 0;
@@ -163,7 +163,7 @@ public class EvalVerifySingleField {
         CachedRowSet crs;
 
         // Success
-        crs = DatabaseHandlerImpl.getInstance().executeQuery(database, this.getSqlSuccess());
+        crs = DatabaseHandler.getInstance().executeQuery(database, this.getSqlSuccess());
         while (crs.next()) {
             successTotal = crs.getLong("RES_SUC");
         }
@@ -171,7 +171,7 @@ public class EvalVerifySingleField {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        crs = DatabaseHandlerImpl.getInstance().executeQuery(database, this.getSqlError());
+        crs = DatabaseHandler.getInstance().executeQuery(database, this.getSqlError());
         while (crs.next()) {
             errorTotal = crs.getLong("RES_ERR");
         }

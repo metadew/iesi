@@ -2,14 +2,14 @@ package io.metadew.iesi.datatypes.text;
 
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import io.metadew.iesi.datatypes.DataTypeService;
+import io.metadew.iesi.datatypes.IDataTypeService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.MessageFormat;
 
 @Log4j2
-public class TextService implements DataTypeService<Text> {
+public class TextService implements IDataTypeService<Text> {
 
     private static TextService INSTANCE;
 

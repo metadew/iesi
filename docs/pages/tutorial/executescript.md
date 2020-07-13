@@ -14,12 +14,17 @@ This page guide you through executing scripts that have been loaded into the con
 ## Execute the script
 
 Finally, we will execute the script:
-* Navigate to the `bin` folder
-* Execute the script via the `bin/iesi-launch.sh` (or `bin/iesi-launch.cmd` on Windows) command providing 
+* Navigate to the `bin` folder and open the terminal (or command prompt on Windows)
+* Execute the script via the `./iesi-launch.sh` (or `./iesi-launch.cmd` on Windows) command providing 
 the `script` and `environment` option: execute a script on a given environment. 
 
+Linux/Mac
 ```bash
-bin/iesi-launch.sh -script <arg> -env <arg>
+./iesi-launch.sh -script <arg> -env <arg>
+```
+Windows
+```bash
+./iesi-launch.cmd -script <arg> -env <arg>
 ```
 
 ## Recap

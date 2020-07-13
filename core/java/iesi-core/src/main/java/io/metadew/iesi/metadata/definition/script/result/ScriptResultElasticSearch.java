@@ -27,7 +27,7 @@ public class ScriptResultElasticSearch implements ElasticSearchDocument {
         scriptName = scriptResult.getScriptName();
         scriptVersion = scriptResult.getScriptVersion();
         environment = scriptResult.getEnvironment();
-        status = scriptResult.getStatus();
+        status = scriptResult.getStatus().value();
         startTimestamp = scriptResult.getStartTimestamp();
         endTimestamp = scriptResult.getEndTimestamp();
     }

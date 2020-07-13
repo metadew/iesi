@@ -29,7 +29,7 @@ public class NonRouteScriptExecution extends ScriptExecution {
 
     @Override
     protected void endExecution() {
-        setResult(getExecutionControl().logEnd(this));
+        setResult(getExecutionControl().logEnd(this).value());
         getRootingStrategy().endExecution(this);
     }
 

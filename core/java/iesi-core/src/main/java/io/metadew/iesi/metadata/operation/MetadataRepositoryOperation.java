@@ -1,8 +1,8 @@
 package io.metadew.iesi.metadata.operation;
 
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +20,8 @@ public class MetadataRepositoryOperation {
 
     // Constructors
 
-    public MetadataRepositoryOperation() {}
+    public MetadataRepositoryOperation() {
+    }
 
     // Methods
 //    public void cleanAllTables() {
@@ -58,18 +59,18 @@ public class MetadataRepositoryOperation {
         LOGGER.info("metadata.load.start");
 
         // Folder definition
-        String inputFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance()
+        String inputFolder = FrameworkConfiguration.getInstance()
                 .getMandatoryFrameworkFolder("metadata.in.new")
-                .getAbsolutePath());
-        String workFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance()
+                .getAbsolutePath().toString();
+        String workFolder = FrameworkConfiguration.getInstance()
                 .getMandatoryFrameworkFolder("metadata.in.work")
-                .getAbsolutePath());
-        String errorFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance()
+                .getAbsolutePath().toString();
+        String errorFolder = FrameworkConfiguration.getInstance()
                 .getMandatoryFrameworkFolder("metadata.in.error")
-                .getAbsolutePath());
-        String archiveFolder = FilenameUtils.normalize(FrameworkConfiguration.getInstance()
+                .getAbsolutePath().toString();
+        String archiveFolder = FrameworkConfiguration.getInstance()
                 .getMandatoryFrameworkFolder("metadata.in.done")
-                .getAbsolutePath());
+                .getAbsolutePath().toString();
 
         System.out.println(inputFolder);
 
@@ -116,12 +117,7 @@ public class MetadataRepositoryOperation {
                                             String errorFolder, String regex) {
         final File folder = new File(FilenameUtils.normalize(inputFolder));
         final String file_filter = regex;
-        final File[] files = folder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return name.matches(file_filter);
-            }
-        });
+        final File[] files = folder.listFiles((dir, name) -> name.matches(file_filter));
 
         if (files != null) {
             for (final File file : files) {

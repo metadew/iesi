@@ -1,11 +1,11 @@
 package io.metadew.iesi.script.action.socket;
 
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -77,8 +77,8 @@ public class SocketTransmitMessage {
         }
 
         // Create parameter list
-        actionParameterOperationMap.put(socketKey, messageActionParameterOperation);
-        actionParameterOperationMap.put(messageKey, socketActionParameterOperation);
+        actionParameterOperationMap.put(socketKey, socketActionParameterOperation);
+        actionParameterOperationMap.put(messageKey, messageActionParameterOperation);
         actionParameterOperationMap.put(protocolKey, protocolActionParameterOperation);
         actionParameterOperationMap.put(outputKey, outputActionParameterOperation);
         actionParameterOperationMap.put(timeoutKey, timeoutActionParameterOperation);

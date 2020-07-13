@@ -17,10 +17,12 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.apache.commons.cli.*;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.ThreadContext;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.UUID;
 
 /**
  * The execution launcher is entry point to launch all automation scripts.
@@ -29,7 +31,7 @@ import java.util.*;
  */
 public class ScriptLauncher {
 
-    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException {
+    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException, IOException {
         ThreadContext.clearAll();
 
         Options options = new Options()
@@ -38,8 +40,8 @@ public class ScriptLauncher {
                 .addOption(Option.builder("version").hasArg().desc("define the version of the script to execute").build())
                 .addOption(Option.builder("file").hasArg().desc("define the configuration file to execute").build())
                 .addOption(Option.builder("env").hasArg().desc("define the environment name where the execution needs to take place").build())
-                .addOption(Option.builder("paramlist").hasArg().desc("define a list of parameters to use").build())
-                .addOption(Option.builder("impersonation").hasArg().desc("define impersonation name to use").build())
+                .addOption(Option.builder("paramlist").hasArgs().desc("define a list of parameters to use").build())
+                .addOption(Option.builder("impersonation").hasArgs().desc("define impersonation name to use").build())
                 .addOption(Option.builder("exit").hasArg().desc("define if an explicit exit is required").build())
                 .addOption(Option.builder("password").hasArg().desc("define the password to log in with").build())
                 .addOption(Option.builder("user").hasArg().desc("define the user to log in with").build())
@@ -126,12 +128,13 @@ public class ScriptLauncher {
 
         // Get variable configurations
         if (line.hasOption("paramlist")) {
-            System.out.println("Option -paramlist (parameter list) value = " + line.getOptionValue("paramlist"));
+            System.out.println("Option -paramlist (parameter list) value = " + Arrays.toString(line.getOptionValues("paramlist")));
             for (String parameter : line.getOptionValues("paramlist")) {
                 scriptExecutionRequestBuilder.parameter(new ScriptExecutionRequestParameter(
-                        new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(scriptExecutionRequestKey.getId() + parameter.split("=")[0])),
+                        new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()),
                         scriptExecutionRequestKey,
-                        parameter.split("=")[0], parameter.split("=")[1]));
+                        parameter.split("=")[0],
+                        parameter.split("=")[1]));
             }
         }
 
@@ -140,7 +143,7 @@ public class ScriptLauncher {
             System.out.println("Option -impersonations (impersonations) value = " + Arrays.toString(line.getOptionValues("impersonations")));
             for (String impersonation : line.getOptionValues("impersonation")) {
                 scriptExecutionRequestBuilder.impersonations(new ScriptExecutionRequestImpersonation(
-                        new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(scriptExecutionRequestKey.getId()+impersonation)),
+                        new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()),
                         scriptExecutionRequestKey,
                         new ImpersonationKey(impersonation)));
             }
@@ -160,12 +163,12 @@ public class ScriptLauncher {
         // Get the labels
         if (line.hasOption("labels")) {
             System.out.println("Option -labels (labels) value = " + Arrays.toString(line.getOptionValues("labels")));
-            List<ExecutionRequestLabel> executionRequestLabels = new ArrayList<>();
             for (String label : line.getOptionValues("labels")) {
                 executionRequestBuilder.executionRequestLabel(new ExecutionRequestLabel(
-                        new ExecutionRequestLabelKey(DigestUtils.sha256Hex(executionRequestId+label.split("=")[0])),
+                        new ExecutionRequestLabelKey(UUID.randomUUID().toString()),
                         new ExecutionRequestKey(executionRequestId),
-                        label.split("=")[0], label.split("=")[1]));
+                        label.split("=")[0],
+                        label.split("=")[1]));
             }
         }
 

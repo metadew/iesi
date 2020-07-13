@@ -6,18 +6,25 @@ iesi:
       # each category should define its own type and definition
       - categories:
           - general
-        # scope:
-        name:
         instance:
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
-          type: h2
-          mode: memory
-          database: test;DB_CLOSE_DELAY=-1
+          # init_sql: alter  current....
+#          type: h2
+#          mode: memory
+#          database: test;DB_CLOSE_DELAY=-1
+#          owner:
+#            user: "sa"
+#            password: ""
+
+          type: oracle
+          connection: "jdbc:oracle:thin:localhost:1521"
+          schema: GETA
           owner:
-            user: ""
-            password: ""
+            user: GETA
+            password: GETA
+
 
 #          type: h2
 #          mode: embedded
@@ -26,13 +33,13 @@ iesi:
 #          host:
 #          port:
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
 #            password:
 
 #          type: mssql
@@ -42,13 +49,13 @@ iesi:
 #          schema: 
 #          name: 
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
 #            password:
 
 #          type: netezza
@@ -57,27 +64,41 @@ iesi:
 #          port: 
 #          schema: 
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
 #            password:
 
 #          type: postgresql
 #          host: 
 #          name: 
 #          port: 
-#          reader: 
-#          schema: 
+#          schema:
 #          owner:
-#            name:
+#            user:
 #            password:
 #          reader:
-#            name:
+#            user:
 #            password:
 #          writer:
-#            name:
+#            user:
+#            password:
+
+#          type: mysql
+#          host:
+#          name:
+#          port:
+#          schema:
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
 #            password:

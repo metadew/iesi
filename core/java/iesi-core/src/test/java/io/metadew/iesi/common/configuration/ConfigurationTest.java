@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration;
 
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.plugin.PluginConfiguration;
@@ -14,9 +15,10 @@ class ConfigurationTest {
 
     @Test
     void initTest() throws Exception {
+
         Configuration configuration = Configuration.getInstance();
 
-        io.metadew.iesi.common.configuration.framework.FrameworkConfiguration conf = io.metadew.iesi.common.configuration.framework.FrameworkConfiguration.getInstance();
+        FrameworkConfiguration conf = FrameworkConfiguration.getInstance();
         MetadataConfiguration metadataRepositoryConfiguration = MetadataConfiguration.getInstance();
         assertTrue(true);
 

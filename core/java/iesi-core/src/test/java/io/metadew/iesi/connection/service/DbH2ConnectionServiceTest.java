@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
+import java.io.ByteArrayInputStream;
 import java.text.MessageFormat;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

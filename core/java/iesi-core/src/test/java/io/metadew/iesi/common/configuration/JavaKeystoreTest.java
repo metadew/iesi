@@ -19,7 +19,6 @@ public class JavaKeystoreTest {
 
     @Test
     public void testEncryptKey() throws Exception {
-        Configuration configuration = Configuration.getInstance();
         String password = "foobar";
         System.setIn(new ByteArrayInputStream(password.getBytes()));
         Scanner scanner = new Scanner(System.in);
@@ -27,10 +26,11 @@ public class JavaKeystoreTest {
         KeyStore ks = KeyStore.getInstance("PKCS12");
 
         String currentDirectory = System.getProperty("user.dir");
-        File fIn = FileUtils.getFile(currentDirectory + "/src/test/resources" + configuration.getProperty("iesi.security.encryption.keystore-path").get().toString());
+        File fIn = FileUtils.getFile(currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString());
         FileInputStream fisPublic = new FileInputStream(fIn);
         ks.load(fisPublic, userinput.toCharArray());
-        KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) ks.getEntry(configuration.getProperty("iesi.security.encryption.alias").get().toString(),
+        String alias = "mypass";
+        KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) ks.getEntry(alias,
                 new KeyStore.PasswordProtection(password.toCharArray()));
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
         PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(
@@ -40,7 +40,6 @@ public class JavaKeystoreTest {
 
     @Test
     public void testEncryptWrongAlias() throws Exception {
-        Configuration configuration = Configuration.getInstance();
         String password = "foobar";
         System.setIn(new ByteArrayInputStream(password.getBytes()));
         Scanner scanner = new Scanner(System.in);
@@ -48,7 +47,7 @@ public class JavaKeystoreTest {
         KeyStore ks = KeyStore.getInstance("PKCS12");
 
         String currentDirectory = System.getProperty("user.dir");
-        File fIn = FileUtils.getFile(currentDirectory + "/src/test/resources" + configuration.getProperty("iesi.security.encryption.keystore-path").get().toString());
+        File fIn = FileUtils.getFile(currentDirectory + "/src/test/resources" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString());
         FileInputStream fisPublic = new FileInputStream(fIn);
         ks.load(fisPublic, userinput.toCharArray());
         String alias = "mypas";

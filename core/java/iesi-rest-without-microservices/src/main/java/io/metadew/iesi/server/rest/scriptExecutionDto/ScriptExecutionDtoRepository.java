@@ -1,21 +1,31 @@
 package io.metadew.iesi.server.rest.scriptExecutionDto;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
+import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.tools.InputParametersDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.tools.OutputDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.tools.ScriptExecutionDtoBuildHelper;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.sql.SQLException;
+import java.util.*;
 
-//@Log4j2
+@Log4j2
 @Repository
 public class ScriptExecutionDtoRepository implements IScriptExecutionDtoRepository {
 
     MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    RepositoryCoordinator repositoryCoordinator;
 
     @Autowired
     ScriptExecutionDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
@@ -23,17 +33,107 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
     }
 
     @Override
-    public ScriptExecutionDto getByRunIdAndProcessId(String runId, Long processId) {
-        ScriptExecutionDto scriptExecutionDto;
-        String SQLQuery = getSQLQuery(runId, processId);
+    public Optional<ScriptExecutionDto> getByRunIdAndProcessId(String runId, Long processId) {
+        try {
+            // List of entity to construct
+            Map<ScriptResultKey, ScriptExecutionDtoBuildHelper> scriptExecutionDtoBuildHelpers = new HashMap<>();
 
-        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getResultMetadataRepository()
-                .executeQuery(SQLQuery, "reader");
+            // process and execute the query
+            String SQLQuery = getSQLQuery(runId, processId);
+//            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getResultMetadataRepository()
+//                    .executeQuery(SQLQuery, "reader");
+//            This method is the one that is executed in the end
+            CachedRowSet cachedRowSet = repositoryCoordinator.executeQuery(SQLQuery, "reader");
 
-        // Todo: Create a row mapper
+            // Use the returned data to construct the POJO in the map
+            while (cachedRowSet.next()) {
+                mapRow(cachedRowSet, scriptExecutionDtoBuildHelpers);
+            }
 
-        // Todo: return the created Object
-        return null;
+            // return the data
+            if (scriptExecutionDtoBuildHelpers.size() > 1)
+                log.warn("found multiple scriptExecution for runId " + runId + " and processId" + processId);
+            return scriptExecutionDtoBuildHelpers.values().stream().map(ScriptExecutionDtoBuildHelper::toScriptExecutionDto).findFirst();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void mapRow(CachedRowSet cachedRowSet, Map<ScriptResultKey, ScriptExecutionDtoBuildHelper> scriptExecutionDtoBuildHelpers) throws SQLException {
+
+        // those value will be reused
+        String runId = cachedRowSet.getString("RUN_ID");
+        Long prcId = cachedRowSet.getLong("PRC_ID");
+
+        // Construct the ScriptResultKey -> Primary Key for scriptExecution
+        ScriptResultKey scriptResultKey = new ScriptResultKey(runId, prcId);
+
+        // IESI_RES_SCRIPT || IESI_TRC_DES_SCRIPT && IESI_TRC_DES_SCRIPT_VRS
+        // Check if the Script Already exist and if not, create and insert it into the map
+        ScriptExecutionDtoBuildHelper scriptExecutionDtoBuildHelper = scriptExecutionDtoBuildHelpers.get(scriptResultKey);
+        if (scriptExecutionDtoBuildHelper == null) {
+            scriptExecutionDtoBuildHelper = mapScriptExecutionDtoBuildHelper(cachedRowSet);
+            scriptExecutionDtoBuildHelpers.put(scriptResultKey, scriptExecutionDtoBuildHelper);
+        }
+
+        //
+        // Inputparams : check if there is one and if yes, is it already in the script's map of inputparam ?
+        String inputParameterName = cachedRowSet.getString("SCRIPT_PAR_NM");
+        if (inputParameterName != null && scriptExecutionDtoBuildHelper.getInputParameters().get(inputParameterName) == null) {
+            scriptExecutionDtoBuildHelper.getInputParameters()
+                    .put(inputParameterName, new InputParametersDto(inputParameterName,
+                            cachedRowSet.getString("SCRIPT_PAR_VAL"),
+                            // Todo: resolvedValue ?
+                            "resolvedValue")
+                    );
+        }
+
+        // DesignLabels
+        String designLabelId = cachedRowSet.getString("SCRIPT_LBL_ID");
+        if (designLabelId != null && scriptExecutionDtoBuildHelper.getDesignLabels().get(designLabelId) == null) {
+            scriptExecutionDtoBuildHelper.getDesignLabels()
+                    .put(designLabelId, new ScriptLabelDto(cachedRowSet.getString("SCRIPT_LBL_NM"),
+                            cachedRowSet.getString("SCRIPT_LBL_VAL")));
+        }
+
+        // Execution Labels Todo: include the execution label in the query
+        String executionLabelId = cachedRowSet.getString("");
+        if (executionLabelId != null && scriptExecutionDtoBuildHelper.getExecutionLabels().get(executionLabelId) == null) {
+            scriptExecutionDtoBuildHelper.getExecutionLabels()
+                    .put(designLabelId, new ExecutionRequestLabelDto(cachedRowSet.getString(""),
+                            cachedRowSet.getString("")));
+        }
+
+        // Outputs
+        String outputName = cachedRowSet.getString("OUT_NM");
+        if (outputName != null && scriptExecutionDtoBuildHelper.getOutput().get(outputName) == null) {
+            scriptExecutionDtoBuildHelper.getOutput()
+                    .put(outputName, new OutputDto(outputName,cachedRowSet.getString("OUT_VAL")));
+        }
+
+        // TODO: Check Primary key to use
+        // Actions - PRK RunID + PrcID + ActionID
+        String actionID = cachedRowSet.getString("");
+//        if (Action) {
+//            scriptExecutionDto.addActions(getAction);
+//        }
+
+
+
+    }
+
+    private ScriptExecutionDtoBuildHelper mapScriptExecutionDtoBuildHelper(CachedRowSet cachedRowSet) throws SQLException {
+        return ScriptExecutionDtoBuildHelper.builder()
+                .runId(cachedRowSet.getString("RUN_ID"))
+                .processId(cachedRowSet.getLong("PRC_ID"))
+                .scriptId(cachedRowSet.getString("SCRIPT_ID"))
+                .scriptName(cachedRowSet.getString("SCRIPT_NM"))
+                .scriptVersion(cachedRowSet.getLong("SCRIPT_VRS_NB"))
+                .environment(cachedRowSet.getString("ENV_NM"))
+                .status(ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")))
+                .startTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")))
+                .endTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS")))
+                .build();
     }
 
     private String getSQLQuery(String runId, Long processId) {

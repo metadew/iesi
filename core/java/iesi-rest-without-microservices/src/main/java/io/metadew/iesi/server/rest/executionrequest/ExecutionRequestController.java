@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoRepository;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.ScriptController;
@@ -29,22 +30,33 @@ public class ExecutionRequestController {
 
     private final ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler;
     private final ExecutionRequestService executionRequestService;
+    private final ExecutionRequestDtoRepository executionRequestDtoRepository;
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
-                               ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler) {
+                               ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler, ExecutionRequestDtoRepository executionRequestDtoRepository) {
         this.executionRequestService = executionRequestService;
         this.executionRequestDtoResourceAssembler = executionRequestDtoResourceAssembler;
+        this.executionRequestDtoRepository = executionRequestDtoRepository;
     }
 
     @GetMapping("")
-    public HalMultipleEmbeddedResource<ExecutionRequestDto> getAll() {
-        return new HalMultipleEmbeddedResource<>(executionRequestService.getAll()
+    public HalMultipleEmbeddedResource<ExecutionRequestDto> getAll(
+            @RequestParam int limit,
+            @RequestParam int pageNumber,
+            @RequestParam(required = false) List<String> column,
+            @RequestParam(required = false) List<String> order,
+            @RequestParam(required = false) String filterColumn,
+            @RequestParam(required = false) String searchParam,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String enDate) {
+        return new HalMultipleEmbeddedResource<>(executionRequestDtoRepository.getAll(limit, pageNumber, column, order, filterColumn, searchParam, startDate, enDate)
                 .stream()
                 .parallel()
                 .map(executionRequestDtoResourceAssembler::toModel)
                 .collect(Collectors.toList()));
     }
+
 
     @GetMapping("/{id}")
     public ExecutionRequestDto getById(@PathVariable String id) {

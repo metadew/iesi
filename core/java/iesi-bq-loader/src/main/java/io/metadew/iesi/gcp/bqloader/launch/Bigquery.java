@@ -1,7 +1,7 @@
 package io.metadew.iesi.gcp.bqloader.launch;
 
-import io.metadew.iesi.gcp.bqloader.bigquery.Dataset;
-import io.metadew.iesi.gcp.bqloader.bigquery.Table;
+import io.metadew.iesi.gcp.bqloader.bigquery.BigqueryDataset;
+import io.metadew.iesi.gcp.bqloader.bigquery.BigqueryTable;
 import org.apache.commons.cli.*;
 
 public class Bigquery {
@@ -39,16 +39,16 @@ public class Bigquery {
             if (line.hasOption("delete")) delete = true;
         }
 
-        Dataset dataset = new Dataset("iesi-01","iesi_results");
-        Table table = new Table(dataset, "foo");
+        BigqueryDataset bigqueryDataset = new BigqueryDataset("iesi-01","iesi_results");
+        BigqueryTable bigqueryTable = new BigqueryTable(bigqueryDataset, "foo");
         if (create) {
-            dataset.create();
-            table.create();
+            bigqueryDataset.create();
+            bigqueryTable.create();
         }
 
         if (delete) {
-            table.delete();
-            dataset.delete();
+            bigqueryTable.delete();
+            bigqueryDataset.delete();
         }
 
     }

@@ -2,7 +2,7 @@ package io.metadew.iesi.gcp.bqloader.bigquery;
 
 import com.google.cloud.bigquery.*;
 
-public class Dataset {
+public class BigqueryDataset {
 
     private String project;
     private String name;
@@ -23,7 +23,7 @@ public class Dataset {
         this.name = name;
     }
 
-    public Dataset(String project, String name) {
+    public BigqueryDataset(String project, String name) {
         this.setProject(project);
         this.setName(name);
     }

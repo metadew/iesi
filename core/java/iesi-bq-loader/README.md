@@ -65,7 +65,12 @@ Next, you can plan and execute the Terraform deployment using ```terraform plan`
 This will deploy the following:
 * Pubsub topic: iesi-scriptresults
 * Pubsub subsription@ iesi-scriptresults-bigquery
+* Bigquery dataset & relevant tables: iesi_results
 
 ### Using the component itself
 
-Todo
+The java component supports some of the individual deployment actions, however it is advised to currently use the Terraform deployment and use these functions only for advanced ops interventions. It is possible in future that these actions will be improved and upgrade to suport all needed operations.
+
+## Running the solution
+
+todo

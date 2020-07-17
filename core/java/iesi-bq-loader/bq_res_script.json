@@ -1,0 +1,51 @@
+[ {
+  "description" : "Unique identifier for the script execution",
+  "mode" : "REQUIRED",
+  "name" : "RUN_ID",
+  "type" : "STRING"
+}, {
+  "description" : "Process number for the script execution",
+  "mode" : "REQUIRED",
+  "name" : "PRC_ID",
+  "type" : "INT64"
+}, {
+  "description" : "Process number for the parent executing the script",
+  "mode" : "REQUIRED",
+  "name" : "PARENT_PRC_ID",
+  "type" : "INT64"
+}, {
+  "description" : "Unique identifier for the script design",
+  "mode" : "REQUIRED",
+  "name" : "SCRIPT_ID",
+  "type" : "STRING"
+}, {
+  "description" : "Unique short name for the script",
+  "mode" : "REQUIRED",
+  "name" : "SCRIPT_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Unique identifier for the script version",
+  "mode" : "REQUIRED",
+  "name" : "SCRIPT_VRS_NB",
+  "type" : "INT64"
+}, {
+  "description" : "Environment name on which the script was executed",
+  "mode" : "REQUIRED",
+  "name" : "ENV_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Status result of the script execution",
+  "mode" : "REQUIRED",
+  "name" : "ST_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Starting timestamp for the script execution",
+  "mode" : "NULLABLE",
+  "name" : "STRT_TMS",
+  "type" : "DATETIME"
+}, {
+  "description" : "Ending timestamp for the script execution",
+  "mode" : "NULLABLE",
+  "name" : "END_TMS",
+  "type" : "DATETIME"
+} ]

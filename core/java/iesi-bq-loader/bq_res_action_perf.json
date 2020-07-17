@@ -1,0 +1,41 @@
+[ {
+  "description" : "Unique identifier for the action execution",
+  "mode" : "REQUIRED",
+  "name" : "RUN_ID",
+  "type" : "STRING"
+}, {
+  "description" : "Process number for the action within the script execution",
+  "mode" : "REQUIRED",
+  "name" : "PRC_ID",
+  "type" : "INT64"
+}, {
+  "description" : "Unique identifier for the action design",
+  "mode" : "REQUIRED",
+  "name" : "ACTION_ID",
+  "type" : "STRING"
+}, {
+  "description" : "Context name for the performance entry",
+  "mode" : "REQUIRED",
+  "name" : "CONTEXT_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Scope name for the performance entry",
+  "mode" : "NULLABLE",
+  "name" : "SCOPE_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Starting timestamp for the performance entry",
+  "mode" : "NULLABLE",
+  "name" : "STRT_TMS",
+  "type" : "DATETIME"
+}, {
+  "description" : "Ending timestamp for the performance entry",
+  "mode" : "NULLABLE",
+  "name" : "END_TMS",
+  "type" : "DATETIME"
+}, {
+  "description" : "Duraction value for the performance entry",
+  "mode" : "NULLABLE",
+  "name" : "DURATION_VAL",
+  "type" : "INT64"
+} ]

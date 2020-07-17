@@ -1,0 +1,66 @@
+[ {
+  "description" : "Unique identifier for the request item",
+  "mode" : "REQUIRED",
+  "name" : "REQUEST_ID",
+  "type" : "STRING"
+}, {
+  "description" : "Unique identifier for the parent request item",
+  "mode" : "REQUIRED",
+  "name" : "PARENT_REQUEST_ID",
+  "type" : "STRING"
+}, {
+  "description" : "Unique identifier for the script execution",
+  "mode" : "REQUIRED",
+  "name" : "RUN_ID",
+  "type" : "STRING"
+}, {
+  "description" : "Request origin",
+  "mode" : "REQUIRED",
+  "name" : "ORIGIN_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Request name",
+  "mode" : "REQUIRED",
+  "name" : "REQUEST_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Scope of the request",
+  "mode" : "REQUIRED",
+  "name" : "SCOPE_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Context of the request",
+  "mode" : "REQUIRED",
+  "name" : "CONTEXT_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Unique identifier for the space",
+  "mode" : "REQUIRED",
+  "name" : "SPACE_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Unique identifier for the user",
+  "mode" : "REQUIRED",
+  "name" : "USER_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Request timestamp",
+  "mode" : "REQUIRED",
+  "name" : "REQUEST_TMS",
+  "type" : "DATETIME"
+}, {
+  "description" : "Status result of the script execution",
+  "mode" : "REQUIRED",
+  "name" : "ST_NM",
+  "type" : "STRING"
+}, {
+  "description" : "Starting timestamp for the request execution",
+  "mode" : "NULLABLE",
+  "name" : "STRT_TMS",
+  "type" : "DATETIME"
+}, {
+  "description" : "Ending timestamp for the request execution",
+  "mode" : "NULLABLE",
+  "name" : "END_TMS",
+  "type" : "DATETIME"
+} ]

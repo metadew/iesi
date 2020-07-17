@@ -2,17 +2,17 @@ package io.metadew.iesi.gcp.bqloader.bigquery;
 
 import com.google.cloud.bigquery.*;
 
-public class Table {
+public class BigqueryTable {
 
-    private Dataset dataset;
+    private BigqueryDataset bigqueryDataset;
     private String name;
 
-    public Dataset getDataset() {
-        return dataset;
+    public BigqueryDataset getBigqueryDataset() {
+        return bigqueryDataset;
     }
 
-    public void setDataset(Dataset dataset) {
-        this.dataset = dataset;
+    public void setBigqueryDataset(BigqueryDataset bigqueryDataset) {
+        this.bigqueryDataset = bigqueryDataset;
     }
 
     public String getName() {
@@ -23,14 +23,14 @@ public class Table {
         this.name = name;
     }
 
-    public Table (Dataset dataset, String name) {
-        this.setDataset(dataset);
+    public BigqueryTable(BigqueryDataset bigqueryDataset, String name) {
+        this.setBigqueryDataset(bigqueryDataset);
         this.setName(name);
     }
 
     public void create() {
         BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
-        TableId tableId = TableId.of(this.getDataset().getName(), this.getName());
+        TableId tableId = TableId.of(this.getBigqueryDataset().getName(), this.getName());
 
         // Table field definition
         com.google.cloud.bigquery.Field field1 = com.google.cloud.bigquery.Field.of("foo", LegacySQLTypeName.STRING);
@@ -47,7 +47,7 @@ public class Table {
 
     public void delete() {
         BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
-        TableId tableId = TableId.of(this.getDataset().getProject(), this.getDataset().getName(), this.getName());
+        TableId tableId = TableId.of(this.getBigqueryDataset().getProject(), this.getBigqueryDataset().getName(), this.getName());
         boolean deleted = bigquery.delete(tableId);
         if (deleted) {
             System.out.println("Table was deleted.");

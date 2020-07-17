@@ -1,11 +1,18 @@
 package io.metadew.iesi.gcp.bqloader.bigquery;
 
-public class Field {
+public class BigqueryField {
 
     private String description;
     private String mode;
     private String name;
     private String type;
+
+    public BigqueryField(String name, String type, String mode, String description) {
+        this.setName(name);
+        this.setType(type);
+        this.setMode(mode);
+        this.setDescription(description);
+    }
 
     public String getDescription() {
         return description;

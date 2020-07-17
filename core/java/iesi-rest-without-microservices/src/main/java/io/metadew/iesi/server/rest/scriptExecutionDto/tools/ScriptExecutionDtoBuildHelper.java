@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Builder
 @Data
@@ -45,7 +46,7 @@ public class ScriptExecutionDtoBuildHelper {
 
     // action: runId, processId, type, name, description, condition,
     // stopOnError, expectedError, status, startTimestamp, endTimestamp
-    private Map<String, ActionExecutionDto> actions = new HashMap<>();
+    private Map<ActionExecutionKey, ActionExecutionDtoBuildHelper> actions = new HashMap<>();
 
     // output: name, value
     private Map<String, OutputDto> output = new HashMap<>();
@@ -65,7 +66,9 @@ public class ScriptExecutionDtoBuildHelper {
                 .inputParameters(new ArrayList<>(inputParameters.values()))
                 .designLabels(new ArrayList<>(designLabels.values()))
                 .executionLabels(new ArrayList<>(executionLabels.values()))
-                .actions(new ArrayList<>(actions.values()))
+                .actions(actions.values().stream()
+                        .map(ActionExecutionDtoBuildHelper::toActionExecutionDto)
+                        .collect(Collectors.toList()))
                 .output(new ArrayList<>(output.values()))
                 .build();
     }

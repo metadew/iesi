@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface IScriptDtoRepository {
 
-    List<ScriptDto> getAll(List<String> expansions, boolean isLatestOnly);
+    List<ScriptDto> getAll(List<String> expansions, boolean isLatestOnly,int limit, int pageNumber, List<String> column, List<String> sort);
 
     List<ScriptDto> getByName(String name, List<String> expansions);
 

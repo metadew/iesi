@@ -163,10 +163,11 @@ if [ "$iesi_build_src" -eq 1 ]; then
   cd ${repo_dir}/core/java/iesi-rest-without-microservices
   mvn clean package project-info-reports:dependencies
 
-  echo
-  echo "*****    Building iesi-test           *****"
-  cd ${repo_dir}/core/java/iesi-test
-  mvn clean install project-info-reports:dependencies
+  #Skipping since it is not actively used at this stage
+  #echo
+  #echo "*****    Building iesi-test           *****"
+  #cd ${repo_dir}/core/java/iesi-test
+  #mvn clean install project-info-reports:dependencies
   #-Pdependencies TODO check if needed to add dependencies profile
 else
   echo "Skipping, iesi source build"

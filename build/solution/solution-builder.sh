@@ -178,12 +178,9 @@ if [ "$iesi_workspace_setup" -eq 1 ]; then
   echo
   echo "*****    Setting up workspace         *****"
   mkdir -p ${build_dir}/workspace
-  mkdir -p ${build_dir}/workspace/conf
-  mkdir -p ${build_dir}/workspace/conf/build
-  mkdir -p ${build_dir}/workspace/build
   mkdir -p ${build_dir}/workspace/dist
   
-  workspace_dir=${build_dir}/workspace/conf/build/${branch}
+  workspace_dir=${build_dir}/workspace/conf/${iesi_version}/build
   rm -rf ${workspace_dir}
   mkdir -p ${workspace_dir}
 else
@@ -195,7 +192,7 @@ jar_file=${repo_dir}/core/java/iesi-core/target/iesi-core-${iesi_version}-jar-wi
 if [ "$iesi_assembly" -eq 1 ]; then
   echo
   echo "*****    Running assembly             *****"
-  java -cp ${jar_file} io.metadew.iesi.launch.AssemblyLauncher -repository ${repo_dir} -development ${repo_dir} -sandbox ${build_dir}/workspace -instance build -version ${branch} -configuration ${branch} -distribution
+  java -cp ${jar_file} io.metadew.iesi.launch.AssemblyLauncher -repository ${repo_dir} -sandbox ${build_dir}/workspace -instance build -version ${iesi_version}
 else
   echo "Skipping, iesi assembly"
 fi
@@ -213,7 +210,7 @@ if [ "$iesi_distribution" -eq 1 ]; then
   #copy sources
   rm -rf ${build_dir}/workspace/dist/${branch}/${uuid}
   mkdir -p ${build_dir}/workspace/dist/${branch}/${uuid}/iesi
-  rsync -ax ${build_dir}/workspace/build/${branch}/. ${build_dir}/workspace/dist/${branch}/${uuid}/iesi/
+  rsync -ax ${build_dir}/workspace/${iesi_version}/build/. ${build_dir}/workspace/dist/${branch}/${uuid}/iesi/
   
   cd ${build_dir}/workspace/dist/${branch}/${uuid}
   now=$(date +"%Y%m%d%H%M%S%N")

@@ -7,7 +7,6 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Builder
@@ -27,8 +26,9 @@ public class ActionExecutionDtoBuildHelper {
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
     private Map<String, InputParametersDto> inputParameters;
+    private Map<String, OutputDto> output;
 
-    public ActionExecutionDto toActionExecutionDto(){
+    public ActionExecutionDto toActionExecutionDto() {
         return ActionExecutionDto.builder()
                 .runId(runId)
                 .processId(processId)
@@ -42,6 +42,7 @@ public class ActionExecutionDtoBuildHelper {
                 .startTimestamp(startTimestamp)
                 .endTimestamp(endTimestamp)
                 .inputParameters(new ArrayList<>(inputParameters.values()))
+                .output(new ArrayList<>(output.values()))
                 .build();
     }
 

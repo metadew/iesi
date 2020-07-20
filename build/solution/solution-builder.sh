@@ -21,7 +21,7 @@ iesi_distribution=1
 exclude=""
 
 #Script settings
-iesi_version=0.4.0
+iesi_version=0.5.0
 branch="develop"
 current_dir=$(pwd)
 script_dir=`dirname $0`

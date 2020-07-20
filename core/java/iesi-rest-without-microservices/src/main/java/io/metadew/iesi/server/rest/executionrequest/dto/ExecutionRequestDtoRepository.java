@@ -134,8 +134,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
 
                     + " ORDER BY " + orderBy(column, sort) + ";";
 
-            System.out.println(query);
-
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
 

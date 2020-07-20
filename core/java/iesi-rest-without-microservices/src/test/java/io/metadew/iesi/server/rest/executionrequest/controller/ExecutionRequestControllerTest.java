@@ -70,6 +70,7 @@ public class ExecutionRequestControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
     @BeforeEach
     public void setup() {
         mvc = MockMvcBuilders.standaloneSetup(executionRequestController)
@@ -94,7 +95,6 @@ public class ExecutionRequestControllerTest {
                 get("/execution_requests?limit=1&pageNumber=1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
-
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -157,6 +157,7 @@ public class ExecutionRequestControllerTest {
 
         assertThat(result.get(0).getContext())
                 .isEqualTo(executionRequest1.getContext());
+        System.out.println(result);
 
         mvc.perform(get("/execution_requests?limit=2&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)

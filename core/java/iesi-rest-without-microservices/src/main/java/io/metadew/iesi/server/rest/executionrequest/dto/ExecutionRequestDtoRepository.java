@@ -53,11 +53,10 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                 if (!columns.isEmpty()) {
                     sqlQuery.setLength(sqlQuery.length() - comma.length());
                 }
-                return sqlQuery.toString();
-            } else if (columns.size() == 1) {
+            } else {
                 sqlQuery.append(columns.get(0) + " ").append(sorts.get(0));
-                return sqlQuery.toString();
             }
+            return sqlQuery.toString();
         }
         sqlQuery.append("EXECUTION_REQUEST.REQUEST_ID ").append(" ASC ");
         return sqlQuery.toString();
@@ -65,33 +64,36 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
 
     public String filter(String filterColumn, String searchParam, String request_to, String request_from) {
         StringBuilder sqlQuery = new StringBuilder();
-        if (filterColumn.equals("request_name")) {
-             sqlQuery.append("WHERE EXECUTION_REQUEST.REQUEST_NM LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
-             return sqlQuery.toString();
-        } else if (filterColumn.equals( "script_name")) {
-            sqlQuery.append( "WHERE SCRPT_NM_EXEC_REQ.SCRPT_NAME LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
-            return sqlQuery.toString();
-        } else if (filterColumn.equals("script_version")) {
-            sqlQuery.append( "WHERE SCRPT_NM_EXEC_REQ.SCRPT_VRS LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
-            return sqlQuery.toString();
-        } else if (filterColumn.equals( "script_environment")) {
-            sqlQuery.append( "WHERE SCRPT_EXEC_REQ.ENVIRONMENT  LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
-            return sqlQuery.toString();
-        } else if (filterColumn.equals("execution_label")) {
-            List<String> searchParamSpit = Arrays.asList(searchParam.split(":"));
-            sqlQuery.append( " WHERE (EXECUTION_REQUEST_LBL.NAME LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(0) + "%") + ") AND ( EXECUTION_REQUEST_LBL.VALUE LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(1) + "%") + ")");
-            return sqlQuery.toString();
-        } else if (filterColumn.equals("request_timestamp") && request_from == null) {
-            sqlQuery.append( " WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(request_to + "%"));
-            return sqlQuery.toString();
-        } else if (filterColumn.equals("request_timestamp") && request_from != null) {
-            sqlQuery.append( " WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(request_to + "%") + " AND " + SQLTools.GetStringForSQL(request_from + "%"));
-            return sqlQuery.toString();
-        } else {
-            sqlQuery.append(" ");
-            return sqlQuery.toString();
+        if (filterColumn != null) {
+            if (filterColumn.equals("request_name")) {
+                sqlQuery.append("WHERE EXECUTION_REQUEST.REQUEST_NM LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
+                return sqlQuery.toString();
+            } else if (filterColumn.equals("script_name")) {
+                sqlQuery.append("WHERE SCRPT_NM_EXEC_REQ.SCRPT_NAME LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
+                return sqlQuery.toString();
+            } else if (filterColumn.equals("script_version")) {
+                sqlQuery.append("WHERE SCRPT_NM_EXEC_REQ.SCRPT_VRS LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
+                return sqlQuery.toString();
+            } else if (filterColumn.equals("script_environment")) {
+                sqlQuery.append("WHERE SCRPT_EXEC_REQ.ENVIRONMENT  LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
+                return sqlQuery.toString();
+            } else if (filterColumn.equals("execution_label")) {
+                List<String> searchParamSpit = Arrays.asList(searchParam.split(":"));
+                sqlQuery.append(" WHERE (EXECUTION_REQUEST_LBL.NAME LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(0) + "%") + ") AND ( EXECUTION_REQUEST_LBL.VALUE LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(1) + "%") + ")");
+                return sqlQuery.toString();
+            } else if (filterColumn.equals("request_timestamp") && request_from == null) {
+                sqlQuery.append(" WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(request_to + "%"));
+                System.out.println(sqlQuery.toString());
+                return sqlQuery.toString();
+            } else if (filterColumn.equals("request_timestamp") && request_from != null) {
+                sqlQuery.append(" WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(request_to + "%") + " AND " + SQLTools.GetStringForSQL(request_from + "%"));
+                return sqlQuery.toString();
+            }
         }
+        sqlQuery.append(" ");
+        return sqlQuery.toString();
     }
+
 
     public List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String request_to, String request_from) {
         try {
@@ -131,6 +133,8 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     filter(filterColumn, searchParam, request_to, request_from)
 
                     + " ORDER BY " + orderBy(column, sort) + ";";
+
+            System.out.println(query);
 
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {

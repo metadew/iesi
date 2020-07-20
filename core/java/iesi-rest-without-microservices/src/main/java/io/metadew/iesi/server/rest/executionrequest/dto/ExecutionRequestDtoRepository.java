@@ -62,7 +62,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         }
     }
 
-    public String filter(String filterColumn, String searchParam, String startDate, String endDate) {
+    public String filter(String filterColumn, String searchParam, String request_to, String request_from) {
         if (filterColumn == "request_name") {
             return "WHERE EXECUTION_REQUEST.REQUEST_NM LIKE " + SQLTools.GetStringForSQL(searchParam + "%");
         } else if (filterColumn == "script_name") {
@@ -74,16 +74,16 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         } else if (filterColumn == "execution_label") {
             List<String> searchParamSpit = Arrays.asList(searchParam.split(":"));
             return " WHERE (EXECUTION_REQUEST_LBL.NAME LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(0) + "%") + ") AND ( EXECUTION_REQUEST_LBL.VALUE LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(1) + "%") + ")";
-        } else if (filterColumn == "request_timestamp" && endDate == null) {
-            return "WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(searchParam + "%");
-        } else if (filterColumn == "request_timestamp" && endDate != null) {
-            return "WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(startDate + "%") + " AND " + SQLTools.GetStringForSQL(endDate + "%");
+        } else if (filterColumn == "request_timestamp" && request_from == null) {
+            return " WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(searchParam + "%");
+        } else if (filterColumn == "request_timestamp" && request_from != null) {
+            return " WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(request_to + "%") + " AND " + SQLTools.GetStringForSQL(request_from + "%");
         } else {
             return "";
         }
     }
 
-    public List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String startDate, String endDate) {
+    public List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String request_to, String request_from) {
         try {
             List<ExecutionRequest> executionRequests = new ArrayList<>();
 
@@ -118,7 +118,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests") + " SCRPT_NM_EXEC_REQ " +
                     "ON SCRPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRPT_NM_EXEC_REQ.SCRPT_REQUEST_ID " +
 
-                    filter(filterColumn, searchParam, startDate, endDate)
+                    filter(filterColumn, searchParam, request_to, request_from)
 
                     + " ORDER BY " + orderBy(column, sort) + ";";
 

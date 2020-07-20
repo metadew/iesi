@@ -23,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,13 +63,14 @@ public class ExecutionRequestControllerTest {
     private ExecutionRequestLabelDto executionRequestLabelDto;
     @MockBean
     private ExecutionRequestDtoRepository executionRequestDtoRepository;
-    //    @MockBean
+
     @InjectMocks
     private ExecutionRequestController executionRequestController;
 
+    @Autowired
+    private ObjectMapper objectMapper;
     @BeforeEach
     public void setup() {
-        JacksonTester.initFields(this, new ObjectMapper());
         mvc = MockMvcBuilders.standaloneSetup(executionRequestController)
                 .build();
     }
@@ -86,7 +86,7 @@ public class ExecutionRequestControllerTest {
                 .scope("scope")
                 .build();
         executionRequests.add(executionRequest1);
-        given(executionRequestDtoRepository.getAll(1,1,null,null,null,null,null,null))
+        given(executionRequestDtoRepository.getAll(1, 1, null, null, null, null, null, null))
                 .willReturn(executionRequests);
 
         MockHttpServletResponse response = mvc.perform(
@@ -98,8 +98,25 @@ public class ExecutionRequestControllerTest {
     }
 
     @Test
+    public void testRequestParams() throws Exception {
+        List<ExecutionRequest> executionRequests = new ArrayList<>();
+        ExecutionRequest executionRequest1 = new ExecutionRequestBuilder()
+                .id("newExecutionRequestId")
+                .name("name")
+                .context("context")
+                .description("description")
+                .scope("scope")
+                .build();
+        executionRequests.add(executionRequest1);
+        mvc.perform(
+                get("/execution_requests?limit=1&pageNumber=1&column=id,secondId&sort=ASC,DESC&filterColumn=id&searchParam=search:value&request_to=2020&request_from=2021")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(executionRequest1)))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
     public void getAllNoResultTest() throws Exception {
-        // Mock Service
         List<ExecutionRequest> executionRequests = new ArrayList<>();
         given(executionRequestService.getAll()).willReturn(executionRequests);
         mvc.perform(get("/execution_requests?limit=1&pageNumber=1")
@@ -113,7 +130,7 @@ public class ExecutionRequestControllerTest {
         ExecutionRequest executionRequest1 = new ExecutionRequestBuilder()
                 .id("newExecutionRequestId")
                 .name("name")
-                .context("context")
+                .context("context1")
                 .description("description")
                 .scope("scope")
                 .build();

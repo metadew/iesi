@@ -45,12 +45,12 @@ public class ExecutionRequestController {
             @RequestParam int limit,
             @RequestParam int pageNumber,
             @RequestParam(required = false) List<String> column,
-            @RequestParam(required = false) List<String> order,
+            @RequestParam(required = false) List<String> sort,
             @RequestParam(required = false) String filterColumn,
             @RequestParam(required = false) String searchParam,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String enDate) {
-        return new HalMultipleEmbeddedResource<>(executionRequestDtoRepository.getAll(limit, pageNumber, column, order, filterColumn, searchParam, startDate, enDate)
+            @RequestParam(required = false) String request_to,
+            @RequestParam(required = false) String request_from) {
+        return new HalMultipleEmbeddedResource<>(executionRequestDtoRepository.getAll(limit, pageNumber, column, sort, filterColumn, searchParam, request_to, request_from)
                 .stream()
                 .parallel()
                 .map(executionRequestDtoResourceAssembler::toModel)

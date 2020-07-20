@@ -42,44 +42,54 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
 
     public String orderBy(List<String> columns, List<String> sorts) {
         StringBuilder sqlQuery = new StringBuilder();
-        if (columns.size() > 1) {
-            final String comma = ",";
-            for (int i = 0; i < columns.size(); i++) {
-                String column = columns.get(i);
-                String sort = sorts.get(i);
-                sqlQuery.append(" " + column + " ").append(sort).append(comma);
+        if (columns != null) {
+            if (columns.size() > 1) {
+                final String comma = ",";
+                for (int i = 0; i < columns.size(); i++) {
+                    String column = columns.get(i);
+                    String sort = sorts.get(i);
+                    sqlQuery.append(" " + column + " ").append(sort).append(comma);
+                }
+                if (!columns.isEmpty()) {
+                    sqlQuery.setLength(sqlQuery.length() - comma.length());
+                }
+                return sqlQuery.toString();
+            } else if (columns.size() == 1) {
+                sqlQuery.append(columns.get(0) + " ").append(sorts.get(0));
+                return sqlQuery.toString();
             }
-            if (!columns.isEmpty()) {
-                sqlQuery.setLength(sqlQuery.length() - comma.length());
-            }
-            return sqlQuery.toString();
-        } else if (columns.size() == 1) {
-            sqlQuery.append(columns.get(0) + " ").append(sorts.get(0));
-            return sqlQuery.toString();
-        } else {
-            sqlQuery.append("EXECUTION_REQUEST.REQUEST_ID ").append(" ASC ");
-            return sqlQuery.toString();
         }
+        sqlQuery.append("EXECUTION_REQUEST.REQUEST_ID ").append(" ASC ");
+        return sqlQuery.toString();
     }
 
     public String filter(String filterColumn, String searchParam, String request_to, String request_from) {
-        if (filterColumn == "request_name") {
-            return "WHERE EXECUTION_REQUEST.REQUEST_NM LIKE " + SQLTools.GetStringForSQL(searchParam + "%");
-        } else if (filterColumn == "script_name") {
-            return "WHERE SCRPT_NM_EXEC_REQ.SCRPT_NAME LIKE " + SQLTools.GetStringForSQL(searchParam + "%");
-        } else if (filterColumn == "script_version") {
-            return "WHERE SCRPT_NM_EXEC_REQ.SCRPT_VRS LIKE " + SQLTools.GetStringForSQL(searchParam + "%");
-        } else if (filterColumn == "script_environment") {
-            return "WHERE SCRPT_EXEC_REQ.ENVIRONMENT  LIKE " + SQLTools.GetStringForSQL(searchParam + "%");
-        } else if (filterColumn == "execution_label") {
+        StringBuilder sqlQuery = new StringBuilder();
+        if (filterColumn.equals("request_name")) {
+             sqlQuery.append("WHERE EXECUTION_REQUEST.REQUEST_NM LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
+             return sqlQuery.toString();
+        } else if (filterColumn.equals( "script_name")) {
+            sqlQuery.append( "WHERE SCRPT_NM_EXEC_REQ.SCRPT_NAME LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
+            return sqlQuery.toString();
+        } else if (filterColumn.equals("script_version")) {
+            sqlQuery.append( "WHERE SCRPT_NM_EXEC_REQ.SCRPT_VRS LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
+            return sqlQuery.toString();
+        } else if (filterColumn.equals( "script_environment")) {
+            sqlQuery.append( "WHERE SCRPT_EXEC_REQ.ENVIRONMENT  LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
+            return sqlQuery.toString();
+        } else if (filterColumn.equals("execution_label")) {
             List<String> searchParamSpit = Arrays.asList(searchParam.split(":"));
-            return " WHERE (EXECUTION_REQUEST_LBL.NAME LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(0) + "%") + ") AND ( EXECUTION_REQUEST_LBL.VALUE LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(1) + "%") + ")";
-        } else if (filterColumn == "request_timestamp" && request_from == null) {
-            return " WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(searchParam + "%");
-        } else if (filterColumn == "request_timestamp" && request_from != null) {
-            return " WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(request_to + "%") + " AND " + SQLTools.GetStringForSQL(request_from + "%");
+            sqlQuery.append( " WHERE (EXECUTION_REQUEST_LBL.NAME LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(0) + "%") + ") AND ( EXECUTION_REQUEST_LBL.VALUE LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(1) + "%") + ")");
+            return sqlQuery.toString();
+        } else if (filterColumn.equals("request_timestamp") && request_from == null) {
+            sqlQuery.append( " WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(request_to + "%"));
+            return sqlQuery.toString();
+        } else if (filterColumn.equals("request_timestamp") && request_from != null) {
+            sqlQuery.append( " WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(request_to + "%") + " AND " + SQLTools.GetStringForSQL(request_from + "%"));
+            return sqlQuery.toString();
         } else {
-            return "";
+            sqlQuery.append(" ");
+            return sqlQuery.toString();
         }
     }
 
@@ -99,23 +109,23 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     "SCRPT_EXEC_REQ.SCRPT_REQUEST_ID AS SCRPT_EXEC_REQ, " +
                     "EXECUTION_REQUEST_LBL.REQUEST_ID AS EXECUTION_REQUEST_LBL " +
 
-                    "FROM (SELECT * FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests")
+                    "FROM (SELECT * FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName()
                     + " LIMIT " + SQLTools.GetStringForSQL(limit) + " OFFSET (" + SQLTools.GetStringForSQL(pageNumber) + "-1 ) * "
                     + SQLTools.GetStringForSQL(limit) + " ) " + " EXECUTION_REQUEST " +
 
-                    "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests") + " AUTH_EXECUTION_REQUEST " +
+                    "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " AUTH_EXECUTION_REQUEST " +
                     "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
 
-                    "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
+                    "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " NON_AUTH_EXECUTION_REQUEST " +
                     "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
 
-                    "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels") + " EXECUTION_REQUEST_LBL " +
+                    "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " EXECUTION_REQUEST_LBL " +
                     "ON EXECUTION_REQUEST.REQUEST_ID = EXECUTION_REQUEST_LBL.REQUEST_ID " +
 
-                    "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests") + " SCRPT_EXEC_REQ " +
+                    "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " SCRPT_EXEC_REQ " +
                     "ON EXECUTION_REQUEST.REQUEST_ID = SCRPT_EXEC_REQ.SCRPT_REQUEST_ID " +
 
-                    "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests") + " SCRPT_NM_EXEC_REQ " +
+                    "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " SCRPT_NM_EXEC_REQ " +
                     "ON SCRPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRPT_NM_EXEC_REQ.SCRPT_REQUEST_ID " +
 
                     filter(filterColumn, searchParam, request_to, request_from)

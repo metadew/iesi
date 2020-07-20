@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.executionrequest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
@@ -98,27 +99,10 @@ public class ExecutionRequestControllerTest {
     }
 
     @Test
-    public void testRequestParams() throws Exception {
-        List<ExecutionRequest> executionRequests = new ArrayList<>();
-        ExecutionRequest executionRequest1 = new ExecutionRequestBuilder()
-                .id("newExecutionRequestId")
-                .name("name")
-                .context("context")
-                .description("description")
-                .scope("scope")
-                .build();
-        executionRequests.add(executionRequest1);
-        mvc.perform(
-                get("/execution_requests?limit=1&pageNumber=1&column=id,secondId&sort=ASC,DESC&filterColumn=id&searchParam=search:value&request_to=2020&request_from=2021")
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(executionRequest1)))
-                .andExpect(status().isOk());
-    }
-
-
-    @Test
     public void getAllNoResultTest() throws Exception {
         List<ExecutionRequest> executionRequests = new ArrayList<>();
         given(executionRequestService.getAll()).willReturn(executionRequests);
+        System.out.println(MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName());
         mvc.perform(get("/execution_requests?limit=1&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());

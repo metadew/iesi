@@ -148,7 +148,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 // Infotype 5: always present if the script contains action and could contain action parameter
                 // script + script action + action parameters
                 String actionParameterName = cachedRowSet.getString("ACTION_PAR_NM");
-                if (actionExecutionDtoBuildHelper.getInputParameters().get(actionParameterName) == null) {
+                if (actionParameterName != null && actionExecutionDtoBuildHelper.getInputParameters().get(actionParameterName) == null) {
                     actionExecutionDtoBuildHelper.getInputParameters()
                             .put(actionParameterName, new InputParametersDto(actionParameterName,
                                     // Todo: rawValue -> given in scriptParameter ?
@@ -201,6 +201,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 .build();
     }
 
+    // TODO: change public to private when test are all ok
+
     /**
      * getSQLQuery compute the SQL Statement with or without filter depending of the given parameters
      *
@@ -208,7 +210,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
      * @param processId - processId of the Script
      * @return Return a String containing the SQL statement
      */
-    private String getSQLQuery(String runId, Long processId) {
+    public String getSQLQuery(String runId, Long processId) {
         return "SELECT 0 INFO_TYPE, results.RUN_ID RUN_ID, results.PRC_ID SCRIPT_PRC_ID, " +
                 "results.PARENT_PRC_ID SCRIPT_PARENT_PRC_ID, results.SCRIPT_ID SCRIPT_ID, results.SCRIPT_NM SCRIPT_NM, " +
                 "results.SCRIPT_VRS_NB SCRIPT_VRS_NB, results.ENV_NM ENV_NM, results.ST_NM SCRIPT_ST_NM, " +
@@ -221,26 +223,26 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "null ACTION_CONDITION_VAL, null ACTION_STOP_ERR_FL, null ACTION_EXP_ERR_FL, null ACTION_ST_NM, " +
                 "null ACTION_STRT_TMS, null ACTION_END_TMS, null ACTION_PAR_NM, null ACTION_PAR_VAL, " +
                 "null ACTION_OUTPUT_NM, null ACTION_OUTPUT_VAL " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResult") + " results " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
                 "LEFT OUTER JOIN " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameterDesignTraces") +
-                " trc_des_script_par on results.SCRIPT_ID = trc_des_script_par.SCRIPT_ID " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameterDesignTraces").getName() +
+                " trc_des_script_par on results.RUN_ID = trc_des_script_par.RUN_ID AND results.PRC_ID = trc_des_script_par.PRC_ID " +
                 getWhereClause(runId, processId).orElse("") +
                 "UNION ALL " +
                 "SELECT 1 INFO_TYPE, results.RUN_ID RUN_ID, results.PRC_ID SCRIPT_PRC_ID, " +
                 "results.PARENT_PRC_ID SCRIPT_PARENT_PRC_ID, results.SCRIPT_ID SCRIPT_ID, results.SCRIPT_NM SCRIPT_NM, " +
                 "results.SCRIPT_VRS_NB SCRIPT_VRS_NB, results.ENV_NM ENV_NM, results.ST_NM SCRIPT_ST_NM, " +
                 "results.STRT_TMS SCRIPT_STRT_TMS, results.END_TMS SCRIPT_END_TMS, null SCRIPT_PAR_NM, null SCRIPT_PAR_VAL, " +
-                "trc_des_script_lbl.SCRIPT_LBL_ID SCRIPT_LBL_ID " +
+                "trc_des_script_lbl.SCRIPT_LBL_ID SCRIPT_LBL_ID, " +
                 "trc_des_script_lbl.NAME SCRIPT_LBL_NM, trc_des_script_lbl.VALUE SCRIPT_LBL_VAL, null SCRIPT_OUTPUT_NM, " +
                 "null SCRIPT_OUTPUT_VAL, null SCRIPT_EXE_PAR_NM, null SCRIPT_EXE_PAR_VAL, null SCRIPT_EXE_LBL_NM, " +
                 "null SCRIPT_EXE_LBL_VAL, null ACTION_PRC_ID, null ACTION_ID, null ACTION_TYP_NM, null ACTION_NM, " +
                 "null ACTION_DSC, null ACTION_CONDITION_VAL, null ACTION_STOP_ERR_FL, null ACTION_EXP_ERR_FL, " +
                 "null ACTION_ST_NM, null ACTION_STRT_TMS, null ACTION_END_TMS, null ACTION_PAR_NM, null ACTION_PAR_VAL, " +
                 "null ACTION_OUTPUT_NM, null ACTION_OUTPUT_VAL " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResult") + " results " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
                 "INNER JOIN " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabelDesignTraces") + " trc_des_script_lbl " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabelDesignTraces").getName() + " trc_des_script_lbl " +
                 "on results.RUN_ID = trc_des_script_lbl.RUN_ID AND results.PRC_ID = trc_des_script_lbl.PRC_ID " +
                 getWhereClause(runId, processId).orElse("") +
                 "UNION ALL " +
@@ -255,9 +257,9 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "null ACTION_NM, null ACTION_DSC, null ACTION_CONDITION_VAL, null ACTION_STOP_ERR_FL, null ACTION_EXP_ERR_FL, " +
                 "null ACTION_ST_NM, null ACTION_STRT_TMS, null ACTION_END_TMS, null ACTION_PAR_NM, null ACTION_PAR_VAL, " +
                 "null ACTION_OUTPUT_NM, null ACTION_OUTPUT_VAL " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResult") + " results " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
                 "INNER JOIN " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResultOutputs") + " script_output " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResultOutputs").getName() + " script_output " +
                 "on results.RUN_ID = script_output.RUN_ID AND results.PRC_ID = script_output.PRC_ID " +
                 getWhereClause(runId, processId).orElse("") +
                 "UNION ALL " +
@@ -269,10 +271,10 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "null SCRIPT_EXE_LBL_VAL, null ACTION_PRC_ID, null ACTION_ID, null ACTION_TYP_NM, null ACTION_NM, null ACTION_DSC, " +
                 "null ACTION_CONDITION_VAL, null ACTION_STOP_ERR_FL, null ACTION_EXP_ERR_FL, null ACTION_ST_NM, null ACTION_STRT_TMS, " +
                 "null ACTION_END_TMS, null ACTION_PAR_NM, null ACTION_PAR_VAL, null ACTION_OUTPUT_NM, null ACTION_OUTPUT_VAL " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResult") + " results " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions") + " script_exec " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_exec " +
                 "on results.RUN_ID = script_exec.RUN_ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters") + " script_exec_par " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_exec_par " +
                 "on script_exec.SCRPT_REQUEST_ID = script_exec_par.SCRIPT_EXEC_REQ_ID " +
                 getWhereClause(runId, processId).orElse("") +
                 "UNION ALL " +
@@ -284,14 +286,14 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "null ACTION_PRC_ID, null ACTION_ID, null ACTION_TYP_NM, null ACTION_NM, null ACTION_DSC, null ACTION_CONDITION_VAL, " +
                 "null ACTION_STOP_ERR_FL, null ACTION_EXP_ERR_FL, null ACTION_ST_NM, null ACTION_STRT_TMS, null ACTION_END_TMS, " +
                 "null ACTION_PAR_NM, null ACTION_PAR_VAL, null ACTION_OUTPUT_NM, null ACTION_OUTPUT_VAL " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResult") + " results " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions") + " script_exec " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_exec " +
                 "on results.RUN_ID = script_exec.RUN_ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests") + " IESER " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " IESER " +
                 "on script_exec.SCRPT_REQUEST_ID = IESER.SCRPT_REQUEST_ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests") + " IER " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " IER " +
                 "on IESER.ID = IER.REQUEST_ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels") + " script_exec_lbl " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " script_exec_lbl " +
                 "on IER.REQUEST_ID = script_exec_lbl.REQUEST_ID " +
                 getWhereClause(runId, processId).orElse("") +
                 "UNION ALL " +
@@ -305,13 +307,13 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "action_trc.STOP_ERR_FL ACTION_STOP_ERR_FL, action_trc.EXP_ERR_FL ACTION_EXP_ERR_FL, action_res.ST_NM ACTION_ST_NM, " +
                 "action_res.STRT_TMS ACTION_STRT_TMS, action_res.END_TMS ACTION_END_TMS, action_trc_par.ACTION_PAR_NM ACTION_PAR_NM, " +
                 "action_trc_par.ACTION_PAR_VAL ACTION_PAR_VAL, null ACTION_OUTPUT_NM, null ACTION_OUTPUT_VAL " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResult") + " results " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionDesignTraces") + " action_trc " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionDesignTraces").getName() + " action_trc " +
                 "on results.RUN_ID = action_trc.RUN_ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults") + " action_res " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +
                 "on results.RUN_ID = action_res.RUN_ID " +
                 "LEFT OUTER JOIN " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameterDesignTraces") + " action_trc_par " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameterDesignTraces").getName() + " action_trc_par " +
                 "on action_trc.RUN_ID = action_trc_par.RUN_ID AND action_trc.PRC_ID = action_trc_par.PRC_ID " +
                 getWhereClause(runId, processId).orElse("") +
                 "UNION ALL " +
@@ -325,15 +327,15 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "action_trc.STOP_ERR_FL ACTION_STOP_ERR_FL, action_trc.EXP_ERR_FL ACTION_EXP_ERR_FL, action_res.ST_NM ACTION_ST_NM, " +
                 "action_res.STRT_TMS ACTION_STRT_TMS, action_res.END_TMS ACTION_END_TMS, null ACTION_PAR_NM, null ACTION_PAR_VAL, " +
                 "action_res_output.OUT_NM ACTION_OUTPUT_NM, action_res_output.OUT_VAL ACTION_OUTPUT_VAL " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResult") + " results " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
                 "INNER JOIN " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionDesignTraces") + " action_trc " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionDesignTraces").getName() + " action_trc " +
                 "on results.RUN_ID = action_trc.RUN_ID " +
                 "INNER JOIN " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults") + " action_res " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +
                 "on results.RUN_ID = action_res.RUN_ID " +
                 "INNER JOIN " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultOutputs") + " action_res_output " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultOutputs").getName() + " action_res_output " +
                 "on action_res.RUN_ID = action_res_output.RUN_ID AND action_res.PRC_ID = action_res_output.PRC_ID " +
                 getWhereClause(runId, processId).orElse("") +
                 ";";

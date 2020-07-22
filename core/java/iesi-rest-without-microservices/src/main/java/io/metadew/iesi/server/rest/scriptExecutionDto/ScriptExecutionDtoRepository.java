@@ -81,90 +81,91 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         if (infoType == 0) {
             // Inputparams of the script
             String inputParameterName = cachedRowSet.getString("SCRIPT_PAR_NM");
-            if (scriptExecutionDtoBuildHelper.getInputParameters().get(inputParameterName) == null) {
+            // infotype 0 could not contain parameter name as it also initialize the script
+            if (inputParameterName != null && scriptExecutionDtoBuildHelper.getInputParameters().get(inputParameterName) == null) {
                 scriptExecutionDtoBuildHelper.getInputParameters()
                         .put(inputParameterName, new InputParametersDto(inputParameterName,
-                                // Todo: rawValue -> value given on execution ? given from infotype 3 (EXE_REQ)?
+                                // Todo: rawValue -> given on execution -> infotype 3 (EXE_REQ) -> verify if it works
                                 "",
                                 cachedRowSet.getString("SCRIPT_PAR_VAL"))
                         );
             }
         } else if (infoType == 1) {
-            // DesignLabels
+            // Infotype 1: rows are present only if containing DesignLabels
             String designLabelId = cachedRowSet.getString("SCRIPT_LBL_ID");
             if (scriptExecutionDtoBuildHelper.getDesignLabels().get(designLabelId) == null) {
                 scriptExecutionDtoBuildHelper.getDesignLabels()
                         .put(designLabelId, new ScriptLabelDto(cachedRowSet.getString("SCRIPT_LBL_NM"),
                                 cachedRowSet.getString("SCRIPT_LBL_VAL")));
             }
-        }else if(infoType == 2){
-            // TODO: to continue
+        } else if (infoType == 2) {
+            // Infotype 2: rows are present only if containing Outputs of the script
+            String outputName = cachedRowSet.getString("SCRIPT_OUTPUT_NM");
+            if (scriptExecutionDtoBuildHelper.getOutput().get(outputName) == null) {
+                scriptExecutionDtoBuildHelper.getOutput()
+                        .put(outputName, new OutputDto(outputName, cachedRowSet.getString("SCRIPT_OUTPUT_VAL")));
+            }
+        } else if (infoType == 3) {
+            // Todo: verify if it is working
+            // Infotype 3: rows are present only if containing Execution parameter of the script
+            String inputParameterName = cachedRowSet.getString("SCRIPT_EXE_PAR_NM");
+            if (scriptExecutionDtoBuildHelper.getInputParameters().get(inputParameterName) == null) {
+                scriptExecutionDtoBuildHelper.getInputParameters()
+                        .put(inputParameterName, new InputParametersDto(inputParameterName,
+                                cachedRowSet.getString("SCRIPT_EXE_PAR_VAL"),
+                                "")
+                        );
+            } else {
+                // Script parameter should already have been initialized
+                scriptExecutionDtoBuildHelper
+                        .getInputParameters()
+                        .get(inputParameterName)
+                        .setRawValue(cachedRowSet.getString("SCRIPT_EXE_PAR_VAL"));
+            }
+        } else if (infoType == 4) {
+            // Infotype 4: rows are present only if containing Execution Labels
+            String executionLabelId = cachedRowSet.getString("SCRIPT_EXE_LBL_NM");
+            if (scriptExecutionDtoBuildHelper.getExecutionLabels().get(executionLabelId) == null) {
+                scriptExecutionDtoBuildHelper.getExecutionLabels()
+                        .put(executionLabelId, new ExecutionRequestLabelDto(cachedRowSet.getString(""),
+                                cachedRowSet.getString("SCRIPT_EXE_LBL_VAL")));
+            }
+        } else {
+            // else infotype 5 and 6 -> Action
+
+            // Actions - PRK RunID + PrcID + ActionID : RunID of action is the same than the RunID of the script
+            Long actionPrcId = cachedRowSet.getLong("ACTION_PRC_ID");
+            String actionId = cachedRowSet.getString("ACTION_ID");
+            ActionExecutionKey actionExecutionKey = new ActionExecutionKey(actionPrcId, actionId);
+
+            ActionExecutionDtoBuildHelper actionExecutionDtoBuildHelper = scriptExecutionDtoBuildHelper.getActions().get(actionExecutionKey);
+            if (actionExecutionDtoBuildHelper == null) {
+                actionExecutionDtoBuildHelper = mapActionExecutionDtoBuildHelper(cachedRowSet);
+                scriptExecutionDtoBuildHelper.getActions().put(actionExecutionKey, actionExecutionDtoBuildHelper);
+            }
+
+            if (infoType == 5) {
+                // Infotype 5: always present if the script contains action and could contain action parameter
+                // script + script action + action parameters
+                String actionParameterName = cachedRowSet.getString("ACTION_PAR_NM");
+                if (actionExecutionDtoBuildHelper.getInputParameters().get(actionParameterName) == null) {
+                    actionExecutionDtoBuildHelper.getInputParameters()
+                            .put(actionParameterName, new InputParametersDto(actionParameterName,
+                                    // Todo: rawValue -> given in scriptParameter ?
+                                    "",
+                                    cachedRowSet.getString("ACTION_PAR_VAL")));
+                }
+            } else if (infoType == 6) {
+                // script + script action + action output
+                String actionOutput = cachedRowSet.getString("ACTION_OUTPUT_NM");
+                if (actionExecutionDtoBuildHelper.getOutput().get(actionOutput) == null) {
+                    actionExecutionDtoBuildHelper.getOutput()
+                            .put(actionOutput, new OutputDto(actionOutput,
+                                    cachedRowSet.getString("ACTION_OUTPUT_VAL")));
+                }
+            }
         }
-
-
-        // Execution Labels
-        String designLabelId = cachedRowSet.getString("SCRIPT_LBL_ID");
-        String executionLabelId = cachedRowSet.getString("");
-        if (executionLabelId != null && scriptExecutionDtoBuildHelper.getExecutionLabels().get(executionLabelId) == null) {
-            scriptExecutionDtoBuildHelper.getExecutionLabels()
-                    .put(designLabelId, new ExecutionRequestLabelDto(cachedRowSet.getString(""),
-                            cachedRowSet.getString("")));
-        }
-
-        // Outputs of the script
-        String outputName = cachedRowSet.getString("OUT_NM");
-        if (outputName != null && scriptExecutionDtoBuildHelper.getOutput().get(outputName) == null) {
-            scriptExecutionDtoBuildHelper.getOutput()
-                    .put(outputName, new OutputDto(outputName, cachedRowSet.getString("OUT_VAL")));
-        }
-
-        // Actions - PRK RunID + PrcID + ActionID -> RunID for "this" script will always be the same
-        String actionId = cachedRowSet.getString("ACTION_ID");
-        if (actionId != null) {
-            mapRowScriptAction(scriptExecutionDtoBuildHelper, actionId, cachedRowSet);
-        }
-
-
     }
-
-    /**
-     * mapRowScriptAction treats the current row and take care of everything regarding Actions
-     *
-     * @param scriptExecutionDtoBuildHelper - Object that contains several Map, one of them contain the actions
-     * @param actionId                      - actionId was obtained from the cachedRowSet, it is passed to avoid getting it of the cachedRowSet again
-     * @param cachedRowSet                  - cachedRowSet obtained from the SQLQuery
-     * @throws SQLException - Throws SQLException due to the param cachedRowSet
-     */
-    private void mapRowScriptAction(ScriptExecutionDtoBuildHelper scriptExecutionDtoBuildHelper, String actionId, CachedRowSet cachedRowSet) throws SQLException {
-        // create ActionKey
-        Long actionPrcId = cachedRowSet.getLong("PRC_ID");
-        ActionExecutionKey actionExecutionKey = new ActionExecutionKey(actionPrcId, actionId);
-        ActionExecutionDtoBuildHelper actionExecutionDtoBuildHelper = scriptExecutionDtoBuildHelper.getActions().get(actionExecutionKey);
-        if (actionExecutionDtoBuildHelper == null) {
-            actionExecutionDtoBuildHelper = mapActionExecutionDtoBuildHelper(cachedRowSet);
-            scriptExecutionDtoBuildHelper.getActions().put(actionExecutionKey, actionExecutionDtoBuildHelper);
-        }
-
-        String actionParameterName = cachedRowSet.getString("ACTION_PAR_NM");
-        if (actionParameterName != null && actionExecutionDtoBuildHelper.getInputParameters().get(actionParameterName) == null) {
-            actionExecutionDtoBuildHelper.getInputParameters()
-                    .put(actionParameterName, new InputParametersDto(actionParameterName,
-                            // Todo: rawValue -> name given on execution ?
-                            // is it the param in EXE_REQ_PAR
-                            "#" + actionParameterName,
-                            cachedRowSet.getString("ACTION_PAR_VAL"))
-                    );
-        }
-        String actionOutput = cachedRowSet.getString("ACTION_OUTPUT_NM");
-        if (actionOutput != null && actionExecutionDtoBuildHelper.getInputParameters().get(actionOutput) == null) {
-            actionExecutionDtoBuildHelper.getOutput()
-                    .put(actionOutput, new OutputDto(actionOutput,
-                            cachedRowSet.getString("ACTION_OUTPUT_VAL"))
-                    );
-        }
-
-    }
-
 
     // Name of column already verified
     private ScriptExecutionDtoBuildHelper mapScriptExecutionDtoBuildHelper(CachedRowSet cachedRowSet) throws SQLException {
@@ -181,19 +182,22 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 .build();
     }
 
+    // Name of column already verified
     private ActionExecutionDtoBuildHelper mapActionExecutionDtoBuildHelper(CachedRowSet cachedRowSet) throws SQLException {
         return ActionExecutionDtoBuildHelper.builder()
-                .runId(cachedRowSet.getString("ACTION_RUN_ID"))
+                .runId(cachedRowSet.getString("RUN_ID")) // the runId of the action is the same than the runId of the script
                 .processId(cachedRowSet.getLong("ACTION_PRC_ID"))
                 .type(cachedRowSet.getString("ACTION_TYP_NM"))
                 .name(cachedRowSet.getString("ACTION_NM"))
-                .description(cachedRowSet.getString("ACTION_DES"))
-                .condition(cachedRowSet.getString("ACTION_COND"))
-                .errorStop(cachedRowSet.getBoolean(""))
-                .errorExpected(cachedRowSet.getBoolean(""))
-                .status(ScriptRunStatus.valueOf(cachedRowSet.getString("")))
-                .startTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("")))
-                .endTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("")))
+                .description(cachedRowSet.getString("ACTION_DSC"))
+                .condition(cachedRowSet.getString("ACTION_CONDITION_VAL"))
+                .errorStop(cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("y") ||
+                        cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("yes"))
+                .errorExpected(cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("y") ||
+                        cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("yes"))
+                .status(ScriptRunStatus.valueOf(cachedRowSet.getString("ACTION_ST_NM")))
+                .startTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("ACTION_STRT_TMS")))
+                .endTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("ACTION_END_TMS")))
                 .build();
     }
 

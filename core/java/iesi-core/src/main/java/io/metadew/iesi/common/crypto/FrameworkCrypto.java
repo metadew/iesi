@@ -1,14 +1,19 @@
 package io.metadew.iesi.common.crypto;
 
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.crypto.algo.AESEncryptBasic;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.Console;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +24,8 @@ public class FrameworkCrypto {
 
     private static FrameworkCrypto INSTANCE;
 
+    private final Logger LOGGER = LogManager.getLogger();
+
     public static FrameworkCrypto getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new FrameworkCrypto();
@@ -26,8 +33,25 @@ public class FrameworkCrypto {
         return INSTANCE;
     }
 
-    private FrameworkCrypto() {
-        this.aes = new AESEncryptBasic("c7c1e47391154a6a");
+
+    public FrameworkCrypto() {
+        try {
+            if (Configuration.getInstance().getProperty("iesi.security.encryption.alias").isPresent()) {
+                Console console = System.console();
+                char[] password = console.readPassword("Enter password");
+                String keystoreLocation = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
+                String alias = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.alias").toString();
+                String keyJKS = new JavaKeystore().loadKey(password, keystoreLocation, alias);
+                this.aes = new AESEncryptBasic(keyJKS);
+            } else if (Configuration.getInstance().getProperty("iesi.security.encryption.key").isPresent()) {
+                this.aes = new AESEncryptBasic(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString());
+            } else {
+                LOGGER.warn(MessageFormat.format("Warning: don't use hardcoded encrypted key", this.aes));
+                this.aes = new AESEncryptBasic("c7c1e47391154a6a");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
     // Methods

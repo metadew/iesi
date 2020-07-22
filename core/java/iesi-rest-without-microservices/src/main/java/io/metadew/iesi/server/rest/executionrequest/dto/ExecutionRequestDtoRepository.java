@@ -34,10 +34,45 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    public int getTotalPages(int limit) {
-        String payLoad = "SELECT COUNT(REQUEST_ID) FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests") + ";";
-        int totalPages = Math.round(Integer.parseInt(payLoad) / limit);
-        return totalPages;
+    public int getTotalPages(int limit, String filterColumn, String searchParam, String request_to, String request_from) {
+        try {
+            String query = "SELECT " +
+                    "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
+                    "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH, " +
+                    "SCRPT_NM_EXEC_REQ.SCRPT_REQUEST_ID AS SCRPT_NM_EXEC_REQ, " +
+                    "SCRPT_EXEC_REQ.SCRPT_REQUEST_ID AS SCRPT_EXEC_REQ, " +
+                    "EXECUTION_REQUEST_LBL.REQUEST_ID AS EXECUTION_REQUEST_LBL, " +
+                    "COUNT(*) " +
+                    "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() +
+                    " AS EXECUTION_REQUEST " +
+
+                    " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+
+                    "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " NON_AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+
+                    "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " EXECUTION_REQUEST_LBL " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = EXECUTION_REQUEST_LBL.REQUEST_ID " +
+
+                    "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " SCRPT_EXEC_REQ " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = SCRPT_EXEC_REQ.SCRPT_REQUEST_ID " +
+
+                    "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " SCRPT_NM_EXEC_REQ " +
+                    "ON SCRPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRPT_NM_EXEC_REQ.SCRPT_REQUEST_ID " +
+
+                    filter(filterColumn, searchParam, request_to, request_from) + " ;";
+
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+            int totalPages = 0;
+            while (cachedRowSet.next()) {
+                String result = cachedRowSet.getString("COUNT(*)");
+                totalPages = Math.round(Integer.parseInt(result) / limit);
+            }
+            return totalPages;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String orderBy(List<String> columns, List<String> sorts) {
@@ -83,7 +118,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                 return sqlQuery.toString();
             } else if (filterColumn.equals("request_timestamp") && request_from == null) {
                 sqlQuery.append(" WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(request_to + "%"));
-                System.out.println(sqlQuery.toString());
                 return sqlQuery.toString();
             } else if (filterColumn.equals("request_timestamp") && request_from != null) {
                 sqlQuery.append(" WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(request_to + "%") + " AND " + SQLTools.GetStringForSQL(request_from + "%"));
@@ -163,7 +197,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                             ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
                 } else {
                     LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
-
                 }
             }
             return executionRequests;

@@ -5,13 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
-public class TotalPages<T> extends RepresentationModel {
+public class TotalPages<T extends Object> extends RepresentationModel {
 
     private int totalPages;
-    private List<T> list;
+    private T payload;
 }

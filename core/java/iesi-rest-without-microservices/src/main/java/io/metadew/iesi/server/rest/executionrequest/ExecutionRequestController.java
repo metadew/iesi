@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoRepos
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
 import io.metadew.iesi.server.rest.executionrequest.dto.TotalPages;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.resource.HalSingleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.ScriptController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +43,7 @@ public class ExecutionRequestController {
     }
 
     @GetMapping("")
-    public HalMultipleEmbeddedResource<TotalPages> getAll(
+    public HalSingleEmbeddedResource<TotalPages> getAll(
             @RequestParam int limit,
             @RequestParam int pageNumber,
             @RequestParam(required = false) List<String> column,
@@ -53,7 +51,7 @@ public class ExecutionRequestController {
             @RequestParam(required = false) String filterColumn,
             @RequestParam(required = false) String searchParam,
             @RequestParam(required = false) String request_to,
-            @RequestParam(required = false) String request_from) throws SQLException {
+            @RequestParam(required = false) String request_from) {
         List<ExecutionRequestDto> executionRequestDtos = executionRequestDtoRepository.getAll(limit, pageNumber, column, sort, filterColumn, searchParam, request_to, request_from)
                 .stream()
                 .parallel()
@@ -61,13 +59,10 @@ public class ExecutionRequestController {
                 .collect(Collectors.toList());
         TotalPages totalPages = TotalPages.builder()
                 .totalPages(executionRequestDtoRepository.getTotalPages(limit, filterColumn, searchParam, request_to, request_from))
-                .list(Collections.singletonList(executionRequestDtos))
+                .payload(executionRequestDtos)
                 .build();
-        List<TotalPages> total = new ArrayList<>();
-        total.add(totalPages);
-        return new HalMultipleEmbeddedResource<>(total);
+        return new HalSingleEmbeddedResource<>(totalPages);
     }
-
 
     @GetMapping("/{id}")
     public ExecutionRequestDto getById(@PathVariable String id) {

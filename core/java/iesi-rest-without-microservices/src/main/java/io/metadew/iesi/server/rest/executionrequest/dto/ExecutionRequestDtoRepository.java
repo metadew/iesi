@@ -64,12 +64,13 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     filter(filterColumn, searchParam, request_to, request_from) + " ;";
 
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
-            int totalPages = 0;
+            double totalPages = 0;
             while (cachedRowSet.next()) {
                 String result = cachedRowSet.getString("COUNT(*)");
-                totalPages = Math.round(Integer.parseInt(result) / limit);
+                totalPages = Math.ceil(Double.parseDouble(result) / limit);
             }
-            return totalPages;
+            int totalPagesToInt = (int) totalPages;
+            return totalPagesToInt;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -83,18 +84,39 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                 for (int i = 0; i < columns.size(); i++) {
                     String column = columns.get(i);
                     String sort = sorts.get(i);
-                    sqlQuery.append(" " + column + " ").append(sort).append(comma);
+                    sqlQuery.append(" " + orderByColumn(column) + " ").append(sort).append(comma);
                 }
                 if (!columns.isEmpty()) {
                     sqlQuery.setLength(sqlQuery.length() - comma.length());
                 }
             } else {
-                sqlQuery.append(columns.get(0) + " ").append(sorts.get(0));
+                String column = columns.get(0);
+                sqlQuery.append(orderByColumn(column) + " ").append(sorts.get(0));
             }
             return sqlQuery.toString();
         }
         sqlQuery.append("EXECUTION_REQUEST.REQUEST_ID ").append(" ASC ");
         return sqlQuery.toString();
+    }
+
+    public String orderByColumn(String column) {
+        StringBuilder sqlQuery = new StringBuilder();
+        switch (column) {
+            case "request_name":
+                sqlQuery.append("EXECUTION_REQUEST.REQUEST_NM ");
+                return sqlQuery.toString();
+            case "request_timestamp":
+                sqlQuery.append("EXECUTION_REQUEST.REQUEST_TMS ");
+                return sqlQuery.toString();
+            case "script_name":
+                sqlQuery.append("SCRPT_NM_EXEC_REQ.SCRPT_NAME ");
+                return sqlQuery.toString();
+            case "script_version":
+                sqlQuery.append("SCRPT_NM_EXEC_REQ.SCRPT_VRS ");
+                return sqlQuery.toString();
+            default:
+                throw new IllegalStateException("Wrong query on column");
+        }
     }
 
     public String filter(String filterColumn, String searchParam, String request_to, String request_from) {

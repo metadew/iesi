@@ -32,38 +32,8 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    public int getTotalPages(int limit) {
-        String payLoad = "SELECT COUNT(*) FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts") + ";";
-        int totalPages = Math.round(Integer.parseInt(payLoad) / limit);
-        return totalPages;
-    }
-
-
-    public String orderBy(List<String> columns, List<String> sorts) {
-        StringBuilder sqlQuery = new StringBuilder();
-        if (columns.size() > 1) {
-            final String comma = ",";
-            for (int i = 0; i < columns.size(); i++) {
-                String column = columns.get(i);
-                String sort = sorts.get(i);
-                sqlQuery.append(" " + column + " ").append(sort).append(comma);
-            }
-            if (!columns.isEmpty()) {
-                sqlQuery.setLength(sqlQuery.length() - comma.length());
-            }
-            return sqlQuery.toString();
-        } else if (columns.size() == 1) {
-            sqlQuery.append(columns.get(0) + " ").append(sorts.get(0));
-            return sqlQuery.toString();
-        } else {
-            sqlQuery.append("script.SCRIPT_ID ").append(" ASC ");
-            return sqlQuery.toString();
-        }
-    }
-
-
     @Override
-    public List<ScriptDto> getAll(List<String> expansions, boolean isLatestVersionOnly, int limit, int pageNumber, List<String> column, List<String> sort) {
+    public List<ScriptDto> getAll(List<String> expansions, boolean isLatestVersionOnly) {
         try {
             Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
             Map<ActionKey, ActionDto> actionDtos = new HashMap<>();
@@ -97,8 +67,6 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     "on script.SCRIPT_ID = action_parameter.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action_parameter.SCRIPT_VRS_NB and action.ACTION_ID = action_parameter.ACTION_ID" +
                     getWhereClause(null, null, isLatestVersionOnly).orElse("") +
                     (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(null, null, isLatestVersionOnly) : "") +
-                    " ORDER BY " + orderBy(column, sort) +
-                    " LIMIT " + SQLTools.GetStringForSQL(limit) + " OFFSET (" + SQLTools.GetStringForSQL(pageNumber) + "-1 ) * " + SQLTools.GetStringForSQL(limit) + " ) " +
                     ";";
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {

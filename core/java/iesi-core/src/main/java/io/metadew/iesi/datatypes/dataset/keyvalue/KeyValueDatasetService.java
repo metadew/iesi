@@ -46,8 +46,8 @@ public class KeyValueDatasetService extends DatasetService<KeyValueDataset> impl
 
     private MetadataTable metadataTable = new MetadataTable("data", "dataset", "dataset", "dataset",
             Stream.of(
-                    new AbstractMap.SimpleEntry<>("key", new MetadataField("key", 1, "string", 2000, false, false, true)),
-                    new AbstractMap.SimpleEntry<>("value", new MetadataField("key", 1, "string", 2000, false, false, true))
+                    new AbstractMap.SimpleEntry<>("key", new MetadataField("key", 1, "string", 2000, false, false, true, false)),
+                    new AbstractMap.SimpleEntry<>("value", new MetadataField("key", 1, "string", 2000, false, false, true, false))
             ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
     public synchronized static KeyValueDatasetService getInstance() {

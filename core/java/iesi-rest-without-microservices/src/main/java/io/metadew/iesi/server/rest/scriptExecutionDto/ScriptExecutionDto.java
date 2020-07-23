@@ -41,7 +41,6 @@ public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> 
     // Label: name, value
     private List<ScriptLabelDto> designLabels = new ArrayList<>();
 
-    // TODO: add to query
     // EXE_REQ_LBL OR TRC_SCRIPT_LBL
     private List<ExecutionRequestLabelDto> executionLabels = new ArrayList<>();
 

@@ -8,6 +8,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class ActionExecutionKey {
-    private final Long prcId;
     private final String actionId;
+    private final Long prcId;
 }

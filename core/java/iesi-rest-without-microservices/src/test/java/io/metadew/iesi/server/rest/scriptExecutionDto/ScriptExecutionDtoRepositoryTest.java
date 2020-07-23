@@ -24,7 +24,6 @@ class ScriptExecutionDtoRepositoryTest {
     @Autowired
     private ScriptExecutionDtoRepository scriptExecutionDtoRepository;
 
-
     //    testing the getSQLQuery -> need getSQLQuery to be public
     @Test
     void getSQLQueryTest() {

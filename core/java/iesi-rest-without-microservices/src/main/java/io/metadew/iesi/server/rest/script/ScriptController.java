@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.resource.HalSingleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +39,17 @@ public class ScriptController {
     }
 
     @GetMapping("")
-    public HalMultipleEmbeddedResource<ScriptDto> getAll(@RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
-                                                         @RequestParam(required = false, name = "version") String version) {
-        List<ScriptDto> scripts = scriptDtoService.getAll(expansions, version != null && version.toLowerCase().equals("latest"));
-        return new HalMultipleEmbeddedResource<>(scripts);
+    public HalSingleEmbeddedResource<TotalPages> getAll(
+            @RequestParam int limit,
+            @RequestParam int pageNumber,
+            @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
+            @RequestParam(required = false, name = "version") String version) {
+        List<ScriptDto> scripts = scriptDtoService.getAll(limit, pageNumber, expansions, version != null && version.toLowerCase().equals("latest"));
+        TotalPages totalPages = TotalPages.builder()
+                .totalPages(scriptDtoService.getTotalPages(limit, expansions, version != null && version.toLowerCase().equals("latest")))
+                .payload(scripts)
+                .build();
+        return new HalSingleEmbeddedResource<>(totalPages);
     }
 
     @GetMapping("/{name}")

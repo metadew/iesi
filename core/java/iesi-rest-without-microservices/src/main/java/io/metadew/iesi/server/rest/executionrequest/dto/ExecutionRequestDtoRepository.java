@@ -64,13 +64,12 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     filter(filterColumn, searchParam, request_to, request_from) + " ;";
 
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
-            double totalPages = 0;
+            int totalPages = 0;
             while (cachedRowSet.next()) {
                 String result = cachedRowSet.getString("COUNT(*)");
-                totalPages = Math.ceil(Double.parseDouble(result) / limit);
+                totalPages = Math.round(Integer.parseInt(result) / limit);
             }
-            int totalPagesToInt = (int) totalPages;
-            return totalPagesToInt;
+            return totalPages;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

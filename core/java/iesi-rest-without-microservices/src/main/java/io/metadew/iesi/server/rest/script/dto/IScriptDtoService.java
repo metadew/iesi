@@ -11,15 +11,9 @@ public interface IScriptDtoService {
 
     ScriptDto convertToDto(Script script);
 
-//    List<ScriptDto> getAll();
-//
-//    List<ScriptDto> getAll(List<String> expansions);
-//
-//    List<ScriptDto> getAll(List<String> expansions, boolean isLatestOnly);
-
     int getTotalPages(int limit, List<String> expansions, boolean isLatestVersionOnly);
 
-    List<ScriptDto> getAll(int limit, int pageNumber,List<String> expansions, boolean isLatestOnly);
+    List<ScriptDto> getAll(int limit, int pageNumber, List<String> expansions, boolean isLatestOnly);
 
     List<ScriptDto> getByName(String name);
 

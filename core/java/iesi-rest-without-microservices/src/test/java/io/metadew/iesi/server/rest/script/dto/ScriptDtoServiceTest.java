@@ -1,179 +1,184 @@
-//package io.metadew.iesi.server.rest.script.dto;
-//
-//import io.metadew.iesi.common.configuration.ScriptRunStatus;
-//import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-//import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
-//import io.metadew.iesi.metadata.definition.script.Script;
-//import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
-//import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
-//import io.metadew.iesi.metadata.repository.MetadataRepository;
-//import io.metadew.iesi.server.rest.Application;
-//import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
-//import io.metadew.iesi.server.rest.builder.scriptresult.ScriptResultBuilder;
-//import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-//import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
-//import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
-//import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
-//import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionInformation;
-//import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
-//import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.ActiveProfiles;
-//import org.springframework.test.context.ContextConfiguration;
-//import org.springframework.test.context.junit.jupiter.SpringExtension;
-//
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.UUID;
-//import java.util.stream.Collectors;
-//import java.util.stream.Stream;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
-//@ContextConfiguration(classes = TestConfiguration.class)
-//@ActiveProfiles("test")
-//class ScriptDtoServiceTest {
-//
-//    @Autowired
-//    private IScriptDtoService scriptDtoService;
-//
-//    @Autowired
-//    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-//
-//    @Autowired
-//    private ScriptResultConfiguration scriptResultConfiguration;
-//
-//    @BeforeEach
-//    void setup() {
-//        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
-//        //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
-//        //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::createAllTables);
-//    }
-//
-//    @Test
-//    void getAllNoScriptsTest() {
-//        assertThat(scriptDtoService.getAll().size())
-//                .isEqualTo(0);
-//    }
-//
-//    @Test
-//    void getAllSimpleTest() {
-//        ScriptResult scriptResult = new ScriptResult(new ScriptResultKey("123", 1L), 1L, " ", "", 1L, "", ScriptRunStatus.SUCCESS, LocalDateTime.now(), LocalDateTime.now());
-//        ScriptResult scriptResult1 = ScriptResult.builder().scriptResultKey(
-//                ScriptResultKey.builder()
-//                        .runId("azeaz")
-//                        .processId(1L).build())
-//                .scriptId("azraze")
-//                .build();
-//
-//        scriptResultConfiguration.insert(scriptResult);
-//
-//
-//        Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
-//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
-//        assertThat(scriptDtoService.getAll().size())
-//                .isEqualTo(1);
-//        assertThat(scriptDtoService.getAll().get(0))
-//                .isEqualTo(new ScriptDto("script0", "dummy script",
-//                        new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
-//                        Stream.of(
-//                                new ActionDto(0, "action0", "fwk.dummy",
-//                                        "dummy action", null, null, null, false, false,
-//                                        0,
-//                                        Stream.of(
-//                                                new ActionParameterDto("parameter0", "value0"),
-//                                                new ActionParameterDto("parameter1", "value1"))
-//                                                .collect(Collectors.toList())),
-//                                new ActionDto(1, "action1", "fwk.dummy",
-//                                        "dummy action", null, null, null, false, false,
-//                                        0,
-//                                        Stream.of(
-//                                                new ActionParameterDto("parameter0", "value0"),
-//                                                new ActionParameterDto("parameter1", "value1"))
-//                                                .collect(Collectors.toList()))
-//                        ).collect(Collectors.toList()),
-//                        Stream.of(
-//                                new ScriptLabelDto("label0", "value0"),
-//                                new ScriptLabelDto("label1", "value1")
-//                        ).collect(Collectors.toList()), null, null));
-//    }
-//
-//    @Test
-//    void getAllMultipleScriptsTest() {
-//        Script script1 = ScriptBuilder.simpleScript("script0", 0, 1, 2, 1);
-//        Script script2 = ScriptBuilder.simpleScript("script1", 0, 1, 2, 1);
-//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
-//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
-//        assertThat(scriptDtoService.getAll().size())
-//                .isEqualTo(2);
-//        assertThat(scriptDtoService.getAll())
-//                .contains(new ScriptDto("script0", "dummy script",
-//                        new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
-//                        Stream.of(new ActionDto(0, "action0", "fwk.dummy",
-//                                "dummy action", null, null, null, false, false,
-//                                0,
-//                                Stream.of(
-//                                        new ActionParameterDto("parameter0", "value0"),
-//                                        new ActionParameterDto("parameter1", "value1"))
-//                                        .collect(Collectors.toList())))
-//                                .collect(Collectors.toList()),
-//                        Stream.of(new ScriptLabelDto("label0", "value0"))
-//                                .collect(Collectors.toList()), null, null), new ScriptDto("script1", "dummy script",
-//                        new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
-//                        Stream.of(new ActionDto(0, "action0", "fwk.dummy",
-//                                "dummy action", null, null, null, false, false,
-//                                0,
-//                                Stream.of(
-//                                        new ActionParameterDto("parameter0", "value0"),
-//                                        new ActionParameterDto("parameter1", "value1"))
-//                                        .collect(Collectors.toList())))
-//                                .collect(Collectors.toList()),
-//                        Stream.of(new ScriptLabelDto("label0", "value0"))
-//                                .collect(Collectors.toList()), null, null));
-//    }
-//
-//    @Test
-//    void getAllMultipleScriptVersionsTest() {
-//        Script script1 = ScriptBuilder.simpleScript("script0", 0, 1, 2, 1);
-//        Script script2 = ScriptBuilder.simpleScript("script0", 1, 1, 2, 1);
-//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
-//        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
-//        assertThat(scriptDtoService.getAll().size())
-//                .isEqualTo(2);
-//        assertThat(scriptDtoService.getAll())
-//                .contains(new ScriptDto("script0", "dummy script",
-//                        new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
-//                        Stream.of(new ActionDto(0, "action0", "fwk.dummy",
-//                                "dummy action", null, null, null, false, false,
-//                                0,
-//                                Stream.of(
-//                                        new ActionParameterDto("parameter0", "value0"),
-//                                        new ActionParameterDto("parameter1", "value1"))
-//                                        .collect(Collectors.toList())))
-//                                .collect(Collectors.toList()),
-//                        Stream.of(new ScriptLabelDto("label0", "value0"))
-//                                .collect(Collectors.toList()), null, null), new ScriptDto("script0", "dummy script",
-//                        new ScriptVersionDto(1, "dummy version"), new ArrayList<>(),
-//                        Stream.of(new ActionDto(0, "action0", "fwk.dummy",
-//                                "dummy action", null, null, null, false, false,
-//                                0,
-//                                Stream.of(
-//                                        new ActionParameterDto("parameter0", "value0"),
-//                                        new ActionParameterDto("parameter1", "value1"))
-//                                        .collect(Collectors.toList())))
-//                                .collect(Collectors.toList()),
-//                        Stream.of(new ScriptLabelDto("label0", "value0"))
-//                                .collect(Collectors.toList()), null, null));
-//    }
-//
+package io.metadew.iesi.server.rest.script.dto;
+
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.server.rest.Application;
+import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
+import io.metadew.iesi.server.rest.builder.scriptresult.ScriptResultBuilder;
+import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
+import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
+import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
+import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionInformation;
+import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
+import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
+@ContextConfiguration(classes = TestConfiguration.class)
+@ActiveProfiles("test")
+class ScriptDtoServiceTest {
+
+    @Autowired
+    private IScriptDtoService scriptDtoService;
+
+    @Autowired
+    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private ScriptResultConfiguration scriptResultConfiguration;
+
+    @BeforeEach
+    void setup() {
+        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
+        //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
+        //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+    }
+
+    @Test
+    void getAllNoScriptsTest() {
+        assertThat(scriptDtoService.getAll(1,1,null,true).size())
+                .isEqualTo(0);
+    }
+
+    @Test
+    void getAllSimpleTest() {
+        ScriptResult scriptResult = new ScriptResult(new ScriptResultKey("123", 1L), 1L, " ", "", 1L, "", ScriptRunStatus.SUCCESS, LocalDateTime.now(), LocalDateTime.now());
+        ScriptResult scriptResult1 = ScriptResult.builder().scriptResultKey(
+                ScriptResultKey.builder()
+                        .runId("azeaz")
+                        .processId(1L).build())
+                .scriptId("azraze")
+                .build();
+
+        scriptResultConfiguration.insert(scriptResult);
+
+        Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
+        List<String> expansions = new ArrayList<>();
+//        expansions.add("");
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
+        assertThat(scriptDtoService.getAll(1,1,expansions,false).size())
+                .isEqualTo(1);
+        assertThat(scriptDtoService.getAll(1,1,expansions,false).get(0))
+                .isEqualTo(new ScriptDto("script0", "dummy script",
+                        new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
+                        Stream.of(
+                                new ActionDto(0, "action0", "fwk.dummy",
+                                        "dummy action", null, null, null, false, false,
+                                        0,
+                                        Stream.of(
+                                                new ActionParameterDto("parameter0", "value0"),
+                                                new ActionParameterDto("parameter1", "value1"))
+                                                .collect(Collectors.toList())),
+                                new ActionDto(1, "action1", "fwk.dummy",
+                                        "dummy action", null, null, null, false, false,
+                                        0,
+                                        Stream.of(
+                                                new ActionParameterDto("parameter0", "value0"),
+                                                new ActionParameterDto("parameter1", "value1"))
+                                                .collect(Collectors.toList()))
+                        ).collect(Collectors.toList()),
+                        Stream.of(
+                                new ScriptLabelDto("label0", "value0"),
+                                new ScriptLabelDto("label1", "value1")
+                        ).collect(Collectors.toList()), null, null));
+    }
+
+    @Test
+    void getAllMultipleScriptsTest() {
+        Script script1 = ScriptBuilder.simpleScript("script0", 0, 1, 2, 1);
+        Script script2 = ScriptBuilder.simpleScript("script1", 0, 1, 2, 1);
+        List<String> expansions = new ArrayList<>();
+        expansions.add("");
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
+        assertThat(scriptDtoService.getAll(2,1,expansions,false).size())
+                .isEqualTo(2);
+        assertThat(scriptDtoService.getAll(2,1,expansions,false))
+                .contains(new ScriptDto("script0", "dummy script",
+                        new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
+                        Stream.of(new ActionDto(0, "action0", "fwk.dummy",
+                                "dummy action", null, null, null, false, false,
+                                0,
+                                Stream.of(
+                                        new ActionParameterDto("parameter0", "value0"),
+                                        new ActionParameterDto("parameter1", "value1"))
+                                        .collect(Collectors.toList())))
+                                .collect(Collectors.toList()),
+                        Stream.of(new ScriptLabelDto("label0", "value0"))
+                                .collect(Collectors.toList()), null, null), new ScriptDto("script1", "dummy script",
+                        new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
+                        Stream.of(new ActionDto(0, "action0", "fwk.dummy",
+                                "dummy action", null, null, null, false, false,
+                                0,
+                                Stream.of(
+                                        new ActionParameterDto("parameter0", "value0"),
+                                        new ActionParameterDto("parameter1", "value1"))
+                                        .collect(Collectors.toList())))
+                                .collect(Collectors.toList()),
+                        Stream.of(new ScriptLabelDto("label0", "value0"))
+                                .collect(Collectors.toList()), null, null));
+    }
+
+    @Test
+    void getAllMultipleScriptVersionsTest() {
+        Script script1 = ScriptBuilder.simpleScript("script0", 0, 1, 2, 1);
+        Script script2 = ScriptBuilder.simpleScript("script0", 1, 1, 2, 1);
+        List<String> expansions = new ArrayList<>();
+        expansions.add("");
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
+        assertThat(scriptDtoService.getAll(2,1,expansions,false).size())
+                .isEqualTo(2);
+        assertThat(scriptDtoService.getAll(2,1,expansions,false))
+                .contains(new ScriptDto("script0", "dummy script",
+                        new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
+                        Stream.of(new ActionDto(0, "action0", "fwk.dummy",
+                                "dummy action", null, null, null, false, false,
+                                0,
+                                Stream.of(
+                                        new ActionParameterDto("parameter0", "value0"),
+                                        new ActionParameterDto("parameter1", "value1"))
+                                        .collect(Collectors.toList())))
+                                .collect(Collectors.toList()),
+                        Stream.of(new ScriptLabelDto("label0", "value0"))
+                                .collect(Collectors.toList()), null, null), new ScriptDto("script0", "dummy script",
+                        new ScriptVersionDto(1, "dummy version"), new ArrayList<>(),
+                        Stream.of(new ActionDto(0, "action0", "fwk.dummy",
+                                "dummy action", null, null, null, false, false,
+                                0,
+                                Stream.of(
+                                        new ActionParameterDto("parameter0", "value0"),
+                                        new ActionParameterDto("parameter1", "value1"))
+                                        .collect(Collectors.toList())))
+                                .collect(Collectors.toList()),
+                        Stream.of(new ScriptLabelDto("label0", "value0"))
+                                .collect(Collectors.toList()), null, null));
+    }
+
 //    @Test
 //    void getAllSimpleWithSingleExecutionExecutionExpansionEnabledTest() {
 //        Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
@@ -731,5 +736,5 @@
 //                                        LocalDateTime.parse("2020-05-20T10:10:33"))
 //                        ).collect(Collectors.toList())), null));
 //    }
-//
-//}
+
+}

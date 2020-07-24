@@ -119,7 +119,6 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
             }
-            System.out.println(query);
             return new ArrayList<>(scriptDtos.values());
         } catch (SQLException e) {
             throw new RuntimeException(e);

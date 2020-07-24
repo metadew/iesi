@@ -13,5 +13,4 @@ public interface IScriptDtoRepository {
 
     Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions);
 
-//    List<ScriptDto> getAll(List<String> expansions, boolean isLatestOnly);
 }

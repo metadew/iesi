@@ -212,11 +212,6 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         }
     }
 
-//    @Override
-//    public List<ScriptDto> getAll(List<String> expansions, boolean isLatestOnly) {
-//        return null;
-//    }
-
     private ActionParameterDto mapActionParameterDto(CachedRowSet cachedRowSet) throws SQLException {
         return new ActionParameterDto(
                 cachedRowSet.getString("ACTION_PAR_NM"),

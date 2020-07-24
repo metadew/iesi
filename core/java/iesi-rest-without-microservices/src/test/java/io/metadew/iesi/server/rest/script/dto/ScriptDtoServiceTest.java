@@ -60,7 +60,7 @@ class ScriptDtoServiceTest {
 
     @Test
     void getAllNoScriptsTest() {
-        assertThat(scriptDtoService.getAll(1,1,null,true).size())
+        assertThat(scriptDtoService.getAll(1, 1, null, true).size())
                 .isEqualTo(0);
     }
 
@@ -80,9 +80,9 @@ class ScriptDtoServiceTest {
         List<String> expansions = new ArrayList<>();
         expansions.add("");
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
-        assertThat(scriptDtoService.getAll(10,0,expansions,false).size())
+        assertThat(scriptDtoService.getAll(10, 0, expansions, false).size())
                 .isEqualTo(1);
-        assertThat(scriptDtoService.getAll(10,0,expansions,false).get(0))
+        assertThat(scriptDtoService.getAll(10, 0, expansions, false).get(0))
                 .isEqualTo(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(
@@ -115,9 +115,9 @@ class ScriptDtoServiceTest {
         expansions.add("");
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
-        assertThat(scriptDtoService.getAll(10,1,expansions,false).size())
+        assertThat(scriptDtoService.getAll(10, 1, expansions, false).size())
                 .isEqualTo(2);
-        assertThat(scriptDtoService.getAll(10,1,expansions,false))
+        assertThat(scriptDtoService.getAll(10, 1, expansions, false))
                 .contains(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(new ActionDto(0, "action0", "fwk.dummy",
@@ -151,9 +151,9 @@ class ScriptDtoServiceTest {
         expansions.add("");
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
-        assertThat(scriptDtoService.getAll(10,1,expansions,false).size())
+        assertThat(scriptDtoService.getAll(10, 1, expansions, false).size())
                 .isEqualTo(2);
-        assertThat(scriptDtoService.getAll(10,1,expansions,false))
+        assertThat(scriptDtoService.getAll(10, 1, expansions, false))
                 .contains(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(new ActionDto(0, "action0", "fwk.dummy",
@@ -195,9 +195,9 @@ class ScriptDtoServiceTest {
                 .build();
         ScriptResultConfiguration.getInstance().insert(scriptResult);
 
-        assertThat(scriptDtoService.getAll(10,0,Stream.of("execution").collect(Collectors.toList()),false).size())
+        assertThat(scriptDtoService.getAll(10, 0, Stream.of("execution").collect(Collectors.toList()), false).size())
                 .isEqualTo(1);
-        assertThat(scriptDtoService.getAll(10,0,Stream.of("execution").collect(Collectors.toList()),false).get(0))
+        assertThat(scriptDtoService.getAll(10, 0, Stream.of("execution").collect(Collectors.toList()), false).get(0))
                 .isEqualTo(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(
@@ -257,9 +257,9 @@ class ScriptDtoServiceTest {
                 .build();
         ScriptResultConfiguration.getInstance().insert(scriptResult2);
 
-        assertThat(scriptDtoService.getAll(10,0,Stream.of("execution").collect(Collectors.toList()),false).size())
+        assertThat(scriptDtoService.getAll(10, 0, Stream.of("execution").collect(Collectors.toList()), false).size())
                 .isEqualTo(1);
-        assertThat(scriptDtoService.getAll(10,0,Stream.of("execution").collect(Collectors.toList()),false).get(0))
+        assertThat(scriptDtoService.getAll(10, 0, Stream.of("execution").collect(Collectors.toList()), false).get(0))
                 .isEqualTo(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(
@@ -309,9 +309,9 @@ class ScriptDtoServiceTest {
         ScriptResultConfiguration.getInstance().insert(scriptResult);
         List<String> expansions = new ArrayList<>();
         expansions.add("");
-        assertThat(scriptDtoService.getAll(10,0,expansions,false).size())
+        assertThat(scriptDtoService.getAll(10, 0, expansions, false).size())
                 .isEqualTo(1);
-        assertThat(scriptDtoService.getAll(10,0,expansions,false).get(0))
+        assertThat(scriptDtoService.getAll(10, 0, expansions, false).get(0))
                 .isEqualTo(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(
@@ -348,7 +348,7 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
 
-        List<ScriptDto> queryResult = scriptDtoService.getAll(10,0,new ArrayList<>(), true);
+        List<ScriptDto> queryResult = scriptDtoService.getAll(10, 0, new ArrayList<>(), true);
         assertThat(queryResult.size())
                 .as("Only 2 ScriptDto should be return")
                 .isEqualTo(2);
@@ -393,11 +393,11 @@ class ScriptDtoServiceTest {
                 .build();
         ScriptResultConfiguration.getInstance().insert(scriptResult);
 
-        assertThat(scriptDtoService.getAll(10,0,Stream.of("execution").collect(Collectors.toList()), true).size())
+        assertThat(scriptDtoService.getAll(10, 0, Stream.of("execution").collect(Collectors.toList()), true).size())
                 .as("There should be only one ScriptDto")
                 .isEqualTo(1);
 
-        assertThat(scriptDtoService.getAll(10,0,Stream.of("execution").collect(Collectors.toList()), true).get(0))
+        assertThat(scriptDtoService.getAll(10, 0, Stream.of("execution").collect(Collectors.toList()), true).get(0))
                 .as("The retrieved ScriptDto should be equal to this ScriptDto")
                 .isEqualTo(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(1, "dummy version"), new ArrayList<>(),
@@ -442,7 +442,7 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
 
-        List<ScriptDto> queryResult = scriptDtoService.getAll(10,0,new ArrayList<>(), true);
+        List<ScriptDto> queryResult = scriptDtoService.getAll(10, 0, new ArrayList<>(), true);
         assertThat(queryResult.size())
                 .as("Only 2 ScriptDto should be return")
                 .isEqualTo(2);

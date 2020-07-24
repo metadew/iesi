@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface IScriptDtoRepository {
 
-    List<ScriptDto> getAll(int limit, int pageNumber,List<String> expansions, boolean isLatestOnly);
+    List<ScriptDto> getAll(int limit, int pageNumber, List<String> expansions, boolean isLatestOnly);
 
     int getTotalPages(int limit, List<String> expansions, boolean isLatestVersionOnly);
 

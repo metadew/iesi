@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,13 +52,13 @@ class ScriptControllerTest {
     void getAllNoResult() throws Exception {
         // Mock Service
         List<ScriptDto> scriptDtoList = new ArrayList<>();
-        given(scriptDtoService.getAll(0,0, null, false)).willReturn(scriptDtoList);
+        given(scriptDtoService.getAll(0, 0, null, false)).willReturn(scriptDtoList);
 
         mvc.perform(get("/scripts?limit=0&pageNumber=0").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
-                .andExpect(jsonPath("$").isMap());}
-
+                .andExpect(jsonPath("$").isMap());
+    }
 
     @Test
     void getAll2ResultsAndSerializationTest() throws Exception {
@@ -67,7 +66,7 @@ class ScriptControllerTest {
         ScriptDto scriptDto0 = ScriptDtoBuilder.simpleScriptDto("1stScript", 0);
         ScriptDto scriptDto1 = ScriptDtoBuilder.simpleScriptDto("1stScript", 1);
         List<ScriptDto> scriptDtoList = Stream.of(scriptDto0, scriptDto1).collect(Collectors.toList());
-        given(scriptDtoService.getAll(1,1,new ArrayList<>(), false)).willReturn(scriptDtoList);
+        given(scriptDtoService.getAll(1, 1, new ArrayList<>(), false)).willReturn(scriptDtoList);
 
         mvc.perform(get("/scripts?limit=1&pageNumber=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -160,7 +159,7 @@ class ScriptControllerTest {
         ScriptDto scriptDto0 = ScriptDtoBuilder.simpleScriptDto("1Script", 2);
         ScriptDto scriptDto1 = ScriptDtoBuilder.simpleScriptDto("AnotherScript", 3);
         List<ScriptDto> scriptDtoList = Stream.of(scriptDto0, scriptDto1).collect(Collectors.toList());
-        given(scriptDtoService.getAll(1,1,new ArrayList<>(), true)).willReturn(scriptDtoList);
+        given(scriptDtoService.getAll(1, 1, new ArrayList<>(), true)).willReturn(scriptDtoList);
 
         mvc.perform(get("/scripts?limit=1&pageNumber=1&version=latest").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

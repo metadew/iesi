@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.script.dto;
+package io.metadew.iesi.server.rest.pagination;
 
 import lombok.Builder;
 import lombok.Getter;

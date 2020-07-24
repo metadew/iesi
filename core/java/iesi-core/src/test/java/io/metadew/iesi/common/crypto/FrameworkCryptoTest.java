@@ -16,7 +16,7 @@ public class FrameworkCryptoTest {
     public void testJavaKeystore() throws Exception {
         String password = "foobar";
         String currentDirectory = System.getProperty("user.dir");
-        String keystoreLocation = currentDirectory + "/src/test/resources/myks.p12";
+        String keystoreLocation = currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
 
         System.setIn(new ByteArrayInputStream(password.getBytes()));
         Scanner scanner = new Scanner(System.in);
@@ -30,7 +30,7 @@ public class FrameworkCryptoTest {
     public void testJavaKeystoreWrongPassword() {
         String password = "fooar";
         String currentDirectory = System.getProperty("user.dir");
-        String keystoreLocation = currentDirectory + "/src/test/resources/myks.p12";
+        String keystoreLocation = currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
 
         System.setIn(new ByteArrayInputStream(password.getBytes()));
         Scanner scanner = new Scanner(System.in);
@@ -39,7 +39,7 @@ public class FrameworkCryptoTest {
         try {
             new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
         } catch (Exception e) {
-            assertEquals("Integrity check failed: java.security.UnrecoverableKeyException: Failed PKCS12 integrity checking", e.getMessage());
+            assertEquals("java.io.IOException: Integrity check failed: java.security.UnrecoverableKeyException: Failed PKCS12 integrity checking", e.getMessage());
         }
     }
 

@@ -102,7 +102,7 @@ public class ExecutionRequestControllerTest {
     @Test
     public void getAllNoResultTest() throws Exception {
         List<ExecutionRequest> executionRequests = new ArrayList<>();
-        given(executionRequestService.getAll()).willReturn(executionRequests);
+        given(executionRequestService.getAll(10,0,null,null,null,null,null,null)).willReturn(executionRequests);
         System.out.println(MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName());
         mvc.perform(get("/execution_requests?limit=1&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -152,8 +152,8 @@ public class ExecutionRequestControllerTest {
         executionRequests.add(executionRequest3);
         executionRequests.add(executionRequest4);
         executionRequests.add(executionRequest5);
-        when(executionRequestDtoRepository.getAll(5, 1, null, null, null, null, null, null)).thenReturn(executionRequests);
-        List<ExecutionRequest> result = executionRequestDtoRepository.getAll(5, 1, null, null, null, null, null, null);
+        when(executionRequestService.getAll(5, 1, null, null, null, null, null, null)).thenReturn(executionRequests);
+        List<ExecutionRequest> result = executionRequestService.getAll(5, 1, null, null, null, null, null, null);
         assertThat(result.size()).isEqualTo(5);
 
         assertThat(result.get(0).getContext())

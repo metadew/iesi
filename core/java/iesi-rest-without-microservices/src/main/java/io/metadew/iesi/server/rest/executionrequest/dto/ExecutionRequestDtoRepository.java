@@ -11,8 +11,6 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -26,7 +24,7 @@ import java.util.List;
 @Log4j2
 @Repository
 public class ExecutionRequestDtoRepository implements IExecutionRequestDtoRepository {
-    private static final Logger LOGGER = LogManager.getLogger();
+
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
@@ -34,7 +32,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    public int getTotalPages(int limit, String filterColumn, String searchParam, String request_to, String request_from) {
+    public int getTotalPages(int limit, String filterColumn, String searchParam, String request_from, String request_to) {
         try {
             String query = "SELECT " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
@@ -61,22 +59,20 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " SCRPT_NM_EXEC_REQ " +
                     "ON SCRPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRPT_NM_EXEC_REQ.SCRPT_REQUEST_ID " +
 
-                    filter(filterColumn, searchParam, request_to, request_from) + " ;";
+                    getFilterClause(filterColumn, searchParam, request_from, request_to) + " ;";
 
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
-            double totalPages = 0;
+            int result = 0;
             while (cachedRowSet.next()) {
-                String result = cachedRowSet.getString("COUNT(*)");
-                totalPages = Math.ceil(Double.parseDouble(result) / limit);
+                 result = cachedRowSet.getInt("COUNT(*)");
             }
-            int totalPagesToInt = (int) totalPages;
-            return totalPagesToInt;
+            return (int) Math.ceil((double) result / limit);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String orderBy(List<String> columns, List<String> sorts) {
+    public String getOrderByStatement(List<String> columns, List<String> sorts) {
         StringBuilder sqlQuery = new StringBuilder();
         if (columns != null) {
             if (columns.size() > 1) {
@@ -100,50 +96,38 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
     }
 
     public String orderByColumn(String column) {
-        StringBuilder sqlQuery = new StringBuilder();
         switch (column) {
             case "request_name":
-                sqlQuery.append("EXECUTION_REQUEST.REQUEST_NM ");
-                return sqlQuery.toString();
+                return " EXECUTION_REQUEST.REQUEST_NM ";
             case "request_timestamp":
-                sqlQuery.append("EXECUTION_REQUEST.REQUEST_TMS ");
-                return sqlQuery.toString();
+                return " EXECUTION_REQUEST.REQUEST_TMS ";
             case "script_name":
-                sqlQuery.append("SCRPT_NM_EXEC_REQ.SCRPT_NAME ");
-                return sqlQuery.toString();
+                return " SCRPT_NM_EXEC_REQ.SCRPT_NAME ";
             case "script_version":
-                sqlQuery.append("SCRPT_NM_EXEC_REQ.SCRPT_VRS ");
-                return sqlQuery.toString();
+                return " SCRPT_NM_EXEC_REQ.SCRPT_VRS ";
             default:
-                throw new IllegalStateException("Wrong query on column");
+                throw new IllegalArgumentException("Wrong query on column");
         }
     }
 
-    public String filter(String filterColumn, String searchParam, String request_to, String request_from) {
+    public String getFilterClause(String filterColumn, String searchParam, String request_from, String request_to) {
         StringBuilder sqlQuery = new StringBuilder();
         if (filterColumn != null) {
             if (filterColumn.equals("request_name")) {
                 sqlQuery.append("WHERE EXECUTION_REQUEST.REQUEST_NM LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
-                return sqlQuery.toString();
             } else if (filterColumn.equals("script_name")) {
                 sqlQuery.append("WHERE SCRPT_NM_EXEC_REQ.SCRPT_NAME LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
-                return sqlQuery.toString();
             } else if (filterColumn.equals("script_version")) {
                 sqlQuery.append("WHERE SCRPT_NM_EXEC_REQ.SCRPT_VRS LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
-                return sqlQuery.toString();
             } else if (filterColumn.equals("script_environment")) {
                 sqlQuery.append("WHERE SCRPT_EXEC_REQ.ENVIRONMENT  LIKE " + SQLTools.GetStringForSQL(searchParam + "%"));
-                return sqlQuery.toString();
             } else if (filterColumn.equals("execution_label")) {
                 List<String> searchParamSpit = Arrays.asList(searchParam.split(":"));
                 sqlQuery.append(" WHERE (EXECUTION_REQUEST_LBL.NAME LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(0) + "%") + ") AND ( EXECUTION_REQUEST_LBL.VALUE LIKE " + SQLTools.GetStringForSQL(searchParamSpit.get(1) + "%") + ")");
-                return sqlQuery.toString();
-            } else if (filterColumn.equals("request_timestamp") && request_from == null) {
-                sqlQuery.append(" WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(request_to + "%"));
-                return sqlQuery.toString();
-            } else if (filterColumn.equals("request_timestamp") && request_from != null) {
-                sqlQuery.append(" WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(request_to + "%") + " AND " + SQLTools.GetStringForSQL(request_from + "%"));
-                return sqlQuery.toString();
+            } else if (filterColumn.equals("request_timestamp") && request_to == null) {
+                sqlQuery.append(" WHERE  EXECUTION_REQUEST.REQUEST_TMS  LIKE " + SQLTools.GetStringForSQL(request_from + "%"));
+            } else if (filterColumn.equals("request_timestamp") && request_to != null) {
+                sqlQuery.append(" WHERE  EXECUTION_REQUEST.REQUEST_TMS  BETWEEN " + SQLTools.GetStringForSQL(request_from + "%") + " AND " + SQLTools.GetStringForSQL(request_to + "%"));
             }
         }
         sqlQuery.append(" ");
@@ -151,7 +135,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
     }
 
 
-    public List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String request_to, String request_from) {
+    public List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String request_from, String request_to) {
         try {
             List<ExecutionRequest> executionRequests = new ArrayList<>();
 
@@ -186,9 +170,9 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " SCRPT_NM_EXEC_REQ " +
                     "ON SCRPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRPT_NM_EXEC_REQ.SCRPT_REQUEST_ID " +
 
-                    filter(filterColumn, searchParam, request_to, request_from)
+                    getFilterClause(filterColumn, searchParam, request_from, request_to)
 
-                    + " ORDER BY " + orderBy(column, sort) + ";";
+                    + " ORDER BY " + getOrderByStatement(column, sort) + ";";
 
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -218,7 +202,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
                 } else {
-                    LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
+                    log.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
                 }
             }
             return executionRequests;

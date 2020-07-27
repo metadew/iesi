@@ -32,14 +32,12 @@ public class ExecutionRequestController {
 
     private final ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler;
     private final ExecutionRequestService executionRequestService;
-    private final ExecutionRequestDtoRepository executionRequestDtoRepository;
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
-                               ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler, ExecutionRequestDtoRepository executionRequestDtoRepository) {
+                               ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler) {
         this.executionRequestService = executionRequestService;
         this.executionRequestDtoResourceAssembler = executionRequestDtoResourceAssembler;
-        this.executionRequestDtoRepository = executionRequestDtoRepository;
     }
 
     @GetMapping("")
@@ -50,15 +48,15 @@ public class ExecutionRequestController {
             @RequestParam(required = false) List<String> sort,
             @RequestParam(required = false) String filterColumn,
             @RequestParam(required = false) String searchParam,
-            @RequestParam(required = false) String request_to,
-            @RequestParam(required = false) String request_from) {
-        List<ExecutionRequestDto> executionRequestDtos = executionRequestDtoRepository.getAll(limit, pageNumber, column, sort, filterColumn, searchParam, request_to, request_from)
+            @RequestParam(required = false) String request_from,
+            @RequestParam(required = false) String request_to) {
+        List<ExecutionRequestDto> executionRequestDtos = executionRequestService.getAll(limit, pageNumber, column, sort, filterColumn, searchParam, request_from, request_to)
                 .stream()
                 .parallel()
                 .map(executionRequestDtoResourceAssembler::toModel)
                 .collect(Collectors.toList());
         TotalPages totalPages = TotalPages.builder()
-                .totalPages(executionRequestDtoRepository.getTotalPages(limit, filterColumn, searchParam, request_to, request_from))
+                .totalPages(executionRequestService.getTotalPages(limit, filterColumn, searchParam, request_from, request_to))
                 .payload(executionRequestDtos)
                 .build();
         return new HalSingleEmbeddedResource<>(totalPages);

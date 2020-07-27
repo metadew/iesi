@@ -92,6 +92,4 @@ public class ScriptDtoService implements IScriptDtoService {
     public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions) {
         return scriptDtoRepository.getByNameAndVersion(name, version, expansions);
     }
-
-
 }

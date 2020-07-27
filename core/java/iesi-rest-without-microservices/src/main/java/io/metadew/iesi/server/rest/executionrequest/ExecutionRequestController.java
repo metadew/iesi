@@ -6,8 +6,11 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoRepository;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.dto.TotalPages;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
+import io.metadew.iesi.server.rest.resource.HalSingleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.ScriptController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +41,25 @@ public class ExecutionRequestController {
     }
 
     @GetMapping("")
-    public HalMultipleEmbeddedResource<ExecutionRequestDto> getAll() {
-        return new HalMultipleEmbeddedResource<>(executionRequestService.getAll()
+    public HalSingleEmbeddedResource<TotalPages> getAll(
+            @RequestParam int limit,
+            @RequestParam int pageNumber,
+            @RequestParam(required = false) List<String> column,
+            @RequestParam(required = false) List<String> sort,
+            @RequestParam(required = false) String filterColumn,
+            @RequestParam(required = false) String searchParam,
+            @RequestParam(required = false) String request_from,
+            @RequestParam(required = false) String request_to) {
+        List<ExecutionRequestDto> executionRequestDtos = executionRequestService.getAll(limit, pageNumber, column, sort, filterColumn, searchParam, request_from, request_to)
                 .stream()
                 .parallel()
                 .map(executionRequestDtoResourceAssembler::toModel)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        TotalPages totalPages = TotalPages.builder()
+                .totalPages(executionRequestService.getTotalPages(limit, filterColumn, searchParam, request_from, request_to))
+                .payload(executionRequestDtos)
+                .build();
+        return new HalSingleEmbeddedResource<>(totalPages);
     }
 
     @GetMapping("/{id}")

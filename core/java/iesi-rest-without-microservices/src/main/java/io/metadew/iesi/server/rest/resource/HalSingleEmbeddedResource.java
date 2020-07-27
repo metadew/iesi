@@ -10,13 +10,17 @@ public class HalSingleEmbeddedResource<T extends RepresentationModel> extends Re
 
     private T embeddedResource;
 
+    public HalSingleEmbeddedResource(T embeddedResource) {
+        this.embeddedResource = embeddedResource;
+    }
+
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("_embedded")
     public T getEmbeddedResource() {
         return embeddedResource;
     }
 
-    public void setEmbeddedResource(T embeddedResource) {
+    public void embedResource(T embeddedResource) {
         this.embeddedResource = embeddedResource;
     }
 }

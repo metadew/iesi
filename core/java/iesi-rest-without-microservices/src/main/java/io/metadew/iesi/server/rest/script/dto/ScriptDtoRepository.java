@@ -113,8 +113,10 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                     "on script.SCRIPT_ID = action_parameter.SCRIPT_ID and script_version.SCRIPT_VRS_NB = action_parameter.SCRIPT_VRS_NB and action.ACTION_ID = action_parameter.ACTION_ID" +
                     getWhereClause(null, null, isLatestVersionOnly).orElse("") +
                     (expansions != null && expansions.contains("execution") ? getExecutionExpansionUnion(null, null, isLatestVersionOnly) : "") +
-                    " LIMIT " + SQLTools.GetStringForSQL(limit) + " OFFSET (" + SQLTools.GetStringForSQL(pageNumber) + "-1 ) * " + SQLTools.GetStringForSQL(limit) +
+//                    " LIMIT " + SQLTools.GetStringForSQL(limit) + " OFFSET (" + SQLTools.GetStringForSQL(pageNumber) + "-1 ) * " + SQLTools.GetStringForSQL(limit) +
                     ";";
+
+            System.out.println(query);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);

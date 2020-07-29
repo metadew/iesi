@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.script.dto;
 
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
@@ -64,6 +65,15 @@ class ScriptDtoServiceTest {
                 .isEqualTo(0);
     }
 
+    private String pagination(int limit, int pageNumber) {
+        String query = " LIMIT " + SQLTools.GetStringForSQL(limit) + " OFFSET (" + SQLTools.GetStringForSQL(pageNumber) + "-1 ) * "
+                + SQLTools.GetStringForSQL(limit) + " ) ";
+        return query;
+    }
+    @Test
+    void getAllNoScriptsTes2t() {
+        System.out.println(pagination(10,2));
+    }
     @Test
     void getAllSimpleTest() {
         ScriptResult scriptResult = new ScriptResult(new ScriptResultKey("123", 1L), 1L, " ", "", 1L, "", ScriptRunStatus.SUCCESS, LocalDateTime.now(), LocalDateTime.now());

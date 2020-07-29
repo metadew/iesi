@@ -22,5 +22,4 @@ public interface IScriptDtoService {
     Optional<ScriptDto> getByNameAndVersion(String name, long version);
 
     Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions);
-
 }

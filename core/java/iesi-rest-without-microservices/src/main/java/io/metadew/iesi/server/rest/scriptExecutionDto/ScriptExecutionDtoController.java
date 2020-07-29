@@ -1,15 +1,18 @@
 package io.metadew.iesi.server.rest.scriptExecutionDto;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
-import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/script_executions")
+import java.util.List;
+
+@Tag(name = "script_executions", description = "Everything about script_executions")
+@RestController
+@RequestMapping("/script_executions")
+@CrossOrigin
 public class ScriptExecutionDtoController {
 
     IScriptExecutionDtoService scriptExecutionService;
@@ -17,6 +20,16 @@ public class ScriptExecutionDtoController {
     @Autowired
     ScriptExecutionDtoController(IScriptExecutionDtoService scriptExecutionService) {
         this.scriptExecutionService = scriptExecutionService;
+    }
+
+    @GetMapping
+    public HalMultipleEmbeddedResource<ScriptExecutionDto> getAll() {
+        return new HalMultipleEmbeddedResource<>(scriptExecutionService.getAll());
+    }
+
+    @GetMapping("/{runId}")
+    public HalMultipleEmbeddedResource<ScriptExecutionDto> getByRunId(@PathVariable String runId) {
+        return new HalMultipleEmbeddedResource<>(scriptExecutionService.getByRunId(runId));
     }
 
     @GetMapping("/{runId}/{processId}")

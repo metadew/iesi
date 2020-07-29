@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Repository
@@ -28,7 +29,32 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
     }
 
     @Override
+    public List<ScriptExecutionDto> getAll() {
+        return getExecutionDtoList(null, null);
+    }
+
+    @Override
+    public List<ScriptExecutionDto> getByRunId(String runId) {
+        return getExecutionDtoList(runId, null);
+    }
+
+    @Override
     public Optional<ScriptExecutionDto> getByRunIdAndProcessId(String runId, Long processId) {
+        List<ScriptExecutionDto> scriptExecutionDtoStream = getExecutionDtoList(runId, processId);
+        if (scriptExecutionDtoStream.size() > 1)
+            log.warn("found multiple scriptExecution for runId " + runId + " and processId" + processId);
+        return scriptExecutionDtoStream.stream().findFirst();
+    }
+
+    /**
+     * This method take care of running the appropriate query depending of the provided parameter
+     * and call subMethod to create the ScriptExecutionDto as POJOs
+     *
+     * @param runId     - runId of the ScriptExecution, can be null
+     * @param processId - processId of the ScriptExecution, can be null
+     * @return Stream of ScriptExecutionDto that can contain zero, one or several ScriptExecutionDto
+     */
+    private List<ScriptExecutionDto> getExecutionDtoList(String runId, Long processId) {
         try {
             Map<ScriptResultKey, ScriptExecutionDtoBuildHelper> scriptExecutionDtoBuildHelpers = new HashMap<>();
             String SQLQuery = getSQLQuery(runId, processId);
@@ -39,17 +65,16 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 mapRow(cachedRowSet, scriptExecutionDtoBuildHelpers);
             }
 
-            if (scriptExecutionDtoBuildHelpers.size() > 1)
-                log.warn("found multiple scriptExecution for runId " + runId + " and processId" + processId);
             return scriptExecutionDtoBuildHelpers.values().stream()
-                    .map(ScriptExecutionDtoBuildHelper::toScriptExecutionDto).findFirst();
+                    .map(ScriptExecutionDtoBuildHelper::toScriptExecutionDto)
+                    .collect(Collectors.toList());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * mapRow treats and inserts result of mapping in the provided Map
+     * mapRow treats the result of the query and populate the provided Map
      *
      * @param cachedRowSet                   - cachedRowSet containing the result of the SQLquery
      * @param scriptExecutionDtoBuildHelpers - Map designed to contain the POJOs made out of the SQLQuery
@@ -141,6 +166,14 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         }
     }
 
+    /**
+     * This methods create and return an ScriptExecutionDtoBuildHelper:
+     * inputParameters, designLabels, executionLabels, actions and output are created empty
+     *
+     * @param cachedRowSet - item containing the fields required to create the object
+     * @return ScriptExecutionDtoBuildHelper - Object similar to ScriptExecutionDto but containing Hashmap instead of List
+     * @throws SQLException - Throws SQLException due to the param cachedRowSet
+     */
     private ScriptExecutionDtoBuildHelper mapScriptExecutionDtoBuildHelper(CachedRowSet cachedRowSet) throws SQLException {
         return ScriptExecutionDtoBuildHelper.builder()
                 .runId(cachedRowSet.getString("RUN_ID"))
@@ -152,9 +185,21 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 .status(ScriptRunStatus.valueOf(cachedRowSet.getString("SCRIPT_ST_NM")))
                 .startTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_STRT_TMS")))
                 .endTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_END_TMS")))
+                .inputParameters(new HashMap<>())
+                .designLabels(new HashMap<>())
+                .executionLabels(new HashMap<>())
+                .actions(new HashMap<>())
+                .output(new HashMap<>())
                 .build();
     }
 
+    /**
+     * This methods create and return an ActionExecutionDtoBuildHelper: only inputParameters and output aren't completed
+     *
+     * @param cachedRowSet - item containing the fields required to create the object
+     * @return mapActionExecutionDtoBuildHelper: object similar to ActionExecutionDto but containing map instead of list
+     * @throws SQLException - Throws SQLException due to the param cachedRowSet
+     */
     private ActionExecutionDtoBuildHelper mapActionExecutionDtoBuildHelper(CachedRowSet cachedRowSet) throws SQLException {
         return ActionExecutionDtoBuildHelper.builder()
                 .runId(cachedRowSet.getString("RUN_ID")) // the runId of the action is the same than the runId of the script
@@ -166,16 +211,19 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 .errorStop(cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("y") ||
                         cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("yes"))
                 .errorExpected(cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("y") ||
-                        cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("yes"))
+                        cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("yes"))
                 .status(ScriptRunStatus.valueOf(cachedRowSet.getString("ACTION_ST_NM")))
                 .startTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("ACTION_STRT_TMS")))
                 .endTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("ACTION_END_TMS")))
+                .inputParameters(new HashMap<>())
+                .output(new HashMap<>())
                 .build();
     }
 
 
     /**
-     * getSQLQuery compute the SQL Statement with or without filter depending of the given parameters
+     * This method computes the SQL Statement with or without filter depending of the given parameters.
+     * The method uses Union all query to make an efficient query on the DataBase
      *
      * @param runId     - runId of the Script
      * @param processId - processId of the Script
@@ -199,7 +247,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "on results.RUN_ID = trc_des_script_par.RUN_ID AND results.PRC_ID = trc_des_script_par.PRC_ID " +
                 "LEFT OUTER JOIN " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameterTraces").getName() + " trc_script_par " +
-                "on results.RUN_ID = trc_script_par.RUN_ID AND results.PRC_ID = trc_script_par.PRC_ID" +
+                "on results.RUN_ID = trc_script_par.RUN_ID AND results.PRC_ID = trc_script_par.PRC_ID " +
                 getWhereClause(runId, processId).orElse("") +
                 "UNION ALL " +
                 "SELECT 1 INFO_TYPE, results.RUN_ID RUN_ID, results.PRC_ID SCRIPT_PRC_ID, " +
@@ -310,43 +358,6 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 ";";
     }
 
-    private String getSQLQueryPrevious(String runId, Long processId) {
-        return "select * from " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
-                "inner join " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ScriptDesignTraces").getName() + " script_traces " +
-                "on results.RUN_ID = script_traces.RUN_ID and results.PRC_ID = script_traces.PRC_ID " +
-                "inner join " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ScriptVersionDesignTraces").getName() + " script_version_traces " +
-                "on results.RUN_ID = script_version_traces.RUN_ID and results.PRC_ID = script_version_traces.PRC_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ScriptParameterDesignTraces").getName() + " script_params_traces " +
-                "on results.RUN_ID = script_params_traces.RUN_ID and " +
-                "results.PRC_ID = script_params_traces.PRC_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ScriptLabelDesignTraces").getName() + " script_labels_traces " +
-                "on results.RUN_ID = script_labels_traces.RUN_ID and " +
-                "results.PRC_ID = script_labels_traces.PRC_ID " +
-                "inner join " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ActionResults").getName() + " action_results " +
-                "on results.RUN_ID = action_results.RUN_ID and " +
-                "results.prc_id = action_results.SCRIPT_PRC_ID " +
-                "inner join " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ActionDesignTraces").getName() + " action_design_traces " +
-                "on results.RUN_ID = action_design_traces.RUN_ID and " +
-                "action_results.prc_id = action_design_traces.PRC_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ActionParameterDesignTraces").getName() + " action_design_param_traces " +
-                "on results.RUN_ID = action_design_param_traces.RUN_ID and " +
-                "action_design_traces.PRC_ID = action_design_param_traces.PRC_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance()
-                .getMetadataTableNameByLabel("ActionResultOutputs").getName() + " action_result_outputs " +
-                "on action_result_outputs.RUN_ID = results.RUN_ID and " +
-                "action_result_outputs.PRC_ID = action_results.PRC_ID " +
-                getWhereClause(runId, processId).orElse("")
-                + ";";
-    }
-
     /**
      * getWhereClause return a String containing or not the Where SQL statement depending if the parameters are null or not
      *
@@ -359,6 +370,6 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         if (runId != null) conditions.add(" results.RUN_ID = " + SQLTools.GetStringForSQL(runId));
         if (processId != null) conditions.add(" results.prc_id = " + SQLTools.GetStringForSQL(processId));
         if (conditions.isEmpty()) return Optional.empty();
-        return Optional.of(" where" + String.join(" and", conditions) + " ");
+        return Optional.of(" where " + String.join(" and ", conditions) + " ");
     }
 }

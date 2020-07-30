@@ -7,8 +7,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "script_executions", description = "Everything about script_executions")
 @RestController
 @RequestMapping("/script_executions")

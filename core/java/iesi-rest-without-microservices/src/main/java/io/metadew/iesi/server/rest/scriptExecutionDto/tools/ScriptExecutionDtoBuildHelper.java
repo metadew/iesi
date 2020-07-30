@@ -1,4 +1,5 @@
 package io.metadew.iesi.server.rest.scriptExecutionDto.tools;
+
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
@@ -19,36 +20,21 @@ import java.util.stream.Collectors;
 public class ScriptExecutionDtoBuildHelper {
 
 
-    // runId and processId = PRIMARY KEYS
-    private String runId; // RES_SCRIPT - TRC_DES_SCRIPT - ...
-    private Long processId; // RES_SCRIPT - TRC_DES_SCRIPT - ...
+    private String runId;
+    private Long processId;
 
-    private Long parentProcessId; // RES_SCRIPT
-    private String scriptId; // RES_SCRIPT
-    private String scriptName; // RES_SCRIPT
-    private Long scriptVersion; // RES_SCRIPT
-    private String environment; // RES_SCRIPT
-    private ScriptRunStatus status; // RES_SCRIPT
-    private LocalDateTime startTimestamp; // RES_SCRIPT
-    private LocalDateTime endTimestamp; // RES_SCRIPT
-
-    // TRC_DES_SCRIPT_PAR - Primary Key: RunID PrcId ScriptParName
-    // InputParameterDto : name, rawValue, ?resolvedValue?
-
+    private Long parentProcessId;
+    private String scriptId;
+    private String scriptName;
+    private Long scriptVersion;
+    private String environment;
+    private ScriptRunStatus status;
+    private LocalDateTime startTimestamp;
+    private LocalDateTime endTimestamp;
     private Map<String, InputParametersDto> inputParameters = new HashMap<>();
-
-    // TRC_DES_SCRIPT_LBL - Primary Key: RunId PrcId ScriptLabelId
-    // Label: name, value
     private Map<String, ScriptLabelDto> designLabels = new HashMap<>();
-
-    // EXE_REQ_LBL OR TRC_SCRIPT_LBL
     private Map<String, ExecutionRequestLabelDto> executionLabels = new HashMap<>();
-
-    // action: runId, processId, type, name, description, condition,
-    // stopOnError, expectedError, status, startTimestamp, endTimestamp
     private Map<ActionExecutionKey, ActionExecutionDtoBuildHelper> actions = new HashMap<>();
-
-    // output: name, value
     private Map<String, OutputDto> output = new HashMap<>();
 
     public ScriptExecutionDto toScriptExecutionDto() {

@@ -20,7 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> {
 
-    // Primary Keys in DB
     private String runId;
     private Long processId;
 

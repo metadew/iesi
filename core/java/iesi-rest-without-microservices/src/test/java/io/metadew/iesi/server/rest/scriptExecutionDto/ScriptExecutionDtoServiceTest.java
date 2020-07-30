@@ -1,16 +1,13 @@
 package io.metadew.iesi.server.rest.scriptExecutionDto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.launch.MetadataLauncher;
+import io.metadew.iesi.launch.ScriptLauncher;
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.metadata.definition.script.ScriptVersion;
-import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
-import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,14 +34,13 @@ class ScriptExecutionDtoServiceTest {
         this.scriptExecutionDtoService = scriptExecutionDtoService;
     }
 
-    @BeforeAll
-    void setUp() {
-        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
-        populateDB();
-    }
+//    @BeforeEach
+//    void setUp() {
+//        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
+//        populateDB();
+//    }
 
 
-    @AfterAll
     @Test
     void emptyDBTest() {
         metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
@@ -58,17 +50,44 @@ class ScriptExecutionDtoServiceTest {
     }
 
     @Test
+    void getAll(){
+
+    }
+
+    @Test
+    void getByRunId(){
+
+    }
+
+    @Test
     void getByRunIdAndProcessId() {
 
     }
 
+    @Test
     void populateDB() {
         // Simulate a ScriptExecution:
         // 1) Script Insertion with action etc
         // 2) ScriptExecution : insert data as they are after a ScriptExecution
 
-        Script script = ScriptBuilder.simpleScript("scriptTest",0L,3,2,2);
-        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script);
+        Script script1 = ScriptBuilder.simpleScript("oneScriptTest", 0L, 3, 2, 2);
+        Script script2 = ScriptBuilder.simpleScript("oneScriptTest", 1L, 3, 2, 2);
+        Script script3 = ScriptBuilder.simpleScript("anotherScriptTest", 0L, 3, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(script3);
+
+        // TODO: create accurate scriptExecutionRequest and scriptExecution simulation
+
+        // doesn't work: first, the column name sounds to be a problem, second, The framework instance shutdown the DB
+        // after its work is done -> impossible to perform test on it + Can't be sure it opens the same DB
+//        try {
+//            String[] executeScripts = {"-script", "oneScriptTest", "-env", "testEnv"};
+//            ScriptLauncher.main(executeScripts);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+
 
     }
 
@@ -105,7 +124,6 @@ class ScriptExecutionDtoServiceTest {
 
     // output: name, value
     private List<OutputDto> output = new ArrayList<>();
-
     */
 
 }

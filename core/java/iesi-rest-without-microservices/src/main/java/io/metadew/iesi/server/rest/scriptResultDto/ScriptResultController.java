@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "scriptResults", description = "Everything about scriptResults")
-@RequestMapping("/script_results")
+@RequestMapping("/script-results")
 @CrossOrigin
 public class ScriptResultController {
     private final IScriptResultService scriptResultService;

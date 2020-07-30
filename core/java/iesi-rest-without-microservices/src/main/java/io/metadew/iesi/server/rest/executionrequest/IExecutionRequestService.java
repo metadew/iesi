@@ -9,18 +9,20 @@ import java.util.Optional;
 
 public interface IExecutionRequestService {
 
-    public List<ExecutionRequest> getAll();
+     int getTotalPages(int limit, String filterColumn, String searchParam, String request_from, String request_to);
 
-    public Optional<ExecutionRequest> getById(String id);
+     List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String request_from, String request_to);
 
-    public ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
+     Optional<ExecutionRequest> getById(String id);
 
-    public void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
+     ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
 
-    public void updateExecutionRequests(List<ExecutionRequestDto> executionRequestDtos);
+     void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
 
-    public void deleteAll();
+     void updateExecutionRequests(List<ExecutionRequestDto> executionRequestDtos);
 
-    public void deleteById(String id);
+     void deleteAll();
+
+     void deleteById(String id);
 
 }

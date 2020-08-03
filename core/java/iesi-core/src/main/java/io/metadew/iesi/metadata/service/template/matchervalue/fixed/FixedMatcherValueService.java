@@ -5,7 +5,9 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.service.template.matchervalue.IMatcherValueService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class FixedMatcherValueService implements IMatcherValueService<MatcherFixedValue> {
 
     private static FixedMatcherValueService INSTANCE;
@@ -19,6 +21,7 @@ public class FixedMatcherValueService implements IMatcherValueService<MatcherFix
 
     @Override
     public boolean matches(MatcherFixedValue matcherValue, DataType dataType, ExecutionRuntime executionRuntime) {
+        log.info("checking " + matcherValue.toString() + " against " + dataType.toString());
         return DataTypeHandler.getInstance().equals(dataType,
                 DataTypeHandler.getInstance().resolve(matcherValue.getValue(), executionRuntime),
                 executionRuntime);

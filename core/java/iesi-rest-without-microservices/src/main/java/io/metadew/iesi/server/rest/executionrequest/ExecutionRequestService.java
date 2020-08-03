@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +16,19 @@ public class ExecutionRequestService implements IExecutionRequestService {
 
     private ExecutionRequestConfiguration executionRequestConfiguration;
 
-    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration) {
+    private final ExecutionRequestDtoRepository executionRequestDtoRepository;
+
+    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration, ExecutionRequestDtoRepository executionRequestDtoRepository) {
         this.executionRequestConfiguration = executionRequestConfiguration;
+        this.executionRequestDtoRepository = executionRequestDtoRepository;
     }
 
-    public List<ExecutionRequest> getAll() {
-        return executionRequestConfiguration.getAll();
+    public List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String request_from, String request_to) {
+        return executionRequestDtoRepository.getAll(limit, pageNumber, column, sort, filterColumn, searchParam, request_from, request_to);
+    }
+
+    public int getTotalPages(int limit, String filterColumn, String searchParam, String request_from, String request_to){
+        return executionRequestDtoRepository.getTotalPages(limit, filterColumn, searchParam, request_from, request_to);
     }
 
     public Optional<ExecutionRequest> getById(String id) {

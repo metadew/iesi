@@ -19,8 +19,6 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.Optional;
 
@@ -101,34 +99,14 @@ public class CliExecuteCommand extends ActionTypeExecution {
         this.getActionParameterOperationMap().put(connectionNameKey, connectionName);
     }
 
-    // Methods
-    public boolean execute() throws InterruptedException {
-        try {
-            String shellPath = convertShellPath(this.shellPath.getValue());
-            String shellCommand = convertShellCommand(this.shellCommand.getValue());
-            boolean settingRuntimeVariables = convertSetRuntimeVariables(this.setRunVar.getValue());
-            String settingRuntimeVariablesPrefix = convertSetRuntimeVariablesPrefix(this.setRunVarPrefix.getValue());
-            String settingRuntimeVariablesMode = convertSetRuntimeVariablesMode(this.setRunVarMode.getValue());
-            String connectionName = convertConnectionName(this.connectionName.getValue());
-            return executeCommand(shellPath, shellCommand, settingRuntimeVariables, settingRuntimeVariablesPrefix, settingRuntimeVariablesMode, connectionName);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            getActionExecution().getActionControl().increaseErrorCount();
-
-            getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean executeCommand(String shellPath, String shellCommand, boolean settingRuntimeVariables, String settingRuntimeVariablesPrefix, String settingRuntimeVariablesMode, String connectionName) throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
         // Get Connection
+        String shellPath = convertShellPath(this.shellPath.getValue());
+        String shellCommand = convertShellCommand(this.shellCommand.getValue());
+        boolean settingRuntimeVariables = convertSetRuntimeVariables(this.setRunVar.getValue());
+        String settingRuntimeVariablesPrefix = convertSetRuntimeVariablesPrefix(this.setRunVarPrefix.getValue());
+        String settingRuntimeVariablesMode = convertSetRuntimeVariablesMode(this.setRunVarMode.getValue());
+        String connectionName = convertConnectionName(this.connectionName.getValue());
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, getExecutionControl().getEnvName());
         HostConnection hostConnection;

@@ -25,14 +25,10 @@ import java.util.HashMap;
 
 public class SqlEvaluateResult {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation sqlQuery;
     private ActionParameterOperation expectedResult;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

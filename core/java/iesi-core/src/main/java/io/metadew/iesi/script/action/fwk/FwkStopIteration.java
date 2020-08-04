@@ -11,13 +11,8 @@ import java.util.HashMap;
 
 public class FwkStopIteration {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation startActionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-
     // Constructors
     public FwkStopIteration(ExecutionControl executionControl, ActionExecution actionExecution) {
         this.setExecutionControl(executionControl);

@@ -24,15 +24,10 @@ import java.util.List;
 
 public class FwkSetRepository {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation repositoryReferenceName;
     private ActionParameterOperation repositoryName;
     private ActionParameterOperation repositoryInstanceName;
     private ActionParameterOperation repositoryInstanceLabels;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

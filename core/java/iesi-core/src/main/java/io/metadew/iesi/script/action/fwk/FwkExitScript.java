@@ -24,12 +24,8 @@ import java.util.Optional;
  */
 public class FwkExitScript {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation status;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

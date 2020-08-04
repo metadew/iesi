@@ -33,20 +33,11 @@ import java.util.HashMap;
  */
 public class FhoCreateFolder {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation folderPath;
     private ActionParameterOperation folderName;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FhoCreateFolder() {
-
-    }
 
     public FhoCreateFolder(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {

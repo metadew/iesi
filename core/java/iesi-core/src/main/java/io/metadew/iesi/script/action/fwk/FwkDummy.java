@@ -12,17 +12,6 @@ import java.util.HashMap;
 
 public class FwkDummy {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-
-    // Constructors
-    public FwkDummy() {
-
-    }
-
     public FwkDummy(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.init(executionControl, scriptExecution, actionExecution);
     }

@@ -29,15 +29,11 @@ import java.util.Optional;
 
 public class SqlExecuteQuery {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation sqlQuery;
     private ActionParameterOperation connectionName;
     private ActionParameterOperation outputDataset;
     private ActionParameterOperation appendOutput;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

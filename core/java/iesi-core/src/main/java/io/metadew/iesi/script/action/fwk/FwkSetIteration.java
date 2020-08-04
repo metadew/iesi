@@ -19,10 +19,6 @@ import java.util.HashMap;
 
 public class FwkSetIteration {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation iterationName;
     private ActionParameterOperation iterationType;
     private ActionParameterOperation iterationList;
@@ -32,13 +28,7 @@ public class FwkSetIteration {
     private ActionParameterOperation iterationStep;
     private ActionParameterOperation iterationCondition;
     private ActionParameterOperation iterationInterrupt;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FwkSetIteration() {
-
-    }
 
     public FwkSetIteration(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {

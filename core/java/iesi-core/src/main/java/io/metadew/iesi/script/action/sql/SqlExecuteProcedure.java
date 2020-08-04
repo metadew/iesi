@@ -28,16 +28,12 @@ import java.util.Optional;
 
 public class SqlExecuteProcedure {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation sqlProcedure;
     private ActionParameterOperation connectionName;
     private ActionParameterOperation sqlParameters;
     private ActionParameterOperation outputDataset;
     private ActionParameterOperation appendOutput;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

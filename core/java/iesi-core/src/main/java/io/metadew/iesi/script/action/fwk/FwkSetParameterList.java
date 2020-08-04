@@ -23,15 +23,10 @@ import java.util.regex.Pattern;
 
 public class FwkSetParameterList {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
 
     // Parameters
     private ActionParameterOperation parameterList;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkSetParameterList(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {

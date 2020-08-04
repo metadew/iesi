@@ -18,9 +18,6 @@ public class RSetWorkspace {
 
     private static  final String pathKey = "path";
     private static final String referenceNameKey = "name";
-    private final ExecutionControl executionControl;
-    private final ActionExecution actionExecution;
-    private final HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private String referenceName;
     private String path;
 

@@ -19,12 +19,8 @@ import java.util.HashMap;
 
 public class RExecuteScript {
 
-    private static final Logger LOGGER = LogManager.getLogger();
     private static  final String scriptKey = "script";
     private static final String workspaceReferenceNameKey = "workspace";
-    private final ExecutionControl executionControl;
-    private final ActionExecution actionExecution;
-    private final HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private String workspaceReferenceName;
     private String script;
 

@@ -22,13 +22,9 @@ import java.util.HashMap;
 
 public class SqlExecuteStatement {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation sqlStatement;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public SqlExecuteStatement(ExecutionControl executionControl,

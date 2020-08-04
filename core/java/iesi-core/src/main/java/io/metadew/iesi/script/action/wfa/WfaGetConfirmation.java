@@ -18,15 +18,11 @@ import java.util.Scanner;
 
 public class WfaGetConfirmation {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation confirmationType;
     private ActionParameterOperation confirmationQuestion;
     private ActionParameterOperation timeoutInterval;
     private final int defaultTimeoutInterval = 1000;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

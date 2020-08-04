@@ -18,13 +18,8 @@ import java.util.HashMap;
 
 public class FwkSetParameterValue {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation operationName;
     private ActionParameterOperation operationValue;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

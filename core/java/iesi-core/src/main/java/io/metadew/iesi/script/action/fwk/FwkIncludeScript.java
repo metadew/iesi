@@ -27,14 +27,8 @@ import java.util.Optional;
  */
 public class FwkIncludeScript {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation scriptName;
     private ActionParameterOperation scriptVersion;
-
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     // Exposed Script
     private Script script;

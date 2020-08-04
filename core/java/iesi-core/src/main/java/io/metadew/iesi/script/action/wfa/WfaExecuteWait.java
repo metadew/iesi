@@ -18,15 +18,11 @@ import java.util.HashMap;
 
 public class WfaExecuteWait {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation waitInterval;
     private final int defaultWaitInterval = 0;
     private ActionParameterOperation waitIntervalInput;
     private long startTime;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

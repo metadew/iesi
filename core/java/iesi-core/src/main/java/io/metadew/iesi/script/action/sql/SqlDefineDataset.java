@@ -17,14 +17,10 @@ import java.util.HashMap;
 
 public class SqlDefineDataset {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation referenceName;
     private ActionParameterOperation sqlStatement;
     private ActionParameterOperation sqlIdentifier;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

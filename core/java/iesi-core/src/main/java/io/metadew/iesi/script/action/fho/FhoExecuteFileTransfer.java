@@ -25,9 +25,6 @@ import java.util.HashMap;
 
 public class FhoExecuteFileTransfer {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation sourceFilePath;
     private ActionParameterOperation sourceFileName;
@@ -35,13 +32,7 @@ public class FhoExecuteFileTransfer {
     private ActionParameterOperation targetFilePath;
     private ActionParameterOperation targetFileName;
     private ActionParameterOperation targetConnectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FhoExecuteFileTransfer() {
-
-    }
 
     public FhoExecuteFileTransfer(ExecutionControl executionControl,
                                   ScriptExecution scriptExecution, ActionExecution actionExecution) {

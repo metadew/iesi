@@ -35,20 +35,11 @@ import java.util.List;
  */
 public class FhoDeleteFile {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation filePath;
     private ActionParameterOperation fileName;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FhoDeleteFile() {
-
-    }
 
     public FhoDeleteFile(ExecutionControl executionControl,
                          ScriptExecution scriptExecution, ActionExecution actionExecution) {

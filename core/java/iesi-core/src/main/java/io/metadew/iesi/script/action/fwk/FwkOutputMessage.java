@@ -27,19 +27,9 @@ import java.util.List;
  */
 public class FwkOutputMessage {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation message;
     private ActionParameterOperation onScreen;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FwkOutputMessage() {
-
-    }
 
     public FwkOutputMessage(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {

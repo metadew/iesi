@@ -42,9 +42,6 @@ import java.util.stream.Collectors;
 public class HttpExecuteRequest {
 
     private static Logger LOGGER = LogManager.getLogger();
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
     // Parameters
     private static final String typeKey = "type";
     private static final String requestKey = "request";
@@ -53,8 +50,6 @@ public class HttpExecuteRequest {
     private static final String setRuntimeVariablesKey = "setRuntimeVariables";
     private static final String setDatasetKey = "setDataset";
     private static final String expectedStatusCodesKey = "expectedStatusCodes";
-
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     private HttpRequest httpRequest;
     private boolean setRuntimeVariables;

@@ -19,11 +19,7 @@ import java.util.HashMap;
 
 public class RStopShinyApp {
 
-    private static final Logger LOGGER = LogManager.getLogger();
     private static final String workspaceReferenceNameKey = "workspace";
-    private final ExecutionControl executionControl;
-    private final ActionExecution actionExecution;
-    private final HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private String workspaceReferenceName;
 
     public RStopShinyApp(ExecutionControl executionControl,

@@ -37,9 +37,6 @@ public class SocketTransmitMessage {
     private static final String outputKey = "output";
     private static final String timeoutKey = "timeout";
 
-    private final ExecutionControl executionControl;
-    private final ActionExecution actionExecution;
-    private final HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private String message;
     private String protocol;
     private SocketConnection socket;

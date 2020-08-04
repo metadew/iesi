@@ -21,20 +21,12 @@ import java.util.HashMap;
 
 public class ModSoapui {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation project;
     private ActionParameterOperation testSuite;
     private ActionParameterOperation testCase;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public ModSoapui() {
-
-    }
 
     public ModSoapui(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {

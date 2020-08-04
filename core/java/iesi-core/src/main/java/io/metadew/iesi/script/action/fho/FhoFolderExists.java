@@ -34,20 +34,11 @@ import java.util.List;
  */
 public class FhoFolderExists {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation folderPath;
     private ActionParameterOperation folderName;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FhoFolderExists() {
-
-    }
 
     public FhoFolderExists(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {

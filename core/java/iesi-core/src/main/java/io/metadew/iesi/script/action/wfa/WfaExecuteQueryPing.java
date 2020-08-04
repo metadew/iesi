@@ -25,9 +25,6 @@ import java.util.HashMap;
 
 public class WfaExecuteQueryPing {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation sqlQuery;
     private ActionParameterOperation expectedResult;
@@ -36,7 +33,6 @@ public class WfaExecuteQueryPing {
     private ActionParameterOperation waitInterval;
     private ActionParameterOperation timeoutInterval;
     private long startTime;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     private final int defaultWaitInterval = 1000;
     private final int defaultTimeoutInterval = -1;

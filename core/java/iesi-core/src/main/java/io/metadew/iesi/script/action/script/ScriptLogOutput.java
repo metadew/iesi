@@ -25,14 +25,9 @@ import java.util.HashMap;
 @Log4j2
 public class ScriptLogOutput {
 
-    private final ScriptExecution scriptExecution;
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation outputName;
     private ActionParameterOperation outputValue;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ScriptLogOutput(ExecutionControl executionControl,

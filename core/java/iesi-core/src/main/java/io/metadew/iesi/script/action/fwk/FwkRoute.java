@@ -18,22 +18,8 @@ import java.io.StringWriter;
 import java.util.*;
 public class FwkRoute {
 
-    private ActionExecution actionExecution;
-
-    private ScriptExecution scriptExecution;
-
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation destination;
     private HashMap<String, RouteOperation> routeOperationMap;
-
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-
-    // Constructors
-    public FwkRoute() {
-
-    }
 
     public FwkRoute(ExecutionControl executionControl, ScriptExecution scriptExecution,
                     ActionExecution actionExecution) {

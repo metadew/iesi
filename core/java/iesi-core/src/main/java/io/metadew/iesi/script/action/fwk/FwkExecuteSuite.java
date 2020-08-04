@@ -36,11 +36,6 @@ import java.util.List;
 
 public class FwkExecuteSuite {
 
-    private ActionExecution actionExecution;
-    private ScriptExecution scriptExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation componentName;
     private ActionParameterOperation suiteName;
     private ActionParameterOperation suiteVersion;
@@ -52,13 +47,7 @@ public class FwkExecuteSuite {
     private ActionParameterOperation repositoryBuildPath;
     private ActionParameterOperation repositoryBuildAsset;
     private ActionParameterOperation environmentName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FwkExecuteSuite() {
-
-    }
 
     public FwkExecuteSuite(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.init(executionControl, scriptExecution, actionExecution);

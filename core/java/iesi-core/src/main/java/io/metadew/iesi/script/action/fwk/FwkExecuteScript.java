@@ -33,16 +33,11 @@ public class FwkExecuteScript {
 
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
 
-    private ActionExecution actionExecution;
-    private ScriptExecution scriptExecution;
-    private ExecutionControl executionControl;
-    // Parameters
     private ActionParameterOperation scriptName;
     private ActionParameterOperation scriptVersion;
     private ActionParameterOperation environmentName;
     private ActionParameterOperation paramList;
     private ActionParameterOperation paramFile;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {

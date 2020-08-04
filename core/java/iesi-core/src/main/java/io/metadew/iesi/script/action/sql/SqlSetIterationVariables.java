@@ -24,14 +24,10 @@ import java.util.HashMap;
 
 public class SqlSetIterationVariables {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation listName;
     private ActionParameterOperation sqlQuery;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors

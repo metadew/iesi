@@ -32,9 +32,6 @@ import java.util.Vector;
 
 public class WfaExecuteFilePing {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
     // Parameters
     private ActionParameterOperation filePath;
     private ActionParameterOperation fileName;
@@ -44,7 +41,6 @@ public class WfaExecuteFilePing {
     private ActionParameterOperation waitInterval;
     private ActionParameterOperation timeoutInterval;
     private long startTime;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private final int defaultWaitInterval = 1000;
     private final int defaultTimeoutInterval = -1;
     private static final Logger LOGGER = LogManager.getLogger();

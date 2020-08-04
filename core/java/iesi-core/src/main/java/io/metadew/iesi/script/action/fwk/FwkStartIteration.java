@@ -11,10 +11,6 @@ import java.util.HashMap;
 
 public class FwkStartIteration {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation typeName;
     private ActionParameterOperation listName;
     private ActionParameterOperation listValues;
@@ -22,8 +18,6 @@ public class FwkStartIteration {
     private ActionParameterOperation numberTo;
     private ActionParameterOperation numberAction;
     private ActionParameterOperation breakOnError;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
-
     // Constructors
     public FwkStartIteration(ExecutionControl executionControl, ActionExecution actionExecution) {
         this.setExecutionControl(executionControl);

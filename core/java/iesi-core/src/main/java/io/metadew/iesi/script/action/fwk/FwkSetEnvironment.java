@@ -18,18 +18,8 @@ import java.util.HashMap;
 
 public class FwkSetEnvironment {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation environmentName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FwkSetEnvironment() {
-
-    }
 
     public FwkSetEnvironment(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         this.init(executionControl, scriptExecution, actionExecution);

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -25,7 +26,7 @@ public class Script extends Metadata<ScriptKey> {
     private List<Action> actions;
     private List<ScriptLabel> labels;
 
-
+    @Builder
     public Script(ScriptKey scriptKey, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions, List<ScriptLabel> labels) {
         super(scriptKey);

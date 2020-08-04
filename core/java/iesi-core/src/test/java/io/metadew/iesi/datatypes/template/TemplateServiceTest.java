@@ -179,24 +179,12 @@ class TemplateServiceTest {
 
         KeyValueDataset dataset1 = mock(KeyValueDataset.class);
         KeyValueDataset dataset2 = mock(KeyValueDataset.class);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("test")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value2"))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset1, executionRuntime);
         Mockito
                 .doReturn(Optional.of(new Text("test")))
                 .when(datasetHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
         Mockito
                 .doReturn(Optional.of(new Text("value2")))
                 .when(datasetHandlerSpy).getDataItem(dataset1, "key2", executionRuntime);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Text("test")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key4", dataset1)
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset1, executionRuntime);
         Mockito
                 .doReturn(Optional.of(new Text("test")))
                 .when(datasetHandlerSpy).getDataItem(dataset2, "key3", executionRuntime);

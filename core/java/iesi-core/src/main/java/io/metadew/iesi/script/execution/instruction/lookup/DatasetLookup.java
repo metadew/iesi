@@ -48,7 +48,7 @@ public class DatasetLookup implements LookupInstruction {
 
         String[] arguments = splitInput(parameters);
         Dataset dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
-        DataType lookupVariable = convertLookupVariable(arguments[1].trim());
+        DataType lookupVariable = convertLookupVariable(DataTypeHandler.getInstance().resolve(arguments[1].trim(), executionRuntime));
         Optional<DataType> matchedDataItem;
         if (lookupVariable instanceof Text) {
             matchedDataItem = DatasetHandler.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);
@@ -63,8 +63,8 @@ public class DatasetLookup implements LookupInstruction {
         }
     }
 
-    private DataType convertLookupVariable(String lookupVariable) {
-        return null;
+    private DataType convertLookupVariable(DataType lookupVariable) {
+        return lookupVariable;
     }
 
     private Dataset getDataset(DataType dataset) {

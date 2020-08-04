@@ -256,12 +256,11 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
      * @return return the query to of the pivot table according to the parameter.
      */
     private String getScriptAndScriptVRSTable(Pageable pageable, String scriptName, Long scriptVersion, boolean isLatestVersionOnly) {
-        String limitAndOffset = pageable == null ? " " : " limit " + pageable.getPageSize() + " offset " + pageable.getOffset() + " ";
+        String limitAndOffset = pageable == null || pageable.isUnpaged() ? " " : " limit " + pageable.getPageSize() + " offset " + pageable.getOffset() + " ";
         return (" (" +
                 "SELECT " +
-                "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, " +
-                "scriptAndScriptVRS.SCRIPT_TYP_NM, " +
-        "scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC " +
+                "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
+                "script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version " +
                 "on script.SCRIPT_ID = script_version.SCRIPT_ID " +
@@ -270,19 +269,26 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                 ") ");
     }
 
+    /**
+     * This method provide a where statement depending of the arguments passed.
+     * @param scriptName - if filled, add a filter on the name of the script. If null, doesn't filter on the name.
+     * @param scriptVersion - if filled, add a filter on the version of the script. If null, doesn't filter on the version.
+     * @param isLatestVersionOnly - if true, filter to return only the last version of the script. If true, the scriptVersion doesn't apply.
+     * @return a String containing the where clause if argument are provided or a space if all args are null.
+     */
     private Optional<String> getWhereClause(String scriptName, Long scriptVersion, boolean isLatestVersionOnly) {
         List<String> conditions = new ArrayList<>();
         if (scriptName != null) {
-            conditions.add(" script.SCRIPT_NM=" + SQLTools.GetStringForSQL(scriptName));
+            conditions.add(" script.SCRIPT_NM=" + SQLTools.GetStringForSQL(scriptName) + " ");
         }
         if (isLatestVersionOnly) {
             conditions.add(
                     " (script.SCRIPT_ID, script_version.SCRIPT_VRS_NB) in (select script.SCRIPT_ID, max(script_version.SCRIPT_VRS_NB) SCRIPT_VRS_NB " +
                             "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
                             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-                            " script_version on script.SCRIPT_ID = script_version.SCRIPT_ID group by script.SCRIPT_ID)");
+                            " script_version on script.SCRIPT_ID = script_version.SCRIPT_ID group by script.SCRIPT_ID) ");
         } else if (scriptVersion != null) {
-            conditions.add(" script_version.SCRIPT_VRS_NB=" + SQLTools.GetStringForSQL(scriptVersion));
+            conditions.add(" script_version.SCRIPT_VRS_NB=" + SQLTools.GetStringForSQL(scriptVersion) + " ");
         }
         if (conditions.isEmpty()) return Optional.empty();
         return Optional.of(" where " + String.join(" and ", conditions) + " ");

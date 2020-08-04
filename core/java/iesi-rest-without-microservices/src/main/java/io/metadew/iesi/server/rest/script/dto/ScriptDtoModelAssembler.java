@@ -59,12 +59,11 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
     public void addLinksToExistingDto(ScriptDto scriptDto) {
         Link selfLink = linkTo(methodOn(ScriptController.class).get(scriptDto.getName(), scriptDto.getVersion().getNumber(), new ArrayList<>()))
                 .withSelfRel();
-        Link linkToAllVersionOfTheScript = linkTo(methodOn(ScriptController.class).getByName(scriptDto.getName(), new ArrayList<>()))
+        Link linkToAllVersionOfTheScript = linkTo(methodOn(ScriptController.class).getByName(PageRequest.of(0, 20), scriptDto.getName(), new ArrayList<>(), ""))
                 .withRel("AllVersionOfTheScript");
         Link linkToAll = linkTo(methodOn(ScriptController.class).getAll(PageRequest.of(0, 20), new ArrayList<>(), ""))
                 .withRel("scripts");
         scriptDto.add(selfLink, linkToAllVersionOfTheScript, linkToAll);
     }
-
 
 }

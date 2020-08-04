@@ -17,18 +17,8 @@ import java.util.stream.Collectors;
 @Service
 public class ScriptDtoService implements IScriptDtoService {
 
-    private IScriptVersionDtoService scriptVersionDtoService;
-    private IScriptDtoRepository scriptDtoRepository;
-
-//    @Autowired
-//    public void setScriptVersionDtoService(IScriptVersionDtoService scriptVersionDtoService) {
-//        this.scriptVersionDtoService = scriptVersionDtoService;
-//    }
-//
-//    @Autowired
-//    public void setScriptDtoRepository(IScriptDtoRepository scriptDtoRepository) {
-//        this.scriptDtoRepository = scriptDtoRepository;
-//    }
+    private final IScriptVersionDtoService scriptVersionDtoService;
+    private final IScriptDtoRepository scriptDtoRepository;
 
     @Autowired
     public ScriptDtoService(IScriptVersionDtoService scriptVersionDtoService,
@@ -61,13 +51,8 @@ public class ScriptDtoService implements IScriptDtoService {
     }
 
     @Override
-    public List<ScriptDto> getByName(String name) {
-        return getByName(name, new ArrayList<>());
-    }
-
-    @Override
-    public List<ScriptDto> getByName(String name, List<String> expansions) {
-        return scriptDtoRepository.getByName(name, expansions);
+    public Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestOnly) {
+        return scriptDtoRepository.getByName(pageable, name, expansions, isLatestOnly);
     }
 
     @Override

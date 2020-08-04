@@ -10,9 +10,7 @@ import io.metadew.iesi.server.rest.script.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -20,11 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @Tag(name = "scripts", description = "Everything about scripts")
@@ -38,42 +32,46 @@ public class ScriptController {
     private IScriptDtoService scriptDtoService;
     private PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
 
-//    @Autowired
-//    ScriptController(IScriptService scriptService, ScriptDtoModelAssembler scriptDtoModelAssembler,
-//                     IScriptPostDtoService scriptPostDtoService,
-//                     IScriptDtoService scriptDtoService) {
-//        this.scriptService = scriptService;
-//        this.scriptDtoModelAssembler = scriptDtoModelAssembler;
-//        this.scriptPostDtoService = scriptPostDtoService;
-//        this.scriptDtoService = scriptDtoService;
-//    }
-
     @Autowired
-    public void setScriptService(IScriptService scriptService) {
+    ScriptController(IScriptService scriptService,
+                     ScriptDtoModelAssembler scriptDtoModelAssembler,
+                     IScriptPostDtoService scriptPostDtoService,
+                     IScriptDtoService scriptDtoService,
+                     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+                             PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
         this.scriptService = scriptService;
-    }
-
-    @Autowired
-    public void setScriptDtoModelAssembler(ScriptDtoModelAssembler scriptDtoModelAssembler) {
         this.scriptDtoModelAssembler = scriptDtoModelAssembler;
-    }
-
-    @Autowired
-    public void setScriptPostDtoService(IScriptPostDtoService scriptPostDtoService) {
         this.scriptPostDtoService = scriptPostDtoService;
-    }
-
-    @Autowired
-    public void setScriptDtoService(IScriptDtoService scriptDtoService) {
         this.scriptDtoService = scriptDtoService;
-    }
-
-    // IntelliJ falsely report the bean as not found
-    @Autowired
-    public void setPagedResourcesAssembler(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-                                                       PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
         this.scriptDtoPagedResourcesAssembler = scriptDtoPagedResourcesAssembler;
     }
+
+//    @Autowired
+//    public void setScriptService(IScriptService scriptService) {
+//        this.scriptService = scriptService;
+//    }
+//
+//    @Autowired
+//    public void setScriptDtoModelAssembler(ScriptDtoModelAssembler scriptDtoModelAssembler) {
+//        this.scriptDtoModelAssembler = scriptDtoModelAssembler;
+//    }
+//
+//    @Autowired
+//    public void setScriptPostDtoService(IScriptPostDtoService scriptPostDtoService) {
+//        this.scriptPostDtoService = scriptPostDtoService;
+//    }
+//
+//    @Autowired
+//    public void setScriptDtoService(IScriptDtoService scriptDtoService) {
+//        this.scriptDtoService = scriptDtoService;
+//    }
+//
+//    // IntelliJ falsely report the bean as not found
+//    @Autowired
+//    public void setPagedResourcesAssembler(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+//                                                   PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
+//        this.scriptDtoPagedResourcesAssembler = scriptDtoPagedResourcesAssembler;
+//    }
 
     @GetMapping("")
     public PagedModel<ScriptDto> getAll(Pageable pageable,
@@ -85,15 +83,19 @@ public class ScriptController {
 
 
     @GetMapping("/{name}")
-    public HalMultipleEmbeddedResource<ScriptDto> getByName(@PathVariable String name, @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) {
-        List<ScriptDto> scripts = scriptDtoService.getByName(name, expansions);
-        return new HalMultipleEmbeddedResource<>(scripts);
+    public PagedModel<ScriptDto> getByName(Pageable pageable,
+                                           @PathVariable String name,
+                                           @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
+                                           @RequestParam(required = false, name = "version") String version) {
+        Page<ScriptDto> scriptDtoPage = scriptDtoService.getByName(pageable, name, expansions, version != null && version.toLowerCase().equals("latest"));
+        return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDto -> scriptDtoModelAssembler.toModel(scriptDto));
     }
 
     @GetMapping("/{name}/{version}")
     public ScriptDto get(@PathVariable String name, @PathVariable Long version, @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException {
-        return scriptDtoService.getByNameAndVersion(name, version, expansions)
+        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version, expansions)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+        return scriptDtoModelAssembler.toModel(scriptDto);
     }
 
     @PostMapping("")
@@ -115,7 +117,8 @@ public class ScriptController {
     }
 
     @PutMapping("/{name}/{version}")
-    public ScriptDto put(@PathVariable String name, @PathVariable Long version,
+    public ScriptDto put(@PathVariable String name,
+                         @PathVariable Long version,
                          @RequestBody ScriptPostDto scriptPostDto) throws MetadataDoesNotExistException {
         if (!scriptPostDto.getName().equals(name)) {
             throw new DataBadRequestException(name);

@@ -3,11 +3,24 @@ package io.metadew.iesi.server.rest.scriptExecutionDto;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.launch.MetadataLauncher;
 import io.metadew.iesi.launch.ScriptLauncher;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestImpersonation;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestImpersonationKey;
+import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
+import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +28,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,7 +82,7 @@ class ScriptExecutionDtoServiceTest {
     }
 
     @Test
-    void populateDB() {
+    void populateDB() throws ExecutionRequestBuilderException {
         // Simulate a ScriptExecution:
         // 1) Script Insertion with action etc
         // 2) ScriptExecution : insert data as they are after a ScriptExecution
@@ -77,7 +94,48 @@ class ScriptExecutionDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script3);
 
+
         // TODO: create accurate scriptExecutionRequest and scriptExecution simulation
+        ExecutionRequest executionRequest1 = new ExecutionRequestBuilder()
+                .id(UUID.randomUUID().toString())
+                .name("name")
+                .context("context1")
+                .description("description")
+                .scope("scope")
+                .build();
+
+        String uuid = UUID.randomUUID().toString();
+        ScriptNameExecutionRequest scriptNameExecutionRequest = new ScriptNameExecutionRequest(
+                new ScriptExecutionRequestKey(uuid),
+                executionRequest1.getMetadataKey(),
+                "tst",
+                true,
+                Stream.of(new ScriptExecutionRequestImpersonation(
+                                new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(uuid + "name1")),
+                                new ScriptExecutionRequestKey(uuid),
+                                new ImpersonationKey("name1")),
+                        new ScriptExecutionRequestImpersonation(
+                                new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(uuid + "name2")),
+                                new ScriptExecutionRequestKey(uuid),
+                                new ImpersonationKey("name2")))
+                        .collect(Collectors.toList()),
+                Stream.of(new ScriptExecutionRequestParameter(
+                                new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(uuid + "param1")),
+                                new ScriptExecutionRequestKey(uuid),
+                                "param1",
+                                "value1"),
+                        new ScriptExecutionRequestParameter(
+                                new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(uuid + "param2")),
+                                new ScriptExecutionRequestKey(uuid),
+                                "param2",
+                                "value2")).collect(Collectors.toList()),
+                ScriptExecutionRequestStatus.NEW,
+                "script",
+                1L);
+
+        executionRequest1.setScriptExecutionRequests(Stream.of(scriptNameExecutionRequest).collect(Collectors.toList()));
+
+
 
         // doesn't work: first, the column name sounds to be a problem, second, The framework instance shutdown the DB
         // after its work is done -> impossible to perform test on it + Can't be sure it opens the same DB

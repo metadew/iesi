@@ -1,70 +1,72 @@
-//package io.metadew.iesi.server.rest.script.dto;
-//
-//import io.metadew.iesi.common.configuration.ScriptRunStatus;
-//import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-//import io.metadew.iesi.connection.tools.SQLTools;
-//import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
-//import io.metadew.iesi.metadata.definition.script.Script;
-//import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
-//import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
-//import io.metadew.iesi.metadata.repository.MetadataRepository;
-//import io.metadew.iesi.server.rest.Application;
-//import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
-//import io.metadew.iesi.server.rest.builder.scriptresult.ScriptResultBuilder;
-//import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-//import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
-//import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
-//import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
-//import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionInformation;
-//import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
-//import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.ActiveProfiles;
-//import org.springframework.test.context.ContextConfiguration;
-//import org.springframework.test.context.junit.jupiter.SpringExtension;
-//
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.UUID;
-//import java.util.stream.Collectors;
-//import java.util.stream.Stream;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
-//@ContextConfiguration(classes = TestConfiguration.class)
-//@ActiveProfiles("test")
-//class ScriptDtoServiceTest {
-//
-//    @Autowired
-//    private IScriptDtoService scriptDtoService;
-//
-//    @Autowired
-//    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-//
-//    @Autowired
-//    private ScriptResultConfiguration scriptResultConfiguration;
-//
-//    @BeforeEach
-//    void setup() {
-//        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
-//        //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
-//        //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::createAllTables);
-//    }
-//
-//    @Test
-//    void getAllNoScriptsTest() {
-//        assertThat(scriptDtoService.getAll(1, 1, null, true).size())
-//                .isEqualTo(0);
-//    }
-//
+package io.metadew.iesi.server.rest.script.dto;
+
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
+import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.server.rest.Application;
+import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
+import io.metadew.iesi.server.rest.builder.scriptresult.ScriptResultBuilder;
+import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
+import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
+import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
+import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionInformation;
+import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
+import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+
+@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
+@ContextConfiguration(classes = TestConfiguration.class)
+@ActiveProfiles("test")
+class ScriptDtoServiceTest {
+
+    @Autowired
+    private IScriptDtoService scriptDtoService;
+
+    @Autowired
+    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private ScriptResultConfiguration scriptResultConfiguration;
+
+    @BeforeEach
+    void setup() {
+        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
+        //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
+        //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+    }
+
+    @Test
+    void getAllNoScriptsTest() {
+        assertThat(
+                scriptDtoService.getAll(null, null, false)
+                        .getContent()
+                        .size())
+                .isEqualTo(0);
+    }
+
 //    private String pagination(int limit, int pageNumber) {
 //        String query = " LIMIT " + SQLTools.GetStringForSQL(limit) + " OFFSET (" + SQLTools.GetStringForSQL(pageNumber) + "-1 ) * "
 //                + SQLTools.GetStringForSQL(limit) + " ) ";
@@ -747,5 +749,5 @@
 //                                        LocalDateTime.parse("2020-05-20T10:10:33"))
 //                        ).collect(Collectors.toList())), null));
 //    }
-//
-//}
+
+}

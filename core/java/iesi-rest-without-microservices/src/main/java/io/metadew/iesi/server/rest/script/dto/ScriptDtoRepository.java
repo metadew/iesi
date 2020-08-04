@@ -258,7 +258,11 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     private String getScriptAndScriptVRSTable(Pageable pageable, String scriptName, Long scriptVersion, boolean isLatestVersionOnly) {
         String limitAndOffset = pageable == null ? " " : " limit " + pageable.getPageSize() + " offset " + pageable.getOffset() + " ";
         return (" (" +
-                "SELECT * FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
+                "SELECT " +
+                "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, " +
+                "scriptAndScriptVRS.SCRIPT_TYP_NM, " +
+        "scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version " +
                 "on script.SCRIPT_ID = script_version.SCRIPT_ID " +
                 getWhereClause(scriptName, scriptVersion, isLatestVersionOnly).orElse(" ") +

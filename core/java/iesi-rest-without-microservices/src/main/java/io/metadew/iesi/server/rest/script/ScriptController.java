@@ -5,18 +5,26 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
-import io.metadew.iesi.server.rest.pagination.TotalPages;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.resource.HalSingleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @Tag(name = "scripts", description = "Everything about scripts")
@@ -28,30 +36,53 @@ public class ScriptController {
     private ScriptDtoModelAssembler scriptDtoModelAssembler;
     private IScriptPostDtoService scriptPostDtoService;
     private IScriptDtoService scriptDtoService;
+    private PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
+
+//    @Autowired
+//    ScriptController(IScriptService scriptService, ScriptDtoModelAssembler scriptDtoModelAssembler,
+//                     IScriptPostDtoService scriptPostDtoService,
+//                     IScriptDtoService scriptDtoService) {
+//        this.scriptService = scriptService;
+//        this.scriptDtoModelAssembler = scriptDtoModelAssembler;
+//        this.scriptPostDtoService = scriptPostDtoService;
+//        this.scriptDtoService = scriptDtoService;
+//    }
 
     @Autowired
-    ScriptController(IScriptService scriptService, ScriptDtoModelAssembler scriptDtoModelAssembler,
-                     IScriptPostDtoService scriptPostDtoService,
-                     IScriptDtoService scriptDtoService) {
+    public void setScriptService(IScriptService scriptService) {
         this.scriptService = scriptService;
+    }
+
+    @Autowired
+    public void setScriptDtoModelAssembler(ScriptDtoModelAssembler scriptDtoModelAssembler) {
         this.scriptDtoModelAssembler = scriptDtoModelAssembler;
+    }
+
+    @Autowired
+    public void setScriptPostDtoService(IScriptPostDtoService scriptPostDtoService) {
         this.scriptPostDtoService = scriptPostDtoService;
+    }
+
+    @Autowired
+    public void setScriptDtoService(IScriptDtoService scriptDtoService) {
         this.scriptDtoService = scriptDtoService;
     }
 
-    @GetMapping("")
-    public HalSingleEmbeddedResource<TotalPages> getAll(
-            @RequestParam int limit,
-            @RequestParam int pageNumber,
-            @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
-            @RequestParam(required = false, name = "version") String version) {
-        List<ScriptDto> scripts = scriptDtoService.getAll(limit, pageNumber, expansions, version != null && version.toLowerCase().equals("latest"));
-        TotalPages totalPages = TotalPages.builder()
-                .totalPages(scriptDtoService.getTotalPages(limit, expansions, version != null && version.toLowerCase().equals("latest")))
-                .payload(scripts)
-                .build();
-        return new HalSingleEmbeddedResource<>(totalPages);
+    // IntelliJ falsely report the bean as not found
+    @Autowired
+    public void setPagedResourcesAssembler(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+                                                       PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
+        this.scriptDtoPagedResourcesAssembler = scriptDtoPagedResourcesAssembler;
     }
+
+    @GetMapping("")
+    public PagedModel<ScriptDto> getAll(Pageable pageable,
+                                        @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
+                                        @RequestParam(required = false, name = "version") String version) {
+        Page<ScriptDto> scriptDtoPage = scriptDtoService.getAll(pageable, expansions, version != null && version.toLowerCase().equals("latest"));
+        return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDto -> scriptDtoModelAssembler.toModel(scriptDto));
+    }
+
 
     @GetMapping("/{name}")
     public HalMultipleEmbeddedResource<ScriptDto> getByName(@PathVariable String name, @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) {

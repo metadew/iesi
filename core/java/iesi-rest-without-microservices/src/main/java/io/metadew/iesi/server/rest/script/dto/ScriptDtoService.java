@@ -3,11 +3,10 @@ package io.metadew.iesi.server.rest.script.dto;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import io.metadew.iesi.server.rest.script.dto.action.IScriptActionDtoService;
-import io.metadew.iesi.server.rest.script.dto.label.IScriptLabelDtoService;
-import io.metadew.iesi.server.rest.script.dto.parameter.IScriptParameterDtoService;
 import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,19 +17,22 @@ import java.util.stream.Collectors;
 @Service
 public class ScriptDtoService implements IScriptDtoService {
 
-    private IScriptParameterDtoService scriptParameterDtoService;
-    private IScriptLabelDtoService scriptLabelDtoService;
-    private IScriptActionDtoService scriptActionDtoService;
     private IScriptVersionDtoService scriptVersionDtoService;
     private IScriptDtoRepository scriptDtoRepository;
 
+//    @Autowired
+//    public void setScriptVersionDtoService(IScriptVersionDtoService scriptVersionDtoService) {
+//        this.scriptVersionDtoService = scriptVersionDtoService;
+//    }
+//
+//    @Autowired
+//    public void setScriptDtoRepository(IScriptDtoRepository scriptDtoRepository) {
+//        this.scriptDtoRepository = scriptDtoRepository;
+//    }
+
     @Autowired
-    public ScriptDtoService(IScriptParameterDtoService scriptParameterDtoService, IScriptLabelDtoService scriptLabelDtoService,
-                            IScriptActionDtoService scriptActionDtoService, IScriptVersionDtoService scriptVersionDtoService,
+    public ScriptDtoService(IScriptVersionDtoService scriptVersionDtoService,
                             IScriptDtoRepository scriptDtoRepository) {
-        this.scriptActionDtoService = scriptActionDtoService;
-        this.scriptLabelDtoService = scriptLabelDtoService;
-        this.scriptParameterDtoService = scriptParameterDtoService;
         this.scriptVersionDtoService = scriptVersionDtoService;
         this.scriptDtoRepository = scriptDtoRepository;
     }
@@ -53,24 +55,9 @@ public class ScriptDtoService implements IScriptDtoService {
                         .collect(Collectors.toList()));
     }
 
-    public ScriptDto convertToDto(Script script) {
-        return new ScriptDto(script.getName(), script.getDescription(),
-                scriptVersionDtoService.convertToDto(script.getVersion()),
-                script.getParameters().stream().map(scriptParameterDtoService::convertToDto).collect(Collectors.toList()),
-                script.getActions().stream().map(scriptActionDtoService::convertToDto).collect(Collectors.toList()),
-                script.getLabels().stream().map(scriptLabelDtoService::convertToDto).collect(Collectors.toList()),
-                null,
-                null);
-    }
-
     @Override
-    public List<ScriptDto> getAll(int limit, int pageNumber, List<String> expansions, boolean isLatestOnly) {
-        return scriptDtoRepository.getAll(limit, pageNumber, expansions, isLatestOnly);
-    }
-
-    @Override
-    public int getTotalPages(int limit, List<String> expansions, boolean isLatestVersionOnly) {
-        return scriptDtoRepository.getTotalPages(limit, expansions, isLatestVersionOnly);
+    public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestOnly) {
+        return scriptDtoRepository.getAll(pageable, expansions, isLatestOnly);
     }
 
     @Override

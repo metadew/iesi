@@ -47,6 +47,7 @@ public class ScriptDtoService implements IScriptDtoService {
 
     @Override
     public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestOnly) {
+        if (expansions == null) expansions = new ArrayList<>();
         return scriptDtoRepository.getAll(pageable, expansions, isLatestOnly);
     }
 

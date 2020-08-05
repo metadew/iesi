@@ -26,11 +26,11 @@ import java.util.List;
 @CrossOrigin
 public class ScriptController {
 
-    private IScriptService scriptService;
-    private ScriptDtoModelAssembler scriptDtoModelAssembler;
-    private IScriptPostDtoService scriptPostDtoService;
-    private IScriptDtoService scriptDtoService;
-    private PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
+    private final IScriptService scriptService;
+    private final IScriptDtoService scriptDtoService;
+    private final ScriptDtoModelAssembler scriptDtoModelAssembler;
+    private final IScriptPostDtoService scriptPostDtoService;
+    private final PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
 
     @Autowired
     ScriptController(IScriptService scriptService,
@@ -40,45 +40,21 @@ public class ScriptController {
                      @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
                              PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
         this.scriptService = scriptService;
+        this.scriptDtoService = scriptDtoService;
         this.scriptDtoModelAssembler = scriptDtoModelAssembler;
         this.scriptPostDtoService = scriptPostDtoService;
-        this.scriptDtoService = scriptDtoService;
         this.scriptDtoPagedResourcesAssembler = scriptDtoPagedResourcesAssembler;
     }
 
-//    @Autowired
-//    public void setScriptService(IScriptService scriptService) {
-//        this.scriptService = scriptService;
-//    }
-//
-//    @Autowired
-//    public void setScriptDtoModelAssembler(ScriptDtoModelAssembler scriptDtoModelAssembler) {
-//        this.scriptDtoModelAssembler = scriptDtoModelAssembler;
-//    }
-//
-//    @Autowired
-//    public void setScriptPostDtoService(IScriptPostDtoService scriptPostDtoService) {
-//        this.scriptPostDtoService = scriptPostDtoService;
-//    }
-//
-//    @Autowired
-//    public void setScriptDtoService(IScriptDtoService scriptDtoService) {
-//        this.scriptDtoService = scriptDtoService;
-//    }
-//
-//    // IntelliJ falsely report the bean as not found
-//    @Autowired
-//    public void setPagedResourcesAssembler(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-//                                                   PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
-//        this.scriptDtoPagedResourcesAssembler = scriptDtoPagedResourcesAssembler;
-//    }
-
     @GetMapping("")
     public PagedModel<ScriptDto> getAll(Pageable pageable,
-                                        @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
+                                        @RequestParam(required = false, name = "expand") List<String> expansions,
                                         @RequestParam(required = false, name = "version") String version) {
         Page<ScriptDto> scriptDtoPage = scriptDtoService.getAll(pageable, expansions, version != null && version.toLowerCase().equals("latest"));
-        return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDto -> scriptDtoModelAssembler.toModel(scriptDto));
+        if (scriptDtoPage.hasContent())
+            return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDtoModelAssembler::toModel);
+        //noinspection unchecked
+        return (PagedModel<ScriptDto>) scriptDtoPagedResourcesAssembler.toEmptyModel(scriptDtoPage, ScriptDto.class);
     }
 
 
@@ -88,7 +64,10 @@ public class ScriptController {
                                            @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
                                            @RequestParam(required = false, name = "version") String version) {
         Page<ScriptDto> scriptDtoPage = scriptDtoService.getByName(pageable, name, expansions, version != null && version.toLowerCase().equals("latest"));
-        return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDto -> scriptDtoModelAssembler.toModel(scriptDto));
+        if (scriptDtoPage.hasContent())
+            return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDtoModelAssembler::toModel);
+        //noinspection unchecked - disable warning on casting
+        return (PagedModel<ScriptDto>) scriptDtoPagedResourcesAssembler.toEmptyModel(scriptDtoPage, ScriptDto.class);
     }
 
     @GetMapping("/{name}/{version}")
@@ -112,7 +91,6 @@ public class ScriptController {
         for (ScriptPostDto scriptPostDto : scriptDtos) {
             halMultipleEmbeddedResource.embedResource(scriptPostDto);
         }
-
         return halMultipleEmbeddedResource;
     }
 
@@ -125,7 +103,6 @@ public class ScriptController {
         }
         scriptService.updateScript(scriptPostDto);
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
-
     }
 
     @DeleteMapping("/{name}")

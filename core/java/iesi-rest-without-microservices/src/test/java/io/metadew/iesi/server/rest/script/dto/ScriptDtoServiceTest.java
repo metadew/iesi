@@ -2,7 +2,6 @@ package io.metadew.iesi.server.rest.script.dto;
 
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
@@ -20,18 +19,18 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,6 +60,13 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
         //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
         //metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+    }
+
+    @Test
+    void getAllReturnFormatTest(){
+        Pageable pageable = Pageable.unpaged();
+        assertThat(scriptDtoService.getAll(pageable, null, false))
+                .isInstanceOf(PageImpl.class);
     }
 
     @Test
@@ -476,13 +482,20 @@ class ScriptDtoServiceTest {
     }
 
     @Test
+    void getByNameReturnFormatTest(){
+        Pageable pageable = Pageable.unpaged();
+        assertThat(scriptDtoService.getByName(pageable, null, new ArrayList<>(), false))
+                .isInstanceOf(PageImpl.class);
+    }
+
+    @Test
     void getByNameSimpleTest() {
         Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
         Pageable pageable = Pageable.unpaged();
-        assertThat(scriptDtoService.getByName(pageable,"script0", new ArrayList<>(), false).getContent().size())
+        assertThat(scriptDtoService.getByName(pageable, "script0", new ArrayList<>(), false).getContent().size())
                 .isEqualTo(1);
-        assertThat(scriptDtoService.getByName(pageable,"script0", new ArrayList<>(), false).getContent().get(0))
+        assertThat(scriptDtoService.getByName(pageable, "script0", new ArrayList<>(), false).getContent().get(0))
                 .isEqualTo(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(
@@ -512,7 +525,7 @@ class ScriptDtoServiceTest {
         Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
         Pageable pageable = Pageable.unpaged();
-        assertThat(scriptDtoService.getByName(pageable, "script1", new ArrayList<>(),false).getContent().size())
+        assertThat(scriptDtoService.getByName(pageable, "script1", new ArrayList<>(), false).getContent().size())
                 .isEqualTo(0);
     }
 
@@ -522,9 +535,9 @@ class ScriptDtoServiceTest {
         Script script2 = ScriptBuilder.simpleScript("script0", 1, 1, 2, 1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
-        assertThat(scriptDtoService.getByName(Pageable.unpaged(),"script0", new ArrayList<>(),false).getContent().size())
+        assertThat(scriptDtoService.getByName(Pageable.unpaged(), "script0", new ArrayList<>(), false).getContent().size())
                 .isEqualTo(2);
-        assertThat(scriptDtoService.getByName(Pageable.unpaged(),"script0", new ArrayList<>(),false).getContent())
+        assertThat(scriptDtoService.getByName(Pageable.unpaged(), "script0", new ArrayList<>(), false).getContent())
                 .contains(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(new ActionDto(0, "action0", "fwk.dummy",
@@ -556,9 +569,9 @@ class ScriptDtoServiceTest {
         Script script2 = ScriptBuilder.simpleScript("script1", 0, 1, 2, 1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
-        assertThat(scriptDtoService.getByName(Pageable.unpaged(),"script0", new ArrayList<>(),false).getContent().size())
+        assertThat(scriptDtoService.getByName(Pageable.unpaged(), "script0", new ArrayList<>(), false).getContent().size())
                 .isEqualTo(1);
-        assertThat(scriptDtoService.getByName(Pageable.unpaged(),"script0", new ArrayList<>(),false).getContent())
+        assertThat(scriptDtoService.getByName(Pageable.unpaged(), "script0", new ArrayList<>(), false).getContent())
                 .contains(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(new ActionDto(0, "action0", "fwk.dummy",
@@ -600,9 +613,9 @@ class ScriptDtoServiceTest {
                 .build();
         ScriptResultConfiguration.getInstance().insert(scriptResult2);
 
-        assertThat(scriptDtoService.getByName(Pageable.unpaged(), "script0", Stream.of("execution").collect(Collectors.toList()),false).getContent().size())
+        assertThat(scriptDtoService.getByName(Pageable.unpaged(), "script0", Stream.of("execution").collect(Collectors.toList()), false).getContent().size())
                 .isEqualTo(1);
-        assertThat(scriptDtoService.getByName(Pageable.unpaged(), "script0", Stream.of("execution").collect(Collectors.toList()),false).getContent().get(0))
+        assertThat(scriptDtoService.getByName(Pageable.unpaged(), "script0", Stream.of("execution").collect(Collectors.toList()), false).getContent().get(0))
                 .isEqualTo(new ScriptDto("script0", "dummy script",
                         new ScriptVersionDto(0, "dummy version"), new ArrayList<>(),
                         Stream.of(
@@ -751,4 +764,14 @@ class ScriptDtoServiceTest {
                         ).collect(Collectors.toList())), null));
     }
 
+    @Test
+    void getByNameAndVersionEmptyDB(){
+        assertThat(scriptDtoService.getByNameAndVersion("",0L,new ArrayList<>()))
+                .describedAs("The returned value should be an optional")
+                .isInstanceOf(Optional.class);
+
+        assertThat(scriptDtoService.getByNameAndVersion("",0L,new ArrayList<>()).isPresent())
+                .describedAs("The returned optional should be empty")
+                .isFalse();
+    }
 }

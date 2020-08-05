@@ -94,7 +94,7 @@ public class ExecutionRequestControllerTest {
                 .willReturn(executionRequests);
 
         MockHttpServletResponse response = mvc.perform(
-                get("/execution_requests?limit=1&pageNumber=1")
+                get("/execution-requests?limit=1&pageNumber=1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -104,7 +104,7 @@ public class ExecutionRequestControllerTest {
     public void getAllNoResultTest() throws Exception {
         List<ExecutionRequest> executionRequests = new ArrayList<>();
         given(executionRequestService.getAll(10,0,null,null,null,null,null,null)).willReturn(executionRequests);
-        mvc.perform(get("/execution_requests?limit=1&pageNumber=1")
+        mvc.perform(get("/execution-requests?limit=1&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
     }
@@ -159,7 +159,7 @@ public class ExecutionRequestControllerTest {
         assertThat(result.get(0).getContext())
                 .isEqualTo(executionRequest1.getContext());
 
-        mvc.perform(get("/execution_requests?limit=2&pageNumber=1")
+        mvc.perform(get("/execution-requests?limit=2&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
     }

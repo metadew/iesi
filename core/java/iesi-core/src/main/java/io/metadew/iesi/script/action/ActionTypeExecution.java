@@ -25,7 +25,7 @@ public abstract class ActionTypeExecution {
         this.actionExecution = actionExecution;
     }
 
-    public abstract void prepare();
+    public abstract void prepare() throws Exception;
 
     public boolean execute() throws InterruptedException {
         try {

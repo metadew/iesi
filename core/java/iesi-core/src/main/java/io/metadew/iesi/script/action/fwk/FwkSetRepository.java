@@ -5,6 +5,7 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -12,17 +13,14 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 
-public class FwkSetRepository {
+public class FwkSetRepository extends ActionTypeExecution {
 
     private ActionParameterOperation repositoryReferenceName;
     private ActionParameterOperation repositoryName;
@@ -30,24 +28,12 @@ public class FwkSetRepository {
     private ActionParameterOperation repositoryInstanceLabels;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public FwkSetRepository() {
-
-    }
-
     public FwkSetRepository(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
+        super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.executionControl = executionControl;
-        this.actionExecution = actionExecution;
-        this.actionParameterOperationMap = new HashMap<>();
-    }
-
-    public void prepare()  {
+    public void prepare() {
         // Reset Parameters
         this.setRepositoryReferenceName(
                 new ActionParameterOperation(this.getExecutionControl(),
@@ -63,13 +49,13 @@ public class FwkSetRepository {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repository")) {
-                this.getRepositoryName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
-                this.getRepositoryReferenceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryReferenceName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("instance")) {
-                this.getRepositoryInstanceName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryInstanceName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("labels")) {
-                this.getRepositoryInstanceLabels().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryInstanceLabels().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -80,26 +66,7 @@ public class FwkSetRepository {
         this.getActionParameterOperationMap().put("labels", this.getRepositoryInstanceLabels());
     }
 
-    //
-    public boolean execute() throws InterruptedException {
-        try {
-            return executionOperation();
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-    }
-
-    private boolean executionOperation() throws SQLException, InterruptedException {
+    protected boolean executeAction() throws SQLException, InterruptedException {
         String repositoryReferenceName = convertRepositoryReferenceName(getRepositoryReferenceName().getValue());
         String repositoryName = convertRepositoryName(getRepositoryName().getValue());
         String repositoryInstanceName = convertRepositoryInstanceName(getRepositoryInstanceName().getValue());
@@ -118,7 +85,7 @@ public class FwkSetRepository {
         if (repositoryInstanceName instanceof Text) {
             return repositoryInstanceName.toString();
         } else {
-        	LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for repository instance name",
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for repository instance name",
                     repositoryInstanceName.getClass()));
             return repositoryInstanceName.toString();
         }
@@ -128,7 +95,7 @@ public class FwkSetRepository {
         if (referenceName instanceof Text) {
             return referenceName.toString();
         } else {
-        	LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for reference name",
+            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for reference name",
                     referenceName.getClass()));
             return referenceName.toString();
         }
@@ -139,7 +106,7 @@ public class FwkSetRepository {
         List<String> labels = new ArrayList<>();
         if (repositoryLabels instanceof Text) {
             Arrays.stream(repositoryLabels.toString().split(","))
-                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(DataTypeHandler.getInstance().resolve(repositoryLabel.trim(), executionControl.getExecutionRuntime()))));
+                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(DataTypeHandler.getInstance().resolve(repositoryLabel.trim(), getExecutionControl().getExecutionRuntime()))));
             return labels;
         } else if (repositoryLabels instanceof Array) {
             ((Array) repositoryLabels).getList()
@@ -173,31 +140,6 @@ public class FwkSetRepository {
                     datasetLabel.getClass()));
             return datasetLabel.toString();
         }
-    }
-
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getRepositoryName() {

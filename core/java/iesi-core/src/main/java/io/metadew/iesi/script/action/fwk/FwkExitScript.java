@@ -1,9 +1,10 @@
 package io.metadew.iesi.script.action.fwk;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -11,10 +12,7 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Optional;
 
 /**
@@ -22,27 +20,15 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class FwkExitScript {
+public class FwkExitScript extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation status;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public FwkExitScript() {
-
-    }
-
     public FwkExitScript(ExecutionControl executionControl,
                          ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -53,7 +39,7 @@ public class FwkExitScript {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("status")) {
-                this.getStatus().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getStatus().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -61,30 +47,11 @@ public class FwkExitScript {
         this.getActionParameterOperationMap().put("status", this.getStatus());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            return executeOperation();
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean executeOperation() throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
         Optional<String> status = convertStatus(getStatus().getValue());
         // Verify if the status is empty
         if (status.map(status1 -> status1.trim().isEmpty()).orElse(false)) {
-            this.getStatus().setInputValue(ScriptRunStatus.SUCCESS.value(), executionControl.getExecutionRuntime());
+            this.getStatus().setInputValue(ScriptRunStatus.SUCCESS.value(), getExecutionControl().getExecutionRuntime());
         }
         return true;
     }
@@ -100,30 +67,6 @@ public class FwkExitScript {
                     status.getClass()));
             return Optional.of(status.toString());
         }
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getStatus() {

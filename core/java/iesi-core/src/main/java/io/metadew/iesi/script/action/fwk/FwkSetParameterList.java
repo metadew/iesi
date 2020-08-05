@@ -5,6 +5,7 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -12,8 +13,6 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +20,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FwkSetParameterList {
+public class FwkSetParameterList extends ActionTypeExecution {
 
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
 
@@ -30,12 +29,10 @@ public class FwkSetParameterList {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkSetParameterList(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Reset Parameters
         this.setParameterList(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
                 this.getActionExecution().getAction().getType(), "list"));
@@ -43,36 +40,17 @@ public class FwkSetParameterList {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list"))
-                this.getParameterList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getParameterList().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
         }
 
         //Create parameter list
         this.getActionParameterOperationMap().put("list", this.getParameterList());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            return executionOperation();
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean executionOperation() throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
         Map<String, String> list = convertList(getParameterList().getValue());
         for (Map.Entry<String, String> parameter : list.entrySet()) {
-            executionControl.getExecutionRuntime().setRuntimeVariable(actionExecution, parameter.getKey(), parameter.getValue());
+            getExecutionControl().getExecutionRuntime().setRuntimeVariable(getActionExecution(), parameter.getKey(), parameter.getValue());
         }
         return true;
     }
@@ -81,7 +59,7 @@ public class FwkSetParameterList {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, executionControl.getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
             return parameterMap;
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {
@@ -111,30 +89,6 @@ public class FwkSetParameterList {
                     parameterEntry.getClass()));
             return parameterMap;
         }
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getParameterList() {

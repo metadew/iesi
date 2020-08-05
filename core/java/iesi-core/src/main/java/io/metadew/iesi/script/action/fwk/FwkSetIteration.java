@@ -4,6 +4,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -11,13 +12,10 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 
-public class FwkSetIteration {
+public class FwkSetIteration extends ActionTypeExecution {
 
     private ActionParameterOperation iterationName;
     private ActionParameterOperation iterationType;
@@ -32,14 +30,7 @@ public class FwkSetIteration {
 
     public FwkSetIteration(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl, ScriptExecution scriptExecution,
-                     ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -66,23 +57,23 @@ public class FwkSetIteration {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
-                this.getIterationName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
-                this.getIterationType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationType().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list")) {
-                this.getIterationList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationList().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("values")) {
-                this.getIterationValues().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationValues().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("from")) {
-                this.getIterationFrom().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationFrom().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("to")) {
-                this.getIterationTo().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationTo().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("step")) {
-                this.getIterationStep().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationStep().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("condition")) {
-                this.getIterationCondition().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationCondition().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("interrupt")) {
-                this.getIterationInterrupt().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getIterationInterrupt().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -98,37 +89,17 @@ public class FwkSetIteration {
         this.getActionParameterOperationMap().put("interrupt", this.getIterationInterrupt());
     }
 
-    //
-    public boolean execute() throws InterruptedException {
-        try {
-            String name = convertIterationName(getIterationName().getValue());
-            String type = convertIterationType(getIterationType().getValue());
-            String list = convertIterationList(getIterationList().getValue());
-            String values = convertIterationValues(getIterationValues().getValue());
-            String from = convertIterationFrom(getIterationFrom().getValue());
-            String to = convertIterationTo(getIterationTo().getValue());
-            String step = convertIterationStep(getIterationStep().getValue());
-            String condition = convertIterationCondition(getIterationCondition().getValue());
-            boolean interrupt = convertIterationInterrupt(getIterationInterrupt().getValue());
-            return setIteration(name, type, list, values, from, to, step, condition, interrupt);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean setIteration(String name, String type, String list, String values, String from, String to, String step, String condition, boolean interrupt) throws InterruptedException {
-        Iteration iteration = new Iteration(name, type, list, values, from, to, step==null?"1":step, condition, interrupt?"y":"n");
+    protected boolean executeAction() throws InterruptedException {
+        String name = convertIterationName(getIterationName().getValue());
+        String type = convertIterationType(getIterationType().getValue());
+        String list = convertIterationList(getIterationList().getValue());
+        String values = convertIterationValues(getIterationValues().getValue());
+        String from = convertIterationFrom(getIterationFrom().getValue());
+        String to = convertIterationTo(getIterationTo().getValue());
+        String step = convertIterationStep(getIterationStep().getValue());
+        String condition = convertIterationCondition(getIterationCondition().getValue());
+        boolean interrupt = convertIterationInterrupt(getIterationInterrupt().getValue());
+        Iteration iteration = new Iteration(name, type, list, values, from, to, step == null ? "1" : step, condition, interrupt ? "y" : "n");
         this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
         this.getActionExecution().getActionControl().increaseSuccessCount();
 
@@ -245,30 +216,6 @@ public class FwkSetIteration {
                     iterationName.getClass()));
             return iterationName.toString();
         }
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getIterationName() {

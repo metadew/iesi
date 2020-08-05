@@ -21,6 +21,7 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.service.HttpRequestComponentService;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
+import io.metadew.iesi.script.execution.ActionPerformanceLogger;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
@@ -29,8 +30,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -144,6 +143,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             httpResponse = HttpRequestService.getInstance().send(httpRequest);
         }
         outputResponse(httpResponse);
+        ActionPerformanceLogger.getInstance().log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());
         //writeResponseToOutputDataset(httpResponse);
         checkStatusCode(httpResponse);
         return true;
@@ -195,7 +195,8 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private void outputResponse(HttpResponse httpResponse) throws IOException {
         if (getOutputDataset().isPresent()) {
             HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
-        };
+        }
+        ;
         //HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset());
         //getActionExecution().getActionControl().logOutput("response", httpResponse.getResponse().toString());
 //        getActionExecution().getActionControl().logOutput("status", httpResponse.getStatusLine().toString());

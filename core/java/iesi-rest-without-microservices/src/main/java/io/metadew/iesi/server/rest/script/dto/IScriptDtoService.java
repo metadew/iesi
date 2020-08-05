@@ -15,7 +15,5 @@ public interface IScriptDtoService {
 
     Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestOnly);
 
-    Optional<ScriptDto> getByNameAndVersion(String name, long version);
-
     Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions);
 }

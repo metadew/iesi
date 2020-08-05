@@ -53,16 +53,13 @@ public class ScriptDtoService implements IScriptDtoService {
 
     @Override
     public Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestOnly) {
+        if (expansions == null) expansions = new ArrayList<>();
         return scriptDtoRepository.getByName(pageable, name, expansions, isLatestOnly);
     }
 
     @Override
-    public Optional<ScriptDto> getByNameAndVersion(String name, long version) {
-        return getByNameAndVersion(name, version, new ArrayList<>());
-    }
-
-    @Override
     public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions) {
+        if (expansions == null) expansions = new ArrayList<>();
         return scriptDtoRepository.getByNameAndVersion(name, version, expansions);
     }
 }

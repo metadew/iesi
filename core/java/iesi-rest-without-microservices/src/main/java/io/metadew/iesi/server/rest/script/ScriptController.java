@@ -61,7 +61,7 @@ public class ScriptController {
     @GetMapping("/{name}")
     public PagedModel<ScriptDto> getByName(Pageable pageable,
                                            @PathVariable String name,
-                                           @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
+                                           @RequestParam(required = false, name = "expand") List<String> expansions,
                                            @RequestParam(required = false, name = "version") String version) {
         Page<ScriptDto> scriptDtoPage = scriptDtoService.getByName(pageable, name, expansions, version != null && version.toLowerCase().equals("latest"));
         if (scriptDtoPage.hasContent())
@@ -71,7 +71,7 @@ public class ScriptController {
     }
 
     @GetMapping("/{name}/{version}")
-    public ScriptDto get(@PathVariable String name, @PathVariable Long version, @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException {
+    public ScriptDto get(@PathVariable String name, @PathVariable Long version, @RequestParam(required = false, name = "expand") List<String> expansions) throws MetadataDoesNotExistException {
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version, expansions)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
         return scriptDtoModelAssembler.toModel(scriptDto);

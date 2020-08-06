@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.script.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
@@ -18,7 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @Tag(name = "scripts", description = "Everything about scripts")
@@ -91,16 +96,19 @@ public class ScriptController {
         for (ScriptPostDto scriptPostDto : scriptDtos) {
             halMultipleEmbeddedResource.embedResource(scriptPostDto);
         }
+        halMultipleEmbeddedResource.add(
+                linkTo(methodOn(ScriptController.class)
+                        .getAll(PageRequest.of(0, 20), new ArrayList<>(), ""))
+                        .withRel("scripts"));
         return halMultipleEmbeddedResource;
     }
 
     @PutMapping("/{name}/{version}")
     public ScriptDto put(@PathVariable String name,
-                         @PathVariable Long version,
+                         @PathVariable long version,
                          @RequestBody ScriptPostDto scriptPostDto) throws MetadataDoesNotExistException {
-        if (!scriptPostDto.getName().equals(name)) {
-            throw new DataBadRequestException(name);
-        }
+        if (!scriptPostDto.getName().equals(name)) throw new DataBadRequestException(name);
+        if (scriptPostDto.getVersion().getNumber() != version) throw new DataBadRequestException(version);
         scriptService.updateScript(scriptPostDto);
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
     }
@@ -112,7 +120,7 @@ public class ScriptController {
     }
 
     @DeleteMapping("/{name}/{version}")
-    public ResponseEntity<?> delete(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
+    public ResponseEntity<?> delete(@PathVariable String name, @PathVariable long version) throws MetadataDoesNotExistException {
         scriptService.deleteByNameAndVersion(name, version);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

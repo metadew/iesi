@@ -57,7 +57,7 @@ class ScriptControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<ScriptDto> scriptDtoList = new ArrayList<>();
         Page<ScriptDto> page = new PageImpl<>(scriptDtoList, pageable, 1);
-        given(scriptDtoService.getAll(pageable, null, false)).willReturn(page);
+        given(scriptDtoService.getAll(pageable, new ArrayList<>(), false)).willReturn(page);
 
         mvc.perform(get("/scripts").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -76,7 +76,7 @@ class ScriptControllerTest {
         List<ScriptDto> scriptDtoList = Stream.of(scriptDto0, scriptDto1).collect(Collectors.toList());
         Pageable pageable = PageRequest.of(0, 20);
         Page<ScriptDto> page = new PageImpl<>(scriptDtoList, pageable, 2);
-        given(scriptDtoService.getAll(pageable, null, false)).willReturn(page);
+        given(scriptDtoService.getAll(pageable, new ArrayList<>(), false)).willReturn(page);
 
         mvc.perform(get("/scripts").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -171,7 +171,7 @@ class ScriptControllerTest {
         List<ScriptDto> scriptDtoList = Stream.of(scriptDto0, scriptDto1).collect(Collectors.toList());
         Pageable pageable = PageRequest.of(0, 20);
         Page<ScriptDto> page = new PageImpl<>(scriptDtoList, pageable, 2);
-        given(scriptDtoService.getAll(pageable, null, true)).willReturn(page);
+        given(scriptDtoService.getAll(pageable, new ArrayList<>(), true)).willReturn(page);
 
         mvc.perform(get("/scripts?version=latest").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -275,7 +275,7 @@ class ScriptControllerTest {
         Page<ScriptDto> page2 = new PageImpl<>(scriptDtoList2, pageable2, 3);
         Page<ScriptDto> page3 = new PageImpl<>(scriptDtoList3, pageable3, 3);
 
-        given(scriptDtoService.getAll(pageable1, null, false)).willReturn(page1);
+        given(scriptDtoService.getAll(pageable1, new ArrayList<>(), false)).willReturn(page1);
         mvc.perform(get("/scripts?page=0&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -287,7 +287,7 @@ class ScriptControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) scriptDtoTotalList.size() / scriptDtoList1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
-        given(scriptDtoService.getAll(pageable2, null, false)).willReturn(page2);
+        given(scriptDtoService.getAll(pageable2, new ArrayList<>(), false)).willReturn(page2);
         mvc.perform(get("/scripts?page=1&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -299,7 +299,7 @@ class ScriptControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) scriptDtoTotalList.size() / scriptDtoList2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(scriptDtoService.getAll(pageable3, null, false)).willReturn(page3);
+        given(scriptDtoService.getAll(pageable3, new ArrayList<>(), false)).willReturn(page3);
         mvc.perform(get("/scripts?page=2&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -336,14 +336,17 @@ class ScriptControllerTest {
         Page<ScriptDto> page2 = new PageImpl<>(scriptDtoList2, pageable2, 3);
         Page<ScriptDto> page3 = new PageImpl<>(scriptDtoList3, pageable3, 3);
 
-        given(scriptDtoService.getByName(pageable1, name, null, false)).willReturn(page1);
-        given(scriptDtoService.getByName(pageable2, name, null, false)).willReturn(page2);
+        given(scriptDtoService.getByName(pageable1, name, new ArrayList<>(), false)).willReturn(page1);
+        given(scriptDtoService.getByName(pageable2, name, new ArrayList<>(), false)).willReturn(page2);
+        given(scriptDtoService.getByName(pageable3, name, new ArrayList<>(), false)).willReturn(page3);
+
         mvc.perform(get("/scripts/" + name + "?page=0&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.scripts[0].name", is(name)))
+                .andExpect(jsonPath("$._embedded.scripts[0].version.number", is((int)scriptDto1.getVersion().getNumber())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(scriptDtoTotalList.size())))
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) scriptDtoTotalList.size() / scriptDtoList1.size())))))
@@ -355,18 +358,19 @@ class ScriptControllerTest {
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.scripts[0].name", is(name)))
+                .andExpect(jsonPath("$._embedded.scripts[0].version.number", is((int)scriptDto2.getVersion().getNumber())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(scriptDtoTotalList.size())))
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) scriptDtoTotalList.size() / scriptDtoList2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(scriptDtoService.getByName(pageable3, name, null, false)).willReturn(page3);
         mvc.perform(get("/scripts/" + name + "?page=2&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.scripts[0].name", is(name)))
+                .andExpect(jsonPath("$._embedded.scripts[0].version.number", is((int)scriptDto3.getVersion().getNumber())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(scriptDtoTotalList.size())))
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) scriptDtoTotalList.size() / scriptDtoList3.size())))))
@@ -377,7 +381,7 @@ class ScriptControllerTest {
     void getByNameAndVersion400AndPropertyPresenceCheck() throws Exception {
         // Mock Service
         Optional<ScriptDto> optionalScriptDto = Optional.of(ScriptDtoBuilder.simpleScriptDto("nameTest", 0));
-        given(scriptDtoService.getByNameAndVersion("nameTest", 0, null)).willReturn(optionalScriptDto);
+        given(scriptDtoService.getByNameAndVersion("nameTest", 0, new ArrayList<>())).willReturn(optionalScriptDto);
 
         mvc.perform(get("/scripts/nameTest/0").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

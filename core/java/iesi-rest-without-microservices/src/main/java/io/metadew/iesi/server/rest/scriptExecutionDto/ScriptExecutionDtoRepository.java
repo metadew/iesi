@@ -178,6 +178,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         return ScriptExecutionDtoBuildHelper.builder()
                 .runId(cachedRowSet.getString("RUN_ID"))
                 .processId(cachedRowSet.getLong("SCRIPT_PRC_ID"))
+                .parentProcessId(cachedRowSet.getLong("SCRIPT_PARENT_PRC_ID"))
                 .scriptId(cachedRowSet.getString("SCRIPT_ID"))
                 .scriptName(cachedRowSet.getString("SCRIPT_NM"))
                 .scriptVersion(cachedRowSet.getLong("SCRIPT_VRS_NB"))
@@ -329,6 +330,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "LEFT OUTER JOIN " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameterTraces").getName() + " action_trc_par " +
                 "on action_trc.RUN_ID = action_trc_par.RUN_ID AND action_trc.PRC_ID = action_trc_par.PRC_ID " +
+                "AND action_trc_par.ACTION_PAR_NM = action_des_trc_par.ACTION_PAR_NM " +
                 getWhereClause(runId, processId).orElse("") +
                 "UNION ALL " +
                 "SELECT 5 INFO_TYPE, results.RUN_ID RUN_ID, results.PRC_ID SCRIPT_PRC_ID, " +

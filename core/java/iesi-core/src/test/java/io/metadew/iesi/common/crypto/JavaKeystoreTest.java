@@ -12,7 +12,7 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.util.Scanner;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @PrepareForTest(JavaKeystore.class)
 public class JavaKeystoreTest {
@@ -35,7 +35,7 @@ public class JavaKeystoreTest {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
         PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(
                 ske.getSecretKey(), PBEKeySpec.class);
-        assertEquals("c7c1e47391154a6a", new String(keySpec.getPassword()));
+        assertThat("c7c1e47391154a6a").isEqualTo(new String(keySpec.getPassword()));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class JavaKeystoreTest {
             factory.getKeySpec(
                     ske.getSecretKey(), PBEKeySpec.class);
         } catch (NullPointerException e) {
-            assertEquals(null, e.getMessage());
+            assertThat(e.getMessage()).isNull();
         }
     }
 }

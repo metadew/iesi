@@ -7,7 +7,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import java.io.ByteArrayInputStream;
 import java.util.Scanner;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.not;
 
 @PrepareForTest(FrameworkCrypto.class)
 public class FrameworkCryptoTest {
@@ -23,7 +24,7 @@ public class FrameworkCryptoTest {
         String userinput = scanner.nextLine();
         String alias = "mypass";
         String keyJKS = new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
-        assertEquals("c7c1e47391154a6a", keyJKS);
+        assertThat("c7c1e47391154a6a").isEqualTo(keyJKS);
     }
 
     @Test
@@ -39,14 +40,15 @@ public class FrameworkCryptoTest {
         try {
             new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
         } catch (Exception e) {
-            assertEquals("java.io.IOException: Integrity check failed: java.security.UnrecoverableKeyException: Failed PKCS12 integrity checking", e.getMessage());
+            assertThat("java.io.IOException: Integrity check failed: java.security.UnrecoverableKeyException: Failed PKCS12 integrity checking").isEqualTo(e.getMessage());
         }
     }
 
     @Test
     public void testKeyInConf() {
-        if (Configuration.getInstance().getProperty("iesi.security.encryption.key").isPresent()) {
-            assertEquals("c7c1e47391154a6a", Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString());
+        if (!Configuration.getInstance().getProperty("iesi.security.encryption.key").isPresent()) {
+            assertThat("y8c1e47391154a6c").isEqualTo(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString());
+            assertThat("y8c1e47391154a6b").isEqualTo(not(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString()));
         }
     }
 }

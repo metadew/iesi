@@ -80,10 +80,10 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
         List<Matcher> thisMatchers = _this.getMatchers();
         List<Matcher> otherMatchers = other.getMatchers();
 
-        if (!thisMatchers.stream()
+        if (!thisMatchers.parallelStream()
                 .map(Matcher::getKey)
                 .collect(Collectors.toSet())
-                .equals(otherMatchers.stream()
+                .equals(otherMatchers.parallelStream()
                         .map(Matcher::getKey)
                         .collect(Collectors.toSet()))) {
             return false;

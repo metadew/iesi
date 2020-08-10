@@ -323,7 +323,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionDesignTraces").getName() + " action_trc " +
                 "on results.RUN_ID = action_trc.RUN_ID " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +
-                "on results.RUN_ID = action_res.RUN_ID " +
+                "on results.RUN_ID = action_res.RUN_ID AND action_trc.PRC_ID = action_res.PRC_ID AND results.PRC_ID = action_res.SCRIPT_PRC_ID " +
                 "LEFT OUTER JOIN " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameterDesignTraces").getName() + " action_des_trc_par " +
                 "on action_trc.RUN_ID = action_des_trc_par.RUN_ID AND action_trc.PRC_ID = action_des_trc_par.PRC_ID " +
@@ -352,7 +352,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "on results.RUN_ID = action_trc.RUN_ID " +
                 "INNER JOIN " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +
-                "on results.RUN_ID = action_res.RUN_ID " +
+                "on results.RUN_ID = action_res.RUN_ID AND action_trc.PRC_ID = action_res.PRC_ID AND results.PRC_ID = action_res.SCRIPT_PRC_ID " +
                 "INNER JOIN " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultOutputs").getName() + " action_res_output " +
                 "on action_res.RUN_ID = action_res_output.RUN_ID AND action_res.PRC_ID = action_res_output.PRC_ID " +

@@ -93,7 +93,7 @@ public class ExecutionRequestControllerTest {
                 .willReturn(executionRequests);
 
         MockHttpServletResponse response = mvc.perform(
-                get("/execution_requests?limit=1&pageNumber=1")
+                get("/execution-requests?limit=1&pageNumber=1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -104,7 +104,7 @@ public class ExecutionRequestControllerTest {
         List<ExecutionRequest> executionRequests = new ArrayList<>();
         given(executionRequestService.getAll(10,0,null,null,null,null,null,null)).willReturn(executionRequests);
         System.out.println(MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName());
-        mvc.perform(get("/execution_requests?limit=1&pageNumber=1")
+        mvc.perform(get("/execution-requests?limit=1&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
     }
@@ -160,7 +160,7 @@ public class ExecutionRequestControllerTest {
                 .isEqualTo(executionRequest1.getContext());
         System.out.println(result);
 
-        mvc.perform(get("/execution_requests?limit=2&pageNumber=1")
+        mvc.perform(get("/execution-requests?limit=2&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
     }

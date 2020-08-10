@@ -6,14 +6,14 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoRepository;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
-import io.metadew.iesi.server.rest.executionrequest.dto.TotalPages;
+import io.metadew.iesi.server.rest.pagination.TotalPages;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.resource.HalSingleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.ScriptController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,7 +86,7 @@ public class ExecutionRequestController {
         for (ExecutionRequestDto executionRequestDto : executionRequestDtos) {
             halMultipleEmbeddedResource.embedResource(executionRequestDto);
             halMultipleEmbeddedResource.add(WebMvcLinkBuilder.linkTo(methodOn(ScriptController.class)
-                    .getByName(executionRequestDto.getName(), null))
+                    .getByName(PageRequest.of(0, 20), executionRequestDto.getName(), null, ""))
                     .withRel(executionRequestDto.getName()));
         }
 

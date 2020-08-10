@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.springframework.hateoas.RepresentationModel;
 
-@JsonPropertyOrder({ "_embedded", "_links" })
+@JsonPropertyOrder({"_embedded", "_links"})
 public class HalSingleEmbeddedResource<T extends RepresentationModel> extends RepresentationModel {
 
     private T embeddedResource;

@@ -1,22 +1,24 @@
 package io.metadew.iesi.server.rest.scriptExecutionDto;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.launch.MetadataLauncher;
-import io.metadew.iesi.launch.ScriptLauncher;
+import io.metadew.iesi.metadata.definition.environment.Environment;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestImpersonation;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.script.*;
+import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestImpersonationKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
@@ -29,6 +31,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,12 +73,13 @@ class ScriptExecutionDtoServiceTest {
     }
 
     @Test
-    void getAll(){
-
+    void getAll() throws ExecutionRequestBuilderException {
+        populateDB();
+        System.out.println(scriptExecutionDtoService.getAll());
     }
 
     @Test
-    void getByRunId(){
+    void getByRunId() {
 
     }
 
@@ -90,63 +97,77 @@ class ScriptExecutionDtoServiceTest {
         Script script1 = ScriptBuilder.simpleScript("oneScriptTest", 0L, 3, 2, 2);
         Script script2 = ScriptBuilder.simpleScript("oneScriptTest", 1L, 3, 2, 2);
         Script script3 = ScriptBuilder.simpleScript("anotherScriptTest", 0L, 3, 2, 2);
+        Environment environment = new Environment(new EnvironmentKey("tst"), "description", new ArrayList<>());
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script3);
+        metadataRepositoryConfiguration.getConnectivityMetadataRepository().save(environment);
 
+        String executionRequestId = UUID.randomUUID().toString();
+        String scriptExecutionRequestId = UUID.randomUUID().toString();
 
-        // TODO: create accurate scriptExecutionRequest and scriptExecution simulation
-        ExecutionRequest executionRequest1 = new ExecutionRequestBuilder()
-                .id(UUID.randomUUID().toString())
-                .name("name")
-                .context("context1")
-                .description("description")
-                .scope("scope")
+        io.metadew.iesi.script.execution.ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
+                .script(script1)
+                .exitOnCompletion(false)
+                .parameters(new HashMap<>())
+                .impersonations(new HashMap<>())
+                .environment("tst")
                 .build();
 
-        String uuid = UUID.randomUUID().toString();
-        ScriptNameExecutionRequest scriptNameExecutionRequest = new ScriptNameExecutionRequest(
-                new ScriptExecutionRequestKey(uuid),
-                executionRequest1.getMetadataKey(),
-                "tst",
-                true,
-                Stream.of(new ScriptExecutionRequestImpersonation(
-                                new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(uuid + "name1")),
-                                new ScriptExecutionRequestKey(uuid),
-                                new ImpersonationKey("name1")),
-                        new ScriptExecutionRequestImpersonation(
-                                new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(uuid + "name2")),
-                                new ScriptExecutionRequestKey(uuid),
-                                new ImpersonationKey("name2")))
-                        .collect(Collectors.toList()),
-                Stream.of(new ScriptExecutionRequestParameter(
-                                new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(uuid + "param1")),
-                                new ScriptExecutionRequestKey(uuid),
-                                "param1",
-                                "value1"),
-                        new ScriptExecutionRequestParameter(
-                                new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(uuid + "param2")),
-                                new ScriptExecutionRequestKey(uuid),
-                                "param2",
-                                "value2")).collect(Collectors.toList()),
-                ScriptExecutionRequestStatus.NEW,
-                "script",
-                1L);
+        scriptExecution.execute();
 
-        executionRequest1.setScriptExecutionRequests(Stream.of(scriptNameExecutionRequest).collect(Collectors.toList()));
-
-
-
-        // doesn't work: first, the column name sounds to be a problem, second, The framework instance shutdown the DB
-        // after its work is done -> impossible to perform test on it + Can't be sure it opens the same DB
-//        try {
-//            String[] executeScripts = {"-script", "oneScriptTest", "-env", "testEnv"};
-//            ScriptLauncher.main(executeScripts);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-
-
+//
+//        // TODO: create accurate scriptExecutionRequest and scriptExecution simulation
+//        ExecutionRequest executionRequest = new ExecutionRequestBuilder()
+//                .id(executionRequestId)
+//                .name("name")
+//                .context("context1")
+//                .description("description")
+//                .scope("scope")
+//                .scriptExecutionRequests(Stream.of(
+//                        new ScriptNameExecutionRequest(
+//                                new ScriptExecutionRequestKey(scriptExecutionRequestId),
+//                                new ExecutionRequestKey(executionRequestId),
+//                                "tst",
+//                                true,
+////                                Stream.of(
+////                                        new ScriptExecutionRequestImpersonation(
+////                                                new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()),
+////                                                new ScriptExecutionRequestKey(scriptExecutionRequestId),
+////                                                new ImpersonationKey("name1")),
+////                                        new ScriptExecutionRequestImpersonation(
+////                                                new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()),
+////                                                new ScriptExecutionRequestKey(scriptExecutionRequestId),
+////                                                new ImpersonationKey("name2")))
+////                                        .collect(Collectors.toList()),
+//                                new ArrayList<>(),
+//                                Stream.of(new ScriptExecutionRequestParameter(
+//                                                new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()),
+//                                                new ScriptExecutionRequestKey(scriptExecutionRequestId),
+//                                                "param1",
+//                                                "value1"),
+//                                        new ScriptExecutionRequestParameter(
+//                                                new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()),
+//                                                new ScriptExecutionRequestKey(scriptExecutionRequestId),
+//                                                "param2",
+//                                                "value2")).collect(Collectors.toList()),
+//                                ScriptExecutionRequestStatus.COMPLETED,
+//                                "script",
+//                                1L)
+//                ).collect(Collectors.toList()))
+//                .build();
+//        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
+//
+//        String runId = UUID.randomUUID().toString();
+//        String scriptExecutionId = UUID.randomUUID().toString();
+//        ScriptExecution scriptExecution =
+//                new ScriptExecution(new ScriptExecutionKey(scriptExecutionId),
+//                        new ScriptExecutionRequestKey(scriptExecutionRequestId), runId,
+//                        ScriptRunStatus.SUCCESS, LocalDateTime.now(), LocalDateTime.now().plus(1, ChronoUnit.SECONDS));
+//
+//
+//
+//
     }
 
     /*

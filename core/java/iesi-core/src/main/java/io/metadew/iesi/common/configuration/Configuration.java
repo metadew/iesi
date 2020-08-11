@@ -96,7 +96,7 @@ public class Configuration {
                         throws IOException {
                     if (isIESIApplicationConfigurationFile(file.getFileName().toString())) {
                         Yaml yaml = new Yaml();
-                        Map<String, Object> yamlProperties = yaml.load(Files.newBufferedReader(file));
+                        Map<String, Object> yamlProperties = (Map<String, Object>) yaml.load(Files.newBufferedReader(file));
                         if (yamlProperties.containsKey(iesiKeyword)) {
                             log.debug("loading configurations from " + file.getFileName());
                             update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), iesiKeyword);
@@ -123,7 +123,7 @@ public class Configuration {
     private void loadClasspathFiles() {
         Yaml yaml = new Yaml();
         for (String resourceName : getApplicationResourceFiles()) {
-            Map<String, Object> yamlProperties = yaml.load(getClass().getClassLoader().getResourceAsStream(resourceName));
+            Map<String, Object> yamlProperties = (Map<String, Object>) yaml.load(getClass().getClassLoader().getResourceAsStream(resourceName));
             if (yamlProperties.containsKey(iesiKeyword)) {
                 update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), iesiKeyword);
             } else {

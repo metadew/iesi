@@ -3,7 +3,9 @@ package io.metadew.iesi.common.crypto;
 import io.metadew.iesi.common.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.reflect.Whitebox;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -11,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
+import java.util.Optional;
 import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,6 +68,10 @@ public class JavaKeystoreTest {
     @Test
     public void testJavaKeystore() throws Exception {
         String password = "foobar";
+        Configuration configuration = Configuration.getInstance();
+        Configuration configurationSpy = Mockito.spy(configuration);
+        Whitebox.setInternalState(Configuration.class, "INSTANCE", configurationSpy);
+        Mockito.doReturn(Optional.of("myks.p12")).when(configurationSpy).getProperty("iesi.security.encryption.keystore-path");
         String currentDirectory = System.getProperty("user.dir");
         String keystoreLocation = currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
 
@@ -79,6 +86,10 @@ public class JavaKeystoreTest {
     @Test
     public void testJavaKeystoreWrongPassword() {
         String password = "fooar";
+        Configuration configuration = Configuration.getInstance();
+        Configuration configurationSpy = Mockito.spy(configuration);
+        Whitebox.setInternalState(Configuration.class, "INSTANCE", configurationSpy);
+        Mockito.doReturn(Optional.of("myks.p12")).when(configurationSpy).getProperty("iesi.security.encryption.keystore-path");
         String currentDirectory = System.getProperty("user.dir");
         String keystoreLocation = currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
 

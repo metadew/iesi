@@ -7,11 +7,9 @@ import lombok.extern.log4j.Log4j2;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.Console;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +29,7 @@ public class FrameworkCrypto {
 
     public FrameworkCrypto() {
         if (Configuration.getInstance().getProperty("iesi.security.encryption.alias").isPresent()) {
-            Console console = System.console();
-            char[] password = console.readPassword("Enter password");
+            char[] password = Console.getInstance().readPassword("Enter password");
             String keystoreLocation = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
             String alias = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.alias").toString();
             String keyJKS = new JavaKeystore().loadKey(password, keystoreLocation, alias);

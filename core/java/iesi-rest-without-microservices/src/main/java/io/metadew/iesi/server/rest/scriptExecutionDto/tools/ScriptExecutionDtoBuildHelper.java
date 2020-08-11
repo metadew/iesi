@@ -31,7 +31,7 @@ public class ScriptExecutionDtoBuildHelper {
     private ScriptRunStatus status;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
-    private Map<String, InputParametersDto> inputParameters = new HashMap<>();
+    private Map<String, ExecInputParameterDto> inputParameters = new HashMap<>();
     private Map<String, ScriptLabelDto> designLabels = new HashMap<>();
     private Map<String, ExecutionRequestLabelDto> executionLabels = new HashMap<>();
     private Map<ActionExecutionKey, ActionExecutionDtoBuildHelper> actions = new HashMap<>();

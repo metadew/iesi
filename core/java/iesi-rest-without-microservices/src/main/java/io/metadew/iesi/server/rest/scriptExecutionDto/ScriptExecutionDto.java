@@ -4,7 +4,7 @@ import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.scriptExecutionDto.tools.ActionExecutionDto;
-import io.metadew.iesi.server.rest.scriptExecutionDto.tools.InputParametersDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.tools.ExecInputParameterDto;
 import io.metadew.iesi.server.rest.scriptExecutionDto.tools.OutputDto;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
@@ -31,7 +31,7 @@ public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> 
     private ScriptRunStatus status;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
-    private List<InputParametersDto> inputParameters = new ArrayList<>();
+    private List<ExecInputParameterDto> inputParameters = new ArrayList<>();
     private List<ScriptLabelDto> designLabels = new ArrayList<>();
     private List<ExecutionRequestLabelDto> executionLabels = new ArrayList<>();
     private List<ActionExecutionDto> actions = new ArrayList<>();

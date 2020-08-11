@@ -5,7 +5,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class InputParametersDto {
+public class ActionInputParametersDto {
 
     private String name;
     private String rawValue;

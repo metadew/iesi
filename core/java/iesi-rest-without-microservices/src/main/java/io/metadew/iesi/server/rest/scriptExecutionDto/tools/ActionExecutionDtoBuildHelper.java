@@ -25,7 +25,7 @@ public class ActionExecutionDtoBuildHelper {
     private ScriptRunStatus status;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
-    private Map<String, InputParametersDto> inputParameters;
+    private Map<String, ActionInputParametersDto> inputParameters;
     private Map<String, OutputDto> output;
 
     public ActionExecutionDto toActionExecutionDto() {

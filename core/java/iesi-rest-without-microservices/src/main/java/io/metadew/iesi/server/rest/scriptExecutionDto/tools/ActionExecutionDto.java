@@ -22,7 +22,7 @@ public class ActionExecutionDto {
     private ScriptRunStatus status;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
-    private List<InputParametersDto> inputParameters;
+    private List<ActionInputParametersDto> inputParameters;
     private List<OutputDto> output;
 
 }

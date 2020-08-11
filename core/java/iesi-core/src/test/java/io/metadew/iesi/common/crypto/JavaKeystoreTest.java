@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.crypto;
 
+import io.metadew.iesi.common.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -13,6 +14,7 @@ import java.security.KeyStore;
 import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @PrepareForTest(JavaKeystore.class)
 public class JavaKeystoreTest {
@@ -54,11 +56,39 @@ public class JavaKeystoreTest {
         KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) ks.getEntry(alias,
                 new KeyStore.PasswordProtection(password.toCharArray()));
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
-        try {
+        assertThatThrownBy(() -> {
             factory.getKeySpec(
                     ske.getSecretKey(), PBEKeySpec.class);
-        } catch (NullPointerException e) {
-            assertThat(e.getMessage()).isNull();
-        }
+        }).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void testJavaKeystore() throws Exception {
+        String password = "foobar";
+        String currentDirectory = System.getProperty("user.dir");
+        String keystoreLocation = currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
+
+        System.setIn(new ByteArrayInputStream(password.getBytes()));
+        Scanner scanner = new Scanner(System.in);
+        String userinput = scanner.nextLine();
+        String alias = "mypass";
+        String keyJKS = new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
+        assertThat("c7c1e47391154a6a").isEqualTo(keyJKS);
+    }
+
+    @Test
+    public void testJavaKeystoreWrongPassword() {
+        String password = "fooar";
+        String currentDirectory = System.getProperty("user.dir");
+        String keystoreLocation = currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
+
+        System.setIn(new ByteArrayInputStream(password.getBytes()));
+        Scanner scanner = new Scanner(System.in);
+        String userinput = scanner.nextLine();
+        String alias = "mypass";
+        assertThatThrownBy(() -> {
+            new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
+        }).isInstanceOf(Exception.class)
+                .hasMessageContaining("java.io.IOException: Integrity check failed: java.security.UnrecoverableKeyException: Failed PKCS12 integrity checking");
     }
 }

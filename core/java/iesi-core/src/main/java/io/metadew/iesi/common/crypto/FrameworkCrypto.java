@@ -40,7 +40,7 @@ public class FrameworkCrypto {
         } else if (Configuration.getInstance().getProperty("iesi.security.encryption.key").isPresent()) {
             this.aes = new AESEncryptBasic(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString());
         } else {
-            log.warn(MessageFormat.format("iesi.encryption.key: no encryption key provided. IESI will use the hardcoded key", null));
+            log.warn("iesi.encryption.key: no encryption key provided. IESI will use the hardcoded key");
             this.aes = new AESEncryptBasic("a9a1e56891154a6a");
         }
     }

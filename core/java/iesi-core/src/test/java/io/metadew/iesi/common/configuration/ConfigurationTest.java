@@ -3,6 +3,7 @@ package io.metadew.iesi.common.configuration;
 import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.plugin.PluginConfiguration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,6 +22,8 @@ class ConfigurationTest {
 
         PluginConfiguration pluginConfiguration = PluginConfiguration.getInstance();
         GuardConfiguration guardConfiguration = GuardConfiguration.getInstance();
+        FrameworkCrypto.getInstance();
+        System.out.println(FrameworkCrypto.getInstance());
 
         assertTrue(true);
     }

@@ -12,6 +12,7 @@ import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRe
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoResourceAssembler;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
+import io.metadew.iesi.server.rest.pagination.TotalPages;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -103,7 +104,6 @@ public class ExecutionRequestControllerTest {
     public void getAllNoResultTest() throws Exception {
         List<ExecutionRequest> executionRequests = new ArrayList<>();
         given(executionRequestService.getAll(10,0,null,null,null,null,null,null)).willReturn(executionRequests);
-        System.out.println(MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName());
         mvc.perform(get("/execution-requests?limit=1&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
@@ -158,7 +158,6 @@ public class ExecutionRequestControllerTest {
 
         assertThat(result.get(0).getContext())
                 .isEqualTo(executionRequest1.getContext());
-        System.out.println(result);
 
         mvc.perform(get("/execution-requests?limit=2&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)

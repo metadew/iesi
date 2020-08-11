@@ -21,10 +21,13 @@ public class ScriptResultDtoModelAssembler extends RepresentationModelAssemblerS
     @Override
     public ScriptResultDto toModel(ScriptResult scriptResult) {
         ScriptResultDto scriptResultDto = convertToDto(scriptResult);
-        Link selfLink = linkTo(methodOn(ScriptResultController.class)
-                .getByRunIdAndProcessId(scriptResultDto.getRunID(), scriptResultDto.getProcessId()))
+        Link selfLink = linkTo(
+                methodOn(ScriptResultController.class)
+                        .getByRunIdAndProcessId(scriptResultDto.getRunID(), scriptResultDto.getProcessId()))
                 .withSelfRel();
-        scriptResultDto.add(selfLink);
+        Link linkToAll = linkTo(
+                methodOn(ScriptResultController.class).getAll()).withRel("script-results");
+        scriptResultDto.add(selfLink, linkToAll);
         return scriptResultDto;
     }
 

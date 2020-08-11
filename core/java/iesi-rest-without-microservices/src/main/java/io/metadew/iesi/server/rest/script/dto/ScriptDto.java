@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Relation(value = "script", collectionRelation = "scripts")
 public class ScriptDto extends RepresentationModel<ScriptDto> {
 
     private String name;

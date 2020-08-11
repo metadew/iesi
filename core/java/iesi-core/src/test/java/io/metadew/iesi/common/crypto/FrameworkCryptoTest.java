@@ -1,54 +1,62 @@
 package io.metadew.iesi.common.crypto;
 
 import io.metadew.iesi.common.configuration.Configuration;
-import org.junit.Test;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.reflect.Whitebox;
 
-import java.io.ByteArrayInputStream;
-import java.util.Scanner;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.not;
+import static org.mockito.ArgumentMatchers.any;
 
-@PrepareForTest(FrameworkCrypto.class)
-public class FrameworkCryptoTest {
 
+class FrameworkCryptoTest {
+
+    @BeforeAll
+    static void setup() {
+    }
+<
     @Test
-    public void testJavaKeystore() throws Exception {
-        String password = "foobar";
-        String currentDirectory = System.getProperty("user.dir");
-        String keystoreLocation = currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
+    void testHardcodeKey() throws Exception {
+        // computed with https://www.devglan.com/online-tools/aes-encryption-decryption
+        assertThat(FrameworkCrypto.getInstance().encrypt("teststring")).isEqualTo("ENC(whk8wC3/8tr/tqiUFop2jA==)");
+        assertThat(FrameworkCrypto.getInstance().decrypt("ENC(whk8wC3/8tr/tqiUFop2jA==)")).isEqualTo("teststring");
 
-        System.setIn(new ByteArrayInputStream(password.getBytes()));
-        Scanner scanner = new Scanner(System.in);
-        String userinput = scanner.nextLine();
-        String alias = "mypass";
-        String keyJKS = new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
-        assertThat("c7c1e47391154a6a").isEqualTo(keyJKS);
+        Whitebox.setInternalState(FrameworkCrypto.class, "INSTANCE", (FrameworkCrypto) null);
     }
 
     @Test
-    public void testJavaKeystoreWrongPassword() {
-        String password = "fooar";
-        String currentDirectory = System.getProperty("user.dir");
-        String keystoreLocation = currentDirectory + "/src/test/resources/" + Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
+    void testConfigurationKey() {
+        // mock read password
+        Configuration configuration = Configuration.getInstance();
+        Configuration configurationSpy = Mockito.spy(configuration);
+        Whitebox.setInternalState(Configuration.class, "INSTANCE", configurationSpy);
+        Mockito.doReturn(Optional.of("y8c1e47391154a6c")).when(configurationSpy).getProperty("iesi.security.encryption.key");
+        Mockito.doReturn("y8c1e47391154a6c").when(configurationSpy).getMandatoryProperty("iesi.security.encryption.key");
 
-        System.setIn(new ByteArrayInputStream(password.getBytes()));
-        Scanner scanner = new Scanner(System.in);
-        String userinput = scanner.nextLine();
-        String alias = "mypass";
-        try {
-            new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
-        } catch (Exception e) {
-            assertThat("java.io.IOException: Integrity check failed: java.security.UnrecoverableKeyException: Failed PKCS12 integrity checking").isEqualTo(e.getMessage());
-        }
+        // computed with https://www.devglan.com/online-tools/aes-encryption-decryption
+        assertThat(FrameworkCrypto.getInstance().encrypt("teststring")).isEqualTo("ENC(Tzjjbi1xovFr0Ax9Xbje+g==)");
+        assertThat(FrameworkCrypto.getInstance().decrypt("ENC(Tzjjbi1xovFr0Ax9Xbje+g==)")).isEqualTo("teststring");
+
+        Whitebox.setInternalState(Configuration.class, "INSTANCE", (Configuration) null);
+        Whitebox.setInternalState(FrameworkCrypto.class, "INSTANCE", (FrameworkCrypto) null);
     }
 
     @Test
-    public void testKeyInConf() {
-        if (!Configuration.getInstance().getProperty("iesi.security.encryption.key").isPresent()) {
-            assertThat("y8c1e47391154a6c").isEqualTo(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString());
-            assertThat("y8c1e47391154a6b").isEqualTo(not(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString()));
-        }
+    void testJavaKeystoreKey() {
+        // mock read password
+        Console console = Console.getInstance();
+        Console consoleSpy = Mockito.spy(console);
+        Whitebox.setInternalState(Console.class, "INSTANCE", consoleSpy);
+        Mockito.doReturn("abc".toCharArray()).when(consoleSpy).readPassword(any());
+
+        // computed with https://www.devglan.com/online-tools/aes-encryption-decryption
+        assertThat(FrameworkCrypto.getInstance().encrypt("teststring")).isEqualTo("ENC(+COX3DFR3IWeBvn6seDtWg==)");
+        assertThat(FrameworkCrypto.getInstance().decrypt("ENC(+COX3DFR3IWeBvn6seDtWg==)")).isEqualTo("teststring");
     }
+
 }

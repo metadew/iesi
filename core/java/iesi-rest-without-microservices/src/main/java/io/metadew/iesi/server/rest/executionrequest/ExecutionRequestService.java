@@ -5,7 +5,6 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,12 +22,8 @@ public class ExecutionRequestService implements IExecutionRequestService {
         this.executionRequestDtoRepository = executionRequestDtoRepository;
     }
 
-    public List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String request_from, String request_to) {
-        return executionRequestDtoRepository.getAll(limit, pageNumber, column, sort, filterColumn, searchParam, request_from, request_to);
-    }
-
-    public int getTotalPages(int limit, String filterColumn, String searchParam, String request_from, String request_to){
-        return executionRequestDtoRepository.getTotalPages(limit, filterColumn, searchParam, request_from, request_to);
+    public List<ExecutionRequestDto> getAll() {
+        return executionRequestDtoRepository.getAll();
     }
 
     public Optional<ExecutionRequest> getById(String id) {

@@ -34,7 +34,8 @@ public  class ScriptExecutionRequestDtoResourceAssembler extends RepresentationM
                     scriptExecutionRequest.getImpersonations().stream().map(this::convertToDto).collect(Collectors.toList()),
                     scriptExecutionRequest.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()),
                     scriptExecutionRequest.getScriptExecutionRequestStatus(),
-                    ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName(), ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(-1L));
+                    ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName(), ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(-1L),
+                    null);
         } else {
             throw new RuntimeException("");
         }

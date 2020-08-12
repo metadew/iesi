@@ -28,6 +28,7 @@ public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecuti
     private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
     private String scriptName;
     private Long scriptVersion;
+    private String runId;
 
     public ScriptNameExecutionRequest convertToEntity() {
         return new ScriptNameExecutionRequest(

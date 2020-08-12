@@ -89,16 +89,19 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
             return false;
         }
 
-        for (Matcher thisMatcher : thisMatchers) {
-            if (!otherMatchers.stream()
-                    .filter(matcher -> matcher.getKey().equals(thisMatcher.getKey()))
-                    .findFirst()
-                    .map(matcher -> equals(matcher.getMatcherValue(), thisMatcher.getMatcherValue(), executionRuntime))
-                    .orElse(false)) {
-                return false;
-            }
-        }
-        return true;
+//        for (Matcher thisMatcher : thisMatchers) {
+//            if (!otherMatchers.stream()
+//                    .filter(matcher -> matcher.getKey().equals(thisMatcher.getKey()))
+//                    .findFirst()
+//                    .map(matcher -> equals(matcher.getMatcherValue(), thisMatcher.getMatcherValue(), executionRuntime))
+//                    .orElse(false)) {
+//                return false;
+//            }
+//        }
+        return thisMatchers.parallelStream()
+                .allMatch(thisMatcher -> otherMatchers.parallelStream()
+                        .anyMatch(otherMatcher -> otherMatcher.getKey().equals(thisMatcher.getKey())
+                                && equals(thisMatcher.getMatcherValue(), otherMatcher.getMatcherValue(), executionRuntime)));
     }
 
     private boolean equals(MatcherValue _this, MatcherValue other, ExecutionRuntime executionRuntime) {

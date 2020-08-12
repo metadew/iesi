@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.definition.template;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.sun.istack.internal.NotNull;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;

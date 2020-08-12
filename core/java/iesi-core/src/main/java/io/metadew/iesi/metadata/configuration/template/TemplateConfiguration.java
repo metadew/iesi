@@ -270,6 +270,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                             SQLTools.GetStringForSQL(((MatcherTemplate) matcherValue).getTemplateName()),
                             SQLTools.GetStringForSQL(((MatcherTemplate) matcherValue).getTemplateVersion())));
         } else {
+            // TODO
             throw new RuntimeException("");
         }
         getMetadataRepository().executeUpdate(MessageFormat.format(insertMatcherValueQuery, SQLTools.GetStringForSQL(matcherValue.getMetadataKey().getId()),

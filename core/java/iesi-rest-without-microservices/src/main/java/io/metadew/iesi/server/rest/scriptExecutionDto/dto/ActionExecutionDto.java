@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.scriptExecutionDto.tools;
+package io.metadew.iesi.server.rest.scriptExecutionDto.dto;
 
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import lombok.Builder;

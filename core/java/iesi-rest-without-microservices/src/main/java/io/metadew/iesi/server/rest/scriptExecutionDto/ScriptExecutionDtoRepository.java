@@ -7,7 +7,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
-import io.metadew.iesi.server.rest.scriptExecutionDto.tools.*;
+import io.metadew.iesi.server.rest.scriptExecutionDto.dto.*;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,9 +3,9 @@ package io.metadew.iesi.server.rest.scriptExecutionDto;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
-import io.metadew.iesi.server.rest.scriptExecutionDto.tools.ActionExecutionDto;
-import io.metadew.iesi.server.rest.scriptExecutionDto.tools.ExecutionInputParameterDto;
-import io.metadew.iesi.server.rest.scriptExecutionDto.tools.OutputDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.dto.ActionExecutionDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.dto.ExecutionInputParameterDto;
+import io.metadew.iesi.server.rest.scriptExecutionDto.dto.OutputDto;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 

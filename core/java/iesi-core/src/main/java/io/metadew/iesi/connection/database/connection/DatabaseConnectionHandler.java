@@ -68,7 +68,7 @@ public class DatabaseConnectionHandler implements IDatabaseConnectionHandler {
 
     @SuppressWarnings("unchecked")
     public String removeIllgegalCharactersForSingleQuery(DatabaseConnection databaseConnection, String input) {
-        return getDatabaseConnectionService(databaseConnection).removeIllgegalCharactersForSingleQuery(databaseConnection, input);
+        return getDatabaseConnectionService(databaseConnection).removeIllegalCharactersForSingleQuery(databaseConnection, input);
     }
 
     @SuppressWarnings("unchecked")

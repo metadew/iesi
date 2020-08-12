@@ -39,7 +39,7 @@ public class TemporaryDatabaseConnectionServiceImpl implements IDatabaseConnecti
     }
 
     @Override
-    public String removeIllgegalCharactersForSingleQuery(TemporaryDatabaseConnection databaseConnection, String input) {
+    public String removeIllegalCharactersForSingleQuery(TemporaryDatabaseConnection databaseConnection, String input) {
         throw new RuntimeException("Cannot execute queries for a temporary database");
     }
 

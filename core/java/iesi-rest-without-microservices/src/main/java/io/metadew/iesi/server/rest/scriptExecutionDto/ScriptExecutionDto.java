@@ -13,11 +13,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
 public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> {
 
     private String runId;

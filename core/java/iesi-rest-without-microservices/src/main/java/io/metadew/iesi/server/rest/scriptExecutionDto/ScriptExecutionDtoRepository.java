@@ -8,7 +8,8 @@ import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.scriptExecutionDto.dto.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -176,18 +177,21 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
      * @throws SQLException - Throws SQLException due to the param cachedRowSet
      */
     private ScriptExecutionDtoBuildHelper mapScriptExecutionDtoBuildHelper(CachedRowSet cachedRowSet) throws SQLException {
-        return ScriptExecutionDtoBuildHelper.builder()
-                .runId(cachedRowSet.getString("RUN_ID"))
-                .processId(cachedRowSet.getLong("SCRIPT_PRC_ID"))
-                .parentProcessId(cachedRowSet.getLong("SCRIPT_PARENT_PRC_ID"))
-                .scriptId(cachedRowSet.getString("SCRIPT_ID"))
-                .scriptName(cachedRowSet.getString("SCRIPT_NM"))
-                .scriptVersion(cachedRowSet.getLong("SCRIPT_VRS_NB"))
-                .environment(cachedRowSet.getString("ENV_NM"))
-                .status(ScriptRunStatus.valueOf(cachedRowSet.getString("SCRIPT_ST_NM")))
-                .startTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_STRT_TMS")))
-                .endTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_END_TMS")))
-                .build();
+        return new ScriptExecutionDtoBuildHelper(cachedRowSet.getString("RUN_ID"),
+                cachedRowSet.getLong("SCRIPT_PRC_ID"),
+                cachedRowSet.getLong("SCRIPT_PARENT_PRC_ID"),
+                cachedRowSet.getString("SCRIPT_ID"),
+                cachedRowSet.getString("SCRIPT_NM"),
+                cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                cachedRowSet.getString("ENV_NM"),
+                ScriptRunStatus.valueOf(cachedRowSet.getString("SCRIPT_ST_NM")),
+                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_STRT_TMS")),
+                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_END_TMS")),
+                new HashMap<>(),
+                new HashMap<>(),
+                new HashMap<>(),
+                new HashMap<>(),
+                new HashMap<>());
     }
 
     /**
@@ -198,23 +202,21 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
      * @throws SQLException - Throws SQLException due to the param cachedRowSet
      */
     private ActionExecutionDtoBuildHelper mapActionExecutionDtoBuildHelper(CachedRowSet cachedRowSet) throws SQLException {
-        return ActionExecutionDtoBuildHelper.builder()
-                .runId(cachedRowSet.getString("RUN_ID")) // the runId of the action is the same than the runId of the script
-                .processId(cachedRowSet.getLong("ACTION_PRC_ID"))
-                .type(cachedRowSet.getString("ACTION_TYP_NM"))
-                .name(cachedRowSet.getString("ACTION_NM"))
-                .description(cachedRowSet.getString("ACTION_DSC"))
-                .condition(cachedRowSet.getString("ACTION_CONDITION_VAL"))
-                .errorStop(cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("y") ||
-                        cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("yes"))
-                .errorExpected(cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("y") ||
-                        cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("yes"))
-                .status(ScriptRunStatus.valueOf(cachedRowSet.getString("ACTION_ST_NM")))
-                .startTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("ACTION_STRT_TMS")))
-                .endTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("ACTION_END_TMS")))
-                .inputParameters(new HashMap<>())
-                .output(new HashMap<>())
-                .build();
+        return new ActionExecutionDtoBuildHelper(cachedRowSet.getString("RUN_ID"),
+                cachedRowSet.getLong("ACTION_PRC_ID"),
+                cachedRowSet.getString("ACTION_TYP_NM"),
+                cachedRowSet.getString("ACTION_NM"),
+                cachedRowSet.getString("ACTION_DSC"),
+                cachedRowSet.getString("ACTION_CONDITION_VAL"),
+                cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("y") ||
+                        cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("yes"),
+                cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("y") ||
+                        cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("yes"),
+                ScriptRunStatus.valueOf(cachedRowSet.getString("ACTION_ST_NM")),
+                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("ACTION_STRT_TMS")),
+                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("ACTION_END_TMS")),
+                new HashMap<>(),
+                new HashMap<>());
     }
 
 
@@ -400,9 +402,9 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
      * The same applies for ActionExecutionDto, a referenced object.
      * Thus this class helps by using map and by providing a simple method to convert itself into an ActionExecutionDto
      */
-    @Builder
-    @Data
-    public static class ScriptExecutionDtoBuildHelper {
+    @Getter
+    @AllArgsConstructor
+    private class ScriptExecutionDtoBuildHelper {
 
         private final String runId;
 
@@ -416,32 +418,30 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         private final ScriptRunStatus status;
         private final LocalDateTime startTimestamp;
         private final LocalDateTime endTimestamp;
-        private final Map<String, ExecutionInputParameterDto> inputParameters = new HashMap<>();
-        private final Map<String, ScriptLabelDto> designLabels = new HashMap<>();
-        private final Map<String, ExecutionRequestLabelDto> executionLabels = new HashMap<>();
-        private final Map<ActionExecutionKey, ActionExecutionDtoBuildHelper> actions = new HashMap<>();
-        private final Map<String, OutputDto> output = new HashMap<>();
+        private final Map<String, ExecutionInputParameterDto> inputParameters;
+        private final Map<String, ScriptLabelDto> designLabels;
+        private final Map<String, ExecutionRequestLabelDto> executionLabels;
+        private final Map<ActionExecutionKey, ActionExecutionDtoBuildHelper> actions;
+        private final Map<String, OutputDto> output;
 
         public ScriptExecutionDto toScriptExecutionDto() {
-            return ScriptExecutionDto.builder()
-                    .runId(runId)
-                    .processId(processId)
-                    .parentProcessId(parentProcessId)
-                    .scriptId(scriptId)
-                    .scriptName(scriptName)
-                    .scriptVersion(scriptVersion)
-                    .environment(environment)
-                    .status(status)
-                    .startTimestamp(startTimestamp)
-                    .endTimestamp(endTimestamp)
-                    .inputParameters(new ArrayList<>(inputParameters.values()))
-                    .designLabels(new ArrayList<>(designLabels.values()))
-                    .executionLabels(new ArrayList<>(executionLabels.values()))
-                    .actions(actions.values().stream()
+            return new ScriptExecutionDto(runId,
+                    processId,
+                    parentProcessId,
+                    scriptId,
+                    scriptName,
+                    scriptVersion,
+                    environment,
+                    status,
+                    startTimestamp,
+                    endTimestamp,
+                    new ArrayList<>(inputParameters.values()),
+                    new ArrayList<>(designLabels.values()),
+                    new ArrayList<>(executionLabels.values()),
+                    actions.values().stream()
                             .map(ActionExecutionDtoBuildHelper::toActionExecutionDto)
-                            .collect(Collectors.toList()))
-                    .output(new ArrayList<>(output.values()))
-                    .build();
+                            .collect(Collectors.toList()),
+                    new ArrayList<>(output.values()));
         }
 
     }
@@ -451,40 +451,38 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
      * ActionExecutionDto has to use list but should not contain duplicate.
      * Thus this class helps by using map and by providing a simple method to convert itself into an ActionExecutionDto
      */
-    @Builder
-    @Data
-    public static class ActionExecutionDtoBuildHelper {
+    @Getter
+    @AllArgsConstructor
+    private class ActionExecutionDtoBuildHelper {
 
-        private String runId;
-        private Long processId;
-        private String type;
-        private String name;
-        private String description;
-        private String condition;
-        private boolean errorStop;
-        private boolean errorExpected;
-        private ScriptRunStatus status;
-        private LocalDateTime startTimestamp;
-        private LocalDateTime endTimestamp;
-        private Map<String, ActionInputParametersDto> inputParameters;
-        private Map<String, OutputDto> output;
+        private final String runId;
+        private final Long processId;
+        private final String type;
+        private final String name;
+        private final String description;
+        private final String condition;
+        private final boolean errorStop;
+        private final boolean errorExpected;
+        private final ScriptRunStatus status;
+        private final LocalDateTime startTimestamp;
+        private final LocalDateTime endTimestamp;
+        private final Map<String, ActionInputParametersDto> inputParameters;
+        private final Map<String, OutputDto> output;
 
         public ActionExecutionDto toActionExecutionDto() {
-            return ActionExecutionDto.builder()
-                    .runId(runId)
-                    .processId(processId)
-                    .type(type)
-                    .name(name)
-                    .description(description)
-                    .condition(condition)
-                    .errorStop(errorStop)
-                    .errorExpected(errorExpected)
-                    .status(status)
-                    .startTimestamp(startTimestamp)
-                    .endTimestamp(endTimestamp)
-                    .inputParameters(new ArrayList<>(inputParameters.values()))
-                    .output(new ArrayList<>(output.values()))
-                    .build();
+            return new ActionExecutionDto(runId,
+                    processId,
+                    type,
+                    name,
+                    description,
+                    condition,
+                    errorStop,
+                    errorExpected,
+                    status,
+                    startTimestamp,
+                    endTimestamp,
+                    new ArrayList<>(inputParameters.values()),
+                    new ArrayList<>(output.values()));
         }
     }
 

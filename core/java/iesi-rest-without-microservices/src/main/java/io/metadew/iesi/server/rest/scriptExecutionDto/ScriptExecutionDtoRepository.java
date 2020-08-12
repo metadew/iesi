@@ -8,12 +8,14 @@ import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.scriptExecutionDto.tools.*;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -103,7 +105,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
             if (scriptExecInputParameterName != null &&
                     scriptExecutionDtoBuildHelper.getInputParameters().get(scriptExecInputParameterName) == null) {
                 scriptExecutionDtoBuildHelper.getInputParameters()
-                        .put(scriptExecInputParameterName, new ExecInputParameterDto(scriptExecInputParameterName,
+                        .put(scriptExecInputParameterName, new ExecutionInputParameterDto(scriptExecInputParameterName,
                                 cachedRowSet.getString("SCRIPT_EXEC_REQ_PAR_VALUE")));
             }
         } else if (infoType == 1) {
@@ -185,11 +187,6 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 .status(ScriptRunStatus.valueOf(cachedRowSet.getString("SCRIPT_ST_NM")))
                 .startTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_STRT_TMS")))
                 .endTimestamp(SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_END_TMS")))
-                .inputParameters(new HashMap<>())
-                .designLabels(new HashMap<>())
-                .executionLabels(new HashMap<>())
-                .actions(new HashMap<>())
-                .output(new HashMap<>())
                 .build();
     }
 
@@ -396,4 +393,99 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         if (conditions.isEmpty()) return Optional.empty();
         return Optional.of(" where " + String.join(" and ", conditions) + " ");
     }
+
+    /**
+     * This class is an helper to build ScriptExecutionDto.
+     * ScriptExecutionDto has to use list but should not contain duplicate.
+     * The same applies for ActionExecutionDto, a referenced object.
+     * Thus this class helps by using map and by providing a simple method to convert itself into an ActionExecutionDto
+     */
+    @Builder
+    @Data
+    public static class ScriptExecutionDtoBuildHelper {
+
+        private final String runId;
+
+        private final Long processId;
+        private final Long parentProcessId;
+
+        private final String scriptId;
+        private final String scriptName;
+        private final Long scriptVersion;
+        private final String environment;
+        private final ScriptRunStatus status;
+        private final LocalDateTime startTimestamp;
+        private final LocalDateTime endTimestamp;
+        private final Map<String, ExecutionInputParameterDto> inputParameters = new HashMap<>();
+        private final Map<String, ScriptLabelDto> designLabels = new HashMap<>();
+        private final Map<String, ExecutionRequestLabelDto> executionLabels = new HashMap<>();
+        private final Map<ActionExecutionKey, ActionExecutionDtoBuildHelper> actions = new HashMap<>();
+        private final Map<String, OutputDto> output = new HashMap<>();
+
+        public ScriptExecutionDto toScriptExecutionDto() {
+            return ScriptExecutionDto.builder()
+                    .runId(runId)
+                    .processId(processId)
+                    .parentProcessId(parentProcessId)
+                    .scriptId(scriptId)
+                    .scriptName(scriptName)
+                    .scriptVersion(scriptVersion)
+                    .environment(environment)
+                    .status(status)
+                    .startTimestamp(startTimestamp)
+                    .endTimestamp(endTimestamp)
+                    .inputParameters(new ArrayList<>(inputParameters.values()))
+                    .designLabels(new ArrayList<>(designLabels.values()))
+                    .executionLabels(new ArrayList<>(executionLabels.values()))
+                    .actions(actions.values().stream()
+                            .map(ActionExecutionDtoBuildHelper::toActionExecutionDto)
+                            .collect(Collectors.toList()))
+                    .output(new ArrayList<>(output.values()))
+                    .build();
+        }
+
+    }
+
+    /**
+     * This class is an helper to build ActionExecutionDto.
+     * ActionExecutionDto has to use list but should not contain duplicate.
+     * Thus this class helps by using map and by providing a simple method to convert itself into an ActionExecutionDto
+     */
+    @Builder
+    @Data
+    public static class ActionExecutionDtoBuildHelper {
+
+        private String runId;
+        private Long processId;
+        private String type;
+        private String name;
+        private String description;
+        private String condition;
+        private boolean errorStop;
+        private boolean errorExpected;
+        private ScriptRunStatus status;
+        private LocalDateTime startTimestamp;
+        private LocalDateTime endTimestamp;
+        private Map<String, ActionInputParametersDto> inputParameters;
+        private Map<String, OutputDto> output;
+
+        public ActionExecutionDto toActionExecutionDto() {
+            return ActionExecutionDto.builder()
+                    .runId(runId)
+                    .processId(processId)
+                    .type(type)
+                    .name(name)
+                    .description(description)
+                    .condition(condition)
+                    .errorStop(errorStop)
+                    .errorExpected(errorExpected)
+                    .status(status)
+                    .startTimestamp(startTimestamp)
+                    .endTimestamp(endTimestamp)
+                    .inputParameters(new ArrayList<>(inputParameters.values()))
+                    .output(new ArrayList<>(output.values()))
+                    .build();
+        }
+    }
+
 }

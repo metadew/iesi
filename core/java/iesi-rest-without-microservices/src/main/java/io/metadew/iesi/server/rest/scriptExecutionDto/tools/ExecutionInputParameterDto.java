@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode
-public class ExecInputParameterDto {
+public class ExecutionInputParameterDto {
 
     private final String name;
     private final String value;

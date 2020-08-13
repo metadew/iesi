@@ -51,6 +51,10 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
                 .context(context)
                 .description(description)
                 .scope(scope)
+                .executionRequestLabels(executionRequestLabels.stream()
+                        .map(executionRequestLabelDto -> executionRequestLabelDto.convertToEntity(new ExecutionRequestKey(newExecutionRequestId)))
+                        .collect(Collectors.toList()))
+                .email(email)
                 .build();
         List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
         for (ScriptExecutionRequestDto scriptExecutionRequest : this.scriptExecutionRequests) {

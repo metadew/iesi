@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ExecutionRequestService implements IExecutionRequestService {
@@ -26,8 +27,8 @@ public class ExecutionRequestService implements IExecutionRequestService {
         return executionRequestDtoRepository.getAll();
     }
 
-    public Optional<ExecutionRequest> getById(String id) {
-        return executionRequestConfiguration.get(new ExecutionRequestKey(id));
+    public Optional<ExecutionRequestDto> getById(String id) {
+        return executionRequestDtoRepository.getById(UUID.fromString(id));
     }
 
     public ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException {

@@ -45,7 +45,6 @@ public class ExecutionRequestController {
     @GetMapping("/{id}")
     public ExecutionRequestDto getById(@PathVariable String id) {
         return executionRequestService.getById(id)
-                .map(executionRequestDtoResourceAssembler::toModel)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ExecutionRequestKey(id)));
     }
 

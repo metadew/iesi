@@ -11,7 +11,7 @@ public interface IExecutionRequestService {
 
     public List<ExecutionRequestDto> getAll();
 
-    Optional<ExecutionRequest> getById(String id);
+    Optional<ExecutionRequestDto> getById(String id);
 
     ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
 

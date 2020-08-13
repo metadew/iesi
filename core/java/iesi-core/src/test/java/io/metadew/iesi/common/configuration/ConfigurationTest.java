@@ -22,8 +22,6 @@ class ConfigurationTest {
 
         PluginConfiguration pluginConfiguration = PluginConfiguration.getInstance();
         GuardConfiguration guardConfiguration = GuardConfiguration.getInstance();
-        FrameworkCrypto.getInstance();
-        System.out.println(FrameworkCrypto.getInstance());
 
         assertTrue(true);
     }

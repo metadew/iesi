@@ -29,7 +29,7 @@ public class FrameworkCrypto {
 
     public FrameworkCrypto() {
         if (Configuration.getInstance().getProperty("iesi.security.encryption.alias").isPresent()) {
-            char[] password = Console.getInstance().readPassword("Enter password");
+            char[] password = Console.getInstance().readPassword("\nEnter your password");
             String keystoreLocation = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
             String alias = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.alias").toString();
             String keyJKS = new JavaKeystore().loadKey(password, keystoreLocation, alias);

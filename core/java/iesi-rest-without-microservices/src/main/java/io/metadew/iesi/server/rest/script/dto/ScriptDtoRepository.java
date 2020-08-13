@@ -265,14 +265,34 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version " +
                 "on script.SCRIPT_ID = script_version.SCRIPT_ID " +
                 getWhereClause(scriptName, scriptVersion, isLatestVersionOnly).orElse(" ") +
+                getOrderByStatementForScriptAndScriptVersionTable(pageable) +
                 limitAndOffset +
                 ") ");
     }
 
     /**
+     * This method provide an Order by statement to order the
+     * @param pageable - pageable object containing or not the order object
+     * @return a String containing the ORDER BY statement
+     */
+    private String getOrderByStatementForScriptAndScriptVersionTable(Pageable pageable) {
+        if (pageable == null || !pageable.getSort().isSorted())
+            return " ";
+        List<String> sorting = new ArrayList<>();
+        pageable.getSort().stream().forEach(order -> {
+
+            if(order.getProperty().equalsIgnoreCase("NAME"))
+                sorting.add("script.SCRIPT_NM" + " " + order.getDirection());
+
+        });
+        return " ORDER BY " + String.join(", ", sorting) + " ";
+    }
+
+    /**
      * This method provide a where statement depending of the arguments passed.
-     * @param scriptName - if filled, add a filter on the name of the script. If null, doesn't filter on the name.
-     * @param scriptVersion - if filled, add a filter on the version of the script. If null, doesn't filter on the version.
+     *
+     * @param scriptName          - if filled, add a filter on the name of the script. If null, doesn't filter on the name.
+     * @param scriptVersion       - if filled, add a filter on the version of the script. If null, doesn't filter on the version.
      * @param isLatestVersionOnly - if true, filter to return only the last version of the script. If true, the scriptVersion doesn't apply.
      * @return a String containing the where clause if argument are provided or a space if all args are null.
      */

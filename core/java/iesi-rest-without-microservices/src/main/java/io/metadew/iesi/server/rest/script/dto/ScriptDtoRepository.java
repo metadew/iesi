@@ -208,7 +208,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
      */
     private String getQuery(Pageable pageable, String scriptName, Long scriptVersion, boolean isLatestVersionOnly, List<String> expansions) {
         return "Select " +
-                "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, scriptAndScriptVRS.SCRIPT_TYP_NM, " +
+                "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, " +
                 "scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC, 0 INFO_TYPE, " +
                 "script_label.NAME LABEL_NAME, script_label.VALUE LABEL_VALUE, " +
                 "null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, null ACTION_TYP_NM, " +
@@ -222,7 +222,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_label " +
                 "on scriptAndScriptVRS.SCRIPT_ID = script_label.SCRIPT_ID and scriptAndScriptVRS.SCRIPT_VRS_NB = script_label.SCRIPT_VRS_NB " +
                 "union all " +
-                "Select " + "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, scriptAndScriptVRS.SCRIPT_TYP_NM, " +
+                "Select " + "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, " +
                 "scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC, 1 INFO_TYPE, " +
                 "null LABEL_NAME, null LABEL_VALUE, " +
                 "action.ACTION_ID, action.ACTION_NM, action.ACTION_NB, action.ACTION_DSC, action.ACTION_TYP_NM, " +
@@ -259,7 +259,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         String limitAndOffset = pageable == null || pageable.isUnpaged() ? " " : " limit " + pageable.getPageSize() + " offset " + pageable.getOffset() + " ";
         return (" (" +
                 "SELECT " +
-                "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
+                "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, " +
                 "script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version " +
@@ -298,7 +298,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         if (expansions != null && expansions.contains("execution")) {
             return " union all select " +
                     "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, " +
-                    "scriptAndScriptVRS.SCRIPT_TYP_NM, scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC, " +
+                    "scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC, " +
                     "2 INFO_TYPE, " +
                     "null LABEL_NAME, null LABEL_VALUE, null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, " +
                     "null ACTION_TYP_NM, null CONDITION_VAL, null EXP_ERR_FL, null STOP_ERR_FL, null ACTION_PAR_NM, " +

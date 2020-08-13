@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "connectionTypes", description = "Everything about connection types")
-@RequestMapping("/connection_types")
+@RequestMapping("/connection-types")
 @CrossOrigin
 public class ConnectionTypeController {
 

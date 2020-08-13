@@ -6,6 +6,10 @@ springdoc:
 spring:
   profiles:
     active: http
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true #Allow the UI to query page 1 instead of 0
 
 management:
   endpoints:

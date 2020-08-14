@@ -3,7 +3,10 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.publisher.PublishersConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.connection.Publisher;
+import io.metadew.iesi.connection.PublisherHandler;
 import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
@@ -28,6 +31,8 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.apache.logging.log4j.ThreadContext;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
@@ -181,7 +186,15 @@ public class ExecutionControl {
             } catch (Exception ignore) {
             }
         }
-
+        try {
+            for (Publisher publisher : PublishersConfiguration.getInstance().getPublishers()) {
+                PublisherHandler.getInstance().publish(publisher, scriptResult);
+            }
+        } catch (Exception e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            log.warn("unable to publish script result due to: " + stackTrace.toString());
+        }
         elasticSearchConnection.ingest(new ScriptResultElasticSearch(scriptResult));
 
         return status;

@@ -263,7 +263,7 @@ class ExecutionRequestRepositoryDtoTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
-                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .executionRequestStatus(ExecutionRequestStatus.ACCEPTED)
                 .scriptExecutionRequests(Stream.of(
                         ScriptExecutionRequestDto.builder()
                                 .environment("test")
@@ -272,7 +272,7 @@ class ExecutionRequestRepositoryDtoTest {
                                 .scriptExecutionRequestId(scriptExecutionRequestId.toString())
                                 .scriptName("script1")
                                 .scriptVersion(1L)
-                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.ACCEPTED)
                                 .impersonations(Stream.of(
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")

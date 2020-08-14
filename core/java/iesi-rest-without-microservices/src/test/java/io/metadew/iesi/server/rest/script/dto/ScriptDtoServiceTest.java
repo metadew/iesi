@@ -21,9 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -63,7 +61,7 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getAllReturnFormatTest(){
+    void getAllReturnFormatTest() {
         Pageable pageable = Pageable.unpaged();
         assertThat(scriptDtoService.getAll(pageable, null, false))
                 .isInstanceOf(PageImpl.class);
@@ -482,7 +480,167 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getByNameReturnFormatTest(){
+    void getAllPaginationTest() {
+        Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
+        Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
+        Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptA);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
+
+        Pageable requestPage1 = PageRequest.of(0, 1);
+        Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
+
+        assertThat(resultPage1.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage1.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getTotalPages())
+                .isEqualTo(3);
+
+        Pageable requestPage2 = PageRequest.of(1, 1);
+        Page<ScriptDto> resultPage2 = scriptDtoService.getAll(requestPage2, new ArrayList<>(), false);
+
+        assertThat(resultPage2.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage2.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getTotalPages())
+                .isEqualTo(3);
+
+        Pageable requestPage3 = PageRequest.of(2, 1);
+        Page<ScriptDto> resultPage3 = scriptDtoService.getAll(requestPage3, new ArrayList<>(), false);
+
+        assertThat(resultPage3.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage3.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getTotalPages())
+                .isEqualTo(3);
+
+    }
+
+    @Test
+    void getAllPaginatedAndOrderByNameDefaultAsc() {
+        Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
+        Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
+        Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptA);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
+
+        Sort sortAsc = Sort.by(Sort.DEFAULT_DIRECTION, "Name");
+        Pageable requestPage1 = PageRequest.of(0, 1, sortAsc);
+        Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
+
+        assertThat(resultPage1.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage1.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getContent().get(0).getName())
+                .isEqualTo("ScriptA");
+
+        Pageable requestPage2 = PageRequest.of(1, 1, sortAsc);
+        Page<ScriptDto> resultPage2 = scriptDtoService.getAll(requestPage2, new ArrayList<>(), false);
+
+        assertThat(resultPage2.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage2.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getContent().get(0).getName())
+                .isEqualTo("ScriptB");
+
+        Pageable requestPage3 = PageRequest.of(2, 1, sortAsc);
+        Page<ScriptDto> resultPage3 = scriptDtoService.getAll(requestPage3, new ArrayList<>(), false);
+
+        assertThat(resultPage3.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage3.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getContent().get(0).getName())
+                .isEqualTo("ScriptC");
+
+    }
+
+    @Test
+    void getAllPaginatedAndOrderByNameDsc() {
+        Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
+        Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
+        Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptA);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
+
+        Sort sortDesc = Sort.by(Sort.Direction.DESC, "Name");
+        Pageable requestPage1 = PageRequest.of(0, 1, sortDesc);
+        Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
+
+        assertThat(resultPage1.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage1.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getContent().get(0).getName())
+                .isEqualTo("ScriptC");
+
+        Pageable requestPage2 = PageRequest.of(1, 1, sortDesc);
+        Page<ScriptDto> resultPage2 = scriptDtoService.getAll(requestPage2, new ArrayList<>(), false);
+
+        assertThat(resultPage2.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage2.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getContent().get(0).getName())
+                .isEqualTo("ScriptB");
+
+        Pageable requestPage3 = PageRequest.of(2, 1, sortDesc);
+        Page<ScriptDto> resultPage3 = scriptDtoService.getAll(requestPage3, new ArrayList<>(), false);
+
+        assertThat(resultPage3.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage3.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getContent().get(0).getName())
+                .isEqualTo("ScriptA");
+    }
+
+    @Test
+    void getByNameReturnFormatTest() {
         Pageable pageable = Pageable.unpaged();
         assertThat(scriptDtoService.getByName(pageable, null, new ArrayList<>(), false))
                 .isInstanceOf(PageImpl.class);
@@ -765,12 +923,12 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getByNameAndVersionEmptyDB(){
-        assertThat(scriptDtoService.getByNameAndVersion("",0L,new ArrayList<>()))
+    void getByNameAndVersionEmptyDB() {
+        assertThat(scriptDtoService.getByNameAndVersion("", 0L, new ArrayList<>()))
                 .describedAs("The returned value should be an optional")
                 .isInstanceOf(Optional.class);
 
-        assertThat(scriptDtoService.getByNameAndVersion("",0L,new ArrayList<>()).isPresent())
+        assertThat(scriptDtoService.getByNameAndVersion("", 0L, new ArrayList<>()).isPresent())
                 .describedAs("The returned optional should be empty")
                 .isFalse();
     }

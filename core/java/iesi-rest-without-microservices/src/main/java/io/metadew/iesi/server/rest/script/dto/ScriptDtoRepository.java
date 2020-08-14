@@ -271,7 +271,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     }
 
     /**
-     * This method provide an Order by statement to order the
+     * This method provide an Order by statement to order the ScriptAndScriptVersionTable
      * @param pageable - pageable object containing or not the order object
      * @return a String containing the ORDER BY statement
      */

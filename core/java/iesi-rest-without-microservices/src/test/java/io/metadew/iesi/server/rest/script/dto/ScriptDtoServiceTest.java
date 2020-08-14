@@ -527,6 +527,42 @@ class ScriptDtoServiceTest {
     }
 
     @Test
+    void getAllPaginatedSizeEqualsTotalAndOrderByNameDefaultAscTest() {
+        Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
+        Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
+        Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptA);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
+
+        int size = 3;
+        int numberOfScript = 3;
+        Sort sortAsc = Sort.by(Sort.DEFAULT_DIRECTION, "Name");
+        Pageable requestPage1 = PageRequest.of(0, size, sortAsc);
+        Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
+
+        assertThat(resultPage1.getContent().size())
+                .describedAs("The page should only contain " + size + " elements")
+                .isEqualTo(size);
+
+        assertThat(resultPage1.getTotalElements())
+                .isEqualTo(numberOfScript);
+
+        assertThat(resultPage1.getTotalPages())
+                .isEqualTo(size/numberOfScript);
+
+        assertThat(resultPage1.getContent().get(0).getName())
+                .isEqualTo(scriptA.getName());
+
+        assertThat(resultPage1.getContent().get(1).getName())
+                .isEqualTo(scriptB.getName());
+
+        assertThat(resultPage1.getContent().get(2).getName())
+                .isEqualTo(scriptC.getName());
+
+    }
+
+    @Test
     void getAllPaginatedAndOrderByNameDefaultAscTest() {
         Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
         Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
@@ -551,7 +587,7 @@ class ScriptDtoServiceTest {
                 .isEqualTo(3);
 
         assertThat(resultPage1.getContent().get(0).getName())
-                .isEqualTo("ScriptA");
+                .isEqualTo(scriptA.getName());
 
         Pageable requestPage2 = PageRequest.of(1, 1, sortAsc);
         Page<ScriptDto> resultPage2 = scriptDtoService.getAll(requestPage2, new ArrayList<>(), false);

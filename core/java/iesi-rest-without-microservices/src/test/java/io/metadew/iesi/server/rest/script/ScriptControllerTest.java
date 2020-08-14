@@ -478,7 +478,36 @@ class ScriptControllerTest {
                 .andExpect(jsonPath("$.page.number", is(pageable3.getPageNumber())));
 
     }
-    
+
+    @Test
+    void getAllPaginationSizeEqualAllOrderedByNameDescTest() throws Exception {
+        ScriptDto scriptDto1 = ScriptDtoBuilder.simpleScriptDto("ScriptA", 0);
+        ScriptDto scriptDto2 = ScriptDtoBuilder.simpleScriptDto("ScriptB", 1);
+        ScriptDto scriptDto3 = ScriptDtoBuilder.simpleScriptDto("ScriptC", 2);
+        int size = 3;
+        Sort sortDefault = Sort.by(Sort.DEFAULT_DIRECTION, "name");
+        Pageable pageable1 = PageRequest.of(0, size, sortDefault);
+        List<ScriptDto> scriptDtoList1 = Stream.of(scriptDto1, scriptDto2, scriptDto3).collect(Collectors.toList());
+        List<ScriptDto> scriptDtoTotalList = Stream.of(scriptDto1, scriptDto2, scriptDto3).collect(Collectors.toList());
+        // Here Script are given in the Desc Order
+        Page<ScriptDto> page1 = new PageImpl<>(scriptDtoList1, pageable1, 3);
+
+        given(scriptDtoService.getAll(pageable1, new ArrayList<>(), false)).willReturn(page1);
+        mvc.perform(get("/scripts?page=0&size=3&sort=name").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // Check Json format and data
+                .andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$").isMap())
+                .andExpect(jsonPath("$._embedded.scripts[0].name", is(scriptDto1.getName())))
+                .andExpect(jsonPath("$._embedded.scripts[1].name", is(scriptDto2.getName())))
+                .andExpect(jsonPath("$._embedded.scripts[2].name", is(scriptDto3.getName())))
+                .andExpect(jsonPath("$.page.size", is(size)))
+                .andExpect(jsonPath("$.page.totalElements", is(scriptDtoTotalList.size())))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) scriptDtoTotalList.size() / scriptDtoList1.size())))))
+                .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
+
+    }
+
 //    @Test
 //    void getByNameSerializationTest() {
 //        // Todo: Write Test

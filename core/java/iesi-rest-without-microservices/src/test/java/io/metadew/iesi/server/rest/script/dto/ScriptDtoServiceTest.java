@@ -446,7 +446,7 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getAllLatestVersionNoExpansionSpecified() {
+    void getAllLatestVersionNoExpansionSpecifiedTest() {
         Script script1V1 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 0);
         Script script1V2 = ScriptBuilder.simpleScript("script0", 1, 2, 2, 0);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1V1);
@@ -527,7 +527,7 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getAllPaginatedAndOrderByNameDefaultAsc() {
+    void getAllPaginatedAndOrderByNameDefaultAscTest() {
         Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
         Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
         Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
@@ -535,12 +535,14 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
 
+        int size = 1;
         Sort sortAsc = Sort.by(Sort.DEFAULT_DIRECTION, "Name");
-        Pageable requestPage1 = PageRequest.of(0, 1, sortAsc);
+        Pageable requestPage1 = PageRequest.of(0, size, sortAsc);
         Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
 
         assertThat(resultPage1.getContent().size())
-                .isEqualTo(1);
+                .describedAs("The page should only contain " + size + " elements")
+                .isEqualTo(size);
 
         assertThat(resultPage1.getTotalElements())
                 .isEqualTo(3);
@@ -555,7 +557,8 @@ class ScriptDtoServiceTest {
         Page<ScriptDto> resultPage2 = scriptDtoService.getAll(requestPage2, new ArrayList<>(), false);
 
         assertThat(resultPage2.getContent().size())
-                .isEqualTo(1);
+                .describedAs("The page should only contain " + size + " elements")
+                .isEqualTo(size);
 
         assertThat(resultPage2.getTotalElements())
                 .isEqualTo(3);
@@ -570,7 +573,8 @@ class ScriptDtoServiceTest {
         Page<ScriptDto> resultPage3 = scriptDtoService.getAll(requestPage3, new ArrayList<>(), false);
 
         assertThat(resultPage3.getContent().size())
-                .isEqualTo(1);
+                .describedAs("The page should only contain " + size + " elements")
+                .isEqualTo(size);
 
         assertThat(resultPage3.getTotalElements())
                 .isEqualTo(3);
@@ -584,7 +588,7 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getAllPaginatedAndOrderByNameDsc() {
+    void getAllPaginatedAndOrderByNameDscTest() {
         Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
         Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
         Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);

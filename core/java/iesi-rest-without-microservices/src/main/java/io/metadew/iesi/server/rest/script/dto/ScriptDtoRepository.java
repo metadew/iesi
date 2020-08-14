@@ -52,7 +52,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
      */
     public long getRowSize(String scriptName, Long scriptVersion, boolean isLatestVersionOnly) {
         try {
-            String query = "Select COUNT(*) count FROM " + getScriptAndScriptVRSTable(null, scriptName, scriptVersion, isLatestVersionOnly) + ";";
+            String query = "Select COUNT(*) count FROM " + getScriptAndScriptVRSTable(Pageable.unpaged(), scriptName, scriptVersion, isLatestVersionOnly) + ";";
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             cachedRowSet.next();
             return cachedRowSet.getLong("count");
@@ -64,14 +64,15 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     @Override
     public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly) {
         try {
-            Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
+            Map<ScriptKey, ScriptDto> scriptDtos = new LinkedHashMap<>();
             Map<ActionKey, ActionDto> actionDtos = new HashMap<>();
             String query = getQuery(pageable, null, null, isLatestVersionOnly, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
             }
-            return new PageImpl<>(new ArrayList<>(scriptDtos.values()), pageable, getRowSize(null, null, isLatestVersionOnly));
+            List<ScriptDto> scriptDtoList = new ArrayList<>(scriptDtos.values());
+            return new PageImpl<>(scriptDtoList, pageable, getRowSize(null, null, isLatestVersionOnly));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -80,14 +81,15 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     @Override
     public Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestVersionOnly) {
         try {
-            Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
+            Map<ScriptKey, ScriptDto> scriptDtos = new LinkedHashMap<>();
             Map<ActionKey, ActionDto> actionDtos = new HashMap<>();
             String query = getQuery(pageable, name, null, isLatestVersionOnly, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
             }
-            return new PageImpl<>(new ArrayList<>(scriptDtos.values()), pageable, getRowSize(name, null, isLatestVersionOnly));
+            List<ScriptDto> scriptDtoList = new ArrayList<>(scriptDtos.values());
+            return new PageImpl<>(scriptDtoList, pageable, getRowSize(name, null, isLatestVersionOnly));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -98,7 +100,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         try {
             Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
             Map<ActionKey, ActionDto> actionDtos = new HashMap<>();
-            String query = getQuery(null, name, version, false, expansions);
+            String query = getQuery(Pageable.unpaged(), name, version, false, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
@@ -208,7 +210,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
      */
     private String getQuery(Pageable pageable, String scriptName, Long scriptVersion, boolean isLatestVersionOnly, List<String> expansions) {
         return "Select " +
-                "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, scriptAndScriptVRS.SCRIPT_TYP_NM, " +
+                "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, " +
                 "scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC, 0 INFO_TYPE, " +
                 "script_label.NAME LABEL_NAME, script_label.VALUE LABEL_VALUE, " +
                 "null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, null ACTION_TYP_NM, " +
@@ -222,7 +224,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_label " +
                 "on scriptAndScriptVRS.SCRIPT_ID = script_label.SCRIPT_ID and scriptAndScriptVRS.SCRIPT_VRS_NB = script_label.SCRIPT_VRS_NB " +
                 "union all " +
-                "Select " + "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, scriptAndScriptVRS.SCRIPT_TYP_NM, " +
+                "Select " + "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, " +
                 "scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC, 1 INFO_TYPE, " +
                 "null LABEL_NAME, null LABEL_VALUE, " +
                 "action.ACTION_ID, action.ACTION_NM, action.ACTION_NB, action.ACTION_DSC, action.ACTION_TYP_NM, " +
@@ -259,20 +261,41 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         String limitAndOffset = pageable == null || pageable.isUnpaged() ? " " : " limit " + pageable.getPageSize() + " offset " + pageable.getOffset() + " ";
         return (" (" +
                 "SELECT " +
-                "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, script.SCRIPT_TYP_NM, " +
+                "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, " +
                 "script_version.SCRIPT_VRS_NB, script_version.SCRIPT_VRS_DSC " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_version " +
                 "on script.SCRIPT_ID = script_version.SCRIPT_ID " +
                 getWhereClause(scriptName, scriptVersion, isLatestVersionOnly).orElse(" ") +
+                getOrderByStatementForScriptAndScriptVersionTable(pageable) +
                 limitAndOffset +
                 ") ");
     }
 
     /**
+     * This method provide an Order by statement to order the ScriptAndScriptVersionTable
+     *
+     * @param pageable - pageable object containing or not the order object
+     * @return a String containing the ORDER BY statement
+     */
+    private String getOrderByStatementForScriptAndScriptVersionTable(Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) return " ";
+        //if (pageable == null || !pageable.getSort().isSorted())
+        //    return " ";
+        List<String> sorting = new ArrayList<>();
+        pageable.getSort().stream().forEach(order -> {
+            // add further sort on the ScriptAndScriptVersionTable here
+            if (order.getProperty().equalsIgnoreCase("NAME"))
+                sorting.add("script.SCRIPT_NM" + " " + order.getDirection());
+        });
+        return " ORDER BY " + String.join(", ", sorting) + " ";
+    }
+
+    /**
      * This method provide a where statement depending of the arguments passed.
-     * @param scriptName - if filled, add a filter on the name of the script. If null, doesn't filter on the name.
-     * @param scriptVersion - if filled, add a filter on the version of the script. If null, doesn't filter on the version.
+     *
+     * @param scriptName          - if filled, add a filter on the name of the script. If null, doesn't filter on the name.
+     * @param scriptVersion       - if filled, add a filter on the version of the script. If null, doesn't filter on the version.
      * @param isLatestVersionOnly - if true, filter to return only the last version of the script. If true, the scriptVersion doesn't apply.
      * @return a String containing the where clause if argument are provided or a space if all args are null.
      */
@@ -298,7 +321,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         if (expansions != null && expansions.contains("execution")) {
             return " union all select " +
                     "scriptAndScriptVRS.SCRIPT_ID, scriptAndScriptVRS.SCRIPT_NM, scriptAndScriptVRS.SCRIPT_DSC, " +
-                    "scriptAndScriptVRS.SCRIPT_TYP_NM, scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC, " +
+                    "scriptAndScriptVRS.SCRIPT_VRS_NB, scriptAndScriptVRS.SCRIPT_VRS_DSC, " +
                     "2 INFO_TYPE, " +
                     "null LABEL_NAME, null LABEL_VALUE, null ACTION_ID, null ACTION_NM, null ACTION_NB, null ACTION_DSC, " +
                     "null ACTION_TYP_NM, null CONDITION_VAL, null EXP_ERR_FL, null STOP_ERR_FL, null ACTION_PAR_NM, " +

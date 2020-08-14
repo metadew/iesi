@@ -21,9 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -63,7 +61,7 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getAllReturnFormatTest(){
+    void getAllReturnFormatTest() {
         Pageable pageable = Pageable.unpaged();
         assertThat(scriptDtoService.getAll(pageable, null, false))
                 .isInstanceOf(PageImpl.class);
@@ -364,30 +362,10 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
 
         Pageable pageable = Pageable.unpaged();
-        List<ScriptDto> queryResult = scriptDtoService.getAll(pageable, new ArrayList<>(), true).getContent();
-        assertThat(queryResult.size())
-                .as("Only 2 ScriptDto should be return")
-                .isEqualTo(2);
 
-        assertThat(queryResult)
+        assertThat(scriptDtoService.getAll(pageable, new ArrayList<>(), true))
                 .as("The retrieved list of ScriptDto should contain these 2 scriptDto")
-                .containsOnly(scriptDtoModelAssembler.convertToDto(script1V2), scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(0))
-                .as("The first retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(1))
-                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.convertToDto(script1V2));
-
-        assertThat(queryResult.get(0))
-                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
-                .isEqualToComparingFieldByField(scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(1))
-                .as("The retrieved ScriptDto should be exactly equal field by field  to the processed ScriptDto")
-                .isEqualToComparingFieldByField(scriptDtoModelAssembler.convertToDto(script1V2));
+                .containsExactlyInAnyOrder(scriptDtoModelAssembler.convertToDto(script1V2), scriptDtoModelAssembler.convertToDto(script2V2));
 
     }
 
@@ -448,7 +426,7 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getAllLatestVersionNoExpansionSpecified() {
+    void getAllLatestVersionNoExpansionSpecifiedTest() {
         Script script1V1 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 0);
         Script script1V2 = ScriptBuilder.simpleScript("script0", 1, 2, 2, 0);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script1V1);
@@ -459,30 +437,213 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
 
         Pageable pageable = Pageable.unpaged();
-        List<ScriptDto> queryResult = scriptDtoService.getAll(pageable, new ArrayList<>(), true).getContent();
-        assertThat(queryResult.size())
-                .as("Only 2 ScriptDto should be return")
-                .isEqualTo(2);
+        assertThat(scriptDtoService.getAll(pageable, new ArrayList<>(), true))
+                .containsExactlyInAnyOrder(scriptDtoModelAssembler.toModel(script1V2), scriptDtoModelAssembler.toModel(script2V2));
 
-        assertThat(queryResult.get(0))
-                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(1))
-                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.convertToDto(script1V2));
-
-        assertThat(queryResult.get(0))
-                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
-                .isEqualToComparingFieldByField(scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(1))
-                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
-                .isEqualToComparingFieldByField(scriptDtoModelAssembler.convertToDto(script1V2));
     }
 
     @Test
-    void getByNameReturnFormatTest(){
+    void getAllPaginationTest() {
+        Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
+        Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
+        Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptA);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
+
+        Pageable requestPage1 = PageRequest.of(0, 1);
+        Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
+
+        assertThat(resultPage1.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage1.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getTotalPages())
+                .isEqualTo(3);
+
+        Pageable requestPage2 = PageRequest.of(1, 1);
+        Page<ScriptDto> resultPage2 = scriptDtoService.getAll(requestPage2, new ArrayList<>(), false);
+
+        assertThat(resultPage2.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage2.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getTotalPages())
+                .isEqualTo(3);
+
+        Pageable requestPage3 = PageRequest.of(2, 1);
+        Page<ScriptDto> resultPage3 = scriptDtoService.getAll(requestPage3, new ArrayList<>(), false);
+
+        assertThat(resultPage3.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage3.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getTotalPages())
+                .isEqualTo(3);
+
+    }
+
+    @Test
+    void getAllPaginatedSizeEqualsTotalAndOrderByNameDefaultAscTest() {
+        Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
+        Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
+        Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptA);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
+
+        int size = 3;
+        int numberOfScript = 3;
+        Sort sortAsc = Sort.by(Sort.DEFAULT_DIRECTION, "Name");
+        Pageable requestPage1 = PageRequest.of(0, size, sortAsc);
+        Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
+
+        assertThat(resultPage1.getContent().size())
+                .describedAs("The page should only contain " + size + " elements")
+                .isEqualTo(size);
+
+        assertThat(resultPage1.getTotalElements())
+                .isEqualTo(numberOfScript);
+
+        assertThat(resultPage1.getTotalPages())
+                .isEqualTo(size / numberOfScript);
+
+        assertThat(resultPage1.getContent().get(0).getName())
+                .isEqualTo(scriptA.getName());
+
+        assertThat(resultPage1.getContent().get(1).getName())
+                .isEqualTo(scriptB.getName());
+
+        assertThat(resultPage1.getContent().get(2).getName())
+                .isEqualTo(scriptC.getName());
+
+    }
+
+    @Test
+    void getAllPaginatedAndOrderByNameDefaultAscTest() {
+        Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
+        Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
+        Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptA);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
+
+        int size = 1;
+        Sort sortAsc = Sort.by(Sort.DEFAULT_DIRECTION, "Name");
+        Pageable requestPage1 = PageRequest.of(0, size, sortAsc);
+        Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
+
+        assertThat(resultPage1.getContent().size())
+                .describedAs("The page should only contain " + size + " elements")
+                .isEqualTo(size);
+
+        assertThat(resultPage1.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getContent().get(0).getName())
+                .isEqualTo(scriptA.getName());
+
+        Pageable requestPage2 = PageRequest.of(1, 1, sortAsc);
+        Page<ScriptDto> resultPage2 = scriptDtoService.getAll(requestPage2, new ArrayList<>(), false);
+
+        assertThat(resultPage2.getContent().size())
+                .describedAs("The page should only contain " + size + " elements")
+                .isEqualTo(size);
+
+        assertThat(resultPage2.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getContent().get(0).getName())
+                .isEqualTo("ScriptB");
+
+        Pageable requestPage3 = PageRequest.of(2, 1, sortAsc);
+        Page<ScriptDto> resultPage3 = scriptDtoService.getAll(requestPage3, new ArrayList<>(), false);
+
+        assertThat(resultPage3.getContent().size())
+                .describedAs("The page should only contain " + size + " elements")
+                .isEqualTo(size);
+
+        assertThat(resultPage3.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getContent().get(0).getName())
+                .isEqualTo("ScriptC");
+
+    }
+
+    @Test
+    void getAllPaginatedAndOrderByNameDscTest() {
+        Script scriptA = ScriptBuilder.simpleScript("ScriptA", 0, 2, 2, 2);
+        Script scriptB = ScriptBuilder.simpleScript("ScriptB", 0, 2, 2, 2);
+        Script scriptC = ScriptBuilder.simpleScript("ScriptC", 0, 2, 2, 2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptA);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptB);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(scriptC);
+
+        Sort sortDesc = Sort.by(Sort.Direction.DESC, "Name");
+        Pageable requestPage1 = PageRequest.of(0, 1, sortDesc);
+        Page<ScriptDto> resultPage1 = scriptDtoService.getAll(requestPage1, new ArrayList<>(), false);
+
+        assertThat(resultPage1.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage1.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage1.getContent().get(0).getName())
+                .isEqualTo("ScriptC");
+
+        Pageable requestPage2 = PageRequest.of(1, 1, sortDesc);
+        Page<ScriptDto> resultPage2 = scriptDtoService.getAll(requestPage2, new ArrayList<>(), false);
+
+        assertThat(resultPage2.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage2.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage2.getContent().get(0).getName())
+                .isEqualTo("ScriptB");
+
+        Pageable requestPage3 = PageRequest.of(2, 1, sortDesc);
+        Page<ScriptDto> resultPage3 = scriptDtoService.getAll(requestPage3, new ArrayList<>(), false);
+
+        assertThat(resultPage3.getContent().size())
+                .isEqualTo(1);
+
+        assertThat(resultPage3.getTotalElements())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getTotalPages())
+                .isEqualTo(3);
+
+        assertThat(resultPage3.getContent().get(0).getName())
+                .isEqualTo("ScriptA");
+    }
+
+    @Test
+    void getByNameReturnFormatTest() {
         Pageable pageable = Pageable.unpaged();
         assertThat(scriptDtoService.getByName(pageable, null, new ArrayList<>(), false))
                 .isInstanceOf(PageImpl.class);
@@ -521,7 +682,7 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getByNameSimpleNonExistentTest() {
+    void getByNameSimpleNoRetrievedDataTest() {
         Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
         Pageable pageable = Pageable.unpaged();
@@ -765,12 +926,12 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getByNameAndVersionEmptyDB(){
-        assertThat(scriptDtoService.getByNameAndVersion("",0L,new ArrayList<>()))
+    void getByNameAndVersionEmptyDB() {
+        assertThat(scriptDtoService.getByNameAndVersion("", 0L, new ArrayList<>()))
                 .describedAs("The returned value should be an optional")
                 .isInstanceOf(Optional.class);
 
-        assertThat(scriptDtoService.getByNameAndVersion("",0L,new ArrayList<>()).isPresent())
+        assertThat(scriptDtoService.getByNameAndVersion("", 0L, new ArrayList<>()).isPresent())
                 .describedAs("The returned optional should be empty")
                 .isFalse();
     }

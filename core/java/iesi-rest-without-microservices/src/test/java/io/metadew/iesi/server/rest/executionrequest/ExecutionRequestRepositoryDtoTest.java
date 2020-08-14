@@ -293,18 +293,526 @@ class ExecutionRequestRepositoryDtoTest {
 
     @Test
     void getAllMultipleExecutionRequests() {
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        UUID executionRequestId = UUID.randomUUID();
+        UUID scriptExecutionRequestId = UUID.randomUUID();
+        ExecutionRequest executionRequest = AuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                .requestTimestamp(requestTimestamp)
+                .context("context")
+                .email("email")
+                .password("password")
+                .user("user")
+                .space("space")
+                .scope("scope")
+                .name("name")
+                .description("description")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptNameExecutionRequest.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonation.builder()
+                                                .impersonationKey(new ImpersonationKey("impersonation"))
+                                                .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameter.builder()
+                                                .name("param1")
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                                .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+
+        LocalDateTime requestTimestamp2 = LocalDateTime.now();
+        UUID executionRequestId2 = UUID.randomUUID();
+        UUID scriptExecutionRequestId2 = UUID.randomUUID();
+        ExecutionRequest executionRequest2 = AuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(executionRequestId2.toString()))
+                .requestTimestamp(requestTimestamp2)
+                .context("context")
+                .email("email")
+                .password("password")
+                .user("user")
+                .space("space")
+                .scope("scope")
+                .name("name")
+                .description("description")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId2.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId2.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptNameExecutionRequest.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId2.toString()))
+                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonation.builder()
+                                                .impersonationKey(new ImpersonationKey("impersonation"))
+                                                .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameter.builder()
+                                                .name("param1")
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
+                                                .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+        executionRequestConfiguration.insert(executionRequest);
+        executionRequestConfiguration.insert(executionRequest2);
+        ExecutionRequestDto executionRequestDto = ExecutionRequestDto.builder()
+                .requestTimestamp(requestTimestamp)
+                .executionRequestId(executionRequestId.toString())
+                .context("context")
+                .scope("scope")
+                .description("description")
+                .email("email")
+                .name("name")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabelDto.builder()
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabelDto.builder()
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptExecutionRequestDto.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestId(executionRequestId.toString())
+                                .scriptExecutionRequestId(scriptExecutionRequestId.toString())
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonationDto.builder()
+                                                .name("impersonation")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameterDto.builder()
+                                                .name("param1")
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build()
+
+                ).collect(Collectors.toList()))
+                .build();
+        ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
+                .requestTimestamp(requestTimestamp2)
+                .executionRequestId(executionRequestId2.toString())
+                .context("context")
+                .scope("scope")
+                .description("description")
+                .email("email")
+                .name("name")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabelDto.builder()
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabelDto.builder()
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptExecutionRequestDto.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestId(executionRequestId2.toString())
+                                .scriptExecutionRequestId(scriptExecutionRequestId2.toString())
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonationDto.builder()
+                                                .name("impersonation")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameterDto.builder()
+                                                .name("param1")
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build()
+
+                ).collect(Collectors.toList()))
+                .build();
+        assertThat(executionRequestDtoRepository.getAll()).containsOnly(executionRequestDto, executionRequestDto2);
     }
 
     @Test
     void getByIdNoExecutionRequest() {
+        assertThat(executionRequestDtoRepository.getById(UUID.randomUUID())).isEmpty();
     }
+
 
     @Test
     void getByIdSingleExecutionRequest() {
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        UUID executionRequestId = UUID.randomUUID();
+        UUID scriptExecutionRequestId = UUID.randomUUID();
+        ExecutionRequest executionRequest = AuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                .requestTimestamp(requestTimestamp)
+                .context("context")
+                .email("email")
+                .password("password")
+                .user("user")
+                .space("space")
+                .scope("scope")
+                .name("name")
+                .description("description")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptNameExecutionRequest.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonation.builder()
+                                                .impersonationKey(new ImpersonationKey("impersonation"))
+                                                .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameter.builder()
+                                                .name("param1")
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                                .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+        executionRequestConfiguration.insert(executionRequest);
+        ExecutionRequestDto executionRequestDto = ExecutionRequestDto.builder()
+                .requestTimestamp(requestTimestamp)
+                .executionRequestId(executionRequestId.toString())
+                .context("context")
+                .scope("scope")
+                .description("description")
+                .email("email")
+                .name("name")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabelDto.builder()
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabelDto.builder()
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptExecutionRequestDto.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestId(executionRequestId.toString())
+                                .scriptExecutionRequestId(scriptExecutionRequestId.toString())
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonationDto.builder()
+                                                .name("impersonation")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameterDto.builder()
+                                                .name("param1")
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build()
+
+                ).collect(Collectors.toList()))
+                .build();
+        assertThat(executionRequestDtoRepository.getById(executionRequestId)).hasValue(executionRequestDto);
     }
 
     @Test
     void getByIdMultipleExecutionRequests() {
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        UUID executionRequestId = UUID.randomUUID();
+        UUID scriptExecutionRequestId = UUID.randomUUID();
+        ExecutionRequest executionRequest = AuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                .requestTimestamp(requestTimestamp)
+                .context("context")
+                .email("email")
+                .password("password")
+                .user("user")
+                .space("space")
+                .scope("scope")
+                .name("name")
+                .description("description")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptNameExecutionRequest.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
+                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonation.builder()
+                                                .impersonationKey(new ImpersonationKey("impersonation"))
+                                                .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameter.builder()
+                                                .name("param1")
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
+                                                .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+
+        LocalDateTime requestTimestamp2 = LocalDateTime.now();
+        UUID executionRequestId2 = UUID.randomUUID();
+        UUID scriptExecutionRequestId2 = UUID.randomUUID();
+        ExecutionRequest executionRequest2 = AuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(executionRequestId2.toString()))
+                .requestTimestamp(requestTimestamp2)
+                .context("context")
+                .email("email")
+                .password("password")
+                .user("user")
+                .space("space")
+                .scope("scope")
+                .name("name")
+                .description("description")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId2.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabel.builder()
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId2.toString()))
+                                .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptNameExecutionRequest.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestKey(new ExecutionRequestKey(executionRequestId2.toString()))
+                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonation.builder()
+                                                .impersonationKey(new ImpersonationKey("impersonation"))
+                                                .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameter.builder()
+                                                .name("param1")
+                                                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
+                                                .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+        executionRequestConfiguration.insert(executionRequest);
+        executionRequestConfiguration.insert(executionRequest2);
+        ExecutionRequestDto executionRequestDto = ExecutionRequestDto.builder()
+                .requestTimestamp(requestTimestamp)
+                .executionRequestId(executionRequestId.toString())
+                .context("context")
+                .scope("scope")
+                .description("description")
+                .email("email")
+                .name("name")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabelDto.builder()
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabelDto.builder()
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptExecutionRequestDto.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestId(executionRequestId.toString())
+                                .scriptExecutionRequestId(scriptExecutionRequestId.toString())
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonationDto.builder()
+                                                .name("impersonation")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameterDto.builder()
+                                                .name("param1")
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build()
+
+                ).collect(Collectors.toList()))
+                .build();
+        ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
+                .requestTimestamp(requestTimestamp2)
+                .executionRequestId(executionRequestId2.toString())
+                .context("context")
+                .scope("scope")
+                .description("description")
+                .email("email")
+                .name("name")
+                .executionRequestLabels(Stream.of(
+                        ExecutionRequestLabelDto.builder()
+                                .name("label1")
+                                .value("value1")
+                                .build(),
+                        ExecutionRequestLabelDto.builder()
+                                .name("label2")
+                                .value("value2")
+                                .build())
+                        .collect(Collectors.toSet()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .scriptExecutionRequests(Stream.of(
+                        ScriptExecutionRequestDto.builder()
+                                .environment("test")
+                                .exit(false)
+                                .executionRequestId(executionRequestId2.toString())
+                                .scriptExecutionRequestId(scriptExecutionRequestId2.toString())
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .impersonations(Stream.of(
+                                        ScriptExecutionRequestImpersonationDto.builder()
+                                                .name("impersonation")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .parameters(Stream.of(
+                                        ScriptExecutionRequestParameterDto.builder()
+                                                .name("param1")
+                                                .value("value1")
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build()
+
+                ).collect(Collectors.toList()))
+                .build();
+        assertThat(executionRequestDtoRepository.getById(executionRequestId)).hasValue(executionRequestDto);
+        assertThat(executionRequestDtoRepository.getById(executionRequestId2)).hasValue(executionRequestDto2);
     }
 
 }

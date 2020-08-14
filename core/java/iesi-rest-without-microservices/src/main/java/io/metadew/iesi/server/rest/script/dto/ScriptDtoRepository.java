@@ -280,10 +280,9 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             return " ";
         List<String> sorting = new ArrayList<>();
         pageable.getSort().stream().forEach(order -> {
-
+            // add further sort on the ScriptAndScriptVersionTable here
             if(order.getProperty().equalsIgnoreCase("NAME"))
                 sorting.add("script.SCRIPT_NM" + " " + order.getDirection());
-
         });
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

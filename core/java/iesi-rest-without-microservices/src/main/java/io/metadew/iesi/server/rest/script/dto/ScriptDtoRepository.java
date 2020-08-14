@@ -52,7 +52,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
      */
     public long getRowSize(String scriptName, Long scriptVersion, boolean isLatestVersionOnly) {
         try {
-            String query = "Select COUNT(*) count FROM " + getScriptAndScriptVRSTable(null, scriptName, scriptVersion, isLatestVersionOnly) + ";";
+            String query = "Select COUNT(*) count FROM " + getScriptAndScriptVRSTable(Pageable.unpaged(), scriptName, scriptVersion, isLatestVersionOnly) + ";";
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             cachedRowSet.next();
             return cachedRowSet.getLong("count");
@@ -71,7 +71,9 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
             }
-            return new PageImpl<>(new ArrayList<>(scriptDtos.values()), pageable, getRowSize(null, null, isLatestVersionOnly));
+            List<ScriptDto> scriptDtoList = new ArrayList<>(scriptDtos.values());
+            resultSorting(pageable, scriptDtoList);
+            return new PageImpl<>(scriptDtoList, pageable, getRowSize(null, null, isLatestVersionOnly));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -87,7 +89,9 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
             }
-            return new PageImpl<>(new ArrayList<>(scriptDtos.values()), pageable, getRowSize(name, null, isLatestVersionOnly));
+            List<ScriptDto> scriptDtoList = new ArrayList<>(scriptDtos.values());
+            resultSorting(pageable, scriptDtoList);
+            return new PageImpl<>(scriptDtoList, pageable, getRowSize(name, null, isLatestVersionOnly));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -98,7 +102,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         try {
             Map<ScriptKey, ScriptDto> scriptDtos = new HashMap<>();
             Map<ActionKey, ActionDto> actionDtos = new HashMap<>();
-            String query = getQuery(null, name, version, false, expansions);
+            String query = getQuery(Pageable.unpaged(), name, version, false, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtos, actionDtos, expansions);
@@ -197,6 +201,22 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
     }
 
     /**
+     * This method sort the given List according to the provided sort
+     * @param pageable - The pageable containing the Sort object - can be null
+     * @param scriptDtoList - The list to sort
+     */
+    private void resultSorting(Pageable pageable, List<ScriptDto> scriptDtoList) {
+        if (pageable == null || pageable.getSort().isUnsorted())
+            return;
+        pageable.getSort().forEach(order -> {
+            // add other sorting here
+            if (order.getProperty().equalsIgnoreCase("NAME")) {
+                scriptDtoList.sort((Comparator.comparing(ScriptDto::getName)));
+            }
+        });
+    }
+
+    /**
      * This method return the query adapted to the needs.
      *
      * @param pageable            - The pageable object containing the required pagination information. If null, it doesn't paginate.
@@ -272,6 +292,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
 
     /**
      * This method provide an Order by statement to order the ScriptAndScriptVersionTable
+     *
      * @param pageable - pageable object containing or not the order object
      * @return a String containing the ORDER BY statement
      */
@@ -281,7 +302,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         List<String> sorting = new ArrayList<>();
         pageable.getSort().stream().forEach(order -> {
             // add further sort on the ScriptAndScriptVersionTable here
-            if(order.getProperty().equalsIgnoreCase("NAME"))
+            if (order.getProperty().equalsIgnoreCase("NAME"))
                 sorting.add("script.SCRIPT_NM" + " " + order.getDirection());
         });
         return " ORDER BY " + String.join(", ", sorting) + " ";

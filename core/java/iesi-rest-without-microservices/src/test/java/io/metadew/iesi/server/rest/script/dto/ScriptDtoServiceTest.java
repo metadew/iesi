@@ -362,30 +362,10 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
 
         Pageable pageable = Pageable.unpaged();
-        List<ScriptDto> queryResult = scriptDtoService.getAll(pageable, new ArrayList<>(), true).getContent();
-        assertThat(queryResult.size())
-                .as("Only 2 ScriptDto should be return")
-                .isEqualTo(2);
 
-        assertThat(queryResult)
+        assertThat(scriptDtoService.getAll(pageable, new ArrayList<>(), true))
                 .as("The retrieved list of ScriptDto should contain these 2 scriptDto")
-                .containsOnly(scriptDtoModelAssembler.convertToDto(script1V2), scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(0))
-                .as("The first retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(1))
-                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.convertToDto(script1V2));
-
-        assertThat(queryResult.get(0))
-                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
-                .isEqualToComparingFieldByField(scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(1))
-                .as("The retrieved ScriptDto should be exactly equal field by field  to the processed ScriptDto")
-                .isEqualToComparingFieldByField(scriptDtoModelAssembler.convertToDto(script1V2));
+                .containsExactlyInAnyOrder(scriptDtoModelAssembler.convertToDto(script1V2), scriptDtoModelAssembler.convertToDto(script2V2));
 
     }
 
@@ -457,26 +437,9 @@ class ScriptDtoServiceTest {
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script2V2);
 
         Pageable pageable = Pageable.unpaged();
-        List<ScriptDto> queryResult = scriptDtoService.getAll(pageable, new ArrayList<>(), true).getContent();
-        assertThat(queryResult.size())
-                .as("Only 2 ScriptDto should be return")
-                .isEqualTo(2);
+        assertThat(scriptDtoService.getAll(pageable, new ArrayList<>(), true))
+                .containsExactlyInAnyOrder(scriptDtoModelAssembler.toModel(script1V2), scriptDtoModelAssembler.toModel(script2V2));
 
-        assertThat(queryResult.get(0))
-                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(1))
-                .as("The retrieved ScriptDto should be exactly equal to the processed ScriptDto")
-                .isEqualTo(scriptDtoModelAssembler.convertToDto(script1V2));
-
-        assertThat(queryResult.get(0))
-                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
-                .isEqualToComparingFieldByField(scriptDtoModelAssembler.convertToDto(script2V2));
-
-        assertThat(queryResult.get(1))
-                .as("The first retrieved ScriptDto should be exactly equal field by field to the processed ScriptDto")
-                .isEqualToComparingFieldByField(scriptDtoModelAssembler.convertToDto(script1V2));
     }
 
     @Test
@@ -549,7 +512,7 @@ class ScriptDtoServiceTest {
                 .isEqualTo(numberOfScript);
 
         assertThat(resultPage1.getTotalPages())
-                .isEqualTo(size/numberOfScript);
+                .isEqualTo(size / numberOfScript);
 
         assertThat(resultPage1.getContent().get(0).getName())
                 .isEqualTo(scriptA.getName());

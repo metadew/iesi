@@ -139,7 +139,7 @@ public class WfaExecuteFilePing {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(InterruptedException::new);
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection dcConnection = connectionOperation.getHostConnection(connection);
 

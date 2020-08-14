@@ -38,7 +38,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
                     "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
                     "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id_id, null script_exe_req_imp_id_id, " +
+                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
                     "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
                     "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
@@ -82,7 +82,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
                     "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
                     "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "script_execution_request_imps.ID as script_exe_req_imp_id_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
+                    "script_execution_request_imps.ID as script_exe_req_imp_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
                     "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
                     "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
@@ -160,7 +160,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
                     "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
                     "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id_id, null script_exe_req_imp_id_id, " +
+                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
                     "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
                     "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
@@ -206,7 +206,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
                     "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
                     "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "script_execution_request_imps.ID as script_exe_req_imp_id_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
+                    "script_execution_request_imps.ID as script_exe_req_imp_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
                     "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
                     "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
@@ -407,7 +407,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         ScriptExecutionRequestImpersonationDto scriptExecutionRequestImpersonationDto = scriptExecutionRequestBuilder.getImpersonations().get(scriptExecutionRequestImpersonationId);
 
         if (scriptExecutionRequestImpersonationDto == null) {
-            scriptExecutionRequestImpersonationDto = new ScriptExecutionRequestImpersonationDto(cachedRowSet.getString("script_exe_req_imp_id"));
+            scriptExecutionRequestImpersonationDto = new ScriptExecutionRequestImpersonationDto(cachedRowSet.getString("script_exe_req_imp_id_id"));
             scriptExecutionRequestBuilder.getImpersonations().put(scriptExecutionRequestImpersonationId, scriptExecutionRequestImpersonationDto);
         } else {
             log.warn("duplicate impersonation " + scriptExecutionRequestImpersonationId + " found for execution request " + executionRequestBuilder.getExecutionRequestId());

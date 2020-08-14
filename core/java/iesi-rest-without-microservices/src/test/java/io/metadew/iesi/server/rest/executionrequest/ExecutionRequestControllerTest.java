@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.executionrequest.controller;
+package io.metadew.iesi.server.rest.executionrequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;

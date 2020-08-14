@@ -3,6 +3,7 @@ package io.metadew.iesi.launch;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
@@ -61,6 +62,7 @@ public class ScriptLauncher {
         }
 
         Configuration.getInstance();
+        FrameworkCrypto.getInstance();
         MetadataConfiguration.getInstance();
         ExecutionRequestBuilder executionRequestBuilder = new ExecutionRequestBuilder();
         String executionRequestId = UUID.randomUUID().toString();

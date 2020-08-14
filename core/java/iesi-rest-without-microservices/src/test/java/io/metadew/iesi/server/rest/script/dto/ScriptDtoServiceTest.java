@@ -719,7 +719,7 @@ class ScriptDtoServiceTest {
     }
 
     @Test
-    void getByNameSimpleNonExistentTest() {
+    void getByNameSimpleNoRetrievedDataTest() {
         Script script12 = ScriptBuilder.simpleScript("script0", 0, 2, 2, 2);
         metadataRepositoryConfiguration.getDesignMetadataRepository().save(script12);
         Pageable pageable = Pageable.unpaged();

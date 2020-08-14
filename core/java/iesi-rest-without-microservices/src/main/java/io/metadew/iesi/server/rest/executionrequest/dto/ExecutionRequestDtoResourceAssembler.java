@@ -46,7 +46,7 @@ public class ExecutionRequestDtoResourceAssembler extends RepresentationModelAss
                             .collect(Collectors.toList()),
                     executionRequest.getExecutionRequestLabels().stream()
                             .map(this::convertToDto)
-                            .collect(Collectors.toList()));
+                            .collect(Collectors.toSet()));
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot convert ExecutionRequest of type {0} to DTO", executionRequest.getClass().getSimpleName()));
         }

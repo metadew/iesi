@@ -9,9 +9,7 @@ import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -31,7 +29,7 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
     private String email;
     private ExecutionRequestStatus executionRequestStatus;
     private List<ScriptExecutionRequestDto> scriptExecutionRequests = new ArrayList<>();
-    private List<ExecutionRequestLabelDto> executionRequestLabels = new ArrayList<>();
+    private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
 
     public ExecutionRequest convertToEntity() {
         return new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(executionRequestId), requestTimestamp, name,
@@ -40,7 +38,7 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
                 .collect(Collectors.toList()),
                 executionRequestLabels.stream()
                         .map(label -> label.convertToEntity(new ExecutionRequestKey(executionRequestId)))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toSet()));
     }
 
     public ExecutionRequest convertToNewEntity() throws ExecutionRequestBuilderException {

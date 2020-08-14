@@ -468,7 +468,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         public ExecutionRequestDto build() {
             return new ExecutionRequestDto(executionRequestId, requestTimestamp, name, description, scope, context, email, executionRequestStatus,
                     scriptExecutionRequests.values().stream().map(ScriptExecutionRequestBuilder::build).collect(Collectors.toList()),
-                    new ArrayList<>(executionRequestLabels.values()));
+                    new HashSet<>(executionRequestLabels.values()));
         }
     }
 

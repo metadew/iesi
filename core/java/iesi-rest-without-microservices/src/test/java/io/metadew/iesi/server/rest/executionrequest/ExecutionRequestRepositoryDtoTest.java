@@ -98,7 +98,7 @@ class ExecutionRequestRepositoryDtoTest {
                                 .name("label2")
                                 .value("value2")
                                 .build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .executionRequestStatus(ExecutionRequestStatus.NEW)
                 .scriptExecutionRequests(Stream.of(
                         ScriptNameExecutionRequest.builder()
@@ -145,7 +145,7 @@ class ExecutionRequestRepositoryDtoTest {
                                 .name("label2")
                                 .value("value2")
                                 .build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .executionRequestStatus(ExecutionRequestStatus.NEW)
                 .scriptExecutionRequests(Stream.of(
                         ScriptExecutionRequestDto.builder()
@@ -205,7 +205,7 @@ class ExecutionRequestRepositoryDtoTest {
                                 .name("label2")
                                 .value("value2")
                                 .build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .executionRequestStatus(ExecutionRequestStatus.ACCEPTED)
                 .scriptExecutionRequests(Stream.of(
                         ScriptNameExecutionRequest.builder()
@@ -262,7 +262,7 @@ class ExecutionRequestRepositoryDtoTest {
                                 .name("label2")
                                 .value("value2")
                                 .build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .executionRequestStatus(ExecutionRequestStatus.ACCEPTED)
                 .scriptExecutionRequests(Stream.of(
                         ScriptExecutionRequestDto.builder()

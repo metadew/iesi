@@ -6,6 +6,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class AuthenticatedExecutionRequest extends ExecutionRequest {
 
@@ -16,7 +17,7 @@ public class AuthenticatedExecutionRequest extends ExecutionRequest {
     @Builder
     public AuthenticatedExecutionRequest(ExecutionRequestKey executionRequestKey, LocalDateTime requestTimestamp, String name, String description,
                                          String email, String scope, String context, ExecutionRequestStatus executionRequestStatus, List<ScriptExecutionRequest> scriptExecutionRequests,
-                                         List<ExecutionRequestLabel> executionRequestLabels, String space, String user, String password) {
+                                         Set<ExecutionRequestLabel> executionRequestLabels, String space, String user, String password) {
         super(executionRequestKey, requestTimestamp, name, description, email, scope, context, executionRequestStatus, scriptExecutionRequests, executionRequestLabels);
         this.space = space;
         this.user = user;

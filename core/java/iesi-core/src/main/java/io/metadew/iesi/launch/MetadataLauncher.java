@@ -5,6 +5,7 @@ import io.metadew.iesi.common.FrameworkRuntime;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;
@@ -58,6 +59,7 @@ public class MetadataLauncher {
         boolean exit = !line.hasOption("exit") || line.getOptionValue("exit").equalsIgnoreCase("y") || line.getOptionValue("exit").equalsIgnoreCase("true");
 
         Configuration.getInstance();
+        FrameworkCrypto.getInstance();
         // FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("metadata", "")));
 
         MetadataRepositoryOperation metadataRepositoryOperation = new MetadataRepositoryOperation();

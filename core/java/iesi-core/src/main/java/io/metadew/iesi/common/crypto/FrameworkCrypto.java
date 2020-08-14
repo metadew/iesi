@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.crypto;
 
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.crypto.algo.AESEncryptBasic;
 import lombok.extern.log4j.Log4j2;
 
@@ -26,8 +27,19 @@ public class FrameworkCrypto {
         return INSTANCE;
     }
 
-    private FrameworkCrypto() {
-        this.aes = new AESEncryptBasic("c7c1e47391154a6a");
+    public FrameworkCrypto() {
+        if (Configuration.getInstance().getProperty("iesi.security.encryption.alias").isPresent()) {
+            char[] password = Console.getInstance().readPassword("Enter your keystore password: ");
+            String keystoreLocation = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
+            String alias = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.alias").toString();
+            String keyJKS = new JavaKeystore().loadKey(password, keystoreLocation, alias);
+            this.aes = new AESEncryptBasic(keyJKS);
+        } else if (Configuration.getInstance().getProperty("iesi.security.encryption.key").isPresent()) {
+            this.aes = new AESEncryptBasic(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString());
+        } else {
+            log.warn("iesi.encryption.key: no encryption key provided. IESI will use the hardcoded key");
+            this.aes = new AESEncryptBasic("a9a1e56891154a6a");
+        }
     }
 
     // Methods

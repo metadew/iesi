@@ -6,10 +6,8 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
-import io.metadew.iesi.server.rest.pagination.TotalPages;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.resource.HalSingleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.ScriptController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -30,42 +27,24 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/execution-requests")
 public class ExecutionRequestController {
 
-    private final ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler;
+    private final ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler;
     private final ExecutionRequestService executionRequestService;
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
-                               ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler) {
+                               ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler) {
         this.executionRequestService = executionRequestService;
-        this.executionRequestDtoResourceAssembler = executionRequestDtoResourceAssembler;
+        this.executionRequestDtoModelAssembler = executionRequestDtoModelAssembler;
     }
 
     @GetMapping("")
-    public HalSingleEmbeddedResource<TotalPages> getAll(
-            @RequestParam int limit,
-            @RequestParam int pageNumber,
-            @RequestParam(required = false) List<String> column,
-            @RequestParam(required = false) List<String> sort,
-            @RequestParam(required = false) String filterColumn,
-            @RequestParam(required = false) String searchParam,
-            @RequestParam(required = false) String request_from,
-            @RequestParam(required = false) String request_to) {
-        List<ExecutionRequestDto> executionRequestDtos = executionRequestService.getAll(limit, pageNumber, column, sort, filterColumn, searchParam, request_from, request_to)
-                .stream()
-                .parallel()
-                .map(executionRequestDtoResourceAssembler::toModel)
-                .collect(Collectors.toList());
-        TotalPages totalPages = TotalPages.builder()
-                .totalPages(executionRequestService.getTotalPages(limit, filterColumn, searchParam, request_from, request_to))
-                .payload(executionRequestDtos)
-                .build();
-        return new HalSingleEmbeddedResource<>(totalPages);
+    public HalMultipleEmbeddedResource<ExecutionRequestDto> getAll() {
+        return new HalMultipleEmbeddedResource<>(executionRequestService.getAll());
     }
 
     @GetMapping("/{id}")
     public ExecutionRequestDto getById(@PathVariable String id) {
         return executionRequestService.getById(id)
-                .map(executionRequestDtoResourceAssembler::toModel)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ExecutionRequestKey(id)));
     }
 
@@ -73,7 +52,7 @@ public class ExecutionRequestController {
     public ExecutionRequestDto post(@RequestBody ExecutionRequestDto executionRequestDto) throws MetadataAlreadyExistsException {
         try {
             ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(executionRequestDto);
-            return executionRequestDtoResourceAssembler.toModel(executionRequest);
+            return executionRequestDtoModelAssembler.toModel(executionRequest);
         } catch (ExecutionRequestBuilderException e) {
             throw new RuntimeException(e);
         }
@@ -96,7 +75,7 @@ public class ExecutionRequestController {
     @PutMapping("/{id}")
     public ExecutionRequestDto put(@PathVariable String id, @RequestBody ExecutionRequestDto executionRequestDto) throws MetadataDoesNotExistException {
         executionRequestService.updateExecutionRequest(executionRequestDto);
-        return executionRequestDtoResourceAssembler.toModel(executionRequestDto.convertToEntity());
+        return executionRequestDtoModelAssembler.toModel(executionRequestDto.convertToEntity());
     }
 
     @DeleteMapping("/{id}")

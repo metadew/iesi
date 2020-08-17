@@ -1,15 +1,12 @@
-package io.metadew.iesi.server.rest.executionrequest.controller;
+package io.metadew.iesi.server.rest.executionrequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
-import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
-import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestService;
-import io.metadew.iesi.server.rest.executionrequest.dto.*;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
 import io.metadew.iesi.server.rest.pagination.TotalPages;
@@ -31,8 +28,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(ExecutionRequestController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = {ExecutionRequestController.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoResourceAssembler.class, ExecutionRequestDtoResourceAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
+@ContextConfiguration(classes = {ExecutionRequestController.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoModelAssembler.class, ExecutionRequestDtoModelAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
 @ExtendWith(MockitoExtension.class)
 
 public class ExecutionRequestControllerTest {
@@ -57,7 +57,7 @@ public class ExecutionRequestControllerTest {
     @MockBean
     private ScriptExecutionRequestParameterDto scriptExecutionRequestParameterDto;
     @MockBean
-    private ScriptExecutionRequestDtoResourceAssembler scriptExecutionRequestDtoResourceAssembler;
+    private ScriptExecutionRequestDtoModelAssembler scriptExecutionRequestDtoModelAssembler;
     @MockBean
     private ExecutionRequestLabelDto executionRequestLabelDto;
     @MockBean
@@ -77,21 +77,22 @@ public class ExecutionRequestControllerTest {
 
     @Test
     public void testPagination() throws Exception {
-        List<ExecutionRequest> executionRequests = new ArrayList<>();
-        ExecutionRequest executionRequest1 = new ExecutionRequestBuilder()
-                .id("newExecutionRequestId")
+        List<ExecutionRequestDto> executionRequestDtos = new ArrayList<>();
+        ExecutionRequestDto executionRequest1 = ExecutionRequestDto.builder()
+                .executionRequestId("newExecutionRequestId")
                 .name("name")
                 .context("context")
                 .description("description")
                 .scope("scope")
+                .requestTimestamp(LocalDateTime.now())
                 .build();
-        executionRequests.add(executionRequest1);
+        executionRequestDtos.add(executionRequest1);
         TotalPages totalPages = TotalPages.builder()
                 .totalPages(10)
-                .payload(executionRequests)
+                .payload(executionRequestDtos)
                 .build();
-        given(executionRequestDtoRepository.getAll(1, 1, null, null, null, null, null, null))
-                .willReturn(executionRequests);
+        given(executionRequestDtoRepository.getAll())
+                .willReturn(executionRequestDtos);
 
         MockHttpServletResponse response = mvc.perform(
                 get("/execution-requests?limit=1&pageNumber=1")
@@ -102,8 +103,8 @@ public class ExecutionRequestControllerTest {
 
     @Test
     public void getAllNoResultTest() throws Exception {
-        List<ExecutionRequest> executionRequests = new ArrayList<>();
-        given(executionRequestService.getAll(10,0,null,null,null,null,null,null)).willReturn(executionRequests);
+        List<ExecutionRequestDto> executionRequests = new ArrayList<>();
+        given(executionRequestService.getAll()).willReturn(executionRequests);
         mvc.perform(get("/execution-requests?limit=1&pageNumber=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk());
@@ -111,49 +112,48 @@ public class ExecutionRequestControllerTest {
 
     @Test
     public void getAllResultWithPagination() throws Exception {
-        List<ExecutionRequest> executionRequests = new ArrayList<>();
-        ExecutionRequest executionRequest1 = new ExecutionRequestBuilder()
-                .id("newExecutionRequestId")
+        ExecutionRequestDto executionRequest1 = ExecutionRequestDto.builder()
+                .executionRequestId("newExecutionRequestId")
                 .name("name")
                 .context("context1")
                 .description("description")
                 .scope("scope")
+                .requestTimestamp(LocalDateTime.now())
                 .build();
-        ExecutionRequest executionRequest2 = new ExecutionRequestBuilder()
-                .id("newExecutionRequestId")
+        ExecutionRequestDto executionRequest2 = ExecutionRequestDto.builder()
+                .executionRequestId("newExecutionRequestId2")
                 .name("name")
                 .context("context")
                 .description("description")
                 .scope("scope")
+                .requestTimestamp(LocalDateTime.now())
                 .build();
-        ExecutionRequest executionRequest3 = new ExecutionRequestBuilder()
-                .id("newExecutionRequestId")
+        ExecutionRequestDto executionRequest3 = ExecutionRequestDto.builder()
+                .executionRequestId("newExecutionRequestId3")
                 .name("name")
                 .context("context")
                 .description("description")
                 .scope("scope")
+                .requestTimestamp(LocalDateTime.now())
                 .build();
-        ExecutionRequest executionRequest4 = new ExecutionRequestBuilder()
-                .id("newExecutionRequestId")
+        ExecutionRequestDto executionRequest4 = ExecutionRequestDto.builder()
+                .executionRequestId("newExecutionRequestId")
                 .name("name")
                 .context("context")
                 .description("description")
                 .scope("scope")
+                .requestTimestamp(LocalDateTime.now())
                 .build();
-        ExecutionRequest executionRequest5 = new ExecutionRequestBuilder()
-                .id("newExecutionRequestId")
+        ExecutionRequestDto executionRequest5 = ExecutionRequestDto.builder()
+                .executionRequestId("newExecutionRequestId")
                 .name("name")
                 .context("context")
                 .description("description")
                 .scope("scope")
+                .requestTimestamp(LocalDateTime.now())
                 .build();
-        executionRequests.add(executionRequest1);
-        executionRequests.add(executionRequest2);
-        executionRequests.add(executionRequest3);
-        executionRequests.add(executionRequest4);
-        executionRequests.add(executionRequest5);
-        when(executionRequestService.getAll(5, 1, null, null, null, null, null, null)).thenReturn(executionRequests);
-        List<ExecutionRequest> result = executionRequestService.getAll(5, 1, null, null, null, null, null, null);
+        when(executionRequestService.getAll()).thenReturn(Stream.of(executionRequest1, executionRequest2, executionRequest3, executionRequest4, executionRequest5).collect(Collectors.toList()));
+        List<ExecutionRequestDto> result = executionRequestService.getAll();
         assertThat(result.size()).isEqualTo(5);
 
         assertThat(result.get(0).getContext())

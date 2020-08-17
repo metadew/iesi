@@ -39,9 +39,9 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
     public ScriptDto convertToDto(Script script) {
         return new ScriptDto(script.getName(), script.getDescription(),
                 scriptVersionDtoService.convertToDto(script.getVersion()),
-                script.getParameters().stream().map(scriptParameterDtoService::convertToDto).collect(Collectors.toList()),
-                script.getActions().stream().map(scriptActionDtoService::convertToDto).collect(Collectors.toList()),
-                script.getLabels().stream().map(scriptLabelDtoService::convertToDto).collect(Collectors.toList()),
+                script.getParameters().stream().map(scriptParameterDtoService::convertToDto).collect(Collectors.toSet()),
+                script.getActions().stream().map(scriptActionDtoService::convertToDto).collect(Collectors.toSet()),
+                script.getLabels().stream().map(scriptLabelDtoService::convertToDto).collect(Collectors.toSet()),
                 null,
                 null);
     }
@@ -61,7 +61,7 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
                 .withSelfRel();
         Link linkToAllVersionOfTheScript = linkTo(methodOn(ScriptController.class).getByName(PageRequest.of(0, 20), scriptDto.getName(), new ArrayList<>(), ""))
                 .withRel("AllVersionOfTheScript");
-        Link linkToAll = linkTo(methodOn(ScriptController.class).getAll(PageRequest.of(0, 20), new ArrayList<>(), ""))
+        Link linkToAll = linkTo(methodOn(ScriptController.class).getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null))
                 .withRel("scripts");
         scriptDto.add(selfLink, linkToAllVersionOfTheScript, linkToAll);
     }

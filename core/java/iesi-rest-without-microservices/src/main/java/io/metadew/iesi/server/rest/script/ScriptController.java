@@ -54,13 +54,32 @@ public class ScriptController {
     @GetMapping("")
     public PagedModel<ScriptDto> getAll(Pageable pageable,
                                         @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
-                                        @RequestParam(required = false, name = "version") String version) {
+                                        @RequestParam(required = false, name = "version") String version,
+                                        @RequestParam(required = false, name = "name") String name,
+                                        @RequestParam(required = false, name = "label") String labelKeyCombination) {
+        List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination);
+        boolean lastVersion = extractLastVersion(version);
         Page<ScriptDto> scriptDtoPage = scriptDtoService
-                .getAll(pageable, expansions, version != null && version.toLowerCase().equals("latest"));
+                .getAll(pageable, expansions, lastVersion);
         if (scriptDtoPage.hasContent())
             return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDtoModelAssembler::toModel);
         //noinspection unchecked
         return (PagedModel<ScriptDto>) scriptDtoPagedResourcesAssembler.toEmptyModel(scriptDtoPage, ScriptDto.class);
+    }
+
+    private boolean extractLastVersion(String version) {
+        return version != null && version.toLowerCase().equals("latest");
+    }
+
+    private List<ScriptFilter> extractScriptFilterOptions(String name, String labelKeyCombination) {
+        List<ScriptFilter> scriptFilters = new ArrayList<>();
+        if (name != null) {
+            scriptFilters.add(new ScriptFilter(ScriptFilterOption.NAME, name, false));
+        }
+        if (labelKeyCombination != null) {
+            scriptFilters.add(new ScriptFilter(ScriptFilterOption.LABEL, labelKeyCombination, false));
+        }
+        return scriptFilters;
     }
 
 
@@ -102,7 +121,7 @@ public class ScriptController {
         }
         halMultipleEmbeddedResource.add(
                 linkTo(methodOn(ScriptController.class)
-                        .getAll(PageRequest.of(0, 20), new ArrayList<>(), ""))
+                        .getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null))
                         .withRel("scripts"));
         return halMultipleEmbeddedResource;
     }

@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.script.dto;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.server.rest.script.ScriptFilter;
 import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,8 +47,13 @@ public class ScriptDtoService implements IScriptDtoService {
     }
 
     @Override
-    public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestOnly) {
-        return scriptDtoRepository.getAll(pageable, expansions, isLatestOnly);
+    public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly) {
+        return scriptDtoRepository.getAll(pageable, expansions, isLatestVersionOnly);
+    }
+
+    @Override
+    public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
+        return scriptDtoRepository.getAll(pageable, expansions, isLatestVersionOnly, scriptFilters);
     }
 
     @Override

@@ -2,14 +2,11 @@ package io.metadew.iesi.server.rest.executionrequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
-import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
-import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestDtoRepository;
-import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestService;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
 import io.metadew.iesi.server.rest.pagination.TotalPages;
@@ -34,6 +31,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -44,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(ExecutionRequestController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = {ExecutionRequestController.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoResourceAssembler.class, ExecutionRequestDtoResourceAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
+@ContextConfiguration(classes = {ExecutionRequestController.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoModelAssembler.class, ExecutionRequestDtoModelAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
 @ExtendWith(MockitoExtension.class)
 
 public class ExecutionRequestControllerTest {
@@ -58,7 +57,7 @@ public class ExecutionRequestControllerTest {
     @MockBean
     private ScriptExecutionRequestParameterDto scriptExecutionRequestParameterDto;
     @MockBean
-    private ScriptExecutionRequestDtoResourceAssembler scriptExecutionRequestDtoResourceAssembler;
+    private ScriptExecutionRequestDtoModelAssembler scriptExecutionRequestDtoModelAssembler;
     @MockBean
     private ExecutionRequestLabelDto executionRequestLabelDto;
     @MockBean
@@ -113,7 +112,6 @@ public class ExecutionRequestControllerTest {
 
     @Test
     public void getAllResultWithPagination() throws Exception {
-        List<ExecutionRequestDto> executionRequestDtos = new ArrayList<>();
         ExecutionRequestDto executionRequest1 = ExecutionRequestDto.builder()
                 .executionRequestId("newExecutionRequestId")
                 .name("name")
@@ -154,12 +152,7 @@ public class ExecutionRequestControllerTest {
                 .scope("scope")
                 .requestTimestamp(LocalDateTime.now())
                 .build();
-        executionRequestDtos.add(executionRequest1);
-        executionRequestDtos.add(executionRequest2);
-        executionRequestDtos.add(executionRequest3);
-        executionRequestDtos.add(executionRequest4);
-        executionRequestDtos.add(executionRequest5);
-        when(executionRequestService.getAll()).thenReturn(executionRequestDtos);
+        when(executionRequestService.getAll()).thenReturn(Stream.of(executionRequest1, executionRequest2, executionRequest3, executionRequest4, executionRequest5).collect(Collectors.toList()));
         List<ExecutionRequestDto> result = executionRequestService.getAll();
         assertThat(result.size()).isEqualTo(5);
 

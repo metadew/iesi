@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface IExecutionRequestService {
 
-    public List<ExecutionRequestDto> getAll();
+    List<ExecutionRequestDto> getAll();
 
     Optional<ExecutionRequestDto> getById(String id);
 

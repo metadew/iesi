@@ -4,7 +4,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -17,14 +17,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ExecutionRequestDtoResourceAssembler extends RepresentationModelAssemblerSupport<ExecutionRequest, ExecutionRequestDto> {
+public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemblerSupport<ExecutionRequest, ExecutionRequestDto> {
 
-    private final ScriptExecutionRequestDtoResourceAssembler scriptExecutionRequestDtoResourceAssembler;
+    private final ScriptExecutionRequestDtoModelAssembler scriptExecutionRequestDtoModelAssembler;
 
     @Autowired
-    public ExecutionRequestDtoResourceAssembler(ScriptExecutionRequestDtoResourceAssembler scriptExecutionRequestDtoResourceAssembler) {
+    public ExecutionRequestDtoModelAssembler(ScriptExecutionRequestDtoModelAssembler scriptExecutionRequestDtoModelAssembler) {
         super(ExecutionRequestController.class, ExecutionRequestDto.class);
-        this.scriptExecutionRequestDtoResourceAssembler = scriptExecutionRequestDtoResourceAssembler;
+        this.scriptExecutionRequestDtoModelAssembler = scriptExecutionRequestDtoModelAssembler;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ExecutionRequestDtoResourceAssembler extends RepresentationModelAss
                     executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
                     executionRequest.getContext(), executionRequest.getEmail(), executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
-                            .map(scriptExecutionRequestDtoResourceAssembler::toModel)
+                            .map(scriptExecutionRequestDtoModelAssembler::toModel)
                             .collect(Collectors.toList()),
                     executionRequest.getExecutionRequestLabels().stream()
                             .map(this::convertToDto)

@@ -60,7 +60,7 @@ public class ScriptController {
         List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination);
         boolean lastVersion = extractLastVersion(version);
         Page<ScriptDto> scriptDtoPage = scriptDtoService
-                .getAll(pageable, expansions, lastVersion);
+                .getAll(pageable, expansions, lastVersion, scriptFilters);
         if (scriptDtoPage.hasContent())
             return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDtoModelAssembler::toModel);
         //noinspection unchecked

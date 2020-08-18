@@ -47,11 +47,6 @@ public class ScriptDtoService implements IScriptDtoService {
     }
 
     @Override
-    public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly) {
-        return scriptDtoRepository.getAll(pageable, expansions, isLatestVersionOnly);
-    }
-
-    @Override
     public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
         return scriptDtoRepository.getAll(pageable, expansions, isLatestVersionOnly, scriptFilters);
     }

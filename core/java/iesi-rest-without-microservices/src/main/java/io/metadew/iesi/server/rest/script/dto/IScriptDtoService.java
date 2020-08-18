@@ -12,8 +12,6 @@ public interface IScriptDtoService {
 
     Script convertToEntity(ScriptDto scriptDto);
 
-    Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly);
-
     Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters);
 
     Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestOnly);

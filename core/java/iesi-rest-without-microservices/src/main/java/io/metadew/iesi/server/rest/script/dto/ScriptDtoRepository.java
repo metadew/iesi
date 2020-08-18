@@ -132,11 +132,6 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
 //    }
 
     @Override
-    public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly) {
-        return getAll(pageable, expansions, isLatestVersionOnly, new ArrayList<>());
-    }
-
-    @Override
     public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
         try {
             Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders = new LinkedHashMap<>();

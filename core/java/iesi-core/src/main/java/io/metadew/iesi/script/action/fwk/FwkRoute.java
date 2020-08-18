@@ -16,6 +16,8 @@ import io.metadew.iesi.script.operation.RouteOperation;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+
+@SuppressWarnings("unused")
 public class FwkRoute {
 
     private ActionExecution actionExecution;
@@ -45,11 +47,11 @@ public class FwkRoute {
         this.setExecutionControl(executionControl);
         this.setActionExecution(actionExecution);
         this.setScriptExecution(scriptExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-        this.setRouteOperationMap(new HashMap<String, RouteOperation>());
+        this.setActionParameterOperationMap(new HashMap<>());
+        this.setRouteOperationMap(new HashMap<>());
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Reset Parameters
         this.setDestination(new ActionParameterOperation(this.getExecutionControl(),
                 this.getActionExecution(), this.getActionExecution().getAction().getType(), "destination"));
@@ -62,13 +64,7 @@ public class FwkRoute {
 
                 condition.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 
-                int id = 0;
-                int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
-                if (delim > 0) {
-                    String[] item = actionParameter.getMetadataKey().getParameterName().split(".");
-                    id = Integer.parseInt(item[1]);
-                }
-
+                int id = getRouteOperationId(actionParameter);
                 RouteOperation routeOperation = this.getRouteOperation(id);
                 routeOperation.setId(id);
                 this.setRouteOperation(routeOperation);
@@ -80,13 +76,7 @@ public class FwkRoute {
 
                 destination.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
 
-                int id = 0;
-                int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
-                if (delim > 0) {
-                    String[] item = actionParameter.getMetadataKey().getParameterName().split(".");
-                    id = Integer.parseInt(item[1]);
-                }
-
+                int id = getRouteOperationId(actionParameter);
                 RouteOperation routeOperation = this.getRouteOperation(id);
                 routeOperation.setId(id);
                 routeOperation.setDestination(destination);
@@ -96,6 +86,16 @@ public class FwkRoute {
             }
 
         }
+    }
+
+    private int getRouteOperationId(ActionParameter actionParameter) {
+        int id = 0;
+        int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
+        if (delim > 0) {
+            String[] item = actionParameter.getMetadataKey().getParameterName().split("\\.");
+            id = Integer.parseInt(item[1]);
+        }
+        return id;
     }
 
     public boolean execute() throws InterruptedException {
@@ -117,13 +117,13 @@ public class FwkRoute {
 
     }
 
-    private boolean executeOperation() throws InterruptedException{
+    private boolean executeOperation() throws InterruptedException {
 
         // Evaluate conditions
 
         // Prepare script
         String scriptId = scriptExecution.getScript().getMetadataKey().getScriptId();
-        Long versionNumber = scriptExecution.getScript().getVersion().getNumber();
+        long versionNumber = scriptExecution.getScript().getVersion().getNumber();
         ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
         String scriptName = scriptExecution.getScript().getName();
         String scriptDescription = scriptExecution.getScript().getDescription();
@@ -132,16 +132,14 @@ public class FwkRoute {
         List<ScriptParameter> scriptParameters = scriptExecution.getScript().getParameters();
         Script script = new Script(scriptKey, scriptName, scriptDescription, scriptVersion,
                 scriptParameters, scriptActions, scriptExecution.getScript().getLabels());
-
         //Prepare action runtime
-        this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList());
+        this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList<>());
 
         // Find appropriate actions
-        Iterator iterator = null;
         ObjectMapper objectMapper = new ObjectMapper();
-        iterator = this.getRouteOperationMap().entrySet().iterator();
+        Iterator<Map.Entry<String,RouteOperation>> iterator = this.getRouteOperationMap().entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry) iterator.next();
+            Map.Entry<String,RouteOperation> pair = iterator.next();
             RouteOperation routeOperation = objectMapper.convertValue(pair.getValue(),
                     RouteOperation.class);
 

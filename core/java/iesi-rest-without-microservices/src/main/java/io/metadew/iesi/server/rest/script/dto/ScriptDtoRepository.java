@@ -84,10 +84,12 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                         return "script_labels.NAME = '" + scriptFilter.getValue().split(":")[0] +
                                 "' and script_labels.VALUE " + (scriptFilter.isExactMatch() ? "=" : "LIKE") + " '" + (scriptFilter.isExactMatch() ? "" : "%") + scriptFilter.getValue().split(":")[1] + (scriptFilter.isExactMatch() ? "" : "%") + "'";
                     } else {
-                        return "";
+                        return null;
                     }
                 }
-        ).collect(Collectors.joining(" and "));
+        )
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" and "));
         if (!onlyLatestVersions && filterStatements.isEmpty()) {
             return "";
         }
@@ -170,6 +172,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             scriptBuilderDto = mapScriptDto2(cachedRowSet);
             scriptDtoBuilders.put(scriptKey, scriptBuilderDto);
         }
+
         String labelId = cachedRowSet.getString("LABEL_ID");
         if (labelId != null) {
             if (scriptBuilderDto.getLabels().get(labelId) == null) {
@@ -476,9 +479,14 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
                 return "versions.SCRIPT_VRS_NB" + " " + order.getDirection();
             } else {
-                return "";
+                return null;
             }
-        }).collect(Collectors.toList());
+        })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (sorting.isEmpty()) {
+            return "";
+        }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 

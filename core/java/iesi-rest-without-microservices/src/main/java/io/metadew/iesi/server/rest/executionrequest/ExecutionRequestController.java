@@ -11,7 +11,11 @@ import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.ScriptController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,18 +32,24 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ExecutionRequestController {
 
     private final ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler;
-    private final ExecutionRequestService executionRequestService;
+    private final IExecutionRequestService executionRequestService;
+    private final PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage;
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
-                               ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler) {
+                               ExecutionRequestDtoResourceAssembler executionRequestDtoResourceAssembler,
+                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage) {
         this.executionRequestService = executionRequestService;
         this.executionRequestDtoResourceAssembler = executionRequestDtoResourceAssembler;
+        this.executionRequestDtoResourceAssemblerPage = executionRequestDtoResourceAssemblerPage;
     }
 
     @GetMapping("")
-    public HalMultipleEmbeddedResource<ExecutionRequestDto> getAll() {
-        return new HalMultipleEmbeddedResource<>(executionRequestService.getAll());
+    public PagedModel<ExecutionRequestDto> getAll(Pageable pageable) {
+        Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService.getAll(pageable);
+        if (executionRequestDtoPage.hasContent())
+            return executionRequestDtoResourceAssemblerPage.toModel(executionRequestDtoPage, executionRequestDtoResourceAssembler::toModel);
+        return (PagedModel<ExecutionRequestDto>) executionRequestDtoResourceAssemblerPage.toEmptyModel(executionRequestDtoPage, ExecutionRequestDto.class);
     }
 
     @GetMapping("/{id}")

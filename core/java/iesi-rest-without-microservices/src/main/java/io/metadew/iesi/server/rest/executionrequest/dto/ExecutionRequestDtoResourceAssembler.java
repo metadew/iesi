@@ -5,12 +5,15 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.script.ScriptController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -34,6 +37,19 @@ public class ExecutionRequestDtoResourceAssembler extends RepresentationModelAss
                 .withSelfRel();
         executionRequestDto.add(selfLink);
         return executionRequestDto;
+    }
+
+    public ExecutionRequestDto toModel(ExecutionRequestDto executionRequestDto) {
+        addLinksToExistingDto(executionRequestDto);
+        return executionRequestDto;
+    }
+
+    public void addLinksToExistingDto(ExecutionRequestDto executionRequestDto) {
+        Link selfLink = linkTo(methodOn(ExecutionRequestController.class).getById(executionRequestDto.getExecutionRequestId()))
+                .withSelfRel();
+        Link linkToAll = linkTo(methodOn(ScriptController.class).getAll(PageRequest.of(0, 20), new ArrayList<>(), ""))
+                .withRel("executionrequest");
+        executionRequestDto.add(selfLink, linkToAll);
     }
 
     private ExecutionRequestDto convertToDto(ExecutionRequest executionRequest) {

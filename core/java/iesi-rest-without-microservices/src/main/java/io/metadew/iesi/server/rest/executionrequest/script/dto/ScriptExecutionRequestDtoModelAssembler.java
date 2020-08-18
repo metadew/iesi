@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public  class ScriptExecutionRequestDtoResourceAssembler extends RepresentationModelAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
+public  class ScriptExecutionRequestDtoModelAssembler extends RepresentationModelAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
 
 
     @Autowired
-    public ScriptExecutionRequestDtoResourceAssembler() {
+    public ScriptExecutionRequestDtoModelAssembler() {
         super(ExecutionRequestController.class, ScriptExecutionRequestDto.class);
     }
 

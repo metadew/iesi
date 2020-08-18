@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoResourceAssembler;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
 import org.junit.Test;
@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(ExecutionRequestController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = {ExecutionRequestController.class, ExecutionRequestService.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoResourceAssembler.class, ExecutionRequestDtoResourceAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
+@ContextConfiguration(classes = {ExecutionRequestController.class, ExecutionRequestService.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoModelAssembler.class, ExecutionRequestDtoModelAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
 @ExtendWith(MockitoExtension.class)
 
 public class ExecutionRequestControllerTest {
@@ -60,7 +60,7 @@ public class ExecutionRequestControllerTest {
     @MockBean
     private ScriptExecutionRequestParameterDto scriptExecutionRequestParameterDto;
     @MockBean
-    private ScriptExecutionRequestDtoResourceAssembler scriptExecutionRequestDtoResourceAssembler;
+    private ScriptExecutionRequestDtoModelAssembler scriptExecutionRequestDtoModelAssembler;
     @MockBean
     private ExecutionRequestLabelDto executionRequestLabelDto;
     @MockBean

@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
+import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +30,7 @@ import java.util.stream.Stream;
 
 @Repository
 @Log4j2
-public class ExecutionRequestDtoRepository implements IExecutionRequestDtoRepository {
+public class ExecutionRequestDtoRepository extends PaginatedRepository implements IExecutionRequestDtoRepository {
 
     private String getFetchAllQuery(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
         return "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
@@ -46,15 +47,15 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                 // base table
                 " (" + getBaseQuery(pageable, executionRequestFilters) + ") base_execution_requests " +
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                "on base_execution_requests.REQUEST_ID = execution_requests.REQUEST_ID " +
+                "on execution_requests.REQUEST_ID = base_execution_requests.REQUEST_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
+                "on base_execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
+                "on base_execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
-                "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "on base_execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
+                "on base_execution_requests.REQUEST_ID = script_execution_requests.ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
@@ -68,7 +69,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
     }
 
     private String getBaseQuery(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
-        return "SELECT distinct execution_requests.REQUEST_ID " +
+        return "SELECT distinct execution_requests.REQUEST_ID, execution_requests.REQUEST_TMS, name_script_execution_requests.SCRPT_NAME, name_script_execution_requests.SCRPT_VRS " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
                 "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
@@ -95,8 +96,8 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.ID)) {
                         return " execution_requests.REQUEST_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.LABEL)) {
-                        return " execution_request_labels.name = '" + executionRequestFilter.getValue().split(":")[0] +
-                                "' and execution_request_labels.value " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                        return " execution_request_labels.NAME = '" + executionRequestFilter.getValue().split(":")[0] +
+                                "' and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
                     } else {
                         return null;
                     }
@@ -110,11 +111,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         return " WHERE " + filterStatements;
     }
 
-    private String getLimitAndOffsetClause(Pageable pageable) {
-        return pageable.isUnpaged() ? " " : " limit " + pageable.getPageSize() + " offset " + pageable.getOffset() + " ";
-    }
-
-
     private String getOrderByClause(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) return " ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
@@ -122,9 +118,9 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
             if (order.getProperty().equalsIgnoreCase("SCRIPT")) {
                 return "name_script_execution_requests.SCRPT_NAME " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("REQUEST_TIMESTAMP")) {
-                return "name_script_execution_requests.SCRPT_VRS " + order.getDirection();
-            } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
                 return "execution_requests.REQUEST_TMS " + order.getDirection();
+            } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
+                return "name_script_execution_requests.SCRPT_VRS " + order.getDirection();
             } else {
                 return null;
             }
@@ -168,7 +164,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
     @Override
     public Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
         try {
-            Map<String, ExecutionRequestBuilder> executionRequestBuilderMap = new HashMap<>();
+            Map<String, ExecutionRequestBuilder> executionRequestBuilderMap = new LinkedHashMap<>();
             String query = getFetchAllQuery(pageable, executionRequestFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -243,8 +239,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         if (scriptExecutionRequestBuilder.getRunId() == null) {
             String runId = cachedRowSet.getString("script_exec_run_id");
             scriptExecutionRequestBuilder.setRunId(runId);
-        } else {
-            // skip
         }
     }
 
@@ -260,8 +254,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     cachedRowSet.getString("script_exe_req_par_val")
             );
             scriptExecutionRequestBuilder.getParameters().put(scriptExecutionRequestParameterId, scriptExecutionRequestParameterDto);
-        } else {
-            // skip
         }
     }
 
@@ -278,8 +270,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         if (scriptExecutionRequestImpersonationDto == null) {
             scriptExecutionRequestImpersonationDto = new ScriptExecutionRequestImpersonationDto(cachedRowSet.getString("script_exe_req_imp_id_id"));
             scriptExecutionRequestBuilder.getImpersonations().put(scriptExecutionRequestImpersonationId, scriptExecutionRequestImpersonationDto);
-        } else {
-            // skip
         }
     }
 
@@ -295,8 +285,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     cachedRowSet.getString("exe_req_label_value")
             );
             executionRequestBuilder.getExecutionRequestLabels().put(executionRequestLabelId, executionRequestLabelDto);
-        } else {
-            // skip
         }
     }
 

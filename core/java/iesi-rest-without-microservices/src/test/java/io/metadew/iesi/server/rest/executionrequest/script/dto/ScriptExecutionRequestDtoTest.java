@@ -65,7 +65,8 @@ public class ScriptExecutionRequestDtoTest {
                         .collect(Collectors.toList()),
                 ScriptExecutionRequestStatus.NEW,
                 "script",
-                1L);
+                1L,
+                null);
 
         assertEquals(scriptNameExecutionRequest, scriptExecutionRequestDto.convertToEntity());
     }

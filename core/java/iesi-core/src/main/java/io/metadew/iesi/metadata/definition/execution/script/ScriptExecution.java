@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -21,6 +22,7 @@ public class ScriptExecution extends Metadata<ScriptExecutionKey> {
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
 
+    @Builder
     public ScriptExecution(ScriptExecutionKey scriptExecutionKey, ScriptExecutionRequestKey scriptExecutionRequestKey, String runId, ScriptRunStatus scriptRunStatus, LocalDateTime startTimestamp,
                            LocalDateTime endTimestamp) {
         super(scriptExecutionKey);

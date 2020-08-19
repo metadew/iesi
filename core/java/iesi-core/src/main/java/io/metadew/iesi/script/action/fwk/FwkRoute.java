@@ -16,6 +16,7 @@ import io.metadew.iesi.script.operation.RouteOperation;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class FwkRoute extends ActionTypeExecution {
 
     private ActionParameterOperation destination;
@@ -39,13 +40,7 @@ public class FwkRoute extends ActionTypeExecution {
 
                 condition.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
 
-                int id = 0;
-                int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
-                if (delim > 0) {
-                    String[] item = actionParameter.getMetadataKey().getParameterName().split(".");
-                    id = Integer.parseInt(item[1]);
-                }
-
+                int id = getRouteOperationId(actionParameter);
                 RouteOperation routeOperation = this.getRouteOperation(id);
                 routeOperation.setId(id);
                 this.setRouteOperation(routeOperation);
@@ -57,13 +52,7 @@ public class FwkRoute extends ActionTypeExecution {
 
                 destination.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
 
-                int id = 0;
-                int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
-                if (delim > 0) {
-                    String[] item = actionParameter.getMetadataKey().getParameterName().split(".");
-                    id = Integer.parseInt(item[1]);
-                }
-
+                int id = getRouteOperationId(actionParameter);
                 RouteOperation routeOperation = this.getRouteOperation(id);
                 routeOperation.setId(id);
                 routeOperation.setDestination(destination);
@@ -71,7 +60,18 @@ public class FwkRoute extends ActionTypeExecution {
 
                 this.getActionParameterOperationMap().put(actionParameter.getMetadataKey().getParameterName(), destination);
             }
+
         }
+    }
+
+    private int getRouteOperationId(ActionParameter actionParameter) {
+        int id = 0;
+        int delim = actionParameter.getMetadataKey().getParameterName().indexOf(".");
+        if (delim > 0) {
+            String[] item = actionParameter.getMetadataKey().getParameterName().split("\\.");
+            id = Integer.parseInt(item[1]);
+        }
+        return id;
     }
 
     protected boolean executeAction() throws InterruptedException {
@@ -80,7 +80,7 @@ public class FwkRoute extends ActionTypeExecution {
 
         // Prepare script
         String scriptId = getScriptExecution().getScript().getMetadataKey().getScriptId();
-        Long versionNumber = getScriptExecution().getScript().getVersion().getNumber();
+        long versionNumber = getScriptExecution().getScript().getVersion().getNumber();
         ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
         String scriptName = getScriptExecution().getScript().getName();
         String scriptDescription = getScriptExecution().getScript().getDescription();
@@ -91,14 +91,13 @@ public class FwkRoute extends ActionTypeExecution {
                 scriptParameters, scriptActions, getScriptExecution().getScript().getLabels());
 
         //Prepare action runtime
-        this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList());
+        this.getActionExecution().getActionControl().getActionRuntime().setRouteOperations(new ArrayList<>());
 
         // Find appropriate actions
-        Iterator iterator = null;
         ObjectMapper objectMapper = new ObjectMapper();
-        iterator = this.getRouteOperationMap().entrySet().iterator();
+        Iterator<Map.Entry<String, RouteOperation>> iterator = this.getRouteOperationMap().entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry) iterator.next();
+            Map.Entry<String, RouteOperation> pair = iterator.next();
             RouteOperation routeOperation = objectMapper.convertValue(pair.getValue(),
                     RouteOperation.class);
 

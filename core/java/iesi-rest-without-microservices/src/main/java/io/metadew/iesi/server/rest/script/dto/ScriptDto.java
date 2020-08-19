@@ -10,23 +10,25 @@ import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Relation(value = "script", collectionRelation = "scripts")
 public class ScriptDto extends RepresentationModel<ScriptDto> {
 
     private String name;
     private String description;
     private ScriptVersionDto version;
-    private List<ScriptParameterDto> parameters = new ArrayList<>();
-    private List<ActionDto> actions = new ArrayList<>();
-    private List<ScriptLabelDto> labels = new ArrayList<>();
+    private Set<ScriptParameterDto> parameters = new HashSet<>();
+    private Set<ActionDto> actions = new HashSet<>();
+    private Set<ScriptLabelDto> labels = new HashSet<>();
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("execution")
     private ScriptExecutionInformation scriptExecutionInformation;

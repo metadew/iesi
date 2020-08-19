@@ -96,7 +96,9 @@ public class ScriptBuilder {
     public static Script simpleScript(String scriptName, long version, int actionCount, int actionParameterCount, int labelCount) {
         List<Action> actions = IntStream.range(0, actionCount)
                 .boxed()
-                .map(i -> new ActionBuilder(IdentifierTools.getScriptIdentifier(scriptName), version,"action" + i)
+                .map(i -> new ActionBuilder(IdentifierTools.getScriptIdentifier(scriptName),
+                        version,
+                        "action" + i)
                         .name("action" + i)
                         .number(i)
                         .type("fwk.dummy")

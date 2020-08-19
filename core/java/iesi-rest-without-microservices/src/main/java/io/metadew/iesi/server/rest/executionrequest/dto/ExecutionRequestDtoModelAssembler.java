@@ -45,7 +45,7 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
     public void addLinksToExistingDto(ExecutionRequestDto executionRequestDto) {
         Link selfLink = linkTo(methodOn(ExecutionRequestController.class).getById(executionRequestDto.getExecutionRequestId()))
                 .withSelfRel();
-        Link linkToAll = linkTo(methodOn(ExecutionRequestController.class).getAll(PageRequest.of(0, 20)))
+        Link linkToAll = linkTo(methodOn(ExecutionRequestController.class).getAll(PageRequest.of(0, 20), null, null, null, null))
                 .withRel("executionrequest");
         executionRequestDto.add(selfLink, linkToAll);
     }

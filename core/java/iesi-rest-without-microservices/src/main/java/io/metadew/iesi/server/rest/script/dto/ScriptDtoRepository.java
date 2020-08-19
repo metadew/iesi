@@ -140,7 +140,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             String query = getFetchAllQuery(pageable, isLatestVersionOnly, scriptFilters, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-                mapRow2(cachedRowSet, scriptDtoBuilders);
+                mapRow(cachedRowSet, scriptDtoBuilders);
             }
             List<ScriptDto> scriptDtoList = scriptDtoBuilders.values().stream()
                     .map(ScriptDtoBuilder::build)
@@ -165,7 +165,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
         return cachedRowSet.getLong("row_count");
     }
 
-    private void mapRow2(CachedRowSet cachedRowSet, Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders) throws SQLException {
+    private void mapRow(CachedRowSet cachedRowSet, Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders) throws SQLException {
         ScriptKey scriptKey = new ScriptKey(cachedRowSet.getString("SCRIPT_NM"), cachedRowSet.getLong("SCRIPT_VRS_NB"));
         ScriptDtoBuilder scriptBuilderDto = scriptDtoBuilders.get(scriptKey);
         if (scriptBuilderDto == null) {
@@ -272,7 +272,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             String query = getFetchAllQuery(pageable, isLatestVersionOnly, scriptFilters, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-                mapRow2(cachedRowSet, scriptDtoBuilders);
+                mapRow(cachedRowSet, scriptDtoBuilders);
             }
             return new PageImpl<>(
                     scriptDtoBuilders.values().stream()
@@ -295,7 +295,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
             String query = getFetchAllQuery(Pageable.unpaged(), false, scriptFilters, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-                mapRow2(cachedRowSet, scriptDtoBuilders);
+                mapRow(cachedRowSet, scriptDtoBuilders);
             }
             if (scriptDtoBuilders.values().size() > 1) {
                 log.warn("found multiple script for script " + name + "-" + version);

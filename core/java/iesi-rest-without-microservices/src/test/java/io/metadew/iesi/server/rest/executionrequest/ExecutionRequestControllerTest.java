@@ -84,7 +84,7 @@ public class ExecutionRequestControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<ExecutionRequestDto> executionRequestDtoList = new ArrayList<>();
         Page<ExecutionRequestDto> page = new PageImpl<>(executionRequestDtoList, pageable, 1);
-        given(executionRequestService.getAll(pageable)).willReturn(page);
+        given(executionRequestService.getAll(any(), any())).willReturn(page);
 
         mvc.perform(get("/execution-requests").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -132,7 +132,7 @@ public class ExecutionRequestControllerTest {
         Page<ExecutionRequestDto> page2 = new PageImpl<>(executionRequestDtoList2, pageable2, 3);
         Page<ExecutionRequestDto> page3 = new PageImpl<>(executionRequestDtoList3, pageable3, 3);
 
-        given(executionRequestService.getAll(any())).willReturn(page1);
+        given(executionRequestService.getAll(any(), any())).willReturn(page1);
         mvc.perform(get("/execution-requests?page=0&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
@@ -153,7 +153,7 @@ public class ExecutionRequestControllerTest {
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
         ;
 
-        given(executionRequestService.getAll(pageable2)).willReturn(page2);
+        given(executionRequestService.getAll(any(), any())).willReturn(page2);
         mvc.perform(get("/execution-requests?page=1&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
@@ -165,7 +165,7 @@ public class ExecutionRequestControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(executionRequestService.getAll(pageable3)).willReturn(page3);
+        given(executionRequestService.getAll(any(), any())).willReturn(page3);
         mvc.perform(get("/execution-requests?page=2&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())

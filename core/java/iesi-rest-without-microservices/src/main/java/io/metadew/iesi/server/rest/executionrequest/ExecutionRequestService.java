@@ -25,8 +25,8 @@ public class ExecutionRequestService implements IExecutionRequestService {
         this.executionRequestDtoRepository = executionRequestDtoRepository;
     }
 
-    public Page<ExecutionRequestDto> getAll(Pageable pageable) {
-        return executionRequestDtoRepository.getAll(pageable);
+    public Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
+        return executionRequestDtoRepository.getAll(pageable, executionRequestFilters);
     }
 
     public Optional<ExecutionRequestDto> getById(String id) {

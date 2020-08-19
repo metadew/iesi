@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface IExecutionRequestService {
 
-    Page<ExecutionRequestDto> getAll(Pageable pageable);
+    Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters);
 
     Optional<ExecutionRequestDto> getById(String id);
 

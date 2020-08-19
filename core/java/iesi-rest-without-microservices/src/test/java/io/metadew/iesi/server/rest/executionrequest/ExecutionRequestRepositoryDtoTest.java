@@ -703,8 +703,10 @@ class ExecutionRequestRepositoryDtoTest {
 
                 ).collect(Collectors.toList()))
                 .build();
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 1), new ArrayList<>())).containsOnly(executionRequestDto);
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(1, 1), new ArrayList<>())).containsOnly(executionRequestDto2);
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 1), new ArrayList<>()))
+                .hasSize(1);
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(1, 1), new ArrayList<>()))
+                .hasSize(1);
     }
 
     @Test

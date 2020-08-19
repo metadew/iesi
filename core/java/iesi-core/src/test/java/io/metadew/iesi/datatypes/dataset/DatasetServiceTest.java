@@ -26,7 +26,6 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class DatasetServiceTest {
 
-
     private static DatasetHandler datasetHandlerSpy;
 
     @BeforeAll

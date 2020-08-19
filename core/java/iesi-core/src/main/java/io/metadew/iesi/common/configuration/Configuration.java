@@ -19,7 +19,7 @@ public class Configuration {
 
     private static final String iesiKeyword = "iesi";
     private static Configuration INSTANCE;
-    private HashMap<String, Object> properties;
+    private Map<String, Object> properties;
 
     public synchronized static Configuration getInstance() {
         if (INSTANCE == null) {
@@ -140,7 +140,8 @@ public class Configuration {
             if (original.containsKey(entry.getKey()) && original.get(entry.getKey()) == null) {
                 original.put(entry.getKey(), entry.getValue());
             } else if (original.containsKey(entry.getKey())) {
-                if (original.get(entry.getKey()).getClass().equals(entry.getValue().getClass())) {
+                if (original.get(entry.getKey()).getClass().isAssignableFrom(entry.getValue().getClass())
+                        || entry.getValue().getClass().isAssignableFrom(original.get(entry.getKey()).getClass())) {
                     if (entry.getValue() instanceof Map) {
                         update((Map<String, Object>) original.get(entry.getKey()), (Map<String, Object>) entry.getValue(), initialKey + "." + entry.getKey());
                     } else {

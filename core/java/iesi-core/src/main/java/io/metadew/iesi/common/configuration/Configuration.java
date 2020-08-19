@@ -67,8 +67,9 @@ public class Configuration {
         systemProperties.entrySet().stream()
                 .filter(entry -> entry.getKey().toString().startsWith(iesiKeyword))
                 .forEach(entry -> {
+                            log.debug("property " + entry.getKey() + " set via System variable");
                             HashMap<String, Object> filteredSystemProperties = new HashMap<>();
-                            String[] splittedKey = entry.getKey().toString().split("\\.");
+                            String[] splittedKey = entry.getKey().toString().substring(5).split("\\.");
                             HashMap<String, Object> currentHashmap = filteredSystemProperties;
                             for (int i = 0; i < splittedKey.length - 1; i++) {
                                 HashMap<String, Object> newHashMap = new HashMap<>();

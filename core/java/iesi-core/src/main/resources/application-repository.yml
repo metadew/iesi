@@ -13,7 +13,7 @@ iesi:
           # init_sql: alter  current....
           type: h2
           mode: memory
-          database: test;DB_CLOSE_DELAY=-1
+          database: test
           owner:
             user: "sa"
             password: ""

@@ -1,20 +1,14 @@
 package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
+public class FwkStartIteration extends ActionTypeExecution {
 
-public class FwkStartIteration {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation typeName;
     private ActionParameterOperation listName;
     private ActionParameterOperation listValues;
@@ -22,13 +16,10 @@ public class FwkStartIteration {
     private ActionParameterOperation numberTo;
     private ActionParameterOperation numberAction;
     private ActionParameterOperation breakOnError;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     // Constructors
-    public FwkStartIteration(ExecutionControl executionControl, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<>());
+    public FwkStartIteration(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -51,19 +42,19 @@ public class FwkStartIteration {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type_nm")) {
-                this.getTypeName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getTypeName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list_nm")) {
-                this.getListName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getListName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list_val")) {
-                this.getListValues().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getListValues().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("number_from")) {
-                this.getNumberFrom().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getNumberFrom().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("number_to")) {
-                this.getNumberTo().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getNumberTo().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("number_action")) {
-                this.getNumberAction().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getNumberAction().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("break_on_error")) {
-                this.getBreakOnError().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getBreakOnError().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -77,45 +68,10 @@ public class FwkStartIteration {
         this.getActionParameterOperationMap().put("BREAK_ON_ERROR", this.getBreakOnError());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            return executeOperation();
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean executeOperation() throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
         this.getActionExecution().getActionControl().increaseSuccessCount();
 
         return true;
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
     }
 
     public ActionParameterOperation getTypeName() {
@@ -174,12 +130,5 @@ public class FwkStartIteration {
         this.breakOnError = breakOnError;
     }
 
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
-    }
 
 }

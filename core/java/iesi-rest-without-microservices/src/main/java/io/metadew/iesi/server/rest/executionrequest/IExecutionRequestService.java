@@ -3,26 +3,26 @@ package io.metadew.iesi.server.rest.executionrequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IExecutionRequestService {
 
-     int getTotalPages(int limit, String filterColumn, String searchParam, String request_from, String request_to);
+    Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters);
 
-     List<ExecutionRequest> getAll(int limit, int pageNumber, List<String> column, List<String> sort, String filterColumn, String searchParam, String request_from, String request_to);
+    Optional<ExecutionRequestDto> getById(String id);
 
-     Optional<ExecutionRequest> getById(String id);
+    ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
 
-     ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
+    void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
 
-     void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
+    void updateExecutionRequests(List<ExecutionRequestDto> executionRequestDtos);
 
-     void updateExecutionRequests(List<ExecutionRequestDto> executionRequestDtos);
+    void deleteAll();
 
-     void deleteAll();
-
-     void deleteById(String id);
+    void deleteById(String id);
 
 }

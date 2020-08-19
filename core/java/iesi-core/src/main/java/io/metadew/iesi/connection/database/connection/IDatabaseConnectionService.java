@@ -18,7 +18,7 @@ public interface IDatabaseConnectionService<T extends DatabaseConnection> {
 
     public Connection getConnection(T databaseConnection);
 
-    public String removeIllgegalCharactersForSingleQuery(T databaseConnection, String input);
+    public String removeIllegalCharactersForSingleQuery(T databaseConnection, String input);
 
     public CachedRowSet executeQuery(T databaseConnection, String query) throws SQLException;
 

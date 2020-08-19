@@ -3,6 +3,7 @@ package io.metadew.iesi.script.action.eval;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -10,72 +11,46 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
-public class EvalAssertEquals {
+public class EvalAssertEquals extends ActionTypeExecution {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
 
     // Parameters
     private ActionParameterOperation expectedValue;
     private ActionParameterOperation actualValue;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public EvalAssertEquals(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.executionControl = executionControl;
-        this.actionExecution = actionExecution;
-        this.actionParameterOperationMap = new HashMap<>();
+        super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare()  {
+    public void prepare() {
         // Reset Parameters
-        this.expectedValue = new ActionParameterOperation(executionControl,
-                actionExecution, actionExecution.getAction().getType(), "expected");
-        this.actualValue = new ActionParameterOperation(executionControl,
-                actionExecution, actionExecution.getAction().getType(), "actual");
+        this.expectedValue = new ActionParameterOperation(getExecutionControl(),
+                getActionExecution(), getActionExecution().getAction().getType(), "expected");
+        this.actualValue = new ActionParameterOperation(getExecutionControl(),
+                getActionExecution(), getActionExecution().getAction().getType(), "actual");
 
         // Get Parameters
-        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
+        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("expected")) {
-                expectedValue.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                expectedValue.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("actual")) {
-                actualValue.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                actualValue.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
         // Create parameter list
-        actionParameterOperationMap.put("expected", expectedValue);
-        actionParameterOperationMap.put("actual", actualValue);
+        getActionParameterOperationMap().put("expected", expectedValue);
+        getActionParameterOperationMap().put("actual", actualValue);
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            String expected = convertExpectedValue(expectedValue.getValue());
-            String actual = convertActualValue(actualValue.getValue());
-            return compare(expected, actual);
-        } catch (InterruptedException e) {
-            throw e;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            actionExecution.getActionControl().increaseErrorCount();
-
-            actionExecution.getActionControl().logOutput("exception", e.getMessage());
-            actionExecution.getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean compare(String expectedValue, String actualValue) throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
+        String expected = convertExpectedValue(expectedValue.getValue());
+        String actual = convertActualValue(actualValue.getValue());
         boolean evaluation = expectedValue.equals(actualValue);
         if (evaluation) {
             getActionExecution().getActionControl().increaseSuccessCount();
@@ -89,7 +64,7 @@ public class EvalAssertEquals {
         if (actualValue instanceof Text) {
             return actualValue.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for actualValue",
+            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for actualValue",
                     actualValue.getClass()));
             return actualValue.toString();
         }
@@ -99,34 +74,10 @@ public class EvalAssertEquals {
         if (expectedValue instanceof Text) {
             return expectedValue.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for expectedValue",
+            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for expectedValue",
                     expectedValue.getClass()));
             return expectedValue.toString();
         }
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getExpectedValue() {

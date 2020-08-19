@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -14,10 +15,7 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Optional;
 
 /**
@@ -25,37 +23,20 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
-public class FwkIncludeScript {
+public class FwkIncludeScript extends ActionTypeExecution {
 
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation scriptName;
     private ActionParameterOperation scriptVersion;
-
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
 
     // Exposed Script
     private Script script;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public FwkIncludeScript() {
-
-    }
 
     public FwkIncludeScript(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -68,9 +49,9 @@ public class FwkIncludeScript {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("script")) {
-                this.getScriptName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getScriptName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("version")) {
-                this.getScriptVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getScriptVersion().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -79,27 +60,9 @@ public class FwkIncludeScript {
         this.getActionParameterOperationMap().put("version", this.getScriptVersion());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            String scriptName = convertScriptName(getScriptName().getValue());
-            Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
-            return includeScript(scriptName, scriptVersion);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-    }
-
-    private boolean includeScript(String scriptName, Optional<Long> scriptVersion) throws InterruptedException{
+    protected boolean executeAction() throws InterruptedException {
+        String scriptName = convertScriptName(getScriptName().getValue());
+        Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
         Script script = scriptVersion
                 .map(scriptVersion1 -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion1)))
                 .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)).get();
@@ -130,30 +93,6 @@ public class FwkIncludeScript {
                     scriptName.getClass()));
             return scriptName.toString();
         }
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getScriptName() {

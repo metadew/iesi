@@ -1,11 +1,13 @@
 package io.metadew.iesi.server.rest.script.dto;
 
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.server.rest.pagination.LimitAndOffset;
 import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
 import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
@@ -258,7 +260,6 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
      * @return return the query to of the pivot table according to the parameter.
      */
     private String getScriptAndScriptVRSTable(Pageable pageable, String scriptName, Long scriptVersion, boolean isLatestVersionOnly) {
-        String limitAndOffset = pageable == null || pageable.isUnpaged() ? " " : " limit " + pageable.getPageSize() + " offset " + pageable.getOffset() + " ";
         return (" (" +
                 "SELECT " +
                 "script.SCRIPT_ID, script.SCRIPT_NM, script.SCRIPT_DSC, " +
@@ -268,7 +269,7 @@ public class ScriptDtoRepository implements IScriptDtoRepository {
                 "on script.SCRIPT_ID = script_version.SCRIPT_ID " +
                 getWhereClause(scriptName, scriptVersion, isLatestVersionOnly).orElse(" ") +
                 getOrderByStatementForScriptAndScriptVersionTable(pageable) +
-                limitAndOffset +
+                LimitAndOffset.limitAndOffset(pageable) +
                 ") ");
     }
 

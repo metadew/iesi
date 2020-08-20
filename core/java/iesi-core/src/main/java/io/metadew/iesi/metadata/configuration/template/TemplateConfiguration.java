@@ -242,7 +242,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                     .matcherKey(matcherKey)
                     .build();
         } else {
-            throw new RuntimeException("");
+            throw new RuntimeException("Matcher " + matcherKey.toString() + " not of a known type");
         }
 
         Matcher matcher = Matcher.builder()

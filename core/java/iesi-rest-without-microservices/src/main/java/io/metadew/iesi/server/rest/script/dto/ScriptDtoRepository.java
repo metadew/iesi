@@ -1,13 +1,11 @@
 package io.metadew.iesi.server.rest.script.dto;
 
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
-import io.metadew.iesi.server.rest.pagination.LimitAndOffset;
 import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
 import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;

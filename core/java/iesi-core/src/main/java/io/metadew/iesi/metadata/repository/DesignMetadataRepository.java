@@ -74,7 +74,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Saving {0} into design repository", template));
         try {
             TemplateConfiguration.getInstance().insert(template);
-        } catch (Exception e) {
+        } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Template {0} already exists in design repository. Updating to new definition", template));
             TemplateConfiguration.getInstance().update(template);
         }

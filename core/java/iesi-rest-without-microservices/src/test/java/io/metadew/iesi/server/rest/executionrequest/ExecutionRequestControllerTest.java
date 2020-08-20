@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
@@ -19,9 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,16 +36,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ExecutionRequestController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = {ExecutionRequestController.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoModelAssembler.class, ExecutionRequestDtoModelAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
+@ContextConfiguration(classes = {ExecutionRequestController.class, ExecutionRequestService.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoModelAssembler.class, ExecutionRequestDtoModelAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
 @ExtendWith(MockitoExtension.class)
 
 public class ExecutionRequestControllerTest {
@@ -67,6 +71,7 @@ public class ExecutionRequestControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @BeforeEach
     public void setup() {
@@ -75,38 +80,18 @@ public class ExecutionRequestControllerTest {
     }
 
     @Test
-    public void testPagination() throws Exception {
-        List<ExecutionRequestDto> executionRequestDtos = new ArrayList<>();
-        ExecutionRequestDto executionRequest1 = ExecutionRequestDto.builder()
-                .executionRequestId("newExecutionRequestId")
-                .name("name")
-                .context("context")
-                .description("description")
-                .scope("scope")
-                .requestTimestamp(LocalDateTime.now())
-                .build();
-        executionRequestDtos.add(executionRequest1);
-        TotalPages totalPages = TotalPages.builder()
-                .totalPages(10)
-                .payload(executionRequestDtos)
-                .build();
-        given(executionRequestDtoRepository.getAll())
-                .willReturn(executionRequestDtos);
+    public void getAllNoResult() throws Exception {
+        Pageable pageable = PageRequest.of(0, 20);
+        List<ExecutionRequestDto> executionRequestDtoList = new ArrayList<>();
+        Page<ExecutionRequestDto> page = new PageImpl<>(executionRequestDtoList, pageable, 1);
+        given(executionRequestService.getAll(pageable)).willReturn(page);
 
-        MockHttpServletResponse response = mvc.perform(
-                get("/execution-requests?limit=1&pageNumber=1")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    public void getAllNoResultTest() throws Exception {
-        List<ExecutionRequestDto> executionRequests = new ArrayList<>();
-        given(executionRequestService.getAll()).willReturn(executionRequests);
-        mvc.perform(get("/execution-requests?limit=1&pageNumber=1")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        mvc.perform(get("/execution-requests").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isMap())
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList").exists())
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList").isArray())
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList").isEmpty());
     }
 
     @Test
@@ -135,31 +120,62 @@ public class ExecutionRequestControllerTest {
                 .scope("scope")
                 .requestTimestamp(LocalDateTime.now())
                 .build();
-        ExecutionRequestDto executionRequest4 = ExecutionRequestDto.builder()
-                .executionRequestId("newExecutionRequestId")
-                .name("name")
-                .context("context")
-                .description("description")
-                .scope("scope")
-                .requestTimestamp(LocalDateTime.now())
-                .build();
-        ExecutionRequestDto executionRequest5 = ExecutionRequestDto.builder()
-                .executionRequestId("newExecutionRequestId")
-                .name("name")
-                .context("context")
-                .description("description")
-                .scope("scope")
-                .requestTimestamp(LocalDateTime.now())
-                .build();
-        when(executionRequestService.getAll()).thenReturn(Stream.of(executionRequest1, executionRequest2, executionRequest3, executionRequest4, executionRequest5).collect(Collectors.toList()));
-        List<ExecutionRequestDto> result = executionRequestService.getAll();
-        assertThat(result.size()).isEqualTo(5);
+        int size = 1;
+        Pageable pageable1 = PageRequest.of(0, size);
+        Pageable pageable2 = PageRequest.of(1, size);
+        Pageable pageable3 = PageRequest.of(2, size);
+        List<ExecutionRequestDto> executionRequestDtoList1 = Stream.of(executionRequest1).collect(Collectors.toList());
+        List<ExecutionRequestDto> executionRequestDtoList2 = Stream.of(executionRequest2).collect(Collectors.toList());
+        List<ExecutionRequestDto> executionRequestDtoList3 = Stream.of(executionRequest3).collect(Collectors.toList());
+        List<ExecutionRequestDto> executionRequestDtoList = Stream.of(executionRequest1, executionRequest2, executionRequest3).collect(Collectors.toList());
+        Page<ExecutionRequestDto> page1 = new PageImpl<>(executionRequestDtoList1, pageable1, 3);
+        Page<ExecutionRequestDto> page2 = new PageImpl<>(executionRequestDtoList2, pageable2, 3);
+        Page<ExecutionRequestDto> page3 = new PageImpl<>(executionRequestDtoList3, pageable3, 3);
 
-        assertThat(result.get(0).getContext())
-                .isEqualTo(executionRequest1.getContext());
-
-        mvc.perform(get("/execution-requests?limit=2&pageNumber=1")
+        given(executionRequestService.getAll(any())).willReturn(page1);
+        mvc.perform(get("/execution-requests?page=0&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$").isMap())
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].name", is(executionRequestDtoList1.get(0).getName())))
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].executionRequestId", is(executionRequestDtoList1.get(0).getExecutionRequestId())))
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].description", is(executionRequestDtoList1.get(0).getDescription())))
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].scope", is(executionRequestDtoList1.get(0).getScope())))
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].context", is(executionRequestDtoList1.get(0).getContext())))
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].email", is(executionRequestDtoList1.get(0).getEmail())))
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].executionRequestStatus", is(executionRequestDtoList1.get(0).getExecutionRequestStatus())))
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].scriptExecutionRequests", is(executionRequestDtoList1.get(0).getScriptExecutionRequests())))
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].executionRequestLabels", is(executionRequestDtoList1.get(0).getExecutionRequestLabels())))
+                .andExpect(jsonPath("$.page.size", is(size)))
+                .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList1.size())))))
+                .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
+        ;
+
+        given(executionRequestService.getAll(pageable2)).willReturn(page2);
+        mvc.perform(get("/execution-requests?page=1&size=1")
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$").isMap())
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].name", is(executionRequestDtoList2.get(0).getName())))
+                .andExpect(jsonPath("$.page.size", is(size)))
+                .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList2.size())))))
+                .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
+
+        given(executionRequestService.getAll(pageable3)).willReturn(page3);
+        mvc.perform(get("/execution-requests?page=2&size=1")
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$").isMap())
+                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].name", is(executionRequestDtoList3.get(0).getName())))
+                .andExpect(jsonPath("$.page.size", is(size)))
+                .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList3.size())))))
+                .andExpect(jsonPath("$.page.number", is(pageable3.getPageNumber())));
+
     }
 }

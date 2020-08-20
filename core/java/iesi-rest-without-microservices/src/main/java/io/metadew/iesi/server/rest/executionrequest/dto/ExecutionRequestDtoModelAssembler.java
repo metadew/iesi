@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRe
 import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,19 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
                 .withSelfRel();
         executionRequestDto.add(selfLink);
         return executionRequestDto;
+    }
+
+    public ExecutionRequestDto toModel(ExecutionRequestDto executionRequestDto) {
+        addLinksToExistingDto(executionRequestDto);
+        return executionRequestDto;
+    }
+
+    public void addLinksToExistingDto(ExecutionRequestDto executionRequestDto) {
+        Link selfLink = linkTo(methodOn(ExecutionRequestController.class).getById(executionRequestDto.getExecutionRequestId()))
+                .withSelfRel();
+        Link linkToAll = linkTo(methodOn(ExecutionRequestController.class).getAll(PageRequest.of(0, 20), null, null, null, null))
+                .withRel("executionrequest");
+        executionRequestDto.add(selfLink, linkToAll);
     }
 
     private ExecutionRequestDto convertToDto(ExecutionRequest executionRequest) {

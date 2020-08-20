@@ -48,13 +48,23 @@ public class DatasetLookup implements LookupInstruction {
 
         String[] arguments = splitInput(parameters);
         Dataset dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
-        Optional<DataType> dataItem = DatasetHandler.getInstance().getDataItem(dataset, arguments[1].trim(), executionRuntime);
+        DataType lookupVariable = convertLookupVariable(DataTypeHandler.getInstance().resolve(arguments[1].trim(), executionRuntime));
+        Optional<DataType> matchedDataItem;
+        if (lookupVariable instanceof Text) {
+            matchedDataItem = DatasetHandler.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);
+        } else {
+            throw new IllegalArgumentException(MessageFormat.format("Cannot lookup {0} in dataset {1}", lookupVariable, dataset.toString()));
+        }
 
-        if (!dataItem.isPresent()) {
+        if (!matchedDataItem.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", arguments[1], dataset.toString()));
         } else {
-            return dataItem.get().toString();
+            return matchedDataItem.get().toString();
         }
+    }
+
+    private DataType convertLookupVariable(DataType lookupVariable) {
+        return lookupVariable;
     }
 
     private Dataset getDataset(DataType dataset) {

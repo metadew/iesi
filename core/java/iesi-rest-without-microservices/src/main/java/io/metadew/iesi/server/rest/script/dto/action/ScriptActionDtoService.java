@@ -24,7 +24,7 @@ public class ScriptActionDtoService implements IScriptActionDtoService {
     public ActionDto convertToDto(Action action) {
         return new ActionDto(action.getNumber(), action.getName(), action.getType(), action.getDescription(), action.getComponent(),
                 action.getCondition(), action.getIteration(), action.getErrorExpected(), action.getErrorStop(), action.getRetries(),
-                action.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()));
+                action.getParameters().stream().map(this::convertToDto).collect(Collectors.toSet()));
     }
 
     private ActionParameterDto convertToDto(ActionParameter actionParameter) {

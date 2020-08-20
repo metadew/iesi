@@ -4,52 +4,52 @@ import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
-public class RSetWorkspace {
+public class RSetWorkspace extends ActionTypeExecution {
 
-    private static  final String pathKey = "path";
+    private static final String pathKey = "path";
     private static final String referenceNameKey = "name";
-    private final ExecutionControl executionControl;
-    private final ActionExecution actionExecution;
-    private final HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private String referenceName;
     private String path;
 
     public RSetWorkspace(ExecutionControl executionControl,
-                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.executionControl = executionControl;
-        this.actionExecution = actionExecution;
-        this.actionParameterOperationMap = new HashMap<>();
+                         ScriptExecution scriptExecution, ActionExecution actionExecution) {
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
-        ActionParameterOperation pathActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), pathKey);
-        ActionParameterOperation referenceNameActionParameterOperation = new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), referenceNameKey);
+        ActionParameterOperation pathActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), pathKey);
+        ActionParameterOperation referenceNameActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), referenceNameKey);
 
         // Get Parameters
-        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
+        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(referenceNameKey)) {
-                referenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                referenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(pathKey)) {
-                pathActionParameterOperation.setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                pathActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
         // Create parameter list
-        actionParameterOperationMap.put(referenceNameKey, referenceNameActionParameterOperation);
-        actionParameterOperationMap.put(pathKey, pathActionParameterOperation);
+        getActionParameterOperationMap().put(referenceNameKey, referenceNameActionParameterOperation);
+        getActionParameterOperationMap().put(pathKey, pathActionParameterOperation);
 
         this.referenceName = convertReferenceName(referenceNameActionParameterOperation.getValue());
         this.path = convertPath(pathActionParameterOperation.getValue());
+    }
+
+    @Override
+    protected boolean executeAction() throws Exception {
+        RWorkspace rWorkspace = new RWorkspace(path);
+        getExecutionControl().getExecutionRuntime().setRWorkspace(referenceName, rWorkspace);
+        return true;
     }
 
     private String convertReferenceName(DataType referenceName) {
@@ -70,28 +70,6 @@ public class RSetWorkspace {
         } else {
             throw new RuntimeException(MessageFormat.format("path cannot be of type {0}", path.getClass().getSimpleName()));
         }
-    }
-
-    public boolean execute() {
-        try {
-            RWorkspace rWorkspace = new RWorkspace(path);
-            executionControl.getExecutionRuntime().setRWorkspace(referenceName, rWorkspace);
-            return true;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            actionExecution.getActionControl().increaseErrorCount();
-
-            actionExecution.getActionControl().logOutput("exception", e.getMessage());
-            actionExecution.getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
     }
 
 }

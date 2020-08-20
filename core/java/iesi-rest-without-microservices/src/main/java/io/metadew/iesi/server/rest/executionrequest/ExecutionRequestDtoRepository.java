@@ -10,275 +10,153 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
+import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 @Log4j2
-public class ExecutionRequestDtoRepository implements IExecutionRequestDtoRepository {
+public class ExecutionRequestDtoRepository extends PaginatedRepository implements IExecutionRequestDtoRepository {
 
-    private static final String fetchAllQuery =
-            // fetch all execution requests and possible script execution requests
-            "select  execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "4 INFO_TYPE, " +
-                    "null exe_req_label_id, null exe_req_label_name, null exe_req_label_value, " +
-                    "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
-                    "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                    "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
-                    "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
-                    "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                    "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "union all " +
-                    // fetch all script execution request impersonations
-                    "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "0 INFO_TYPE, " +
-                    "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
-                    "null script_exe_req_id, null script_exe_req_exit,null script_exe_req_env, null script_exe_req_st, " +
-                    "null script_exe_req_file, null script_exe_req_file_name, " +
-                    "null script_exe_req_name, null script_exe_req_name_name, null script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
-                    "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
-                    "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
-                    "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
-                    "union all " +
-                    "select  " +
-                    "execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "1 INFO_TYPE, " +
-                    "null exe_req_label_id, null exe_req_label_name, null exe_req_label_value, " +
-                    "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
-                    "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                    "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "script_execution_request_imps.ID as script_exe_req_imp_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
-                    "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
-                    "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                    "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " script_execution_request_imps " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_imps.SCRIPT_EXEC_REQ_ID " +
-                    "union all " +
-                    // fetch all script execution request parameters
-                    "select  execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "2 INFO_TYPE, " +
-                    "null exe_req_label_id, null exe_req_label_name, null exe_req_label_value, " +
-                    "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
-                    "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                    "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
-                    "script_execution_request_pars.ID as script_exe_req_par_id, script_execution_request_pars.NAME as script_exe_req_par_name, script_execution_request_pars.VALUE as script_exe_req_par_val, " +
-                    "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                    "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_execution_request_pars " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_pars.SCRIPT_EXEC_REQ_ID " +
-                    "union all " +
-                    // fetch all script execution request script executions
-                    "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "3 INFO_TYPE, " +
-                    "null exe_req_label_id, null exe_req_label_name, null exe_req_label_value, " +
-                    "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM as script_exe_req_st, " +
-                    "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                    "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
-                    "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
-                    "script_executions.ID as script_exec_id, script_executions.RUN_ID as script_exec_run_id, script_executions.STRT_TMS as script_exec_strt_tms, script_executions.END_TMS as script_exec_end_tms, script_executions.ST_NM as script_exec_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                    "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
-                    "on script_executions.SCRPT_REQUEST_ID = script_execution_requests.SCRPT_REQUEST_ID; ";
+    private String getFetchAllQuery(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
+        return "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
+                "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass, " +
+                "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
+                "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
+                "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
+                "file_script_execution_requests.ID as script_exe_req_file_id, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
+                "name_script_execution_requests.ID as script_exe_req_name_id, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
+                "script_execution_request_imps.ID as script_exe_req_imp_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
+                "script_execution_request_pars.ID as script_exe_req_par_id, script_execution_request_pars.NAME as script_exe_req_par_name, script_execution_request_pars.VALUE as script_exe_req_par_val, " +
+                "script_executions.ID as script_exec_id, script_executions.RUN_ID as script_exec_run_id, script_executions.STRT_TMS as script_exec_strt_tms, script_executions.END_TMS as script_exec_end_tms, script_executions.ST_NM as script_exec_status " +
+                "from " +
+                // base table
+                " (" + getBaseQuery(pageable, executionRequestFilters) + ") base_execution_requests " +
+                "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "on base_execution_requests.REQUEST_ID = execution_requests.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
+                "on base_execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
+                "on base_execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
+                "on base_execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
+                "on base_execution_requests.REQUEST_ID = script_execution_requests.ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " script_execution_request_imps " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_imps.SCRIPT_EXEC_REQ_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_execution_request_pars " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_pars.SCRIPT_EXEC_REQ_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
+                getOrderByClause(pageable) +
+                ";";
+    }
 
-    private static final String fetchSingleQuery =
-            "select  execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "4 INFO_TYPE, " +
-                    "null exe_req_label_id, null exe_req_label_name, null exe_req_label_value, " +
-                    "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
-                    "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                    "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
-                    "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
-                    "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                    "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "where execution_requests.REQUEST_ID = {0}" +
-                    "union all " +
-                    // fetch all script execution request impersonations
-                    "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "0 INFO_TYPE, " +
-                    "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
-                    "null script_exe_req_id, null script_exe_req_exit,null script_exe_req_env, null script_exe_req_st, " +
-                    "null script_exe_req_file, null script_exe_req_file_name, " +
-                    "null script_exe_req_name, null script_exe_req_name_name, null script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
-                    "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
-                    "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
-                    "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
-                    "where execution_requests.REQUEST_ID = {0} " +
-                    "union all " +
-                    "select  " +
-                    "execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "1 INFO_TYPE, " +
-                    "null exe_req_label_id, null exe_req_label_name, null exe_req_label_value, " +
-                    "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
-                    "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                    "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "script_execution_request_imps.ID as script_exe_req_imp_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
-                    "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
-                    "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                    "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " script_execution_request_imps " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_imps.SCRIPT_EXEC_REQ_ID " +
-                    "where execution_requests.REQUEST_ID = {0} " +
-                    "union all " +
-                    // fetch all script execution request parameters
-                    "select  execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "2 INFO_TYPE, " +
-                    "null exe_req_label_id, null exe_req_label_name, null exe_req_label_value, " +
-                    "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
-                    "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                    "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
-                    "script_execution_request_pars.ID as script_exe_req_par_id, script_execution_request_pars.NAME as script_exe_req_par_name, script_execution_request_pars.VALUE as script_exe_req_par_val, " +
-                    "null script_exec_id, null script_exec_run_id, null script_exec_strt_tms, null script_exec_end_tms, null script_exec_end_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                    "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_execution_request_pars " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_pars.SCRIPT_EXEC_REQ_ID " +
-                    "where execution_requests.REQUEST_ID = {0} " +
-                    "union all " +
-                    // fetch all script execution request script executions
-                    "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-                    "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass,  " +
-                    "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
-                    "3 INFO_TYPE, " +
-                    "null exe_req_label_id, null exe_req_label_name, null exe_req_label_value, " +
-                    "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM as script_exe_req_st, " +
-                    "file_script_execution_requests.ID as script_exe_req_file, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                    "name_script_execution_requests.ID as script_exe_req_name, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
-                    "null script_exe_req_imp_id, null script_exe_req_imp_id_id, " +
-                    "null script_exe_req_par_id, null script_exe_req_par_name, null script_exe_req_par_value, " +
-                    "script_executions.ID as script_exec_id, script_executions.RUN_ID as script_exec_run_id, script_executions.STRT_TMS as script_exec_strt_tms, script_executions.END_TMS as script_exec_end_tms, script_executions.ST_NM as script_exec_status " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
-                    "on execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
-                    "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
-                    "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
-                    "on script_executions.SCRPT_REQUEST_ID = script_execution_requests.SCRPT_REQUEST_ID " +
-                    "where execution_requests.REQUEST_ID = {0};";
+    private String getBaseQuery(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
+        return "SELECT distinct execution_requests.REQUEST_ID, execution_requests.REQUEST_TMS, name_script_execution_requests.SCRPT_NAME, name_script_execution_requests.SCRPT_VRS " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
+                "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
+                "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                getWhereClause(executionRequestFilters) +
+                getOrderByClause(pageable) +
+                getLimitAndOffsetClause(pageable);
+    }
+
+
+    private String getWhereClause(List<ExecutionRequestFilter> executionRequestFilters) {
+        String filterStatements = executionRequestFilters.stream().map(executionRequestFilter -> {
+                    if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.NAME)) {
+                        return " name_script_execution_requests.SCRPT_NAME " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.VERSION)) {
+                        return " name_script_execution_requests.SCRPT_VRS = " + Long.parseLong(executionRequestFilter.getValue()) + " ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.ENVIRONMENT)) {
+                        return " script_execution_requests.ENVIRONMENT " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.ID)) {
+                        return " execution_requests.REQUEST_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.LABEL)) {
+                        return " execution_request_labels.NAME = '" + executionRequestFilter.getValue().split(":")[0] +
+                                "' and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    } else {
+                        return null;
+                    }
+                }
+        )
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" and "));
+        if (filterStatements.isEmpty()) {
+            return "";
+        }
+        return " WHERE " + filterStatements;
+    }
+
+    private String getOrderByClause(Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) return " ";
+        List<String> sorting = pageable.getSort().stream().map(order -> {
+            // add further sort on the ScriptAndScriptVersionTable here
+            if (order.getProperty().equalsIgnoreCase("SCRIPT")) {
+                return "name_script_execution_requests.SCRPT_NAME " + order.getDirection();
+            } else if (order.getProperty().equalsIgnoreCase("REQUEST_TIMESTAMP")) {
+                return "execution_requests.REQUEST_TMS " + order.getDirection();
+            } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
+                return "name_script_execution_requests.SCRPT_VRS " + order.getDirection();
+            } else {
+                return null;
+            }
+        })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (sorting.isEmpty()) {
+            return "";
+        }
+        return " ORDER BY " + String.join(", ", sorting) + " ";
+    }
+
+
+    private long getRowSize(List<ExecutionRequestFilter> executionRequestFilters) throws SQLException {
+        String query = "select count(*) as row_count from (" +
+                "SELECT distinct execution_requests.REQUEST_ID " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
+                "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
+                "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                getWhereClause(executionRequestFilters) +
+                ");";
+        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+        cachedRowSet.next();
+        return cachedRowSet.getLong("row_count");
+    }
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
 
     @Autowired
     ExecutionRequestDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
@@ -286,14 +164,18 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
     }
 
     @Override
-    public List<ExecutionRequestDto> getAll() {
+    public Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
         try {
-            Map<String, ExecutionRequestBuilder> executionRequestBuilderMap = new HashMap<>();
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(fetchAllQuery, "reader");
+            Map<String, ExecutionRequestBuilder> executionRequestBuilderMap = new LinkedHashMap<>();
+            String query = getFetchAllQuery(pageable, executionRequestFilters);
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, executionRequestBuilderMap);
             }
-            return executionRequestBuilderMap.values().stream().map(ExecutionRequestBuilder::build).collect(Collectors.toList());
+            List<ExecutionRequestDto> executionRequestDtoList = executionRequestBuilderMap.values().stream()
+                    .map(ExecutionRequestBuilder::build)
+                    .collect(Collectors.toList());
+            return new PageImpl<>(executionRequestDtoList, pageable, getRowSize(executionRequestFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -303,8 +185,9 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
     public Optional<ExecutionRequestDto> getById(UUID uuid) {
         try {
             Map<String, ExecutionRequestBuilder> executionRequestBuilderMap = new HashMap<>();
+            List<ExecutionRequestFilter> executionRequestFilters = Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.ID, uuid.toString(), true)).collect(Collectors.toList());
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository()
-                    .executeQuery(MessageFormat.format(fetchSingleQuery, SQLTools.GetStringForSQL(uuid.toString())), "reader");
+                    .executeQuery(getFetchAllQuery(Pageable.unpaged(), executionRequestFilters), "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, executionRequestBuilderMap);
             }
@@ -323,31 +206,21 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
             executionRequestBuilder = mapExecutionRequestBuilderRow(cachedRowSet);
             executionRequestBuilderMap.put(executionRequestId, executionRequestBuilder);
         }
-
-        int infoType = cachedRowSet.getInt("INFO_TYPE");
-
-        if (infoType == 0) {
-            // labels
-            mapExecutionRequestLabel(cachedRowSet, executionRequestBuilder);
-        } else if (infoType == 1) {
-            // script execution request impersonations
-            mapImpersonation(cachedRowSet, executionRequestBuilder);
-        } else if (infoType == 2) {
-            // script execution request parameters
-            mapScriptExecutionParameters(cachedRowSet, executionRequestBuilder);
-        } else if (infoType == 3) {
-            // script execution request run id
-            mapScriptExecutionRunId(cachedRowSet, executionRequestBuilder);
-        } else if (infoType == 4) {
-            // link script execution request
-            extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
-        } else {
-            log.warn("unknown info type found for execution request : " + infoType);
+        mapExecutionRequestLabel(cachedRowSet, executionRequestBuilder);
+        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
+        if (scriptExecutionRequestBuilder == null) {
+            return;
         }
+        mapImpersonation(cachedRowSet, scriptExecutionRequestBuilder);
+        mapScriptExecutionParameters(cachedRowSet, scriptExecutionRequestBuilder);
+        mapScriptExecutionRunId(cachedRowSet, scriptExecutionRequestBuilder);
     }
 
     private ScriptExecutionRequestBuilder extractScriptExecutionRequestBuilder(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
         String scriptExecutionRequestId = cachedRowSet.getString("script_exe_req_id");
+        if (scriptExecutionRequestId == null) {
+            return null;
+        }
         ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = executionRequestBuilder.getScriptExecutionRequests().get(scriptExecutionRequestId);
         if (scriptExecutionRequestBuilder == null) {
             scriptExecutionRequestBuilder = new ScriptExecutionRequestBuilder(
@@ -367,50 +240,49 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         return scriptExecutionRequestBuilder;
     }
 
-    private void mapScriptExecutionRunId(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
+    private void mapScriptExecutionRunId(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
         // script_exec_id, script_exec_run_id, script_exec_strt_tms, script_exec_end_tms, script_exec_status
 
+        String runId = cachedRowSet.getString("script_exec_run_id");
+        if (runId == null) {
+            return;
+        }
         if (scriptExecutionRequestBuilder.getRunId() == null) {
-            String runId = cachedRowSet.getString("script_exec_run_id");
             scriptExecutionRequestBuilder.setRunId(runId);
-        } else {
-            log.warn("duplicate runId found for execution request " + executionRequestBuilder.getExecutionRequestId());
         }
     }
 
-    private void mapScriptExecutionParameters(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
-        // script_exe_req_par_id, script_exe_req_par_name, script_exe_req_par_value
+    private void mapScriptExecutionParameters(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
+        // script_exe_req_par_id, script_exe_req_par_name, script_exe_req_par_val
         String scriptExecutionRequestParameterId = cachedRowSet.getString("script_exe_req_par_id");
+        if (scriptExecutionRequestParameterId == null) {
+            return;
+        }
         ScriptExecutionRequestParameterDto scriptExecutionRequestParameterDto = scriptExecutionRequestBuilder.getParameters().get(scriptExecutionRequestParameterId);
 
         if (scriptExecutionRequestParameterDto == null) {
             scriptExecutionRequestParameterDto = new ScriptExecutionRequestParameterDto(
                     cachedRowSet.getString("script_exe_req_par_name"),
-                    cachedRowSet.getString("script_exe_req_par_value")
+                    cachedRowSet.getString("script_exe_req_par_val")
             );
             scriptExecutionRequestBuilder.getParameters().put(scriptExecutionRequestParameterId, scriptExecutionRequestParameterDto);
-        } else {
-            log.warn("duplicate parameter " + scriptExecutionRequestParameterId + " found for execution request " + executionRequestBuilder.getExecutionRequestId());
         }
     }
 
-    private void mapImpersonation(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
+    private void mapImpersonation(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
         // script_exe_req_id, script_exe_req_exit, script_exe_req_env,
         // script_exe_req_st, script_exe_req_file, script_exe_req_file_name, script_exe_req_name,
         // script_exe_req_name_name, script_exe_req_name_vrs, script_exe_req_imp_id, script_exe_req_imp_id_id
 
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
 
         String scriptExecutionRequestImpersonationId = cachedRowSet.getString("script_exe_req_imp_id");
+        if (scriptExecutionRequestImpersonationId == null) {
+            return;
+        }
         ScriptExecutionRequestImpersonationDto scriptExecutionRequestImpersonationDto = scriptExecutionRequestBuilder.getImpersonations().get(scriptExecutionRequestImpersonationId);
-
         if (scriptExecutionRequestImpersonationDto == null) {
             scriptExecutionRequestImpersonationDto = new ScriptExecutionRequestImpersonationDto(cachedRowSet.getString("script_exe_req_imp_id_id"));
             scriptExecutionRequestBuilder.getImpersonations().put(scriptExecutionRequestImpersonationId, scriptExecutionRequestImpersonationDto);
-        } else {
-            log.warn("duplicate impersonation " + scriptExecutionRequestImpersonationId + " found for execution request " + executionRequestBuilder.getExecutionRequestId());
         }
     }
 
@@ -418,6 +290,9 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         // exe_req_label_id, exe_req_label_name, exe_req_label_value
 
         String executionRequestLabelId = cachedRowSet.getString("exe_req_label_id");
+        if (executionRequestLabelId == null) {
+            return;
+        }
         ExecutionRequestLabelDto executionRequestLabelDto = executionRequestBuilder.getExecutionRequestLabels().get(executionRequestLabelId);
 
         if (executionRequestLabelDto == null) {
@@ -426,8 +301,6 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
                     cachedRowSet.getString("exe_req_label_value")
             );
             executionRequestBuilder.getExecutionRequestLabels().put(executionRequestLabelId, executionRequestLabelDto);
-        } else {
-            log.warn("duplicate label " + executionRequestLabelId + " found for execution request " + executionRequestBuilder.getExecutionRequestId());
         }
     }
 
@@ -463,7 +336,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         private String email;
         private ExecutionRequestStatus executionRequestStatus;
         private Map<String, ScriptExecutionRequestBuilder> scriptExecutionRequests;
-        private Map<String, ExecutionRequestLabelDto> executionRequestLabels;
+        public Map<String, ExecutionRequestLabelDto> executionRequestLabels;
 
         public ExecutionRequestDto build() {
             return new ExecutionRequestDto(executionRequestId, requestTimestamp, name, description, scope, context, email, executionRequestStatus,
@@ -480,7 +353,7 @@ public class ExecutionRequestDtoRepository implements IExecutionRequestDtoReposi
         private String environment;
         private boolean exit;
         private Map<String, ScriptExecutionRequestImpersonationDto> impersonations;
-        private Map<String, ScriptExecutionRequestParameterDto> parameters;
+        public Map<String, ScriptExecutionRequestParameterDto> parameters;
         private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
         private String scriptName;
         private Long scriptVersion;

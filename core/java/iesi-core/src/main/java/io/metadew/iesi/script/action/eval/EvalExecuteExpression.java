@@ -3,6 +3,7 @@ package io.metadew.iesi.script.action.eval;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -12,38 +13,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.script.ScriptException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 
-public class EvalExecuteExpression {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class EvalExecuteExpression extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation evaluationExpression;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public EvalExecuteExpression() {
-
-    }
 
     public EvalExecuteExpression(ExecutionControl executionControl,
                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
+        super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-    }
 
     public void prepare() {
         // Reset Parameters
@@ -54,7 +38,7 @@ public class EvalExecuteExpression {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("expression")) {
-                this.getEvaluationExpression().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getEvaluationExpression().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -62,25 +46,6 @@ public class EvalExecuteExpression {
         this.getActionParameterOperationMap().put("expression", this.getEvaluationExpression());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            String expression = convertExpression(getEvaluationExpression().getValue());
-            return evaluatedExpression(expression);
-        } catch (InterruptedException e) {
-            throw e;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
 
     private String convertExpression(DataType expression) {
         if (expression instanceof Text) {
@@ -92,7 +57,8 @@ public class EvalExecuteExpression {
         }
     }
 
-    private boolean evaluatedExpression(String expression) throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
+        String expression = convertExpression(getEvaluationExpression().getValue());
         boolean evaluation;
         ConditionOperation conditionOperation = new ConditionOperation(this.getActionExecution(), expression);
         try {
@@ -110,36 +76,12 @@ public class EvalExecuteExpression {
         return true;
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
     public ActionParameterOperation getEvaluationExpression() {
         return evaluationExpression;
     }
 
     public void setEvaluationExpression(ActionParameterOperation evaluationExpression) {
         this.evaluationExpression = evaluationExpression;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
 }

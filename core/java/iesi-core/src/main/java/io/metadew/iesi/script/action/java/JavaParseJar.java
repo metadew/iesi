@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -12,43 +13,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 /**
  * Action type to parse java archive files.
  *
  * @author peter.billen
  */
-public class JavaParseJar {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class JavaParseJar extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation filePath;
     private ActionParameterOperation fileName;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public JavaParseJar() {
-
-    }
 
     public JavaParseJar(ExecutionControl executionControl,
                         ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -63,11 +45,11 @@ public class JavaParseJar {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("path")) {
-                this.getFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getFilePath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("file")) {
-                this.getFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getFileName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -77,39 +59,19 @@ public class JavaParseJar {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    // Methods
-    public boolean execute() throws InterruptedException {
-        try {
-            String path = convertPath(getFilePath().getValue());
-            String fileName = convertFile(getFileName().getValue());
-            String connectionName = convertConnectionName(getConnectionName().getValue());
-            return execute(path, fileName, connectionName);
 
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
+    protected boolean executeAction() throws InterruptedException {
 
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean execute(String path, String fileName, String connectionName) throws InterruptedException {
-
+        String path = convertPath(getFilePath().getValue());
+        String fileName = convertFile(getFileName().getValue());
+        String connectionName = convertConnectionName(getConnectionName().getValue());
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
-        	String filePath = fileName;
-        	if (!path.isEmpty()) filePath = path + File.separator + fileName;
-        	
+            String filePath = fileName;
+            if (!path.isEmpty()) filePath = path + File.separator + fileName;
+
             // JarOperation jarOperation = new JarOperation();
             // jarOperation.getJavaArchiveDefinition(filePath);
         } else {
@@ -167,36 +129,12 @@ public class JavaParseJar {
         this.getActionExecution().getActionControl().increaseSuccessCount();
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
     public ActionParameterOperation getConnectionName() {
         return connectionName;
     }
 
     public void setConnectionName(ActionParameterOperation connectionName) {
         this.connectionName = connectionName;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getFilePath() {

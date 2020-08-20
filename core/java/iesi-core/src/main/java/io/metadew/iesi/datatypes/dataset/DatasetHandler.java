@@ -56,7 +56,9 @@ public class DatasetHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, DataType> getDataItems(Dataset dataset, ExecutionRuntime executionRuntime) {return getDatasetService(dataset).getDataItems(dataset, executionRuntime);}
+    public Map<String, DataType> getDataItems(Dataset dataset, ExecutionRuntime executionRuntime) {
+        return getDatasetService(dataset).getDataItems(dataset, executionRuntime);
+    }
 
     @SuppressWarnings("unchecked")
     public void setDataItem(Dataset dataset, String key, DataType value) {
@@ -110,4 +112,6 @@ public class DatasetHandler {
             return datasetLabel.toString();
         }
     }
+
+
 }

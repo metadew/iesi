@@ -27,4 +27,9 @@ public class MysqlDatabaseConnectionService extends DatabaseConnectionService<My
     public Class<MysqlDatabaseConnection> appliesTo() {
         return MysqlDatabaseConnection.class;
     }
+
+    @Override
+    public String refactorLimitAndOffset(MysqlDatabaseConnection databaseConnection, String query) {
+        return query;
+    }
 }

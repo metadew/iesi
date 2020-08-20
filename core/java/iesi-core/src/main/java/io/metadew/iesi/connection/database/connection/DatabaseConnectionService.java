@@ -168,7 +168,9 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
 
     public void executeUpdate(T databaseConnection, String query, Connection connection) throws SQLException {
         // Remove illegal characters at the end
+        // TODO: replace SQL tech specific languages
         query = this.removeIllegalCharactersForSingleQuery(databaseConnection, query);
+        query = refactorLimitAndOffset(databaseConnection, query);
         // query = prepareQuery(query);
         log.info(databaseConnection.getConnectionURL() + ":" + query);
 

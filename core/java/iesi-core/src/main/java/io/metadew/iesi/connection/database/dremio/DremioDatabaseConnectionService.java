@@ -27,4 +27,9 @@ public class DremioDatabaseConnectionService extends SchemaDatabaseConnectionSer
     public Class<DremioDatabaseConnection> appliesTo() {
         return DremioDatabaseConnection.class;
     }
+
+    @Override
+    public String refactorLimitAndOffset(DremioDatabaseConnection databaseConnection, String query) {
+        return query;
+    }
 }

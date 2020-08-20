@@ -27,4 +27,9 @@ public class DrillDatabaseConnectionService extends SchemaDatabaseConnectionServ
     public Class<DrillDatabaseConnection> appliesTo() {
         return DrillDatabaseConnection.class;
     }
+
+    @Override
+    public String refactorLimitAndOffset(DrillDatabaseConnection databaseConnection, String query) {
+        return query;
+    }
 }

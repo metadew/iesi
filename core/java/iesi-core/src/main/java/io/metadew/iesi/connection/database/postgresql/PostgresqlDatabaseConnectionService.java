@@ -27,4 +27,9 @@ public class PostgresqlDatabaseConnectionService extends SchemaDatabaseConnectio
     public Class<PostgresqlDatabaseConnection> appliesTo() {
         return PostgresqlDatabaseConnection.class;
     }
+
+    @Override
+    public String refactorLimitAndOffset(PostgresqlDatabaseConnection databaseConnection, String query) {
+        return query;
+    }
 }

@@ -1,7 +1,7 @@
 package io.metadew.iesi.connection.database.mariadb;
 
-import io.metadew.iesi.connection.database.connection.IDatabaseConnectionService;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionService;
+import io.metadew.iesi.connection.database.connection.IDatabaseConnectionService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -16,8 +16,10 @@ public class MariadbDatabaseConnectionService extends DatabaseConnectionService<
         return INSTANCE;
     }
 
-    private MariadbDatabaseConnectionService() {}
-//    org.mariadb.jdbc.Driver
+    private MariadbDatabaseConnectionService() {
+    }
+
+    //    org.mariadb.jdbc.Driver
     @Override
     public String getDriver(MariadbDatabaseConnection databaseConnection) {
         return "org.mariadb.jdbc.Driver";
@@ -28,4 +30,8 @@ public class MariadbDatabaseConnectionService extends DatabaseConnectionService<
         return MariadbDatabaseConnection.class;
     }
 
+    @Override
+    public String refactorLimitAndOffset(MariadbDatabaseConnection databaseConnection, String query) {
+        return query;
+    }
 }

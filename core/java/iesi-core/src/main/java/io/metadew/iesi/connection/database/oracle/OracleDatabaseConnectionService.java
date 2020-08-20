@@ -56,4 +56,9 @@ public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionSer
             throw new RuntimeException(e);
         }
     }
+
+    public String refactorLimitAndOffset(OracleDatabaseConnection databaseConnection, String query) {
+        String newQuery = query.replaceAll("(limit|LIMIT|Limit)", " Offset ").replaceAll("(offset|OFFSET)", "ROWS FETCH NEXT").replaceAll("(ROWS FETCH NEXT\\s+\\w+)", "  $1 ROWS ONLY ");
+        return newQuery;
+    }
 }

@@ -27,4 +27,9 @@ public class NetezzaDatabaseConnectionService extends SchemaDatabaseConnectionSe
     public Class<NetezzaDatabaseConnection> appliesTo() {
         return NetezzaDatabaseConnection.class;
     }
+
+    @Override
+    public String refactorLimitAndOffset(NetezzaDatabaseConnection databaseConnection, String query) {
+        return query;
+    }
 }

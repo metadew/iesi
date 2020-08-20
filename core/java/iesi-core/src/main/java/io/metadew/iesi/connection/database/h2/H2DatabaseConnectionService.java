@@ -32,6 +32,11 @@ public class H2DatabaseConnectionService extends SchemaDatabaseConnectionService
         return H2DatabaseConnection.class;
     }
 
+    @Override
+    public String refactorLimitAndOffset(H2DatabaseConnection databaseConnection, String query) {
+        return query;
+    }
+
     public Connection getConnection(H2DatabaseConnection h2DatabaseConnection) {
         try {
             Connection connection = super.getConnection(h2DatabaseConnection);

@@ -27,4 +27,9 @@ public class PrestoDatabaseConnectionService extends SchemaDatabaseConnectionSer
     public Class<PrestoDatabaseConnection> appliesTo() {
         return PrestoDatabaseConnection.class;
     }
+
+    @Override
+    public String refactorLimitAndOffset(PrestoDatabaseConnection databaseConnection, String query) {
+        return query;
+    }
 }

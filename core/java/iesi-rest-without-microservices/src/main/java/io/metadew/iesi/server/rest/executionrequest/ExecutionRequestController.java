@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -46,12 +47,35 @@ public class ExecutionRequestController {
         this.executionRequestDtoResourceAssemblerPage = executionRequestDtoResourceAssemblerPage;
     }
 
+    @SuppressWarnings("unchecked")
     @GetMapping("")
-    public PagedModel<ExecutionRequestDto> getAll(Pageable pageable) {
-        Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService.getAll(pageable);
+    public PagedModel<ExecutionRequestDto> getAll(Pageable pageable,
+                                                  @RequestParam(required = false, name = "script") String script,
+                                                  @RequestParam(required = false, name = "version") String version,
+                                                  @RequestParam(required = false, name = "environment") String environment,
+                                                  @RequestParam(required = false, name = "label") String labelKeyCombination) {
+        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination);
+        Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService.getAll(pageable, executionRequestFilters);
         if (executionRequestDtoPage.hasContent())
             return executionRequestDtoResourceAssemblerPage.toModel(executionRequestDtoPage, executionRequestDtoModelAssembler::toModel);
         return (PagedModel<ExecutionRequestDto>) executionRequestDtoResourceAssemblerPage.toEmptyModel(executionRequestDtoPage, ExecutionRequestDto.class);
+    }
+
+    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination) {
+        List<ExecutionRequestFilter> executionRequestFilters = new ArrayList<>();
+        if (name != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, name, false));
+        }
+        if (labelKeyCombination != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.LABEL, labelKeyCombination, false));
+        }
+        if (environment != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.ENVIRONMENT, environment, false));
+        }
+        if (version != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, version, true));
+        }
+        return executionRequestFilters;
     }
 
     @GetMapping("/{id}")

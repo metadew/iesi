@@ -84,14 +84,14 @@ public class ExecutionRequestControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<ExecutionRequestDto> executionRequestDtoList = new ArrayList<>();
         Page<ExecutionRequestDto> page = new PageImpl<>(executionRequestDtoList, pageable, 1);
-        given(executionRequestService.getAll(pageable)).willReturn(page);
+        given(executionRequestService.getAll(any(), any())).willReturn(page);
 
         mvc.perform(get("/execution-requests").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList").exists())
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList").isArray())
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList").isEmpty());
+                .andExpect(jsonPath("$._embedded.execution_requests").exists())
+                .andExpect(jsonPath("$._embedded.execution_requests").isArray())
+                .andExpect(jsonPath("$._embedded.execution_requests").isEmpty());
     }
 
     @Test
@@ -132,46 +132,46 @@ public class ExecutionRequestControllerTest {
         Page<ExecutionRequestDto> page2 = new PageImpl<>(executionRequestDtoList2, pageable2, 3);
         Page<ExecutionRequestDto> page3 = new PageImpl<>(executionRequestDtoList3, pageable3, 3);
 
-        given(executionRequestService.getAll(any())).willReturn(page1);
+        given(executionRequestService.getAll(any(), any())).willReturn(page1);
         mvc.perform(get("/execution-requests?page=0&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].name", is(executionRequestDtoList1.get(0).getName())))
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].executionRequestId", is(executionRequestDtoList1.get(0).getExecutionRequestId())))
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].description", is(executionRequestDtoList1.get(0).getDescription())))
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].scope", is(executionRequestDtoList1.get(0).getScope())))
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].context", is(executionRequestDtoList1.get(0).getContext())))
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].email", is(executionRequestDtoList1.get(0).getEmail())))
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].executionRequestStatus", is(executionRequestDtoList1.get(0).getExecutionRequestStatus())))
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].scriptExecutionRequests", is(executionRequestDtoList1.get(0).getScriptExecutionRequests())))
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].executionRequestLabels", is(executionRequestDtoList1.get(0).getExecutionRequestLabels())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].name", is(executionRequestDtoList1.get(0).getName())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].executionRequestId", is(executionRequestDtoList1.get(0).getExecutionRequestId())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].description", is(executionRequestDtoList1.get(0).getDescription())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].scope", is(executionRequestDtoList1.get(0).getScope())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].context", is(executionRequestDtoList1.get(0).getContext())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].email", is(executionRequestDtoList1.get(0).getEmail())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].executionRequestStatus", is(executionRequestDtoList1.get(0).getExecutionRequestStatus())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].scriptExecutionRequests", is(executionRequestDtoList1.get(0).getScriptExecutionRequests())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].executionRequestLabels", is(executionRequestDtoList1.get(0).getExecutionRequestLabels())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
         ;
 
-        given(executionRequestService.getAll(pageable2)).willReturn(page2);
+        given(executionRequestService.getAll(any(), any())).willReturn(page2);
         mvc.perform(get("/execution-requests?page=1&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].name", is(executionRequestDtoList2.get(0).getName())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].name", is(executionRequestDtoList2.get(0).getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(executionRequestService.getAll(pageable3)).willReturn(page3);
+        given(executionRequestService.getAll(any(), any())).willReturn(page3);
         mvc.perform(get("/execution-requests?page=2&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.executionRequestDtoList[0].name", is(executionRequestDtoList3.get(0).getName())))
+                .andExpect(jsonPath("$._embedded.execution_requests[0].name", is(executionRequestDtoList3.get(0).getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList3.size())))))

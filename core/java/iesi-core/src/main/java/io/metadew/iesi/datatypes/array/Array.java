@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @Getter
 @RequiredArgsConstructor
-public class Array extends DataType {
+public class Array implements DataType {
 
     private final List<DataType> list;
 

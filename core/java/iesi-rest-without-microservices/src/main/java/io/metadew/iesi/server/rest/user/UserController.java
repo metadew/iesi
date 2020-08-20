@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.stream.Collectors;
 
+
 @RestController
 @Profile("security")
 @Tag(name = "users", description = "Everything about users")

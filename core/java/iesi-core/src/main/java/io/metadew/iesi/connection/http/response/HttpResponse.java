@@ -9,6 +9,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -24,8 +25,10 @@ public class HttpResponse {
     private final Locale locale;
     private final HttpEntity httpEntity;
     private final byte[] entityContent;
+    private final LocalDateTime requestTimestamp;
+    private final LocalDateTime responseTimestamp;
 
-    public HttpResponse(CloseableHttpResponse response) throws IOException {
+    public HttpResponse(CloseableHttpResponse response, LocalDateTime requestTimestamp, LocalDateTime responseTimestamp) throws IOException {
         this.response = response;
         this.statusLine = response.getStatusLine();
         this.httpEntity = response.getEntity();
@@ -38,6 +41,8 @@ public class HttpResponse {
         } else {
             this.entityContent = null;
         }
+        this.requestTimestamp = requestTimestamp;
+        this.responseTimestamp = responseTimestamp;
     }
 
     public Optional<byte[]> getEntityContent() {

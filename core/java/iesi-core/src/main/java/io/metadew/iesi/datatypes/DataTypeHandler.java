@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.*;
 import io.metadew.iesi.datatypes.array.ArrayService;
 import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDatasetService;
+import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class DataTypeHandler {
         dataTypeServiceMap = new HashMap<>();
         dataTypeServiceMap.put(new ClassStringPair(TextService.getInstance().keyword(), TextService.getInstance().appliesTo()), TextService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(TemplateService.getInstance().keyword(), TemplateService.getInstance().appliesTo()), TemplateService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(KeyValueDatasetService.getInstance().keyword(), KeyValueDatasetService.getInstance().appliesTo()), KeyValueDatasetService.getInstance());
     }
 
@@ -70,6 +72,11 @@ public class DataTypeHandler {
         } else {
             return TextService.getInstance().resolve(input, executionRuntime);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean equals(DataType _this, DataType other, ExecutionRuntime executionRuntime) {
+        return getDataTypeService(_this.getClass()).equals(_this, other, executionRuntime);
     }
 
     public IDataTypeService getDataTypeService(String key) {

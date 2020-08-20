@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @Getter
 @Log4j2
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public abstract class Dataset extends DataType {
+@EqualsAndHashCode
+public abstract class Dataset implements DataType {
 
     private String name;
     private List<String> labels;

@@ -233,4 +233,7 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
         return connection.prepareStatement(sqlStatement);
     }
 
+    public String refactorLimitAndOffset(T databaseConnection, String query) {
+        return query;
+    }
 }

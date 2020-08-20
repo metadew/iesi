@@ -28,8 +28,4 @@ public class MysqlDatabaseConnectionService extends DatabaseConnectionService<My
         return MysqlDatabaseConnection.class;
     }
 
-    @Override
-    public String refactorLimitAndOffset(MysqlDatabaseConnection databaseConnection, String query) {
-        return query;
-    }
 }

@@ -27,9 +27,4 @@ public class TeradataDatabaseConnectionService extends DatabaseConnectionService
     public Class<TeradataDatabaseConnection> appliesTo() {
         return TeradataDatabaseConnection.class;
     }
-
-    @Override
-    public String refactorLimitAndOffset(TeradataDatabaseConnection databaseConnection, String query) {
-        return query;
-    }
 }

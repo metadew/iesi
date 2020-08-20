@@ -28,8 +28,4 @@ public class MssqlDatabaseConnectionService extends SchemaDatabaseConnectionServ
         return MssqlDatabaseConnection.class;
     }
 
-    @Override
-    public String refactorLimitAndOffset(MssqlDatabaseConnection databaseConnection, String query) {
-        return query;
-    }
 }

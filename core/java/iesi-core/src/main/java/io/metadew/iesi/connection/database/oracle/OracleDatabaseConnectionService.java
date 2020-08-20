@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionService<OracleDatabaseConnection> implements ISchemaDatabaseConnectionService<OracleDatabaseConnection> {
@@ -57,8 +59,12 @@ public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionSer
         }
     }
 
-    public String refactorLimitAndOffset(OracleDatabaseConnection databaseConnection, String query) {
-        String newQuery = query.replaceAll("(limit|LIMIT|Limit)", "OffSet").replaceAll("(offset|OFFSET|Offset)", "ROWS FETCH NEXT").replaceAll("(ROWS FETCH NEXT\\s+\\w+)", "  $1 ROWS ONLY ");
-        return newQuery;
+    public String refactorLimitAndOffset(String query) {
+        Pattern pattern = Pattern.compile("(?i)limit(?=\\s+[0-9]+\\s+(?i)offset+\\s+[0-9])");
+        Matcher matcher = pattern.matcher(query);
+        if (matcher.find()) {
+            return query.replaceAll("(?i)limit", "OffSet").replaceAll("(offset|OFFSET|Offset)", "ROWS FETCH NEXT").replaceAll("(ROWS FETCH NEXT\\s+\\w+)", " $1 ROWS ONLY ");
+        }
+        return query;
     }
 }

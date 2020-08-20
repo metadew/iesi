@@ -28,9 +28,4 @@ public class Db2DatabaseConnectionService extends SchemaDatabaseConnectionServic
     public Class<Db2DatabaseConnection> appliesTo() {
         return Db2DatabaseConnection.class;
     }
-
-    @Override
-    public String refactorLimitAndOffset(Db2DatabaseConnection databaseConnection, String query) {
-        return query;
-    }
 }

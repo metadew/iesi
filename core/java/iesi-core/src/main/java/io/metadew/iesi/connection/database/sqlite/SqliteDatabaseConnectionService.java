@@ -36,9 +36,4 @@ public class SqliteDatabaseConnectionService extends DatabaseConnectionService<S
     public Class<SqliteDatabaseConnection> appliesTo() {
         return SqliteDatabaseConnection.class;
     }
-
-    @Override
-    public String refactorLimitAndOffset(SqliteDatabaseConnection databaseConnection, String query) {
-        return query;
-    }
 }

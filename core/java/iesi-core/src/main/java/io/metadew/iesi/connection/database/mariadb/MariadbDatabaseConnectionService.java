@@ -29,9 +29,4 @@ public class MariadbDatabaseConnectionService extends DatabaseConnectionService<
     public Class<MariadbDatabaseConnection> appliesTo() {
         return MariadbDatabaseConnection.class;
     }
-
-    @Override
-    public String refactorLimitAndOffset(MariadbDatabaseConnection databaseConnection, String query) {
-        return query;
-    }
 }

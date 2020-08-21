@@ -4,13 +4,13 @@ iesi:
     repository:
       # category can be: general, design, connectivity, trace, result.
       # each category should define its own type and definition
-        categories:
+      - categories:
           - general
         instance:
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
-          type: oracle
+          type: h2
           mode: memory
           database: test;ALIAS_COLUMN_NAME=TRUE
           owner:

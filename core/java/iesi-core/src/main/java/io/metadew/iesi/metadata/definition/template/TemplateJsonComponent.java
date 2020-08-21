@@ -86,7 +86,6 @@ public class TemplateJsonComponent {
                 );
             }
 
-            // TODO
             return Template.builder()
                     .metadataKey(templateKey)
                     .name(name)
@@ -96,12 +95,5 @@ public class TemplateJsonComponent {
                     .build();
         }
 
-//        public static class Serializer extends JsonSerializer<Script> {
-//            @Override
-//            public void serialize(Script script, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-//                jsonGenerator.writeStartObject();
-//                jsonGenerator.writeEndObject();
-//            }
-//        }
     }
 }

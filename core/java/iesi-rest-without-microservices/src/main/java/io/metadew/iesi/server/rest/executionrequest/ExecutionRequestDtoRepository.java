@@ -47,7 +47,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 // base table
                 " (" + getBaseQuery(pageable, executionRequestFilters) + ") base_execution_requests " +
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                "on execution_requests.REQUEST_ID = base_execution_requests.REQUEST_ID " +
+                "on base_execution_requests.REQUEST_ID = execution_requests.REQUEST_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
                 "on base_execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
@@ -65,7 +65,9 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_execution_request_pars " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_pars.SCRIPT_EXEC_REQ_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
-                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID;";
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
+                getOrderByClause(pageable) +
+                ";";
     }
 
     private String getBaseQuery(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
@@ -205,14 +207,20 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
             executionRequestBuilderMap.put(executionRequestId, executionRequestBuilder);
         }
         mapExecutionRequestLabel(cachedRowSet, executionRequestBuilder);
-        mapImpersonation(cachedRowSet, executionRequestBuilder);
-        mapScriptExecutionParameters(cachedRowSet, executionRequestBuilder);
-        mapScriptExecutionRunId(cachedRowSet, executionRequestBuilder);
-        extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
+        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
+        if (scriptExecutionRequestBuilder == null) {
+            return;
+        }
+        mapImpersonation(cachedRowSet, scriptExecutionRequestBuilder);
+        mapScriptExecutionParameters(cachedRowSet, scriptExecutionRequestBuilder);
+        mapScriptExecutionRunId(cachedRowSet, scriptExecutionRequestBuilder);
     }
 
     private ScriptExecutionRequestBuilder extractScriptExecutionRequestBuilder(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
         String scriptExecutionRequestId = cachedRowSet.getString("script_exe_req_id");
+        if (scriptExecutionRequestId == null) {
+            return null;
+        }
         ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = executionRequestBuilder.getScriptExecutionRequests().get(scriptExecutionRequestId);
         if (scriptExecutionRequestBuilder == null) {
             scriptExecutionRequestBuilder = new ScriptExecutionRequestBuilder(
@@ -232,20 +240,24 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         return scriptExecutionRequestBuilder;
     }
 
-    private void mapScriptExecutionRunId(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
+    private void mapScriptExecutionRunId(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
         // script_exec_id, script_exec_run_id, script_exec_strt_tms, script_exec_end_tms, script_exec_status
 
+        String runId = cachedRowSet.getString("script_exec_run_id");
+        if (runId == null) {
+            return;
+        }
         if (scriptExecutionRequestBuilder.getRunId() == null) {
-            String runId = cachedRowSet.getString("script_exec_run_id");
             scriptExecutionRequestBuilder.setRunId(runId);
         }
     }
 
-    private void mapScriptExecutionParameters(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
+    private void mapScriptExecutionParameters(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
         // script_exe_req_par_id, script_exe_req_par_name, script_exe_req_par_val
         String scriptExecutionRequestParameterId = cachedRowSet.getString("script_exe_req_par_id");
+        if (scriptExecutionRequestParameterId == null) {
+            return;
+        }
         ScriptExecutionRequestParameterDto scriptExecutionRequestParameterDto = scriptExecutionRequestBuilder.getParameters().get(scriptExecutionRequestParameterId);
 
         if (scriptExecutionRequestParameterDto == null) {
@@ -257,16 +269,17 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         }
     }
 
-    private void mapImpersonation(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
+    private void mapImpersonation(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
         // script_exe_req_id, script_exe_req_exit, script_exe_req_env,
         // script_exe_req_st, script_exe_req_file, script_exe_req_file_name, script_exe_req_name,
         // script_exe_req_name_name, script_exe_req_name_vrs, script_exe_req_imp_id, script_exe_req_imp_id_id
 
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
 
         String scriptExecutionRequestImpersonationId = cachedRowSet.getString("script_exe_req_imp_id");
+        if (scriptExecutionRequestImpersonationId == null) {
+            return;
+        }
         ScriptExecutionRequestImpersonationDto scriptExecutionRequestImpersonationDto = scriptExecutionRequestBuilder.getImpersonations().get(scriptExecutionRequestImpersonationId);
-
         if (scriptExecutionRequestImpersonationDto == null) {
             scriptExecutionRequestImpersonationDto = new ScriptExecutionRequestImpersonationDto(cachedRowSet.getString("script_exe_req_imp_id_id"));
             scriptExecutionRequestBuilder.getImpersonations().put(scriptExecutionRequestImpersonationId, scriptExecutionRequestImpersonationDto);
@@ -277,6 +290,9 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         // exe_req_label_id, exe_req_label_name, exe_req_label_value
 
         String executionRequestLabelId = cachedRowSet.getString("exe_req_label_id");
+        if (executionRequestLabelId == null) {
+            return;
+        }
         ExecutionRequestLabelDto executionRequestLabelDto = executionRequestBuilder.getExecutionRequestLabels().get(executionRequestLabelId);
 
         if (executionRequestLabelDto == null) {

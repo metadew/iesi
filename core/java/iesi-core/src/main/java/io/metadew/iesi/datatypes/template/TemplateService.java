@@ -80,25 +80,19 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
         List<Matcher> thisMatchers = _this.getMatchers();
         List<Matcher> otherMatchers = other.getMatchers();
 
-        if (!thisMatchers.stream()
+        if (!thisMatchers.parallelStream()
                 .map(Matcher::getKey)
                 .collect(Collectors.toSet())
-                .equals(otherMatchers.stream()
+                .equals(otherMatchers.parallelStream()
                         .map(Matcher::getKey)
                         .collect(Collectors.toSet()))) {
             return false;
         }
 
-        for (Matcher thisMatcher : thisMatchers) {
-            if (!otherMatchers.stream()
-                    .filter(matcher -> matcher.getKey().equals(thisMatcher.getKey()))
-                    .findFirst()
-                    .map(matcher -> equals(matcher.getMatcherValue(), thisMatcher.getMatcherValue(), executionRuntime))
-                    .orElse(false)) {
-                return false;
-            }
-        }
-        return true;
+        return thisMatchers.parallelStream()
+                .allMatch(thisMatcher -> otherMatchers.parallelStream()
+                        .anyMatch(otherMatcher -> otherMatcher.getKey().equals(thisMatcher.getKey())
+                                && equals(thisMatcher.getMatcherValue(), otherMatcher.getMatcherValue(), executionRuntime)));
     }
 
     private boolean equals(MatcherValue _this, MatcherValue other, ExecutionRuntime executionRuntime) {
@@ -166,12 +160,12 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
     public boolean matches(DataType dataType, Template template, ExecutionRuntime executionRuntime) {
         if (dataType instanceof Dataset) {
             for (Matcher matcher : template.getMatchers()) {
-                log.info("checking " + matcher.toString());
+                log.debug("validating " + matcher.toString() + " of template " + template.toString());
                 if (!DatasetHandler.getInstance().getDataItem((Dataset) dataType, matcher.getKey(), executionRuntime)
-                        .map(dataType1 -> MatcherValueHandler.getInstance().matches(matcher.getMatcherValue(), dataType1, executionRuntime))
+                        .map(dataItem -> MatcherValueHandler.getInstance().matches(matcher.getMatcherValue(), dataItem, executionRuntime))
                         .orElse(false)) {
                     if (!DatasetHandler.getInstance().getDataItem((Dataset) dataType, matcher.getKey(), executionRuntime).isPresent()) {
-                        log.warn("Dataset " + ((Dataset) dataType).toString() + " does not contain item with key " + matcher.getKey());
+                        log.warn("Dataset " + dataType.toString() + " does not contain item with key " + matcher.getKey());
                     } else {
                         log.warn(DatasetHandler.getInstance().getDataItem((Dataset) dataType, matcher.getKey(), executionRuntime).get().toString() + " does not match " + matcher.getMatcherValue().toString());
                     }

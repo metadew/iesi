@@ -92,19 +92,19 @@ iesi:
             length: 255
             nullable: false
           EXPIRED:
-            description: Boolean determining if the user is activated or not
+            description: Boolean determining if the user is expired or not
             order: 3
             type: string
             length: 255
             nullable: false
           CREDENTIALS_EXPIRED:
-            description: Boolean determining if the user is activated or not
+            description: Boolean determining if the users credentials are expired or not
             order: 3
             type: string
             length: 255
             nullable: false
           LOCKED:
-            description: Boolean determining if the user is activated or not
+            description: Boolean determining if the user is locked or not
             order: 3
             type: string
             length: 255

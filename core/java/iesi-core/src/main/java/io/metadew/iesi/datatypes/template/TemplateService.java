@@ -169,12 +169,12 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
     public boolean matches(DataType dataType, Template template, ExecutionRuntime executionRuntime) {
         if (dataType instanceof Dataset) {
             for (Matcher matcher : template.getMatchers()) {
-                log.info("checking " + matcher.toString());
+                log.debug("validating " + matcher.toString() + " of template " + template.toString());
                 if (!DatasetHandler.getInstance().getDataItem((Dataset) dataType, matcher.getKey(), executionRuntime)
-                        .map(dataType1 -> MatcherValueHandler.getInstance().matches(matcher.getMatcherValue(), dataType1, executionRuntime))
+                        .map(dataItem -> MatcherValueHandler.getInstance().matches(matcher.getMatcherValue(), dataItem, executionRuntime))
                         .orElse(false)) {
                     if (!DatasetHandler.getInstance().getDataItem((Dataset) dataType, matcher.getKey(), executionRuntime).isPresent()) {
-                        log.warn("Dataset " + ((Dataset) dataType).toString() + " does not contain item with key " + matcher.getKey());
+                        log.warn("Dataset " + dataType.toString() + " does not contain item with key " + matcher.getKey());
                     } else {
                         log.warn(DatasetHandler.getInstance().getDataItem((Dataset) dataType, matcher.getKey(), executionRuntime).get().toString() + " does not match " + matcher.getMatcherValue().toString());
                     }

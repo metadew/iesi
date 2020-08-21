@@ -60,11 +60,19 @@ public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionSer
     }
 
     public String refactorLimitAndOffset(String query) {
-        Pattern pattern = Pattern.compile("(?i)limit(?=\\s+[0-9]+\\s+(?i)offset+\\s+[0-9])");
+
+        Pattern pattern = Pattern.compile("(?i)limit\\s+(?<limit>[0-9]+)\\s+(?i)offset\\s+(?<offset>[0-9]+)");
         Matcher matcher = pattern.matcher(query);
-        if (matcher.find()) {
-            return query.replaceAll("(?i)limit", "OffSet").replaceAll("(offset|OFFSET|Offset)", "ROWS FETCH NEXT").replaceAll("(ROWS FETCH NEXT\\s+\\w+)", " $1 ROWS ONLY ");
+
+        StringBuilder stringBuilder = new StringBuilder(query);
+        while (matcher.find()) {
+            int limit = Integer.parseInt(matcher.group("limit"));
+            int offset = Integer.parseInt(matcher.group("offset"));
+            int matchStartIndex = matcher.start();
+            int matchEndIndex = matcher.end();
+            stringBuilder.replace(matchStartIndex, matchEndIndex, " OFFSET " + offset + " ROWS FETCH NEXT " + limit + " ROWS ONLY ");
+            matcher.reset(stringBuilder);
         }
-        return query;
+        return stringBuilder.toString();
     }
 }

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.fwk;
 
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.ArtifactoryConnection;
 import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
@@ -7,13 +8,13 @@ import io.metadew.iesi.connection.tools.CompressionTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -26,21 +27,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
-public class FwkExecuteSuite {
+public class FwkExecuteSuite extends ActionTypeExecution {
 
-    private ActionExecution actionExecution;
-    private ScriptExecution scriptExecution;
-    private ExecutionControl executionControl;
-
-    // Parameters
     private ActionParameterOperation componentName;
     private ActionParameterOperation suiteName;
     private ActionParameterOperation suiteVersion;
@@ -52,23 +45,10 @@ public class FwkExecuteSuite {
     private ActionParameterOperation repositoryBuildPath;
     private ActionParameterOperation repositoryBuildAsset;
     private ActionParameterOperation environmentName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public FwkExecuteSuite() {
-
-    }
-
     public FwkExecuteSuite(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setScriptExecution(scriptExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -99,27 +79,27 @@ public class FwkExecuteSuite {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("comp_nm")) {
-                this.getComponentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getComponentName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_nm")) {
-                this.getSuiteName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getSuiteName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_version")) {
-                this.getSuiteVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getSuiteVersion().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite_build")) {
-                this.getSuiteBuild().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getSuiteBuild().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_con_nm")) {
-                this.getRepositoryConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_comp_path")) {
-                this.getRepositoryComponentPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryComponentPath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_suite_path")) {
-                this.getRepositorySuitePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositorySuitePath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_version_path")) {
-                this.getRepositoryVersionPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryVersionPath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_build_path")) {
-                this.getRepositoryBuildPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryBuildPath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repo_build_asset")) {
-                this.getRepositoryBuildAsset().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getRepositoryBuildAsset().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("env_nm")) {
-                this.getEnvironmentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getEnvironmentName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -137,39 +117,20 @@ public class FwkExecuteSuite {
         this.getActionParameterOperationMap().put("ENV_NM", this.getEnvironmentName());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            String componentName = convertToString(getComponentName().getValue());
-            String suiteName = convertToString(getSuiteName().getValue());
-            String suiteVersion = convertToString(getSuiteVersion().getValue());
-            String suiteBuild = convertToString(getComponentName().getValue());
-            String repositoryConnectionName = convertToString(getRepositoryConnectionName().getValue());
-            String repositoryComponentPath = convertToString(getRepositoryComponentPath().getValue());
-            String repositorySuitePath = convertToString(getRepositorySuitePath().getValue());
-            String repositoryVersionPath = convertToString(getRepositoryVersionPath().getValue());
-            String repositoryBuildPath = convertToString(getRepositoryBuildPath().getValue());
-            String repositoryBuildAsset = convertToString(getRepositoryBuildAsset().getValue());
-            String environmentName = convertToString(getEnvironmentName().getValue());
-
-            return execute(componentName, suiteName, suiteVersion, suiteBuild, repositoryConnectionName, repositoryComponentPath, repositorySuitePath, repositoryVersionPath, repositoryBuildPath, repositoryBuildAsset, environmentName);
-        } catch (InterruptedException e) {
-            throw e;
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	private boolean execute(String componentName, String suiteName, String suiteVersion, String suiteBuild, String repositoryConnectionName, String repositoryComponentPath, String repositorySuitePath, String repositoryVersionPath, String repositoryBuildPath, String repositoryBuildAsset, String environmentName) throws InterruptedException, ScriptExecutionBuildException {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected boolean executeAction() throws InterruptedException, ScriptExecutionBuildException {
         // Get Connection
+        String componentName = convertToString(getComponentName().getValue());
+        String suiteName = convertToString(getSuiteName().getValue());
+        String suiteVersion = convertToString(getSuiteVersion().getValue());
+        String suiteBuild = convertToString(getComponentName().getValue());
+        String repositoryConnectionName = convertToString(getRepositoryConnectionName().getValue());
+        String repositoryComponentPath = convertToString(getRepositoryComponentPath().getValue());
+        String repositorySuitePath = convertToString(getRepositorySuitePath().getValue());
+        String repositoryVersionPath = convertToString(getRepositoryVersionPath().getValue());
+        String repositoryBuildPath = convertToString(getRepositoryBuildPath().getValue());
+        String repositoryBuildAsset = convertToString(getRepositoryBuildAsset().getValue());
+        String environmentName = convertToString(getEnvironmentName().getValue());
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(repositoryConnectionName, this.getExecutionControl().getEnvName()))
                 .get();
@@ -230,26 +191,26 @@ public class FwkExecuteSuite {
         List<FileConnection> fileConnectionList = new ArrayList();
         fileConnectionList = FolderTools.getConnectionsInFolder(buildAssetFolder, "regex", ".+\\.json", fileConnectionList);
         for (FileConnection fileConnection : fileConnectionList) {
-                Script script = null;
+            Script script = null;
 
-                JsonInputOperation jsonInputOperation = new JsonInputOperation(fileConnection.getFilePath());
-                script = jsonInputOperation.getScript().get();
-                if (script == null) {
-                    System.out.println("No script found for execution");
+            JsonInputOperation jsonInputOperation = new JsonInputOperation(fileConnection.getFilePath());
+            script = jsonInputOperation.getScript().get();
+            if (script == null) {
+                System.out.println("No script found for execution");
 
-                    this.getActionExecution().getActionControl().increaseWarningCount();
-                } else {
-                    ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
-                            .script(script)
-                            .actionSelectOperation(new ActionSelectOperation(""))
-                            .environment(environmentName)
-                            .exitOnCompletion(false)
-                            .build();
+                this.getActionExecution().getActionControl().increaseWarningCount();
+            } else {
+                ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
+                        .script(script)
+                        .actionSelectOperation(new ActionSelectOperation(""))
+                        .environment(environmentName)
+                        .exitOnCompletion(false)
+                        .build();
 
-                    scriptExecution.execute();
+                scriptExecution.execute();
 
-                    this.getActionExecution().getActionControl().increaseSuccessCount();
-                }
+                this.getActionExecution().getActionControl().increaseSuccessCount();
+            }
 
         }
         return true;
@@ -266,29 +227,6 @@ public class FwkExecuteSuite {
         }
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public ScriptExecution getScriptExecution() {
-        return scriptExecution;
-    }
-
-    public void setScriptExecution(ScriptExecution scriptExecution) {
-        this.scriptExecution = scriptExecution;
-    }
 
     public ActionParameterOperation getEnvironmentName() {
         return environmentName;
@@ -296,14 +234,6 @@ public class FwkExecuteSuite {
 
     public void setEnvironmentName(ActionParameterOperation environmentName) {
         this.environmentName = environmentName;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getComponentName() {

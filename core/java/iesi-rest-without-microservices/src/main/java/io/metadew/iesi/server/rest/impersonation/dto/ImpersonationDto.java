@@ -3,10 +3,7 @@ package io.metadew.iesi.server.rest.impersonation.dto;
 
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
@@ -16,6 +13,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ImpersonationDto extends RepresentationModel<ImpersonationDto> {
     private String name;
     private String description;

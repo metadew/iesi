@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Log4j2
 public class ArrayService implements IDataTypeService<Array> {
 
@@ -46,6 +47,26 @@ public class ArrayService implements IDataTypeService<Array> {
                 .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
                 .collect(Collectors.toList());
         return new Array(resolvedArguments);
+    }
+
+    @Override
+    public boolean equals(Array _this, Array other, ExecutionRuntime executionRuntime) {
+        if (_this == null && other == null) {
+            return true;
+        }
+        if (_this == null || other == null) {
+            return false;
+        }
+        if (_this.getList().size() != other.getList().size()) {
+            return false;
+        }
+
+        for (int i = 0; i < _this.getList().size(); i++) {
+            if (!DataTypeHandler.getInstance().equals(_this.getList().get(i), other.getList().get(i), executionRuntime)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Array resolve(KeyValueDataset dataset, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {

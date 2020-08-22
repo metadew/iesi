@@ -3,7 +3,9 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +19,7 @@ public class ListLookup implements LookupInstruction {
 
     private final String ELEMENT_KEY = "parameterName";
 
-	private final Pattern INPUT_PARAMETER_PATTERN = Pattern
+    private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("\\s*\"?(?<" + ARRAY_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + ELEMENT_KEY + ">(\\w|\\.)+)\\s*");
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -39,11 +41,20 @@ public class ListLookup implements LookupInstruction {
         LOGGER.debug(MessageFormat.format("fetching element {0} of list {1}", arguments[1], arguments[0]));
 
         Array array = getArray(DataTypeHandler.getInstance().resolve(arguments[0], executionRuntime));
-        int arrayElementIndex = getIndex(DataTypeHandler.getInstance().resolve(arguments[1], executionRuntime)) - 1;
-//        Array array = getArray(dataTypeService.resolve(inputParameterMatcher.group(ARRAY_KEY)));
-//        int arrayElementIndex = Integer.parseInt(inputParameterMatcher.group(ELEMENT_KEY)) - 1;
-
-        return array.getList().get(arrayElementIndex).toString();
+        DataType elementSelector = DataTypeHandler.getInstance().resolve(arguments[1], executionRuntime);
+        if (elementSelector instanceof Text) {
+            int index = Integer.parseInt(((Text) elementSelector).getString()) - 1;
+            return array.getList().get(index).toString();
+        } else if (elementSelector instanceof Template) {
+            for (DataType dataType : array.getList()) {
+                if (TemplateService.getInstance().matches(dataType, (Template) elementSelector, executionRuntime)) {
+                    return dataType.toString();
+                }
+            }
+            throw new RuntimeException(MessageFormat.format("List {0} does not contain element matching template {1}", array.toString(), elementSelector.toString()));
+        } else {
+            throw new IllegalArgumentException(MessageFormat.format("Cannot lookup {0} in list {1}", elementSelector, array.toString()));
+        }
     }
 
     private int getIndex(DataType index) {

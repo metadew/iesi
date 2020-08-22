@@ -245,6 +245,25 @@ iesi:
             subroutine:
             impersonate: false
         status: stable
+      eval.listContains:
+        className: io.metadew.iesi.script.action.eval.EvalListContains
+        description: Evaluate if a list contains a certain value
+        parameters:
+          list:
+            description: list to be checked
+            type: string
+            mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+          value:
+            description: element value
+            type: string
+            mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+        status: stable
       eval.executeExpression:
         className: io.metadew.iesi.script.action.eval.EvalExecuteExpression
         description: Evaluate an expression using scripted syntax

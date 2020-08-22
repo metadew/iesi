@@ -13,9 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionRequestLabel, ExecutionRequestLabelKey> {
@@ -122,8 +120,8 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    public List<ExecutionRequestLabel> getByExecutionRequest(ExecutionRequestKey executionRequestKey) {
-        List<ExecutionRequestLabel> scriptLabels = new ArrayList<>();
+    public Set<ExecutionRequestLabel> getByExecutionRequest(ExecutionRequestKey executionRequestKey) {
+        Set<ExecutionRequestLabel> scriptLabels = new HashSet<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
                 + " where REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");

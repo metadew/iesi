@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.publisher;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.metadew.iesi.connection.gcp.GCPPublisher;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,7 @@ import java.io.IOException;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@JsonDeserialize(using = GCPPublisherConfigurationJsonComponent.Deserializer.class)
 public class GCPPublisherConfiguration extends PublisherConfiguration<GCPPublisher> {
 
     private final String projectId;

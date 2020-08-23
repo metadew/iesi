@@ -27,6 +27,7 @@ public class GCPIPublisherService implements IGCPPublisherService {
 
     @Override
     public void publish(GCPPublisher gcpPublisher, ScriptResult scriptResult) throws ExecutionException, InterruptedException, JsonProcessingException {
+        log.info("publishing " + new ObjectMapper().writeValueAsString(scriptResult) + "to " + gcpPublisher.toString());
         ByteString data = ByteString.copyFromUtf8(new ObjectMapper().writeValueAsString(scriptResult));
         PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 

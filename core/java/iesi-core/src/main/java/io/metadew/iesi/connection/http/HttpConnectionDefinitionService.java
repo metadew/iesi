@@ -7,6 +7,7 @@ public class HttpConnectionDefinitionService implements IHttpConnectionDefinitio
 
     private static final String CONNECTION_TYPE = "http";
     private static final String HOST_KEY = "host";
+    private static final String BASE_URL_KEY = "baseUrl";
     private static final String PORT_KEY = "port";
     private static final String TLS_KEY = "tls";
     private static HttpConnectionDefinitionService INSTANCE;
@@ -35,6 +36,11 @@ public class HttpConnectionDefinitionService implements IHttpConnectionDefinitio
                         .findFirst()
                         .map(ConnectionParameter::getValue)
                         .orElseThrow(() -> new RuntimeException("Http component " + connection.toString() + " does not contain a " + HOST_KEY)),
+                connection.getParameters().stream()
+                        .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(BASE_URL_KEY))
+                        .findFirst()
+                        .map(ConnectionParameter::getValue)
+                        .orElse(null),
                 connection.getParameters().stream()
                         .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(PORT_KEY))
                         .findFirst()

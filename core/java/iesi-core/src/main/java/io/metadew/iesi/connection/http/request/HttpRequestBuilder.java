@@ -1,8 +1,7 @@
 package io.metadew.iesi.connection.http.request;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -83,36 +82,109 @@ public class HttpRequestBuilder {
             return buildGet();
         } else if (type.equalsIgnoreCase("post")) {
             return buildPost();
+        } else if (type.equalsIgnoreCase("put")) {
+            return buildPut();
+        } else if (type.equalsIgnoreCase("delete")) {
+            return buildDelete();
+        } else if (type.equalsIgnoreCase("head")) {
+            return buildHead();
+        } else if (type.equalsIgnoreCase("options")) {
+            return buildOptions();
+        } else if (type.equalsIgnoreCase("patch")) {
+            return buildPatch();
+        } else if (type.equalsIgnoreCase("trace")) {
+            return buildTrace();
         } else {
             throw new HttpRequestBuilderException(MessageFormat.format("Type ''{0}'' not supported", type));
         }
     }
 
-    private HttpRequest buildPost() throws URISyntaxException, HttpRequestBuilderException {
-        verifyPostRequestRequirements();
-
+    private HttpTraceRequest buildTrace() throws HttpRequestBuilderException, URISyntaxException {
+        verifyRequestRequirements();
         URIBuilder uriBuilder = new URIBuilder(uri);
-        queryParameters.forEach(uriBuilder::addParameter);
+        addQueryParameters(uriBuilder);
+        HttpTrace httpTrace = new HttpTrace(uriBuilder.build());
+        addHeaders(httpTrace);
+        return new HttpTraceRequest(httpTrace);
+    }
 
+    private HttpPatchRequest buildPatch() throws HttpRequestBuilderException, URISyntaxException {
+        verifyRequestRequirements();
+        URIBuilder uriBuilder = new URIBuilder(uri);
+        addQueryParameters(uriBuilder);
+        HttpPatch httpPatch = new HttpPatch(uriBuilder.build());
+        addHeaders(httpPatch);
+        addBody(httpPatch);
+        return new HttpPatchRequest(httpPatch);
+    }
+
+    private HttpOptionsRequest buildOptions() throws HttpRequestBuilderException, URISyntaxException {
+        verifyRequestRequirements();
+        URIBuilder uriBuilder = new URIBuilder(uri);
+        addQueryParameters(uriBuilder);
+        HttpOptions httpOptions = new HttpOptions(uriBuilder.build());
+        addHeaders(httpOptions);
+        return new HttpOptionsRequest(httpOptions);
+    }
+
+    private HttpHeadRequest buildHead() throws HttpRequestBuilderException, URISyntaxException {
+        verifyRequestRequirements();
+        URIBuilder uriBuilder = new URIBuilder(uri);
+        addQueryParameters(uriBuilder);
+        HttpHead httpHead = new HttpHead(uriBuilder.build());
+        addHeaders(httpHead);
+        return new HttpHeadRequest(httpHead);
+    }
+
+    private HttpDeleteRequest buildDelete() throws HttpRequestBuilderException, URISyntaxException {
+        verifyRequestRequirements();
+        URIBuilder uriBuilder = new URIBuilder(uri);
+        addQueryParameters(uriBuilder);
+        HttpDelete httpDelete = new HttpDelete(uriBuilder.build());
+        addHeaders(httpDelete);
+        return new HttpDeleteRequest(httpDelete);
+    }
+
+    private HttpPutRequest buildPut() throws HttpRequestBuilderException, URISyntaxException {
+        verifyRequestRequirements();
+        URIBuilder uriBuilder = new URIBuilder(uri);
+        addQueryParameters(uriBuilder);
+        HttpPut httpPut = new HttpPut(uriBuilder.build());
+        addHeaders(httpPut);
+        addBody(httpPut);
+        return new HttpPutRequest(httpPut);
+    }
+
+    private HttpPostRequest buildPost() throws URISyntaxException, HttpRequestBuilderException {
+        verifyPostRequestRequirements();
+        URIBuilder uriBuilder = new URIBuilder(uri);
+        addQueryParameters(uriBuilder);
         HttpPost httpPost = new HttpPost(uriBuilder.build());
-
-        headers.forEach(httpPost::addHeader);
-
-        getBody().ifPresent(httpPost::setEntity);
-
+        addHeaders(httpPost);
+        addBody(httpPost);
         return new HttpPostRequest(httpPost);
     }
 
-    private HttpRequest buildGet() throws URISyntaxException, HttpRequestBuilderException {
+    private HttpGetRequest buildGet() throws URISyntaxException, HttpRequestBuilderException {
         verifyGetRequestRequirements();
         URIBuilder uriBuilder = new URIBuilder(uri);
-
-        queryParameters.forEach(uriBuilder::addParameter);
-
+        addQueryParameters(uriBuilder);
         HttpGet httpGet = new HttpGet(uriBuilder.build());
-        headers.forEach(httpGet::addHeader);
-
+        addHeaders(httpGet);
         return new HttpGetRequest(httpGet);
+    }
+
+    private void addQueryParameters(URIBuilder uriBuilder) {
+        queryParameters.forEach(uriBuilder::addParameter);
+    }
+
+    private void addHeaders(HttpRequestBase httpRequestBase) {
+        headers.forEach(httpRequestBase::addHeader);
+    }
+
+    private void addBody(HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
+        getBody().ifPresent(httpEntityEnclosingRequestBase::setEntity);
+
     }
 
     private void verifyPostRequestRequirements() throws HttpRequestBuilderException {
@@ -122,6 +194,12 @@ public class HttpRequestBuilder {
     }
 
     private void verifyGetRequestRequirements() throws HttpRequestBuilderException {
+        if (uri == null) {
+            throw new HttpRequestBuilderException("No uri supplied");
+        }
+    }
+
+    private void verifyRequestRequirements() throws HttpRequestBuilderException {
         if (uri == null) {
             throw new HttpRequestBuilderException("No uri supplied");
         }

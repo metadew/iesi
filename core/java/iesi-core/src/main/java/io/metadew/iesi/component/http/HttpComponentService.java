@@ -69,7 +69,8 @@ public class HttpComponentService implements IHttpComponentService {
 
     @Override
     public String getUri(HttpComponent httpComponent) {
-        return HttpConnectionService.getInstance().getBaseUri(httpComponent.getHttpConnection()) + httpComponent.getEndpoint();
+        return HttpConnectionService.getInstance().getBaseUri(httpComponent.getHttpConnection()) +
+                httpComponent.getEndpoint();
     }
 
     @Override
@@ -82,8 +83,12 @@ public class HttpComponentService implements IHttpComponentService {
                 HttpConnectionService.getInstance().get(httpComponentDefinition.getHttpConnectionReferenceName(), actionExecution),
                 resolveEndpoint(httpComponentDefinition.getEndpoint(), actionExecution),
                 resolveType(httpComponentDefinition.getType(), actionExecution),
-                httpComponentDefinition.getHeaders().stream().map(header -> HttpHeaderService.getInstance().convert(header, actionExecution)).collect(Collectors.toList()),
-                httpComponentDefinition.getQueryParameters().stream().map(queryParameter -> HttpQueryParameterService.getInstance().convert(queryParameter, actionExecution)).collect(Collectors.toList())
+                httpComponentDefinition.getHeaders().stream()
+                        .map(header -> HttpHeaderService.getInstance().convert(header, actionExecution))
+                        .collect(Collectors.toList()),
+                httpComponentDefinition.getQueryParameters().stream()
+                        .map(queryParameter -> HttpQueryParameterService.getInstance().convert(queryParameter, actionExecution))
+                        .collect(Collectors.toList())
         );
     }
 

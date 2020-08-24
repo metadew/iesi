@@ -31,7 +31,10 @@ public class HttpConnectionService implements IHttpConnectionService {
 
     @Override
     public String getBaseUri(HttpConnection httpConnection) {
-        return (httpConnection.isTls() ? "https" : "http") + "://" + httpConnection.getHost() + (httpConnection.getPort() != null ? ":" + httpConnection.getPort() : "");
+        return (httpConnection.isTls() ? "https" : "http") + "://" +
+                httpConnection.getHost() +
+                (httpConnection.getPort() != null ? ":" + httpConnection.getPort() : "") +
+                (httpConnection.getBaseUrl() != null ? "/" + httpConnection.getBaseUrl() : "");
     }
 
 
@@ -42,6 +45,7 @@ public class HttpConnectionService implements IHttpConnectionService {
                 httpConnectionDefinition.getDescription(),
                 httpConnectionDefinition.getEnvironmentReferenceName(),
                 httpConnectionDefinition.getHost(),
+                httpConnectionDefinition.getBaseUrl(),
                 httpConnectionDefinition.getPort(),
                 httpConnectionDefinition.isTls());
     }

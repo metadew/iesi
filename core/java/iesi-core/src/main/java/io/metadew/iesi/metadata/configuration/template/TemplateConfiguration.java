@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 
+
 @Log4j2
 public class TemplateConfiguration extends Configuration<Template, TemplateKey> {
 
@@ -56,7 +57,6 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     private static final String existsByNameQuery = "SELECT template.id " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " " +
             "WHERE template.name={0};";
-
     private static final String deleteByTemplateIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " where id={0});";
 
     private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " (ID, NAME, VERSION, DESCRIPTION) VALUES ({0}, {1}, {2}, {3});";

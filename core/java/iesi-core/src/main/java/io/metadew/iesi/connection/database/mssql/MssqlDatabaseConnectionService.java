@@ -27,4 +27,5 @@ public class MssqlDatabaseConnectionService extends SchemaDatabaseConnectionServ
     public Class<MssqlDatabaseConnection> appliesTo() {
         return MssqlDatabaseConnection.class;
     }
+
 }

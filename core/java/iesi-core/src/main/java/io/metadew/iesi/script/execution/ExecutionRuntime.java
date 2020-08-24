@@ -5,6 +5,7 @@ import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.metadata.definition.Iteration;
@@ -48,6 +49,7 @@ public class ExecutionRuntime {
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, Dataset> datasetMap;
+    private HashMap<String, Array> arrayMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
     private ImpersonationOperation impersonationOperation;
@@ -89,6 +91,7 @@ public class ExecutionRuntime {
         variableInstructions = VariableInstructionRepository.getRepository(executionControl);
         lookupInstructions = LookupInstructionRepository.getRepository(executionControl, this);
         datasetMap = new HashMap<>();
+        arrayMap = new HashMap<>();
         RWorkspaceMap = new HashMap<>();
     }
 
@@ -98,6 +101,7 @@ public class ExecutionRuntime {
         stageOperationMap.values()
                 .forEach(StageOperation::doCleanup);
         datasetMap = new HashMap<>();
+        arrayMap = new HashMap<>();
         stageOperationMap = new HashMap<>();
     }
 
@@ -525,6 +529,14 @@ public class ExecutionRuntime {
 
     public Optional<Dataset> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
+    }
+
+    public void setArray(String referenceName, Array array) throws IOException {
+        arrayMap.put(referenceName, array);
+    }
+
+    public Optional<Array> getArray(String referenceName) throws IOException {
+        return Optional.ofNullable(arrayMap.get(referenceName));
     }
 
     public void setRWorkspace(String referenceName, RWorkspace rWorkspace) {

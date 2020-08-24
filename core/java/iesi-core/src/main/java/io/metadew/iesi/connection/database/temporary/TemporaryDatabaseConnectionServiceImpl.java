@@ -127,4 +127,9 @@ public class TemporaryDatabaseConnectionServiceImpl implements IDatabaseConnecti
     public Class<TemporaryDatabaseConnection> appliesTo() {
         return TemporaryDatabaseConnection.class;
     }
+
+    @Override
+    public String refactorLimitAndOffset(TemporaryDatabaseConnection databaseConnection, String query) {
+        return query;
+    }
 }

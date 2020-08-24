@@ -2,9 +2,9 @@ package io.metadew.iesi.script.action.http;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import io.metadew.iesi.component.http.HttpComponentService;
 import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.request.HttpRequest;
-import io.metadew.iesi.connection.http.request.HttpRequestBuilder;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
 import io.metadew.iesi.connection.http.request.HttpRequestService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
@@ -15,17 +15,14 @@ import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.HttpRequestComponent;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.service.HttpRequestComponentService;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ActionPerformanceLogger;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,7 +40,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
     private static Logger LOGGER = LogManager.getLogger();
     // Parameters
-    private static final String typeKey = "type";
     private static final String requestKey = "request";
     private static final String bodyKey = "body";
     private static final String proxyKey = "proxy";
@@ -73,7 +69,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
     public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, MetadataDoesNotExistException {
         // Reset Parameters
-        ActionParameterOperation requestTypeActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), typeKey);
         ActionParameterOperation requestNameActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), requestKey);
         ActionParameterOperation requestBodyActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), bodyKey);
         ActionParameterOperation setRuntimeVariablesActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), setRuntimeVariablesKey);
@@ -85,8 +80,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(requestKey)) {
                 requestNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(typeKey)) {
-                requestTypeActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(bodyKey)) {
                 requestBodyActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRuntimeVariablesKey)) {
@@ -102,26 +95,21 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
         // Create parameter list
         getActionParameterOperationMap().put(requestKey, requestNameActionParameterOperation);
-        getActionParameterOperationMap().put(typeKey, requestTypeActionParameterOperation);
         getActionParameterOperationMap().put(bodyKey, requestBodyActionParameterOperation);
         getActionParameterOperationMap().put(setRuntimeVariablesKey, setRuntimeVariablesActionParameterOperation);
         getActionParameterOperationMap().put(setDatasetKey, setDatasetActionParameterOperation);
         getActionParameterOperationMap().put(expectedStatusCodesKey, expectedStatusCodesActionParameterOperation);
         getActionParameterOperationMap().put(proxyKey, proxyActionParameterOperation);
 
-        HttpRequestComponent httpRequestComponent = HttpRequestComponentService.getInstance()
-                .getHttpRequestComponent(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution(), getExecutionControl());
-        HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder()
-                .type(convertHttpRequestType(requestTypeActionParameterOperation.getValue()))
-                .uri(httpRequestComponent.getUri())
-                .headers(httpRequestComponent.getHeaders())
-                .queryParameters(httpRequestComponent.getQueryParameters());
+        if (convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).isPresent()) {
+            httpRequest = HttpComponentService.getInstance().buildHttpRequest(
+                    HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution()),
+                    convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).get());
+        } else {
+            httpRequest = HttpComponentService.getInstance().buildHttpRequest(
+                    HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution()));
+        }
 
-        convertHttpRequestBody(requestBodyActionParameterOperation.getValue())
-                .map(body -> httpRequestBuilder.body(body,
-                        ContentType.getByMimeType(httpRequestComponent.getHeaders().getOrDefault("Content-Type", "text/plain"))));
-
-        httpRequest = httpRequestBuilder.build();
         expectedStatusCodes = convertExpectStatusCodes(expectedStatusCodesActionParameterOperation.getValue());
         setRuntimeVariables = convertSetRuntimeVariables(setRuntimeVariablesActionParameterOperation.getValue());
         proxyConnection = convertProxyName(proxyActionParameterOperation.getValue());

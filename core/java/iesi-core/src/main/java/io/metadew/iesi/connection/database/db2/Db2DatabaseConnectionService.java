@@ -16,7 +16,8 @@ public class Db2DatabaseConnectionService extends SchemaDatabaseConnectionServic
         return INSTANCE;
     }
 
-    private Db2DatabaseConnectionService() {}
+    private Db2DatabaseConnectionService() {
+    }
 
     @Override
     public String getDriver(Db2DatabaseConnection databaseConnection) {
@@ -27,5 +28,4 @@ public class Db2DatabaseConnectionService extends SchemaDatabaseConnectionServic
     public Class<Db2DatabaseConnection> appliesTo() {
         return Db2DatabaseConnection.class;
     }
-
 }

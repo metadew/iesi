@@ -170,6 +170,7 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
         // Remove illegal characters at the end
         // TODO: replace SQL tech specific languages
         query = this.removeIllegalCharactersForSingleQuery(databaseConnection, query);
+        query = refactorLimitAndOffset(databaseConnection, query);
         // query = prepareQuery(query);
         log.info(databaseConnection.getConnectionURL() + ":" + query);
 
@@ -232,4 +233,7 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
         return connection.prepareStatement(sqlStatement);
     }
 
+    public String refactorLimitAndOffset(T databaseConnection, String query) {
+        return query;
+    }
 }

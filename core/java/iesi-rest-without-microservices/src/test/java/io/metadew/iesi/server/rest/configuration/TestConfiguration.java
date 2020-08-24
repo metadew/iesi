@@ -17,5 +17,4 @@ public class TestConfiguration {
         MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
         return MetadataRepositoryConfiguration.getInstance();
     }
-
 }

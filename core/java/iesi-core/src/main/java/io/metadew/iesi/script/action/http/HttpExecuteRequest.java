@@ -1,7 +1,5 @@
 package io.metadew.iesi.script.action.http;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.metadew.iesi.component.http.HttpComponentService;
 import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.request.HttpRequest;
@@ -31,7 +29,9 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -43,15 +43,12 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String requestKey = "request";
     private static final String bodyKey = "body";
     private static final String proxyKey = "proxy";
-    private static final String setRuntimeVariablesKey = "setRuntimeVariables";
     private static final String setDatasetKey = "setDataset";
     private static final String expectedStatusCodesKey = "expectedStatusCodes";
 
     private HttpRequest httpRequest;
-    private boolean setRuntimeVariables;
     private KeyValueDataset outputDataset;
     private ProxyConnection proxyConnection;
-    private KeyValueDataset rawOutputDataset;
     private List<String> expectedStatusCodes;
 
     private final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
@@ -71,7 +68,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         // Reset Parameters
         ActionParameterOperation requestNameActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), requestKey);
         ActionParameterOperation requestBodyActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), bodyKey);
-        ActionParameterOperation setRuntimeVariablesActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), setRuntimeVariablesKey);
         ActionParameterOperation setDatasetActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), setDatasetKey);
         ActionParameterOperation expectedStatusCodesActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), expectedStatusCodesKey);
         ActionParameterOperation proxyActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), proxyKey);
@@ -82,8 +78,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
                 requestNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(bodyKey)) {
                 requestBodyActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRuntimeVariablesKey)) {
-                setRuntimeVariablesActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setDatasetKey)) {
                 setDatasetActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(expectedStatusCodesKey)) {
@@ -96,14 +90,14 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         // Create parameter list
         getActionParameterOperationMap().put(requestKey, requestNameActionParameterOperation);
         getActionParameterOperationMap().put(bodyKey, requestBodyActionParameterOperation);
-        getActionParameterOperationMap().put(setRuntimeVariablesKey, setRuntimeVariablesActionParameterOperation);
         getActionParameterOperationMap().put(setDatasetKey, setDatasetActionParameterOperation);
         getActionParameterOperationMap().put(expectedStatusCodesKey, expectedStatusCodesActionParameterOperation);
         getActionParameterOperationMap().put(proxyKey, proxyActionParameterOperation);
 
         if (convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).isPresent()) {
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
-                    HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution()),
+                    HttpComponentService.getInstance()
+                            .get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution()),
                     convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).get());
         } else {
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
@@ -111,9 +105,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
 
         expectedStatusCodes = convertExpectStatusCodes(expectedStatusCodesActionParameterOperation.getValue());
-        setRuntimeVariables = convertSetRuntimeVariables(setRuntimeVariablesActionParameterOperation.getValue());
         proxyConnection = convertProxyName(proxyActionParameterOperation.getValue());
-        // TODO: convert from string to dataset DataType
         outputDataset = convertOutputDatasetReferenceName(setDatasetActionParameterOperation.getValue());
 //        if (getOutputDataset().isPresent()) {
 //            List<String> labels = new ArrayList<>(outputDataset.getLabels());
@@ -184,17 +176,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (getOutputDataset().isPresent()) {
             HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
         }
-        ;
-        //HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset());
-        //getActionExecution().getActionControl().logOutput("response", httpResponse.getResponse().toString());
-//        getActionExecution().getActionControl().logOutput("status", httpResponse.getStatusLine().toString());
-//        getActionExecution().getActionControl().logOutput("status.code", String.valueOf(httpResponse.getStatusLine().getStatusCode()));
-//        getActionExecution().getActionControl().logOutput("body", httpResponse.getEntityString().orElse("<empty>"));
-//        int headerCounter = 1;
-//        for (Header header : httpResponse.getHeaders()) {
-//            getActionExecution().getActionControl().logOutput("header." + headerCounter, header.getName() + ":" + header.getValue());
-//            headerCounter++;
-//        }
     }
 
     private KeyValueDataset convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
@@ -238,16 +219,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    private String convertHttpRequestType(DataType httpRequestType) {
-        if (httpRequestType instanceof Text) {
-            return httpRequestType.toString();
-        } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for request type",
-                    httpRequestType.getClass()));
-            return httpRequestType.toString();
-        }
-    }
-
     private String convertHttpRequestName(DataType httpRequestName) {
         if (httpRequestName instanceof Text) {
             return ((Text) httpRequestName).getString();
@@ -286,35 +257,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    private void setRuntimeVariable(JsonNode jsonNode, String keyPrefix) {
-        if (setRuntimeVariables) {
-            Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-            while (fields.hasNext()) {
-                Map.Entry<String, JsonNode> field = fields.next();
-                if (field.getValue().getNodeType().equals(JsonNodeType.OBJECT)) {
-                    setRuntimeVariable(field.getValue(), keyPrefix + field.getKey() + ".");
-                } else if (field.getValue().getNodeType().equals(JsonNodeType.ARRAY)) {
-                    int arrayCounter = 1;
-                    for (JsonNode element : field.getValue()) {
-                        setRuntimeVariable(element, keyPrefix + field.getKey() + "." + arrayCounter + ".");
-                        arrayCounter++;
-                    }
-                } else if (field.getValue().getNodeType().equals(JsonNodeType.NULL)) {
-                    getExecutionControl().getExecutionRuntime().setRuntimeVariable(getActionExecution(), keyPrefix + field.getKey(), "");
-                } else if (field.getValue().isValueNode()) {
-                    getExecutionControl().getExecutionRuntime().setRuntimeVariable(getActionExecution(), keyPrefix + field.getKey(), field.getValue().asText());
-                } else {
-                    // TODO:
-                }
-            }
-        }
-    }
-
-    private void setRuntimeVariable(JsonNode jsonNode, boolean setRuntimeVariables) {
-        setRuntimeVariable(jsonNode, "");
-    }
-
-
     private Optional<KeyValueDataset> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
@@ -327,7 +269,4 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         return Optional.ofNullable(proxyConnection);
     }
 
-    private Optional<KeyValueDataset> getRawOutputDataset() {
-        return Optional.ofNullable(rawOutputDataset);
-    }
 }

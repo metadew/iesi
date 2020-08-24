@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.script.execution.ActionExecution;
 
 public class HttpConnectionService implements IHttpConnectionService {
 
@@ -19,9 +20,10 @@ public class HttpConnectionService implements IHttpConnectionService {
     private HttpConnectionService() {
     }
 
-    public HttpConnection get(String httpConnectionReferenceName, String environmentReferenceName) {
-        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(httpConnectionReferenceName, new EnvironmentKey(environmentReferenceName)))
-                .orElseThrow(() -> new RuntimeException("Could not find definition for http connection " + httpConnectionReferenceName + " for environment " + environmentReferenceName));
+    public HttpConnection get(String httpConnectionReferenceName, ActionExecution actionExecution) {
+        // TODO: trace design and trace
+        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(httpConnectionReferenceName, new EnvironmentKey(actionExecution.getExecutionControl().getEnvName())))
+                .orElseThrow(() -> new RuntimeException("Could not find definition for http connection " + httpConnectionReferenceName + " for environment " + actionExecution));
         HttpConnectionDefinition httpConnectionDefinition = HttpConnectionDefinitionService.getInstance()
                 .convert(connection);
         return convert(httpConnectionDefinition);

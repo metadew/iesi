@@ -5,7 +5,7 @@ springdoc:
   version: '0.3.0'
 spring:
   profiles:
-    active: http
+    active: http, security
 #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration, org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 

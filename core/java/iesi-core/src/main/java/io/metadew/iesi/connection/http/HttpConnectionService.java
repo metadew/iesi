@@ -23,7 +23,7 @@ public class HttpConnectionService implements IHttpConnectionService {
     public HttpConnection get(String httpConnectionReferenceName, ActionExecution actionExecution) {
         // TODO: trace design and trace
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(httpConnectionReferenceName, new EnvironmentKey(actionExecution.getExecutionControl().getEnvName())))
-                .orElseThrow(() -> new RuntimeException("Could not find definition for http connection " + httpConnectionReferenceName + " for environment " + actionExecution));
+                .orElseThrow(() -> new RuntimeException("Could not find definition for http connection " + httpConnectionReferenceName + " for environment " + actionExecution.getExecutionControl().getEnvName()));
         HttpConnectionDefinition httpConnectionDefinition = HttpConnectionDefinitionService.getInstance()
                 .convert(connection);
         return convert(httpConnectionDefinition);

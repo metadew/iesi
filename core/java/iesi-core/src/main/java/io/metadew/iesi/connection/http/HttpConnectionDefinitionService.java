@@ -35,7 +35,7 @@ public class HttpConnectionDefinitionService implements IHttpConnectionDefinitio
                         .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(HOST_KEY))
                         .findFirst()
                         .map(ConnectionParameter::getValue)
-                        .orElseThrow(() -> new RuntimeException("Http component " + connection.toString() + " does not contain a " + HOST_KEY)),
+                        .orElseThrow(() -> new RuntimeException("Http connection " + connection.toString() + " does not contain a " + HOST_KEY)),
                 connection.getParameters().stream()
                         .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(BASE_URL_KEY))
                         .findFirst()
@@ -47,10 +47,10 @@ public class HttpConnectionDefinitionService implements IHttpConnectionDefinitio
                         .map(connectionParameter -> Integer.parseInt(connectionParameter.getValue()))
                         .orElse(null),
                 connection.getParameters().stream()
-                        .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(HOST_KEY))
+                        .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(TLS_KEY))
                         .findFirst()
                         .map(connectionParameter -> connectionParameter.getValue().equalsIgnoreCase("y"))
-                        .orElseThrow(() -> new RuntimeException("Http component " + connection.toString() + " does not contain a " + TLS_KEY)));
+                        .orElseThrow(() -> new RuntimeException("Http connection " + connection.toString() + " does not contain a " + TLS_KEY + " setting")));
     }
 
 

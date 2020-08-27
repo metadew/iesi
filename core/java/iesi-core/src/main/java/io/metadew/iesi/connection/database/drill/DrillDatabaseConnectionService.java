@@ -33,7 +33,7 @@ public class DrillDatabaseConnectionService extends SchemaDatabaseConnectionServ
 
     public String refactorLimitAndOffset(String query) {
 
-        Pattern pattern = Pattern.compile("(?i)limit\\s+(?<limit>[0-9]*+)\\s+(?i)offset\\s+(?<offset>[0-9]*+(?!\\s+(?i)rows))");
+        Pattern pattern = Pattern.compile("(?i)limit\\s+(?<limit>\\d+)\\s+(?i)offset\\s+(?<offset>\\d++(?!\\s+(?i)rows))");
         Matcher matcher = pattern.matcher(query);
 
         StringBuilder stringBuilder = new StringBuilder(query);

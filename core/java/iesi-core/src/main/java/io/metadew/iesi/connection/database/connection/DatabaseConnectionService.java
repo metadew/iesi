@@ -79,6 +79,7 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
     public CachedRowSet executeQueryLimitRows(T databaseConnection, String query, int limit, Connection connection) throws SQLException {
         // Remove illegal characters at the end
         query = this.removeIllegalCharactersForSingleQuery(databaseConnection, query);
+        query = refactorLimitAndOffset(query);
         // query = prepareQuery(query);
 
         Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY,

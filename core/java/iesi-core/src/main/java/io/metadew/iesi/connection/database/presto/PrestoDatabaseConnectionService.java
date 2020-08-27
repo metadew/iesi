@@ -33,7 +33,7 @@ public class PrestoDatabaseConnectionService extends SchemaDatabaseConnectionSer
 
     public String refactorLimitAndOffset(String query) {
 
-        Pattern pattern = Pattern.compile("(?i)limit\\s+(?<limit>[0-9]*+)\\s+(?i)offset\\s+(?<offset>[0-9]*+)");
+        Pattern pattern = Pattern.compile("(?i)limit\\s+(?<limit>\\d+)\\s+(?i)offset\\s+(?<offset>\\d+)");
         Matcher matcher = pattern.matcher(query);
 
         StringBuilder stringBuilder = new StringBuilder(query);

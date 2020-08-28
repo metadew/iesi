@@ -2,4 +2,4 @@ iesi:
   security:
     jwt:
       secret: secret
-      expiry-date: 10000000
+      expiry-date: 10

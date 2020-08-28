@@ -36,15 +36,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    public void setErrorResponse(HttpStatus status, HttpServletResponse response, Throwable ex) {
+    public void setErrorResponse(HttpStatus status, HttpServletResponse response, Throwable ex) throws IOException {
         response.setStatus(status.value());
         response.setContentType("application/json");
         ApiError apiError = new ApiError(status, ex);
-        try {
-            String json = apiError.convertToJson();
-            response.getWriter().write(json);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String json = apiError.convertToJson();
+        response.getWriter().write(json);
     }
 }

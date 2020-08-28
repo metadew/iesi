@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,7 +34,8 @@ public class JWTAuthenticationFilterTest {
 
         jwtAuthenticationFilter.doFilterInternal(request, response, chain);
         assertThat(response.getStatus()).isEqualTo(401);
-        assertThat(response.getContentAsString()).contains("com.auth0.jwt.exceptions.JWTDecodeException: The string");
+        String json = JsonPath.read(response.getContentAsString(), "message");
+        assertThat(json).endsWith("doesn't have a valid JSON format.");
     }
 
     @Test
@@ -48,7 +50,8 @@ public class JWTAuthenticationFilterTest {
 
         jwtAuthenticationFilter.doFilterInternal(request, response, chain);
         assertThat(response.getStatus()).isEqualTo(401);
-        assertThat(response.getContentAsString()).contains("com.auth0.jwt.exceptions.InvalidClaimException: The Claim");
+        String json = JsonPath.read(response.getContentAsString(), "message");
+        assertThat(json).startsWith("The Claim 'iss' value doesn't match the required issuer.");
     }
 
     @Test
@@ -63,7 +66,8 @@ public class JWTAuthenticationFilterTest {
 
         jwtAuthenticationFilter.doFilterInternal(request, response, chain);
         assertThat(response.getStatus()).isEqualTo(401);
-        assertThat(response.getContentAsString()).contains("com.auth0.jwt.exceptions.SignatureVerificationException: The Token's Signature resulted invalid when verified using the Algorithm: HmacSHA256");
+        String json = JsonPath.read(response.getContentAsString(), "message");
+        assertThat(json).startsWith("The Token's Signature resulted invalid when verified using the Algorithm: HmacSHA256");
     }
 
     @Test
@@ -77,6 +81,7 @@ public class JWTAuthenticationFilterTest {
 
         jwtAuthenticationFilter.doFilterInternal(request, response, chain);
         assertThat(response.getStatus()).isEqualTo(401);
-        assertThat(response.getContentAsString()).contains("com.auth0.jwt.exceptions.TokenExpiredException: The Token has expired ");
+        String json = JsonPath.read(response.getContentAsString(), "message");
+        assertThat(json).startsWith("The Token has expired ");
     }
 }

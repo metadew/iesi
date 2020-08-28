@@ -61,7 +61,7 @@ class HttpQueryParameterServiceTest {
                 .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "queryparam.1"))
                 .value("param,value")
                 .build(), actionExecution)
-        ).isEqualTo(new HttpHeader("param", "value"));
+        ).isEqualTo(new HttpQueryParameter("param", "value"));
     }
 
 }

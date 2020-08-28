@@ -136,7 +136,6 @@ class HttpConnectionServiceTest {
 
     @Test
     void getTestNotFound() {
-
         ConnectionConfiguration connectionConfiguration = ConnectionConfiguration.getInstance();
         ConnectionConfiguration connectionConfigurationSpy = Mockito.spy(connectionConfiguration);
         Whitebox.setInternalState(ConnectionConfiguration.class, "INSTANCE", connectionConfigurationSpy);
@@ -158,5 +157,4 @@ class HttpConnectionServiceTest {
         Whitebox.setInternalState(ConnectionConfiguration.class, "INSTANCE", (ConnectionConfiguration) null);
     }
 
-    //"Could not find definition for http connection " + httpConnectionReferenceName + " for environment " + actionExecution.getExecutionControl().getEnvName()
 }

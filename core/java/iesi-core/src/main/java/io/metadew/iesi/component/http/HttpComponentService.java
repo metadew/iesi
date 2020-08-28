@@ -10,7 +10,6 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.script.execution.ActionExecution;
 import org.apache.http.entity.ContentType;
 
@@ -54,15 +53,16 @@ public class HttpComponentService implements IHttpComponentService {
         HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder()
                 .type(httpComponent.getType())
                 .uri(getUri(httpComponent))
-                .headers(httpComponent.getHeaders().stream().collect(Collectors.toMap(HttpHeader::getName, HttpHeader::getValue)));
+                .headers(httpComponent.getHeaders().stream().collect(Collectors.toMap(HttpHeader::getName, HttpHeader::getValue)))
+                .queryParameters(httpComponent.getQueryParameters().stream().collect(Collectors.toMap(HttpQueryParameter::getName, HttpQueryParameter::getValue)));
         return httpRequestBuilder.build();
     }
 
     @Override
     public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution) {
         // TODO: trace design and trace
-        Component component = ComponentConfiguration.getInstance().get(new ComponentKey(httpComponentReferenceName, 1L))
-                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName));
+        Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, 1L)
+                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + "and version 1"));
         HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convert(component);
         return convert(httpComponentDefinition, actionExecution);
     }

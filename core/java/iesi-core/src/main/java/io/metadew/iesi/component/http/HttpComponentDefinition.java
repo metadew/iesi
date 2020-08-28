@@ -9,7 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 public class HttpComponentDefinition {
 
-
     private final String referenceName;
     private final Long version;
     private final String description;
@@ -18,4 +17,5 @@ public class HttpComponentDefinition {
     private final String type;
     private List<String> headers;
     private List<String> queryParameters;
+
 }

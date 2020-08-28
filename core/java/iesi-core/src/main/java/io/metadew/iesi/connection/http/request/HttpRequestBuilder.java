@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.http.request;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Log4j2
 public class HttpRequestBuilder {
 
     private String type;
@@ -175,11 +177,17 @@ public class HttpRequestBuilder {
     }
 
     private void addQueryParameters(URIBuilder uriBuilder) {
-        queryParameters.forEach(uriBuilder::addParameter);
+        queryParameters.forEach((key, value) -> {
+            log.debug("setting query parameter " + key + " to " + value);
+            uriBuilder.addParameter(key, value);
+        });
     }
 
     private void addHeaders(HttpRequestBase httpRequestBase) {
-        headers.forEach(httpRequestBase::addHeader);
+        headers.forEach((key, value) -> {
+            log.debug("setting header " + key + " to " + value);
+            httpRequestBase.addHeader(key, value);
+        });
     }
 
     private void addBody(HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {

@@ -41,7 +41,7 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(ENDPOINT_KEY))
                         .findFirst()
                         .map(ComponentParameter::getValue)
-                        .orElseThrow(() -> new RuntimeException("Http component " + component.toString() + " does not contain a " + ENDPOINT_KEY)),
+                        .orElseThrow(() -> new RuntimeException("Http component " + component.toString() + " does not contain an " + ENDPOINT_KEY)),
                 component.getParameters().stream()
                         .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(TYPE_KEY))
                         .findFirst()

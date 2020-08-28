@@ -1,0 +1,16 @@
+---
+type: Connection
+data:
+  name: "iesi"
+  type: "http"
+  description: "iesi api connection"
+  environment: "iesi-test"
+  parameters:
+  - name: "host"
+    value: "localhost"
+  - name: "port"
+    value: "8080"
+  - name: "tls"
+    value: "N"
+  - name: "baseUrl"
+    value: "/api"

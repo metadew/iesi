@@ -39,7 +39,6 @@ public class JwtService {
         return verifier.verify(token);
     }
 
-
     public UsernamePasswordAuthenticationToken generateUsernamePasswordAuthenticationToken(String token) {
         DecodedJWT jwt = verify(token);
         return new UsernamePasswordAuthenticationToken(jwt.getSubject(), null, jwt.getClaim("authorities").asList(String.class).stream()
@@ -62,5 +61,5 @@ public class JwtService {
                 .sign(algorithm);
         return new AuthenticationResponse(token, ChronoUnit.SECONDS.between(now, expiresAt));
     }
-
 }
+

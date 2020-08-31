@@ -129,7 +129,7 @@ public class TemporaryDatabaseConnectionServiceImpl implements IDatabaseConnecti
     }
 
     @Override
-    public String refactorLimitAndOffset(TemporaryDatabaseConnection databaseConnection, String query) {
+    public String refactorLimitAndOffset(String query) {
         return query;
     }
 }

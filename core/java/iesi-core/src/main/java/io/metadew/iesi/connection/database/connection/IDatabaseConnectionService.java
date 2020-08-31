@@ -54,5 +54,5 @@ public interface IDatabaseConnectionService<T extends DatabaseConnection> {
 
     public Class<T> appliesTo();
 
-    public String refactorLimitAndOffset(T databaseConnection, String query);
+    public String refactorLimitAndOffset(String query);
 }

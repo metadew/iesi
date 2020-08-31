@@ -17,3 +17,4 @@ public class ServiceNameOracleDatabaseConnection extends OracleDatabaseConnectio
         super("jdbc:oracle:thin:@//" + hostName + ":" + portNumber + "/" + serviceName, userName, userPassword, initSql, schema);
     }
 }
+

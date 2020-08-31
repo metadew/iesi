@@ -33,9 +33,10 @@ public class JWTAuthenticationFilterTest {
         MockFilterChain chain = new MockFilterChain();
 
         jwtAuthenticationFilter.doFilterInternal(request, response, chain);
-        assertThat(response.getStatus()).isEqualTo(401);
         String json = JsonPath.read(response.getContentAsString(), "message");
+        int status = JsonPath.read(response.getContentAsString(), "status");
         assertThat(json).endsWith("doesn't have a valid JSON format.");
+        assertThat(status).isEqualTo(401);
     }
 
     @Test
@@ -49,9 +50,10 @@ public class JWTAuthenticationFilterTest {
         MockFilterChain chain = new MockFilterChain();
 
         jwtAuthenticationFilter.doFilterInternal(request, response, chain);
-        assertThat(response.getStatus()).isEqualTo(401);
         String json = JsonPath.read(response.getContentAsString(), "message");
+        int status = JsonPath.read(response.getContentAsString(), "status");
         assertThat(json).startsWith("The Claim 'iss' value doesn't match the required issuer.");
+        assertThat(status).isEqualTo(401);
     }
 
     @Test
@@ -65,9 +67,10 @@ public class JWTAuthenticationFilterTest {
         MockFilterChain chain = new MockFilterChain();
 
         jwtAuthenticationFilter.doFilterInternal(request, response, chain);
-        assertThat(response.getStatus()).isEqualTo(401);
         String json = JsonPath.read(response.getContentAsString(), "message");
+        int status = JsonPath.read(response.getContentAsString(), "status");
         assertThat(json).startsWith("The Token's Signature resulted invalid when verified using the Algorithm: HmacSHA256");
+        assertThat(status).isEqualTo(401);
     }
 
     @Test
@@ -80,8 +83,9 @@ public class JWTAuthenticationFilterTest {
         MockFilterChain chain = new MockFilterChain();
 
         jwtAuthenticationFilter.doFilterInternal(request, response, chain);
-        assertThat(response.getStatus()).isEqualTo(401);
         String json = JsonPath.read(response.getContentAsString(), "message");
+        int status = JsonPath.read(response.getContentAsString(), "status");
         assertThat(json).startsWith("The Token has expired ");
+        assertThat(status).isEqualTo(401);
     }
 }

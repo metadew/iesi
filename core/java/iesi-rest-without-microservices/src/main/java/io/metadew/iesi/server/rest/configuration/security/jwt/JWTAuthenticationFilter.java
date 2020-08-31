@@ -18,7 +18,7 @@ import java.io.IOException;
 @Profile("security")
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JWTAuthenticationConverter jwtAuthenticationConverter;
+    private  JWTAuthenticationConverter jwtAuthenticationConverter;
 
     public JWTAuthenticationFilter(JWTAuthenticationConverter jwtAuthenticationConverter) {
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
@@ -28,6 +28,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
             Authentication authentication = jwtAuthenticationConverter.convert(httpServletRequest);
+            if (authentication == null) {
+                filterChain.doFilter(httpServletRequest, httpServletResponse);
+                return;
+            }
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         } catch (JWTVerificationException e) {

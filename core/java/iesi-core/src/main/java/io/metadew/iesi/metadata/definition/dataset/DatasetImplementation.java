@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 public abstract class DatasetImplementation extends Metadata<DatasetImplementationKey> implements DataType {
 
     private final DatasetKey datasetKey;

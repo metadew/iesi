@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.dataset;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -109,6 +110,10 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     }
 
     private DatasetImplementationConfiguration() {
+    }
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
     }
 
     @Override

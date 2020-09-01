@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.dataset;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -35,6 +36,12 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     }
 
     private DatasetConfiguration() {
+    }
+
+
+    public void init(MetadataRepository metadataRepository) {
+        setMetadataRepository(metadataRepository);
+        DatasetImplementationConfiguration.getInstance().init(metadataRepository);
     }
 
     @Override

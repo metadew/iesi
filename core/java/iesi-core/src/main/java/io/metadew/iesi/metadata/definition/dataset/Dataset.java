@@ -12,19 +12,13 @@ import java.util.List;
 @ToString(callSuper = true)
 public class Dataset extends Metadata<DatasetKey> {
 
-    public Dataset(DatasetKey metadataKey, String name, List<DatasetLabel> labels) {
+    private final String name;
+    private final List<DatasetImplementation> datasetImplementations;
+
+    public Dataset(DatasetKey metadataKey, String name, List<DatasetImplementation> datasetImplementations) {
         super(metadataKey);
         this.name = name;
-        this.labels = labels;
+        this.datasetImplementations = datasetImplementations;
     }
-
-    public Dataset(String name, List<DatasetLabel> labels) {
-        super(new DatasetKey());
-        this.name = name;
-        this.labels = labels;
-    }
-
-    private final String name;
-    private final List<DatasetLabel> labels;
 
 }

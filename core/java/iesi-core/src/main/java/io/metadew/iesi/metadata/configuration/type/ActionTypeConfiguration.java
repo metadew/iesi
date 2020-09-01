@@ -17,9 +17,8 @@ public class ActionTypeConfiguration {
         return INSTANCE;
     }
 
-    private ActionTypeConfiguration() {
+    private ActionTypeConfiguration() {}
 
-    }
     public ActionType getActionType(String actionTypeName) {
         return MetadataActionTypesConfiguration.getInstance().getActionType(actionTypeName)
                 .orElseThrow(() -> new RuntimeException("action type " + actionTypeName + " not found"));

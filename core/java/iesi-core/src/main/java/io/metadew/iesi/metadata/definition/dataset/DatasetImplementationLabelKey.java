@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class DatasetLabelKey extends MetadataKey {
+public class DatasetImplementationLabelKey extends MetadataKey {
 
     private UUID uuid = UUID.randomUUID();
 

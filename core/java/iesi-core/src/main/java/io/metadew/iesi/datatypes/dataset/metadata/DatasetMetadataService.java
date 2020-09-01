@@ -47,8 +47,10 @@ public class DatasetMetadataService {
 
     public Optional<Long> getId(DatasetMetadata datasetMetadata, List<String> labels) {
         try {
-            String query = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL in (" + labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")) +
-                    ") GROUP BY DATASET_INV_ID HAVING COUNT(DISTINCT DATASET_LBL_VAL) = " + labels.size() + ";";
+            String query = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL " +
+                    "WHERE DATASET_LBL_VAL in (" + labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")) +
+                    ") GROUP BY DATASET_INV_ID " +
+                    "HAVING COUNT(DISTINCT DATASET_LBL_VAL) = " + labels.size() + ";";
             CachedRowSet cachedRowSet = DatabaseHandler.getInstance().executeQuery(datasetMetadata.getDatabase(), query);
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();

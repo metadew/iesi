@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.execution.script;
 
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -32,7 +33,8 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
         return INSTANCE;
     }
 
-    private ScriptExecutionRequestConfiguration() {}
+    private ScriptExecutionRequestConfiguration() {
+    }
 
     // Constructors
     public void init(MetadataRepository metadataRepository) {
@@ -84,8 +86,8 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                 return Optional.of(new ScriptNameExecutionRequest(scriptExecutionRequestKey,
                         new ExecutionRequestKey(cachedRowSet.getString("ID")),
                         cachedRowSet.getString("ENVIRONMENT"), SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")), ScriptExecutionRequestImpersonationConfiguration.getInstance()
-                                .getByScriptExecutionRequest(scriptExecutionRequestKey), ScriptExecutionRequestParameterConfiguration.getInstance()
-                                        .getByScriptExecutionRequest(scriptExecutionRequestKey), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
+                        .getByScriptExecutionRequest(scriptExecutionRequestKey), ScriptExecutionRequestParameterConfiguration.getInstance()
+                        .getByScriptExecutionRequest(scriptExecutionRequestKey), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
                         cachedRowSet.getLong("SCRPT_VRS")
                 ));
             } else {
@@ -139,8 +141,8 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                             ),
                             new ExecutionRequestKey(cachedRowSet.getString("ID")),
                             cachedRowSet.getString("ENVIRONMENT"), SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")), ScriptExecutionRequestImpersonationConfiguration.getInstance()
-                                    .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestParameterConfiguration.getInstance()
-                                            .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
+                            .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestParameterConfiguration.getInstance()
+                            .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
                             cachedRowSet.getLong("SCRPT_VRS")
                     ));
                 } else {
@@ -265,8 +267,8 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                             new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                             executionRequestKey,
                             cachedRowSet.getString("ENVIRONMENT"), SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")), ScriptExecutionRequestImpersonationConfiguration.getInstance()
-                                    .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestParameterConfiguration.getInstance()
-                                            .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
+                            .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestParameterConfiguration.getInstance()
+                            .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
                             cachedRowSet.getLong("SCRPT_VRS")
                     ));
                 } else {
@@ -325,7 +327,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
         if (scriptExecutionRequest instanceof ScriptFileExecutionRequest) {
             queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SET " +
                     "ID=" + SQLTools.GetStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
-                    "SCRPT_FILENAME=" + SQLTools.GetStringForSQL(((ScriptFileExecutionRequest) scriptExecutionRequest).getFileName())  + " WHERE " +
+                    "SCRPT_FILENAME=" + SQLTools.GetStringForSQL(((ScriptFileExecutionRequest) scriptExecutionRequest).getFileName()) + " WHERE " +
                     "SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");
             return queries;
         } else if (scriptExecutionRequest instanceof ScriptNameExecutionRequest) {
@@ -340,4 +342,36 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
         }
         return queries;
     }
+
+    public Long getTotalExecutionRequests(String scriptName, long version, String environment) {
+        try {
+            String query = "SELECT COUNT(*) as total_requests FROM (" +
+                    "SELECT SCRPT_REQUEST_ID from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests") +
+                    " WHERE SCRPT_NAME=" + SQLTools.GetStringForSQL(scriptName) + " AND " +
+                    " SCRPT_VRS = " + SQLTools.GetStringForSQL(version) + ") named_script_exec_reqs inner join " +
+                    "SELECT SCRPT_REQUEST_ID from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests") +
+                    " WHERE ENVIRONMENT=" + SQLTools.GetStringForSQL(environment) + ") script_exec_reqs on " +
+                    " named_script_exec_reqs.SCRPT_REQUEST_ID = script_exec_reqs.SCRPT_REQUEST_ID";
+            CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
+            if (crs.next()) {
+                return Long.parseLong(crs.getString("total_executions"));
+            } else {
+                return 0L;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ScriptExecutionRequest getMostRecentExecutionRequests(String scriptName, long version, String environment) {
+        String query = "SELECT COUNT(*) as total_requests FROM (" +
+                "SELECT SCRPT_REQUEST_ID from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests") +
+                " WHERE SCRPT_NAME=" + SQLTools.GetStringForSQL(scriptName) + " AND " +
+                " SCRPT_VRS = " + SQLTools.GetStringForSQL(version) + ") named_script_exec_reqs inner join " +
+                "SELECT SCRPT_REQUEST_ID from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests") +
+                " WHERE ENVIRONMENT=" + SQLTools.GetStringForSQL(environment) + ") script_exec_reqs on " +
+                " named_script_exec_reqs.SCRPT_REQUEST_ID = script_exec_reqs.SCRPT_REQUEST_ID";
+        return null;
+    }
+
 }

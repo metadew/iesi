@@ -1,12 +1,13 @@
 package io.metadew.iesi.script.action.mod;
 
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -14,39 +15,20 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
-public class ModSoapui {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class ModSoapui extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation project;
     private ActionParameterOperation testSuite;
     private ActionParameterOperation testCase;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public ModSoapui() {
-
-    }
 
     public ModSoapui(ExecutionControl executionControl,
                      ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -61,11 +43,11 @@ public class ModSoapui {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("project")) {
-                this.getProject().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getProject().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("suite")) {
-                this.getTestSuite().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getTestSuite().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("case")) {
-                this.getTestCase().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getTestCase().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -73,28 +55,6 @@ public class ModSoapui {
         this.getActionParameterOperationMap().put("project", this.getProject());
         this.getActionParameterOperationMap().put("suite", this.getTestSuite());
         this.getActionParameterOperationMap().put("case", this.getTestCase());
-    }
-
-    public boolean execute() throws InterruptedException {
-        try {
-            String project = convertProject(getProject().getValue());
-            String testSuite = convertTestSuite(getTestSuite().getValue());
-            String testCase = convertTestCase(getTestCase().getValue());
-            return execute(project, testSuite, testCase);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
     }
 
     private String convertProject(DataType project) {
@@ -130,13 +90,21 @@ public class ModSoapui {
         }
     }
 
-    private boolean execute(String project, String testSuite, String testCase) throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
+        String project = convertProject(getProject().getValue());
+        String testSuite = convertTestSuite(getTestSuite().getValue());
+        String testCase = convertTestCase(getTestCase().getValue());
         // Output dir
         String output = this.getActionExecution().getActionControl().getActionRuntime().getRunCacheFolderName() + "soapui";
         FolderTools.createFolder(output);
 
-        String command = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder("modules").getAbsolutePath() +
-                File.separator + "soapui" + File.separator + "bin" + File.separator + "iesi-soapui.cmd";
+        String command = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("modules")
+                .getAbsolutePath()
+                .resolve("soapui")
+                .resolve("bin")
+                .resolve("iesi-soapui.cmd")
+                .toString();
         command = command + " -project " + project;
         if (!testSuite.isEmpty()) command = command + " -suite " + testSuite;
         if (!testCase.isEmpty()) command = command + " -case " + testCase;
@@ -161,30 +129,6 @@ public class ModSoapui {
 
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getActionParameterOperation(String key) {

@@ -92,7 +92,7 @@ public class GenerationObjectExecution {
         for (File file : FolderTools.getFilesInFolder(
                 FrameworkConfiguration.getInstance()
                         .getMandatoryFrameworkFolder("metadata.gen")
-                        .getAbsolutePath(),
+                        .getAbsolutePath().toString(),
                 "regex", ".+\\.yml")) {
 
             if (i == 0) {

@@ -1,0 +1,19 @@
+---
+type: Component
+data:
+  name: "iesi.environments.create"
+  type: "http.request"
+  version:
+    number: 1
+    description: "description"
+  description: "http call to IESI create an environment endpoint"
+  parameters:
+  - name: "connection"
+    value: "iesi"
+  - name: "endpoint"
+    value: "/environments"
+  - name: "type"
+    value: "post"
+  - name: "header.1"
+    value: "Content-Type,application/json"
+  attributes: []

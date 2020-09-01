@@ -1,5 +1,2 @@
-**.idea/
-**.iml
-**/target/
-**/classes/
-**/iesi-home.conf
+run/
+iesi-assembler/

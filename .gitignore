@@ -1,3 +1,4 @@
 workspace/*
-.idea/*
-core/logs/
+.idea/
+core/java/logs/
+core/logs

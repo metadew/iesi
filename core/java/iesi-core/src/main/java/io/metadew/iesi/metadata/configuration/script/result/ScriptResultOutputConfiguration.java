@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -106,7 +107,7 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
                 + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getProcessId()) + ","
                 + SQLTools.GetStringForSQL(scriptResultOutput.getScriptId()) + ","
                 + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getOutputName()) + ","
-                + SQLTools.GetStringForSQL(scriptResultOutput.getValue()) + ");";
+                + SQLTools.GetStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ScriptResultOutputs", "OUT_VAL", scriptResultOutput.getValue())) + ");";
     }
 
     @Override
@@ -119,7 +120,7 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
     private String updateStatement(ScriptResultOutput scriptResultOutput) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
                 + " SET SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptResultOutput.getScriptId()) + "," +
-                " OUT_VAL = " + SQLTools.GetStringForSQL(scriptResultOutput.getValue()) +
+                " OUT_VAL = " + SQLTools.GetStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ScriptResultOutputs", "OUT_VAL", scriptResultOutput.getValue())) +
                 " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getRunId()) +
                 " AND PRC_ID =" + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getProcessId()) +
                 " AND OUT_NM = " + SQLTools.GetStringForSQL(scriptResultOutput.getMetadataKey().getOutputName()) + ";";

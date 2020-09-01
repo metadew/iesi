@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -22,8 +24,8 @@ import java.util.stream.Collectors;
 public class DesignMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public DesignMetadataRepository(String name, String scope, RepositoryCoordinator repositoryCoordinator) {
-        super(scope, repositoryCoordinator);
+    public DesignMetadataRepository(String instance, RepositoryCoordinator repositoryCoordinator) {
+        super(instance, repositoryCoordinator);
         ScriptConfiguration.getInstance().init(this);
         ComponentConfiguration.getInstance().init(this);
     }
@@ -46,7 +48,9 @@ public class DesignMetadataRepository extends MetadataRepository {
             save(component);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
             System.out.println("subroutine");
-            // TODO
+        } else if (dataObject.getType().equalsIgnoreCase("template")) {
+            Template template = objectMapper.convertValue(dataObject.getData(), Template.class);
+            save(template);
         } else {
             LOGGER.trace(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()));
         }
@@ -64,6 +68,17 @@ public class DesignMetadataRepository extends MetadataRepository {
             LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             ScriptConfiguration.getInstance().update(script);
         }
+    }
+
+    public void save(Template template) {
+        LOGGER.info(MessageFormat.format("Saving {0} into design repository", template));
+        try {
+            TemplateConfiguration.getInstance().insert(template);
+        } catch (MetadataAlreadyExistsException e) {
+            LOGGER.info(MessageFormat.format("Template {0} already exists in design repository. Updating to new definition", template));
+            TemplateConfiguration.getInstance().update(template);
+        }
+
     }
 
     public void save(Component component) {

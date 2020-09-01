@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.*;
 import io.metadew.iesi.datatypes.array.ArrayService;
 import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDatasetService;
+import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class DataTypeHandler {
     private final static String DatatypeStopCharacters = "}}";
     private final static Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
-    private Map<ClassStringPair, DataTypeService> dataTypeServiceMap;
+    private Map<ClassStringPair, IDataTypeService> dataTypeServiceMap;
 
     private static DataTypeHandler INSTANCE;
 
@@ -38,6 +39,7 @@ public class DataTypeHandler {
         dataTypeServiceMap = new HashMap<>();
         dataTypeServiceMap.put(new ClassStringPair(TextService.getInstance().keyword(), TextService.getInstance().appliesTo()), TextService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(TemplateService.getInstance().keyword(), TemplateService.getInstance().appliesTo()), TemplateService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(KeyValueDatasetService.getInstance().keyword(), KeyValueDatasetService.getInstance().appliesTo()), KeyValueDatasetService.getInstance());
     }
 
@@ -72,7 +74,12 @@ public class DataTypeHandler {
         }
     }
 
-    public DataTypeService getDataTypeService(String key) {
+    @SuppressWarnings("unchecked")
+    public boolean equals(DataType _this, DataType other, ExecutionRuntime executionRuntime) {
+        return getDataTypeService(_this.getClass()).equals(_this, other, executionRuntime);
+    }
+
+    public IDataTypeService getDataTypeService(String key) {
         return dataTypeServiceMap.entrySet().stream()
                 .filter(entry -> entry.getKey().keyword.equals(key))
                 .map(Map.Entry::getValue)
@@ -80,7 +87,7 @@ public class DataTypeHandler {
                 .orElseThrow(() -> new RuntimeException("Could not find DataTypeService for " + key));
     }
 
-    public DataTypeService getDataTypeService(Class clazz) {
+    public IDataTypeService getDataTypeService(Class clazz) {
         return dataTypeServiceMap.entrySet().stream()
                 .filter(entry -> entry.getKey().clazz.equals(clazz))
                 .map(Map.Entry::getValue)

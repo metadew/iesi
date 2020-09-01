@@ -16,7 +16,7 @@ import java.util.*;
 public class DatasetHandler {
 
     private static DatasetHandler INSTANCE;
-    private Map<Class<? extends Dataset>, DatasetService> datasetServiceMap;
+    private Map<Class<? extends Dataset>, IDatasetService> datasetServiceMap;
 
     public synchronized static DatasetHandler getInstance() {
         if (INSTANCE == null) {
@@ -56,15 +56,17 @@ public class DatasetHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, DataType> getDataItems(Dataset dataset, ExecutionRuntime executionRuntime) {return getDatasetService(dataset).getDataItems(dataset, executionRuntime);}
+    public Map<String, DataType> getDataItems(Dataset dataset, ExecutionRuntime executionRuntime) {
+        return getDatasetService(dataset).getDataItems(dataset, executionRuntime);
+    }
 
     @SuppressWarnings("unchecked")
     public void setDataItem(Dataset dataset, String key, DataType value) {
         getDatasetService(dataset).setDataItem(dataset, key, value);
     }
 
-    private DatasetService getDatasetService(Dataset dataset) {
-        DatasetService datasetService = datasetServiceMap.get(dataset.getClass());
+    private IDatasetService getDatasetService(Dataset dataset) {
+        IDatasetService datasetService = datasetServiceMap.get(dataset.getClass());
         if (datasetService == null) {
             throw new RuntimeException("No dataset service found to handle dataset of type " + dataset.getClass().getSimpleName());
         } else {
@@ -110,4 +112,6 @@ public class DatasetHandler {
             return datasetLabel.toString();
         }
     }
+
+
 }

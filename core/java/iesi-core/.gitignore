@@ -4,6 +4,11 @@
 *.iml
 /src/main/resources/encryption.key
 
+/metadata/out/ddl
+test.db3
+test.mv.db
+test.trace.db
+
 ### Eclipse template
 .metadata
 bin/
@@ -128,7 +133,6 @@ crashlytics-build.properties
 fabric.properties
 
 # Editor-based Rest Client
-.idea/httpRequests
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser

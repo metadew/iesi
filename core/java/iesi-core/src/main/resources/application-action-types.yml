@@ -245,6 +245,25 @@ iesi:
             subroutine:
             impersonate: false
         status: stable
+      eval.listContains:
+        className: io.metadew.iesi.script.action.eval.EvalListContains
+        description: Evaluate if two values are equal
+        parameters:
+          list:
+            description: Expected value to evaluate
+            type: string
+            mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+          value:
+            description: Actual value to evaluate
+            type: string
+            mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+        status: stable
       eval.executeExpression:
         className: io.metadew.iesi.script.action.eval.EvalExecuteExpression
         description: Evaluate an expression using scripted syntax

@@ -1,15 +1,20 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.common.FrameworkRuntime;
 import io.metadew.iesi.common.FrameworkInstance;
+import io.metadew.iesi.common.FrameworkRuntime;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -17,7 +22,7 @@ import java.util.List;
 
 public class MetadataLauncher {
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException, IOException {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(new Option("help", "print this message"))
@@ -53,8 +58,8 @@ public class MetadataLauncher {
         // Define the exit behaviour
         boolean exit = !line.hasOption("exit") || line.getOptionValue("exit").equalsIgnoreCase("y") || line.getOptionValue("exit").equalsIgnoreCase("true");
 
-        System.out.println("initialize framework");
         Configuration.getInstance();
+        FrameworkCrypto.getInstance();
         // FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("metadata", "")));
 
         MetadataRepositoryOperation metadataRepositoryOperation = new MetadataRepositoryOperation();
@@ -97,45 +102,58 @@ public class MetadataLauncher {
 
         // Drop
         if (line.hasOption("drop")) {
+            writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-
-                writeHeaderMessage();
                 System.out.println("Option -drop (drop) selected");
                 System.out.println();
                 metadataRepository.dropAllTables();
-                writeFooterMessage();
             }
+            writeFooterMessage();
         }
 
         // DDL
         if (line.hasOption("ddl")) {
+            writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                System.out.println(metadataRepository.generateDDL());
+                Files.deleteIfExists(FrameworkConfiguration.getInstance()
+                        .getMandatoryFrameworkFolder("metadata.out.ddl")
+                        .getAbsolutePath()
+                        .resolve("ddl_" + metadataRepository.getCategory() + ".sql"));
+                Files.createFile(FrameworkConfiguration.getInstance()
+                        .getMandatoryFrameworkFolder("metadata.out.ddl")
+                        .getAbsolutePath()
+                        .resolve("ddl_" + metadataRepository.getCategory() + ".sql"));
+
+                Files.write(FrameworkConfiguration.getInstance()
+                                .getMandatoryFrameworkFolder("metadata.out.ddl")
+                                .getAbsolutePath()
+                                .resolve("ddl_" + metadataRepository.getCategory() + ".sql"),
+                        metadataRepository.generateDDL().getBytes(StandardCharsets.UTF_8));
             }
+            writeFooterMessage();
         }
 
         // Create
         if (line.hasOption("create")) {
+            writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                writeHeaderMessage();
                 System.out.println("Option -create (create) selected");
                 System.out.println();
                 System.out.println(MessageFormat.format("Creating metadata repository {0}", metadataRepository.getCategory()));
                 metadataRepository.createAllTables();
-                writeFooterMessage();
             }
+            writeFooterMessage();
         }
 
         // clean
         if (line.hasOption("clean")) {
+            writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                writeHeaderMessage();
                 System.out.println("Option -clean (clean) selected");
                 System.out.println();
                 metadataRepository.cleanAllTables();
-                writeFooterMessage();
             }
-
+            writeFooterMessage();
         }
 
         // load
@@ -153,9 +171,9 @@ public class MetadataLauncher {
             writeFooterMessage();
         }
 
+        FrameworkInstance.getInstance().shutdown();
         System.out.println();
         System.out.println("metadata.launcher.end");
-        FrameworkInstance.getInstance().shutdown();
         endLauncher(0, exit);
     }
 

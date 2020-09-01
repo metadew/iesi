@@ -1,8 +1,8 @@
 package io.metadew.iesi.common.crypto;
 
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.crypto.algo.AESEncryptBasic;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -13,11 +13,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Log4j2
 public class FrameworkCrypto {
 
     private AESEncryptBasic aes;
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private static FrameworkCrypto INSTANCE;
 
@@ -28,8 +27,19 @@ public class FrameworkCrypto {
         return INSTANCE;
     }
 
-    private FrameworkCrypto() {
-        this.aes = new AESEncryptBasic("c7c1e47391154a6a");
+    public FrameworkCrypto() {
+        if (Configuration.getInstance().getProperty("iesi.security.encryption.alias").isPresent()) {
+            char[] password = Console.getInstance().readPassword("Enter your keystore password: ");
+            String keystoreLocation = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
+            String alias = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.alias").toString();
+            String keyJKS = new JavaKeystore().loadKey(password, keystoreLocation, alias);
+            this.aes = new AESEncryptBasic(keyJKS);
+        } else if (Configuration.getInstance().getProperty("iesi.security.encryption.key").isPresent()) {
+            this.aes = new AESEncryptBasic(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString());
+        } else {
+            log.warn("iesi.security.encryption.key: no encryption key provided. IESI will use the hardcoded key");
+            this.aes = new AESEncryptBasic("a9a1e56891154a6a");
+        }
     }
 
     // Methods
@@ -45,24 +55,22 @@ public class FrameworkCrypto {
     }
 
     public String decrypt(String input) {
-        String output = "";
+        log.debug("decrypting '" + input + "'");
         if (input.trim().equalsIgnoreCase(""))
-            return output;
+            return input;
 
         if (input.substring(0, 4).equalsIgnoreCase("ENC(")) {
             if (!input.substring(input.length() - 1).equalsIgnoreCase(")")) {
                 throw new RuntimeException("Encrypted password not set correctly");
             }
             try {
-                output = aes.decrypt(input.substring(4, input.length() - 1));
+                return aes.decrypt(input.substring(4, input.length() - 1));
             } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
                 throw new RuntimeException(e);
             }
         } else {
             throw new RuntimeException("Encrypted password not set correctly");
         }
-
-        return output;
     }
 
     public String decryptIfNeeded(String input) {
@@ -136,6 +144,7 @@ public class FrameworkCrypto {
     }
 
     public String resolve(String input) {
+        log.debug("resolving '" + input + "'");
         int openPos;
         int closePos;
         String variable_char = "ENC(";

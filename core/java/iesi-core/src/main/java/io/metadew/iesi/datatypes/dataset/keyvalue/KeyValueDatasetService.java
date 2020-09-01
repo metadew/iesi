@@ -5,17 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.database.SqliteDatabase;
-import io.metadew.iesi.connection.database.connection.sqlite.SqliteDatabaseConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.sqlite.SqliteDatabase;
+import io.metadew.iesi.connection.database.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.BaseDatasetService;
+import io.metadew.iesi.datatypes.dataset.DatasetService;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.datatypes.dataset.DatasetService;
+import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadata;
 import io.metadew.iesi.datatypes.dataset.metadata.DatasetMetadataService;
 import io.metadew.iesi.datatypes.text.Text;
@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -39,14 +40,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log4j2
-public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> implements DatasetService<KeyValueDataset> {
+public class KeyValueDatasetService extends DatasetService<KeyValueDataset> implements IDatasetService<KeyValueDataset> {
 
     private static KeyValueDatasetService INSTANCE;
 
     private MetadataTable metadataTable = new MetadataTable("data", "dataset", "dataset", "dataset",
             Stream.of(
-                    new AbstractMap.SimpleEntry<>("key", new MetadataField("key", 1, "string", 2000, false, false, true)),
-                    new AbstractMap.SimpleEntry<>("value", new MetadataField("key", 1, "string", 2000, false, false, true))
+                    new AbstractMap.SimpleEntry<>("key", new MetadataField("key", 1, "string", 2000, false, false, true, false)),
+                    new AbstractMap.SimpleEntry<>("value", new MetadataField("key", 1, "string", 2000, false, false, true, false))
             ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
     public synchronized static KeyValueDatasetService getInstance() {
@@ -81,7 +82,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
 
     @Override
     public void shutdown(KeyValueDataset dataset) {
-        DatabaseHandlerImpl.getInstance().shutdown(dataset.getDatasetDatabase());
+        DatabaseHandler.getInstance().shutdown(dataset.getDatasetDatabase());
         DatasetMetadataService.getInstance().shutdown(dataset.getDatasetMetadata());
     }
 
@@ -95,9 +96,12 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         DatasetMetadataService.getInstance().insertDatasetLabelInformation(datasetMetadata, nextInventoryId, labels);
 
         log.debug(MessageFormat.format("creating dataset {0} for {1} at {2} table {3}", nextInventoryId, name, datasetFilename, tableName));
-        String filepath = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder(tableName).getAbsolutePath() + File.separator + "datasets"
-                + File.separator + name + File.separator + tableName + File.separator + datasetFilename;
-        File file = new File(filepath);
+        Path filepath = FrameworkConfiguration.getInstance().getMandatoryFrameworkFolder(tableName).getAbsolutePath()
+                .resolve("datasets")
+                .resolve(name)
+                .resolve(tableName)
+                .resolve(datasetFilename);
+        File file = filepath.toFile();
         file.setWritable(true, true);
         try {
             FileUtils.touch(file);
@@ -105,8 +109,8 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
             throw new RuntimeException(e);
         }
         DatasetMetadataService.getInstance().insertDatasetDatabaseInformation(datasetMetadata, nextInventoryId, datasetFilename, tableName);
-        Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath));
-        DatabaseHandlerImpl.getInstance().createTable(database, metadataTable);
+        Database database = new SqliteDatabase(new SqliteDatabaseConnection(filepath.toString(), null));
+        DatabaseHandler.getInstance().createTable(database, metadataTable);
         // String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(tableName) + " (key TEXT, value TEXT)";
         // DatabaseHandlerImpl.getInstance().executeUpdate(database, create);
         return new KeyValueDataset(name, labels, datasetMetadata, database, tableName);
@@ -199,14 +203,14 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         // Check if table exists
         String queryTableExists = "select name from sqlite_master where name = " + SQLTools.GetStringForSQLTable(keyValueDataset.getTableName()) + ";";
         try {
-            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(keyValueDataset.getDatasetDatabase(), queryTableExists);
+            CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(keyValueDataset.getDatasetDatabase(), queryTableExists);
             if (crs.size() >= 1) {
                 crs.next();
                 String clean = "delete from " + SQLTools.GetStringForSQLTable(keyValueDataset.getTableName()) + ";";
-                DatabaseHandlerImpl.getInstance().executeUpdate(keyValueDataset.getDatasetDatabase(), clean);
+                DatabaseHandler.getInstance().executeUpdate(keyValueDataset.getDatasetDatabase(), clean);
             } else {
                 String create = "CREATE TABLE " + SQLTools.GetStringForSQLTable(keyValueDataset.getTableName()) + " (key TEXT, value TEXT);";
-                DatabaseHandlerImpl.getInstance().executeUpdate(keyValueDataset.getDatasetDatabase(), create);
+                DatabaseHandler.getInstance().executeUpdate(keyValueDataset.getDatasetDatabase(), create);
             }
             crs.close();
         } catch (SQLException e) {
@@ -231,7 +235,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
     public Optional<DataType> getDataItem(KeyValueDataset dataset, String dataItem, ExecutionRuntime executionRuntime) {
         String query = "select value from " + SQLTools.GetStringForSQLTable(dataset.getTableName()) + " where key = " + SQLTools.GetStringForSQL(dataItem) + ";";
         try {
-            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(dataset.getDatasetDatabase(), query);
+            CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(dataset.getDatasetDatabase(), query);
             if (crs.size() == 0) {
                 return Optional.empty();
             } else if (crs.size() > 1) {
@@ -251,7 +255,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
         Map<String, DataType> dataItems = new HashMap<>();
         try {
             String query = "select key, value from " + SQLTools.GetStringForSQLTable(dataset.getTableName()) + ";";
-            CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(dataset.getDatasetDatabase(), query);
+            CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(dataset.getDatasetDatabase(), query);
             while (crs.next()) {
                 dataItems.put(crs.getString("key"), DataTypeHandler.getInstance().resolve(crs.getString("value"), executionRuntime));
             }
@@ -266,7 +270,7 @@ public class KeyValueDatasetService extends BaseDatasetService<KeyValueDataset> 
     public void setDataItem(KeyValueDataset dataset, String key, DataType value) {
         String query = "insert into " + SQLTools.GetStringForSQLTable(dataset.getTableName()) + " (key, value) values ("
                 + SQLTools.GetStringForSQL(key) + ", " + SQLTools.GetStringForSQL(value.toString()) + ");";
-        DatabaseHandlerImpl.getInstance().executeUpdate(dataset.getDatasetDatabase(), query);
+        DatabaseHandler.getInstance().executeUpdate(dataset.getDatasetDatabase(), query);
     }
 
     @Override

@@ -9,13 +9,21 @@ import java.time.LocalDateTime;
 
 public class ActionPerformanceLogger {
 
+    private static ActionPerformanceLogger INSTANCE;
 
-    public ActionPerformanceLogger() {
+    public static ActionPerformanceLogger getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ActionPerformanceLogger();
+        }
+        return INSTANCE;
     }
 
-    public void log(ActionExecution actionExecution, String scope, LocalDateTime startTimestamp, LocalDateTime endTimestalmp) {
+    private ActionPerformanceLogger() {
+    }
+
+    public void log(ActionExecution actionExecution, String scope, LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
         ActionPerformanceConfiguration.getInstance().insert(new ActionPerformance(new ActionPerformanceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), scope),
-                actionExecution.getExecutionControl().getEnvName(), actionExecution.getAction().getMetadataKey().getActionId(), startTimestamp, endTimestalmp, (double) Duration.between(startTimestamp, endTimestalmp).toMillis()));
+                actionExecution.getExecutionControl().getEnvName(), actionExecution.getAction().getMetadataKey().getActionId(), startTimestamp, endTimestamp, (double) Duration.between(startTimestamp, endTimestamp).toMillis()));
     }
 
 }

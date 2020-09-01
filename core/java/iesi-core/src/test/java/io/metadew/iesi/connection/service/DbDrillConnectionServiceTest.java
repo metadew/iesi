@@ -1,9 +1,9 @@
 package io.metadew.iesi.connection.service;
 
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.database.DrillDatabase;
-import io.metadew.iesi.connection.database.connection.drill.DrillDatabaseConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.drill.DrillDatabase;
+import io.metadew.iesi.connection.database.drill.DrillDatabaseConnection;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -26,15 +26,15 @@ public class DbDrillConnectionServiceTest {
 
     @BeforeAll
     static void setup() {
-        DatabaseHandlerImpl databaseConnectionHandler = DatabaseHandlerImpl.getInstance();
-        DatabaseHandlerImpl databaseConnectionHandlerSpy = Mockito.spy(databaseConnectionHandler);
-        Whitebox.setInternalState(DatabaseHandlerImpl.class, "INSTANCE", databaseConnectionHandlerSpy);
+        DatabaseHandler databaseConnectionHandler = DatabaseHandler.getInstance();
+        DatabaseHandler databaseConnectionHandlerSpy = Mockito.spy(databaseConnectionHandler);
+        Whitebox.setInternalState(DatabaseHandler.class, "INSTANCE", databaseConnectionHandlerSpy);
         Mockito.doReturn(false).when(databaseConnectionHandlerSpy).isInitializeConnectionPool(any());
     }
 
     @AfterAll
     static void destroy() {
-        Whitebox.setInternalState(DatabaseHandlerImpl.class, "INSTANCE", (DatabaseHandlerImpl) null);
+        Whitebox.setInternalState(DatabaseHandler.class, "INSTANCE", (DatabaseHandler) null);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class DbDrillConnectionServiceTest {
                         .collect(Collectors.toList()));
 
         DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode", "cluster", "directory", "clusterId", "schema", "tries", "user", "password"), "schema");
-        assertEquals(drillDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(drillDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class DbDrillConnectionServiceTest {
                         .collect(Collectors.toList()));
 
         DrillDatabase drillDatabase = new DrillDatabase(new DrillDatabaseConnection("mode", "cluster", "directory", "clusterId", "schema", "tries", "user", "encrypted_password"), "schema");
-        assertEquals(drillDatabase, DatabaseHandlerImpl.getInstance().getDatabase(connection));
+        assertEquals(drillDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class DbDrillConnectionServiceTest {
                         .collect(Collectors.toList()));
 
 
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'mode'", connection));
     }
 
@@ -109,7 +109,7 @@ public class DbDrillConnectionServiceTest {
                         .collect(Collectors.toList()));
 
 
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'cluster'", connection));
     }
 
@@ -128,7 +128,7 @@ public class DbDrillConnectionServiceTest {
                         .collect(Collectors.toList()));
 
 
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'directory'", connection));
     }
 
@@ -146,7 +146,7 @@ public class DbDrillConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'clusterId'", connection));
     }
 
@@ -164,7 +164,7 @@ public class DbDrillConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'schema'", connection));
     }
 
@@ -182,7 +182,7 @@ public class DbDrillConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'tries'", connection));
     }
 
@@ -200,7 +200,7 @@ public class DbDrillConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
 
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -218,7 +218,7 @@ public class DbDrillConnectionServiceTest {
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"))
                         .collect(Collectors.toList()));
 
-        assertThrows(RuntimeException.class, () -> DatabaseHandlerImpl.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 }

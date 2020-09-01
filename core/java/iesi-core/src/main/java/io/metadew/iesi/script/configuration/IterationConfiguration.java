@@ -1,8 +1,8 @@
 package io.metadew.iesi.script.configuration;
 
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
-import io.metadew.iesi.connection.database.H2Database;
-import io.metadew.iesi.connection.database.connection.h2.H2MemoryDatabaseConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.h2.H2Database;
+import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.operation.ConditionOperation;
@@ -12,8 +12,6 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 public class IterationConfiguration {
@@ -30,7 +28,7 @@ public class IterationConfiguration {
         this.executionControl = executionControl;
         this.runCacheFolderName = runCacheFolderName;
         // Create database
-        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", "", null));
         createIterationExecTable();
 
     }
@@ -40,25 +38,25 @@ public class IterationConfiguration {
                 + "PRC_ID INT NOT NULL," + "LIST_ID INT NOT NULL," + "LIST_NM VARCHAR(200) NOT NULL,"
                 + "SET_ID INT NOT NULL," + "SET_NM VARCHAR(200) NOT NULL," + "ORDER_NB INT NOT NULL,"
                 + "VAR_NM VARCHAR(200) NOT NULL," + "VAR_VAL VARCHAR("+RUNTIME_VAR_VALUE_MAX_LENGTH+")" + ")";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+        DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     // Methods
     public void cleanIterationVariables(String runId)  {
         String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + "";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+        DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, long processId)  {
         String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + " and PRC_ID = "
                 + processId;
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+        DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, String iterationList)  {
         String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + " and LIST_NM = "
                 + SQLTools.GetStringForSQL(iterationList) + ";";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database, query);
+        DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
 
@@ -164,14 +162,14 @@ public class IterationConfiguration {
                 + SQLTools.GetStringForSQL(order) + ","
                 + SQLTools.GetStringForSQL(name) + ","
                 + SQLTools.GetStringForSQL(value) + ");";
-        DatabaseHandlerImpl.getInstance().executeUpdate(database , query);
+        DatabaseHandler.getInstance().executeUpdate(database , query);
 
     }
 
     public IterationInstance hasNext(String runId, long orderNumber)  {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
                 + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and order_nb = " + SQLTools.GetStringForSQL(orderNumber);
-        CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
+        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
         IterationInstance iterationInstance = new IterationInstance();
         try {
             while (crs.next()) {
@@ -209,7 +207,7 @@ public class IterationConfiguration {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
                 + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and list_nm = " + SQLTools.GetStringForSQL(listName)
                 + " and order_nb = " + SQLTools.GetStringForSQL(orderNumber) + ";";
-        CachedRowSet crs = DatabaseHandlerImpl.getInstance().executeQuery(database, query);
+        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
         IterationInstance iterationInstance = new IterationInstance();
         int items = 0;
         try {

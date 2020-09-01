@@ -1,27 +1,38 @@
 package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeService;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-public interface DatasetService<T extends Dataset> extends DataTypeService<T> {
+@Log4j2
+public abstract class DatasetService<T extends Dataset> implements IDatasetService<T> {
 
-    public void clean(T dataset, ExecutionRuntime executionRuntime);
-
-    public Optional<DataType> getDataItem(T dataset, String dataItem, ExecutionRuntime executionRuntime);
-
-    public Map<String, DataType> getDataItems(T dataset, ExecutionRuntime executionRuntime);
-
-    public void setDataItem(T dataset, String key, DataType value);
-
-    public KeyValueDataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException;
-
-    public void shutdown(T dataset);
-
+    @Override
+    public boolean equals(T _this, T other, ExecutionRuntime executionRuntime) {
+        if (_this == null && other == null) {
+            return true;
+        }
+        if (_this == null || other == null) {
+            return false;
+        }
+        if (!_this.getClass().equals(other.getClass())) {
+            return false;
+        }
+        Map<String, DataType> thisDataItems = DatasetHandler.getInstance().getDataItems(_this, executionRuntime);
+        Map<String, DataType> otherDataItems = DatasetHandler.getInstance().getDataItems(other, executionRuntime);
+        if (!thisDataItems.keySet().equals(otherDataItems.keySet())) {
+            return false;
+        }
+        for (Map.Entry<String, DataType> thisDataItem : thisDataItems.entrySet()) {
+            if (!DatasetHandler.getInstance().getDataItem(other, thisDataItem.getKey(), executionRuntime)
+                    .map(dataType -> DataTypeHandler.getInstance().equals(dataType, thisDataItem.getValue(), executionRuntime))
+                    .orElse(false)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

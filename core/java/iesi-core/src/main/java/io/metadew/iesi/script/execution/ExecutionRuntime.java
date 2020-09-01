@@ -2,10 +2,10 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.common.configuration.framework.FrameworkFolder;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.metadata.definition.Iteration;
@@ -27,7 +27,6 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -50,6 +49,7 @@ public class ExecutionRuntime {
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, Dataset> datasetMap;
+    private HashMap<String, Array> arrayMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
     private ImpersonationOperation impersonationOperation;
@@ -69,9 +69,11 @@ public class ExecutionRuntime {
         this.runId = runId;
 
         // Create cache folder
-        this.runCacheFolderName = FrameworkConfiguration.getInstance().getFrameworkFolder("run.cache")
-                .map(FrameworkFolder::getAbsolutePath)
-                .orElseThrow(() -> new RuntimeException("no definition found for run.cache")) + File.separator + runId;
+        this.runCacheFolderName = FrameworkConfiguration.getInstance()
+                .getMandatoryFrameworkFolder("run.cache")
+                .getAbsolutePath()
+                .resolve(runId)
+                .toString();
         // FolderTools.createFolder(runCacheFolderName);
         this.runtimeVariableConfiguration = new RuntimeVariableConfiguration(this.runCacheFolderName);
         this.iterationVariableConfiguration = new IterationVariableConfiguration(this.runCacheFolderName, true);
@@ -89,6 +91,7 @@ public class ExecutionRuntime {
         variableInstructions = VariableInstructionRepository.getRepository(executionControl);
         lookupInstructions = LookupInstructionRepository.getRepository(executionControl, this);
         datasetMap = new HashMap<>();
+        arrayMap = new HashMap<>();
         RWorkspaceMap = new HashMap<>();
     }
 
@@ -98,6 +101,7 @@ public class ExecutionRuntime {
         stageOperationMap.values()
                 .forEach(StageOperation::doCleanup);
         datasetMap = new HashMap<>();
+        arrayMap = new HashMap<>();
         stageOperationMap = new HashMap<>();
     }
 
@@ -525,6 +529,14 @@ public class ExecutionRuntime {
 
     public Optional<Dataset> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
+    }
+
+    public void setArray(String referenceName, Array array) throws IOException {
+        arrayMap.put(referenceName, array);
+    }
+
+    public Optional<Array> getArray(String referenceName) throws IOException {
+        return Optional.ofNullable(arrayMap.get(referenceName));
     }
 
     public void setRWorkspace(String referenceName, RWorkspace rWorkspace) {

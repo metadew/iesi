@@ -6,6 +6,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.*;
@@ -13,12 +14,22 @@ import java.util.stream.Collectors;
 
 public final class SQLTools {
 
+    public static final DateTimeFormatter defaultDateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
     // Insert statement tools
     public static String GetStringForSQL(String input) {
         if (input == null) {
             return "null";
         } else {
             return "'" + GetCleanString(input) + "'";
+        }
+    }
+    // Insert statement tools
+    public static String GetStringForSQL(UUID input) {
+        if (input == null) {
+            return "null";
+        } else {
+            return "'" + GetCleanString(input.toString()) + "'";
         }
     }
 
@@ -62,7 +73,7 @@ public final class SQLTools {
         if (input == null) {
             return "null";
         } else {
-            return "'" + GetCleanString(input.toString()) + "'";
+            return "'" + GetCleanString(input.format(defaultDateTimeFormatter)) + "'";
         }
     }
 

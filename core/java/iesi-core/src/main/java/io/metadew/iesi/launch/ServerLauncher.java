@@ -3,13 +3,16 @@ package io.metadew.iesi.launch;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.runtime.ExecutionRequestListener;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
 
+import java.io.IOException;
+
 public class ServerLauncher {
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, IOException {
         ThreadContext.clearAll();
         Options options = new Options()
                 .addOption(Option.builder("help")
@@ -26,6 +29,7 @@ public class ServerLauncher {
         }
 
         Configuration.getInstance();
+        FrameworkCrypto.getInstance();
         MetadataConfiguration.getInstance();
 
         FrameworkInstance frameworkInstance = FrameworkInstance.getInstance();

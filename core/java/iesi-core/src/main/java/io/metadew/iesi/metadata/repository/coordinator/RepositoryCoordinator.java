@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.repository.coordinator;
 
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.database.DatabaseHandlerImpl;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 
@@ -19,25 +19,25 @@ public class RepositoryCoordinator {
     }
 
     public String getAllTablesQuery(String pattern) {
-        return DatabaseHandlerImpl.getInstance().getAllTablesQuery(databases.get("reader"), pattern);
+        return DatabaseHandler.getInstance().getAllTablesQuery(databases.get("reader"), pattern);
     }
 
     public CachedRowSet executeQuery(String query, String logonType) {
         CachedRowSet crs;
-        crs = DatabaseHandlerImpl.getInstance().executeQuery(this.databases.get(logonType), query);
+        crs = DatabaseHandler.getInstance().executeQuery(this.databases.get(logonType), query);
         return crs;
     }
 
     public void executeUpdate(String query) {
-        DatabaseHandlerImpl.getInstance().executeUpdate(this.databases.get("writer"), query);
+        DatabaseHandler.getInstance().executeUpdate(this.databases.get("writer"), query);
     }
 
     public void executeBatch(List<String> queries) {
-        DatabaseHandlerImpl.getInstance().executeBatch(this.databases.get("writer"), queries);
+        DatabaseHandler.getInstance().executeBatch(this.databases.get("writer"), queries);
     }
 
     public void executeScript(String fileName, String logonType) {
-        SqlScriptResult dcSQLScriptResult = DatabaseHandlerImpl.getInstance().executeScript(this.databases.get(logonType), fileName);
+        SqlScriptResult dcSQLScriptResult = DatabaseHandler.getInstance().executeScript(this.databases.get(logonType), fileName);
 
         if (dcSQLScriptResult.getReturnCode() != 0) {
             throw new RuntimeException("Error executing SQL script");
@@ -45,7 +45,7 @@ public class RepositoryCoordinator {
     }
 
     public void executeScript(InputStream inputStream, String logonType) {
-        SqlScriptResult dcSQLScriptResult = DatabaseHandlerImpl.getInstance().executeScript(this.databases.get(logonType), inputStream);
+        SqlScriptResult dcSQLScriptResult = DatabaseHandler.getInstance().executeScript(this.databases.get(logonType), inputStream);
 
         if (dcSQLScriptResult.getReturnCode() != 0) {
             throw new RuntimeException("Error executing SQL script");
@@ -53,23 +53,23 @@ public class RepositoryCoordinator {
     }
 
     public void cleanTable(MetadataTable table) {
-        DatabaseHandlerImpl.getInstance().cleanTable(this.databases.get("writer"), table);
+        DatabaseHandler.getInstance().cleanTable(this.databases.get("writer"), table);
     }
 
     public void dropTable(MetadataTable table) {
-        DatabaseHandlerImpl.getInstance().dropTable(this.databases.get("owner"), table);
+        DatabaseHandler.getInstance().dropTable(this.databases.get("owner"), table);
     }
 
     public void createTable(MetadataTable table) {
-        DatabaseHandlerImpl.getInstance().createTable(this.databases.get("owner"), table);
+        DatabaseHandler.getInstance().createTable(this.databases.get("owner"), table);
     }
 
     public String getCreateStatement(MetadataTable table) {
-        return DatabaseHandlerImpl.getInstance().getCreateStatement(this.databases.get("reader"), table);
+        return DatabaseHandler.getInstance().getCreateStatement(this.databases.get("reader"), table);
     }
 
     public String getDropStatement(MetadataTable table) {
-        return DatabaseHandlerImpl.getInstance().getDropStatement(this.databases.get("reader"), table);
+        return DatabaseHandler.getInstance().getDropStatement(this.databases.get("reader"), table);
     }
 
     public Map<String, Database> getDatabases() {
@@ -78,7 +78,8 @@ public class RepositoryCoordinator {
 
     public void shutdown() {
         for (Database database : databases.values()) {
-            DatabaseHandlerImpl.getInstance().shutdown(database);
+            DatabaseHandler.getInstance()
+                    .shutdown(database);
         }
     }
 }

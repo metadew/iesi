@@ -1,0 +1,26 @@
+server:
+  servlet:
+    context-path: /api
+springdoc:
+  version: '0.3.0'
+spring:
+  profiles:
+    active: http
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration, org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, httptrace, metrics, mappings
+  trace:
+    http:
+      include: request-headers,response-headers,cookie-headers,principal,time-taken,authorization-header,remote-address,session-id
+  #security:
+  #  enabled: false
+
+#security:
+#  basic:
+#    enabled: false
+#  ignored=/**:

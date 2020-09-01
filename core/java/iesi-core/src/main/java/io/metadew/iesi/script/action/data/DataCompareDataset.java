@@ -1,12 +1,12 @@
 package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.mapping.MappingConfiguration;
 import io.metadew.iesi.metadata.definition.Transformation;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementation;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementationService;
 import io.metadew.iesi.metadata.definition.mapping.Mapping;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -17,10 +17,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
+@Deprecated
 public class DataCompareDataset extends ActionTypeExecution {
 
     @SuppressWarnings("unused")
@@ -66,9 +65,9 @@ public class DataCompareDataset extends ActionTypeExecution {
         String leftDatasetName = convertDatasetName(getLeftDatasetName().getValue());
         String rightDatasetName = convertDatasetName(getRightDatasetName().getValue());
         String mappingName = convertMappingName(getMappingName().getValue());
-        Dataset leftDataset = getExecutionControl().getExecutionRuntime().getDataset(leftDatasetName)
+        InMemoryDatasetImplementation leftDataset = getExecutionControl().getExecutionRuntime().getDataset(leftDatasetName)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("data.comparedataset could not find dataset {0} as left dataset", leftDatasetName)));
-        Dataset rightDataset = getExecutionControl().getExecutionRuntime().getDataset(rightDatasetName)
+        InMemoryDatasetImplementation rightDataset = getExecutionControl().getExecutionRuntime().getDataset(rightDatasetName)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("data.comparedataset could not find dataset {0} as right dataset", rightDatasetName)));
 
 
@@ -76,8 +75,8 @@ public class DataCompareDataset extends ActionTypeExecution {
         Mapping mapping = MappingConfiguration.getInstance().getMapping(mappingName);
         for (Transformation transformation : mapping.getTransformations()) {
 
-            Optional<DataType> leftFieldValue = DatasetHandler.getInstance().getDataItem(leftDataset, transformation.getLeftField(), getExecutionControl().getExecutionRuntime());
-            Optional<DataType> rightFieldValue = DatasetHandler.getInstance().getDataItem(rightDataset, transformation.getRightField(), getExecutionControl().getExecutionRuntime());
+            Optional<DataType> leftFieldValue = InMemoryDatasetImplementationService.getInstance().getDataItem(leftDataset, transformation.getLeftField(), getExecutionControl().getExecutionRuntime());
+            Optional<DataType> rightFieldValue = InMemoryDatasetImplementationService.getInstance().getDataItem(rightDataset, transformation.getRightField(), getExecutionControl().getExecutionRuntime());
             if (!leftFieldValue.isPresent()) {
                 this.getActionExecution().getActionControl().logWarning("field.left",
                         MessageFormat.format("cannot find value for {0} in dataset {1}.", transformation.getLeftField(), leftDatasetName));

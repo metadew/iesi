@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementation;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementationService;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
@@ -33,13 +33,13 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
     }
 
     @Override
-    public void writeToDataset(ApplicationJsonHttpResponseEntityStrategy applicationJsonHttpResponseEntityStrategy, KeyValueDataset dataset,
+    public void writeToDataset(ApplicationJsonHttpResponseEntityStrategy applicationJsonHttpResponseEntityStrategy, InMemoryDatasetImplementation dataset,
                                String key, ExecutionRuntime executionRuntime) throws IOException {
         writeToDataset(applicationJsonHttpResponseEntityStrategy.getHttpResponse(), dataset, key, executionRuntime);
     }
 
     @Override
-    public void writeToDataset(HttpResponse httpResponse, KeyValueDataset dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
+    public void writeToDataset(HttpResponse httpResponse, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         if (httpResponse.getEntityContent().isPresent()) {
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
@@ -48,7 +48,7 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
             log.debug("raw JSON content: " + new String(httpResponse.getEntityContent().get(), charset));
             JsonNode jsonNode = new ObjectMapper().readTree(new String(httpResponse.getEntityContent().get(), charset));
             //DatasetHandler.getInstance().clean(dataset, executionRuntime);
-            DatasetHandler.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
+            InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
         }
     }
 

@@ -9,12 +9,12 @@ import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.connection.http.response.HttpResponseService;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementation;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ActionPerformanceLogger;
@@ -47,7 +47,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String expectedStatusCodesKey = "expectedStatusCodes";
 
     private HttpRequest httpRequest;
-    private KeyValueDataset outputDataset;
+    private InMemoryDatasetImplementation outputDataset;
     private ProxyConnection proxyConnection;
     private List<String> expectedStatusCodes;
 
@@ -179,13 +179,13 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
     }
 
-    private KeyValueDataset convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
+    private InMemoryDatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
         if (outputDatasetReferenceName == null) {
             return null;
         } else if (outputDatasetReferenceName instanceof Text) {
             return getExecutionControl().getExecutionRuntime()
                     .getDataset(((Text) outputDatasetReferenceName).getString())
-                    .map(dataset -> (KeyValueDataset) dataset)
+                    .map(dataset -> dataset)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
         } else {
             LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
@@ -258,7 +258,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    private Optional<KeyValueDataset> getOutputDataset() {
+    private Optional<InMemoryDatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 

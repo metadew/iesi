@@ -4,15 +4,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.IDataTypeService;
+import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class InMemoryDatasetImplementationService implements IInMemoryDatasetImplementationService {
+@Log4j2
+public class InMemoryDatasetImplementationService implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
     private static InMemoryDatasetImplementationService INSTANCE;
 
     public synchronized static InMemoryDatasetImplementationService getInstance() {
@@ -32,7 +35,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     }
 
     @Override
-    public InMemoryDatasetImplementation createNewDatasetImplementation(String name, List<DatasetImplementationLabel> labels) {
+    public InMemoryDatasetImplementation createNewDatasetImplementation(String name, List<String> labels) {
         Dataset dataset;
         if (DatasetConfiguration.getInstance().getByName(name).isPresent()) {
             dataset = DatasetConfiguration.getInstance().getByName(name).get();
@@ -40,11 +43,14 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
             dataset = new Dataset(new DatasetKey(), name, new ArrayList<>());
             DatasetConfiguration.getInstance().insert(dataset);
         }
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
         InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
-                new DatasetImplementationKey(),
+                datasetImplementationKey,
                 dataset.getMetadataKey(),
                 dataset.getName(),
-                labels,
+                labels.stream()
+                        .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
+                        .collect(Collectors.toList()),
                 new ArrayList<>()
         );
         DatasetImplementationConfiguration.getInstance().insert(inMemoryDatasetImplementation);
@@ -92,15 +98,117 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     }
 
 
-
-    public DataType resolve(KeyValueDataset dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
+    public DataType resolve(InMemoryDatasetImplementation dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-        KeyValueDataset objectDataset = getObjectDataset(dataset, key);
+        InMemoryDatasetImplementation inMemoryDatasetImplementation = getObjectDataset(dataset, key);
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
-            DataType object = DataTypeHandler.getInstance().resolve(objectDataset, field.getKey(), field.getValue(), executionRuntime);
-            DatasetHandler.getInstance().setDataItem(objectDataset, field.getKey(), object);
+            DataType object = DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementation, field.getKey(), field.getValue(), executionRuntime);
+            setDataItem(inMemoryDatasetImplementation, field.getKey(), object);
         }
-        return objectDataset;
+        return inMemoryDatasetImplementation;
+    }
+
+
+    private InMemoryDatasetImplementation getObjectDataset(InMemoryDatasetImplementation inMemoryDatasetImplementation, String keyPrefix) {
+        if (keyPrefix != null) {
+            List<String> labels = inMemoryDatasetImplementation.getDatasetImplementationLabels().stream()
+                    .map(DatasetImplementationLabel::getValue)
+                    .collect(Collectors.toList());
+            labels.add(keyPrefix);
+            return createNewDatasetImplementation(inMemoryDatasetImplementation.getName(), labels);
+        } else {
+            return inMemoryDatasetImplementation;
+        }
+    }
+
+    @Override
+    public Class<InMemoryDatasetImplementation> appliesTo() {
+        return InMemoryDatasetImplementation.class;
+    }
+
+    @Override
+    public String keyword() {
+        return "dataset";
+    }
+
+    @Override
+    public InMemoryDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
+        arguments = executionRuntime.resolveVariables(arguments);
+        List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
+        if (splittedArguments.size() == 2) {
+            List<DataType> resolvedArguments = splittedArguments.stream()
+                    .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
+                    .collect(Collectors.toList());
+            return getDatasetImplementation(convertDatasetName(resolvedArguments.get(0)), convertDatasetLabels(resolvedArguments.get(1), executionRuntime))
+                    .orElseThrow(() -> new RuntimeException("Could not find dataset for " + convertDatasetName(resolvedArguments.get(0)) + " " + convertDatasetLabels(resolvedArguments.get(1), executionRuntime)));
+        } else {
+            throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
+        }
+    }
+
+    private String convertDatasetName(DataType datasetName) {
+        if (datasetName instanceof Text) {
+            return ((Text) datasetName).getString();
+        } else {
+            log.warn(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase name",
+                    datasetName.getClass()));
+            return datasetName.toString();
+        }
+    }
+
+
+    private List<String> convertDatasetLabels(DataType datasetLabels, ExecutionRuntime executionRuntime) {
+        List<String> labels = new ArrayList<>();
+        if (datasetLabels instanceof Text) {
+            Arrays.stream(datasetLabels.toString().split(","))
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeHandler.getInstance().resolve(datasetLabel.trim(), executionRuntime), executionRuntime)));
+            return labels;
+        } else if (datasetLabels instanceof Array) {
+            ((Array) datasetLabels).getList()
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel, executionRuntime)));
+            return labels;
+        } else {
+            log.warn(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase labels",
+                    datasetLabels.getClass()));
+            return labels;
+        }
+    }
+
+
+    private String convertDatasetLabel(DataType datasetLabel, ExecutionRuntime executionRuntime) {
+        if (datasetLabel instanceof Text) {
+            return executionRuntime.resolveVariables(((Text) datasetLabel).getString());
+        } else {
+            log.warn(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
+                    datasetLabel.getClass()));
+            return executionRuntime.resolveVariables(datasetLabel.toString());
+        }
+    }
+
+    @Override
+    public boolean equals(InMemoryDatasetImplementation _this, InMemoryDatasetImplementation other, ExecutionRuntime executionRuntime) {
+        if (_this == null && other == null) {
+            return true;
+        }
+        if (_this == null || other == null) {
+            return false;
+        }
+        if (!_this.getClass().equals(other.getClass())) {
+            return false;
+        }
+        Map<String, DataType> thisDataItems = getDataItems(_this, executionRuntime);
+        Map<String, DataType> otherDataItems = getDataItems(other, executionRuntime);
+        if (!thisDataItems.keySet().equals(otherDataItems.keySet())) {
+            return false;
+        }
+        for (Map.Entry<String, DataType> thisDataItem : thisDataItems.entrySet()) {
+            if (!getDataItem(other, thisDataItem.getKey(), executionRuntime)
+                    .map(dataType -> DataTypeHandler.getInstance().equals(dataType, thisDataItem.getValue(), executionRuntime))
+                    .orElse(false)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

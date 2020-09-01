@@ -2,12 +2,12 @@ package io.metadew.iesi.metadata.service.action;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementation;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementationService;
 import io.metadew.iesi.script.execution.ActionExecution;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
@@ -69,8 +69,8 @@ public class ActionParameterTraceService {
                 actionParameterTraces.addAll(getActionParameterTraces(actionExecution, key + counter, element));
                 counter++;
             }
-        } else if (value instanceof Dataset) {
-            for (Map.Entry<String, DataType> datasetItem : DatasetHandler.getInstance().getDataItems((Dataset) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
+        } else if (value instanceof InMemoryDatasetImplementation) {
+            for (Map.Entry<String, DataType> datasetItem : InMemoryDatasetImplementationService.getInstance().getDataItems((InMemoryDatasetImplementation) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
                 actionParameterTraces.addAll(getActionParameterTraces(actionExecution, key + datasetItem.getKey(), datasetItem.getValue()));
             }
         } else {

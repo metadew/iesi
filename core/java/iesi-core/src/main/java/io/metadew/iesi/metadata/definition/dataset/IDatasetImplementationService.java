@@ -11,7 +11,7 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
 
     public Optional<T> getDatasetImplementation(String name, List<String> labels);
 
-    public T createNewDatasetImplementation(String name, List<DatasetImplementationLabel> labels);
+    public T createNewDatasetImplementation(String name, List<String> labels);
 
     public void clean(T datasetImplementation, ExecutionRuntime executionRuntime);
 

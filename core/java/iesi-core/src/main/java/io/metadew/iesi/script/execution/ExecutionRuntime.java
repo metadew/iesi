@@ -6,10 +6,10 @@ import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementation;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementationService;
 import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
 import io.metadew.iesi.script.configuration.RuntimeVariableConfiguration;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
@@ -48,7 +48,7 @@ public class ExecutionRuntime {
 
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
-    private HashMap<String, Dataset> datasetMap;
+    private HashMap<String, InMemoryDatasetImplementation> datasetMap;
     private HashMap<String, Array> arrayMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
@@ -96,8 +96,8 @@ public class ExecutionRuntime {
     }
 
     public void terminate() {
-        datasetMap.values()
-                .forEach(dataset -> DatasetHandler.getInstance().shutdown(dataset));
+        //datasetMap.values()
+        //        .forEach(dataset -> DatasetHandler.getInstance().shutdown(dataset));
         stageOperationMap.values()
                 .forEach(StageOperation::doCleanup);
         datasetMap = new HashMap<>();
@@ -524,10 +524,17 @@ public class ExecutionRuntime {
     }
 
     public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException {
-        datasetMap.put(referenceName, DatasetHandler.getInstance().getByNameAndLabels(datasetName, datasetLabels, this));
+        referenceName = resolveVariables(referenceName);
+        datasetLabels = datasetLabels.stream()
+                .peek(this::resolveVariables)
+                .collect(Collectors.toList());
+        InMemoryDatasetImplementation inMemoryDatasetImplementation = InMemoryDatasetImplementationService.getInstance()
+                .getDatasetImplementation(datasetName, datasetLabels)
+                .orElse(InMemoryDatasetImplementationService.getInstance().createNewDatasetImplementation(referenceName, datasetLabels));
+        datasetMap.put(referenceName, inMemoryDatasetImplementation);
     }
 
-    public Optional<Dataset> getDataset(String referenceName) {
+    public Optional<InMemoryDatasetImplementation> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
     }
 

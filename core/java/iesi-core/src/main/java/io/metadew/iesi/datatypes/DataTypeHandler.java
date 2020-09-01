@@ -3,10 +3,10 @@ package io.metadew.iesi.datatypes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
 import io.metadew.iesi.datatypes.array.ArrayService;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDatasetService;
 import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.datatypes.text.TextService;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementation;
+import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementationService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -40,7 +40,7 @@ public class DataTypeHandler {
         dataTypeServiceMap.put(new ClassStringPair(TextService.getInstance().keyword(), TextService.getInstance().appliesTo()), TextService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(TemplateService.getInstance().keyword(), TemplateService.getInstance().appliesTo()), TemplateService.getInstance());
-        dataTypeServiceMap.put(new ClassStringPair(KeyValueDatasetService.getInstance().keyword(), KeyValueDatasetService.getInstance().appliesTo()), KeyValueDatasetService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(InMemoryDatasetImplementationService.getInstance().keyword(), InMemoryDatasetImplementationService.getInstance().appliesTo()), InMemoryDatasetImplementationService.getInstance());
     }
 
     /*
@@ -140,20 +140,20 @@ public class DataTypeHandler {
         return instructionArguments;
     }
 
-    public DataType resolve(KeyValueDataset rootDataset, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
+    public DataType resolve(InMemoryDatasetImplementation inMemoryDatasetImplementation, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) {
         if (jsonNode.getNodeType().equals(JsonNodeType.ARRAY)) {
-            return ArrayService.getInstance().resolve(rootDataset, key, (ArrayNode) jsonNode, executionRuntime);
+            return ArrayService.getInstance().resolve(inMemoryDatasetImplementation, key, (ArrayNode) jsonNode, executionRuntime);
         } else if (jsonNode.getNodeType().equals(JsonNodeType.NULL)) {
             return TextService.getInstance().resolve((NullNode) jsonNode);
         } else if (jsonNode.isValueNode()) {
             return TextService.getInstance().resolve((ValueNode) jsonNode);
         }
         if (jsonNode.getNodeType().equals(JsonNodeType.OBJECT)) {
-            return KeyValueDatasetService.getInstance().resolve(rootDataset, key, (ObjectNode) jsonNode, executionRuntime);
+            return InMemoryDatasetImplementationService.getInstance().resolve(inMemoryDatasetImplementation, key, (ObjectNode) jsonNode, executionRuntime);
         } else {
             log.warn(MessageFormat.format("dataset.json.unknownnode=cannot decipher json node of type {0}", jsonNode.getNodeType().toString()));
         }
-        return rootDataset;
+        return inMemoryDatasetImplementation;
     }
 
     @RequiredArgsConstructor

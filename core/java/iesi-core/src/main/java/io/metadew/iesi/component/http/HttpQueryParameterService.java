@@ -4,7 +4,6 @@ import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 
 import java.text.MessageFormat;
@@ -24,17 +23,10 @@ public class HttpQueryParameterService implements IHttpQueryParameterService {
     }
 
 
-    public HttpQueryParameter convert(String httpQueryParameter, ActionExecution actionExecution) {
-        return new HttpQueryParameter(httpQueryParameter.split(",", 2)[0], resolveQueryParameter(httpQueryParameter.split(",", 2)[1], actionExecution));
+    public HttpQueryParameter convert(HttpQueryParameterDefinition httpQueryParameterDefinition, ActionExecution actionExecution) {
+        return new HttpQueryParameter(httpQueryParameterDefinition.getName(), resolveQueryParameter(httpQueryParameterDefinition.getValue(), actionExecution));
     }
 
-    public HttpQueryParameter convert(ComponentParameter componentParameter, ActionExecution actionExecution) {
-        return convert(componentParameter.getValue(), actionExecution);
-    }
-
-    public boolean isQueryParameter(ComponentParameter componentParameter) {
-        return componentParameter.getMetadataKey().getParameterName().startsWith("queryparam");
-    }
 
     private String resolveQueryParameter(String httpQueryParameter, ActionExecution actionExecution) {
         String actionResolvedValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(httpQueryParameter);

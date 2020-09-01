@@ -73,8 +73,8 @@ class HttpComponentDefinitionServiceTest {
                         "connection1",
                         "endpoint",
                         "get",
-                        Stream.of("content-type,application/json", "content-length,1000").collect(Collectors.toList()),
-                        Stream.of("name,test", "version,2").collect(Collectors.toList())
+                        Stream.of(new HttpHeaderDefinition("content-type", "application/json"), new HttpHeaderDefinition("content-length", "1000")).collect(Collectors.toList()),
+                        Stream.of(new HttpQueryParameterDefinition("name", "test"), new HttpQueryParameterDefinition("version", "2")).collect(Collectors.toList())
                 ));
     }
 

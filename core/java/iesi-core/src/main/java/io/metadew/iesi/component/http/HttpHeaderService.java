@@ -4,7 +4,6 @@ import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 
 import java.text.MessageFormat;
@@ -23,17 +22,10 @@ public class HttpHeaderService implements IHttpHeaderService {
     private HttpHeaderService() {
     }
 
-    public HttpHeader convert(String httpHeader, ActionExecution actionExecution) {
-        return new HttpHeader(httpHeader.split(",", 2)[0], resolveHeader(httpHeader.split(",", 2)[1], actionExecution));
+    public HttpHeader convert(HttpHeaderDefinition httpHeaderDefinition, ActionExecution actionExecution) {
+        return new HttpHeader(httpHeaderDefinition.getName(), resolveHeader(httpHeaderDefinition.getValue(), actionExecution));
     }
 
-    public HttpHeader convert(ComponentParameter componentParameter, ActionExecution actionExecution) {
-        return convert(componentParameter.getValue(), actionExecution);
-    }
-
-    public boolean isHeader(ComponentParameter componentParameter) {
-        return componentParameter.getMetadataKey().getParameterName().startsWith("header");
-    }
 
     private String resolveHeader(String header, ActionExecution actionExecution) {
         String actionResolvedValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(header);

@@ -60,7 +60,6 @@ public class HttpComponentService implements IHttpComponentService {
 
     @Override
     public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution) {
-        // TODO: trace design and trace
         Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, 1L)
                 .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + "and version 1"));
         HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convert(component);
@@ -76,6 +75,7 @@ public class HttpComponentService implements IHttpComponentService {
     @Override
     public HttpComponent convert(HttpComponentDefinition httpComponentDefinition,
                                  ActionExecution actionExecution) {
+        // TODO: trace resolved HTTP component
         return new HttpComponent(
                 httpComponentDefinition.getReferenceName(),
                 httpComponentDefinition.getVersion(),

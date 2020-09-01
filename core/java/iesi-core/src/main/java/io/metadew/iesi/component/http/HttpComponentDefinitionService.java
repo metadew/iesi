@@ -28,6 +28,7 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
         if (!(component.getType().equalsIgnoreCase(COMPONENT_TYPE))) {
             throw new RuntimeException("Cannot convert " + component.toString() + " to http component");
         }
+        // TODO: trace design HTTP component
         return new HttpComponentDefinition(
                 component.getName(),
                 component.getVersion().getMetadataKey().getComponentKey().getVersionNumber(),
@@ -48,12 +49,14 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .map(ComponentParameter::getValue)
                         .orElseThrow(() -> new RuntimeException("Http component " + component.toString() + " does not contain a " + TYPE_KEY)),
                 component.getParameters().stream()
-                        .filter(componentParameter -> HttpHeaderService.getInstance().isHeader(componentParameter))
+                        .filter(componentParameter -> HttpHeaderDefinitionService.getInstance().isHeader(componentParameter))
                         .map(ComponentParameter::getValue)
+                        .map(componentParameterValue -> HttpHeaderDefinitionService.getInstance().convert(componentParameterValue))
                         .collect(Collectors.toList()),
                 component.getParameters().stream()
-                        .filter(componentParameter -> HttpQueryParameterService.getInstance().isQueryParameter(componentParameter))
+                        .filter(componentParameter -> HttpQueryParameterDefinitionService.getInstance().isQueryParameter(componentParameter))
                         .map(ComponentParameter::getValue)
+                        .map(componentParameterValue -> HttpQueryParameterDefinitionService.getInstance().convert(componentParameterValue))
                         .collect(Collectors.toList())
         );
     }

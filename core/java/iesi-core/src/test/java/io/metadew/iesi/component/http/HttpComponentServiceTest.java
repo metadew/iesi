@@ -9,7 +9,6 @@ import io.metadew.iesi.script.execution.*;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -104,16 +103,16 @@ class HttpComponentServiceTest {
                 .get("connection1", actionExecution);
         doReturn(new HttpHeader("content-type", "application/json"))
                 .when(httpHeaderServiceSpy)
-                .convert("content-type,application/json", actionExecution);
+                .convert(new HttpHeaderDefinition("content-type", "application/json"), actionExecution);
         doReturn(new HttpHeader("content-length", "1000"))
                 .when(httpHeaderServiceSpy)
-                .convert("content-length,1000", actionExecution);
+                .convert(new HttpHeaderDefinition("content-length", "1000"), actionExecution);
         doReturn(new HttpQueryParameter("name", "test"))
                 .when(httpQueryParameterServiceSpy)
-                .convert("name,test", actionExecution);
+                .convert(new HttpQueryParameterDefinition("name", "test"), actionExecution);
         doReturn(new HttpQueryParameter("version", "2"))
                 .when(httpQueryParameterServiceSpy)
-                .convert("version,2", actionExecution);
+                .convert(new HttpQueryParameterDefinition("version", "2"), actionExecution);
 
         assertThat(HttpComponentService.getInstance().convert(
                 new HttpComponentDefinition(
@@ -123,8 +122,8 @@ class HttpComponentServiceTest {
                         "connection1",
                         "/endpoint",
                         "get",
-                        Stream.of("content-type,application/json", "content-length,1000").collect(Collectors.toList()),
-                        Stream.of("name,test", "version,2").collect(Collectors.toList())
+                        Stream.of(new HttpHeaderDefinition("content-type", "application/json"), new HttpHeaderDefinition("content-length", "1000")).collect(Collectors.toList()),
+                        Stream.of(new HttpQueryParameterDefinition("name", "test"), new HttpQueryParameterDefinition("version", "2")).collect(Collectors.toList())
                 ),
                 actionExecution))
                 .isEqualTo(

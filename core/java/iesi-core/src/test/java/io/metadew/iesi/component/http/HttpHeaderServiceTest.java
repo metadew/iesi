@@ -1,8 +1,5 @@
 package io.metadew.iesi.component.http;
 
-import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
-import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.script.execution.*;
 import org.junit.jupiter.api.Test;
 
@@ -12,23 +9,6 @@ import static org.mockito.Mockito.when;
 
 class HttpHeaderServiceTest {
 
-    @Test
-    void isHeaderTrueTest() {
-        assertThat(HttpHeaderService.getInstance().isHeader(ComponentParameter.builder()
-                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
-                .value("content-type, application/json")
-                .build())
-        ).isTrue();
-    }
-
-    @Test
-    void isHeaderFalseTest() {
-        assertThat(HttpHeaderService.getInstance().isHeader(ComponentParameter.builder()
-                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "notheader.1"))
-                .value("content-type, application/json")
-                .build())
-        ).isFalse();
-    }
 
     @Test
     void convertTest() {
@@ -46,7 +26,7 @@ class HttpHeaderServiceTest {
                 .thenReturn(actionControl);
         when(actionControl.getActionRuntime())
                 .thenReturn(actionRuntime);
-        when(actionRuntime.resolveRuntimeVariables("application/json"))
+        when(actionRuntime.resolveRuntimeVariables("function"))
                 .thenReturn("application/json");
         when(executionRuntime.resolveVariables(actionExecution, "application/json"))
                 .thenReturn("application/json");
@@ -57,11 +37,8 @@ class HttpHeaderServiceTest {
         when(executionRuntime.resolveVariables("application/json"))
                 .thenReturn("application/json");
 
-        assertThat(HttpHeaderService.getInstance().convert(ComponentParameter.builder()
-                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
-                .value("content-type,application/json")
-                .build(), actionExecution)
-        ).isEqualTo(new HttpHeader("content-type", "application/json"));
+        assertThat(HttpHeaderService.getInstance().convert(new HttpHeaderDefinition("content-type", "function"), actionExecution))
+                .isEqualTo(new HttpHeader("content-type", "application/json"));
     }
 
 }

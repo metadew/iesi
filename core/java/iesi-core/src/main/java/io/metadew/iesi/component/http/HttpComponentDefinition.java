@@ -15,7 +15,7 @@ public class HttpComponentDefinition {
     private final String httpConnectionReferenceName;
     private final String endpoint;
     private final String type;
-    private List<String> headers;
-    private List<String> queryParameters;
+    private List<HttpHeaderDefinition> headers;
+    private List<HttpQueryParameterDefinition> queryParameters;
 
 }

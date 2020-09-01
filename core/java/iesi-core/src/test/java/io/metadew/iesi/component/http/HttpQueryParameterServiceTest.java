@@ -13,24 +13,6 @@ import static org.mockito.Mockito.when;
 class HttpQueryParameterServiceTest {
 
     @Test
-    void isHeaderTrueTest() {
-        assertThat(HttpQueryParameterService.getInstance().isQueryParameter(ComponentParameter.builder()
-                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "queryparam.1"))
-                .value("param,value")
-                .build())
-        ).isTrue();
-    }
-
-    @Test
-    void isHeaderFalseTest() {
-        assertThat(HttpQueryParameterService.getInstance().isQueryParameter(ComponentParameter.builder()
-                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "notqueryparam.1"))
-                .value("param,value")
-                .build())
-        ).isFalse();
-    }
-
-    @Test
     void convertTest() {
         ActionRuntime actionRuntime = mock(ActionRuntime.class);
         ActionControl actionControl = mock(ActionControl.class);
@@ -46,7 +28,7 @@ class HttpQueryParameterServiceTest {
                 .thenReturn(actionControl);
         when(actionControl.getActionRuntime())
                 .thenReturn(actionRuntime);
-        when(actionRuntime.resolveRuntimeVariables("value"))
+        when(actionRuntime.resolveRuntimeVariables("function"))
                 .thenReturn("value");
         when(executionRuntime.resolveVariables(actionExecution, "value"))
                 .thenReturn("value");
@@ -57,11 +39,8 @@ class HttpQueryParameterServiceTest {
         when(executionRuntime.resolveVariables("value"))
                 .thenReturn("value");
 
-        assertThat(HttpQueryParameterService.getInstance().convert(ComponentParameter.builder()
-                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "queryparam.1"))
-                .value("param,value")
-                .build(), actionExecution)
-        ).isEqualTo(new HttpQueryParameter("param", "value"));
+        assertThat(HttpQueryParameterService.getInstance().convert(new HttpQueryParameterDefinition("param", "function"), actionExecution))
+                .isEqualTo(new HttpQueryParameter("param", "value"));
     }
 
 }

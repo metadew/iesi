@@ -13,6 +13,8 @@ import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfigu
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
+import io.metadew.iesi.metadata.definition.dataset.DatasetConfiguration;
+import io.metadew.iesi.metadata.definition.dataset.DatasetImplementationConfiguration;
 import io.metadew.iesi.metadata.service.user.AuthorityService;
 import io.metadew.iesi.metadata.service.user.GroupService;
 import io.metadew.iesi.metadata.service.user.UserService;
@@ -118,6 +120,18 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ComponentConfiguration componentConfiguration() {
         return ComponentConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public DatasetConfiguration datasetConfiguration() {
+        return DatasetConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public DatasetImplementationConfiguration datasetImplementationConfiguration() {
+        return DatasetImplementationConfiguration.getInstance();
     }
 
     @Bean

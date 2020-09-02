@@ -108,7 +108,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: DATA_DATASET_IMPL_IN_MEM
+      - name: DATA_DATASET_IMPL_IN_MEM_KVS
         label: DatasetInMemoryImplementationKeyValues
         description: metadata for dataset implementation in memory implementations key value pair
         category: data

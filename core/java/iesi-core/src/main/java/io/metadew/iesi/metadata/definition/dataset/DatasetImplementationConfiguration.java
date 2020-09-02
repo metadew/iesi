@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
@@ -27,9 +28,9 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "on dataset_impls.DATASET_ID=datasets.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
-            "on dataset_impls.ID = dataset_in_mem_impls.ID" +
+            "on dataset_impls.ID = dataset_in_mem_impls.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID" +
+            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID;";
 
@@ -43,9 +44,9 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "on dataset_impls.DATASET_ID=datasets.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
-            "on dataset_impls.ID = dataset_in_mem_impls.ID" +
+            "on dataset_impls.ID = dataset_in_mem_impls.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID" +
+            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "where dataset_impls.ID={0};";
@@ -60,15 +61,15 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "on dataset_impls.DATASET_ID=datasets.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
-            "on dataset_impls.ID = dataset_in_mem_impls.ID" +
+            "on dataset_impls.ID = dataset_in_mem_impls.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID" +
+            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
-            "where datasets.NAME={0} and datasets_impls.ID in (" +
+            "where datasets.NAME={0} and dataset_impls.ID in (" +
             "SELECT dataset_impl_labels.DATASET_IMPL_ID FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             " where dataset_impl_labels.VALUE in ({1})" +
-            " GROUP BY dataset_impl_labels.DATASET_IMPL_ID" +
+            " GROUP BY dataset_impl_labels.DATASET_IMPL_ID " +
             "HAVING COUNT(DISTINCT dataset_impl_labels.VALUE) = {2});";
 
     private static String insertQuery = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() +
@@ -79,11 +80,11 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             " (ID, DATASET_IMPL_ID, VALUE) " +
             "VALUES ({0}, {1}, {2});";
 
-    private static String insertInMemoryDatasetImplementationQuery = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() +
+    private static String insertInMemoryDatasetImplementationQuery = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() +
             " (ID) " +
             "VALUES ({0});";
 
-    private static String insertInMemoryDatasetImplementationKeyValueQuery = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() +
+    private static String insertInMemoryDatasetImplementationKeyValueQuery = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
             " (ID, IMPL_IN_MEM_ID, KEY, VALUE) " +
             "VALUES ({0}, {1}, {2}, {3});";
 
@@ -153,13 +154,13 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     @Override
     public void delete(DatasetImplementationKey metadataKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteQuery,
-                SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadataKey.getUuid()))));
+                SQLTools.GetStringForSQL(metadataKey.getUuid())));
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteDatasetImplementationLabelByDatasetImplementationIdQuery,
-                SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadataKey.getUuid()))));
+                SQLTools.GetStringForSQL(metadataKey.getUuid())));
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteInMemoryDatasetImplementationByDatasetImplementationIdQuery,
-                SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadataKey.getUuid()))));
+                SQLTools.GetStringForSQL(metadataKey.getUuid())));
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteInMemoryDatasetImplementationKeyValueByDatasetImplementationIdQuery,
-                SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadataKey.getUuid()))));
+                SQLTools.GetStringForSQL(metadataKey.getUuid())));
     }
 
     @Override
@@ -192,7 +193,6 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             datasetImplementationBuilder = extractDatasetImplementationBuilderMapRow(cachedRowSet);
             datasetImplementationBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
         }
-
         String type = mapType(cachedRowSet);
         if (type.equalsIgnoreCase("in_memory")) {
             mapInMemoryDatasetImplementation(cachedRowSet, (InMemoryDatasetImplementationBuilder) datasetImplementationBuilder);
@@ -234,11 +234,11 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
         }
     }
 
-    private void mapDatasetImplementationLabel(CachedRowSet cachedRowSet, DatasetImplementationBuilder executionRequestBuilder) throws SQLException {
+    private void mapDatasetImplementationLabel(CachedRowSet cachedRowSet, DatasetImplementationBuilder datasetImplementationBuilder) throws SQLException {
         // "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.VALUE as dataset_impl_label_value, "
         String datasetImplementationLabelId = cachedRowSet.getString("dataset_impl_label_id");
-        if (datasetImplementationLabelId != null && executionRequestBuilder.getDatasetImplementationLabels().get(datasetImplementationLabelId) == null) {
-            executionRequestBuilder.getDatasetImplementationLabels().put(
+        if (datasetImplementationLabelId != null && datasetImplementationBuilder.getDatasetImplementationLabels().get(datasetImplementationLabelId) == null) {
+            datasetImplementationBuilder.getDatasetImplementationLabels().put(
                     datasetImplementationLabelId,
                     new DatasetImplementationLabel(
                             new DatasetImplementationLabelKey(UUID.fromString(datasetImplementationLabelId)),
@@ -264,6 +264,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     @AllArgsConstructor
     @Getter
+    @ToString
     private abstract class DatasetImplementationBuilder {
         private DatasetImplementationKey datasetImplementationKey;
         private DatasetKey datasetKey;
@@ -276,6 +277,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
 
     @Getter
+    @ToString(callSuper = true)
     private class InMemoryDatasetImplementationBuilder extends DatasetImplementationBuilder {
 
         private Map<String, InMemoryDatasetImplementationKeyValue> keyValues;

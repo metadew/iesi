@@ -56,6 +56,13 @@ public class MetadataRepositoryConfiguration {
                 .orElseThrow(() -> new RuntimeException("DesignMetadataRepository not configured"));
     }
 
+    public DataMetadataRepository getDataMetadataRepository() {
+        return (DataMetadataRepository) metadataRepositories.stream()
+                .filter(metadataRepository -> metadataRepository.getClass().isAssignableFrom(DataMetadataRepository.class))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("DataMetadataRepository not configured"));
+    }
+
     public ControlMetadataRepository getControlMetadataRepository() {
         return (ControlMetadataRepository) metadataRepositories.stream()
                 .filter(metadataRepository -> metadataRepository.getClass().isAssignableFrom(ControlMetadataRepository.class))

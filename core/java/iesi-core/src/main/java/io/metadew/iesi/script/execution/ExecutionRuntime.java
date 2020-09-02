@@ -418,6 +418,7 @@ public class ExecutionRuntime {
                     resolvedInput = instructionArgumentsResolved;
                     break;
                 case "^":
+                    resolvedInput = "{{^" + instructionKeyword + "(" + instructionArgumentsResolved + ")}}";
                     break;
                 default:
                     LOGGER.warn(MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for {0}", instructionType));
@@ -480,6 +481,7 @@ public class ExecutionRuntime {
     }
 
     private String generateLookupInstruction(String context, String input) {
+        LOGGER.debug("concept.lookup.resolve.instruction=executing lookup " + context + " for " + input);
         LookupInstruction lookupInstruction = lookupInstructions.get(context);
         if (lookupInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No lookup instruction named {0} found.", context));
@@ -489,6 +491,7 @@ public class ExecutionRuntime {
     }
 
     private String getVariableInstruction(String context) {
+        LOGGER.debug("concept.lookup.resolve.instruction=fetching variable");
         VariableInstruction variableInstruction = this.getVariableInstructions().get(context);
         if (variableInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No variable instruction named {0} found.", context));
@@ -498,6 +501,7 @@ public class ExecutionRuntime {
     }
 
     private String generateDataInstruction(String context, String input) {
+        LOGGER.debug("concept.lookup.resolve.instruction=executing data creation " + context + " for " + input);
         DataInstruction dataInstruction = dataInstructions.get(context);
         if (dataInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No data instruction named {0} found.", context));
@@ -523,14 +527,15 @@ public class ExecutionRuntime {
         this.getStageOperationMap().put(stageName, stageOperation);
     }
 
-    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException {
+    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) {
         referenceName = resolveVariables(referenceName);
         datasetLabels = datasetLabels.stream()
                 .peek(this::resolveVariables)
                 .collect(Collectors.toList());
+        List<String> finalDatasetLabels = datasetLabels;
         InMemoryDatasetImplementation inMemoryDatasetImplementation = InMemoryDatasetImplementationService.getInstance()
                 .getDatasetImplementation(datasetName, datasetLabels)
-                .orElse(InMemoryDatasetImplementationService.getInstance().createNewDatasetImplementation(referenceName, datasetLabels));
+                .orElseGet(() -> InMemoryDatasetImplementationService.getInstance().createNewDatasetImplementation(datasetName, finalDatasetLabels));
         datasetMap.put(referenceName, inMemoryDatasetImplementation);
     }
 

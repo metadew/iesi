@@ -87,6 +87,9 @@ public class MetadataLauncher {
             case "execution":
                 metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
                 break;
+            case "data":
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
+                break;
             case "general":
                 metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
                 metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
@@ -94,6 +97,7 @@ public class MetadataLauncher {
                 metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
                 metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
                 metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
                 break;
             default:
                 System.out.println("Unknown Option -type (type) = " + type);

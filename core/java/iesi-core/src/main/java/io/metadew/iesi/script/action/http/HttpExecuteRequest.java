@@ -185,8 +185,9 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (outputDatasetReferenceName instanceof Text) {
             return getExecutionControl().getExecutionRuntime()
                     .getDataset(((Text) outputDatasetReferenceName).getString())
-                    .map(dataset -> dataset)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
+        } else if (outputDatasetReferenceName instanceof InMemoryDatasetImplementation) {
+            return (InMemoryDatasetImplementation) outputDatasetReferenceName;
         } else {
             LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
                     outputDatasetReferenceName.getClass()));

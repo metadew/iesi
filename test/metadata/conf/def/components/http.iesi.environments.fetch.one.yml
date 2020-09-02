@@ -4,7 +4,7 @@ data:
   name: "iesi.environments.fetch.one"
   type: "http.request"
   version:
-    number: 0
+    number: 1
     description: "description"
   description: "http call to IESI fetch one environments endpoint"
   parameters:

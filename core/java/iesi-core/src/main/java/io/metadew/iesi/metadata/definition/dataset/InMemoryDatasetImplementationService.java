@@ -141,7 +141,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
                     .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
                     .collect(Collectors.toList());
             return getDatasetImplementation(convertDatasetName(resolvedArguments.get(0)), convertDatasetLabels(resolvedArguments.get(1), executionRuntime))
-                    .orElseThrow(() -> new RuntimeException("Could not find dataset for " + convertDatasetName(resolvedArguments.get(0)) + " " + convertDatasetLabels(resolvedArguments.get(1), executionRuntime)));
+                    .orElseGet(() -> createNewDatasetImplementation(convertDatasetName(resolvedArguments.get(0)), convertDatasetLabels(resolvedArguments.get(1), executionRuntime)));
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }
@@ -178,7 +178,9 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
 
     private String convertDatasetLabel(DataType datasetLabel, ExecutionRuntime executionRuntime) {
         if (datasetLabel instanceof Text) {
-            return executionRuntime.resolveVariables(((Text) datasetLabel).getString());
+            String resolvedDatasetLabel = executionRuntime.resolveVariables(((Text) datasetLabel).getString());
+            //resolvedDatasetLabel = executionRuntime.resolveConceptLookup(resolvedDatasetLabel).getValue();
+            return resolvedDatasetLabel;
         } else {
             log.warn(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
                     datasetLabel.getClass()));

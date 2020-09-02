@@ -18,4 +18,8 @@ public class InMemoryDatasetImplementation extends DatasetImplementation {
         this.keyValues = keyValues;
     }
 
+    public String toString() {
+        return super.toString();
+    }
+
 }

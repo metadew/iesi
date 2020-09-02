@@ -67,7 +67,7 @@ public class DefaultHttpResponseEntityService implements IHttpResponseEntityServ
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
-            log.info(MessageFormat.format("Writing http response {0} with default interpreter", new String(s, charset)));
+            log.warn(MessageFormat.format("outputting http response {0} with default interpreter", new String(s, charset)));
             actionControl.logOutput("response.body", new String(s, charset));
         });
 

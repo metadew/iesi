@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.dataset;
+package io.metadew.iesi.datatypes.dataset.implementation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -20,5 +20,17 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
     public Map<String, DataType> getDataItems(T datasetImplementation, ExecutionRuntime executionRuntime);
 
     public void setDataItem(T datasetImplementation, String key, DataType value);
+
+    public Optional<DatasetImplementation> get(DatasetImplementationKey datasetImplementationKey);
+
+    public void create(T datasetImplementation);
+
+    public void delete(T datasetImplementation);
+
+    public void delete(DatasetImplementationKey datasetImplementationKey);
+
+    public void update(T datasetImplementation);
+
+    public List<DatasetImplementation> getAll();
 
 }

@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.dataset;
+package io.metadew.iesi.datatypes.dataset.implementation.inmemory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -6,6 +6,14 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
+import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
+import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
@@ -15,7 +23,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class InMemoryDatasetImplementationService implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
+public class InMemoryDatasetImplementationService extends DatasetImplementationService<InMemoryDatasetImplementation> implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
+
     private static InMemoryDatasetImplementationService INSTANCE;
 
     public synchronized static InMemoryDatasetImplementationService getInstance() {
@@ -97,7 +106,6 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
         DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
     }
 
-
     public DataType resolve(InMemoryDatasetImplementation dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
         InMemoryDatasetImplementation inMemoryDatasetImplementation = getObjectDataset(dataset, key);
@@ -178,9 +186,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
 
     private String convertDatasetLabel(DataType datasetLabel, ExecutionRuntime executionRuntime) {
         if (datasetLabel instanceof Text) {
-            String resolvedDatasetLabel = executionRuntime.resolveVariables(((Text) datasetLabel).getString());
-            //resolvedDatasetLabel = executionRuntime.resolveConceptLookup(resolvedDatasetLabel).getValue();
-            return resolvedDatasetLabel;
+            return executionRuntime.resolveVariables(((Text) datasetLabel).getString());
         } else {
             log.warn(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
                     datasetLabel.getClass()));

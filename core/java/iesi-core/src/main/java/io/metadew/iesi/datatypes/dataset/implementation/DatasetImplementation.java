@@ -1,12 +1,13 @@
-package io.metadew.iesi.metadata.definition.dataset;
+package io.metadew.iesi.datatypes.dataset.implementation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.util.List;
 import java.util.stream.Collectors;

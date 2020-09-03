@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.dataset;
+package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import lombok.AllArgsConstructor;

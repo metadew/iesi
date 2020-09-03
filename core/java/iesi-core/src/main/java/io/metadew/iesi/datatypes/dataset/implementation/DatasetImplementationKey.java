@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.dataset;
+package io.metadew.iesi.datatypes.dataset.implementation;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class InMemoryDatasetImplementationKeyValueKey extends MetadataKey {
+public class DatasetImplementationKey extends MetadataKey {
 
     private UUID uuid = UUID.randomUUID();
 

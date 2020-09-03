@@ -5,13 +5,12 @@ import com.fasterxml.jackson.databind.node.*;
 import io.metadew.iesi.datatypes.array.ArrayService;
 import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.datatypes.text.TextService;
-import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementation;
-import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;

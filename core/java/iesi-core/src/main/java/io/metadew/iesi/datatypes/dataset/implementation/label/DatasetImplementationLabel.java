@@ -1,6 +1,7 @@
-package io.metadew.iesi.metadata.definition.dataset;
+package io.metadew.iesi.datatypes.dataset.implementation.label;
 
 import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

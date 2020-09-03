@@ -3,7 +3,7 @@ package io.metadew.iesi.datatypes.array;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.dataset.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

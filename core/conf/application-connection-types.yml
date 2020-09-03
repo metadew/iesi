@@ -1,6 +1,59 @@
 iesi:
   metadata:
     connection-types:
+      db.bigquery:
+        description: Google BigQuery Connection
+        parameters:
+          host:
+            description: The host name of the server
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          project:
+            description: The name of the Google Cloud project
+            type: string
+            mandatory: true
+            encrypted: false
+          authValue:
+            description: The number that specifies the type of authentication used by the driver
+            type: number
+            mandatory: true
+            encrypted: false
+          OAuthServiceAcctEmail:
+            description: authValue=0 - Google service account email address
+            type: string
+            mandatory: false
+            encrypted: false
+          OAuthPvtKeyPath:
+            description: authValue=0 - Full path to the key file that is used to authenticate the service account email address
+            type: string
+            mandatory: false
+            OAuthAccessToken: false
+          OAuthAccessToken:
+            description: authValue=2 - Access token
+            type: string
+            mandatory: false
+            encrypted: true
+          OAuthRefreshToken:
+            description: authValue=2 - Refresh token
+            type: string
+            mandatory: false
+            encrypted: true
+          OAuthClientId:
+            description: authValue=2 - Client ID
+            type: string
+            mandatory: false
+            encrypted: false
+          OAuthClientSecret:
+            description: authValue=2 - Client secret
+            type: string
+            mandatory: false
+            encrypted: true
       db.db2:
         description: IBM DB2 Database Connection
         parameters:

@@ -30,4 +30,13 @@ public class InMemoryDatasetImplementationKeyValueDto extends RepresentationMode
         );
     }
 
+    public InMemoryDatasetImplementationKeyValue convertToNewEntity(UUID datasetImplementationUuid) {
+        return new InMemoryDatasetImplementationKeyValue(
+                new InMemoryDatasetImplementationKeyValueKey(getUuid() == null ? UUID.randomUUID() : getUuid()),
+                new DatasetImplementationKey(datasetImplementationUuid),
+                getKey(),
+                getValue()
+        );
+    }
+
 }

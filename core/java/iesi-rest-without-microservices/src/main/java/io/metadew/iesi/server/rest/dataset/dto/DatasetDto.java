@@ -26,10 +26,22 @@ public class DatasetDto extends RepresentationModel<DatasetDto> {
 
 
     public Dataset convertToEntity() {
-        return new Dataset(new DatasetKey(uuid),
+        return new Dataset(
+                new DatasetKey(uuid),
                 name,
                 implementations.stream()
                         .map(datasetImplementationDto -> datasetImplementationDto.convertToEntity(uuid, name))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    public Dataset convertToNewEntity() {
+        UUID datasetUuid = uuid == null ? UUID.randomUUID() : uuid;
+        return new Dataset(
+                new DatasetKey(datasetUuid),
+                name,
+                implementations.stream()
+                        .map(datasetImplementationDto -> datasetImplementationDto.convertToNewEntity(datasetUuid, name))
                         .collect(Collectors.toList())
         );
     }

@@ -26,4 +26,12 @@ public class DatasetImplementationLabelDto extends RepresentationModel<DatasetIm
                 new DatasetImplementationKey(datasetImplementationUuid),
                 label);
     }
+
+    public DatasetImplementationLabel convertToNewEntity(UUID datasetImplementationUuid) {
+        return new DatasetImplementationLabel(
+                new DatasetImplementationLabelKey(uuid == null ? UUID.randomUUID() : uuid),
+                new DatasetImplementationKey(datasetImplementationUuid),
+                label);
+    }
+
 }

@@ -39,4 +39,19 @@ public class InMemoryDatasetImplementationDto extends DatasetImplementationDto {
         );
     }
 
+    public InMemoryDatasetImplementation convertToNewEntity(UUID datasetUuid, String datasetName) {
+        UUID datasetImplementationUuid = getUuid() == null ? UUID.randomUUID() : getUuid();
+        return new InMemoryDatasetImplementation(
+                new DatasetImplementationKey(datasetImplementationUuid),
+                new DatasetKey(datasetUuid),
+                datasetName,
+                getLabels().stream()
+                        .map(datasetImplementationLabelDto -> datasetImplementationLabelDto.convertToNewEntity(datasetImplementationUuid))
+                        .collect(Collectors.toList()),
+                keyValues.stream()
+                        .map(keyValue -> keyValue.convertToNewEntity(datasetImplementationUuid))
+                        .collect(Collectors.toList())
+        );
+    }
+
 }

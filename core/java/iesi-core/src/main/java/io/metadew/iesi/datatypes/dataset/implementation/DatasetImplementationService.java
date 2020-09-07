@@ -1,5 +1,7 @@
 package io.metadew.iesi.datatypes.dataset.implementation;
 
+import io.metadew.iesi.datatypes.dataset.DatasetKey;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +37,12 @@ public abstract class DatasetImplementationService<T extends DatasetImplementati
     public List<DatasetImplementation> getAll() {
         return DatasetImplementationConfiguration.getInstance()
                 .getAll();
+    }
+
+    @Override
+    public List<DatasetImplementation> getByDatasetId(DatasetKey datasetKey) {
+        return DatasetImplementationConfiguration.getInstance()
+                .getByDatasetId(datasetKey);
     }
 
 

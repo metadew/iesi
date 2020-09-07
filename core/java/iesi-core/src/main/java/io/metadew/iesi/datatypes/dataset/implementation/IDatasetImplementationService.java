@@ -1,6 +1,7 @@
 package io.metadew.iesi.datatypes.dataset.implementation;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 
 import java.util.List;
@@ -32,5 +33,7 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
     public void update(T datasetImplementation);
 
     public List<DatasetImplementation> getAll();
+
+    public List<DatasetImplementation> getByDatasetId(DatasetKey datasetKey);
 
 }

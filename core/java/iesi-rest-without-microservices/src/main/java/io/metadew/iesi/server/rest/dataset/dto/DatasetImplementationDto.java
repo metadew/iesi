@@ -23,4 +23,6 @@ public abstract class DatasetImplementationDto extends RepresentationModel<Datas
 
     public abstract DatasetImplementation convertToEntity(UUID datasetUuid, String datasetName);
 
+    public abstract DatasetImplementation convertToNewEntity(UUID datasetUuid, String datasetName);
+
 }

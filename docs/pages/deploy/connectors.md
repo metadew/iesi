@@ -18,7 +18,7 @@ The framework will load all necessary driver on startup.
 |Dremio|![red](/{{site.repository}}/images/icons/red-dot.png)||
 |File System|![grey](/{{site.repository}}/images/icons/green-dot.png)||
 |H2|![red](/{{site.repository}}/images/icons/red-dot.png)||
-|Google BigQuery|![red](/{{site.repository}}/images/icons/red-dot.png)||
+|Google BigQuery|![red](/{{site.repository}}/images/icons/red-dot.png)|Only Simba driver version 4.2 supported|
 |IBM DB2|![red](/{{site.repository}}/images/icons/red-dot.png)||
 |Maria DB|![red](/{{site.repository}}/images/icons/red-dot.png)||
 |Microsoft SQL Server|![red](/{{site.repository}}/images/icons/red-dot.png)||

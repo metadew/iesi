@@ -51,7 +51,7 @@ public class DatabaseHandler implements IDatabaseHandler {
     private DatabaseHandler() {
         databaseServiceMap = new HashMap<>();
         databaseServiceMap.put(new ClassStringPair(BigqueryDatabaseService.getInstance().keyword(), BigqueryDatabaseService.getInstance().appliesTo()),
-                Db2DatabaseService.getInstance());
+                BigqueryDatabaseService.getInstance());
         databaseServiceMap.put(new ClassStringPair(Db2DatabaseService.getInstance().keyword(), Db2DatabaseService.getInstance().appliesTo()),
                 Db2DatabaseService.getInstance());
         databaseServiceMap.put(new ClassStringPair(DremioDatabaseService.getInstance().keyword(), DremioDatabaseService.getInstance().appliesTo()),

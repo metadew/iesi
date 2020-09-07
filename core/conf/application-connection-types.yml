@@ -19,37 +19,42 @@ iesi:
             type: string
             mandatory: true
             encrypted: false
+          dataset:
+            description: The name of the dataset
+            type: string
+            mandatory: true
+            encrypted: false
           authValue:
             description: The number that specifies the type of authentication used by the driver
             type: number
             mandatory: true
             encrypted: false
-          OAuthServiceAcctEmail:
+          serviceAccount:
             description: authValue=0 - Google service account email address
             type: string
             mandatory: false
             encrypted: false
-          OAuthPvtKeyPath:
+          keyPath:
             description: authValue=0 - Full path to the key file that is used to authenticate the service account email address
             type: string
             mandatory: false
-            OAuthAccessToken: false
-          OAuthAccessToken:
+            encrypted: false
+          accessToken:
             description: authValue=2 - Access token
             type: string
             mandatory: false
             encrypted: true
-          OAuthRefreshToken:
+          refreshToken:
             description: authValue=2 - Refresh token
             type: string
             mandatory: false
             encrypted: true
-          OAuthClientId:
+          clientId:
             description: authValue=2 - Client ID
             type: string
             mandatory: false
             encrypted: false
-          OAuthClientSecret:
+          clientSecret:
             description: authValue=2 - Client secret
             type: string
             mandatory: false

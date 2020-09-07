@@ -20,7 +20,8 @@ public class BigqueryDatabaseConnectionService extends SchemaDatabaseConnectionS
 
     @Override
     public String getDriver(BigqueryDatabaseConnection databaseConnection) {
-        return "com.simba.googlebigquery.jdbc41.Driver";
+        //The version of the driver needs to be modified here
+        return "com.simba.googlebigquery.jdbc42.Driver";
     }
 
     @Override

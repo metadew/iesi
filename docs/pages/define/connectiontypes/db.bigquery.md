@@ -4,6 +4,8 @@
 
 This type connects to Google BigQuery. It uses the Magnitude Simba drivers for BigQuery. More information can be found [here](https://cloud.google.com/bigquery/providers/simba-drivers). More technical information can be found [here](https://www.simba.com/drivers/bigquery-odbc-jdbc/).
 
+*Important* Only the Simba driver version 4.2 is supported for now.
+
 Get more information at [https://cloud.google.com/bigquery](https://cloud.google.com/bigquery).
 
 ## Use cases
@@ -26,6 +28,11 @@ Get more information at [https://cloud.google.com/bigquery](https://cloud.google
 
 `project: "project name"`
 * define the name of the Google Cloud project
+
+### 4: dataset
+
+`dataset: "dataset name"`
+* define the name of the dataset
 
 ### 4: authValue
 
@@ -82,19 +89,23 @@ See [here](https://cloud.google.com/docs/authentication/production) for more inf
 ---
 type: Connection
 data:
-  name: "db.postgresql.1"
-  type: "db.postgresql"
-  description: "db.postgresql connection"
-  environment: "iesi-test"
+  name: "db.bigquery.1"
+  type: "db.bigquery"
+  description: "db.bigquery connection"
+  environment: "iesi-dev"
   parameters:
   - name: "host"
-    value: "localhost"
+    value: "https://www.googleapis.com/bigquery/v2"
   - name: "port"
-    value: "5432"
-  - name: "database"
+    value: "443"
+  - name: "project"
+    value: "iesi-01"
+  - name: "dataset"
     value: "iesi"
-  - name: "user"
-    value: "admin"
-  - name: "password"
-    value: "ENC(Waan0DOjDHNBnTXtldp5xnGwIP0=)"
+  - name: "authValue"
+    value: "0"
+  - name: "serviceAccount"
+    value: "serviceaccount@domain.com"
+  - name: "keyPath"
+    value: "/path/keyfile.json"
 ```

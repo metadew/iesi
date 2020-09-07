@@ -139,7 +139,7 @@
             <AppenderRef ref="queries" level="all" />
         </Logger>
         <Logger name="io.metadew.iesi.script" additivity="false">
-            <AppenderRef ref="STDOUT" level="info" />
+            <AppenderRef ref="STDOUT" level="debug" />
             <AppenderRef ref="scriptExecution" level="all" />
         </Logger>
         <Logger name="io.metadew.iesi.metadata.configuration" additivity="false">

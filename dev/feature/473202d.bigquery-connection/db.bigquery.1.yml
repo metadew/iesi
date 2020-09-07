@@ -1,0 +1,22 @@
+---
+type: Connection
+data:
+  name: "db.bigquery.1"
+  type: "db.bigquery"
+  description: "db.bigquery connection"
+  environment: "iesi-dev"
+  parameters:
+  - name: "host"
+    value: "https://www.googleapis.com/bigquery/v2"
+  - name: "port"
+    value: "443"
+  - name: "project"
+    value: "iesi-01"
+  - name: "dataset"
+    value: "iesi"
+  - name: "authValue"
+    value: "0"
+  - name: "serviceAccount"
+    value: ""
+  - name: "keyPath"
+    value: ""

@@ -3216,6 +3216,341 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+      - name: TRC_COMP_DES
+        label: TraceComponentDesign
+        description: to do
+        category: trace
+        fields:
+          ID:
+              description: Unique ID for the TraceComponentDesign
+              order: 1
+              type: string
+              length: 255
+              nullable: false
+              primaryKey: true
+          RUN_ID:
+              description: Unique identifier for the script execution
+              order: 2
+              type: string
+              length: 255
+              nullable: false
+              defaultTimestamp:
+          PRC_ID:
+              description: Process number for the script within the script execution
+              order: 3
+              type: number
+              length: 0
+              nullable: false
+              defaultTimestamp:
+          ACTION_PAR_NM:
+              description: Name of the action parameter
+              order: 4
+              type: string
+              length: 100
+              nullable: false
+              defaultTimestamp:
+          COMP_TYP_NM:
+              description: Keyword for the component type
+              order: 5
+              type: string
+              length: 100
+              nullable: false
+              defaultTimestamp:
+          COMP_NM:
+              description: Unique short name for the applicable component
+              order: 6
+              type: string
+              length: 200
+              nullable: true
+              defaultTimestamp:
+          COMP_DSC:
+              description: Description of the component
+              order: 7
+              type: string
+              length: 2000
+              nullable: true
+              defaultTimestamp:
+          COMP_VRS_NB:
+              description: Unique identifier for the component version
+              order: 8
+              type: number
+              length: 0
+              nullable: false
+              defaultTimestamp: true
+      - name: TRC_HTTP_COMP_DES
+        label: TraceHttpComponentDesign
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentDesign
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          CONN_NM:
+            description: Unique short name for the connection
+            order: 2
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          TYPE:
+            description: Type of the TraceHttpComponentDesign
+            order: 3
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          ENDPOINT:
+            description: Endpoint of the TraceHttpComponentDesign
+            order: 4
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP_HEADER_DES
+        label: TraceHttpComponentHeaderDesign
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentHeaderDesign
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          HEADER_DES_ID:
+            description: Unique short name for the TraceHttpComponentHeaderDesign
+            order: 2
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: Name of the TraceHttpComponentDesign
+            order: 3
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: Value of the TraceHttpComponentDesign
+            order: 4
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP_QUERY_DES
+        label: TraceHttpComponentQueryDesign
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentQueryDesign
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          QUERY_DES_ID:
+            description: Unique short name for the TraceHttpComponentQueryDesign
+            order: 2
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: Name of the TraceHttpComponentQueryDesign
+            order: 3
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: Value of the TraceHttpComponentQueryDesign
+            order: 4
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_COMP
+        label: TraceComponent
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceComponent
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          RUN_ID:
+            description: Unique identifier for the script execution
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          PRC_ID:
+            description: Process number for the script within the script execution
+            order: 3
+            type: number
+            length: 0
+            nullable: false
+            defaultTimestamp:
+          ACTION_PAR_NM:
+            description: Name of the action parameter
+            order: 4
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          COMP_ID:
+            description: Unique identifier for the component
+            order: 5
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          COMP_TYP_NM:
+            description: Keyword for the component type
+            order: 6
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          COMP_NM:
+            description: Unique short name for the applicable component
+            order: 7
+            type: string
+            length: 200
+            nullable: true
+            defaultTimestamp:
+          COMP_DSC:
+            description: Description of the component
+            order: 8
+            type: number
+            length: 2000
+            nullable: true
+            defaultTimestamp:
+          COMP_VRS_NB:
+            description: Unique identifier for the script version
+            order: 9
+            type: number
+            length: 0
+            nullable: false
+            primaryKey: true
+            defaultTimestamp: true
+          COMP_VRS_DSC:
+            description: Description of the version
+            order: 10
+            type: string
+            length: 2000
+            nullable: true
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP
+        label: TraceHttpComponent
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponent
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          CONN_NM:
+            description: Unique short name for the connection
+            order: 2
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          TYPE:
+            description: Type of the TraceHttpComponent
+            order: 3
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          ENDPOINT:
+            description: Endpoint of the TraceHttpComponent
+            order: 4
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP_HEADER
+        label: TraceHttpComponentHeader
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentHeader
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          HTTP_COMP_ID:
+            description: Unique short name for the TraceHttpComponentHeader
+            order: 2
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: NAME of the TraceHttpComponentHeader
+            order: 3
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: VALUE of the TraceHttpComponentHeader
+            order: 4
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP_QUERY
+        label: TraceHttpComponentQuery
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentQuery
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          HTTP_COMP_ID:
+            description: Unique short name for the TraceHttpComponentQuery
+            order: 2
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: Name of the TraceHttpComponentQuery
+            order: 3
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: Value of the TraceHttpComponentQuery
+            order: 4
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
     objects:
       Connection:
         label: Connections

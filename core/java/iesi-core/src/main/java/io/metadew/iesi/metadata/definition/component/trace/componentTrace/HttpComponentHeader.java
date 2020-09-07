@@ -1,19 +1,22 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentDesign;
+package io.metadew.iesi.metadata.definition.component.trace.componentTrace;
 
-import io.metadew.iesi.metadata.definition.Metadata;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class HttpComponentHeaderDesign extends Metadata<HttpComponentHeaderDesignKey> {
+public class HttpComponentHeader {
 
-    private final String httpComponentHeaderDesignID;
-    private final String name;
-    private final String value;
-
-    public HttpComponentHeaderDesign(HttpComponentHeaderDesignKey metadataKey, String httpComponentHeaderDesignID, String name, String value) {
-        super(metadataKey);
-        this.httpComponentHeaderDesignID = httpComponentHeaderDesignID;
+    @Builder
+    public HttpComponentHeader(String id, HttpComponentHeaderKey httpComponentHeaderID, String name, String value) {
+        Id = id;
+        this.httpComponentHeaderID = httpComponentHeaderID;
         this.name = name;
         this.value = value;
     }
+
+    private final String Id;
+    private final HttpComponentHeaderKey httpComponentHeaderID;
+    private final String name;
+    private final String value;
+
 }

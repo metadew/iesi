@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ComponentTraceConfigurationTest {
+public class ComponentDesignTraceConfigurationTest {
 
     private HttpComponentDesignTrace httpComponentDesignTrace;
     private HttpComponentDesignTrace httpComponentDesignTrace2;
@@ -62,8 +62,7 @@ public class ComponentTraceConfigurationTest {
                 .componentTypeParameter("componentTypeParameter")
                 .componentName("componentName")
                 .componentDescription("componentDescription")
-                .componentVersion(1)
-                .id(componetKey.getUuid().toString())
+                .componentVersion(1L)
                 .connectionName("connectionName")
                 .type("type")
                 .endpoint("endpoint")
@@ -115,8 +114,7 @@ public class ComponentTraceConfigurationTest {
                 .componentTypeParameter("test2")
                 .componentName("test2")
                 .componentDescription("test2")
-                .componentVersion(1)
-                .id(componentUuid2.toString())
+                .componentVersion(1L)
                 .connectionName("test2")
                 .type("test2")
                 .endpoint("test2")
@@ -155,7 +153,7 @@ public class ComponentTraceConfigurationTest {
         ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace);
         ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace2);
         assertThat(ComponentDesignTraceConfiguration.getInstance().getAll())
-                .containsOnly(httpComponentDesignTrace,httpComponentDesignTrace2);
+                .contains(httpComponentDesignTrace,httpComponentDesignTrace2);
     }
 
 }

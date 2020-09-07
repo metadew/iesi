@@ -1,19 +1,24 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentDesign;
+package io.metadew.iesi.metadata.definition.component.trace.componentTrace;
 
 import io.metadew.iesi.metadata.definition.Metadata;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class HttpComponentQueryDesign extends Metadata<HttpComponentQueryDesignKey> {
+public class HttpComponentQuery {
 
-    private final String httpComponentQueryDesignID;
-    private final String name;
-    private final String value;
-
-    public HttpComponentQueryDesign(HttpComponentQueryDesignKey metadataKey, String httpComponentQueryDesignID, String name, String value) {
-        super(metadataKey);
-        this.httpComponentQueryDesignID = httpComponentQueryDesignID;
+    @Builder
+    public HttpComponentQuery(String id, HttpComponentQueryKey httpComponentQueryID, String name, String value) {
+        Id = id;
+        this.httpComponentQueryID = httpComponentQueryID;
         this.name = name;
         this.value = value;
     }
+
+    private final String Id;
+    private final HttpComponentQueryKey httpComponentQueryID;
+
+    private final String name;
+    private final String value;
+
 }

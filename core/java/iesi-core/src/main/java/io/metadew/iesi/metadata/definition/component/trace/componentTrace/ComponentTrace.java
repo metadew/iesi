@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentDesign;
+package io.metadew.iesi.metadata.definition.component.trace.componentTrace;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import lombok.Data;
@@ -8,30 +8,30 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class ComponentDesignTrace extends Metadata<ComponentDesignTraceKey> {
+public abstract class ComponentTrace extends Metadata<ComponentTraceKey> {
 
     private final String runId;
     private final Long processId;
-    private final String actionParameter;
-    private final String componentTypeParameter;
-    private final String componentName;
-    private final String componentDescription;
-    private final String componentVersion;
-    private final List<HttpComponentDesignTrace> httpComponentDesignTraces;
-    private final List<HttpComponentHeaderDesign> httpComponentHeaderDesigns;
-    private final List<HttpComponentQueryDesign> httpComponentQueryDesigns;
 
-    public ComponentDesignTrace(ComponentDesignTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentTypeParameter, String componentName, String componentDescription, String componentVersion, List<HttpComponentDesignTrace> httpComponentDesignTraces, List<HttpComponentHeaderDesign> httpComponentHeaderDesigns, List<HttpComponentQueryDesign> httpComponentQueryDesigns) {
+    public ComponentTrace(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentID, String componentTypeParameter, String componentName, Long componentDescription, Long componentVersion, String componentVersionDescription) {
         super(metadataKey);
         this.runId = runId;
         this.processId = processId;
         this.actionParameter = actionParameter;
+        this.componentID = componentID;
         this.componentTypeParameter = componentTypeParameter;
         this.componentName = componentName;
         this.componentDescription = componentDescription;
         this.componentVersion = componentVersion;
-        this.httpComponentDesignTraces = httpComponentDesignTraces;
-        this.httpComponentHeaderDesigns = httpComponentHeaderDesigns;
-        this.httpComponentQueryDesigns = httpComponentQueryDesigns;
+        this.componentVersionDescription = componentVersionDescription;
     }
+
+    private final String actionParameter;
+    private final String componentID;
+    private final String componentTypeParameter;
+    private final String componentName;
+    private final Long componentDescription;
+    private final Long componentVersion;
+    private final String componentVersionDescription;
+
 }

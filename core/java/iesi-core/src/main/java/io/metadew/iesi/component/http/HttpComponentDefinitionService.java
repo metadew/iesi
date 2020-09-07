@@ -2,7 +2,10 @@ package io.metadew.iesi.component.http;
 
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
+import io.metadew.iesi.metadata.definition.component.trace.componentDesign.*;
+import io.metadew.iesi.script.execution.ActionExecution;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class HttpComponentDefinitionService implements IHttpComponentDefinitionService {
@@ -21,15 +24,34 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
         return INSTANCE;
     }
 
-    private HttpComponentDefinitionService() {
+    private HttpComponentDefinitionService() { }
+
+    public HttpComponentHeaderDesign convertHeaders(HttpHeaderDefinition httpHeaderDefinition, String id) {
+        UUID uuid = UUID.randomUUID();
+        return new HttpComponentHeaderDesign(
+                uuid.toString(),
+                new HttpComponentDesignTraceKey(UUID.fromString(id)),
+                httpHeaderDefinition.getName(),
+                httpHeaderDefinition.getValue()
+        );
     }
 
-    public HttpComponentDefinition convert(Component component) {
+    public HttpComponentQueryDesign convertQueries(HttpQueryParameterDefinition httpQueryParameterDefinition, String id) {
+        UUID uuid = UUID.randomUUID();
+        return new HttpComponentQueryDesign(
+                uuid.toString(),
+                new HttpComponentQueryDesignKey(UUID.fromString(id)),
+                httpQueryParameterDefinition.getName(),
+                httpQueryParameterDefinition.getValue()
+        );
+    }
+
+    public HttpComponentDefinition convert(Component component, ActionExecution actionExecution, String actionParameterName) {
         if (!(component.getType().equalsIgnoreCase(COMPONENT_TYPE))) {
             throw new RuntimeException("Cannot convert " + component.toString() + " to http component");
         }
-        // TODO: trace design HTTP component
-        return new HttpComponentDefinition(
+
+        HttpComponentDefinition httpComponentDefinition = new HttpComponentDefinition(
                 component.getName(),
                 component.getVersion().getMetadataKey().getComponentKey().getVersionNumber(),
                 component.getDescription(),
@@ -59,6 +81,24 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .map(componentParameterValue -> HttpQueryParameterDefinitionService.getInstance().convert(componentParameterValue))
                         .collect(Collectors.toList())
         );
-    }
+        UUID uuid = UUID.randomUUID();
+        HttpComponentDesignTrace httpComponentDesignTrace = new HttpComponentDesignTrace(
+               new ComponentDesignTraceKey(uuid),
+                actionExecution.getExecutionControl().getRunId(),
+                actionExecution.getExecutionControl().getProcessId(),
+                actionParameterName,
+                COMPONENT_TYPE,
+                httpComponentDefinition.getReferenceName(),
+                httpComponentDefinition.getDescription(),
+                httpComponentDefinition.getVersion(),
+                httpComponentDefinition.getHttpConnectionReferenceName(),
+                httpComponentDefinition.getType(),
+                httpComponentDefinition.getEndpoint(),
+                httpComponentDefinition.getHeaders().stream().map(headers -> convertHeaders(headers,uuid.toString())).collect(Collectors.toList()),
+                httpComponentDefinition.getQueryParameters().stream().map(queries -> convertQueries(queries,uuid.toString())).collect(Collectors.toList())
+        );
+        ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace);
 
+        return httpComponentDefinition;
+    }
 }

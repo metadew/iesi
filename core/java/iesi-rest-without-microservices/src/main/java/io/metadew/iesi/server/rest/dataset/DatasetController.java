@@ -108,7 +108,7 @@ public class DatasetController {
     public ResponseEntity addDatasetImplementation(@RequestParam UUID uuid, @RequestBody DatasetImplementationDto datasetImplementationDto) {
         Optional<Dataset> dataset = datasetService.get(new DatasetKey(uuid));
         if (dataset.isPresent()) {
-            datasetImplementationService.create(datasetImplementationDto.convertToEntity(dataset.get().getMetadataKey().getUuid(), dataset.get().getName()));
+            datasetImplementationService.create(datasetImplementationDto.convertToNewEntity(dataset.get().getMetadataKey().getUuid(), dataset.get().getName()));
             return datasetService.get(new DatasetKey(uuid))
                     .map(updatedDataset -> ResponseEntity.ok(datasetDtoModelAssembler.toModel(updatedDataset)))
                     .orElse(ResponseEntity.notFound().build());

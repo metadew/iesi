@@ -91,7 +91,6 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
                 mapRow(cachedRowSet, componentTraceBuilderMap);
             }
             return componentTraceBuilderMap.values().stream()
-                    .parallel()
                     .map(ComponentHttpTraceBuilder::build)
                     .collect(Collectors.toList());
         } catch (SQLException e) {
@@ -184,8 +183,8 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
                 cachedRowSet.getString("TraceHttpComponent_CONN_NM"),
                 cachedRowSet.getString("TraceHttpComponent_TYPE"),
                 cachedRowSet.getString("TraceHttpComponent_ENDPOINT"),
-                new HashMap<>(),
-                new HashMap<>());
+                new LinkedHashMap<>(),
+                new LinkedHashMap<>());
     }
 
     private void mapHttpComponentHeader(CachedRowSet cachedRowSet, ComponentHttpTraceBuilder componentTraceBuilder) throws SQLException {

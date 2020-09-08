@@ -67,7 +67,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
     @Override
     public List<HttpComponentDesignTrace> getAll() {
         try {
-            Map<String, ComponentHttpDesignTraceBuilder> componentDesignTraceBuilderMap = new HashMap<>();
+            Map<String, ComponentHttpDesignTraceBuilder> componentDesignTraceBuilderMap = new LinkedHashMap<>();
             String query = "select TraceComponentDesign.ID as TraceComponentDesign_ID, TraceComponentDesign.RUN_ID as TraceComponentDesign_RUN_ID, TraceComponentDesign.PRC_ID as TraceComponentDesign_PRC_ID, TraceComponentDesign.ACTION_PAR_NM as TraceComponentDesign_ACTION_PAR_NM, " +
                     "TraceComponentDesign.COMP_TYP_NM as TraceComponentDesign_COMP_TYP_NM, TraceComponentDesign.COMP_NM as TraceComponentDesign_COMP_NM, " +
                     "TraceComponentDesign.COMP_DSC as TraceComponentDesign_COMP_DSC, TraceComponentDesign.COMP_VRS_NB as TraceComponentDesign_COMP_VRS_NB, " +

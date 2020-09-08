@@ -39,7 +39,7 @@ public class ComponentTraceConfigurationTest {
                 .build();
 
         HttpComponentHeader httpComponentHeaders1 = HttpComponentHeader.builder()
-                .id(uuid.toString())
+                .id(uuid)
                 .httpComponentHeaderID(httpComponentTraceKey)
                 .name("test")
                 .value("test").build();
@@ -50,7 +50,7 @@ public class ComponentTraceConfigurationTest {
         List<HttpComponentQuery> httpComponentQuerys = new ArrayList<>();
         UUID uuid0 = UUID.randomUUID();
         HttpComponentQuery httpComponentQuery1 = HttpComponentQuery.builder()
-                .id(uuid0.toString())
+                .id(uuid0)
                 .httpComponentQueryID(httpComponentQueryKey).name("test")
                 .value("test").build();
         httpComponentQuerys.add(httpComponentQuery1);
@@ -60,12 +60,10 @@ public class ComponentTraceConfigurationTest {
                 .runId("testRunid")
                 .processId(1L)
                 .actionParameter("actionParameter")
-                .componentID("componentID")
                 .componentTypeParameter("componentTypeParameter")
                 .componentName("componentName")
-                .componentDescription(1L)
+                .componentDescription("componentDescription")
                 .componentVersion(1L)
-                .componentVersionDescription("componentVersionDescription")
                 .connectionName("connectionName")
                 .type("type")
                 .endpoint("endpoint")
@@ -81,7 +79,7 @@ public class ComponentTraceConfigurationTest {
         HttpComponentHeaderKey httpComponentTraceKey2 = HttpComponentHeaderKey.builder().uuid(componentUuid2)
                 .build();
         HttpComponentHeader httpComponentHeaders3 = HttpComponentHeader.builder()
-                .id(uuid01.toString())
+                .id(uuid01)
                 .httpComponentHeaderID(httpComponentTraceKey2)
                 .name("test")
                 .value("test").build();
@@ -92,22 +90,20 @@ public class ComponentTraceConfigurationTest {
         List<HttpComponentQuery> httpComponentQuerys2 = new ArrayList<>();
 
         UUID uuid1 = UUID.randomUUID();
-        String randomUUIDString = uuid1.toString();
 
         HttpComponentQuery httpComponentQuery3 = HttpComponentQuery.builder()
-                .id(randomUUIDString)
+                .id(uuid1)
                 .httpComponentQueryID(httpComponentQueryKey2)
                 .name("test2")
                 .value("test2").build();
 
-        httpComponentQuerys2.add(httpComponentQuery3);
         UUID uuid2 = UUID.randomUUID();
-        String randomUUIDString2 = uuid2.toString();
 
         HttpComponentQuery httpComponentQuery4 = HttpComponentQuery.builder()
-                .id(randomUUIDString2)
+                .id(uuid2)
                 .httpComponentQueryID(httpComponentQueryKey2).name("test4")
                 .value("test4").build();
+        httpComponentQuerys2.add(httpComponentQuery3);
         httpComponentQuerys2.add(httpComponentQuery4);
 
         httpComponentTrace2 = HttpComponentTrace.builder()
@@ -115,19 +111,19 @@ public class ComponentTraceConfigurationTest {
                 .runId("testRunid")
                 .processId(1L)
                 .actionParameter("actionParameter")
-                .componentID("componentID")
                 .componentTypeParameter("componentTypeParameter")
                 .componentName("componentName")
-                .componentDescription(1L)
+                .componentDescription("componentDescription")
                 .componentVersion(1L)
-                .componentVersionDescription("componentVersionDescription")
                 .connectionName("connectionName")
                 .type("type")
                 .endpoint("endpoint")
                 .httpComponentHeader(httpComponentHeaders2)
                 .httpComponentQueries(httpComponentQuerys2)
                 .build();
-    };
+    }
+
+    ;
 
     @AfterEach
     void clearDatabase() {
@@ -160,6 +156,6 @@ public class ComponentTraceConfigurationTest {
         ComponentTraceConfiguration.getInstance().insert(httpComponentTrace);
         ComponentTraceConfiguration.getInstance().insert(httpComponentTrace2);
         assertThat(ComponentTraceConfiguration.getInstance().getAll())
-                .contains(httpComponentTrace, httpComponentTrace2);
+                .containsOnly(httpComponentTrace, httpComponentTrace2);
     }
 }

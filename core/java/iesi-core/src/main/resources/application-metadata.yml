@@ -3409,13 +3409,6 @@ iesi:
             length: 100
             nullable: false
             defaultTimestamp:
-          COMP_ID:
-            description: Unique identifier for the component
-            order: 5
-            type: string
-            length: 255
-            nullable: false
-            defaultTimestamp:
           COMP_TYP_NM:
             description: Keyword for the component type
             order: 6
@@ -3445,13 +3438,6 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp: true
-          COMP_VRS_DSC:
-            description: Description of the version
-            order: 10
-            type: string
-            length: 2000
-            nullable: true
-            defaultTimestamp:
       - name: TRC_HTTP_COMP
         label: TraceHttpComponent
         description: to do

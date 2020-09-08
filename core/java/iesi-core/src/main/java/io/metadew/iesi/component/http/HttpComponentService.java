@@ -83,7 +83,7 @@ public class HttpComponentService implements IHttpComponentService {
     public HttpComponentHeader convertHeaders(HttpHeader httpHeader, String id) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentHeader(
-                uuid.toString(),
+                uuid,
                 new HttpComponentHeaderKey(UUID.fromString(id)),
                 httpHeader.getName(),
                 httpHeader.getValue()
@@ -93,7 +93,7 @@ public class HttpComponentService implements IHttpComponentService {
     public HttpComponentQuery convertQueries(HttpQueryParameter httpQueryParameter, String id) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentQuery(
-                uuid.toString(),
+                uuid,
                 new HttpComponentQueryKey(UUID.fromString(id)),
                 httpQueryParameter.getName(),
                 httpQueryParameter.getValue()
@@ -126,12 +126,10 @@ public class HttpComponentService implements IHttpComponentService {
                 actionExecution.getExecutionControl().getRunId(),
                 actionExecution.getExecutionControl().getProcessId(),
                 actionParameterName,
-                "componentId",
                 COMPONENT_TYPE,
                 httpComponent.getReferenceName(),
-                1L,
+                httpComponent.getDescription(),
                 httpComponent.getVersion(),
-                "componentVersDesc",
                 httpComponent.getHttpConnection().getReferenceName(),
                 httpComponent.getType(),
                 httpComponent.getEndpoint(),

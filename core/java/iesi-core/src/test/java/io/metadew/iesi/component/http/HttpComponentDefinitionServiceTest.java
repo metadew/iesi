@@ -65,6 +65,8 @@ class HttpComponentDefinitionServiceTest {
                 .thenReturn(actionControl);
         when(actionControl.getActionRuntime())
                 .thenReturn(actionRuntime);
+        when(actionExecution.getExecutionControl().getRunId())
+                .thenReturn("runId");
 
         Component component = Component.builder()
                 .componentKey(componentKey)

@@ -9,8 +9,8 @@ import java.util.List;
 public class HttpComponentTrace extends ComponentTrace {
 
     @Builder
-    public HttpComponentTrace(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentID, String componentTypeParameter, String componentName, Long componentDescription, Long componentVersion, String componentVersionDescription, String connectionName, String type, String endpoint, List<HttpComponentHeader> httpComponentHeader, List<HttpComponentQuery> httpComponentQueries) {
-        super(metadataKey, runId, processId, actionParameter, componentID, componentTypeParameter, componentName, componentDescription, componentVersion, componentVersionDescription);
+    public HttpComponentTrace(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter,  String componentTypeParameter, String componentName, String componentDescription, Long componentVersion,  String connectionName, String type, String endpoint, List<HttpComponentHeader> httpComponentHeader, List<HttpComponentQuery> httpComponentQueries) {
+        super(metadataKey, runId, processId, actionParameter, componentTypeParameter, componentName, componentDescription, componentVersion);
         this.connectionName = connectionName;
         this.type = type;
         this.endpoint = endpoint;

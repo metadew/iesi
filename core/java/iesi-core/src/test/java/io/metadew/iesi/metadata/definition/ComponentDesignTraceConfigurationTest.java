@@ -37,10 +37,10 @@ public class ComponentDesignTraceConfigurationTest {
         HttpComponentDesignTraceKey httpComponentDesignTraceKey = HttpComponentDesignTraceKey.builder().uuid(componentUuid)
                 .build();
 
-        HttpComponentHeaderDesign httpComponentHeaderDesigns1 =  HttpComponentHeaderDesign.builder()
-                .id(uuid.toString())
+        HttpComponentHeaderDesign httpComponentHeaderDesigns1 = HttpComponentHeaderDesign.builder()
+                .id(uuid)
                 .httpComponentDesignID(httpComponentDesignTraceKey)
-            .name("test")
+                .name("test")
                 .value("test").build();
         httpComponentHeaderDesigns.add(httpComponentHeaderDesigns1);
 
@@ -48,8 +48,8 @@ public class ComponentDesignTraceConfigurationTest {
                 .build();
         List<HttpComponentQueryDesign> httpComponentQueryDesigns = new ArrayList<>();
         UUID uuid0 = UUID.randomUUID();
-        HttpComponentQueryDesign httpComponentQueryDesign1 =  HttpComponentQueryDesign.builder()
-                .id(uuid0.toString())
+        HttpComponentQueryDesign httpComponentQueryDesign1 = HttpComponentQueryDesign.builder()
+                .id(uuid0)
                 .httpComponentQueryDesignID(httpComponentQueryDesignKey).name("test")
                 .value("test").build();
         httpComponentQueryDesigns.add(httpComponentQueryDesign1);
@@ -77,8 +77,8 @@ public class ComponentDesignTraceConfigurationTest {
         List<HttpComponentHeaderDesign> httpComponentHeaderDesigns2 = new ArrayList<>();
         HttpComponentDesignTraceKey httpComponentDesignTraceKey2 = HttpComponentDesignTraceKey.builder().uuid(componentUuid2)
                 .build();
-        HttpComponentHeaderDesign httpComponentHeaderDesigns3 =  HttpComponentHeaderDesign.builder()
-                .id(uuid01.toString())
+        HttpComponentHeaderDesign httpComponentHeaderDesigns3 = HttpComponentHeaderDesign.builder()
+                .id(uuid01)
                 .httpComponentDesignID(httpComponentDesignTraceKey2)
                 .name("test")
                 .value("test").build();
@@ -89,21 +89,20 @@ public class ComponentDesignTraceConfigurationTest {
         List<HttpComponentQueryDesign> httpComponentQueryDesigns2 = new ArrayList<>();
 
         UUID uuid1 = UUID.randomUUID();
-        String randomUUIDString = uuid1.toString();
-        HttpComponentQueryDesign httpComponentQueryDesign3 =  HttpComponentQueryDesign.builder()
-                .id(randomUUIDString)
+
+        HttpComponentQueryDesign httpComponentQueryDesign3 = HttpComponentQueryDesign.builder()
+                .id(uuid1)
                 .httpComponentQueryDesignID(httpComponentQueryDesignKey2)
                 .name("test2")
                 .value("test2").build();
 
-        httpComponentQueryDesigns2.add(httpComponentQueryDesign3);
         UUID uuid2 = UUID.randomUUID();
-        String randomUUIDString2 = uuid2.toString();
 
-        HttpComponentQueryDesign httpComponentQueryDesign4 =  HttpComponentQueryDesign.builder()
-                .id(randomUUIDString2)
+        HttpComponentQueryDesign httpComponentQueryDesign4 = HttpComponentQueryDesign.builder()
+                .id(uuid2)
                 .httpComponentQueryDesignID(httpComponentQueryDesignKey2).name("test4")
                 .value("test4").build();
+        httpComponentQueryDesigns2.add(httpComponentQueryDesign3);
         httpComponentQueryDesigns2.add(httpComponentQueryDesign4);
 
         httpComponentDesignTrace2 = HttpComponentDesignTrace.builder()
@@ -136,7 +135,7 @@ public class ComponentDesignTraceConfigurationTest {
     }
 
     @Test
-    void testGetAllEmpty()  {
+    void testGetAllEmpty() {
         assertThat(ComponentDesignTraceConfiguration.getInstance().getAll())
                 .isEmpty();
     }
@@ -148,12 +147,12 @@ public class ComponentDesignTraceConfigurationTest {
                 .hasValue(httpComponentDesignTrace);
         assertThat(httpComponentDesignTrace.getRunId()).isEqualTo("testRunid");
     }
+
     @Test
-    void testGetAll()  {
+    void testGetAll() {
         ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace);
         ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace2);
         assertThat(ComponentDesignTraceConfiguration.getInstance().getAll())
-                .contains(httpComponentDesignTrace,httpComponentDesignTrace2);
+                .containsOnly(httpComponentDesignTrace, httpComponentDesignTrace2);
     }
-
 }

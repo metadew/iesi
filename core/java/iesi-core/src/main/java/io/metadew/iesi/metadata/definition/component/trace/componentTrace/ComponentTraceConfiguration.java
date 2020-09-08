@@ -38,9 +38,9 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
         try {
             Map<String, ComponentHttpTraceBuilder> componentTraceBuilderMap = new LinkedHashMap<>();
             String query = "select TraceComponent.ID as TraceComponent_ID, TraceComponent.RUN_ID as TraceComponent_RUN_ID, TraceComponent.PRC_ID as TraceComponent_PRC_ID," +
-                    " TraceComponent.ACTION_PAR_NM as TraceComponent_ACTION_PAR_NM, TraceComponent.COMP_ID as TraceComponent_COMP_ID, " +
+                    " TraceComponent.ACTION_PAR_NM as TraceComponent_ACTION_PAR_NM, " +
                     " TraceComponent.COMP_TYP_NM as TraceComponent_COMP_TYP_NM, TraceComponent.COMP_NM as TraceComponent_COMP_NM, " +
-                    "TraceComponent.COMP_DSC as TraceComponent_COMP_DSC, TraceComponent.COMP_VRS_NB as TraceComponent_COMP_VRS_NB, TraceComponent.COMP_VRS_DSC as TraceComponent_COMP_VRS_DSC ," +
+                    "TraceComponent.COMP_DSC as TraceComponent_COMP_DSC, TraceComponent.COMP_VRS_NB as TraceComponent_COMP_VRS_NB, " +
                     " TraceHttpComponent.ID as TraceHttpComponent_ID, TraceHttpComponent.CONN_NM as TraceHttpComponent_CONN_NM, TraceHttpComponent.TYPE as TraceHttpComponent_TYPE, TraceHttpComponent.ENDPOINT as  TraceHttpComponent_ENDPOINT," +
                     " TraceHttpComponentHeader.ID as TraceHttpComponentHeader_ID, TraceHttpComponentHeader.HTTP_COMP_ID as TraceHttpComponentHeader_HTTP_COMP_ID, TraceHttpComponentHeader.NAME as TraceHttpComponentHeader_NAME , TraceHttpComponentHeader.VALUE as TraceHttpComponentHeader_VALUE," +
                     " TraceHttpComponentQuery.ID as TraceHttpComponentQuery_ID, TraceHttpComponentQuery.HTTP_COMP_ID as TraceHttpComponentQuery_HTTP_COMP_ID, TraceHttpComponentQuery.NAME as TraceHttpComponentQuery_NAME, TraceHttpComponentQuery.VALUE as TraceHttpComponentQuery_VALUE" +
@@ -71,9 +71,9 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
         try {
             Map<String, ComponentHttpTraceBuilder> componentTraceBuilderMap = new LinkedHashMap<>();
             String query = "select TraceComponent.ID as TraceComponent_ID, TraceComponent.RUN_ID as TraceComponent_RUN_ID, TraceComponent.PRC_ID as TraceComponent_PRC_ID," +
-                    " TraceComponent.ACTION_PAR_NM as TraceComponent_ACTION_PAR_NM, TraceComponent.COMP_ID as TraceComponent_COMP_ID, " +
+                    " TraceComponent.ACTION_PAR_NM as TraceComponent_ACTION_PAR_NM, " +
                     " TraceComponent.COMP_TYP_NM as TraceComponent_COMP_TYP_NM, TraceComponent.COMP_NM as TraceComponent_COMP_NM, " +
-                    "TraceComponent.COMP_DSC as TraceComponent_COMP_DSC, TraceComponent.COMP_VRS_NB as TraceComponent_COMP_VRS_NB, TraceComponent.COMP_VRS_DSC as TraceComponent_COMP_VRS_DSC ," +
+                    "TraceComponent.COMP_DSC as TraceComponent_COMP_DSC, TraceComponent.COMP_VRS_NB as TraceComponent_COMP_VRS_NB, " +
                     " TraceHttpComponent.ID as TraceHttpComponent_ID, TraceHttpComponent.CONN_NM as TraceHttpComponent_CONN_NM, TraceHttpComponent.TYPE as TraceHttpComponent_TYPE, TraceHttpComponent.ENDPOINT as  TraceHttpComponent_ENDPOINT," +
                     " TraceHttpComponentHeader.ID as TraceHttpComponentHeader_ID, TraceHttpComponentHeader.HTTP_COMP_ID as TraceHttpComponentHeader_HTTP_COMP_ID, TraceHttpComponentHeader.NAME as TraceHttpComponentHeader_NAME , TraceHttpComponentHeader.VALUE as TraceHttpComponentHeader_VALUE," +
                     " TraceHttpComponentQuery.ID as TraceHttpComponentQuery_ID, TraceHttpComponentQuery.HTTP_COMP_ID as TraceHttpComponentQuery_HTTP_COMP_ID, TraceHttpComponentQuery.NAME as TraceHttpComponentQuery_NAME, TraceHttpComponentQuery.VALUE as TraceHttpComponentQuery_VALUE" +
@@ -118,17 +118,15 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
     public void insert(HttpComponentTrace metadata) {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
         String insertStatementTraceComponent = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponent").getName() +
-                " (ID, RUN_ID,  PRC_ID, ACTION_PAR_NM, COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC, COMP_VRS_NB, COMP_VRS_DSC ) VALUES (" +
+                " (ID, RUN_ID,  PRC_ID, ACTION_PAR_NM, COMP_TYP_NM, COMP_NM, COMP_DSC, COMP_VRS_NB ) VALUES (" +
                 SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
                 SQLTools.GetStringForSQL(metadata.getRunId()) + ", " +
                 SQLTools.GetStringForSQL(metadata.getProcessId()) + ", " +
                 SQLTools.GetStringForSQL(metadata.getActionParameter()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getComponentID()) + ", " +
                 SQLTools.GetStringForSQL(metadata.getComponentTypeParameter()) + ", " +
                 SQLTools.GetStringForSQL(metadata.getComponentName()) + ", " +
                 SQLTools.GetStringForSQL(metadata.getComponentDescription()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getComponentVersion()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getComponentVersionDescription()) +
+                SQLTools.GetStringForSQL(metadata.getComponentVersion()) +
                 ");";
         getMetadataRepository().executeUpdate(insertStatementTraceComponent);
 
@@ -178,12 +176,10 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
                 cachedRowSet.getString("TraceComponent_RUN_ID"),
                 cachedRowSet.getLong("TraceComponent_PRC_ID"),
                 cachedRowSet.getString("TraceComponent_ACTION_PAR_NM"),
-                cachedRowSet.getString("TraceComponent_COMP_ID"),
                 cachedRowSet.getString("TraceComponent_COMP_TYP_NM"),
                 cachedRowSet.getString("TraceComponent_COMP_NM"),
-                cachedRowSet.getLong("TraceComponent_COMP_DSC"),
+                cachedRowSet.getString("TraceComponent_COMP_DSC"),
                 cachedRowSet.getLong("TraceComponent_COMP_VRS_NB"),
-                cachedRowSet.getString("TraceComponent_COMP_VRS_DSC"),
                 cachedRowSet.getString("TraceHttpComponent_CONN_NM"),
                 cachedRowSet.getString("TraceHttpComponent_TYPE"),
                 cachedRowSet.getString("TraceHttpComponent_ENDPOINT"),
@@ -193,11 +189,11 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
 
     private void mapHttpComponentHeader(CachedRowSet cachedRowSet, ComponentHttpTraceBuilder componentTraceBuilder) throws SQLException {
         String mapHttpComponentHeaderId = cachedRowSet.getString("TraceHttpComponentHeader_ID");
-        if (mapHttpComponentHeaderId != null && componentTraceBuilder.getHttpComponentHeader().get(mapHttpComponentHeaderId) == null) {
+        if (mapHttpComponentHeaderId != null) {
             componentTraceBuilder.getHttpComponentHeader().put(
                     mapHttpComponentHeaderId,
                     new HttpComponentHeader(
-                            cachedRowSet.getString("TraceHttpComponentHeader_ID"),
+                            UUID.fromString(mapHttpComponentHeaderId),
                             new HttpComponentHeaderKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeader_HTTP_COMP_ID"))),
                             cachedRowSet.getString("TraceHttpComponentHeader_NAME"),
                             cachedRowSet.getString("TraceHttpComponentHeader_VALUE")
@@ -212,7 +208,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
             componentTraceBuilder.getHttpComponentQueries().put(
                     httpComponentQueryId,
                     new HttpComponentQuery(
-                            cachedRowSet.getString("TraceHttpComponentQuery_ID"),
+                            UUID.fromString(httpComponentQueryId),
                             new HttpComponentQueryKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQuery_HTTP_COMP_ID"))),
                             cachedRowSet.getString("TraceHttpComponentQuery_NAME"),
                             cachedRowSet.getString("TraceHttpComponentQuery_VALUE")
@@ -228,12 +224,10 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
         private final String runId;
         private final Long processId;
         private final String actionParameter;
-        private final String componentID;
         private final String componentTypeParameter;
         private final String componentName;
-        private final Long componentDescription;
+        private final String componentDescription;
         private final Long componentVersion;
-        private final String componentVersionDescription;
 
         public abstract ComponentTrace build();
     }
@@ -241,8 +235,8 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
     @Getter
     @ToString
     private class ComponentHttpTraceBuilder extends ComponentTraceBuilder {
-        public ComponentHttpTraceBuilder(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentID, String componentTypeParameter, String componentName, Long componentDescription, Long componentVersion, String componentVersionDescription,  String connectionName, String type, String endpoint, Map<String, HttpComponentHeader> httpComponentHeader, Map<String, HttpComponentQuery> httpComponentQueries) {
-            super(metadataKey, runId, processId, actionParameter, componentID, componentTypeParameter, componentName, componentDescription, componentVersion, componentVersionDescription);
+        public ComponentHttpTraceBuilder(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentTypeParameter, String componentName, String componentDescription, Long componentVersion, String connectionName, String type, String endpoint, Map<String, HttpComponentHeader> httpComponentHeader, Map<String, HttpComponentQuery> httpComponentQueries) {
+            super(metadataKey, runId, processId, actionParameter, componentTypeParameter, componentName, componentDescription, componentVersion);
             this.connectionName = connectionName;
             this.type = type;
             this.endpoint = endpoint;
@@ -251,7 +245,6 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
         }
 
         private final String connectionName;
-
         private final String type;
         private final String endpoint;
         private Map<String, HttpComponentHeader> httpComponentHeader;
@@ -259,10 +252,10 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
 
         public HttpComponentTrace build() {
             return new HttpComponentTrace(
-                    getMetadataKey(), getRunId(), getProcessId(), getActionParameter(), getComponentID(),
+                    getMetadataKey(), getRunId(), getProcessId(), getActionParameter(),
                     getComponentTypeParameter(), getComponentName()
-                    , getComponentDescription(), getComponentVersion(), getComponentVersionDescription()
-                    ,  connectionName, type, endpoint,
+                    , getComponentDescription(), getComponentVersion()
+                    , connectionName, type, endpoint,
                     new ArrayList<>(getHttpComponentHeader().values()),
                     new ArrayList<>(getHttpComponentQueries().values())
             );

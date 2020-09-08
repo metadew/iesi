@@ -29,7 +29,7 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
     public HttpComponentHeaderDesign convertHeaders(HttpHeaderDefinition httpHeaderDefinition, String id) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentHeaderDesign(
-                uuid.toString(),
+                uuid,
                 new HttpComponentDesignTraceKey(UUID.fromString(id)),
                 httpHeaderDefinition.getName(),
                 httpHeaderDefinition.getValue()
@@ -39,7 +39,7 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
     public HttpComponentQueryDesign convertQueries(HttpQueryParameterDefinition httpQueryParameterDefinition, String id) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentQueryDesign(
-                uuid.toString(),
+                uuid,
                 new HttpComponentQueryDesignKey(UUID.fromString(id)),
                 httpQueryParameterDefinition.getName(),
                 httpQueryParameterDefinition.getValue()
@@ -82,6 +82,7 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .collect(Collectors.toList())
         );
         UUID uuid = UUID.randomUUID();
+        System.out.println(httpComponentDefinition.getHttpConnectionReferenceName());
         HttpComponentDesignTrace httpComponentDesignTrace = new HttpComponentDesignTrace(
                new ComponentDesignTraceKey(uuid),
                 actionExecution.getExecutionControl().getRunId(),

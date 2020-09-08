@@ -155,7 +155,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                         "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQueryDesign").getName() +
                                 " (ID, QUERY_DES_ID,  NAME, VALUE )  VALUES " +
                                 " ( " +
-                                SQLTools.GetStringForSQL(httpComponentQueryTrace.getId()) + ", " +
+                                SQLTools.GetStringForSQL(httpComponentQueryTrace.getId().toString()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentQueryTrace.getHttpComponentQueryDesignID().getUuid().toString()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentQueryTrace.getName()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentQueryTrace.getValue()) + ") "));
@@ -195,7 +195,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
             componentDesignTraceBuilder.getHttpComponentHeaderDesigns().put(
                     mapHttpComponentHeaderDesignsId,
                     new HttpComponentHeaderDesign(
-                            cachedRowSet.getString("TraceHttpComponentHeaderDesign_ID"),
+                            UUID.fromString(mapHttpComponentHeaderDesignsId),
                             new HttpComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeaderDesign_HEADER_DES_ID"))),
                             cachedRowSet.getString("TraceHttpComponentHeaderDesign_NAME"),
                             cachedRowSet.getString("TraceHttpComponentHeaderDesign_VALUE")
@@ -210,7 +210,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
             componentDesignTraceBuilder.getHttpComponentQueryDesigns().put(
                     httpComponentDesignQueryId,
                     new HttpComponentQueryDesign(
-                            cachedRowSet.getString("TraceHttpComponentQueryDesign_ID"),
+                            UUID.fromString(httpComponentDesignQueryId),
                             new HttpComponentQueryDesignKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQueryDesign_QUERY_DES_ID"))),
                             cachedRowSet.getString("TraceHttpComponentQueryDesign_NAME"),
                             cachedRowSet.getString("TraceHttpComponentQueryDesign_VALUE")
@@ -245,8 +245,8 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
 
         public ComponentHttpDesignTraceBuilder(ComponentDesignTraceKey metadataKey, String runId,
                                                Long processId, String actionParameter, String componentTypeParameter,
-                                               String componentName, String componentDescription, Long componentVersion,String connectionName, String type, String endpoint,
-                                               Map<String, HttpComponentHeaderDesign> httpComponentHeaderDesigns,Map<String, HttpComponentQueryDesign> httpComponentQueryDesigns ) {
+                                               String componentName, String componentDescription, Long componentVersion, String connectionName, String type, String endpoint,
+                                               Map<String, HttpComponentHeaderDesign> httpComponentHeaderDesigns, Map<String, HttpComponentQueryDesign> httpComponentQueryDesigns) {
             super(metadataKey, runId, processId, actionParameter, componentTypeParameter, componentName, componentDescription, componentVersion);
             this.connectionName = connectionName;
             this.type = type;
@@ -257,9 +257,9 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
 
         public HttpComponentDesignTrace build() {
             return new HttpComponentDesignTrace(
-                    getMetadataKey(),getRunId(),getProcessId(),getActionParameter(),getComponentTypeParameter(),getComponentName()
-                    ,getComponentDescription(),getComponentVersion()
-                    ,  connectionName, type, endpoint,
+                    getMetadataKey(), getRunId(), getProcessId(), getActionParameter(), getComponentTypeParameter(), getComponentName()
+                    , getComponentDescription(), getComponentVersion()
+                    , connectionName, type, endpoint,
                     new ArrayList<>(getHttpComponentHeaderDesigns().values()),
                     new ArrayList<>(getHttpComponentQueryDesigns().values())
             );

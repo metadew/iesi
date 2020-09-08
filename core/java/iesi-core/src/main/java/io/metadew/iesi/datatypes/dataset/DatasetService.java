@@ -18,6 +18,16 @@ public class DatasetService implements IDatasetService {
 
 
     @Override
+    public boolean exists(DatasetKey datasetKey) {
+        return DatasetConfiguration.getInstance().exists(datasetKey);
+    }
+
+    @Override
+    public boolean exists(String name) {
+        return DatasetConfiguration.getInstance().existsByName(name);
+    }
+
+    @Override
     public Optional<Dataset> get(DatasetKey datasetKey) {
         return DatasetConfiguration.getInstance().get(datasetKey);
     }

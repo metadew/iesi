@@ -2,6 +2,7 @@ package io.metadew.iesi.datatypes.dataset.implementation.label;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -14,6 +15,7 @@ public class DatasetImplementationLabel extends Metadata<DatasetImplementationLa
     private final DatasetImplementationKey datasetImplementationKey;
     private final String value;
 
+    @Builder
     public DatasetImplementationLabel(DatasetImplementationLabelKey metadataKey, DatasetImplementationKey datasetImplementationKey, String value) {
         super(metadataKey);
         this.datasetImplementationKey = datasetImplementationKey;

@@ -8,6 +8,18 @@ import java.util.Optional;
 public abstract class DatasetImplementationService<T extends DatasetImplementation> implements IDatasetImplementationService<T> {
 
     @Override
+    public boolean exists(DatasetImplementationKey datasetImplementationKey) {
+        return DatasetImplementationConfiguration.getInstance()
+                .exists(datasetImplementationKey);
+    }
+
+    @Override
+    public boolean exists(String name, List<String> labels) {
+        return DatasetImplementationConfiguration.getInstance()
+                .exists(name, labels);
+    }
+
+    @Override
     public Optional<DatasetImplementation> get(DatasetImplementationKey datasetImplementationKey) {
         return DatasetImplementationConfiguration.getInstance()
                 .get(datasetImplementationKey);

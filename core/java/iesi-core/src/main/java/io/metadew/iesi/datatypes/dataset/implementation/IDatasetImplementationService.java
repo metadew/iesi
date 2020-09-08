@@ -22,6 +22,10 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
 
     public void setDataItem(T datasetImplementation, String key, DataType value);
 
+    public boolean exists(DatasetImplementationKey datasetImplementationKey);
+
+    public boolean exists(String name, List<String> labels);
+
     public Optional<DatasetImplementation> get(DatasetImplementationKey datasetImplementationKey);
 
     public void create(T datasetImplementation);

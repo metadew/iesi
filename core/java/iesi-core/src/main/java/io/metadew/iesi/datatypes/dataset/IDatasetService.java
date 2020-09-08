@@ -5,6 +5,10 @@ import java.util.Optional;
 
 public interface IDatasetService {
 
+    public boolean exists(DatasetKey datasetKey);
+
+    public boolean exists(String name);
+
     public Optional<Dataset> get(DatasetKey datasetKey);
 
     public List<Dataset> getAll();

@@ -24,6 +24,20 @@ import java.util.stream.Collectors;
 @Log4j2
 public class DatasetImplementationConfiguration extends Configuration<DatasetImplementation, DatasetImplementationKey> {
 
+    private static String existsQuery = "select dataset_impls.ID as dataset_impl_id " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+            "WHERE dataset_impls.ID={0}";
+
+    private static String existsByNameAndLabelsQuery = "select dataset_impls.ID as dataset_impl_id " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+            "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+            "on dataset_impls.DATASET_ID=datasets.ID " +
+            "where datasets.NAME={0} and dataset_impls.ID in (" +
+            "SELECT dataset_impl_labels.DATASET_IMPL_ID FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+            " where dataset_impl_labels.VALUE in ({1})" +
+            " GROUP BY dataset_impl_labels.DATASET_IMPL_ID " +
+            "HAVING COUNT(DISTINCT dataset_impl_labels.VALUE) = {2});";
+
     private static String selectQuery = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
             "datasets.ID as dataset_id, datasets.NAME as dataset_name, " +
@@ -138,6 +152,32 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
+    }
+
+    @Override
+    public boolean exists(DatasetImplementationKey datasetImplementationKey) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(existsQuery, SQLTools.GetStringForSQL(datasetImplementationKey.getUuid())),
+                    "reader");
+            return cachedRowSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean exists(String name, List<String> labels) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(existsByNameAndLabelsQuery,
+                            SQLTools.GetStringForSQL(name),
+                            labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")),
+                            SQLTools.GetStringForSQL(labels.size())),
+                    "reader");
+            return cachedRowSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

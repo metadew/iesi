@@ -66,7 +66,7 @@ public class DatasetImplementationController {
     }
 
     @GetMapping("/{uuid}")
-    public DatasetImplementationDto get(@RequestParam UUID uuid) {
+    public DatasetImplementationDto get(@PathVariable UUID uuid) {
         Optional<DatasetImplementation> datasetImplementation = datasetImplementationService.get(new DatasetImplementationKey(uuid));
         return datasetImplementation
                 .map(datasetImplementationDtoModelAssembler::toModel)

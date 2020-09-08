@@ -81,19 +81,19 @@ public class DatasetController {
     }
 
     @GetMapping("/{uuid}")
-    public DatasetDto get(@RequestParam UUID uuid) {
+    public DatasetDto get(@PathVariable UUID uuid) {
         return datasetService.get(new DatasetKey(uuid))
                 .map(datasetDtoModelAssembler::toModel)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new DatasetKey(uuid)));
     }
 
     @DeleteMapping("/{uuid}")
-    public void delete(@RequestParam UUID uuid) {
+    public void delete(@PathVariable UUID uuid) {
         datasetService.delete(new DatasetKey(uuid));
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<DatasetDto> update(@RequestParam UUID uuid, @RequestBody DatasetDto datasetDto) {
+    public ResponseEntity<DatasetDto> update(@PathVariable UUID uuid, @RequestBody DatasetDto datasetDto) {
         if (datasetDto.getUuid().equals(uuid)) {
             return ResponseEntity.badRequest().build();
         }
@@ -105,7 +105,7 @@ public class DatasetController {
 
     @SuppressWarnings("unchecked")
     @PostMapping("/{uuid}/datasetImplementation")
-    public ResponseEntity addDatasetImplementation(@RequestParam UUID uuid, @RequestBody DatasetImplementationDto datasetImplementationDto) {
+    public ResponseEntity addDatasetImplementation(@PathVariable UUID uuid, @RequestBody DatasetImplementationDto datasetImplementationDto) {
         Optional<Dataset> dataset = datasetService.get(new DatasetKey(uuid));
         if (dataset.isPresent()) {
             datasetImplementationService.create(datasetImplementationDto.convertToNewEntity(dataset.get().getMetadataKey().getUuid(), dataset.get().getName()));

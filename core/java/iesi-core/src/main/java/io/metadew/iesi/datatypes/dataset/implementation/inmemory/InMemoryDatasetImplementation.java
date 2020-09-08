@@ -4,6 +4,7 @@ import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,6 +16,7 @@ public class InMemoryDatasetImplementation extends DatasetImplementation {
 
     private List<InMemoryDatasetImplementationKeyValue> keyValues;
 
+    @Builder
     public InMemoryDatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, List<DatasetImplementationLabel> datasetImplementationLabels, List<InMemoryDatasetImplementationKeyValue> keyValues) {
         super(metadataKey, datasetKey, name, datasetImplementationLabels);
         this.keyValues = keyValues;

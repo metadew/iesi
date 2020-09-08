@@ -18,7 +18,15 @@ import java.util.stream.Collectors;
 
 public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
 
-    //private static String fetchQuery = "SELECT ID, NAME FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName();
+    private static String existQuery = "SELECT " +
+            "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+            "WHERE datasets.ID = {0}";
+
+    private static String existByNameQuery = "SELECT " +
+            "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+            "WHERE datasets.NAME = {0}";
 
     private static String fetchSingleQuery = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
@@ -69,8 +77,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "WHERE datasets.NAME={0};";
-    //private static String fetchSingleQuery = "SELECT ID, NAME FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
-    //        " WHERE ID={0};";
+
     private static String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
             " (ID, NAME) VALUES ({0}, {1})";
     private static String deleteQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
@@ -108,6 +115,29 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             return datasetBuilderMap.values().stream()
                     .findFirst()
                     .map(DatasetBuilder::build);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean exists(DatasetKey metadataKey) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(existQuery, SQLTools.GetStringForSQL(metadataKey.getUuid())),
+                    "reader");
+            return cachedRowSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean existsByName(String datasetName) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(existQuery, SQLTools.GetStringForSQL(datasetName)),
+                    "reader");
+            return cachedRowSet.next();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

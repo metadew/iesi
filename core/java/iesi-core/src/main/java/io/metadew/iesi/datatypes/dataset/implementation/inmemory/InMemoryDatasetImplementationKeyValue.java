@@ -1,7 +1,8 @@
 package io.metadew.iesi.datatypes.dataset.implementation.inmemory;
 
-import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
+import io.metadew.iesi.metadata.definition.Metadata;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,6 +16,7 @@ public class InMemoryDatasetImplementationKeyValue extends Metadata<InMemoryData
     private final String key;
     private String value;
 
+    @Builder
     public InMemoryDatasetImplementationKeyValue(InMemoryDatasetImplementationKeyValueKey metadataKey, DatasetImplementationKey datasetImplementationKey, String key, String value) {
         super(metadataKey);
         this.datasetImplementationKey = datasetImplementationKey;

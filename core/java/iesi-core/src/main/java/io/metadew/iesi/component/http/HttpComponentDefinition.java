@@ -1,7 +1,5 @@
 package io.metadew.iesi.component.http;
 
-import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class HttpComponentDefinition  {
+public class HttpComponentDefinition {
 
     private final String referenceName;
     private final Long version;

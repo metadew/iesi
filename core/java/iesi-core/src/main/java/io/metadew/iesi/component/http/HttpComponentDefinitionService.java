@@ -26,21 +26,21 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
 
     private HttpComponentDefinitionService() { }
 
-    public HttpComponentHeaderDesign convertHeaders(HttpHeaderDefinition httpHeaderDefinition, String id) {
+    public HttpComponentHeaderDesign convertHeaders(HttpHeaderDefinition httpHeaderDefinition, UUID id) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentHeaderDesign(
                 uuid,
-                new HttpComponentDesignTraceKey(UUID.fromString(id)),
+                new HttpComponentDesignTraceKey(id),
                 httpHeaderDefinition.getName(),
                 httpHeaderDefinition.getValue()
         );
     }
 
-    public HttpComponentQueryDesign convertQueries(HttpQueryParameterDefinition httpQueryParameterDefinition, String id) {
+    public HttpComponentQueryDesign convertQueries(HttpQueryParameterDefinition httpQueryParameterDefinition, UUID id) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentQueryDesign(
                 uuid,
-                new HttpComponentQueryDesignKey(UUID.fromString(id)),
+                new HttpComponentQueryDesignKey(id),
                 httpQueryParameterDefinition.getName(),
                 httpQueryParameterDefinition.getValue()
         );
@@ -82,7 +82,6 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .collect(Collectors.toList())
         );
         UUID uuid = UUID.randomUUID();
-        System.out.println(httpComponentDefinition.getHttpConnectionReferenceName());
         HttpComponentDesignTrace httpComponentDesignTrace = new HttpComponentDesignTrace(
                new ComponentDesignTraceKey(uuid),
                 actionExecution.getExecutionControl().getRunId(),
@@ -95,8 +94,8 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                 httpComponentDefinition.getHttpConnectionReferenceName(),
                 httpComponentDefinition.getType(),
                 httpComponentDefinition.getEndpoint(),
-                httpComponentDefinition.getHeaders().stream().map(headers -> convertHeaders(headers,uuid.toString())).collect(Collectors.toList()),
-                httpComponentDefinition.getQueryParameters().stream().map(queries -> convertQueries(queries,uuid.toString())).collect(Collectors.toList())
+                httpComponentDefinition.getHeaders().stream().map(headers -> convertHeaders(headers,uuid)).collect(Collectors.toList()),
+                httpComponentDefinition.getQueryParameters().stream().map(queries -> convertQueries(queries,uuid)).collect(Collectors.toList())
         );
         ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace);
 

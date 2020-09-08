@@ -80,21 +80,21 @@ public class HttpComponentService implements IHttpComponentService {
                 httpComponent.getEndpoint();
     }
 
-    public HttpComponentHeader convertHeaders(HttpHeader httpHeader, String id) {
+    public HttpComponentHeader convertHeaders(HttpHeader httpHeader, UUID id) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentHeader(
                 uuid,
-                new HttpComponentHeaderKey(UUID.fromString(id)),
+                new HttpComponentHeaderKey(id),
                 httpHeader.getName(),
                 httpHeader.getValue()
         );
     }
 
-    public HttpComponentQuery convertQueries(HttpQueryParameter httpQueryParameter, String id) {
+    public HttpComponentQuery convertQueries(HttpQueryParameter httpQueryParameter, UUID id) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentQuery(
                 uuid,
-                new HttpComponentQueryKey(UUID.fromString(id)),
+                new HttpComponentQueryKey(id),
                 httpQueryParameter.getName(),
                 httpQueryParameter.getValue()
         );
@@ -133,9 +133,9 @@ public class HttpComponentService implements IHttpComponentService {
                 httpComponent.getHttpConnection().getReferenceName(),
                 httpComponent.getType(),
                 httpComponent.getEndpoint(),
-                httpComponent.getHeaders().stream().map(header -> convertHeaders(header, uuid.toString()))
+                httpComponent.getHeaders().stream().map(header -> convertHeaders(header, uuid))
                         .collect(Collectors.toList()),
-                httpComponent.getQueryParameters().stream().map(queries -> convertQueries(queries, uuid.toString()))
+                httpComponent.getQueryParameters().stream().map(queries -> convertQueries(queries, uuid))
                         .collect(Collectors.toList())
         );
 

@@ -48,13 +48,13 @@ public class FwkSetEnvironment extends ActionTypeExecution {
 
         //Check if environment exists
         Optional<Environment> environment = EnvironmentConfiguration.getInstance().get(new EnvironmentKey(environmentName));
-        if (environment.equals(Optional.empty())) {
-            this.getActionExecution().getActionControl().increaseErrorCount();
-            return false;
-        } else {
+        if (environment.isPresent()) {
             this.getExecutionControl().setEnvironment(getActionExecution(), environmentName);
             this.getActionExecution().getActionControl().increaseSuccessCount();
             return true;
+        } else {
+            this.getActionExecution().getActionControl().increaseErrorCount();
+            return false;
         }
     }
 

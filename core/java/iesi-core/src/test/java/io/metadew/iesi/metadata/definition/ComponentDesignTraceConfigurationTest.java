@@ -26,6 +26,18 @@ public class ComponentDesignTraceConfigurationTest {
                 .createAllTables();
     }
 
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getTraceMetadataRepository().cleanAllTables();
+    }
+
+    @AfterAll
+    static void teardown() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getTraceMetadataRepository().dropAllTables();
+    }
+
     @BeforeEach
     void initializeTemplates() {
         componentUuid = UUID.randomUUID();
@@ -121,18 +133,6 @@ public class ComponentDesignTraceConfigurationTest {
                 .httpComponentQueryDesigns(httpComponentQueryDesigns2)
                 .build();
     };
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().cleanAllTables();
-    }
-
-    @AfterAll
-    static void teardown() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().dropAllTables();
-    }
 
     @Test
     void testGetAllEmpty() {

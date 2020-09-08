@@ -48,6 +48,7 @@ class HttpComponentServiceTest {
     @Test
     void getUriTest() {
         HttpConnection httpConnection = mock(HttpConnection.class);
+
         HttpConnectionService httpConnectionService = HttpConnectionService.getInstance();
         HttpConnectionService httpConnectionServiceSpy = Mockito.spy(httpConnectionService);
         Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", httpConnectionServiceSpy);
@@ -121,6 +122,8 @@ class HttpComponentServiceTest {
                 .thenReturn("get");
 
         HttpConnection httpConnection = mock(HttpConnection.class);
+        when(httpConnection.getReferenceName())
+                .thenReturn("connectionName");
         doReturn(httpConnection)
                 .when(httpConnectionServiceSpy)
                 .get("connection1", actionExecution);

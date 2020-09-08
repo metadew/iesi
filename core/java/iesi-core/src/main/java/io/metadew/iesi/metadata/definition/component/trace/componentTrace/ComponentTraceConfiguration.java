@@ -91,6 +91,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
                 mapRow(cachedRowSet, componentTraceBuilderMap);
             }
             return componentTraceBuilderMap.values().stream()
+                    .parallel()
                     .map(ComponentHttpTraceBuilder::build)
                     .collect(Collectors.toList());
         } catch (SQLException e) {

@@ -25,3 +25,8 @@ terraform apply
 ```
 
 And you are ready to go! Check it out in the console!
+
+## Components
+
+* google_compute_instance -> contains metadata_startup_script using a template
+  * google_compute_address -> static IP address

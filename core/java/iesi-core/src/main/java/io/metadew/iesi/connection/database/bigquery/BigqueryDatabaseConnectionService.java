@@ -4,6 +4,12 @@ import io.metadew.iesi.connection.database.connection.ISchemaDatabaseConnectionS
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnectionService;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 @Log4j2
 public class BigqueryDatabaseConnectionService extends SchemaDatabaseConnectionService<BigqueryDatabaseConnection> implements ISchemaDatabaseConnectionService<BigqueryDatabaseConnection> {
 
@@ -17,6 +23,22 @@ public class BigqueryDatabaseConnectionService extends SchemaDatabaseConnectionS
     }
 
     private BigqueryDatabaseConnectionService() {}
+
+    @Override
+    public Connection getConnection(BigqueryDatabaseConnection bigqueryDatabaseConnection) {
+        try {
+            Class.forName(getDriver(bigqueryDatabaseConnection));
+            Connection connection;
+            connection = DriverManager.getConnection(bigqueryDatabaseConnection.getConnectionURL());
+            return connection;
+        } catch (ClassNotFoundException | SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            log.info("exception=" + e);
+            log.debug("exception.stacktrace=" + stackTrace.toString());
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public String getDriver(BigqueryDatabaseConnection databaseConnection) {

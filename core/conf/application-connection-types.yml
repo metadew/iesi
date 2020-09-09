@@ -24,38 +24,38 @@ iesi:
             type: string
             mandatory: true
             encrypted: false
-          authValue:
-            description: The number that specifies the type of authentication used by the driver
-            type: number
+          authMode:
+            description: The authentication mode that specifies the type of authentication used by the driver
+            type: string
             mandatory: true
             encrypted: false
           serviceAccount:
-            description: authValue=0 - Google service account email address
+            description: authValue=service - Google service account email address
             type: string
             mandatory: false
             encrypted: false
           keyPath:
-            description: authValue=0 - Full path to the key file that is used to authenticate the service account email address
+            description: authValue=service - Full path to the key file that is used to authenticate the service account email address
             type: string
             mandatory: false
             encrypted: false
           accessToken:
-            description: authValue=2 - Access token
+            description: authValue=token - Access token
             type: string
             mandatory: false
             encrypted: true
           refreshToken:
-            description: authValue=2 - Refresh token
+            description: authValue=token - Refresh token
             type: string
             mandatory: false
             encrypted: true
           clientId:
-            description: authValue=2 - Client ID
+            description: authValue=token - Client ID
             type: string
             mandatory: false
             encrypted: false
           clientSecret:
-            description: authValue=2 - Client secret
+            description: authValue=token - Client secret
             type: string
             mandatory: false
             encrypted: true

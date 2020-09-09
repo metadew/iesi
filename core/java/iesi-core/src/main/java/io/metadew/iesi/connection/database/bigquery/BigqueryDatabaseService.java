@@ -3,6 +3,7 @@ package io.metadew.iesi.connection.database.bigquery;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
+import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandler;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
@@ -16,7 +17,7 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
     private final static String hostKey = "host";
     private final static String portKey = "port";
     private final static String projectKey = "project";
-    private final static String authValueKey = "authValue";
+    private final static String authModeKey = "authMode";
     private final static String serviceAccountKey = "serviceAccount";
     private final static String keyPathKey = "keyPath";
     private final static String accessTokenKey = "accessToken";
@@ -35,6 +36,11 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
     private BigqueryDatabaseService() {}
 
     @Override
+    public java.sql.Connection getConnection(BigqueryDatabase bigqueryDatabase) {
+        return DatabaseConnectionHandler.getInstance().getConnection(bigqueryDatabase.getDatabaseConnection());
+    }
+
+    @Override
     public BigqueryDatabase getDatabase(Connection connection) {
         String schemaName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
 
@@ -51,138 +57,42 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
         String host = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
         int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, portKey));
         String project = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, projectKey);
-        int authValue = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, authValueKey));
+        String authMode = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, authModeKey);
 
-        switch (authValue) {
-            case 0:
-                bigqueryDatabaseConnection = new BigqueryDatabaseConnection(
-                        getConnectionUrlServiceAccount(
+        switch (authMode) {
+            case "service":
+                bigqueryDatabaseConnection = new ServiceBigqueryDatabaseConnection(
                                 host,
                                 port,
                                 project,
-                                authValue,
                                 DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, serviceAccountKey),
-                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, keyPathKey)));
+                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, keyPathKey));
                 return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
-            case 1:
-                bigqueryDatabaseConnection = new BigqueryDatabaseConnection(
-                        getConnectionUrlUserAccount(
+            case "user":
+                bigqueryDatabaseConnection = new UserBigqueryDatabaseConnection(
+                                host,
+                                port,
+                                project);
+                return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
+            case "token":
+                bigqueryDatabaseConnection = new TokenBigqueryDatabaseConnection(
                                 host,
                                 port,
                                 project,
-                                authValue));
-                return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
-            case 2:
-                bigqueryDatabaseConnection = new BigqueryDatabaseConnection(
-                        getConnectionUrlWithTokens (
-                                host,
-                                port,
-                                project,
-                                authValue,
                                 DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, accessTokenKey),
                                 DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, refreshTokenKey),
                                 DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, clientIdKey),
-                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, clientSecretKey)));
+                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, clientSecretKey));
                 return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
-            case 3:
-                bigqueryDatabaseConnection = new BigqueryDatabaseConnection(
-                        getConnectionUrlDefaultCredentials(
+            case "default":
+                bigqueryDatabaseConnection = new DefaultBigqueryDatabaseConnection(
                                 host,
                                 port,
-                                project,
-                                authValue));
+                                project);
                 return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
             default:
-                throw new RuntimeException("Bigquery database " + connection + " does not know authValue '" + authValue + "'");
+                throw new RuntimeException("Bigquery database " + connection + " does not know authMode '" + authMode + "'");
         }
-    }
-
-    private static String getConnectionUrlServiceAccount(String hostName, int portNumber, String project, int authValue, String serviceAccount, String keyPath) {
-        StringBuilder connectionUrl = new StringBuilder();
-        connectionUrl.append("jdbc:bigquery://");
-        connectionUrl.append(hostName);
-        if (portNumber > 0) {
-            connectionUrl.append(":");
-            connectionUrl.append(portNumber);
-        }
-        connectionUrl.append(";ProjectId=");
-        connectionUrl.append(project);
-        connectionUrl.append(";OAuthType=");
-        connectionUrl.append(authValue);
-        connectionUrl.append(";OAuthServiceAcctEmail=");
-        connectionUrl.append(serviceAccount);
-        connectionUrl.append(";OAuthPvtKeyPath=");
-        connectionUrl.append(keyPath);
-        connectionUrl.append(";");
-
-        return connectionUrl.toString();
-    }
-
-    private static String getConnectionUrlUserAccount(String hostName, int portNumber, String project, int authValue) {
-        StringBuilder connectionUrl = new StringBuilder();
-        connectionUrl.append("jdbc:bigquery://");
-        connectionUrl.append(hostName);
-        if (portNumber > 0) {
-            connectionUrl.append(":");
-            connectionUrl.append(portNumber);
-        }
-        connectionUrl.append(";ProjectId=");
-        connectionUrl.append(project);
-        connectionUrl.append(";OAuthType=");
-        connectionUrl.append(authValue);
-        connectionUrl.append(";");
-
-        return connectionUrl.toString();
-    }
-
-    private static String getConnectionUrlWithTokens(String hostName, int portNumber, String project, int authValue, String accessToken, String refreshToken, String clientId, String clientSecret) {
-        StringBuilder connectionUrl = new StringBuilder();
-        connectionUrl.append("jdbc:bigquery://");
-        connectionUrl.append(hostName);
-        if (portNumber > 0) {
-            connectionUrl.append(":");
-            connectionUrl.append(portNumber);
-        }
-        connectionUrl.append(";ProjectId=");
-        connectionUrl.append(project);
-        connectionUrl.append(";OAuthType=");
-        connectionUrl.append(authValue);
-        if (!accessToken.isEmpty()) {
-            connectionUrl.append(";OAuthAccessToken=");
-            connectionUrl.append(accessToken);
-        }
-        if (!refreshToken.isEmpty()) {
-            connectionUrl.append(";OAuthRefreshToken=");
-            connectionUrl.append(refreshToken);
-        }
-        if (!clientId.isEmpty()) {
-            connectionUrl.append(";OAuthClientId=");
-            connectionUrl.append(clientId);
-        }
-        if (!clientSecret.isEmpty()) {
-            connectionUrl.append(";OAuthClientSecret=");
-            connectionUrl.append(clientSecret);
-        }
-        connectionUrl.append(";");
-
-        return connectionUrl.toString();
-    }
-
-    private static String getConnectionUrlDefaultCredentials(String hostName, int portNumber, String project, int authValue) {
-        StringBuilder connectionUrl = new StringBuilder();
-        connectionUrl.append("jdbc:bigquery://");
-        connectionUrl.append(hostName);
-        if (portNumber > 0) {
-            connectionUrl.append(":");
-            connectionUrl.append(portNumber);
-        }
-        connectionUrl.append(";ProjectId=");
-        connectionUrl.append(project);
-        connectionUrl.append(";OAuthType=");
-        connectionUrl.append(authValue);
-        connectionUrl.append(";");
-
-        return connectionUrl.toString();
     }
 
     @Override

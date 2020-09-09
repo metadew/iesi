@@ -34,31 +34,31 @@ Get more information at [https://cloud.google.com/bigquery](https://cloud.google
 `dataset: "dataset name"`
 * define the name of the dataset
 
-### 4: authValue
+### 4: authMode
 
-`authValue: "authValue number"`
-* define the number that specifies the type of authentication used by the driver
-  * 0: The driver uses service-based OAuth authentication
-  * 1: The driver uses user-based OAuth authentication
-  * 2: The driver uses pre-generated tokens for authentication
-  * 3: The driver uses Application Default Credentials for authentication
+`authValue: "authentication mode"`
+* define the authentication mode that specifies the type of authentication used by the driver
+  * ```service```: The driver uses service-based OAuth authentication
+  * ```user```: The driver uses user-based OAuth authentication
+  * ```token```: The driver uses pre-generated tokens for authentication
+  * ```default```: The driver uses Application Default Credentials for authentication
 
-### 5: authValue defined parameters
+### 5: authMode defined parameters
 
 Depending on the authValue number specified, the following parameters need to be specified.
 
-*authValue 0: using a Google Serice Account*
+*authMode service: using a Google Serice Account*
 
 |Parameter|Value|
 |------|-----------|
 |OAuthServiceAcctEmail|Google service account email address|
 |OAuthPvtKeyPath|full path to the key file that is used to authenticate the service account email address. This parameter supports keys in .pl2 or .json format.|
 
-*authValue 1: using a Google User Account*
+*authMode user: using a Google User Account*
 
-Not available for the moment. Please raise an issue if this is relevant to you.
+No additional parameters needed. However, unattended script execution is not possible since authentication in the session is required manually.
 
-*authValue 2: Using Pre-Generated Access and Refresh Tokens*
+*authMode token: Using Pre-Generated Access and Refresh Tokens*
 
 Not available for the moment. Please raise an issue if this is relevant to you.
 
@@ -74,7 +74,9 @@ OR
 |OAuthClientId|client id|
 |OAuthClientSecret|client secret|
 
-*authValue 3: Using Application Default Credentials*
+*authMode default: Using Application Default Credentials*
+
+No additional parameters needed.
 
 * If the environment variable GOOGLE_APPLICATION_CREDENTIALS is set, Application Default Credentials uses the service account file that the variable points to.
 * If the environment variable GOOGLE_APPLICATION_CREDENTIALS isn't set, Application Default Credentials uses the default service account that Compute Engine, Google Kubernetes Engine, App Engine, Cloud Run, and Cloud Functions provide.
@@ -102,8 +104,8 @@ data:
     value: "iesi-01"
   - name: "dataset"
     value: "iesi"
-  - name: "authValue"
-    value: "0"
+  - name: "authMode"
+    value: "service"
   - name: "serviceAccount"
     value: "serviceaccount@domain.com"
   - name: "keyPath"

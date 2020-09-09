@@ -18,13 +18,8 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
         try {
             Class.forName(getDriver(databaseConnection));
             Connection connection;
-            //Ensure Bigquery connection url can be used
-            if (databaseConnection.getType().equalsIgnoreCase("bigquery")) {
-                connection = DriverManager.getConnection(databaseConnection.getConnectionURL());
-            } else {
-                connection = DriverManager.getConnection(databaseConnection.getConnectionURL(), databaseConnection.getUserName(), databaseConnection.getUserPassword());
-                connection.setAutoCommit(false);
-            }
+            connection = DriverManager.getConnection(databaseConnection.getConnectionURL(), databaseConnection.getUserName(), databaseConnection.getUserPassword());
+            connection.setAutoCommit(false);
             return connection;
         } catch (ClassNotFoundException | SQLException e) {
             StringWriter stackTrace = new StringWriter();

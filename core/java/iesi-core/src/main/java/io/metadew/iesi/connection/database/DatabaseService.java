@@ -26,11 +26,6 @@ import java.util.stream.Collectors;
 public abstract class DatabaseService<T extends Database> implements IDatabaseService<T> {
 
     public Connection getConnection(T database) throws SQLException {
-        //Avoid creating a Hikari Connection pool for Bigquery
-        if (database.getDatabaseConnection().getType().equalsIgnoreCase("bigquery")) {
-            return DatabaseConnectionHandler.getInstance().getConnection(database.getDatabaseConnection());
-        }
-
         if (database.getConnectionPool() == null) {
             database.setConnectionPool(DatabaseHandler.getInstance().createConnectionPool(database, database.getDatabaseConnection()));
         }

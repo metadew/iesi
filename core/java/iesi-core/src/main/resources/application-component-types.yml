@@ -7,8 +7,18 @@ iesi:
       http.request:
         description: Http request component type
         parameters:
-          url:
+          connection:
+            description: connection
+            type: string
+            mandatory: true
+            encrypted: false
+          endpoint:
             description: url
+            type: string
+            mandatory: true
+            encrypted: false
+          type:
+            description: type of HTTP Request
             type: string
             mandatory: true
             encrypted: false

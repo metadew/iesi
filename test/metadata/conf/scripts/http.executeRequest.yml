@@ -1,0 +1,19 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "http.executeRequest"
+  description: "call an endpoint"
+  actions:
+  - number: 1
+    type: "http.executeRequest"
+    name: "call"
+    description: "call the endpoint"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "Y"
+    parameters: 
+    - name: "request"
+      value: "iesi.environments.fetch.all"

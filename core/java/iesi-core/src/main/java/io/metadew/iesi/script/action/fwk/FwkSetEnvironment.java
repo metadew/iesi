@@ -2,7 +2,10 @@ package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.environment.Environment;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -12,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 
 public class FwkSetEnvironment extends ActionTypeExecution {
@@ -41,9 +45,17 @@ public class FwkSetEnvironment extends ActionTypeExecution {
 
     protected boolean executeAction() throws InterruptedException {
         String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
-        this.getExecutionControl().setEnvironment(getActionExecution(), environmentName);
-        this.getActionExecution().getActionControl().increaseSuccessCount();
-        return true;
+
+        //Check if environment exists
+        Optional<Environment> environment = EnvironmentConfiguration.getInstance().get(new EnvironmentKey(environmentName));
+        if (environment.isPresent()) {
+            this.getExecutionControl().setEnvironment(getActionExecution(), environmentName);
+            this.getActionExecution().getActionControl().increaseSuccessCount();
+            return true;
+        } else {
+            this.getActionExecution().getActionControl().increaseErrorCount();
+            return false;
+        }
     }
 
     private String convertEnvironmentName(DataType environmentName) {

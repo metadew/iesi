@@ -3,4 +3,16 @@
 **/target/
 **/classes/
 **/iesi-home.conf
+bin/
+conf/
+data/
+lib/
+licenses/
+logs/
+metadata/
+plugins/
+rest/
 run/
+sbin/
+*.db3
+LICENSE

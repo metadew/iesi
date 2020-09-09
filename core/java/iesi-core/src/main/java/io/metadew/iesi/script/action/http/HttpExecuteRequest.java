@@ -21,6 +21,7 @@ import io.metadew.iesi.script.execution.ActionPerformanceLogger;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.http.Header;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -95,6 +96,8 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         getActionParameterOperationMap().put(proxyKey, proxyActionParameterOperation);
 
         if (convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).isPresent()) {
+            convertHttpRequestBody(requestBodyActionParameterOperation.getValue())
+                    .ifPresent(body -> getActionExecution().getActionControl().logOutput("request.body", body));
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
                     HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution(), requestKey),
                     convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).get());
@@ -102,6 +105,13 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
                     HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution(), requestKey));
         }
+        getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
+
+        for (int i = 0; i < httpRequest.getHttpRequest().getAllHeaders().length; i++) {
+            Header header = httpRequest.getHttpRequest().getAllHeaders()[i];
+            getActionExecution().getActionControl().logOutput("request.header." + i, header.toString());
+        }
+
 
         expectedStatusCodes = convertExpectStatusCodes(expectedStatusCodesActionParameterOperation.getValue());
         proxyConnection = convertProxyName(proxyActionParameterOperation.getValue());

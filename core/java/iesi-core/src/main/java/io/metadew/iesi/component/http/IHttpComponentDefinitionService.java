@@ -7,5 +7,4 @@ public interface IHttpComponentDefinitionService {
 
     public HttpComponentDefinition convert(Component component, ActionExecution actionExecution, String actionParameterName);
 
-
 }

@@ -40,7 +40,7 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
         return hikariConfig;
     }
 
-    public String removeIllgegalCharactersForSingleQuery(T databaseConnection, String input) {
+    public String removeIllegalCharactersForSingleQuery(T databaseConnection, String input) {
         input = input.trim();
         if (input.endsWith(";")) {
             input = input.substring(0, input.length() - 1);
@@ -57,7 +57,8 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
 
     public CachedRowSet executeQuery(T databaseConnection, String query, Connection connection) throws SQLException {
         // Remove illegal characters at the end
-        query = this.removeIllgegalCharactersForSingleQuery(databaseConnection, query);
+        query = this.removeIllegalCharactersForSingleQuery(databaseConnection, query);
+        query = refactorLimitAndOffset(query);
         Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         log.info(databaseConnection.getConnectionURL() + ":" + query);
         ResultSet resultSet = statement.executeQuery(query);
@@ -77,7 +78,8 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
 
     public CachedRowSet executeQueryLimitRows(T databaseConnection, String query, int limit, Connection connection) throws SQLException {
         // Remove illegal characters at the end
-        query = this.removeIllgegalCharactersForSingleQuery(databaseConnection, query);
+        query = this.removeIllegalCharactersForSingleQuery(databaseConnection, query);
+        query = refactorLimitAndOffset(query);
         // query = prepareQuery(query);
 
         Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY,
@@ -168,7 +170,9 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
 
     public void executeUpdate(T databaseConnection, String query, Connection connection) throws SQLException {
         // Remove illegal characters at the end
-        query = this.removeIllgegalCharactersForSingleQuery(databaseConnection, query);
+        // TODO: replace SQL tech specific languages
+        query = this.removeIllegalCharactersForSingleQuery(databaseConnection, query);
+        query = refactorLimitAndOffset(query);
         // query = prepareQuery(query);
         log.info(databaseConnection.getConnectionURL() + ":" + query);
 
@@ -186,7 +190,8 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
     public void executeBatch(T databaseConnection, List<String> queries, Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
         for (String query : queries) {
-            query = this.removeIllgegalCharactersForSingleQuery(databaseConnection, query);
+            query = this.removeIllegalCharactersForSingleQuery(databaseConnection, query);
+            query = refactorLimitAndOffset(query);
             // query = prepareQuery(query);
             log.info(databaseConnection.getConnectionURL() + ":" + query);
             statement.addBatch(query);
@@ -231,4 +236,7 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
         return connection.prepareStatement(sqlStatement);
     }
 
+    public String refactorLimitAndOffset(String query) {
+        return query;
+    }
 }

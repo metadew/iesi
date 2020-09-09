@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.HttpHost;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 
 @Log4j2
 public class HttpRequestService implements IHttpRequestService {
@@ -28,18 +30,24 @@ public class HttpRequestService implements IHttpRequestService {
         return INSTANCE;
     }
 
-    private HttpRequestService() {}
+    private HttpRequestService() {
+    }
 
     public HttpResponse send(HttpRequest httpRequest) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         CloseableHttpClient httpClient = noSSLCertificateVerification();
-        HttpResponse httpResponse = new HttpResponse(httpClient.execute(httpRequest.getHttpRequest()));
-        httpClient.close();
-        return httpResponse;
+        return send(httpRequest, httpClient);
     }
 
     public HttpResponse send(HttpRequest httpRequest, ProxyConnection proxyConnection) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         CloseableHttpClient httpClient = noSSLCertificateVerification(proxyConnection);
-        HttpResponse httpResponse = new HttpResponse(httpClient.execute(httpRequest.getHttpRequest()));
+        return send(httpRequest, httpClient);
+    }
+
+    private HttpResponse send(HttpRequest httpRequest, CloseableHttpClient httpClient) throws IOException {
+        LocalDateTime startTimestamp = LocalDateTime.now();
+        CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpRequest.getHttpRequest());
+        LocalDateTime endTimestamp = LocalDateTime.now();
+        HttpResponse httpResponse = new HttpResponse(closeableHttpResponse, startTimestamp, endTimestamp);
         httpClient.close();
         return httpResponse;
     }

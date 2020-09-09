@@ -27,4 +27,5 @@ public class MysqlDatabaseConnectionService extends DatabaseConnectionService<My
     public Class<MysqlDatabaseConnection> appliesTo() {
         return MysqlDatabaseConnection.class;
     }
+
 }

@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
 
     public abstract Optional<T> get(V metadataKey);
 
-    public abstract List<T> getAll();
+    public abstract List<T> getAll() throws SQLException;
 
     public abstract void delete(V metadataKey);
 

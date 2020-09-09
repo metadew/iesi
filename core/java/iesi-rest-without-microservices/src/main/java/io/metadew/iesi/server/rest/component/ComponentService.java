@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class ComponentService implements IComponentService {
 
     private ComponentConfiguration componentConfiguration;
 
+    @Autowired
     public ComponentService(ComponentConfiguration componentConfiguration) {
         this.componentConfiguration = componentConfiguration;
     }

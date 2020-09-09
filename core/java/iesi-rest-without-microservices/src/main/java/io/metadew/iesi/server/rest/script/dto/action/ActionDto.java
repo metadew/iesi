@@ -6,9 +6,10 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Builder
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Relation(value = "action", collectionRelation = "actions")
 public class ActionDto extends RepresentationModel<ActionDto> {
 
     private long number;
@@ -28,7 +30,7 @@ public class ActionDto extends RepresentationModel<ActionDto> {
     private boolean errorExpected;
     private boolean errorStop;
     private int retries;
-    private List<ActionParameterDto> parameters = new ArrayList<>();
+    private Set<ActionParameterDto> parameters = new HashSet<>();
 
     public Action convertToEntity(String scriptId, long version) {
         return new Action(new ActionKey(new ScriptKey(scriptId, version), IdentifierTools.getActionIdentifier(name)),

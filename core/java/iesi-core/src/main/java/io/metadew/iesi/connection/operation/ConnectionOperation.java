@@ -264,7 +264,6 @@ public class ConnectionOperation {
         return artifactoryConnection;
     }
 
-    @Deprecated
     public boolean isOnLocalConnection(HostConnection hostConnection) {
         boolean result = false;
 

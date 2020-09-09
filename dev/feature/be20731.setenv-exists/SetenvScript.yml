@@ -1,0 +1,66 @@
+---
+type: Script
+data:
+  type: "script"
+  name: "setenv-exists"
+  description: "setenv-exists"
+  actions:
+  - number: 1
+    type: "fwk.dummy"
+    name: "start"
+    description: "start"
+    errorExpected: "N"
+    errorStop: "N"
+    parameters: []
+  - number: 2
+    type: "fwk.outputMessage"
+    name: "current environment"
+    description: "display current environment"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "current env: {{$run.env}}"
+    - name: "onScreen"
+      value: "Y"
+  - number: 3
+    type: "fwk.setEnvironment"
+    name: "new existing environment"
+    description: "Set environment to tutorial2"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "environment"
+      value : "tutorial2"
+  - number: 4
+    type: "fwk.outputMessage"
+    name: "current environment2"
+    description: "display current environment"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "message"
+      value : "current env: {{$run.env}}"
+    - name: "onScreen"
+      value: "Y"
+  - number: 3
+    type: "fwk.setEnvironment"
+    name: "new non-existing environment"
+    description: "Set environment to tutorial3"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "environment"
+      value : "tutorial3"

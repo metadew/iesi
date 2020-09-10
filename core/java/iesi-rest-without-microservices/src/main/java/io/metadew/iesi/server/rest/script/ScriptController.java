@@ -82,7 +82,6 @@ public class ScriptController {
         return scriptFilters;
     }
 
-
     @GetMapping("/{name}")
     public PagedModel<ScriptDto> getByName(Pageable pageable,
                                            @PathVariable String name,

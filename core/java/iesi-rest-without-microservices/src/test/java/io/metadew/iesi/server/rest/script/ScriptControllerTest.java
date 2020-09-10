@@ -63,7 +63,6 @@ class ScriptControllerTest {
                 .andExpect(jsonPath("$._embedded.scripts").isArray())
                 .andExpect(jsonPath("$._embedded.scripts").isEmpty());
     }
-
 //    @Test
 //    void getAll2ResultsAndSerializationTest() throws Exception {
 //        // Mock Service

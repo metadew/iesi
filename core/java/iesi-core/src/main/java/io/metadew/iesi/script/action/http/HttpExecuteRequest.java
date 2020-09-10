@@ -9,18 +9,19 @@ import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.connection.http.response.HttpResponseService;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ActionPerformanceLogger;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import org.apache.http.Header;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -95,12 +96,20 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         getActionParameterOperationMap().put(proxyKey, proxyActionParameterOperation);
 
         if (convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).isPresent()) {
+            convertHttpRequestBody(requestBodyActionParameterOperation.getValue())
+                    .ifPresent(body -> getActionExecution().getActionControl().logOutput("request.body", body));
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
                     HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution()),
                     convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).get());
         } else {
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
                     HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution()));
+        }
+        getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
+
+        for (int i = 0; i < httpRequest.getHttpRequest().getAllHeaders().length; i++) {
+            Header header = httpRequest.getHttpRequest().getAllHeaders()[i];
+            getActionExecution().getActionControl().logOutput("request.header." + i, header.toString());
         }
 
         expectedStatusCodes = convertExpectStatusCodes(expectedStatusCodesActionParameterOperation.getValue());

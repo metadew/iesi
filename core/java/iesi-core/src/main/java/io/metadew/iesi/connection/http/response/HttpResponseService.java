@@ -2,14 +2,15 @@ package io.metadew.iesi.connection.http.response;
 
 import io.metadew.iesi.connection.http.entity.HttpResponseEntityHandler;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
+
 
 public class HttpResponseService implements IHttpResponseService {
 

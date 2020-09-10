@@ -543,11 +543,11 @@ public class ExecutionRuntime {
         return Optional.ofNullable(datasetMap.get(referenceName));
     }
 
-    public void setArray(String referenceName, Array array) throws IOException {
+    public void setArray(String referenceName, Array array) {
         arrayMap.put(referenceName, array);
     }
 
-    public Optional<Array> getArray(String referenceName) throws IOException {
+    public Optional<Array> getArray(String referenceName) {
         return Optional.ofNullable(arrayMap.get(referenceName));
     }
 

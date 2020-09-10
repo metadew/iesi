@@ -8,6 +8,15 @@ import java.util.stream.Collectors;
 
 public class HttpComponentDesignTraceService {
 
+    private static HttpComponentDesignTraceService INSTANCE;
+
+    public synchronized static HttpComponentDesignTraceService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new HttpComponentDesignTraceService();
+        }
+        return INSTANCE;
+    }
+
     public HttpComponentDesignTrace convert(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution,
                                             String actionParameterName, String component_type) {
         UUID uuid = UUID.randomUUID();

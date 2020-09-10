@@ -93,9 +93,7 @@ public class HttpComponentService implements IHttpComponentService {
                         .collect(Collectors.toList())
         );
 
-        HttpComponentTraceService httpComponentTraceService = new HttpComponentTraceService();
-
-        ComponentTraceConfiguration.getInstance().insert(httpComponentTraceService.convert(httpComponent, actionExecution, actionParameterName, COMPONENT_TYPE));
+        ComponentTraceConfiguration.getInstance().insert(HttpComponentTraceService.getInstance().convert(httpComponent, actionExecution, actionParameterName, COMPONENT_TYPE));
 
         return httpComponent;
     }

@@ -61,9 +61,8 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .map(componentParameterValue -> HttpQueryParameterDefinitionService.getInstance().convert(componentParameterValue))
                         .collect(Collectors.toList())
         );
-        HttpComponentDesignTraceService httpComponentDesignTraceService = new HttpComponentDesignTraceService();
 
-        ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTraceService.convert(httpComponentDefinition, actionExecution, actionParameterName, COMPONENT_TYPE));
+        ComponentDesignTraceConfiguration.getInstance().insert(HttpComponentDesignTraceService.getInstance().convert(httpComponentDefinition, actionExecution, actionParameterName, COMPONENT_TYPE));
 
         return httpComponentDefinition;
     }

@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: io.metadew.iesi.component.http.HttpQueryParameterDefinitionServiceTest
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s - in io.metadew.iesi.component.http.HttpQueryParameterDefinitionServiceTest

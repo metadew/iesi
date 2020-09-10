@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: io.metadew.iesi.component.http.HttpComponentServiceTest
--------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 0.767 s - in io.metadew.iesi.component.http.HttpComponentServiceTest

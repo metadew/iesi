@@ -207,8 +207,8 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
         if (httpComponentQueryId != null) {
             componentTraceBuilder.getHttpComponentQueries().put(
                     httpComponentQueryId,
-                    new HttpComponentQueryTrace(
-                          new HttpComponentQueryTraceKey(UUID.fromString(httpComponentQueryId)),
+                    new HttpComponentQueryParameterTrace(
+                          new HttpComponentQueryParameterTraceKey(UUID.fromString(httpComponentQueryId)),
                             new ComponentTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQuery_HTTP_COMP_ID"))),
                             cachedRowSet.getString("TraceHttpComponentQuery_NAME"),
                             cachedRowSet.getString("TraceHttpComponentQuery_VALUE")
@@ -235,7 +235,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
     @Getter
     @ToString
     private class ComponentHttpTraceBuilder extends ComponentTraceBuilder {
-        public ComponentHttpTraceBuilder(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentTypeParameter, String componentName, String componentDescription, Long componentVersion, String connectionName, String type, String endpoint, Map<String, HttpComponentHeaderTrace> httpComponentHeader, Map<String, HttpComponentQueryTrace> httpComponentQueries) {
+        public ComponentHttpTraceBuilder(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentTypeParameter, String componentName, String componentDescription, Long componentVersion, String connectionName, String type, String endpoint, Map<String, HttpComponentHeaderTrace> httpComponentHeader, Map<String, HttpComponentQueryParameterTrace> httpComponentQueries) {
             super(metadataKey, runId, processId, actionParameter, componentTypeParameter, componentName, componentDescription, componentVersion);
             this.connectionName = connectionName;
             this.type = type;
@@ -248,7 +248,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
         private final String type;
         private final String endpoint;
         private Map<String, HttpComponentHeaderTrace> httpComponentHeader;
-        private Map<String, HttpComponentQueryTrace> httpComponentQueries;
+        private Map<String, HttpComponentQueryParameterTrace> httpComponentQueries;
 
         public HttpComponentTrace build() {
             return new HttpComponentTrace(

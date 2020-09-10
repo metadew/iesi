@@ -59,13 +59,13 @@ public class ComponentTraceConfigurationTest {
 
         ComponentTraceKey httpComponentQueryKey = ComponentTraceKey.builder().uuid(componentUuid)
                 .build();
-        List<HttpComponentQueryTrace> httpComponentQueryTraces = new ArrayList<>();
+        List<HttpComponentQueryParameterTrace> httpComponentQueryParameterTraces = new ArrayList<>();
         UUID uuid0 = UUID.randomUUID();
-        HttpComponentQueryTrace httpComponentQueryTrace1 = HttpComponentQueryTrace.builder()
-                .metadataKey(new HttpComponentQueryTraceKey(uuid0))
+        HttpComponentQueryParameterTrace httpComponentQueryParameterTrace1 = HttpComponentQueryParameterTrace.builder()
+                .metadataKey(new HttpComponentQueryParameterTraceKey(uuid0))
                 .httpComponentQueryID(httpComponentQueryKey).name("test")
                 .value("test").build();
-        httpComponentQueryTraces.add(httpComponentQueryTrace1);
+        httpComponentQueryParameterTraces.add(httpComponentQueryParameterTrace1);
 
         httpComponentTrace = HttpComponentTrace.builder()
                 .metadataKey(componetKey)
@@ -80,7 +80,7 @@ public class ComponentTraceConfigurationTest {
                 .type("type")
                 .endpoint("endpoint")
                 .httpComponentHeaderTrace(httpComponentHeaderTraces)
-                .httpComponentQueries(httpComponentQueryTraces)
+                .httpComponentQueries(httpComponentQueryParameterTraces)
                 .build();
 
         componentUuid2 = UUID.randomUUID();
@@ -99,24 +99,24 @@ public class ComponentTraceConfigurationTest {
 
         ComponentTraceKey httpComponentQueryKey2 = ComponentTraceKey.builder().uuid(componentUuid2)
                 .build();
-        List<HttpComponentQueryTrace> httpComponentQuerys2Trace = new ArrayList<>();
+        List<HttpComponentQueryParameterTrace> httpComponentQuerys2Trace = new ArrayList<>();
 
         UUID uuid1 = UUID.randomUUID();
 
-        HttpComponentQueryTrace httpComponentQueryTrace3 = HttpComponentQueryTrace.builder()
-                .metadataKey(new HttpComponentQueryTraceKey(uuid1))
+        HttpComponentQueryParameterTrace httpComponentQueryParameterTrace3 = HttpComponentQueryParameterTrace.builder()
+                .metadataKey(new HttpComponentQueryParameterTraceKey(uuid1))
                 .httpComponentQueryID(httpComponentQueryKey2)
                 .name("test2")
                 .value("test2").build();
 
         UUID uuid2 = UUID.randomUUID();
 
-        HttpComponentQueryTrace httpComponentQueryTrace4 = HttpComponentQueryTrace.builder()
-                .metadataKey(new HttpComponentQueryTraceKey(uuid2))
+        HttpComponentQueryParameterTrace httpComponentQueryParameterTrace4 = HttpComponentQueryParameterTrace.builder()
+                .metadataKey(new HttpComponentQueryParameterTraceKey(uuid2))
                 .httpComponentQueryID(httpComponentQueryKey2).name("test4")
                 .value("test4").build();
-        httpComponentQuerys2Trace.add(httpComponentQueryTrace3);
-        httpComponentQuerys2Trace.add(httpComponentQueryTrace4);
+        httpComponentQuerys2Trace.add(httpComponentQueryParameterTrace3);
+        httpComponentQuerys2Trace.add(httpComponentQueryParameterTrace4);
 
         httpComponentTrace2 = HttpComponentTrace.builder()
                 .metadataKey(componentKey2)

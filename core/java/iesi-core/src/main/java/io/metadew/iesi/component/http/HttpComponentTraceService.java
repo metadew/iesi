@@ -40,9 +40,9 @@ public class HttpComponentTraceService {
         );
     }
 
-    private HttpComponentQueryTrace convertQueries(HttpQueryParameter httpQueryParameter, UUID id) {
-        return new HttpComponentQueryTrace(
-                new HttpComponentQueryTraceKey(UUID.randomUUID()),
+    private HttpComponentQueryParameterTrace convertQueries(HttpQueryParameter httpQueryParameter, UUID id) {
+        return new HttpComponentQueryParameterTrace(
+                new HttpComponentQueryParameterTraceKey(UUID.randomUUID()),
                 new ComponentTraceKey(id),
                 httpQueryParameter.getName(),
                 httpQueryParameter.getValue()

@@ -9,7 +9,7 @@ import java.util.List;
 public class HttpComponentTrace extends ComponentTrace {
 
     @Builder
-    public HttpComponentTrace(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentTypeParameter, String componentName, String componentDescription, Long componentVersion, String connectionName, String type, String endpoint, List<HttpComponentHeaderTrace> httpComponentHeaderTrace, List<HttpComponentQueryTrace> httpComponentQueries) {
+    public HttpComponentTrace(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentTypeParameter, String componentName, String componentDescription, Long componentVersion, String connectionName, String type, String endpoint, List<HttpComponentHeaderTrace> httpComponentHeaderTrace, List<HttpComponentQueryParameterTrace> httpComponentQueries) {
         super(metadataKey, runId, processId, actionParameter, componentTypeParameter, componentName, componentDescription, componentVersion);
         this.connectionName = connectionName;
         this.type = type;
@@ -22,6 +22,6 @@ public class HttpComponentTrace extends ComponentTrace {
     private final String type;
     private final String endpoint;
     private final List<HttpComponentHeaderTrace> httpComponentHeaderTrace;
-    private final List<HttpComponentQueryTrace> httpComponentQueries;
+    private final List<HttpComponentQueryParameterTrace> httpComponentQueries;
 
 }

@@ -14,31 +14,29 @@ public class TokenBigqueryDatabaseConnection extends BigqueryDatabaseConnection 
         super(getConnectionUrl(hostName, portNumber, project,accessToken, refreshToken, clientId, clientSecret));
     }
 
-    private static String getConnectionUrl(String hostName, int portNumber, String project, String accessToken, String refreshToken, String clientId, String clientSecret) {
+    private static String getConnectionUrl(String hostName, Integer portNumber, String project, String accessToken, String refreshToken, String clientId, String clientSecret) {
         StringBuilder connectionUrl = new StringBuilder();
         connectionUrl.append("jdbc:bigquery://");
         connectionUrl.append(hostName);
-        if (portNumber > 0) {
-            connectionUrl.append(":");
-            connectionUrl.append(portNumber);
-        }
+        connectionUrl.append(":");
+        connectionUrl.append(portNumber);
         connectionUrl.append(";ProjectId=");
         connectionUrl.append(project);
         connectionUrl.append(";OAuthType=");
         connectionUrl.append("2");
-        if (!accessToken.isEmpty()) {
+        if (accessToken != null) {
             connectionUrl.append(";OAuthAccessToken=");
             connectionUrl.append(accessToken);
         }
-        if (!refreshToken.isEmpty()) {
+        if (refreshToken != null) {
             connectionUrl.append(";OAuthRefreshToken=");
             connectionUrl.append(refreshToken);
         }
-        if (!clientId.isEmpty()) {
+        if (clientId != null) {
             connectionUrl.append(";OAuthClientId=");
             connectionUrl.append(clientId);
         }
-        if (!clientSecret.isEmpty()) {
+        if (clientSecret != null) {
             connectionUrl.append(";OAuthClientSecret=");
             connectionUrl.append(clientSecret);
         }

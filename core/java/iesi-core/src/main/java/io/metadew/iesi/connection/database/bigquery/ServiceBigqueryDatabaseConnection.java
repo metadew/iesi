@@ -14,14 +14,12 @@ public class ServiceBigqueryDatabaseConnection extends BigqueryDatabaseConnectio
         super(getConnectionUrl(hostName, portNumber, project, serviceAccount, keyPath));
     }
 
-    private static String getConnectionUrl(String hostName, int portNumber, String project, String serviceAccount, String keyPath) {
+    private static String getConnectionUrl(String hostName, Integer portNumber, String project, String serviceAccount, String keyPath) {
         StringBuilder connectionUrl = new StringBuilder();
         connectionUrl.append("jdbc:bigquery://");
         connectionUrl.append(hostName);
-        if (portNumber > 0) {
-            connectionUrl.append(":");
-            connectionUrl.append(portNumber);
-        }
+        connectionUrl.append(":");
+        connectionUrl.append(portNumber);
         connectionUrl.append(";ProjectId=");
         connectionUrl.append(project);
         connectionUrl.append(";OAuthType=");

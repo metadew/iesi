@@ -79,10 +79,10 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
                                 host,
                                 port,
                                 project,
-                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, accessTokenKey),
-                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, refreshTokenKey),
-                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, clientIdKey),
-                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, clientSecretKey));
+                                DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, accessTokenKey).orElse(null),
+                                DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, refreshTokenKey).orElse(null),
+                                DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, clientIdKey).orElse(null),
+                                DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, clientSecretKey).orElse(null));
                 return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
             case "default":
                 bigqueryDatabaseConnection = new DefaultBigqueryDatabaseConnection(

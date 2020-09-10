@@ -3,10 +3,7 @@ package io.metadew.iesi.server.rest.executionrequest.script.dto;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.*;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
@@ -17,6 +14,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecutionRequestDto> {
 
     private String scriptExecutionRequestId;
@@ -28,6 +26,7 @@ public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecuti
     private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
     private String scriptName;
     private Long scriptVersion;
+    private String runId;
 
     public ScriptNameExecutionRequest convertToEntity() {
         return new ScriptNameExecutionRequest(

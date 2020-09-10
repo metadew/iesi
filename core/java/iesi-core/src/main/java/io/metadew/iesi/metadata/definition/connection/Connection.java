@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,6 +31,8 @@ public class Connection extends Metadata<ConnectionKey> {
         this.description = description;
         this.parameters = parameters;
     }
+
+    @Builder
     public Connection(ConnectionKey connectionKey, String type, String description, List<ConnectionParameter> parameters) {
         super(connectionKey);
         this.type = type;

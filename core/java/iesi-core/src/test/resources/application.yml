@@ -9,3 +9,4 @@ iesi:
 #    mode: standalone
 #    threads:
 #      timeout: 30
+  home: "."

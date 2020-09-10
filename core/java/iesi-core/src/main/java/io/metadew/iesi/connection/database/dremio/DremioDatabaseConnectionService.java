@@ -27,4 +27,5 @@ public class DremioDatabaseConnectionService extends SchemaDatabaseConnectionSer
     public Class<DremioDatabaseConnection> appliesTo() {
         return DremioDatabaseConnection.class;
     }
+
 }

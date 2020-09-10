@@ -24,6 +24,14 @@ public final class SQLTools {
             return "'" + GetCleanString(input) + "'";
         }
     }
+    // Insert statement tools
+    public static String GetStringForSQL(UUID input) {
+        if (input == null) {
+            return "null";
+        } else {
+            return "'" + GetCleanString(input.toString()) + "'";
+        }
+    }
 
     public static String GetStringForSQLTable(String input) {
         if (input == null) {

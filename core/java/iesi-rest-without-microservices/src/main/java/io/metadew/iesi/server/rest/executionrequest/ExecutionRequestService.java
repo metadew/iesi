@@ -5,26 +5,32 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ExecutionRequestService implements IExecutionRequestService {
 
     private ExecutionRequestConfiguration executionRequestConfiguration;
 
-    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration) {
+    private final ExecutionRequestDtoRepository executionRequestDtoRepository;
+
+    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration, ExecutionRequestDtoRepository executionRequestDtoRepository) {
         this.executionRequestConfiguration = executionRequestConfiguration;
+        this.executionRequestDtoRepository = executionRequestDtoRepository;
     }
 
-    public List<ExecutionRequest> getAll() {
-        return executionRequestConfiguration.getAll();
+    public Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
+        return executionRequestDtoRepository.getAll(pageable, executionRequestFilters);
     }
 
-    public Optional<ExecutionRequest> getById(String id) {
-        return executionRequestConfiguration.get(new ExecutionRequestKey(id));
+    public Optional<ExecutionRequestDto> getById(String id) {
+        return executionRequestDtoRepository.getById(UUID.fromString(id));
     }
 
     public ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException {

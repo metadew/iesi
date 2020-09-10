@@ -4,9 +4,7 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ExecutionRequestBuilder {
 
@@ -25,7 +23,7 @@ public class ExecutionRequestBuilder {
     private String email;
 
     private List<ScriptExecutionRequest> scriptExecutionRequests;
-    private List<ExecutionRequestLabel> executionRequestLabels = new ArrayList<>();
+    private Set<ExecutionRequestLabel> executionRequestLabels = new HashSet<>();
 
     public ExecutionRequestBuilder name(String name) {
         this.name = name;

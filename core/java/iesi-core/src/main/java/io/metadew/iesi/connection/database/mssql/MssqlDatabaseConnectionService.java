@@ -4,6 +4,9 @@ import io.metadew.iesi.connection.database.connection.ISchemaDatabaseConnectionS
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnectionService;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Log4j2
 public class MssqlDatabaseConnectionService extends SchemaDatabaseConnectionService<MssqlDatabaseConnection> implements ISchemaDatabaseConnectionService<MssqlDatabaseConnection> {
 
@@ -16,8 +19,9 @@ public class MssqlDatabaseConnectionService extends SchemaDatabaseConnectionServ
         return INSTANCE;
     }
 
-    private MssqlDatabaseConnectionService() {}
-    
+    private MssqlDatabaseConnectionService() {
+    }
+
     @Override
     public String getDriver(MssqlDatabaseConnection databaseConnection) {
         return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
@@ -27,4 +31,22 @@ public class MssqlDatabaseConnectionService extends SchemaDatabaseConnectionServ
     public Class<MssqlDatabaseConnection> appliesTo() {
         return MssqlDatabaseConnection.class;
     }
+
+    public String refactorLimitAndOffset(String query) {
+
+        Pattern pattern = Pattern.compile("(?i)limit\\s+(?<limit>\\d+)\\s+(?i)offset\\s+(?<offset>\\d+)");
+        Matcher matcher = pattern.matcher(query);
+
+        StringBuilder stringBuilder = new StringBuilder(query);
+        while (matcher.find()) {
+            int limit = Integer.parseInt(matcher.group("limit"));
+            int offset = Integer.parseInt(matcher.group("offset"));
+            int matchStartIndex = matcher.start();
+            int matchEndIndex = matcher.end();
+            stringBuilder.replace(matchStartIndex, matchEndIndex, " OFFSET " + offset + " ROWS FETCH NEXT " + limit + " ROWS ONLY ");
+            matcher.reset(stringBuilder);
+        }
+        return stringBuilder.toString();
+    }
+
 }

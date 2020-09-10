@@ -14,6 +14,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -21,10 +22,7 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -33,33 +31,17 @@ import java.util.List;
  *
  * @author peter.billen
  */
-public class FhoDeleteFolder {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class FhoDeleteFolder extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation folderPath;
     private ActionParameterOperation folderName;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public FhoDeleteFolder() {
-
-    }
 
     public FhoDeleteFolder(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -74,11 +56,11 @@ public class FhoDeleteFolder {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("path")) {
-                this.getFolderPath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getFolderPath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("folder")) {
-                this.getFolderName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getFolderName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -88,31 +70,10 @@ public class FhoDeleteFolder {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    // Methods
-    public boolean execute() throws InterruptedException {
-        try {
-            String path = convertPath(getFolderPath().getValue());
-            String folder = convertFolder(getFolderName().getValue());
-            String connectionName = convertConnectionName(getConnectionName().getValue());
-            return execute(path, folder, connectionName);
-
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean execute(String path, String folder, String connectionName) throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
+        String path = convertPath(getFolderPath().getValue());
+        String folder = convertFolder(getFolderName().getValue());
+        String connectionName = convertConnectionName(getConnectionName().getValue());
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
@@ -210,36 +171,12 @@ public class FhoDeleteFolder {
         this.getActionExecution().getActionControl().increaseSuccessCount();
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
     public ActionParameterOperation getConnectionName() {
         return connectionName;
     }
 
     public void setConnectionName(ActionParameterOperation connectionName) {
         this.connectionName = connectionName;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getFolderPath() {

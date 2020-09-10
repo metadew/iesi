@@ -22,7 +22,7 @@ public abstract class Configuration<T extends Metadata, V extends MetadataKey> {
     // TODO: make singleton
     public Configuration() {
     }
-//hello
+//hellosSqs
     public abstract Optional<T> get(V metadataKey);
 
     public abstract List<T> getAll() throws SQLException;

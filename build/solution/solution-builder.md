@@ -8,11 +8,13 @@ This page describes how to build a branch from git and assemble the distribution
 
 ### Limitations
 
-The builder script is currently made for debian based linux environments using the bash shell scripting language.
+* The builder script is currently made for debian based linux environments using the bash shell scripting language.
+* The builder script only works if the `build/solution` folder is part of the target branch.
 
 ### Accessing the script
 
-The builder script can be found in the `build/scripts` folder.
+The builder script can be found in the `build/solution` folder.
+* Verify the desired iesi_version and update as needed
 
 ### Script actions
 
@@ -63,8 +65,8 @@ Exclusions are added as single characters that are concatenated one after the ot
 ### Script output
 
 As a result, the script will produce the following inside the build directory:
-* [branch]/[git clone] containing the code that has been built
-* workspace/build/[branch] containing the assembled solution
-* workspace/dist/[branch] containing the compressed archives suffixed with a timestamp
+* [source]/[branch]/[git clone] containing the code that has been built
+* workspace/[version]/[build] containing the assembled solution
+* workspace/dist/[branch] containing the compressed archives suffixed with a timestamp: ```iesi-dist-[timestamp].tar.gz```
 
 Happy building!!

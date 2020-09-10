@@ -144,9 +144,7 @@ if [ "$maven_build_ext" -eq 1 ]; then
   do
     echo "Installing ${file} into local Maven repository"
     mvn install:install-file -Dfile=$file -DgroupId=$groupid -DartifactId=$artifactid -Dversion=$version -Dpackaging=$packaging
-  done < "${current_dir}/ext.list"
-  # TODO point to list in repo
-  # XXXXXXXXXXXXXXXXXXXXXXXXXX
+  done < "${repo_dir}/build/solution/ext.list"
 else
   echo "Skipping, build ext installation"
 fi

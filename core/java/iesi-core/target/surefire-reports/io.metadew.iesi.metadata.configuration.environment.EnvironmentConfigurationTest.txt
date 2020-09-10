@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: io.metadew.iesi.metadata.configuration.environment.EnvironmentConfigurationTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.34 s - in io.metadew.iesi.metadata.configuration.environment.EnvironmentConfigurationTest

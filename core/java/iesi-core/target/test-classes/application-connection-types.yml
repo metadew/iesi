@@ -1,0 +1,569 @@
+iesi:
+  metadata:
+    connection-types:
+      http:
+        description: Connection to a server exposing HTTP endpoints
+        parameters:
+          host:
+            description: The host name of the server where the endpoints are hosted
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: Set the specific port for the host. In case the default port (80 for http, 443 for HTTPS) this parameter can be omitted
+            type: number
+            mandatory: false
+            encrypted: false
+          baseUrl:
+            description: all endpoints hosted at the host start with this specific endpoint
+            type: string
+            mandatory: true
+            encrypted: false
+          tls:
+            description: Whether or not the connection to the host is encrypted using TLS
+            type: boolean
+            mandatory: true
+            encrypted: false
+      db.db2:
+        description: IBM DB2 Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is running
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          database:
+            description: The database name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+      db.dremio:
+        description: Dremio Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is located
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          mode:
+            description: 'The connection mode to use: direct, zookeeper'
+            type: string
+            mandatory: true
+            encrypted: false
+          cluster:
+            description: The optional cluster name if connection mode is zookeeper
+            type: string
+            mandatory: false
+            encrypted: false
+          schema:
+            description: The schema name in the catalog to connect to
+            type: string
+            mandatory: false
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: false
+            encrypted: true
+      db.drill:
+        description: Apache Drill Database Connection
+        parameters:
+          mode:
+            description: 'The connection mode to use: drillbit, zookeeper'
+            type: string
+            mandatory: true
+            encrypted: false
+          cluster:
+            description: 'The drillbit or zookeeper nodes including optional ports: node[:port],node[:port],etc'
+            type: string
+            mandatory: true
+            encrypted: false
+          directory:
+            description: Optional drill directory in zookeeper which by default is drill
+            type: string
+            mandatory: false
+            encrypted: false
+          clusterId:
+            description: Optional cluster Id which by default is drillbits1
+            type: string
+            mandatory: false
+            encrypted: false
+          schema:
+            description: Optional name of a storage plugin configuration to use as the default
+              for queries
+            type: string
+            mandatory: false
+            encrypted: false
+          tries:
+            description: Optional tries parameter for drillbit connections
+            type: string
+            mandatory: false
+            encrypted: false
+      db.h2:
+        description: H2 Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database file is located
+            type: string
+            mandatory: false
+            encrypted: false
+          type:
+            description: The type of h2 database (embedded/server/memory)
+            type: string
+            mandatory: true
+            encrypted: false
+          name:
+            description: The name of the h2 database (memory)
+            type: string
+            mandatory: false
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: false
+            encrypted: false
+          path:
+            description: The path where the database is stored
+            type: string
+            mandatory: false
+            encrypted: false
+          file:
+            description: The database file name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: false
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: false
+            encrypted: true
+      db.mariadb:
+        description: MariaDB Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is running
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          database:
+            description: The database name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+      db.mssql:
+        description: Microsoft SQL Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is running
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          database:
+            description: The database name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+      db.mysql:
+        description: MySql Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is running
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          schema:
+            description: The schema name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+      db.netezza:
+        description: falseetezza Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is running
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          database:
+            description: The database name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+      db.oracle:
+        description: Oracle Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is running
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          tnsalias:
+            description: The TfalseS Alias name to connect to the database
+            type: string
+            mandatory: false
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+          service:
+            description: The Service name to connect to the database
+            type: string
+            mandatory: false
+            encrypted: false
+      db.postgresql:
+        description: Postgresql Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is running
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          database:
+            description: The database name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+      db.presto:
+        description: Presto Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database file is located
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          catalog:
+            description: The catalog name to connect to
+            type: string
+            mandatory: false
+            encrypted: false
+          schema:
+            description: The schema name in the catalog to connect to
+            type: string
+            mandatory: false
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: false
+            encrypted: true
+      db.sqlite:
+        description: SQLite Database Connection
+        parameters:
+          filePath:
+            description: The file path where the database is stored
+            type: string
+            mandatory: true
+            encrypted: false
+          filefalseame:
+            description: The file name of the the database
+            type: string
+            mandatory: true
+            encrypted: false
+      db.teradata:
+        description: Teradata Database Connection
+        parameters:
+          host:
+            description: The host name of the server where the database is running
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          database:
+            description: The database name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+      fwk.alias:
+        description: Connection alias only to be used for impersonation
+        parameters:
+          type:
+            description: The connection type that is impersonated
+            type: string
+            mandatory: true
+            encrypted: false
+      host.linux:
+        description: Linux-Based Operating System Connection
+        parameters:
+          host:
+            description: The host name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the host
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the host
+            type: string
+            mandatory: true
+            encrypted: true
+          tempPath:
+            description: The temporary path on the host name that can be used by the solution
+            type: string
+            mandatory: false
+            encrypted: false
+          simulateTerminal:
+            description: Flag indicating if a terminal needs to be simulated when connecting
+            type: string
+            mandatory: false
+            encrypted: false
+          jumphostConnections:
+            description: Connection names that need to be used as jump host for connecting
+            type: string
+            mandatory: false
+            encrypted: false
+          allowLocalhostExecution:
+            description: Flag indicating if processes are allowed to run as localhost on
+              the automation engine
+            type: string
+            mandatory: false
+            encrypted: false
+      host.unix:
+        description: Unix-Based Operating System Connection
+        parameters:
+          host:
+            description: The host name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number for connecting to the host
+            type: number
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the host
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the host
+            type: string
+            mandatory: true
+            encrypted: true
+          tempPath:
+            description: The temporary path on the host name that can be used by the solution
+            type: string
+            mandatory: false
+            encrypted: false
+          simulateTerminal:
+            description: Flag indicating if a terminal needs to be simulated when connecting
+            type: string
+            mandatory: false
+            encrypted: false
+          jumphostConnections:
+            description: Connection names that need to be used as jump host for connecting
+            type: string
+            mandatory: false
+            encrypted: false
+          allowLocalhostExecution:
+            description: Flag indicating if processes are allowed to run as localhost on
+              the automation engine
+            type: string
+            mandatory: false
+            encrypted: false
+      host.windows:
+        description: Windows-Based Operating System  Connection
+        parameters:
+          host:
+            description: The host name to connect to
+            type: string
+            mandatory: true
+            encrypted: false
+          tempPath:
+            description: The temporary path on the host name that can be used by the solution
+            type: string
+            mandatory: false
+            encrypted: false
+      http.host:
+        description: Http Host Connection
+        parameters:
+          url:
+            description: The connection URL
+            type: string
+            mandatory: true
+            encrypted: false
+      repo.artifactory:
+        description: Artifactory Repository Connection
+        parameters:
+          url:
+            description: The connection URL for the instance
+            type: string
+            mandatory: true
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: true
+            encrypted: true
+          repository:
+            description: The repository name within the instance to connect to
+            type: string
+            mandatory: false
+            encrypted: false
+      socket:
+        description: socket Connection
+        parameters:
+          hostname:
+            description: The host name
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: The port number
+            type: string
+            mandatory: true
+            encrypted: false

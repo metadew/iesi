@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: io.metadew.iesi.connection.service.DbDremioConnectionServiceTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.05 s - in io.metadew.iesi.connection.service.DbDremioConnectionServiceTest

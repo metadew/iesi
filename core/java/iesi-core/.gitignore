@@ -10,7 +10,6 @@ test.mv.db
 test.trace.db
 
 ### Eclipse template
-.metadata
 bin/
 tmp/
 *.tmp

@@ -22,7 +22,8 @@ exclude=""
 
 #Script settings
 iesi_version=0.5.0
-branch="develop"
+branch_input="develop"
+branch=$(echo $branch_input | sed -e 's/\//./g')
 current_dir=$(pwd)
 script_dir=`dirname $0`
 build_dir=${current_dir}

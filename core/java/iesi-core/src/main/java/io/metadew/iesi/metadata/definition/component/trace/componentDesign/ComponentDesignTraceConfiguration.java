@@ -174,8 +174,8 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                 cachedRowSet.getString("TraceHttpComponentDesign_CONN_NM"),
                 cachedRowSet.getString("TraceHttpComponentDesign_TYPE"),
                 cachedRowSet.getString("TraceHttpComponentDesign_ENDPOINT"),
-                new HashMap<>(),
-                new HashMap<>());
+                new LinkedHashMap<>(),
+                new LinkedHashMap<>());
     }
 
     private void mapRow(CachedRowSet cachedRowSet, Map<String, ComponentHttpDesignTraceBuilder> componentDesignTraceBuilderMap) throws SQLException {

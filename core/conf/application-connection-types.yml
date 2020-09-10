@@ -78,7 +78,6 @@ iesi:
             type: boolean
             mandatory: true
             encrypted: false
->>>>>>> develop
       db.db2:
         description: IBM DB2 Database Connection
         parameters:

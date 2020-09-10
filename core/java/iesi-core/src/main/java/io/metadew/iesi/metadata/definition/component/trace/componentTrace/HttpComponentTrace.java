@@ -9,19 +9,19 @@ import java.util.List;
 public class HttpComponentTrace extends ComponentTrace {
 
     @Builder
-    public HttpComponentTrace(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter,  String componentTypeParameter, String componentName, String componentDescription, Long componentVersion,  String connectionName, String type, String endpoint, List<HttpComponentHeader> httpComponentHeader, List<HttpComponentQuery> httpComponentQueries) {
+    public HttpComponentTrace(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentTypeParameter, String componentName, String componentDescription, Long componentVersion, String connectionName, String type, String endpoint, List<HttpComponentHeaderTrace> httpComponentHeaderTrace, List<HttpComponentQueryTrace> httpComponentQueries) {
         super(metadataKey, runId, processId, actionParameter, componentTypeParameter, componentName, componentDescription, componentVersion);
         this.connectionName = connectionName;
         this.type = type;
         this.endpoint = endpoint;
-        this.httpComponentHeader = httpComponentHeader;
+        this.httpComponentHeaderTrace = httpComponentHeaderTrace;
         this.httpComponentQueries = httpComponentQueries;
     }
 
     private final String connectionName;
     private final String type;
     private final String endpoint;
-    private final List<HttpComponentHeader> httpComponentHeader;
-    private final List<HttpComponentQuery> httpComponentQueries;
+    private final List<HttpComponentHeaderTrace> httpComponentHeaderTrace;
+    private final List<HttpComponentQueryTrace> httpComponentQueries;
 
 }

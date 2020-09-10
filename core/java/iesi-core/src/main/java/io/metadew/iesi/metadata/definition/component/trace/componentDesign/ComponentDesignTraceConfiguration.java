@@ -144,7 +144,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                         "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeaderDesign").getName() +
                                 " (ID, HEADER_DES_ID, NAME, VALUE ) VALUES " +
                                 " ( " +
-                                SQLTools.GetStringForSQL(httpComponentHeaderTrace.getId()) + ", " +
+                                SQLTools.GetStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentHeaderTrace.getHttpComponentDesignID().getUuid().toString()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentHeaderTrace.getName()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentHeaderTrace.getValue()) + ") ")
@@ -155,7 +155,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                         "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQueryDesign").getName() +
                                 " (ID, QUERY_DES_ID,  NAME, VALUE )  VALUES " +
                                 " ( " +
-                                SQLTools.GetStringForSQL(httpComponentQueryTrace.getId().toString()) + ", " +
+                                SQLTools.GetStringForSQL(httpComponentQueryTrace.getMetadataKey().getUuid().toString()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentQueryTrace.getHttpComponentQueryDesignID().getUuid().toString()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentQueryTrace.getName()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentQueryTrace.getValue()) + ") "));
@@ -194,9 +194,9 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
         if (mapHttpComponentHeaderDesignsId != null) {
             componentDesignTraceBuilder.getHttpComponentHeaderDesigns().put(
                     mapHttpComponentHeaderDesignsId,
-                    new HttpComponentHeaderDesign(
-                            UUID.fromString(mapHttpComponentHeaderDesignsId),
-                            new HttpComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeaderDesign_HEADER_DES_ID"))),
+                    new HttpComponentHeaderDesignTrace(
+                            new HttpComponentHeaderDesignTraceKey(UUID.fromString(mapHttpComponentHeaderDesignsId)),
+                            new ComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeaderDesign_HEADER_DES_ID"))),
                             cachedRowSet.getString("TraceHttpComponentHeaderDesign_NAME"),
                             cachedRowSet.getString("TraceHttpComponentHeaderDesign_VALUE")
                     )
@@ -209,9 +209,9 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
         if (httpComponentDesignQueryId != null) {
             componentDesignTraceBuilder.getHttpComponentQueryDesigns().put(
                     httpComponentDesignQueryId,
-                    new HttpComponentQueryDesign(
-                            UUID.fromString(httpComponentDesignQueryId),
-                            new HttpComponentQueryDesignKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQueryDesign_QUERY_DES_ID"))),
+                    new HttpComponentQueryParameterDesignTrace(
+                        new HttpComponentQueryParameterDesignTraceKey(UUID.fromString(httpComponentDesignQueryId)),
+                            new ComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQueryDesign_QUERY_DES_ID"))),
                             cachedRowSet.getString("TraceHttpComponentQueryDesign_NAME"),
                             cachedRowSet.getString("TraceHttpComponentQueryDesign_VALUE")
                     )
@@ -240,13 +240,13 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
         private final String connectionName;
         private final String type;
         private final String endpoint;
-        private Map<String, HttpComponentHeaderDesign> httpComponentHeaderDesigns;
-        private Map<String, HttpComponentQueryDesign> httpComponentQueryDesigns;
+        private Map<String, HttpComponentHeaderDesignTrace> httpComponentHeaderDesigns;
+        private Map<String, HttpComponentQueryParameterDesignTrace> httpComponentQueryDesigns;
 
         public ComponentHttpDesignTraceBuilder(ComponentDesignTraceKey metadataKey, String runId,
                                                Long processId, String actionParameter, String componentTypeParameter,
                                                String componentName, String componentDescription, Long componentVersion, String connectionName, String type, String endpoint,
-                                               Map<String, HttpComponentHeaderDesign> httpComponentHeaderDesigns, Map<String, HttpComponentQueryDesign> httpComponentQueryDesigns) {
+                                               Map<String, HttpComponentHeaderDesignTrace> httpComponentHeaderDesigns, Map<String, HttpComponentQueryParameterDesignTrace> httpComponentQueryDesigns) {
             super(metadataKey, runId, processId, actionParameter, componentTypeParameter, componentName, componentDescription, componentVersion);
             this.connectionName = connectionName;
             this.type = type;

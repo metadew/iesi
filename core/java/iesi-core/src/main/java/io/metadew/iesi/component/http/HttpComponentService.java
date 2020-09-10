@@ -10,13 +10,12 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.component.trace.componentTrace.*;
+import io.metadew.iesi.metadata.definition.component.trace.componentTrace.ComponentTraceConfiguration;
 import io.metadew.iesi.script.execution.ActionExecution;
 import org.apache.http.entity.ContentType;
 
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class HttpComponentService implements IHttpComponentService {
@@ -75,26 +74,6 @@ public class HttpComponentService implements IHttpComponentService {
                 httpComponent.getEndpoint();
     }
 
-    public HttpComponentHeader convertHeaders(HttpHeader httpHeader, UUID id) {
-        UUID uuid = UUID.randomUUID();
-        return new HttpComponentHeader(
-                uuid,
-                new HttpComponentHeaderKey(id),
-                httpHeader.getName(),
-                httpHeader.getValue()
-        );
-    }
-
-    public HttpComponentQuery convertQueries(HttpQueryParameter httpQueryParameter, UUID id) {
-        UUID uuid = UUID.randomUUID();
-        return new HttpComponentQuery(
-                uuid,
-                new HttpComponentQueryKey(id),
-                httpQueryParameter.getName(),
-                httpQueryParameter.getValue()
-        );
-    }
-
     @Override
     public HttpComponent convert(HttpComponentDefinition httpComponentDefinition,
                                  ActionExecution actionExecution, String actionParameterName) {
@@ -114,27 +93,9 @@ public class HttpComponentService implements IHttpComponentService {
                         .collect(Collectors.toList())
         );
 
+        HttpComponentTraceService httpComponentTraceService = new HttpComponentTraceService();
 
-        UUID uuid = UUID.randomUUID();
-        HttpComponentTrace httpComponentTrace = new HttpComponentTrace(
-                new ComponentTraceKey(uuid),
-                actionExecution.getExecutionControl().getRunId(),
-                actionExecution.getExecutionControl().getProcessId(),
-                actionParameterName,
-                COMPONENT_TYPE,
-                httpComponent.getReferenceName(),
-                httpComponent.getDescription(),
-                httpComponent.getVersion(),
-                httpComponent.getHttpConnection().getReferenceName(),
-                httpComponent.getType(),
-                httpComponent.getEndpoint(),
-                httpComponent.getHeaders().stream().map(header -> convertHeaders(header, uuid))
-                        .collect(Collectors.toList()),
-                httpComponent.getQueryParameters().stream().map(queries -> convertQueries(queries, uuid))
-                        .collect(Collectors.toList())
-        );
-
-        ComponentTraceConfiguration.getInstance().insert(httpComponentTrace);
+        ComponentTraceConfiguration.getInstance().insert(httpComponentTraceService.convert(httpComponent, actionExecution, actionParameterName, COMPONENT_TYPE));
 
         return httpComponent;
     }

@@ -2,10 +2,9 @@ package io.metadew.iesi.component.http;
 
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.metadata.definition.component.trace.componentDesign.*;
+import io.metadew.iesi.metadata.definition.component.trace.componentDesign.ComponentDesignTraceConfiguration;
 import io.metadew.iesi.script.execution.ActionExecution;
 
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class HttpComponentDefinitionService implements IHttpComponentDefinitionService {
@@ -25,26 +24,6 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
     }
 
     private HttpComponentDefinitionService() {
-    }
-
-    public HttpComponentHeaderDesign convertHeaders(HttpHeaderDefinition httpHeaderDefinition, UUID id) {
-        UUID uuid = UUID.randomUUID();
-        return new HttpComponentHeaderDesign(
-                uuid,
-                new HttpComponentDesignTraceKey(id),
-                httpHeaderDefinition.getName(),
-                httpHeaderDefinition.getValue()
-        );
-    }
-
-    public HttpComponentQueryDesign convertQueries(HttpQueryParameterDefinition httpQueryParameterDefinition, UUID id) {
-        UUID uuid = UUID.randomUUID();
-        return new HttpComponentQueryDesign(
-                uuid,
-                new HttpComponentQueryDesignKey(id),
-                httpQueryParameterDefinition.getName(),
-                httpQueryParameterDefinition.getValue()
-        );
     }
 
     public HttpComponentDefinition convert(Component component, ActionExecution actionExecution, String actionParameterName) {
@@ -82,23 +61,9 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .map(componentParameterValue -> HttpQueryParameterDefinitionService.getInstance().convert(componentParameterValue))
                         .collect(Collectors.toList())
         );
-        UUID uuid = UUID.randomUUID();
-        HttpComponentDesignTrace httpComponentDesignTrace = new HttpComponentDesignTrace(
-                new ComponentDesignTraceKey(uuid),
-                actionExecution.getExecutionControl().getRunId(),
-                actionExecution.getExecutionControl().getProcessId(),
-                actionParameterName,
-                COMPONENT_TYPE,
-                httpComponentDefinition.getReferenceName(),
-                httpComponentDefinition.getDescription(),
-                httpComponentDefinition.getVersion(),
-                httpComponentDefinition.getHttpConnectionReferenceName(),
-                httpComponentDefinition.getType(),
-                httpComponentDefinition.getEndpoint(),
-                httpComponentDefinition.getHeaders().stream().map(headers -> convertHeaders(headers, uuid)).collect(Collectors.toList()),
-                httpComponentDefinition.getQueryParameters().stream().map(queries -> convertQueries(queries, uuid)).collect(Collectors.toList())
-        );
-        ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace);
+        HttpComponentDesignTraceService httpComponentDesignTraceService = new HttpComponentDesignTraceService();
+
+        ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTraceService.convert(httpComponentDefinition, actionExecution, actionParameterName, COMPONENT_TYPE));
 
         return httpComponentDefinition;
     }

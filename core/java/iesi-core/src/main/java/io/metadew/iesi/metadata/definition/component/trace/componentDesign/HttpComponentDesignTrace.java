@@ -11,7 +11,7 @@ public class HttpComponentDesignTrace extends ComponentDesignTrace {
     @Builder
     public HttpComponentDesignTrace(ComponentDesignTraceKey metadataKey, String runId, Long processId,
                                     String actionParameter, String componentTypeParameter, String componentName, String componentDescription,
-                                    Long componentVersion, String connectionName, String type, String endpoint, List<HttpComponentHeaderDesign> httpComponentHeaderDesigns, List<HttpComponentQueryDesign> httpComponentQueryDesigns) {
+                                    Long componentVersion, String connectionName, String type, String endpoint, List<HttpComponentHeaderDesignTrace> httpComponentHeaderDesigns, List<HttpComponentQueryParameterDesignTrace> httpComponentQueryDesigns) {
         super(metadataKey, runId, processId, actionParameter, componentTypeParameter, componentName, componentDescription, componentVersion);
         this.connectionName = connectionName;
         this.type = type;
@@ -24,7 +24,7 @@ public class HttpComponentDesignTrace extends ComponentDesignTrace {
     private final String type;
     private final String endpoint;
 
-    private List<HttpComponentHeaderDesign> httpComponentHeaderDesigns;
-    private List<HttpComponentQueryDesign> httpComponentQueryDesigns;
+    private List<HttpComponentHeaderDesignTrace> httpComponentHeaderDesigns;
+    private List<HttpComponentQueryParameterDesignTrace> httpComponentQueryDesigns;
 
 }

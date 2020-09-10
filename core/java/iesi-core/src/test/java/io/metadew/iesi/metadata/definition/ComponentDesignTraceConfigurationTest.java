@@ -45,24 +45,24 @@ public class ComponentDesignTraceConfigurationTest {
         ComponentDesignTraceKey componetKey = ComponentDesignTraceKey.builder().uuid(componentUuid)
                 .build();
 
-        List<HttpComponentHeaderDesign> httpComponentHeaderDesigns = new ArrayList<>();
-        HttpComponentDesignTraceKey httpComponentDesignTraceKey = HttpComponentDesignTraceKey.builder().uuid(componentUuid)
+        List<HttpComponentHeaderDesignTrace> httpComponentHeaderDesigns = new ArrayList<>();
+        ComponentDesignTraceKey httpComponentHeaderDesignTraceKey = ComponentDesignTraceKey.builder().uuid(componentUuid)
                 .build();
 
-        HttpComponentHeaderDesign httpComponentHeaderDesigns1 = HttpComponentHeaderDesign.builder()
-                .id(uuid)
-                .httpComponentDesignID(httpComponentDesignTraceKey)
+        HttpComponentHeaderDesignTrace httpComponentHeaderDesigns1 = HttpComponentHeaderDesignTrace.builder()
+                .metadataKey(new HttpComponentHeaderDesignTraceKey(uuid))
+                .httpComponentDesignID(httpComponentHeaderDesignTraceKey)
                 .name("test")
                 .value("test").build();
         httpComponentHeaderDesigns.add(httpComponentHeaderDesigns1);
 
-        HttpComponentQueryDesignKey httpComponentQueryDesignKey = HttpComponentQueryDesignKey.builder().uuid(componentUuid)
+        ComponentDesignTraceKey httpComponentQueryParameterDesignTraceKey = ComponentDesignTraceKey.builder().uuid(componentUuid)
                 .build();
-        List<HttpComponentQueryDesign> httpComponentQueryDesigns = new ArrayList<>();
+        List<HttpComponentQueryParameterDesignTrace> httpComponentQueryDesigns = new ArrayList<>();
         UUID uuid0 = UUID.randomUUID();
-        HttpComponentQueryDesign httpComponentQueryDesign1 = HttpComponentQueryDesign.builder()
-                .id(uuid0)
-                .httpComponentQueryDesignID(httpComponentQueryDesignKey).name("test")
+        HttpComponentQueryParameterDesignTrace httpComponentQueryDesign1 = HttpComponentQueryParameterDesignTrace.builder()
+                .metadaKey(new HttpComponentQueryParameterDesignTraceKey(uuid0))
+                .httpComponentQueryDesignID(httpComponentQueryParameterDesignTraceKey).name("test")
                 .value("test").build();
         httpComponentQueryDesigns.add(httpComponentQueryDesign1);
 
@@ -86,33 +86,33 @@ public class ComponentDesignTraceConfigurationTest {
         ComponentDesignTraceKey componentKey2 = ComponentDesignTraceKey.builder().uuid(componentUuid2)
                 .build();
         UUID uuid01 = UUID.randomUUID();
-        List<HttpComponentHeaderDesign> httpComponentHeaderDesigns2 = new ArrayList<>();
-        HttpComponentDesignTraceKey httpComponentDesignTraceKey2 = HttpComponentDesignTraceKey.builder().uuid(componentUuid2)
+        List<HttpComponentHeaderDesignTrace> httpComponentHeaderDesigns2 = new ArrayList<>();
+        ComponentDesignTraceKey httpComponentHeaderDesignTraceKey2 = ComponentDesignTraceKey.builder().uuid(componentUuid2)
                 .build();
-        HttpComponentHeaderDesign httpComponentHeaderDesigns3 = HttpComponentHeaderDesign.builder()
-                .id(uuid01)
-                .httpComponentDesignID(httpComponentDesignTraceKey2)
+        HttpComponentHeaderDesignTrace httpComponentHeaderDesigns3 = HttpComponentHeaderDesignTrace.builder()
+                .metadataKey(new HttpComponentHeaderDesignTraceKey(uuid01))
+                .httpComponentDesignID(httpComponentHeaderDesignTraceKey2)
                 .name("test")
                 .value("test").build();
         httpComponentHeaderDesigns2.add(httpComponentHeaderDesigns3);
 
-        HttpComponentQueryDesignKey httpComponentQueryDesignKey2 = HttpComponentQueryDesignKey.builder().uuid(componentUuid2)
+        ComponentDesignTraceKey httpComponentQueryParameterDesignTraceKey2 = ComponentDesignTraceKey.builder().uuid(componentUuid2)
                 .build();
-        List<HttpComponentQueryDesign> httpComponentQueryDesigns2 = new ArrayList<>();
+        List<HttpComponentQueryParameterDesignTrace> httpComponentQueryDesigns2 = new ArrayList<>();
 
         UUID uuid1 = UUID.randomUUID();
 
-        HttpComponentQueryDesign httpComponentQueryDesign3 = HttpComponentQueryDesign.builder()
-                .id(uuid1)
-                .httpComponentQueryDesignID(httpComponentQueryDesignKey2)
+        HttpComponentQueryParameterDesignTrace httpComponentQueryDesign3 = HttpComponentQueryParameterDesignTrace.builder()
+                .metadaKey(new HttpComponentQueryParameterDesignTraceKey(uuid1))
+                .httpComponentQueryDesignID(httpComponentQueryParameterDesignTraceKey2)
                 .name("test2")
                 .value("test2").build();
 
         UUID uuid2 = UUID.randomUUID();
 
-        HttpComponentQueryDesign httpComponentQueryDesign4 = HttpComponentQueryDesign.builder()
-                .id(uuid2)
-                .httpComponentQueryDesignID(httpComponentQueryDesignKey2).name("test4")
+        HttpComponentQueryParameterDesignTrace httpComponentQueryDesign4 = HttpComponentQueryParameterDesignTrace.builder()
+                .metadaKey(new HttpComponentQueryParameterDesignTraceKey(uuid2))
+                .httpComponentQueryDesignID(httpComponentQueryParameterDesignTraceKey2).name("test4")
                 .value("test4").build();
         httpComponentQueryDesigns2.add(httpComponentQueryDesign3);
         httpComponentQueryDesigns2.add(httpComponentQueryDesign4);
@@ -132,7 +132,7 @@ public class ComponentDesignTraceConfigurationTest {
                 .httpComponentHeaderDesigns(httpComponentHeaderDesigns2)
                 .httpComponentQueryDesigns(httpComponentQueryDesigns2)
                 .build();
-    };
+    }
 
     @Test
     void testGetAllEmpty() {

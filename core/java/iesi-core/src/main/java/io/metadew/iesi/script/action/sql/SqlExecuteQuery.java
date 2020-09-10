@@ -117,9 +117,14 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         String outputDatasetReferenceName = convertDatasetReferenceName(getSqlQuery().getValue());
         boolean appendOutput = convertAppendOutput(getConnectionName().getValue());
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance()
-                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+        Connection connection;
+        try {
+            connection = ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                    .get();
+        } catch (Exception e) {
+            throw new RuntimeException("Unknown connection name");
+        }
 
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
         if (database == null) {

@@ -116,11 +116,21 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         boolean setRuntimeVariables = converSetRuntimeVariable(getSetRuntimeVariables().getValue());
         int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
         int waitInterval = convertWaitInterval(getWaitInterval().getValue());
-        Connection connection = ConnectionConfiguration.getInstance()
-                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+
+        Connection connection;
+        try {
+            connection = ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                    .get();
+        } catch (Exception e) {
+            throw new RuntimeException("Unknown connection name");
+        }
+
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        if (database == null) {
+            throw new RuntimeException("Error establishing DB connection");
+        }
 
         // Run the action
         int i = 1;

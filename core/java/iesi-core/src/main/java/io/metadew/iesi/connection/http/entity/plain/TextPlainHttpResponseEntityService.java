@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.dataset.DatasetHandler;
 import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.Consts;
@@ -55,6 +56,17 @@ public class TextPlainHttpResponseEntityService implements IHttpResponseEntitySe
     public List<String> appliesToContentTypes() {
         return Stream.of(ContentType.TEXT_PLAIN.getMimeType())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void outputResponse(HttpResponse httpResponse, ActionControl actionControl) {
+        httpResponse.getEntityContent().ifPresent(s -> {
+            Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
+                    .map(contentType -> Optional.ofNullable(contentType.getCharset())
+                            .orElse(Consts.UTF_8))
+                    .orElse(Consts.UTF_8);
+            actionControl.logOutput("response.body", new String(s, charset));
+        });
     }
 
 }

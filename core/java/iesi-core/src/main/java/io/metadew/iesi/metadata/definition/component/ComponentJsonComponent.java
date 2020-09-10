@@ -66,7 +66,7 @@ public class ComponentJsonComponent {
 
             // component attributes
             List<ComponentAttribute> componentAttributes = new ArrayList<>();
-            for (JsonNode componentAttributeNode : node.get(Field.ATTRIBUTES_KEY.value())){
+            for (JsonNode componentAttributeNode : node.get(Field.ATTRIBUTES_KEY.value())) {
                 componentAttributes.add(new ComponentAttribute(
                         new ComponentAttributeKey(
                                 new ComponentKey(componentId, versionNumber),

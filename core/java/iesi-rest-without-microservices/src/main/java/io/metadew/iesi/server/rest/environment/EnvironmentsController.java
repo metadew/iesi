@@ -61,9 +61,8 @@ public class EnvironmentsController {
                 .orElseThrow(() -> new MetadataDoesNotExistException(new EnvironmentKey(name)));
     }
 
-    //
     @PostMapping("")
-    public EnvironmentDto post(@Valid @RequestBody EnvironmentDto environment) throws MetadataAlreadyExistsException {
+    public EnvironmentDto post(@RequestBody EnvironmentDto environment) throws MetadataAlreadyExistsException {
         environmentService.createEnvironment(environment);
         return environmentDtoResourceAssembler.toModel(environment.convertToEntity());
     }

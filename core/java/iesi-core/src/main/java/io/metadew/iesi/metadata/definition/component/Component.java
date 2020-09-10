@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -25,6 +26,7 @@ public class Component extends Metadata<ComponentKey> {
     private List<ComponentParameter> parameters = new ArrayList<>();
     private List<ComponentAttribute> attributes = new ArrayList<>();
 
+    @Builder
     public Component(ComponentKey componentKey, String type, String name, String description, ComponentVersion version,
                      List<ComponentParameter> parameters, List<ComponentAttribute> attributes) {
         super(componentKey);

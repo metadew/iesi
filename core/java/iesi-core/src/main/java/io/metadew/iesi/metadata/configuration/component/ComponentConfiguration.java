@@ -47,7 +47,44 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         ComponentAttributeConfiguration.getInstance().init(metadataRepository);
     }
 
-    @Override
+    public Optional<Component> getByNameAndVersion(String name, Long version) {
+        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
+                + getMetadataRepository().getTableNameByLabel("Components")
+                + " where COMP_NM = " + SQLTools.GetStringForSQL(name);
+        CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
+        try {
+            if (crsComponent.size() == 0) {
+                return Optional.empty();
+            } else if (crsComponent.size() > 1) {
+                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}. Returning first implementation.", name));
+            }
+            crsComponent.next();
+            ComponentKey componentKey = new ComponentKey(crsComponent.getString("COMP_ID"), version);
+            // get version
+            Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().get(new ComponentVersionKey(componentKey));
+            if (!componentVersion.isPresent()) {
+                return Optional.empty();
+            }
+
+            List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
+            List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
+
+            String componentType = crsComponent.getString("COMP_TYP_NM");
+            String componentDescription = crsComponent.getString("COMP_DSC");
+            String componentName = crsComponent.getString("COMP_NM");
+            crsComponent.close();
+            return Optional.of(new Component(componentKey,
+                    componentType,
+                    componentName,
+                    componentDescription,
+                    componentVersion.get(),
+                    componentParameters,
+                    componentAttributes));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Optional<Component> get(ComponentKey componentKey) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
                 + getMetadataRepository().getTableNameByLabel("Components")

@@ -22,13 +22,13 @@ exclude=""
 
 #Script settings
 iesi_version=0.5.0
-branch_input="develop"
-branch=$(echo $branch_input | sed -e 's/\//./g')
+branch="develop"
+branch_folder=$(echo $branch | sed -e 's/\//./g')
 current_dir=$(pwd)
 script_dir=`dirname $0`
 build_dir=${current_dir}
 source_dir=${build_dir}/source
-branch_dir=${source_dir}/${branch}
+branch_dir=${source_dir}/${branch_folder}
 repo_dir=${branch_dir}/iesi
 
 
@@ -199,7 +199,7 @@ fi
 if [ "$iesi_distribution" -eq 1 ]; then
   echo
   echo "*****    Creating distribution        *****"
-  mkdir -p ${build_dir}/workspace/dist/${branch}
+  mkdir -p ${build_dir}/workspace/dist/${branch_folder}
   
   #Generate uuid
   uuid=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
@@ -207,17 +207,17 @@ if [ "$iesi_distribution" -eq 1 ]; then
   uuid=${uuid,,}
   
   #copy sources
-  rm -rf ${build_dir}/workspace/dist/${branch}/${uuid}
-  mkdir -p ${build_dir}/workspace/dist/${branch}/${uuid}/iesi
-  rsync -ax ${build_dir}/workspace/${iesi_version}/build/. ${build_dir}/workspace/dist/${branch}/${uuid}/iesi/
+  rm -rf ${build_dir}/workspace/dist/${branch_folder}/${uuid}
+  mkdir -p ${build_dir}/workspace/dist/${branch_folder}/${uuid}/iesi
+  rsync -ax ${build_dir}/workspace/${iesi_version}/build/. ${build_dir}/workspace/dist/${branch_folder}/${uuid}/iesi/
   
-  cd ${build_dir}/workspace/dist/${branch}/${uuid}
+  cd ${build_dir}/workspace/dist/${branch_folder}/${uuid}
   now=$(date +"%Y%m%d%H%M%S%N")
-  tar -zcf ${build_dir}/workspace/dist/${branch}/iesi-dist-${now}.tar.gz .
+  tar -zcf ${build_dir}/workspace/dist/${branch_folder}/iesi-dist-${now}.tar.gz .
   cd ${current_dir}
   
   #cleanup
-  rm -rf ${build_dir}/workspace/dist/${branch}/${uuid}
+  rm -rf ${build_dir}/workspace/dist/${branch_folder}/${uuid}
 else
   echo "Skipping, distribution creation"
 fi

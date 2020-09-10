@@ -10,8 +10,9 @@ This page describes how to install IESI on the Google Cloud Platform (GCP) and w
 
 |Versions|Ideal for|
 |---|---|
-|Mark1|Proof Of Concept,Small project|
-|Mark2|Medium to Large project,|
+|[Mark1](/{{site.repository}}/pages/deploy/gcp/mark1.html)|Proof Of Concept,Small project|
+|[Mark2](/{{site.repository}}/pages/deploy/gcp/mark2.html)|Medium to Large project,|
+
 
 ### Mark1
 

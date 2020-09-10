@@ -2,6 +2,8 @@
 
 This configuration will perform a Mark2 deployment using Terraform.
 
+You can find all relevant assets at the following location: ```deploy/gcp/mark2```
+
 ## General prerequisites
 * Make sure that Terraform is up-and-running, if not have a look [here](https://learn.hashicorp.com/terraform/gcp/intro)
 * Select a project to deploy to. If none exists, create a new project.

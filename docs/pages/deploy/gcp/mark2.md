@@ -15,7 +15,6 @@ You can find all relevant assets at the following location: ```deploy/gcp/mark2`
 You can find more information on the above three steps [here](https://learn.hashicorp.com/terraform/gcp/build).
 
 ## Template prerequisites
-* Select a network to use. Feel free to create a new one depending on your needs.
 * The iesi-instance will be created with the option `os login` enabled. Click [here](https://cloud.google.com/compute/docs/oslogin) to learn more.
 
 ## Getting started

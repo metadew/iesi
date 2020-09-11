@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection;
 
 import com.zaxxer.hikari.HikariConfig;
+import io.metadew.iesi.connection.database.bigquery.BigqueryDatabaseConnectionService;
 import io.metadew.iesi.connection.database.db2.Db2DatabaseConnectionService;
 import io.metadew.iesi.connection.database.dremio.DremioDatabaseConnectionService;
 import io.metadew.iesi.connection.database.drill.DrillDatabaseConnectionService;
@@ -41,6 +42,7 @@ public class DatabaseConnectionHandler implements IDatabaseConnectionHandler {
 
     private DatabaseConnectionHandler() {
         databaseConnectionServiceMap = new HashMap<>();
+        databaseConnectionServiceMap.put(BigqueryDatabaseConnectionService.getInstance().appliesTo(), BigqueryDatabaseConnectionService.getInstance());
         databaseConnectionServiceMap.put(Db2DatabaseConnectionService.getInstance().appliesTo(), Db2DatabaseConnectionService.getInstance());
         databaseConnectionServiceMap.put(DremioDatabaseConnectionService.getInstance().appliesTo(), DremioDatabaseConnectionService.getInstance());
         databaseConnectionServiceMap.put(DrillDatabaseConnectionService.getInstance().appliesTo(), DrillDatabaseConnectionService.getInstance());

@@ -13,6 +13,5 @@ export GOOGLE_APPLICATION_CREDENTIALS="${script_dir}/service-account.json"
 export tf_state_bucket=
 export tf_state_path=path/terraform.tfstate
 export tf_target_project=
-export tf_target_network=
 export tf_target_region=
 export tf_target_zone=

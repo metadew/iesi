@@ -18,3 +18,8 @@ variable "private_network" {
   description = "The private network to deploy to"
   type    = string
 }
+
+variable "database_version" {
+  description = "The database version to use"
+  type    = string
+}

@@ -29,12 +29,13 @@ resource "google_sql_database_instance" "instance" {
   project = var.project
   region = var.region
   #database_version = "MYSQL_5_7"
-  database_version = "POSTGRES_12"
+  #database_version = "POSTGRES_12"
+  database_version = var.database_version
   
   settings {
     tier                        = "db-f1-micro"
     ip_configuration {
-      ipv4_enabled    = true
+      ipv4_enabled    = false
       private_network = var.private_network
     }
     maintenance_window {

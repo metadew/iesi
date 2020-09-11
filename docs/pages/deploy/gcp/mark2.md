@@ -20,12 +20,14 @@ You can find more information on the above three steps [here](https://learn.hash
 
 ## Getting started
 * Complete the parameters in the `setenv.sh` file and source it
+* Complete parameters in the `terraform.tfvars` file that can be persisted on disk
 * Run the following commands with the ```tf-launch.sh``` script
 
 ```
 ./tf-launch.sh init
 ./tf-launch.sh apply
 ./tf-launch.sh destroy
+./tf-launch.sh cleanup
 ```
 
 And you are ready to go! Check it out in the console!
@@ -40,13 +42,9 @@ And you are ready to go! Check it out in the console!
 * google_compute_instance -> empty instance
   * google_compute_address -> static IP address
   * google_compute_firewall -> SSH access
-* google_sql_database_instance
+* google_sql_database_instance -> only using private ip
   * google_sql_database
   * google_sql_user -> admin user
 
 ## Important attention points
-* Mark2 makes use of private VPC peering. This is incorrectly destroyed by Terraform and will require a manual action in the console before or after running the destruction.
-
-## Open points
-* Review variables and input, split between setenv.sh and terraform.tfvars
-* Remove the public IP for the CloudSQL instance
+* Mark2 makes use of private VPC peering in a custom VPC network. While Terraform successfully creates and updates resources, it has issues correctly destroying all resources. You will need to manually delete internal VPC peering and the network itself from the console or using the appropriate gcloud commands.

@@ -8,11 +8,6 @@ variable "project" {
   type    = string
 }
 
-variable "network" {
-  description = "The network to deploy to"
-  type    = string
-}
-
 variable "region" {
   description = "The region to deploy to"
   type    = string
@@ -20,5 +15,10 @@ variable "region" {
 
 variable "zone" {
   description = "The zone to deploy to"
+  type    = string
+}
+
+variable "database_version" {
+  description = "The database version to use"
   type    = string
 }

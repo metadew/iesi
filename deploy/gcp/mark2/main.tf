@@ -18,9 +18,8 @@ resource "random_id" "name" {
 }
 
 locals {
-  # If name_override is specified, use that - otherwise use the name_prefix with a random string
   private_network_name = "iesi-private-network-${random_id.name.hex}"
-  private_ip_name      = "private-ip-${random_id.name.hex}"
+  private_ip_name      = "iesi-private-ip-${random_id.name.hex}"
 }
 
 # ------------------------------------------------------------------------------
@@ -41,6 +40,8 @@ resource "google_compute_subnetwork" "private_network_subnet" {
   ip_cidr_range = "10.2.0.0/16"
   region        = var.region
   network       = google_compute_network.private_network.id
+  
+  depends_on = [google_compute_network.private_network]
 }
 
 # Reserve global internal address range for the peering
@@ -50,6 +51,8 @@ resource "google_compute_global_address" "private_ip_address" {
   address_type  = "INTERNAL"
   prefix_length = 16
   network       = google_compute_network.private_network.self_link
+  
+  depends_on = [google_compute_network.private_network]
 }
 
 # Establish VPC network peering connection using the reserved address range
@@ -57,6 +60,8 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = google_compute_network.private_network.self_link
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+  
+  depends_on = [google_compute_network.private_network]
 }
 
 
@@ -64,7 +69,7 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 # CREATE INSTANCE
 # ------------------------------------------------------------------------------
 
-module "instance" {
+module "iesi-instance" {
   source = "./instance"
   network=google_compute_network.private_network.self_link
   subnetwork = google_compute_subnetwork.private_network_subnet.self_link
@@ -78,10 +83,10 @@ module "instance" {
 # ------------------------------------------------------------------------------
 
 
-module "firewall-rule" {
+module "iesi-instance-ssh-firewall-rule" {
   source= "./firewall-rule"
-  name = "ssh-rule"
-  description = "ssh-rule"
+  name = "iesi-instance-ssh-rule"
+  description = "iesi-instance-ssh-rule"
   network = local.private_network_name
   allow-rule = true
   protocol = "tcp"
@@ -97,11 +102,12 @@ module "firewall-rule" {
 # CREATE METADATA
 # ------------------------------------------------------------------------------
 
-module "metadata" {
+module "iesi-metadata" {
   source = "./metadata"
   project=var.project
   region = var.region
   private_network = google_compute_network.private_network.self_link
+  database_version = var.database_version
   
   # Wait for the vpc connection to complete
   dependencies = [google_service_networking_connection.private_vpc_connection.network]

@@ -1,5 +1,5 @@
 #!/bin/bash
-parameters="-var="credentials_file=${GOOGLE_APPLICATION_CREDENTIALS}" -var="project=${tf_target_project}" -var="network=${tf_target_network}" -var="region=${tf_target_region}" -var="zone=${tf_target_zone}""
+parameters="-var="credentials_file=${GOOGLE_APPLICATION_CREDENTIALS}" -var="project=${tf_target_project}" -var="region=${tf_target_region}" -var="zone=${tf_target_zone}""
 
 case $1 in
 "init")

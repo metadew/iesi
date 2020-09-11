@@ -6,7 +6,7 @@ resource "null_resource" "dependency_getter" {
 
 resource "google_compute_address" "vm_static_ip" {
   depends_on = [null_resource.dependency_getter]
-  name = "iesi-static-ip"
+  name = "iesi-instance-static-ip"
 }
 
 resource "google_compute_instance" "vm_instance" {

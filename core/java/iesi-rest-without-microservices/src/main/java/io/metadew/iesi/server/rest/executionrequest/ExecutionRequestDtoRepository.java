@@ -127,18 +127,18 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
     private String getWhereClause(List<ExecutionRequestFilter> executionRequestFilters) {
         String filterStatements = executionRequestFilters.stream().map(executionRequestFilter -> {
                     if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.NAME)) {
-                        return " name_script_execution_requests.SCRPT_NAME " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + (executionRequestFilter.isExactMatch() ? "" : "%") + ":script_name" + (executionRequestFilter.isExactMatch() ? "" : "%") + " ";
+                        return " name_script_execution_requests.SCRPT_NAME " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE ") + ":script_name ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.VERSION)) {
                         return " name_script_execution_requests.SCRPT_VRS = :script_version ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.ENVIRONMENT)) {
-                        return " script_execution_requests.ENVIRONMENT " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " " + (executionRequestFilter.isExactMatch() ? "" : "%") + ":environment" + (executionRequestFilter.isExactMatch() ? "" : "%") + " ";
+                        return " script_execution_requests.ENVIRONMENT " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE ") + ":environment ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.ID)) {
-                        return " execution_requests.REQUEST_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " " + (executionRequestFilter.isExactMatch() ? "" : "%") + ":request_id" + (executionRequestFilter.isExactMatch() ? "" : "%") + " ";
+                        return " execution_requests.REQUEST_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE ") + ":request_id ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.IDS)) {
                         return " execution_requests.REQUEST_IDS in (:request_ids) ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.LABEL)) {
-                        return " execution_request_labels.NAME = " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " " + (executionRequestFilter.isExactMatch() ? "" : "%") + ":label_key" + (executionRequestFilter.isExactMatch() ? "" : "%") +
-                                " and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " " + (executionRequestFilter.isExactMatch() ? "" : "%") + ":label_name" + (executionRequestFilter.isExactMatch() ? "" : "%") + " ";
+                        return " execution_request_labels.NAME " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE ") + ":label_key" +
+                                " and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE ") + ":label_name ";
                     } else {
                         return null;
                     }

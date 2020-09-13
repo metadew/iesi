@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @Relation(value = "execution_request", collectionRelation = "execution_requests")
 public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto> {
 
+    @Id
     private String executionRequestId;
     private LocalDateTime requestTimestamp;
     private String name;

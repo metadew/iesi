@@ -2,7 +2,7 @@ package io.metadew.iesi.common.configuration.publisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.connection.Publisher;
+import io.metadew.iesi.connection.publisher.Publisher;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 

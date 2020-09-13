@@ -1,7 +1,6 @@
-package io.metadew.iesi.connection;
+package io.metadew.iesi.connection.publisher;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.metadew.iesi.common.configuration.publisher.PublisherConfiguration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 
 import java.util.concurrent.ExecutionException;

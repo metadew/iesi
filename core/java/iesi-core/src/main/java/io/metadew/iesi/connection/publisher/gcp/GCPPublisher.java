@@ -1,4 +1,4 @@
-package io.metadew.iesi.connection.gcp;
+package io.metadew.iesi.connection.publisher.gcp;
 
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.pubsub.v1.TopicName;
@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.IOException;
 
 @Data
-public class GCPPublisher implements io.metadew.iesi.connection.Publisher {
+public class GCPPublisher implements io.metadew.iesi.connection.publisher.Publisher {
 
     private final Publisher publisher;
 

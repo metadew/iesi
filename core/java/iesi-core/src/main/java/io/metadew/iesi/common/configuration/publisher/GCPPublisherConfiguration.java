@@ -1,7 +1,7 @@
 package io.metadew.iesi.common.configuration.publisher;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.metadew.iesi.connection.gcp.GCPPublisher;
+import io.metadew.iesi.connection.publisher.gcp.GCPPublisher;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -2,8 +2,8 @@ package io.metadew.iesi.common;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.publisher.PublishersConfiguration;
-import io.metadew.iesi.connection.Publisher;
-import io.metadew.iesi.connection.PublisherHandler;
+import io.metadew.iesi.connection.publisher.Publisher;
+import io.metadew.iesi.connection.publisher.PublisherHandler;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
 

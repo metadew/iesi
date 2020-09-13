@@ -1,6 +1,6 @@
-package io.metadew.iesi.connection;
+package io.metadew.iesi.connection.publisher;
 
-import io.metadew.iesi.connection.gcp.GCPIPublisherService;
+import io.metadew.iesi.connection.publisher.gcp.GCPIPublisherService;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 
 import java.util.HashMap;

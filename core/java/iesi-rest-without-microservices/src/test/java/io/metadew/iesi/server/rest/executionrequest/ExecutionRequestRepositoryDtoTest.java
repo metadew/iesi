@@ -21,6 +21,10 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
+import io.metadew.iesi.server.rest.executionrequest.filter.EnvironmentExecutionRequestFilter;
+import io.metadew.iesi.server.rest.executionrequest.filter.LabelExecutionRequestFilter;
+import io.metadew.iesi.server.rest.executionrequest.filter.ScriptNameExecutionRequestFilter;
+import io.metadew.iesi.server.rest.executionrequest.filter.ScriptVersionExecutionRequestFilter;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
@@ -1535,11 +1539,11 @@ class ExecutionRequestRepositoryDtoTest {
 
                 ).collect(Collectors.toList()))
                 .build();
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, "ript", false)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ScriptNameExecutionRequestFilter("ript", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto, executionRequestDto2);
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, "ript1", false)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ScriptNameExecutionRequestFilter("ript1", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto);
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, "ript2", false)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ScriptNameExecutionRequestFilter("ript2", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto2);
     }
 
@@ -1746,9 +1750,9 @@ class ExecutionRequestRepositoryDtoTest {
 
                 ).collect(Collectors.toList()))
                 .build();
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, "1", true)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ScriptVersionExecutionRequestFilter("1", true)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto);
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, "2", true)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ScriptVersionExecutionRequestFilter("2", true)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto2);
     }
 
@@ -1955,9 +1959,9 @@ class ExecutionRequestRepositoryDtoTest {
 
                 ).collect(Collectors.toList()))
                 .build();
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.ENVIRONMENT, "es", false)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new EnvironmentExecutionRequestFilter("es", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto);
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.ENVIRONMENT, "pro", false)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new EnvironmentExecutionRequestFilter("pro", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto2);
     }
 
@@ -2164,11 +2168,11 @@ class ExecutionRequestRepositoryDtoTest {
 
                 ).collect(Collectors.toList()))
                 .build();
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.LABEL, "label2:lue2", false)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new LabelExecutionRequestFilter("label2:lue2", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto, executionRequestDto2);
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.LABEL, "label1:lue1", false)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new LabelExecutionRequestFilter("label1:lue1", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto);
-        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.LABEL, "label3:lue3", false)).collect(Collectors.toList())))
+        assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new LabelExecutionRequestFilter("label3:lue3", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto2);
     }
 

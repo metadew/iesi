@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.filter.ExecutionRequestFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,9 @@ public class ExecutionRequestService implements IExecutionRequestService {
 
     private ExecutionRequestConfiguration executionRequestConfiguration;
 
-    private final ExecutionRequestDtoRepository executionRequestDtoRepository;
+    private final IExecutionRequestDtoRepository executionRequestDtoRepository;
 
-    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration, ExecutionRequestDtoRepository executionRequestDtoRepository) {
+    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration, IExecutionRequestDtoRepository executionRequestDtoRepository) {
         this.executionRequestConfiguration = executionRequestConfiguration;
         this.executionRequestDtoRepository = executionRequestDtoRepository;
     }

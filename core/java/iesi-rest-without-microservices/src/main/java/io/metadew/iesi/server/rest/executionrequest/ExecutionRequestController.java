@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderExce
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
+import io.metadew.iesi.server.rest.executionrequest.filter.*;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.ScriptController;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -64,16 +65,16 @@ public class ExecutionRequestController {
     private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination) {
         List<ExecutionRequestFilter> executionRequestFilters = new ArrayList<>();
         if (name != null) {
-            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, name, false));
+            executionRequestFilters.add(new ScriptNameExecutionRequestFilter(name, false));
         }
         if (labelKeyCombination != null) {
-            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.LABEL, labelKeyCombination, false));
+            executionRequestFilters.add(new LabelExecutionRequestFilter(labelKeyCombination, false));
         }
         if (environment != null) {
-            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.ENVIRONMENT, environment, false));
+            executionRequestFilters.add(new EnvironmentExecutionRequestFilter(environment, false));
         }
         if (version != null) {
-            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, version, true));
+            executionRequestFilters.add(new ScriptVersionExecutionRequestFilter(version, true));
         }
         return executionRequestFilters;
     }

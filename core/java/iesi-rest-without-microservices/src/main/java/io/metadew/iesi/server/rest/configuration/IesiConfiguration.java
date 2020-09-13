@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.configuration;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
@@ -17,11 +18,14 @@ import io.metadew.iesi.metadata.service.user.AuthorityService;
 import io.metadew.iesi.metadata.service.user.GroupService;
 import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 
 @Configuration
@@ -124,6 +128,28 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ExecutionRequestConfiguration executionRequestConfiguration() {
         return ExecutionRequestConfiguration.getInstance();
+    }
+
+    @Bean
+    public DataSource executionDataSource(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+        Database database = metadataRepositoryConfiguration.getExecutionServerMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+        dataSourceBuilder.url(database.getDatabaseConnection().getConnectionURL());
+        dataSourceBuilder.username(database.getDatabaseConnection().getUserName());
+        dataSourceBuilder.password(database.getDatabaseConnection().getUserPassword());
+        return dataSourceBuilder.build();
+    }
+
+    //@Bean
+    //public JdbcTemplate executionJdbcTemplate(@Qualifier("executionDataSource") DataSource executionDataSource) {
+    //    return new JdbcTemplate(executionDataSource);
+    //}
+
+    @Bean
+    NamedParameterJdbcTemplate executionJdbcTemplate(DataSource dataSource) {
+        return new NamedParameterJdbcTemplate(dataSource);
     }
 
 }

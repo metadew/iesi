@@ -24,3 +24,10 @@ management:
 #  basic:
 #    enabled: false
 #  ignored=/**:
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate: trace

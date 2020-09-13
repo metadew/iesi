@@ -20,6 +20,7 @@ public abstract class MetadataRepository {
     @Getter
     private final List<MetadataTable> metadataTables;
 
+    @Getter
     private RepositoryCoordinator repositoryCoordinator;
 
     public MetadataRepository(String instanceName,

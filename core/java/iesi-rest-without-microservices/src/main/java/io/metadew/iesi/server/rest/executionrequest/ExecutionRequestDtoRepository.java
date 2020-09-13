@@ -1,29 +1,24 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
-import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
+import io.metadew.iesi.server.rest.executionrequest.filter.ExecutionRequestFilter;
+import io.metadew.iesi.server.rest.executionrequest.filter.ExecutionRequestFilterOption;
+import io.metadew.iesi.server.rest.executionrequest.filter.IdExecutionRequestFilter;
+import io.metadew.iesi.server.rest.executionrequest.filter.IdsExecutionRequestFilter;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,7 +61,45 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_pars.SCRIPT_EXEC_REQ_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
-                getOrderByClause(pageable) +
+                getOrderByClause(pageable.getSort()) +
+                ";";
+    }
+
+    private String getFetchAllQuery(Sort sort, List<ExecutionRequestFilter> executionRequestFilters) {
+        return "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
+                "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass, " +
+                "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
+                "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
+                "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
+                "file_script_execution_requests.ID as script_exe_req_file_id, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
+                "name_script_execution_requests.ID as script_exe_req_name_id, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
+                "script_execution_request_imps.ID as script_exe_req_imp_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
+                "script_execution_request_pars.ID as script_exe_req_par_id, script_execution_request_pars.NAME as script_exe_req_par_name, script_execution_request_pars.VALUE as script_exe_req_par_val, " +
+                "script_executions.ID as script_exec_id, script_executions.RUN_ID as script_exec_run_id, script_executions.STRT_TMS as script_exec_strt_tms, script_executions.END_TMS as script_exec_end_tms, script_executions.ST_NM as script_exec_status " +
+                "from " +
+                // base table
+                " (" + getBaseQuery(executionRequestFilters) + ") base_execution_requests " +
+                "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "on base_execution_requests.REQUEST_ID = execution_requests.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
+                "on base_execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
+                "on base_execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
+                "on base_execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
+                "on base_execution_requests.REQUEST_ID = script_execution_requests.ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " script_execution_request_imps " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_imps.SCRIPT_EXEC_REQ_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_execution_request_pars " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_pars.SCRIPT_EXEC_REQ_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
+                getOrderByClause(sort) +
                 ";";
     }
 
@@ -82,24 +115,30 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
                 getWhereClause(executionRequestFilters) +
-                getOrderByClause(pageable) +
+                getOrderByClause(pageable.getSort()) +
                 getLimitAndOffsetClause(pageable);
+    }
+
+    private String getBaseQuery(List<ExecutionRequestFilter> executionRequestFilters) {
+        return getBaseQuery(Pageable.unpaged(), executionRequestFilters);
     }
 
 
     private String getWhereClause(List<ExecutionRequestFilter> executionRequestFilters) {
         String filterStatements = executionRequestFilters.stream().map(executionRequestFilter -> {
                     if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.NAME)) {
-                        return " name_script_execution_requests.SCRPT_NAME " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                        return " name_script_execution_requests.SCRPT_NAME " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + (executionRequestFilter.isExactMatch() ? "" : "%") + ":script_name" + (executionRequestFilter.isExactMatch() ? "" : "%") + " ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.VERSION)) {
-                        return " name_script_execution_requests.SCRPT_VRS = " + Long.parseLong(executionRequestFilter.getValue()) + " ";
+                        return " name_script_execution_requests.SCRPT_VRS = :script_version ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.ENVIRONMENT)) {
-                        return " script_execution_requests.ENVIRONMENT " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                        return " script_execution_requests.ENVIRONMENT " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " " + (executionRequestFilter.isExactMatch() ? "" : "%") + ":environment" + (executionRequestFilter.isExactMatch() ? "" : "%") + " ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.ID)) {
-                        return " execution_requests.REQUEST_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                        return " execution_requests.REQUEST_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " " + (executionRequestFilter.isExactMatch() ? "" : "%") + ":request_id" + (executionRequestFilter.isExactMatch() ? "" : "%") + " ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.IDS)) {
+                        return " execution_requests.REQUEST_IDS in (:request_ids) ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.LABEL)) {
-                        return " execution_request_labels.NAME = '" + executionRequestFilter.getValue().split(":")[0] +
-                                "' and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                        return " execution_request_labels.NAME = " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " " + (executionRequestFilter.isExactMatch() ? "" : "%") + ":label_key" + (executionRequestFilter.isExactMatch() ? "" : "%") +
+                                " and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " " + (executionRequestFilter.isExactMatch() ? "" : "%") + ":label_name" + (executionRequestFilter.isExactMatch() ? "" : "%") + " ";
                     } else {
                         return null;
                     }
@@ -113,9 +152,9 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         return " WHERE " + filterStatements;
     }
 
-    private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ";
-        List<String> sorting = pageable.getSort().stream().map(order -> {
+    private String getOrderByClause(Sort sort) {
+        if (sort.isUnsorted()) return " ";
+        List<String> sorting = sort.stream().map(order -> {
             // add further sort on the ScriptAndScriptVersionTable here
             if (order.getProperty().equalsIgnoreCase("SCRIPT")) {
                 return "name_script_execution_requests.SCRPT_NAME " + order.getDirection();
@@ -136,7 +175,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
     }
 
 
-    private long getRowSize(List<ExecutionRequestFilter> executionRequestFilters) throws SQLException {
+    private long getRowSize(List<ExecutionRequestFilter> executionRequestFilters) {
         String query = "select count(*) as row_count from (" +
                 "SELECT distinct execution_requests.REQUEST_ID " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
@@ -150,224 +189,108 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
                 getWhereClause(executionRequestFilters) +
                 ");";
-        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
-        cachedRowSet.next();
-        return cachedRowSet.getLong("row_count");
+
+        return executionJdbcTemplate.queryForObject(query, getSqlParameters(executionRequestFilters), Long.class);
     }
 
-    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final NamedParameterJdbcTemplate executionJdbcTemplate;
 
 
     @Autowired
-    ExecutionRequestDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
-        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+    ExecutionRequestDtoRepository(@Qualifier("executionJdbcTemplate") NamedParameterJdbcTemplate executionJdbcTemplate) {
+        this.executionJdbcTemplate = executionJdbcTemplate;
     }
 
     @Override
     public Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
-        try {
-            Map<String, ExecutionRequestBuilder> executionRequestBuilderMap = new LinkedHashMap<>();
-            String query = getFetchAllQuery(pageable, executionRequestFilters);
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                mapRow(cachedRowSet, executionRequestBuilderMap);
-            }
-            List<ExecutionRequestDto> executionRequestDtoList = executionRequestBuilderMap.values().stream()
-                    .map(ExecutionRequestBuilder::build)
-                    .collect(Collectors.toList());
-            return new PageImpl<>(executionRequestDtoList, pageable, getRowSize(executionRequestFilters));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        String query = getFetchAllQuery(pageable, executionRequestFilters);
+        List<ExecutionRequestDto> executionRequestDtos = executionJdbcTemplate.query(query, getSqlParameters(executionRequestFilters), new ExecutionRequestDtoListResultSetExtractor());
+        return new PageImpl<>(executionRequestDtos, pageable, getRowSize(executionRequestFilters));
     }
 
     @Override
     public Optional<ExecutionRequestDto> getById(UUID uuid) {
-        try {
-            Map<String, ExecutionRequestBuilder> executionRequestBuilderMap = new HashMap<>();
-            List<ExecutionRequestFilter> executionRequestFilters = Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.ID, uuid.toString(), true)).collect(Collectors.toList());
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository()
-                    .executeQuery(getFetchAllQuery(Pageable.unpaged(), executionRequestFilters), "reader");
-            while (cachedRowSet.next()) {
-                mapRow(cachedRowSet, executionRequestBuilderMap);
-            }
-            return executionRequestBuilderMap.values().stream()
-                    .findFirst()
-                    .map(ExecutionRequestBuilder::build);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        List<ExecutionRequestFilter> executionRequestFilters = Stream.of(new IdExecutionRequestFilter(uuid.toString(), true)).collect(Collectors.toList());
+        return Optional.ofNullable(
+                DataAccessUtils.singleResult(
+                        executionJdbcTemplate.query(
+                                getFetchAllQuery(Pageable.unpaged(), executionRequestFilters),
+                                getSqlParameters(executionRequestFilters),
+                                new ExecutionRequestDtoListResultSetExtractor())));
     }
 
-    private void mapRow(CachedRowSet cachedRowSet, Map<String, ExecutionRequestBuilder> executionRequestBuilderMap) throws SQLException {
-        String executionRequestId = cachedRowSet.getString("exe_req_id");
-        ExecutionRequestBuilder executionRequestBuilder = executionRequestBuilderMap.get(executionRequestId);
-        if (executionRequestBuilder == null) {
-            executionRequestBuilder = mapExecutionRequestBuilderRow(cachedRowSet);
-            executionRequestBuilderMap.put(executionRequestId, executionRequestBuilder);
-        }
-        mapExecutionRequestLabel(cachedRowSet, executionRequestBuilder);
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = extractScriptExecutionRequestBuilder(cachedRowSet, executionRequestBuilder);
-        if (scriptExecutionRequestBuilder == null) {
-            return;
-        }
-        mapImpersonation(cachedRowSet, scriptExecutionRequestBuilder);
-        mapScriptExecutionParameters(cachedRowSet, scriptExecutionRequestBuilder);
-        mapScriptExecutionRunId(cachedRowSet, scriptExecutionRequestBuilder);
+    private MapSqlParameterSource getSqlParameters(List<ExecutionRequestFilter> executionRequestFilters) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        executionRequestFilters.forEach(executionRequestFilter -> executionRequestFilter.addParameter(parameters));
+        log.info(parameters.toString());
+        return parameters;
     }
 
-    private ScriptExecutionRequestBuilder extractScriptExecutionRequestBuilder(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
-        String scriptExecutionRequestId = cachedRowSet.getString("script_exe_req_id");
-        if (scriptExecutionRequestId == null) {
-            return null;
-        }
-        ScriptExecutionRequestBuilder scriptExecutionRequestBuilder = executionRequestBuilder.getScriptExecutionRequests().get(scriptExecutionRequestId);
-        if (scriptExecutionRequestBuilder == null) {
-            scriptExecutionRequestBuilder = new ScriptExecutionRequestBuilder(
-                    cachedRowSet.getString("script_exe_req_id"),
-                    cachedRowSet.getString("exe_req_id"),
-                    cachedRowSet.getString("script_exe_req_env"),
-                    SQLTools.getBooleanFromSql(cachedRowSet.getString("script_exe_req_exit")),
-                    new HashMap<>(),
-                    new HashMap<>(),
-                    ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("script_exe_req_st")),
-                    cachedRowSet.getString("script_exe_req_name_name"),
-                    cachedRowSet.getLong("script_exe_req_name_vrs"),
-                    null
-            );
-            executionRequestBuilder.getScriptExecutionRequests().put(scriptExecutionRequestId, scriptExecutionRequestBuilder);
-        }
-        return scriptExecutionRequestBuilder;
+    @Override
+    public Iterable<ExecutionRequestDto> findAll(Sort sort) {
+        String query = getFetchAllQuery(sort, new ArrayList<>());
+        return executionJdbcTemplate.query(query, getSqlParameters(new ArrayList<>()), new ExecutionRequestDtoListResultSetExtractor());
     }
 
-    private void mapScriptExecutionRunId(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
-        // script_exec_id, script_exec_run_id, script_exec_strt_tms, script_exec_end_tms, script_exec_status
-
-        String runId = cachedRowSet.getString("script_exec_run_id");
-        if (runId == null) {
-            return;
-        }
-        if (scriptExecutionRequestBuilder.getRunId() == null) {
-            scriptExecutionRequestBuilder.setRunId(runId);
-        }
+    @Override
+    public Page<ExecutionRequestDto> findAll(Pageable pageable) {
+        return getAll(pageable, new ArrayList<>());
     }
 
-    private void mapScriptExecutionParameters(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
-        // script_exe_req_par_id, script_exe_req_par_name, script_exe_req_par_val
-        String scriptExecutionRequestParameterId = cachedRowSet.getString("script_exe_req_par_id");
-        if (scriptExecutionRequestParameterId == null) {
-            return;
-        }
-        ScriptExecutionRequestParameterDto scriptExecutionRequestParameterDto = scriptExecutionRequestBuilder.getParameters().get(scriptExecutionRequestParameterId);
-
-        if (scriptExecutionRequestParameterDto == null) {
-            scriptExecutionRequestParameterDto = new ScriptExecutionRequestParameterDto(
-                    cachedRowSet.getString("script_exe_req_par_name"),
-                    cachedRowSet.getString("script_exe_req_par_val")
-            );
-            scriptExecutionRequestBuilder.getParameters().put(scriptExecutionRequestParameterId, scriptExecutionRequestParameterDto);
-        }
+    @Override
+    public <S extends ExecutionRequestDto> S save(S entity) {
+        throw new UnsupportedOperationException();
     }
 
-    private void mapImpersonation(CachedRowSet cachedRowSet, ScriptExecutionRequestBuilder scriptExecutionRequestBuilder) throws SQLException {
-        // script_exe_req_id, script_exe_req_exit, script_exe_req_env,
-        // script_exe_req_st, script_exe_req_file, script_exe_req_file_name, script_exe_req_name,
-        // script_exe_req_name_name, script_exe_req_name_vrs, script_exe_req_imp_id, script_exe_req_imp_id_id
-
-
-        String scriptExecutionRequestImpersonationId = cachedRowSet.getString("script_exe_req_imp_id");
-        if (scriptExecutionRequestImpersonationId == null) {
-            return;
-        }
-        ScriptExecutionRequestImpersonationDto scriptExecutionRequestImpersonationDto = scriptExecutionRequestBuilder.getImpersonations().get(scriptExecutionRequestImpersonationId);
-        if (scriptExecutionRequestImpersonationDto == null) {
-            scriptExecutionRequestImpersonationDto = new ScriptExecutionRequestImpersonationDto(cachedRowSet.getString("script_exe_req_imp_id_id"));
-            scriptExecutionRequestBuilder.getImpersonations().put(scriptExecutionRequestImpersonationId, scriptExecutionRequestImpersonationDto);
-        }
+    @Override
+    public <S extends ExecutionRequestDto> Iterable<S> saveAll(Iterable<S> entities) {
+        throw new UnsupportedOperationException();
     }
 
-    private void mapExecutionRequestLabel(CachedRowSet cachedRowSet, ExecutionRequestBuilder executionRequestBuilder) throws SQLException {
-        // exe_req_label_id, exe_req_label_name, exe_req_label_value
-
-        String executionRequestLabelId = cachedRowSet.getString("exe_req_label_id");
-        if (executionRequestLabelId == null) {
-            return;
-        }
-        ExecutionRequestLabelDto executionRequestLabelDto = executionRequestBuilder.getExecutionRequestLabels().get(executionRequestLabelId);
-
-        if (executionRequestLabelDto == null) {
-            executionRequestLabelDto = new ExecutionRequestLabelDto(
-                    cachedRowSet.getString("exe_req_label_name"),
-                    cachedRowSet.getString("exe_req_label_value")
-            );
-            executionRequestBuilder.getExecutionRequestLabels().put(executionRequestLabelId, executionRequestLabelDto);
-        }
+    @Override
+    public Optional<ExecutionRequestDto> findById(UUID uuid) {
+        return getById(uuid);
     }
 
-    private ExecutionRequestBuilder mapExecutionRequestBuilderRow(CachedRowSet cachedRowSet) throws SQLException {
-        //             "execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms,
-        //             execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc,
-        //             execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope,
-        //             execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
-        return new ExecutionRequestBuilder(
-                cachedRowSet.getString("exe_req_id"),
-                SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("exe_req_tms")),
-                cachedRowSet.getString("exe_req_name"),
-                cachedRowSet.getString("exe_req_desc"),
-                cachedRowSet.getString("exe_req_scope"),
-                cachedRowSet.getString("exe_req_context"),
-                cachedRowSet.getString("exe_req_email"),
-                ExecutionRequestStatus.valueOf(cachedRowSet.getString("exec_req_status")),
-                new HashMap<>(),
-                new HashMap<>()
-        );
+    @Override
+    public boolean existsById(UUID uuid) {
+        return findById(uuid).isPresent();
     }
 
-    @AllArgsConstructor
-    @Getter
-    private class ExecutionRequestBuilder {
-
-        private String executionRequestId;
-        private LocalDateTime requestTimestamp;
-        private String name;
-        private String description;
-        private String scope;
-        private String context;
-        private String email;
-        private ExecutionRequestStatus executionRequestStatus;
-        private Map<String, ScriptExecutionRequestBuilder> scriptExecutionRequests;
-        public Map<String, ExecutionRequestLabelDto> executionRequestLabels;
-
-        public ExecutionRequestDto build() {
-            return new ExecutionRequestDto(executionRequestId, requestTimestamp, name, description, scope, context, email, executionRequestStatus,
-                    scriptExecutionRequests.values().stream().map(ScriptExecutionRequestBuilder::build).collect(Collectors.toList()),
-                    new HashSet<>(executionRequestLabels.values()));
-        }
+    @Override
+    public Iterable<ExecutionRequestDto> findAll() {
+        return getAll(Pageable.unpaged(), new ArrayList<>());
     }
 
-    @AllArgsConstructor
-    @Getter
-    private class ScriptExecutionRequestBuilder {
-        private String scriptExecutionRequestId;
-        private String executionRequestId;
-        private String environment;
-        private boolean exit;
-        private Map<String, ScriptExecutionRequestImpersonationDto> impersonations;
-        public Map<String, ScriptExecutionRequestParameterDto> parameters;
-        private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
-        private String scriptName;
-        private Long scriptVersion;
-        @Setter
-        private String runId;
+    @Override
+    public Iterable<ExecutionRequestDto> findAllById(Iterable<UUID> uuids) {
+        return getAll(
+                Pageable.unpaged(),
+                Stream.of(new IdsExecutionRequestFilter(Stream.of(uuids).map(Object::toString).collect(Collectors.joining(",")), true)).collect(Collectors.toList()));
+    }
 
-        public ScriptExecutionRequestDto build() {
-            return new ScriptExecutionRequestDto(scriptExecutionRequestId, executionRequestId, environment, exit,
-                    new ArrayList<>(impersonations.values()),
-                    new ArrayList<>(parameters.values()),
-                    scriptExecutionRequestStatus,
-                    scriptName, scriptVersion,
-                    runId);
-        }
+    @Override
+    public long count() {
+        return getRowSize(new ArrayList<>());
+    }
 
+    @Override
+    public void deleteById(UUID uuid) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void delete(ExecutionRequestDto entity) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteAll(Iterable<? extends ExecutionRequestDto> entities) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteAll() {
+        throw new UnsupportedOperationException();
     }
 }

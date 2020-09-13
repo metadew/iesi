@@ -24,7 +24,7 @@ public class ScriptResultDto {
     private String scriptName;
     private Long scriptVersion;
     private String environment;
-    private String status; // Enum
+    private ScriptRunStatus status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime startTimestamp;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")

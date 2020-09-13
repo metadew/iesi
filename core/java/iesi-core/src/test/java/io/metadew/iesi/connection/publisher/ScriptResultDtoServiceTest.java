@@ -24,7 +24,7 @@ class ScriptResultDtoServiceTest {
                         "scriptName",
                         0L,
                         "environment",
-                        ScriptRunStatus.SUCCESS.value(),
+                        ScriptRunStatus.SUCCESS,
                         LocalDateTime.of(LocalDate.of(2020, 9, 11), LocalTime.of(17, 31, 35, 120000000)),
                         LocalDateTime.of(LocalDate.of(2020, 9, 11), LocalTime.of(17, 31, 36, 120000000))));
     }
@@ -39,7 +39,7 @@ class ScriptResultDtoServiceTest {
                 "scriptName",
                 0L,
                 "environment",
-                ScriptRunStatus.SUCCESS.value(),
+                ScriptRunStatus.SUCCESS,
                 LocalDateTime.of(LocalDate.of(2020, 9, 11), LocalTime.of(17, 31, 35, 120156123)),
                 LocalDateTime.of(LocalDate.of(2020, 9, 11), LocalTime.of(17, 31, 36, 120156123)));
         assertThat(ScriptResultDtoService.getInstance().serialize(scriptResultDto))

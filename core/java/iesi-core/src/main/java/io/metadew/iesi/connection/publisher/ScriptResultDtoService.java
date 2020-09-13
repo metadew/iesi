@@ -31,7 +31,7 @@ public class ScriptResultDtoService {
                 scriptResult.getScriptName(),
                 scriptResult.getScriptVersion(),
                 scriptResult.getEnvironment(),
-                scriptResult.getStatus().value(),
+                scriptResult.getStatus(),
                 scriptResult.getStartTimestamp(),
                 scriptResult.getEndTimestamp());
     }

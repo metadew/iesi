@@ -3310,7 +3310,7 @@ iesi:
             length: 100
             nullable: false
             defaultTimestamp:
-      - name: TRC_HTTP_COMP_HEADER_DES
+      - name: TRC_HTTP_COMP_HEAD_DES
         label: TraceHttpComponentHeaderDesign
         description: to do
         category: trace
@@ -3343,7 +3343,7 @@ iesi:
             length: 100
             nullable: false
             defaultTimestamp:
-      - name: TRC_HTTP_COMP_QUERY_DES
+      - name: TRC_HTTP_COMP_QUER_DES
         label: TraceHttpComponentQueryDesign
         description: to do
         category: trace
@@ -3471,7 +3471,7 @@ iesi:
             length: 100
             nullable: false
             defaultTimestamp:
-      - name: TRC_HTTP_COMP_HEADER
+      - name: TRC_HTTP_COMP_HEAD
         label: TraceHttpComponentHeader
         description: to do
         category: trace
@@ -3504,7 +3504,7 @@ iesi:
             length: 100
             nullable: false
             defaultTimestamp:
-      - name: TRC_HTTP_COMP_QUERY
+      - name: TRC_HTTP_COMP_QUER
         label: TraceHttpComponentQuery
         description: to do
         category: trace

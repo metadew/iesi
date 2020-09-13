@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.configuration.template;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.template.matcher.MatcherConfiguration;
@@ -11,11 +12,15 @@ import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
 import io.metadew.iesi.metadata.definition.template.matcher.MatcherKey;
 import io.metadew.iesi.metadata.definition.template.matcher.value.*;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 
 @Log4j2
@@ -66,6 +71,8 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
 
     private static TemplateConfiguration INSTANCE;
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     public synchronized static TemplateConfiguration getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new TemplateConfiguration();
@@ -74,6 +81,13 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     }
 
     private TemplateConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
         setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
     }
 
@@ -130,25 +144,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
 
     @Override
     public List<Template> getAll() {
-        List<Template> templates = new ArrayList<>();
-        Map<UUID, Template> templateMap = new HashMap<>();
-        try {
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(fetchAllQuery, "reader");
-            Template template;
-            while (cachedRowSet.next()) {
-                UUID uuid = UUID.fromString(cachedRowSet.getString("template_id"));
-                template = templateMap.get(uuid);
-                if (template == null) {
-                    template = mapRow(cachedRowSet);
-                    templateMap.put(uuid, template);
-                    templates.add(template);
-                }
-                addMapping(template, cachedRowSet);
-            }
-            return templates;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return namedParameterJdbcTemplate.query(fetchAllQuery, new TemplateListResultSetExtractor());
     }
 
     @Override

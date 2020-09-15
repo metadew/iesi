@@ -2,6 +2,8 @@ package io.metadew.iesi.component.http;
 
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
+import io.metadew.iesi.metadata.definition.component.trace.componentDesign.ComponentDesignTraceConfiguration;
+import io.metadew.iesi.script.execution.ActionExecution;
 
 import java.util.stream.Collectors;
 
@@ -24,12 +26,12 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
     private HttpComponentDefinitionService() {
     }
 
-    public HttpComponentDefinition convert(Component component) {
+    public HttpComponentDefinition convert(Component component, ActionExecution actionExecution, String actionParameterName) {
         if (!(component.getType().equalsIgnoreCase(COMPONENT_TYPE))) {
             throw new RuntimeException("Cannot convert " + component.toString() + " to http component");
         }
-        // TODO: trace design HTTP component
-        return new HttpComponentDefinition(
+
+        HttpComponentDefinition httpComponentDefinition = new HttpComponentDefinition(
                 component.getName(),
                 component.getVersion().getMetadataKey().getComponentKey().getVersionNumber(),
                 component.getDescription(),
@@ -59,6 +61,9 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .map(componentParameterValue -> HttpQueryParameterDefinitionService.getInstance().convert(componentParameterValue))
                         .collect(Collectors.toList())
         );
-    }
 
+        ComponentDesignTraceConfiguration.getInstance().insert(HttpComponentDesignTraceService.getInstance().convert(httpComponentDefinition, actionExecution, actionParameterName, COMPONENT_TYPE));
+
+        return httpComponentDefinition;
+    }
 }

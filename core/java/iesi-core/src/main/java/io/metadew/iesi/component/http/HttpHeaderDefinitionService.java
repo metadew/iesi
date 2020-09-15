@@ -16,7 +16,6 @@ public class HttpHeaderDefinitionService implements IHttpHeaderDefinitionService
     private HttpHeaderDefinitionService() {
     }
 
-
     public HttpHeaderDefinition convert(String httpHeader) {
         return new HttpHeaderDefinition(httpHeader.split(",", 2)[0], httpHeader.split(",", 2)[1]);
     }

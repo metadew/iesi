@@ -1,6 +1,7 @@
 package io.metadew.iesi.datatypes.dataset;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.metadata.definition.Metadata;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @JsonDeserialize(using = DatasetJsonComponent.Deserializer.class)
+@JsonSerialize(using = DatasetJsonComponent.Serializer.class)
 public class Dataset extends Metadata<DatasetKey> {
 
     private final String name;

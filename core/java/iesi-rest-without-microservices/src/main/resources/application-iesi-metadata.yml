@@ -1,7 +1,7 @@
 iesi:
   metadata:
     tables:
-      - name: DATA_DATASET
+      - name: DATA_SET
         label: Datasets
         description: Metadata for datasets
         category: data
@@ -28,7 +28,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: DATA_DATASET_IMPL
+      - name: DATA_SET_IMPL
         label: DatasetImplementations
         description: metadata for dataset implementation
         category: data
@@ -54,7 +54,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: DATA_DATASET_IMPL_LBL
+      - name: DATA_SET_IMPL_LBL
         label: DatasetImplementationLabels
         description: metadata for dataset implementation labels
         category: data
@@ -88,7 +88,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: DATA_DATASET_IMPL_IN_MEM
+      - name: DATA_SET_IMPL_MEM
         label: DatasetInMemoryImplementations
         description: metadata for dataset implementation in memory
         category: data
@@ -108,7 +108,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: DATA_DATASET_IMPL_IN_MEM_KVS
+      - name: DATA_SET_IMPL_MEM_KVS
         label: DatasetInMemoryImplementationKeyValues
         description: metadata for dataset implementation in memory implementations key value pair
         category: data
@@ -121,7 +121,7 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
-          IMPL_IN_MEM_ID:
+          IMPL_MEM_ID:
             description: foreign key of the dataset implementation
             order: 2
             type: string

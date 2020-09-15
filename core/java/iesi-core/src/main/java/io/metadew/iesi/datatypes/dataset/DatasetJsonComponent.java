@@ -1,10 +1,9 @@
 package io.metadew.iesi.datatypes.dataset;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.*;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationJsonComponent;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
@@ -13,6 +12,11 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelJsonComponent;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
+import io.metadew.iesi.metadata.definition.environment.Environment;
+import io.metadew.iesi.metadata.definition.environment.EnvironmentJsonComponent;
+import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
+import io.metadew.iesi.metadata.definition.environment.EnvironmentParameterJsonComponent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ import java.util.List;
 public class DatasetJsonComponent {
 
     public enum Field {
+        TYPE("dataset"),
         NAME_KEY("name"),
         IMPLEMENTATIONS_KEY("implementations");
 
@@ -86,5 +91,46 @@ public class DatasetJsonComponent {
                     .build();
         }
 
+    }
+
+    public static class Serializer extends JsonSerializer<Dataset> {
+        @Override
+        public void serialize(Dataset dataset, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField(MetadataJsonComponent.Field.TYPE_KEY.value(), DatasetJsonComponent.Field.TYPE.value());
+
+            jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
+
+            jsonGenerator.writeStringField(DatasetJsonComponent.Field.NAME_KEY.value(), dataset.getName());
+            jsonGenerator.writeArrayFieldStart(Field.IMPLEMENTATIONS_KEY.value());
+            for (DatasetImplementation datasetImplementation : dataset.getDatasetImplementations()) {
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeArrayFieldStart(DatasetImplementationJsonComponent.Field.LABELS_KEY.value());
+                for (DatasetImplementationLabel datasetImplementationLabel : datasetImplementation.getDatasetImplementationLabels()) {
+                    jsonGenerator.writeStartObject();
+                    jsonGenerator.writeStringField(DatasetImplementationLabelJsonComponent.Field.LABEL_KEY.value(), datasetImplementationLabel.getValue());
+                    jsonGenerator.writeEndObject();
+                }
+                jsonGenerator.writeEndArray();
+
+                if (datasetImplementation instanceof InMemoryDatasetImplementation) {
+                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), InMemoryDatasetImplementationJsonComponent.Field.TYPE.value());
+                    jsonGenerator.writeArrayFieldStart(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
+                    for (InMemoryDatasetImplementationKeyValue inMemoryDatasetImplementationKeyValue : ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues())  {
+                        jsonGenerator.writeStartObject();
+                        jsonGenerator.writeStringField(InMemoryDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), inMemoryDatasetImplementationKeyValue.getKey());
+                        jsonGenerator.writeStringField(InMemoryDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), inMemoryDatasetImplementationKeyValue.getValue());
+                        jsonGenerator.writeEndObject();
+                    }
+                    jsonGenerator.writeEndArray();
+                } else {
+                    // TODO
+                }
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+            jsonGenerator.writeEndObject();
+            jsonGenerator.writeEndObject();
+        }
     }
 }

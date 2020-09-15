@@ -43,14 +43,14 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "datasets.ID as dataset_id, datasets.NAME as dataset_name, " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
             "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "on dataset_impls.DATASET_ID=datasets.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
             "on dataset_impls.ID = dataset_in_mem_impls.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID " +
+            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID;";
 
@@ -59,14 +59,14 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "datasets.ID as dataset_id, datasets.NAME as dataset_name, " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
             "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "on dataset_impls.DATASET_ID=datasets.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
             "on dataset_impls.ID = dataset_in_mem_impls.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID " +
+            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "where dataset_impls.ID={0};";
@@ -76,14 +76,14 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "datasets.ID as dataset_id, datasets.NAME as dataset_name, " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
             "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "on dataset_impls.DATASET_ID=datasets.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
             "on dataset_impls.ID = dataset_in_mem_impls.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID " +
+            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "where datasets.ID={0};";
@@ -93,14 +93,14 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "datasets.ID as dataset_id, datasets.NAME as dataset_name, " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
             "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "on dataset_impls.DATASET_ID=datasets.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
             "on dataset_impls.ID = dataset_in_mem_impls.ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_IN_MEM_ID " +
+            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "where datasets.NAME={0} and dataset_impls.ID in (" +
@@ -122,7 +122,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "VALUES ({0});";
 
     private static String insertInMemoryDatasetImplementationKeyValueQuery = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " (ID, IMPL_IN_MEM_ID, KEY, VALUE) " +
+            " (ID, IMPL_MEM_ID, KEY, VALUE) " +
             "VALUES ({0}, {1}, {2}, {3});";
 
     private static String deleteQuery = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() +
@@ -135,7 +135,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             " WHERE ID={0};";
 
     private static String deleteInMemoryDatasetImplementationKeyValueByDatasetImplementationIdQuery = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " WHERE IMPL_IN_MEM_ID={0};";
+            " WHERE IMPL_MEM_ID={0};";
 
 
     private static DatasetImplementationConfiguration INSTANCE;

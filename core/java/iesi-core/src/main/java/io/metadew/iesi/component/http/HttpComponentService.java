@@ -10,6 +10,7 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
+import io.metadew.iesi.metadata.definition.component.trace.componentTrace.ComponentTraceConfiguration;
 import io.metadew.iesi.script.execution.ActionExecution;
 import org.apache.http.entity.ContentType;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class HttpComponentService implements IHttpComponentService {
 
     private static HttpComponentService INSTANCE;
+    private static final String COMPONENT_TYPE = "http.request";
 
     public synchronized static HttpComponentService getInstance() {
         if (INSTANCE == null) {
@@ -59,11 +61,11 @@ public class HttpComponentService implements IHttpComponentService {
     }
 
     @Override
-    public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution) {
+    public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName) {
         Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, 1L)
                 .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + "and version 1"));
-        HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convert(component);
-        return convert(httpComponentDefinition, actionExecution);
+        HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convert(component, actionExecution, actionParameterName);
+        return convert(httpComponentDefinition, actionExecution, actionParameterName);
     }
 
     @Override
@@ -74,9 +76,9 @@ public class HttpComponentService implements IHttpComponentService {
 
     @Override
     public HttpComponent convert(HttpComponentDefinition httpComponentDefinition,
-                                 ActionExecution actionExecution) {
-        // TODO: trace resolved HTTP component
-        return new HttpComponent(
+                                 ActionExecution actionExecution, String actionParameterName) {
+
+        HttpComponent httpComponent = new HttpComponent(
                 httpComponentDefinition.getReferenceName(),
                 httpComponentDefinition.getVersion(),
                 httpComponentDefinition.getDescription(),
@@ -90,6 +92,10 @@ public class HttpComponentService implements IHttpComponentService {
                         .map(queryParameter -> HttpQueryParameterService.getInstance().convert(queryParameter, actionExecution))
                         .collect(Collectors.toList())
         );
+
+        ComponentTraceConfiguration.getInstance().insert(HttpComponentTraceService.getInstance().convert(httpComponent, actionExecution, actionParameterName, COMPONENT_TYPE));
+
+        return httpComponent;
     }
 
     private String resolveEndpoint(String endpoint, ActionExecution actionExecution) {

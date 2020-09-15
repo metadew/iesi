@@ -1,5 +1,7 @@
 package io.metadew.iesi.component.http;
 
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.http.HttpConnection;
 import io.metadew.iesi.connection.http.HttpConnectionService;
 import io.metadew.iesi.connection.http.request.HttpGetRequest;
@@ -9,8 +11,7 @@ import io.metadew.iesi.script.execution.*;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
@@ -24,9 +25,30 @@ import static org.mockito.Mockito.*;
 
 class HttpComponentServiceTest {
 
+    @BeforeAll
+    static void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getTraceMetadataRepository()
+                .createAllTables();
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getTraceMetadataRepository().cleanAllTables();
+    }
+
+    @AfterAll
+    static void teardown() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getTraceMetadataRepository().dropAllTables();
+    }
+
     @Test
     void getUriTest() {
         HttpConnection httpConnection = mock(HttpConnection.class);
+
         HttpConnectionService httpConnectionService = HttpConnectionService.getInstance();
         HttpConnectionService httpConnectionServiceSpy = Mockito.spy(httpConnectionService);
         Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", httpConnectionServiceSpy);
@@ -68,6 +90,8 @@ class HttpComponentServiceTest {
 
         when(actionExecution.getExecutionControl())
                 .thenReturn(executionControl);
+        when(actionExecution.getExecutionControl().getRunId())
+                .thenReturn("runId");
         when(executionControl.getExecutionRuntime())
                 .thenReturn(executionRuntime);
         when(actionExecution.getActionControl())
@@ -98,6 +122,8 @@ class HttpComponentServiceTest {
                 .thenReturn("get");
 
         HttpConnection httpConnection = mock(HttpConnection.class);
+        when(httpConnection.getReferenceName())
+                .thenReturn("connectionName");
         doReturn(httpConnection)
                 .when(httpConnectionServiceSpy)
                 .get("connection1", actionExecution);
@@ -125,7 +151,8 @@ class HttpComponentServiceTest {
                         Stream.of(new HttpHeaderDefinition("content-type", "application/json"), new HttpHeaderDefinition("content-length", "1000")).collect(Collectors.toList()),
                         Stream.of(new HttpQueryParameterDefinition("name", "test"), new HttpQueryParameterDefinition("version", "2")).collect(Collectors.toList())
                 ),
-                actionExecution))
+                actionExecution,
+                ",actionParameterName"))
                 .isEqualTo(
                         new HttpComponent(
                                 "component1",

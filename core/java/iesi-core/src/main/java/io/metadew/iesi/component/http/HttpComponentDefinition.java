@@ -17,5 +17,4 @@ public class HttpComponentDefinition {
     private final String type;
     private List<HttpHeaderDefinition> headers;
     private List<HttpQueryParameterDefinition> queryParameters;
-
 }

@@ -26,10 +26,10 @@ Our framework aims to differentiate itself by making automation services accessi
 
 Learn more on our [introduction](/{{site.repository}}/pages/introduction.html) page.
 
-IESI was designed primarily with configuration and reuse in mind. 
-It has been used at several projects and clients over the past years and evolves along with these initiatives. 
-Please consider that we are aware of some shortcomings but many efforts are undertaken to improve features and documentation. 
-In the meantime, feel free to download and experiment with the automation framework and get acquainted with our approach. 
+IESI was designed primarily with configuration and reuse in mind.
+It has been used at several projects and clients over the past years and evolves along with these initiatives.
+Please consider that we are aware of some shortcomings but many efforts are undertaken to improve features and documentation.
+In the meantime, feel free to download and experiment with the automation framework and get acquainted with our approach.
 [We welcome contributors](/{{site.repository}}/pages/contribute/contribute.html) from any organization or background to help us grow the framework.
 
 > We grow our framework best when we combine innovation with real life experiences and common sense
@@ -54,6 +54,7 @@ Our framework can run on Linux/Unix, Mac and Windows systems.
 |Dremio|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |File System|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|
 |H2|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Google BigQuery|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![grey](/{{site.repository}}/images/icons/grey-dot.png)|
 |IBM DB2|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Maria DB|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Microsoft SQL Server|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
@@ -65,8 +66,8 @@ Our framework can run on Linux/Unix, Mac and Windows systems.
 |SQLite|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 |Teradata|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 
-By default, technology connectors are not included unless used by the framework's core functions. 
-[Adding a connector](/{{site.repository}}/pages/deploy/connectors.html) is made as simple as possible. 
+By default, technology connectors are not included unless used by the framework's core functions.
+[Adding a connector](/{{site.repository}}/pages/deploy/connectors.html) is made as simple as possible.
 Looking for other options? Get in touch via our [GitHub issue page](https://github.com/metadew/iesi/issues).
 
 For more information on the technology support definition, please refer to the [legend](/{{site.repository}}/pages/understand/legend.html) page.

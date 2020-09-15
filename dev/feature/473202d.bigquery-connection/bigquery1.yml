@@ -1,8 +1,8 @@
 ---
 type: "script"
 data:
-  name: "db.db2.1"
-  description: "test db.db2 connection with standard select query"
+  name: "db.bigquery.1"
+  description: "test db.bigquery connection with standard select query"
   parameters: []
   actions:
   - number: 1
@@ -18,4 +18,4 @@ data:
     - name: "query"
       value : "select * from iesi.table1;"
     - name: "connection"
-      value : "db.db2.1"
+      value : "db.bigquery.1"

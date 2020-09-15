@@ -17,7 +17,8 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
     public Connection getConnection(T databaseConnection) {
         try {
             Class.forName(getDriver(databaseConnection));
-            Connection connection = DriverManager.getConnection(databaseConnection.getConnectionURL(), databaseConnection.getUserName(), databaseConnection.getUserPassword());
+            Connection connection;
+            connection = DriverManager.getConnection(databaseConnection.getConnectionURL(), databaseConnection.getUserName(), databaseConnection.getUserPassword());
             connection.setAutoCommit(false);
             return connection;
         } catch (ClassNotFoundException | SQLException e) {

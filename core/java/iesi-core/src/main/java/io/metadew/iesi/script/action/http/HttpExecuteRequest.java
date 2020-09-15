@@ -99,11 +99,11 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             convertHttpRequestBody(requestBodyActionParameterOperation.getValue())
                     .ifPresent(body -> getActionExecution().getActionControl().logOutput("request.body", body));
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
-                    HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution()),
+                    HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution(), requestKey),
                     convertHttpRequestBody(requestBodyActionParameterOperation.getValue()).get());
         } else {
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
-                    HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution()));
+                    HttpComponentService.getInstance().get(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution(), requestKey));
         }
         getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
 

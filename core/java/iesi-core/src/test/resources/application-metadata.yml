@@ -2760,21 +2760,21 @@ iesi:
               description: Name of the action parameter
               order: 4
               type: string
-              length: 100
+              length: 255
               nullable: false
               defaultTimestamp:
           COMP_TYP_NM:
               description: Keyword for the component type
               order: 5
               type: string
-              length: 100
+              length: 255
               nullable: false
               defaultTimestamp:
           COMP_NM:
               description: Unique short name for the applicable component
               order: 6
               type: string
-              length: 200
+              length: 255
               nullable: true
               defaultTimestamp:
           COMP_DSC:
@@ -2790,7 +2790,7 @@ iesi:
               type: number
               length: 0
               nullable: false
-              defaultTimestamp: true
+              defaultTimestamp: false
       - name: TRC_HTTP_COMP_DES
         label: TraceHttpComponentDesign
         description: to do
@@ -2807,21 +2807,21 @@ iesi:
             description: Unique short name for the connection
             order: 2
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           TYPE:
             description: Type of the TraceHttpComponentDesign
             order: 3
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           ENDPOINT:
             description: Endpoint of the TraceHttpComponentDesign
             order: 4
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
       - name: TRC_HTTP_COMP_HEAD_DES
@@ -2836,25 +2836,25 @@ iesi:
             length: 255
             nullable: false
             primaryKey: true
-          HEADER_DES_ID:
+          HTTP_COMP_DES_ID:
             description: Unique short name for the TraceHttpComponentHeaderDesign
             order: 2
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           NAME:
             description: Name of the TraceHttpComponentDesign
             order: 3
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           VALUE:
             description: Value of the TraceHttpComponentDesign
             order: 4
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
       - name: TRC_HTTP_COMP_QUER_DES
@@ -2869,25 +2869,25 @@ iesi:
             length: 255
             nullable: false
             primaryKey: true
-          QUERY_DES_ID:
+          HTTP_COMP_DES_ID:
             description: Unique short name for the TraceHttpComponentQueryDesign
             order: 2
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           NAME:
             description: Name of the TraceHttpComponentQueryDesign
             order: 3
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           VALUE:
             description: Value of the TraceHttpComponentQueryDesign
             order: 4
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
       - name: TRC_COMP
@@ -2920,21 +2920,21 @@ iesi:
             description: Name of the action parameter
             order: 4
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           COMP_TYP_NM:
             description: Keyword for the component type
             order: 6
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           COMP_NM:
             description: Unique short name for the applicable component
             order: 7
             type: string
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           COMP_DSC:
@@ -2951,7 +2951,7 @@ iesi:
             length: 0
             nullable: false
             primaryKey: true
-            defaultTimestamp: true
+            defaultTimestamp: false
       - name: TRC_HTTP_COMP
         label: TraceHttpComponent
         description: to do
@@ -2968,21 +2968,21 @@ iesi:
             description: Unique short name for the connection
             order: 2
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           TYPE:
             description: Type of the TraceHttpComponent
             order: 3
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           ENDPOINT:
             description: Endpoint of the TraceHttpComponent
             order: 4
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
       - name: TRC_HTTP_COMP_HEAD
@@ -3001,21 +3001,21 @@ iesi:
             description: Unique short name for the TraceHttpComponentHeader
             order: 2
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           NAME:
             description: NAME of the TraceHttpComponentHeader
             order: 3
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           VALUE:
             description: VALUE of the TraceHttpComponentHeader
             order: 4
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
       - name: TRC_HTTP_COMP_QUER
@@ -3034,21 +3034,21 @@ iesi:
             description: Unique short name for the TraceHttpComponentQuery
             order: 2
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           NAME:
             description: Name of the TraceHttpComponentQuery
             order: 3
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           VALUE:
             description: Value of the TraceHttpComponentQuery
             order: 4
             type: string
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
     objects:
@@ -3064,10 +3064,6 @@ iesi:
         label: Impersonations
         description: Design metadata for impersonations
         category: connectivity
-      #      Repository:
-      #        label: Repositories
-      #        description: Design metadata for repositories
-      #        category: connectivity
       Component:
         label: Components
         description: Design metadata for components

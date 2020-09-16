@@ -1,6 +1,8 @@
 package io.metadew.iesi.component.http;
 
-import io.metadew.iesi.metadata.definition.component.trace.componentTrace.*;
+import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceConfiguration;
+import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceKey;
+import io.metadew.iesi.metadata.definition.component.trace.http.*;
 import io.metadew.iesi.script.execution.ActionExecution;
 
 import java.util.UUID;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class HttpComponentTraceService {
 
+    private static final String COMPONENT_TYPE = "http.request";
     private static HttpComponentTraceService INSTANCE;
 
     public synchronized static HttpComponentTraceService getInstance() {
@@ -18,14 +21,14 @@ public class HttpComponentTraceService {
     }
 
     public HttpComponentTrace convert(HttpComponent httpComponent,
-                                      ActionExecution actionExecution, String actionParameterName, String component_type) {
+                                      ActionExecution actionExecution, String actionParameterName) {
         UUID uuid = UUID.randomUUID();
         return new HttpComponentTrace(
                 new ComponentTraceKey(uuid),
                 actionExecution.getExecutionControl().getRunId(),
                 actionExecution.getExecutionControl().getProcessId(),
                 actionParameterName,
-                component_type,
+                COMPONENT_TYPE,
                 httpComponent.getReferenceName(),
                 httpComponent.getDescription(),
                 httpComponent.getVersion(),
@@ -37,7 +40,10 @@ public class HttpComponentTraceService {
                 httpComponent.getQueryParameters().stream().map(queries -> convertQueries(queries, uuid))
                         .collect(Collectors.toList())
         );
+    }
 
+    public void trace(HttpComponent httpComponent, ActionExecution actionExecution, String actionParameterName) {
+        ComponentTraceConfiguration.getInstance().insert(convert(httpComponent, actionExecution, actionParameterName));
     }
 
     private HttpComponentHeaderTrace convertHeaders(HttpHeader httpHeader, UUID id) {

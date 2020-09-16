@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentDesign;
+package io.metadew.iesi.metadata.definition.component.trace.design;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import lombok.Data;

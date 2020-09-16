@@ -102,8 +102,8 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
     public void delete(ConnectionTraceKey metadataKey) {
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteByIdQuery,
-                        SQLTools.GetStringForSQL(metadataKey.getUuid())
-                ));
+                        SQLTools.GetStringForSQL(metadataKey.getUuid()))
+        );
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteByIdHttpQuery,
                         SQLTools.GetStringForSQL(metadataKey.getUuid())
@@ -114,22 +114,22 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
     public void insert(ConnectionTrace metadata) {
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(insertQuery,
-                        SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid())),
-                        SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadata.getRunId())),
-                        SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadata.getProcessId())),
-                        SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadata.getActionParameter())),
-                        SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadata.getName())),
-                        SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadata.getType())),
-                        SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadata.getDescription()))
+                        SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
+                        SQLTools.GetStringForSQL(metadata.getRunId()),
+                        SQLTools.GetStringForSQL(metadata.getProcessId()),
+                        SQLTools.GetStringForSQL(metadata.getActionParameter()),
+                        SQLTools.GetStringForSQL(metadata.getName()),
+                        SQLTools.GetStringForSQL(metadata.getType()),
+                        SQLTools.GetStringForSQL(metadata.getDescription())
                 ));
         if (metadata instanceof HttpConnectionTrace) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertHttpQuery,
-                            SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid())),
-                            SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(((HttpConnectionTrace) metadata).getHost())),
-                            SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(((HttpConnectionTrace) metadata).getPort())),
-                            SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(((HttpConnectionTrace) metadata).getBaseUrl())),
-                            SQLTools.GetStringForSQL(SQLTools.GetStringForSQL(((HttpConnectionTrace) metadata).isTls()))
+                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
+                            SQLTools.GetStringForSQL(((HttpConnectionTrace) metadata).getHost()),
+                            SQLTools.GetStringForSQL(((HttpConnectionTrace) metadata).getPort()),
+                            SQLTools.GetStringForSQL(((HttpConnectionTrace) metadata).getBaseUrl()),
+                            SQLTools.GetStringForSQL(((HttpConnectionTrace) metadata).isTls())
                     ));
         }
 

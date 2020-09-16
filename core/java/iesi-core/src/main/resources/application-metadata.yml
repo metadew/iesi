@@ -3538,7 +3538,7 @@ iesi:
             nullable: false
             defaultTimestamp:
       - name: TRC_CONN
-        label: TraceConnections
+        label: ConnectionTraces
         description: to do
         category: trace
         fields:
@@ -3582,14 +3582,14 @@ iesi:
             type: string
             length: 255
             nullable: false
-          CONN_DSC:
+          CONN_DESC:
             description: Description of the component
             order: 8
             type: string
             length: 2000
             nullable: true
       - name: TRC_HTTP_CONN
-        label: HttpTraceConnections
+        label: HttpConnectionTraces
         description: to do
         category: trace
         fields:

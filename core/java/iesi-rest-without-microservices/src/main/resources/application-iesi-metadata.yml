@@ -3222,61 +3222,61 @@ iesi:
         category: trace
         fields:
           ID:
-              description: Unique ID for the TraceComponentDesign
-              order: 1
-              type: string
-              length: 255
-              nullable: false
-              primaryKey: true
+            description: Unique ID for the TraceComponentDesign
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
           RUN_ID:
-              description: Unique identifier for the script execution
-              order: 2
-              type: string
-              length: 255
-              nullable: false
-              defaultTimestamp:
+            description: Unique identifier for the script execution
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            defaultTimestamp:
           PRC_ID:
-              description: Process number for the script within the script execution
-              order: 3
-              type: number
-              length: 0
-              nullable: false
-              defaultTimestamp:
+            description: Process number for the script within the script execution
+            order: 3
+            type: number
+            length: 0
+            nullable: false
+            defaultTimestamp:
           ACTION_PAR_NM:
-              description: Name of the action parameter
-              order: 4
-              type: string
-              length: 100
-              nullable: false
-              defaultTimestamp:
+            description: Name of the action parameter
+            order: 4
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
           COMP_TYP_NM:
-              description: Keyword for the component type
-              order: 5
-              type: string
-              length: 100
-              nullable: false
-              defaultTimestamp:
+            description: Keyword for the component type
+            order: 5
+            type: string
+            length: 100
+            nullable: false
+            defaultTimestamp:
           COMP_NM:
-              description: Unique short name for the applicable component
-              order: 6
-              type: string
-              length: 200
-              nullable: true
-              defaultTimestamp:
+            description: Unique short name for the applicable component
+            order: 6
+            type: string
+            length: 200
+            nullable: true
+            defaultTimestamp:
           COMP_DSC:
-              description: Description of the component
-              order: 7
-              type: string
-              length: 2000
-              nullable: true
-              defaultTimestamp:
+            description: Description of the component
+            order: 7
+            type: string
+            length: 2000
+            nullable: true
+            defaultTimestamp:
           COMP_VRS_NB:
-              description: Unique identifier for the component version
-              order: 8
-              type: number
-              length: 0
-              nullable: false
-              defaultTimestamp: true
+            description: Unique identifier for the component version
+            order: 8
+            type: number
+            length: 0
+            nullable: false
+            defaultTimestamp: true
       - name: TRC_HTTP_COMP_DES
         label: TraceHttpComponentDesign
         description: to do
@@ -3537,6 +3537,93 @@ iesi:
             length: 100
             nullable: false
             defaultTimestamp:
+      - name: TRC_CONN
+        label: ConnectionTraces
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceConnection
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          RUN_ID:
+            description: Unique identifier for the script execution
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          PRC_ID:
+            description: Process number for the script within the script execution
+            order: 3
+            type: number
+            length: 0
+            nullable: false
+            unique: true
+          ACTION_PAR_NM:
+            description: Name of the action parameter
+            order: 4
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          CONN_TYP_NM:
+            description: Keyword for the component type
+            order: 6
+            type: string
+            length: 255
+            nullable: false
+          CONN_NM:
+            description: Unique short name for the applicable component
+            order: 7
+            type: string
+            length: 255
+            nullable: false
+          CONN_DESC:
+            description: Description of the component
+            order: 8
+            type: string
+            length: 2000
+            nullable: true
+      - name: TRC_HTTP_CONN
+        label: HttpConnectionTraces
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceConnection
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          HOST:
+            description: hostname of the http connection
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+          PORT:
+            description: port of the http connection
+            order: 3
+            type: number
+            length: 0
+            nullable: true
+          BASE_URL:
+            description: base url of the http connection
+            order: 4
+            type: string
+            length: 255
+            nullable: true
+          TLS:
+            description: whether or not http connection is tls encrypted
+            order: 6
+            type: string
+            length: 255
+            nullable: false
     objects:
       Connection:
         label: Connections

@@ -151,8 +151,7 @@ class HttpComponentServiceTest {
                         Stream.of(new HttpHeaderDefinition("content-type", "application/json"), new HttpHeaderDefinition("content-length", "1000")).collect(Collectors.toList()),
                         Stream.of(new HttpQueryParameterDefinition("name", "test"), new HttpQueryParameterDefinition("version", "2")).collect(Collectors.toList())
                 ),
-                actionExecution,
-                ",actionParameterName"))
+                actionExecution))
                 .isEqualTo(
                         new HttpComponent(
                                 "component1",

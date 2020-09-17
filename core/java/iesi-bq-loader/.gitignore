@@ -4,6 +4,9 @@
 *.iml
 /src/main/resources/encryption.key
 
+### specific service directories
+bql/*
+
 ### Eclipse template
 .metadata
 bin/

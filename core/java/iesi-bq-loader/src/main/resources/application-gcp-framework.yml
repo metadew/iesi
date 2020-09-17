@@ -1,0 +1,71 @@
+iesi:
+  gcp:
+    framework:
+      folders:
+        conf:
+          path: "conf"
+          label: Conf
+          description: Configuration files definining the framework setup
+          permissions: '755'
+        data:
+          path: "data"
+          label: Data
+          description: Location where data files can be stored
+          permissions: '755'
+        lib:
+          path: "lib"
+          label: Lib
+          description: Libraries essential for running the framework
+          permissions: '755'
+        licenses:
+          path: "licenses"
+          label: Licenses
+          description: License files for libraries used by the framework
+          permissions: '755'
+        logs:
+          path: "logs"
+          label: Logs
+          description: Log files are stored here
+          permissions: '755'
+        metadata:
+          path: "metadata"
+          label: Metadata
+          description: The metadata can be found here
+          permissions: '755'
+        run:
+          path: "run"
+          label: Run
+          description: Run-time variable data
+          permissions: '755'
+        run.cache:
+          path: "run/cache"
+          label: RunCache
+          description: Cache data
+          permissions: '755'
+        run.exec:
+          path: "run/exec"
+          label: RunExec
+          description: Execution data
+          permissions: '755'
+        run.lock:
+          path: "run/lock"
+          label: RunLock
+          description: Lock files keeping track of resources currently in use
+          permissions: '755'
+        run.spool:
+          path: "run/spool"
+          label: RunSpool
+          description: Spool files waiting to be processed
+          permissions: '755'
+        run.tmp:
+          path: "run/tmp"
+          label: RunTmp
+          description: Temporary files
+          permissions: '755'
+      settings:
+        identifier:
+          path: iesi.gcp.identifier
+          label: Identifier
+          description:
+          group: Framework
+          category: General

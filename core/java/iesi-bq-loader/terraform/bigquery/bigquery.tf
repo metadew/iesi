@@ -14,10 +14,6 @@ resource "google_bigquery_table" "default" {
   dataset_id = google_bigquery_dataset.main.dataset_id
   table_id   = "res_script"
   schema = file("schema/bq_res_script.json")
-  
-  time_partitioning {
-    type = "DAY"
-  }
 
   labels = {
     env = "default"

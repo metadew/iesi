@@ -1,0 +1,7 @@
+iesi:
+  gcp:
+    bql:
+      project: ""
+      topic: "iesi-scriptresults"
+      subscription: "iesi-scriptresults-bigquery"
+      dataset: "iesi_results"

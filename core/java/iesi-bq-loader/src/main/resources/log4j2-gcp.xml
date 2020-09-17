@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <RollingFile
+                name="default"
+                fileName="./bql/logs/iesi-gcp.log"
+                filePattern="./bql/logs/iesi.gcp.%i.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%c{1.}] - %m%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="io.metadew.iesi.gcp.bqloader" additivity="false" level="all">
+            <AppenderRef ref="STDOUT" level="info" />
+            <AppenderRef ref="default" level="all" />
+        </Logger>
+        <Root level="all" additivity="false">
+            <AppenderRef ref="STDOUT" level="warn" />
+            <AppenderRef ref="default" level="all" />
+        </Root>
+    </Loggers>
+</Configuration>

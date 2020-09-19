@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
@@ -148,10 +147,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     @Override
     public void delete(ScriptKey scriptKey) {
-        LOGGER.trace(MessageFormat.format("Deleting script {0}-{1}.", scriptKey.toString()));
-        if (!exists(scriptKey)) {
-            throw new MetadataDoesNotExistException(scriptKey);
-        }
+        LOGGER.trace(MessageFormat.format("Deleting script {0}", scriptKey.toString()));
         ScriptVersionKey scriptVersionKey = new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion()));
         ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
         ActionConfiguration.getInstance().deleteByScript(scriptKey);

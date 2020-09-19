@@ -128,6 +128,7 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
+        LOGGER.trace(MessageFormat.format("Deleting script parameters for script {0}", scriptKey.toString()));
         String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
                 " WHERE " +
                 " SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) + " AND " +

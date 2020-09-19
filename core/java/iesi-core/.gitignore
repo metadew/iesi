@@ -4,6 +4,7 @@
 *.iml
 /src/main/resources/encryption.key
 
+/coverage/
 /metadata/out/ddl
 test.db3
 test.mv.db

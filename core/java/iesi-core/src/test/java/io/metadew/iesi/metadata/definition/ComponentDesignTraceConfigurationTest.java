@@ -2,7 +2,8 @@ package io.metadew.iesi.metadata.definition;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.metadata.definition.component.trace.componentDesign.*;
+import io.metadew.iesi.metadata.definition.component.trace.design.*;
+import io.metadew.iesi.metadata.definition.component.trace.design.http.*;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;

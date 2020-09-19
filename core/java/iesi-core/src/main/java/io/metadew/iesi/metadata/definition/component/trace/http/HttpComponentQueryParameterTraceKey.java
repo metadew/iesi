@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentDesign;
+package io.metadew.iesi.metadata.definition.component.trace.http;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import lombok.Builder;
@@ -7,10 +7,10 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class HttpComponentHeaderDesignTraceKey extends MetadataKey {
+public class HttpComponentQueryParameterTraceKey extends MetadataKey {
 
     @Builder
-    public HttpComponentHeaderDesignTraceKey(UUID uuid) {
+    public HttpComponentQueryParameterTraceKey(UUID uuid) {
         this.uuid = uuid;
     }
 

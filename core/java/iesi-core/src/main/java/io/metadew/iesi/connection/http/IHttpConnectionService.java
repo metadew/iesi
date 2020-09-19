@@ -4,7 +4,9 @@ import io.metadew.iesi.script.execution.ActionExecution;
 
 public interface IHttpConnectionService {
 
-    public HttpConnection get(String httpConnectionReferenceName, ActionExecution actionExecution);
+    public HttpConnection get(String httpConnectionReferenceName,  ActionExecution actionExecution);
+
+    public HttpConnection getAndTrace(String httpConnectionReferenceName, ActionExecution actionExecution, String actionParameterName);
 
     public String getBaseUri(HttpConnection httpConnection);
 

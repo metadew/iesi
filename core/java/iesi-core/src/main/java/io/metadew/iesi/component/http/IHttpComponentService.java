@@ -12,10 +12,14 @@ public interface IHttpComponentService {
 
     public HttpRequest buildHttpRequest(HttpComponent httpComponent) throws URISyntaxException, HttpRequestBuilderException;
 
-    public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName);
+    public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution);
+
+    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName);
 
     public String getUri(HttpComponent httpComponent);
 
-    public HttpComponent convert(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution, String actionParameterName);
+    public HttpComponent convert(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution);
+
+    public HttpComponent convertAndTrace(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution, String actionParameterName);
 
 }

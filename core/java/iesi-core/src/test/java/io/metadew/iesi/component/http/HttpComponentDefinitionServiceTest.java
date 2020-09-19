@@ -112,7 +112,7 @@ class HttpComponentDefinitionServiceTest {
                 ).collect(Collectors.toList()))
                 .build();
 
-        assertThat(HttpComponentDefinitionService.getInstance().convert(component, actionExecution, "actionParameterName"))
+        assertThat(HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
                 .isEqualTo(new HttpComponentDefinition(
                         "component1",
                         1L,
@@ -187,7 +187,7 @@ class HttpComponentDefinitionServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution, "actionParameterName"))
+        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert " + component.toString() + " to http component");
     }
@@ -250,7 +250,7 @@ class HttpComponentDefinitionServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution, "actionParameterName"))
+        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Http component " + component.toString() + " does not contain a type");
     }
@@ -312,7 +312,7 @@ class HttpComponentDefinitionServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution, "actionParameterName"))
+        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Http component " + component.toString() + " does not contain an endpoint");
     }
@@ -373,7 +373,7 @@ class HttpComponentDefinitionServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution, "actionParameterName"))
+        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Http component " + component.toString() + " does not contain a connection");
     }

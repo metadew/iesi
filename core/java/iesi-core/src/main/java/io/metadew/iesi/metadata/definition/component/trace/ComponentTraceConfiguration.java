@@ -1,9 +1,10 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentTrace;
+package io.metadew.iesi.metadata.definition.component.trace;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.definition.component.trace.http.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class ComponentTraceConfiguration extends Configuration<HttpComponentTrace, ComponentTraceKey> {
+public class ComponentTraceConfiguration extends Configuration<ComponentTrace, ComponentTraceKey> {
 
 
     private static ComponentTraceConfiguration INSTANCE;
@@ -34,7 +35,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
 
 
     @Override
-    public Optional<HttpComponentTrace> get(ComponentTraceKey metadataKey) {
+    public Optional<ComponentTrace> get(ComponentTraceKey metadataKey) {
         try {
             Map<String, ComponentHttpTraceBuilder> componentTraceBuilderMap = new LinkedHashMap<>();
             String query = "select TraceComponent.ID as TraceComponent_ID, TraceComponent.RUN_ID as TraceComponent_RUN_ID, TraceComponent.PRC_ID as TraceComponent_PRC_ID," +
@@ -67,7 +68,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
     }
 
     @Override
-    public List<HttpComponentTrace> getAll() {
+    public List<ComponentTrace> getAll() {
         try {
             Map<String, ComponentHttpTraceBuilder> componentTraceBuilderMap = new LinkedHashMap<>();
             String query = "select TraceComponent.ID as TraceComponent_ID, TraceComponent.RUN_ID as TraceComponent_RUN_ID, TraceComponent.PRC_ID as TraceComponent_PRC_ID," +
@@ -115,7 +116,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
     }
 
     @Override
-    public void insert(HttpComponentTrace metadata) {
+    public void insert(ComponentTrace metadata) {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
         String insertStatementTraceComponent = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponent").getName() +
                 " (ID, RUN_ID,  PRC_ID, ACTION_PAR_NM, COMP_TYP_NM, COMP_NM, COMP_DSC, COMP_VRS_NB ) VALUES (" +
@@ -130,33 +131,35 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
                 ");";
         getMetadataRepository().executeUpdate(insertStatementTraceComponent);
 
-        String insertStatementHttpTraceComponent = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponent").getName() +
-                " (ID, CONN_NM, TYPE, ENDPOINT ) VALUES ( "
-                +
-                SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getConnectionName()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getType()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getEndpoint()) + ") ";
+        if (metadata instanceof HttpComponentTrace) {
+            String insertStatementHttpTraceComponent = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponent").getName() +
+                    " (ID, CONN_NM, TYPE, ENDPOINT ) VALUES ( "
+                    +
+                    SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
+                    SQLTools.GetStringForSQL(((HttpComponentTrace) metadata).getConnectionName()) + ", " +
+                    SQLTools.GetStringForSQL(((HttpComponentTrace) metadata).getType()) + ", " +
+                    SQLTools.GetStringForSQL(((HttpComponentTrace) metadata).getEndpoint()) + ") ";
 
-        getMetadataRepository().executeUpdate(insertStatementHttpTraceComponent);
+            getMetadataRepository().executeUpdate(insertStatementHttpTraceComponent);
 
-        metadata.getHttpComponentHeaderTrace().forEach(httpComponentHeaderTrace ->
-                getMetadataRepository().executeUpdate(
-                        "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
-                                " (ID, HTTP_COMP_ID, NAME, VALUE ) VALUES ( " +
-                                SQLTools.GetStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
-                                SQLTools.GetStringForSQL(httpComponentHeaderTrace.getHttpComponentHeaderID().getUuid().toString()) + ", " +
-                                SQLTools.GetStringForSQL(httpComponentHeaderTrace.getName()) + ", " +
-                                SQLTools.GetStringForSQL(httpComponentHeaderTrace.getValue()) + ") "));
+            ((HttpComponentTrace) metadata).getHttpComponentHeaderTrace().forEach(httpComponentHeaderTrace ->
+                    getMetadataRepository().executeUpdate(
+                            "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
+                                    " (ID, HTTP_COMP_ID, NAME, VALUE ) VALUES ( " +
+                                    SQLTools.GetStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
+                                    SQLTools.GetStringForSQL(httpComponentHeaderTrace.getHttpComponentHeaderID().getUuid().toString()) + ", " +
+                                    SQLTools.GetStringForSQL(httpComponentHeaderTrace.getName()) + ", " +
+                                    SQLTools.GetStringForSQL(httpComponentHeaderTrace.getValue()) + ") "));
 
-        metadata.getHttpComponentQueries().forEach(httpComponentTrace ->
-                getMetadataRepository().executeUpdate(
-                        "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
-                                " (ID, HTTP_COMP_ID,  NAME, VALUE ) VALUES  ( " +
-                                SQLTools.GetStringForSQL(httpComponentTrace.getMetadataKey().getUuid().toString()) + ", " +
-                                SQLTools.GetStringForSQL(httpComponentTrace.getHttpComponentQueryID().getUuid().toString()) + ", " +
-                                SQLTools.GetStringForSQL(httpComponentTrace.getName()) + ", " +
-                                SQLTools.GetStringForSQL(httpComponentTrace.getValue()) + ") "));
+            ((HttpComponentTrace) metadata).getHttpComponentQueries().forEach(httpComponentTrace ->
+                    getMetadataRepository().executeUpdate(
+                            "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
+                                    " (ID, HTTP_COMP_ID,  NAME, VALUE ) VALUES  ( " +
+                                    SQLTools.GetStringForSQL(httpComponentTrace.getMetadataKey().getUuid().toString()) + ", " +
+                                    SQLTools.GetStringForSQL(httpComponentTrace.getHttpComponentQueryID().getUuid().toString()) + ", " +
+                                    SQLTools.GetStringForSQL(httpComponentTrace.getName()) + ", " +
+                                    SQLTools.GetStringForSQL(httpComponentTrace.getValue()) + ") "));
+        }
     }
 
     private void mapRow(CachedRowSet cachedRowSet, Map<String, ComponentHttpTraceBuilder> componentTraceBuilderMap) throws SQLException {
@@ -193,7 +196,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
             componentTraceBuilder.getHttpComponentHeader().put(
                     mapHttpComponentHeaderId,
                     new HttpComponentHeaderTrace(
-                          new HttpComponentHeaderTraceKey(UUID.fromString(mapHttpComponentHeaderId)),
+                            new HttpComponentHeaderTraceKey(UUID.fromString(mapHttpComponentHeaderId)),
                             new ComponentTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeader_HTTP_COMP_ID"))),
                             cachedRowSet.getString("TraceHttpComponentHeader_NAME"),
                             cachedRowSet.getString("TraceHttpComponentHeader_VALUE")
@@ -208,7 +211,7 @@ public class ComponentTraceConfiguration extends Configuration<HttpComponentTrac
             componentTraceBuilder.getHttpComponentQueries().put(
                     httpComponentQueryId,
                     new HttpComponentQueryParameterTrace(
-                          new HttpComponentQueryParameterTraceKey(UUID.fromString(httpComponentQueryId)),
+                            new HttpComponentQueryParameterTraceKey(UUID.fromString(httpComponentQueryId)),
                             new ComponentTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQuery_HTTP_COMP_ID"))),
                             cachedRowSet.getString("TraceHttpComponentQuery_NAME"),
                             cachedRowSet.getString("TraceHttpComponentQuery_VALUE")

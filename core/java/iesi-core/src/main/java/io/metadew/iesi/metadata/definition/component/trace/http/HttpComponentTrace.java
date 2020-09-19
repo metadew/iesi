@@ -1,5 +1,7 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentTrace;
+package io.metadew.iesi.metadata.definition.component.trace.http;
 
+import io.metadew.iesi.metadata.definition.component.trace.ComponentTrace;
+import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceKey;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentTrace;
+package io.metadew.iesi.metadata.definition.component.trace;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import lombok.Data;
@@ -10,6 +10,12 @@ public abstract class ComponentTrace extends Metadata<ComponentTraceKey> {
 
     private final String runId;
     private final Long processId;
+    private final String actionParameter;
+    private final String componentTypeParameter;
+    private final String componentName;
+    private final String componentDescription;
+    private final Long componentVersion;
+
 
     public ComponentTrace(ComponentTraceKey metadataKey, String runId, Long processId, String actionParameter, String componentTypeParameter, String componentName, String componentDescription, Long componentVersion) {
         super(metadataKey);
@@ -21,11 +27,5 @@ public abstract class ComponentTrace extends Metadata<ComponentTraceKey> {
         this.componentDescription = componentDescription;
         this.componentVersion = componentVersion;
     }
-
-    private final String actionParameter;
-    private final String componentTypeParameter;
-    private final String componentName;
-    private final String componentDescription;
-    private final Long componentVersion;
 
 }

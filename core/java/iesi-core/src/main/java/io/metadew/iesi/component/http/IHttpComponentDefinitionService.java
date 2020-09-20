@@ -5,6 +5,8 @@ import io.metadew.iesi.script.execution.ActionExecution;
 
 public interface IHttpComponentDefinitionService {
 
-    public HttpComponentDefinition convert(Component component, ActionExecution actionExecution, String actionParameterName);
+    public HttpComponentDefinition convert(Component component, ActionExecution actionExecution);
+
+    public HttpComponentDefinition convertAndTrace(Component component, ActionExecution actionExecution, String actionParameterName);
 
 }

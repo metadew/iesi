@@ -90,10 +90,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
 
     @Override
     public void delete(ScriptVersionKey scriptVersionKey) {
-        LOGGER.trace(MessageFormat.format("Deleting ScriptVersion {0}.", scriptVersionKey.toString()));
-        if (!exists(scriptVersionKey)) {
-            throw new MetadataDoesNotExistException(scriptVersionKey);
-        }
+        LOGGER.trace(MessageFormat.format("deleting ScriptVersion {0}", scriptVersionKey.toString()));
         String deleteStatement = deleteStatement(scriptVersionKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }

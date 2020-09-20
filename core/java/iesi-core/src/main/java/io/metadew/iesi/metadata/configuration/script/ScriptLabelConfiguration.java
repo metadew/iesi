@@ -118,6 +118,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
+        LOGGER.trace(MessageFormat.format("deleting script labels for script {0}", scriptKey.toString()));
         String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
                 " WHERE " +
                 " SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) + " AND " +

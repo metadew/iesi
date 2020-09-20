@@ -107,7 +107,7 @@ class ScriptVersionConfigurationTest {
 
     @Test
     void scriptVersionDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class, () -> ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey()));
+        ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey());
     }
 
     @Test

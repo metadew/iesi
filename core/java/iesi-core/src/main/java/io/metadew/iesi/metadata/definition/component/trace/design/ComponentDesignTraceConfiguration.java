@@ -1,9 +1,10 @@
-package io.metadew.iesi.metadata.definition.component.trace.componentDesign;
+package io.metadew.iesi.metadata.definition.component.trace.design;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.definition.component.trace.design.http.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;

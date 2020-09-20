@@ -10,7 +10,7 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.component.trace.componentTrace.ComponentTraceConfiguration;
+import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
 import io.metadew.iesi.script.execution.ActionExecution;
 import org.apache.http.entity.ContentType;
 
@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class HttpComponentService implements IHttpComponentService {
 
     private static HttpComponentService INSTANCE;
-    private static final String COMPONENT_TYPE = "http.request";
 
     public synchronized static HttpComponentService getInstance() {
         if (INSTANCE == null) {
@@ -61,11 +60,19 @@ public class HttpComponentService implements IHttpComponentService {
     }
 
     @Override
-    public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName) {
+    public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution) {
         Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, 1L)
                 .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + "and version 1"));
-        HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convert(component, actionExecution, actionParameterName);
-        return convert(httpComponentDefinition, actionExecution, actionParameterName);
+        HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convert(component, actionExecution);
+        return convert(httpComponentDefinition, actionExecution);
+    }
+
+    @Override
+    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName) {
+        Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, 1L)
+                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + "and version 1"));
+        HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convertAndTrace(component, actionExecution, actionParameterName);
+        return convertAndTrace(httpComponentDefinition, actionExecution, actionParameterName);
     }
 
     @Override
@@ -75,10 +82,8 @@ public class HttpComponentService implements IHttpComponentService {
     }
 
     @Override
-    public HttpComponent convert(HttpComponentDefinition httpComponentDefinition,
-                                 ActionExecution actionExecution, String actionParameterName) {
-
-        HttpComponent httpComponent = new HttpComponent(
+    public HttpComponent convert(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution) {
+        return new HttpComponent(
                 httpComponentDefinition.getReferenceName(),
                 httpComponentDefinition.getVersion(),
                 httpComponentDefinition.getDescription(),
@@ -92,9 +97,13 @@ public class HttpComponentService implements IHttpComponentService {
                         .map(queryParameter -> HttpQueryParameterService.getInstance().convert(queryParameter, actionExecution))
                         .collect(Collectors.toList())
         );
+    }
 
-        ComponentTraceConfiguration.getInstance().insert(HttpComponentTraceService.getInstance().convert(httpComponent, actionExecution, actionParameterName, COMPONENT_TYPE));
-
+    @Override
+    public HttpComponent convertAndTrace(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution, String actionParameterName) {
+        HttpComponent httpComponent = convert(httpComponentDefinition, actionExecution);
+        HttpComponentTraceService.getInstance().trace(httpComponent, actionExecution, actionParameterName);
+        HttpConnectionTraceService.getInstance().trace(httpComponent.getHttpConnection(), actionExecution, actionParameterName);
         return httpComponent;
     }
 

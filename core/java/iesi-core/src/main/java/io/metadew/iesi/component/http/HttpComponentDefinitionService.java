@@ -2,7 +2,6 @@ package io.metadew.iesi.component.http;
 
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.metadata.definition.component.trace.componentDesign.ComponentDesignTraceConfiguration;
 import io.metadew.iesi.script.execution.ActionExecution;
 
 import java.util.stream.Collectors;
@@ -26,12 +25,11 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
     private HttpComponentDefinitionService() {
     }
 
-    public HttpComponentDefinition convert(Component component, ActionExecution actionExecution, String actionParameterName) {
+    public HttpComponentDefinition convert(Component component, ActionExecution actionExecution) {
         if (!(component.getType().equalsIgnoreCase(COMPONENT_TYPE))) {
             throw new RuntimeException("Cannot convert " + component.toString() + " to http component");
         }
-
-        HttpComponentDefinition httpComponentDefinition = new HttpComponentDefinition(
+        return new HttpComponentDefinition(
                 component.getName(),
                 component.getVersion().getMetadataKey().getComponentKey().getVersionNumber(),
                 component.getDescription(),
@@ -61,9 +59,12 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
                         .map(componentParameterValue -> HttpQueryParameterDefinitionService.getInstance().convert(componentParameterValue))
                         .collect(Collectors.toList())
         );
+    }
 
-        ComponentDesignTraceConfiguration.getInstance().insert(HttpComponentDesignTraceService.getInstance().convert(httpComponentDefinition, actionExecution, actionParameterName, COMPONENT_TYPE));
-
+    @Override
+    public HttpComponentDefinition convertAndTrace(Component component, ActionExecution actionExecution, String actionParameterName) {
+        HttpComponentDefinition httpComponentDefinition = convert(component, actionExecution);
+        HttpComponentDesignTraceService.getInstance().trace(httpComponentDefinition, actionExecution, actionParameterName);
         return httpComponentDefinition;
     }
 }

@@ -162,6 +162,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
+        LOGGER.trace(MessageFormat.format("Deleting action parameters for script {0}", scriptKey.toString()));
         String query = "delete from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";

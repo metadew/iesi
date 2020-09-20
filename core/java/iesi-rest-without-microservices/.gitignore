@@ -4,7 +4,7 @@ src/main/resources/iesikey.p12
 /run/
 /test.mv.db
 /token.trace.db
-
+/coverage/
 HELP.md
 /target/
 /out/

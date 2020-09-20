@@ -209,6 +209,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
+        LOGGER.trace(MessageFormat.format("Deleting actions for script {0}", scriptKey.toString()));
         ActionParameterConfiguration.getInstance().deleteByScript(scriptKey);
         getMetadataRepository().executeUpdate("delete from " + getMetadataRepository().getTableNameByLabel("Actions") +
                 " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +

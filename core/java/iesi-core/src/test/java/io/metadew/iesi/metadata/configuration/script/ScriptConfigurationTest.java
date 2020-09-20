@@ -191,13 +191,13 @@ designMetadataRepository.createAllTables();
 
     @Test
     void scriptDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class,() -> ScriptConfiguration.getInstance().delete(script11.getMetadataKey()));
+        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
     }
 
     @Test
     void scriptDeleteDoesNotExistMultipleVersionsTest() {
         ScriptConfiguration.getInstance().insert(script12);
-        assertThrows(MetadataDoesNotExistException.class,() -> ScriptConfiguration.getInstance().delete(script11.getMetadataKey()));
+        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
     }
 
     @Test

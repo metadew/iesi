@@ -1,18 +1,22 @@
 package io.metadew.iesi.gcp.launch;
 
 import io.metadew.iesi.gcp.bqloader.launch.BqlCommand;
+import io.metadew.iesi.gcp.dlp.launch.DlpCommand;
+import io.metadew.iesi.gcp.pubsub.launch.PubsubCommand;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command (
         subcommands = {
-                BqlCommand.class
+                BqlCommand.class,
+                DlpCommand.class,
+                PubsubCommand.class
         }
 )
 public class RootCommand implements Runnable {
     public static void main(String[] args) {
         System.setProperty("log4j.configurationFile", "log4j2-gcp.xml");
-        CommandLine.run(new RootCommand(), args);
+        new CommandLine(new RootCommand()).execute(args);
     }
 
     @Override

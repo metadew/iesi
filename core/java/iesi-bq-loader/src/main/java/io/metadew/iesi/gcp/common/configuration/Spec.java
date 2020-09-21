@@ -30,6 +30,10 @@ public class Spec {
         specs = new HashMap<>();
     }
 
+    public HashMap<String, Object> get() {
+        return specs;
+    }
+
     @SuppressWarnings("unchecked")
     public void readSpec(Path path) {
         Yaml yaml = new Yaml();
@@ -49,12 +53,10 @@ public class Spec {
             if (iesiProperties.containsKey(gcpKeyword)) {
                 Map<String, Object> specProperties = (Map<String, Object>) iesiProperties.get(gcpKeyword);
                 if (specProperties.containsKey(specKeyword)) {
-                    ConfigurationTools.update(specs, (Map<String, Object>) specProperties.get(specKeyword), iesiKeyword +"." +gcpKeyword +"." +specKeyword);
+                    ConfigurationTools.update(specs, (Map<String, Object>) specProperties.get(specKeyword));
                 }
             }
         }
-
-        System.out.println(specs.toString());
     }
 
     public String toString() {

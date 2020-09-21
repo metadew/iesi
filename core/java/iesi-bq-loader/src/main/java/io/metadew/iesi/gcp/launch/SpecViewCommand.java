@@ -16,7 +16,6 @@ public class SpecViewCommand implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("files");
         if (files != null) {
             files.forEach(path -> Spec.getInstance().readSpec(path));
         }

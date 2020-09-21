@@ -12,7 +12,6 @@ public class PubsubSubscriptionCreateCommand implements Runnable {
     @Option(names = {"-n", "--name"}, required = true, description = "the subscription to create")
     private String subscriptionName;
 
-
     @Option(names = {"-t", "--topic"}, required = true, description = "the topic for which to create the subscription")
     private String topicName;
 

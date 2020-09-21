@@ -1,6 +1,5 @@
 package io.metadew.iesi.gcp.pubsub.launch;
 
-import io.metadew.iesi.gcp.pubsub.launch.PubsubTopicCreateCommand;
 import picocli.CommandLine.Command;
 
 @Command(

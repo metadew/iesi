@@ -6,7 +6,8 @@ import picocli.CommandLine.Command;
 @Command (
         name = "pubsub",
         subcommands = {
-                PubsubTopicCommand.class
+                PubsubTopicCommand.class,
+                PubsubSubscriptionCommand.class
         }
 )
 public class PubsubCommand implements Runnable {

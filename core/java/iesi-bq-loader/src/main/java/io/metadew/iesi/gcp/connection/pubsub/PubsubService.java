@@ -45,4 +45,34 @@ public class PubsubService {
             e.printStackTrace();
         }
     }
+
+    public void createSubscription(String projectName, String topicName, String subscriptionName) {
+        Topic topic = new Topic(projectName,topicName);
+        Subscription subscription = new Subscription(topic,subscriptionName);
+
+        try {
+            if (!topic.exists()) {
+                topic.create();
+            }
+
+            if (!subscription.exists()) {
+                subscription.create();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteSubscription(String projectName, String topicName, String subscriptionName) {
+        Topic topic = new Topic(projectName,topicName);
+        Subscription subscription = new Subscription(topic,subscriptionName);
+
+        try {
+            if (subscription.exists()) {
+                subscription.delete();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

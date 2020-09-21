@@ -10,7 +10,8 @@ import picocli.CommandLine.Command;
         subcommands = {
                 BqlCommand.class,
                 DlpCommand.class,
-                PubsubCommand.class
+                PubsubCommand.class,
+                SpecCommand.class
         }
 )
 public class RootCommand implements Runnable {

@@ -66,6 +66,8 @@ public class Configuration {
                 .filter(entry -> entry.getKey().toString().startsWith(iesiKeyword + "." + configurationKeyword))
                 .forEach(entry -> {
                             log.debug("property " + entry.getKey() + " set via System variable");
+
+                            //Get lowest level property and value
                             HashMap<String, Object> filteredSystemProperties = new HashMap<>();
                             String[] splittedKey = entry.getKey().toString().split("\\.");
                             HashMap<String, Object> currentHashmap = filteredSystemProperties;
@@ -75,6 +77,15 @@ public class Configuration {
                                 currentHashmap = newHashMap;
                             }
                             currentHashmap.put(splittedKey[splittedKey.length - 1], entry.getValue());
+
+                            //Rebuild hashmap levels
+                            for (int i = splittedKey.length - 2; i > 1; i--) {
+                                HashMap<String, Object> newHashMap = new HashMap<>();
+                                newHashMap.put(splittedKey[i], currentHashmap);
+                                currentHashmap = newHashMap;
+                            }
+
+                            //Update properties
                             update(properties, currentHashmap, "");
                         }
 
@@ -151,8 +162,8 @@ public class Configuration {
                         original.put(entry.getKey(), entry.getValue());
                     }
                 } else {
-                    throw new RuntimeException("original value " + initialKey + original.get(entry.getKey()) + " (" + original.get(entry.getKey()).getClass().getSimpleName() + ")" +
-                            " does not match update value " + initialKey + entry.getValue() + " (" + entry.getValue().getClass().getSimpleName() + ")");
+                    //Different structures are allowed. This makes it possible to overwrite values
+                    original.putAll(update);
                 }
             } else {
                 original.putAll(update);

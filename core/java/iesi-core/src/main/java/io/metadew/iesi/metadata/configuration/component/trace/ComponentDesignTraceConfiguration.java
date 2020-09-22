@@ -1,9 +1,11 @@
-package io.metadew.iesi.metadata.definition.component.trace.design;
+package io.metadew.iesi.metadata.configuration.component.trace;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.definition.component.trace.design.ComponentDesignTrace;
+import io.metadew.iesi.metadata.definition.component.trace.design.ComponentDesignTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.design.http.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +31,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
     }
 
     private ComponentDesignTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override
@@ -41,16 +43,16 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                     "TraceComponentDesign.COMP_TYP_NM as TraceComponentDesign_COMP_TYP_NM, TraceComponentDesign.COMP_NM as TraceComponentDesign_COMP_NM, " +
                     "TraceComponentDesign.COMP_DSC as TraceComponentDesign_COMP_DSC, TraceComponentDesign.COMP_VRS_NB as TraceComponentDesign_COMP_VRS_NB, " +
                     " TraceHttpComponentDesign.ID as TraceHttpComponentDesign_ID, TraceHttpComponentDesign.CONN_NM as TraceHttpComponentDesign_CONN_NM, TraceHttpComponentDesign.TYPE as TraceHttpComponentDesign_TYPE, TraceHttpComponentDesign.ENDPOINT as TraceHttpComponentDesign_ENDPOINT, " +
-                    " TraceHttpComponentHeaderDesign.ID as TraceHttpComponentHeaderDesign_ID, TraceHttpComponentHeaderDesign.HEADER_DES_ID as TraceHttpComponentHeaderDesign_HEADER_DES_ID, TraceHttpComponentHeaderDesign.NAME as TraceHttpComponentHeaderDesign_NAME , TraceHttpComponentHeaderDesign.VALUE as TraceHttpComponentHeaderDesign_VALUE, " +
-                    " TraceHttpComponentQueryDesign.ID as TraceHttpComponentQueryDesign_ID, TraceHttpComponentQueryDesign.QUERY_DES_ID as TraceHttpComponentQueryDesign_QUERY_DES_ID, TraceHttpComponentQueryDesign.NAME as TraceHttpComponentQueryDesign_NAME, TraceHttpComponentQueryDesign.VALUE as TraceHttpComponentQueryDesign_VALUE" +
+                    " TraceHttpComponentHeaderDesign.ID as TraceHttpComponentHeaderDesign_ID, TraceHttpComponentHeaderDesign.HTTP_COMP_DES_ID as TraceHttpComponentHeaderDesign_HTTP_COMP_DES_ID, TraceHttpComponentHeaderDesign.NAME as TraceHttpComponentHeaderDesign_NAME , TraceHttpComponentHeaderDesign.VALUE as TraceHttpComponentHeaderDesign_VALUE, " +
+                    " TraceHttpComponentQueryDesign.ID as TraceHttpComponentQueryDesign_ID, TraceHttpComponentQueryDesign.HTTP_COMP_DES_ID as TraceHttpComponentQueryDesign_HTTP_COMP_DES_ID, TraceHttpComponentQueryDesign.NAME as TraceHttpComponentQueryDesign_NAME, TraceHttpComponentQueryDesign.VALUE as TraceHttpComponentQueryDesign_VALUE" +
                     " FROM " +
                     MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponentDesign").getName() + " TraceComponentDesign " +
                     " left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentDesign").getName() + " TraceHttpComponentDesign " +
                     "on TraceComponentDesign.ID=TraceHttpComponentDesign.ID " +
                     " left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeaderDesign").getName() + " TraceHttpComponentHeaderDesign " +
-                    "on TraceHttpComponentDesign.ID=TraceHttpComponentHeaderDesign.HEADER_DES_ID " +
+                    "on TraceHttpComponentDesign.ID=TraceHttpComponentHeaderDesign.HTTP_COMP_DES_ID " +
                     " left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQueryDesign").getName() + " TraceHttpComponentQueryDesign " +
-                    "on TraceHttpComponentDesign.ID=TraceHttpComponentQueryDesign.QUERY_DES_ID " +
+                    "on TraceHttpComponentDesign.ID=TraceHttpComponentQueryDesign.HTTP_COMP_DES_ID " +
                     " WHERE TraceComponentDesign.ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
@@ -73,16 +75,16 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                     "TraceComponentDesign.COMP_TYP_NM as TraceComponentDesign_COMP_TYP_NM, TraceComponentDesign.COMP_NM as TraceComponentDesign_COMP_NM, " +
                     "TraceComponentDesign.COMP_DSC as TraceComponentDesign_COMP_DSC, TraceComponentDesign.COMP_VRS_NB as TraceComponentDesign_COMP_VRS_NB, " +
                     " TraceHttpComponentDesign.ID as TraceHttpComponentDesign_ID, TraceHttpComponentDesign.CONN_NM as TraceHttpComponentDesign_CONN_NM, TraceHttpComponentDesign.TYPE as TraceHttpComponentDesign_TYPE, TraceHttpComponentDesign.ENDPOINT as TraceHttpComponentDesign_ENDPOINT, " +
-                    " TraceHttpComponentHeaderDesign.ID as TraceHttpComponentHeaderDesign_ID, TraceHttpComponentHeaderDesign.HEADER_DES_ID as TraceHttpComponentHeaderDesign_HEADER_DES_ID, TraceHttpComponentHeaderDesign.NAME as TraceHttpComponentHeaderDesign_NAME , TraceHttpComponentHeaderDesign.VALUE as TraceHttpComponentHeaderDesign_VALUE, " +
-                    " TraceHttpComponentQueryDesign.ID as TraceHttpComponentQueryDesign_ID, TraceHttpComponentQueryDesign.QUERY_DES_ID as TraceHttpComponentQueryDesign_QUERY_DES_ID, TraceHttpComponentQueryDesign.NAME as TraceHttpComponentQueryDesign_NAME, TraceHttpComponentQueryDesign.VALUE as TraceHttpComponentQueryDesign_VALUE" +
+                    " TraceHttpComponentHeaderDesign.ID as TraceHttpComponentHeaderDesign_ID, TraceHttpComponentHeaderDesign.HTTP_COMP_DES_ID as TraceHttpComponentHeaderDesign_HTTP_COMP_DES_ID, TraceHttpComponentHeaderDesign.NAME as TraceHttpComponentHeaderDesign_NAME , TraceHttpComponentHeaderDesign.VALUE as TraceHttpComponentHeaderDesign_VALUE, " +
+                    " TraceHttpComponentQueryDesign.ID as TraceHttpComponentQueryDesign_ID, TraceHttpComponentQueryDesign.HTTP_COMP_DES_ID as TraceHttpComponentQueryDesign_HTTP_COMP_DES_ID, TraceHttpComponentQueryDesign.NAME as TraceHttpComponentQueryDesign_NAME, TraceHttpComponentQueryDesign.VALUE as TraceHttpComponentQueryDesign_VALUE" +
                     " FROM " +
                     MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponentDesign").getName() + " TraceComponentDesign" +
                     " left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentDesign").getName() + " TraceHttpComponentDesign " +
                     "on TraceComponentDesign.ID=TraceHttpComponentDesign.ID " +
                     " left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeaderDesign").getName() + " TraceHttpComponentHeaderDesign " +
-                    "on TraceHttpComponentDesign.ID=TraceHttpComponentHeaderDesign.HEADER_DES_ID " +
+                    "on TraceHttpComponentDesign.ID=TraceHttpComponentHeaderDesign.HTTP_COMP_DES_ID " +
                     " left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQueryDesign").getName() + " TraceHttpComponentQueryDesign " +
-                    "on TraceHttpComponentDesign.ID=TraceHttpComponentQueryDesign.QUERY_DES_ID " + ";";
+                    "on TraceHttpComponentDesign.ID=TraceHttpComponentQueryDesign.HTTP_COMP_DES_ID " + ";";
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -98,6 +100,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
 
     @Override
     public void delete(ComponentDesignTraceKey metadataKey) {
+        log.trace("deleting " + metadataKey.toString());
         String deleteTraceComponentDesign = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponentDesign").getName() +
                 " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceComponentDesign);
@@ -105,10 +108,10 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                 " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponentDesign);
         String deleteTraceHttpComponentHeaderDesign = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeaderDesign").getName() +
-                " WHERE HEADER_DES_ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE HTTP_COMP_DES_ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponentHeaderDesign);
         String deleteTraceHttpComponentQueryDesign = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQueryDesign").getName() +
-                " WHERE QUERY_DES_ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE HTTP_COMP_DES_ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponentQueryDesign);
     }
 
@@ -116,7 +119,6 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
     @Override
     public void insert(HttpComponentDesignTrace metadata) {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
-
         String insertStatementTraceComponentDesign = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponentDesign").getName() +
                 " (ID, RUN_ID,  PRC_ID, ACTION_PAR_NM, COMP_TYP_NM, COMP_NM, COMP_DSC, COMP_VRS_NB ) VALUES (" +
                 SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()) + ", " +
@@ -143,7 +145,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
         metadata.getHttpComponentHeaderDesigns().forEach(httpComponentHeaderTrace ->
                 getMetadataRepository().executeUpdate(
                         "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeaderDesign").getName() +
-                                " (ID, HEADER_DES_ID, NAME, VALUE ) VALUES " +
+                                " (ID, HTTP_COMP_DES_ID, NAME, VALUE ) VALUES " +
                                 " ( " +
                                 SQLTools.GetStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentHeaderTrace.getHttpComponentDesignID().getUuid().toString()) + ", " +
@@ -154,7 +156,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
         metadata.getHttpComponentQueryDesigns().forEach(httpComponentQueryTrace ->
                 getMetadataRepository().executeUpdate(
                         "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQueryDesign").getName() +
-                                " (ID, QUERY_DES_ID,  NAME, VALUE )  VALUES " +
+                                " (ID, HTTP_COMP_DES_ID,  NAME, VALUE )  VALUES " +
                                 " ( " +
                                 SQLTools.GetStringForSQL(httpComponentQueryTrace.getMetadataKey().getUuid().toString()) + ", " +
                                 SQLTools.GetStringForSQL(httpComponentQueryTrace.getHttpComponentQueryDesignID().getUuid().toString()) + ", " +
@@ -197,7 +199,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                     mapHttpComponentHeaderDesignsId,
                     new HttpComponentHeaderDesignTrace(
                             new HttpComponentHeaderDesignTraceKey(UUID.fromString(mapHttpComponentHeaderDesignsId)),
-                            new ComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeaderDesign_HEADER_DES_ID"))),
+                            new ComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeaderDesign_HTTP_COMP_DES_ID"))),
                             cachedRowSet.getString("TraceHttpComponentHeaderDesign_NAME"),
                             cachedRowSet.getString("TraceHttpComponentHeaderDesign_VALUE")
                     )
@@ -212,7 +214,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                     httpComponentDesignQueryId,
                     new HttpComponentQueryParameterDesignTrace(
                         new HttpComponentQueryParameterDesignTraceKey(UUID.fromString(httpComponentDesignQueryId)),
-                            new ComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQueryDesign_QUERY_DES_ID"))),
+                            new ComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQueryDesign_HTTP_COMP_DES_ID"))),
                             cachedRowSet.getString("TraceHttpComponentQueryDesign_NAME"),
                             cachedRowSet.getString("TraceHttpComponentQueryDesign_VALUE")
                     )

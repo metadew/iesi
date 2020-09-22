@@ -12,12 +12,14 @@ import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
 import io.metadew.iesi.script.execution.ActionExecution;
+import lombok.extern.log4j.Log4j2;
 import org.apache.http.entity.ContentType;
 
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class HttpComponentService implements IHttpComponentService {
 
     private static HttpComponentService INSTANCE;

@@ -3322,7 +3322,7 @@ iesi:
             length: 255
             nullable: false
             primaryKey: true
-          HEADER_DES_ID:
+          HTTP_COMP_DES_ID:
             description: Unique short name for the TraceHttpComponentHeaderDesign
             order: 2
             type: string
@@ -3355,7 +3355,7 @@ iesi:
             length: 255
             nullable: false
             primaryKey: true
-          QUERY_DES_ID:
+          HTTP_COMP_DES_ID:
             description: Unique short name for the TraceHttpComponentQueryDesign
             order: 2
             type: string

@@ -1,9 +1,11 @@
-package io.metadew.iesi.metadata.definition.component.trace;
+package io.metadew.iesi.metadata.configuration.component.trace;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.definition.component.trace.ComponentTrace;
+import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.http.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,7 +32,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
     }
 
     private ComponentTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
 
@@ -101,6 +103,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
 
     @Override
     public void delete(ComponentTraceKey metadataKey) {
+        log.trace("deleting " + metadataKey.toString());
         String deleteTraceComponent = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponent").getName() +
                 " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceComponent);

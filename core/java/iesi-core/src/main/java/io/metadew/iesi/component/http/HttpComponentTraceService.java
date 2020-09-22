@@ -1,6 +1,6 @@
 package io.metadew.iesi.component.http;
 
-import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.component.trace.ComponentTraceConfiguration;
 import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.http.*;
 import io.metadew.iesi.script.execution.ActionExecution;

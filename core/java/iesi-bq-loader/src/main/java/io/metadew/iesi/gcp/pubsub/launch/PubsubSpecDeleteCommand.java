@@ -16,10 +16,10 @@ import java.nio.file.Path;
 import java.util.*;
 
 @Command(
-        name = "create"
+        name = "delete"
 )
-public class PubsubSpecCreateCommand implements Runnable {
-    @Option(names = {"-p", "--project"}, description = "the project where to create the spec")
+public class PubsubSpecDeleteCommand implements Runnable {
+    @Option(names = {"-p", "--project"}, description = "the project where to delete the spec")
     private String projectName;
 
     @Parameters
@@ -41,12 +41,12 @@ public class PubsubSpecCreateCommand implements Runnable {
 
             //Create the topics and subscriptions
             for (PubsubTopicSpec pubsubTopicSpec : pubsubSpec.getTopics()) {
-                PubsubService.getInstance().createTopic(whichProject,pubsubTopicSpec.getName());
                 if ( pubsubTopicSpec.getSubscriptions() != null) {
                     for (PubsubSubscriptionSpec pubsubSubscriptionSpec : pubsubTopicSpec.getSubscriptions()) {
-                        PubsubService.getInstance().createSubscription(whichProject, pubsubTopicSpec.getName(), pubsubSubscriptionSpec.getName());
+                        PubsubService.getInstance().deleteSubscription(whichProject, pubsubTopicSpec.getName(), pubsubSubscriptionSpec.getName());
                     }
                 }
+                PubsubService.getInstance().deleteTopic(whichProject,pubsubTopicSpec.getName());
             }
         }
 

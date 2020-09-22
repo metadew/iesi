@@ -5,7 +5,8 @@ import picocli.CommandLine.Command;
 @Command(
         name = "spec",
         subcommands = {
-                PubsubSpecCreateCommand.class
+                PubsubSpecCreateCommand.class,
+                PubsubSpecDeleteCommand.class
         }
 )
 public class PubsubSpecCommand implements Runnable {

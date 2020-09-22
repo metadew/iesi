@@ -20,6 +20,8 @@ public class Mount {
             whichProject = cliProject;
         } else if (Configuration.getInstance().getProperty("iesi.gcp.project").isPresent()) {
             whichProject = Configuration.getInstance().getProperty("iesi.gcp.project").get().toString();
+        } else if (Spec.getInstance().getSpec("project").isPresent()) {
+            whichProject = Spec.getInstance().getSpec("project").get().toString();
         }
 
         //Ensure that a project is available

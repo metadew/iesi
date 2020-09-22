@@ -5,18 +5,18 @@ import com.google.cloud.bigquery.*;
 import java.util.List;
 import java.util.Map;
 
-public class BigqueryService {
+public class BigqueryConnection {
 
-    private static BigqueryService INSTANCE;
+    private static BigqueryConnection INSTANCE;
 
-    public synchronized static BigqueryService getInstance() {
+    public synchronized static BigqueryConnection getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new BigqueryService();
+            INSTANCE = new BigqueryConnection();
         }
         return INSTANCE;
     }
 
-    private BigqueryService () {
+    private BigqueryConnection() {
 
     }
 

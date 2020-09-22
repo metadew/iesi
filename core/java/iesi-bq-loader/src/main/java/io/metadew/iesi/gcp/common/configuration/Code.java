@@ -4,7 +4,8 @@ public enum Code {
     BQL("bql"),
     PUBSUB("pubsub"),
     TOPIC("topic"),
-    SUBSCRIPTION("subscription");
+    SUBSCRIPTION("subscription"),
+    DLP("dlp");
 
     private String value;
 

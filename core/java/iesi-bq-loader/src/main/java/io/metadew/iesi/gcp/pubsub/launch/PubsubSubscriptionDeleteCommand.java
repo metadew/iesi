@@ -1,7 +1,7 @@
 package io.metadew.iesi.gcp.pubsub.launch;
 
 import io.metadew.iesi.gcp.common.configuration.Mount;
-import io.metadew.iesi.gcp.connection.pubsub.PubsubService;
+import io.metadew.iesi.gcp.connection.pubsub.PubsubConnection;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -22,6 +22,6 @@ public class PubsubSubscriptionDeleteCommand implements Runnable {
     @Override
     public void run() {
         String whichProject = Mount.getInstance().getProjectName(projectName);
-        PubsubService.getInstance().deleteSubscription(whichProject,topicName,subscriptionName);
+        PubsubConnection.getInstance().deleteSubscription(whichProject,topicName,subscriptionName);
     }
 }

@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.gcp.common.configuration.Code;
 import io.metadew.iesi.gcp.common.configuration.Mount;
 import io.metadew.iesi.gcp.common.configuration.Spec;
-import io.metadew.iesi.gcp.connection.pubsub.PubsubService;
+import io.metadew.iesi.gcp.connection.pubsub.PubsubConnection;
+import io.metadew.iesi.gcp.pubsub.common.PubsubService;
 import io.metadew.iesi.gcp.spec.pubsub.PubsubSpec;
 import io.metadew.iesi.gcp.spec.pubsub.PubsubSubscriptionSpec;
 import io.metadew.iesi.gcp.spec.pubsub.PubsubTopicSpec;
@@ -19,6 +20,9 @@ import java.util.*;
         name = "create"
 )
 public class PubsubSpecCreateCommand implements Runnable {
+    @Option(names = {"-n", "--name"}, required = true, description = "the pubsup name to create")
+    private String pubsubName;
+
     @Option(names = {"-p", "--project"}, description = "the project where to create the spec")
     private String projectName;
 
@@ -34,17 +38,17 @@ public class PubsubSpecCreateCommand implements Runnable {
             files.forEach(path -> Spec.getInstance().readSpec(path));
         }
 
-        //Run through and apply the spec
-        if (Spec.getInstance().get().containsKey(Code.PUBSUB.value())) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            PubsubSpec pubsubSpec = objectMapper.convertValue(Spec.getInstance().get().get(Code.PUBSUB.value()), PubsubSpec.class);
+        //Create the pubsub service
+        PubsubService.getInstance().init(whichProject,pubsubName);
 
+        //Run through and apply the spec
+        if (PubsubService.getInstance().getPubsubSpec() != null) {
             //Create the topics and subscriptions
-            for (PubsubTopicSpec pubsubTopicSpec : pubsubSpec.getTopics()) {
-                PubsubService.getInstance().createTopic(whichProject,pubsubTopicSpec.getName());
+            for (PubsubTopicSpec pubsubTopicSpec : PubsubService.getInstance().getPubsubSpec().getTopics()) {
+                PubsubConnection.getInstance().createTopic(whichProject,pubsubTopicSpec.getName());
                 if ( pubsubTopicSpec.getSubscriptions() != null) {
                     for (PubsubSubscriptionSpec pubsubSubscriptionSpec : pubsubTopicSpec.getSubscriptions()) {
-                        PubsubService.getInstance().createSubscription(whichProject, pubsubTopicSpec.getName(), pubsubSubscriptionSpec.getName());
+                        PubsubConnection.getInstance().createSubscription(whichProject, pubsubTopicSpec.getName(), pubsubSubscriptionSpec.getName());
                     }
                 }
             }

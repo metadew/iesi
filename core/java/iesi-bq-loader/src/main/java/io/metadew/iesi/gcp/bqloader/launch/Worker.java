@@ -8,14 +8,8 @@ import com.google.pubsub.v1.PubsubMessage;
 
 import io.metadew.iesi.connection.publisher.ScriptResultDto;
 import io.metadew.iesi.connection.publisher.ScriptResultDtoService;
-import io.metadew.iesi.gcp.connection.bigquery.BigqueryService;
+import io.metadew.iesi.gcp.connection.bigquery.BigqueryConnection;
 import io.metadew.iesi.gcp.bqloader.configuration.bigquery.ScriptResultsConfiguration;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.HelpFormatter;
 
 import java.io.IOException;
 
@@ -34,7 +28,7 @@ public class Worker
                 // Save to GCS
                 // https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-json
 
-                BigqueryService.getInstance().tableInsertRows("iesi_results", "res_script", ScriptResultsConfiguration.getInstance().getRowContent(scriptResultDto));
+                BigqueryConnection.getInstance().tableInsertRows("iesi_results", "res_script", ScriptResultsConfiguration.getInstance().getRowContent(scriptResultDto));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -46,13 +40,13 @@ public class Worker
             consumer.ack();
         }
     }
-    public static void main( String[] args ) throws IOException, InterruptedException {
+    public static void main( String[] args ) {
 
         // set subscriber id, eg. my-sub
         String subscriptionId = "iesi-scriptresults-bigquery";
         ProjectSubscriptionName subscriptionName =
                 ProjectSubscriptionName.of("iesi-01", subscriptionId);
-        Subscriber subscriber = null;
+        Subscriber subscriber;
         try {
             // create a subscriber bound to the asynchronous message receiver
             subscriber = Subscriber.newBuilder(subscriptionName, new MessageReceiverExample()).build();

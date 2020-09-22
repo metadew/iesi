@@ -1,19 +1,19 @@
 package io.metadew.iesi.gcp.connection.pubsub;
 
-public class PubsubService {
+public class PubsubConnection {
 
-    private static PubsubService INSTANCE;
+    private static PubsubConnection INSTANCE;
 
-    public synchronized static PubsubService getInstance() {
+    public synchronized static PubsubConnection getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new PubsubService();
+            INSTANCE = new PubsubConnection();
         }
         return INSTANCE;
     }
 
     //TODO improve logging
     //TODO automatically find subscriptions and display error
-    private PubsubService () {
+    private PubsubConnection() {
 
     }
 

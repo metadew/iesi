@@ -6,9 +6,8 @@ import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
-import io.metadew.iesi.script.operation.ConditionOperation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.metadew.iesi.script.service.ConditionService;
+import lombok.extern.log4j.Log4j2;
 
 import javax.script.ScriptException;
 import java.io.PrintWriter;
@@ -18,9 +17,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 
+@Log4j2
 public class ActionExecution {
 
-    private final static Logger LOGGER = LogManager.getLogger();
     private ExecutionControl executionControl;
     private ActionControl actionControl;
     private ScriptExecution scriptExecution;
@@ -48,8 +47,8 @@ public class ActionExecution {
     public void execute(IterationInstance iterationInstance) throws InterruptedException {
         this.executed = true;
 
-        LOGGER.info("action.name=" + action.getName());
-        LOGGER.debug("action.prcid=" + processId);
+        log.info("action.name=" + action.getName());
+        log.debug("action.prcid=" + processId);
 
         // Log Start
         executionControl.logStart(this);
@@ -71,7 +70,7 @@ public class ActionExecution {
             }
 
             String className = ActionTypeConfiguration.getInstance().getActionType(action.getType()).getClassName();
-            LOGGER.debug("action.type=" + action.getType());
+            log.debug("action.type=" + action.getType());
 
             Class classRef = Class.forName(className);
 
@@ -82,22 +81,10 @@ public class ActionExecution {
             // Store actionTypeExecution
             this.actionTypeExecution = instance;
 
-            // Check condition, execute by default
-            boolean conditionResult = true;
-            if (action.getCondition() != null && !action.getCondition().isEmpty() && !action.getCondition().equalsIgnoreCase("null")) {
-                ConditionOperation conditionOperation = new ConditionOperation(this, action.getCondition());
-                try {
-                    conditionResult = conditionOperation.evaluateCondition();
-                } catch (ScriptException exception) {
-                    conditionResult = true;
-                    LOGGER.warn("action.condition=" + action.getCondition());
-                    LOGGER.warn("action.condition.error=" + exception.getMessage());
-                }
-            }
-            instance.prepare();
-
             // Execution
-            if (conditionResult) {
+            if (evaluateCondition(action.getCondition())) {
+                instance.prepare();
+
                 LocalDateTime start = LocalDateTime.now();
                 instance.execute();
                 ActionPerformanceLogger.getInstance().log(this, "action", start, LocalDateTime.now());
@@ -120,13 +107,13 @@ public class ActionExecution {
                     if (action.getErrorExpected()) {
                         actionControl.getExecutionMetrics().resetErrorCount();
                         actionControl.getExecutionMetrics().increaseSuccessCount(1);
-                        LOGGER.info("action.status=ERROR:expected");
+                        log.info("action.status=ERROR:expected");
                     }
                 } else {
                     if (action.getErrorExpected()) {
                         actionControl.getExecutionMetrics().resetSuccessCount();
                         actionControl.getExecutionMetrics().increaseErrorCount(1);
-                        LOGGER.info("action.status=SUCCESS:unexpected");
+                        log.info("action.status=SUCCESS:unexpected");
                     }
                 }
 
@@ -141,21 +128,36 @@ public class ActionExecution {
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.info("action.error=" + e);
-            LOGGER.debug("action.stacktrace=" + stackTrace);
+            log.info("action.error=" + e);
+            log.debug("action.stacktrace=" + stackTrace);
             actionControl.increaseErrorCount();
         }
         actionControl.getActionRuntime().getRuntimeActionCacheConfiguration().shutdown();
         executionControl.logEnd(this, scriptExecution);
     }
 
+    private boolean evaluateCondition(String condition) {
+        if (condition == null || condition.isEmpty() || condition.equalsIgnoreCase("null")) {
+            return true;
+        } else {
+            log.info("action.condition=" + condition);
+            try {
+                return ConditionService.getInstance()
+                        .evaluateCondition(condition, executionControl.getExecutionRuntime(), this);
+            } catch (ScriptException e) {
+                log.warn("action.condition.error=" + e.getMessage());
+                return false;
+            }
+        }
+    }
+
     private void dummy() throws InterruptedException {
     }
 
     public void skip() {
-        LOGGER.info("action.name=" + action.getName());
-        LOGGER.debug("action.id=" + action.getMetadataKey().getActionId());
-        LOGGER.info("action.selection.skip");
+        log.info("action.name=" + action.getName());
+        log.debug("action.id=" + action.getMetadataKey().getActionId());
+        log.info("action.selection.skip");
 
         // Log Skip
         executionControl.logSkip(this);

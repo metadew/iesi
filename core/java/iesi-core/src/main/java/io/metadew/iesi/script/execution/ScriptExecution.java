@@ -80,7 +80,7 @@ public abstract class ScriptExecution {
 					iterationExecution.initialize(executionControl, actionExecution, action.getIteration());
 				}
 
-				while (iterationExecution.hasNext()) {
+				while (iterationExecution.hasNext(actionExecution)) {
 					actionExecution.initialize();
 					actionExecution.execute(iterationExecution.getIterationInstance());
 					int retryCounter = 1;

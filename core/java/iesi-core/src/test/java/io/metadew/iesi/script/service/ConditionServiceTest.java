@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.service;
 
 import io.metadew.iesi.script.execution.ActionExecution;
+import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.Test;
@@ -8,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import javax.script.ScriptException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 // https://commons.apache.org/proper/commons-jexl/reference/syntax.html
 class ConditionServiceTest {
@@ -73,5 +73,12 @@ class ConditionServiceTest {
                 .isFalse();
     }
 
+
+    @Test
+    void test() {
+        ExecutionControl executionControl = mock(ExecutionControl.class);
+        ExecutionRuntime executionRuntime = new ExecutionRuntime(executionControl, "runId");
+        System.out.println(executionRuntime.resolveConceptLookup("{{*date.today()}} == {{*date.today()}}").getValue());
+    }
 
 }

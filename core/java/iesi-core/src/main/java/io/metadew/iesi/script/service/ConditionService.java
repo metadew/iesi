@@ -36,6 +36,7 @@ public class ConditionService implements IConditionService {
 
     public boolean evaluateCondition(String expression, String syntax, ExecutionRuntime executionRuntime, ActionExecution actionExecution) throws ScriptException {
         String resolvedExpression = resolveExpression(expression, executionRuntime, actionExecution);
+        log.info("action.condition.resolved=" + resolvedExpression);
         switch (syntax) {
             case "javascript":
             case "js":

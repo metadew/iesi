@@ -1,0 +1,18 @@
+iesi:
+  gcp:
+    spec:
+      name: "dlp-sample"
+      project: ""
+      pubsub:
+        - name: "dlp-sample"
+          topics:
+            - name: "dlp-in"
+              subscriptions:
+                - name: "dlp-in-sub"
+            - name: "dlp-out"
+              subscriptions:
+                - name: "dlp-out-sub"
+      dlp:
+        - name: "dlp-sample"
+          input: "dlp-in-sub"
+          output: "dlp-out"

@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class Worker {
 
     public static void main(String[] args) throws Exception {
-        String projectId = "";
+        String projectId = "iesi-01";
         String textToInspect = "My name is Alicia Abernathy, and my email address is aabernathy@example.com.";
         deIdentifyWithRedaction(projectId, textToInspect);
         deIdentifyWithReplacement(projectId, textToInspect);
@@ -79,7 +79,7 @@ public class Worker {
             InspectConfig inspectConfig = InspectConfig.newBuilder().addInfoTypes(infoType).build();
             // Specify replacement string to be used for the finding.
             ReplaceValueConfig replaceValueConfig = ReplaceValueConfig.newBuilder()
-                    .setNewValue(Value.newBuilder().setStringValue("[email-address]").build())
+                    .setNewValue(Value.newBuilder().setStringValue("[EMAIL_ADDRESS]").build())
                     .build();
             // Define type of deidentification as replacement.
             PrimitiveTransformation primitiveTransformation = PrimitiveTransformation.newBuilder()
@@ -139,7 +139,7 @@ public class Worker {
                             .build();
             PrimitiveTransformation primitiveTransformation =
                     PrimitiveTransformation.newBuilder()
-                            .setReplaceWithInfoTypeConfig(ReplaceWithInfoTypeConfig.getDefaultInstance())
+                            .setCharacterMaskConfig(characterMaskConfig)
                             .build();
             InfoTypeTransformations.InfoTypeTransformation infoTypeTransformation =
                     InfoTypeTransformations.InfoTypeTransformation.newBuilder()

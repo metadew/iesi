@@ -62,18 +62,20 @@ public class DlpInstanceStartCommand implements Runnable {
         public void receiveMessage(PubsubMessage message, AckReplyConsumer consumer) {
             String data = message.getData().toStringUtf8();
             System.out.println(
-                    "Message Id: " + message.getMessageId() + " Data: " + data);
-            nextHop(data);
+                    "[I] " + message.getMessageId());
+            String result = DlpService.getInstance().deIdentifyWithReplacement(data);
             // Ack only after all work for the message is complete.
             consumer.ack();
+            nextHop(message.getMessageId(), result);
         }
 
-        public void nextHop(String message) {
+        public void nextHop(String sourceMessageId, String message) {
             //Define the topic and subscription
             Topic topic = new Topic(DlpService.getInstance().getProjectName(), DlpService.getInstance().getDlpSpec().getOutput());
 
             try {
-                topic.publish(message);
+                System.out.println("[O] " + sourceMessageId + " -> " + topic.publish(message));
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

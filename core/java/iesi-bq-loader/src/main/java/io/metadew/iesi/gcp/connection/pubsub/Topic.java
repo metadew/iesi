@@ -62,7 +62,7 @@ public class Topic {
     }
 
     public boolean exists() {
-        boolean result = false;
+        boolean result;
         try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
             topicAdminClient.getTopic(this.getTopicName());
             result = true;
@@ -72,8 +72,9 @@ public class Topic {
         return result;
     }
 
-    public void publish(String message) throws InterruptedException, IOException {
+    public String publish(String message) throws InterruptedException, IOException {
         Publisher publisher = null;
+        final String[] publishedMessageId = {""};
         try {
             publisher = Publisher.newBuilder(this.getTopicName()).build();
             ByteString data = ByteString.copyFromUtf8(message);
@@ -81,7 +82,7 @@ public class Topic {
             ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
             ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
                 public void onSuccess(String messageId) {
-                    System.out.println("published with message id: " + messageId);
+                    publishedMessageId[0] = messageId;
                 }
 
                 public void onFailure(Throwable t) {
@@ -94,6 +95,7 @@ public class Topic {
                 publisher.awaitTermination(1, TimeUnit.MINUTES);
             }
         }
+        return publishedMessageId[0];
 
     }
 }

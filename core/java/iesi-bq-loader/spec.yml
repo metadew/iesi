@@ -15,4 +15,4 @@ iesi:
       dlp:
         - name: "dlp-sample"
           input: "dlp-in-sub"
-          output: "dlp-out"
+          output: "dlp-out" 

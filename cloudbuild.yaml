@@ -8,8 +8,16 @@ steps:
   args: [ '-c', 'ls -la']
   dir: build/ext
 - name: maven:3-jdk-8
-  entrypoint: mvn
-  args: ['install:install-file', '-Dfile=xeger-1.0.jar', '-DgroupId=nl.flotsam', '-DartifactId=xeger', '-Dversion=1.0', '-Dpackaging=jar']
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mvn install:install-file -Dfile=build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar \
+    && mvn install:install-file -Dfile=build/ext/artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar \
+    && mvn install:install-file -Dfile=build/ext/artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar \
+    && mvn install:install-file -Dfile=build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.6.0 -Dpackaging=jarDpackaging=jar \
+    && mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jarDpackaging=jar \
+    && mvn test
   dir: build/ext
 - name: maven:3-jdk-8
   entrypoint: mvn

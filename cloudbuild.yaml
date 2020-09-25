@@ -13,6 +13,7 @@ steps:
     && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies \
     && mkdir -p ../iesi-rest-without-microservices/run/cache \
     && mkdir -p ../iesi-rest-without-microservices/metadata/gen \
+    && ls -lah ../iesi-rest-without-microservices \
     && mvn -f ../iesi-rest-without-microservices test \
     && mvn -f ../iesi-rest-without-microservices -Dmaven.test.skip=true -P package project-info-reports:dependencies
   dir: core/java/iesi-core

@@ -7,7 +7,7 @@ steps:
   args: [ '-c', 'ls -la']
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
-  args: [ 'cd', 'core']
+  args: [ '-c', 'cd', 'core']
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args: [ '-c', 'ls -la']

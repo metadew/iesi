@@ -11,6 +11,8 @@ steps:
     && mvn install:install-file -Dfile=../../../build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar \
     && mvn test \
     && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies \
+    && mkdir -p ../iesi-rest-without-microservices/run/cache \
+    && mkdir -p ../iesi-rest-without-microservices/metadata/gen \
     && mvn -f ../iesi-rest-without-microservices test \
     && mvn -f ../iesi-rest-without-microservices -Dmaven.test.skip=true -P package project-info-reports:dependencies
   dir: core/java/iesi-core

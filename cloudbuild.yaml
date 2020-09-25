@@ -2,3 +2,12 @@ steps:
 - name: maven:3-jdk-8
   entrypoint: mvn
   args: ['--version']
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args: [ '-c', 'ls -la']
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args: [ 'cd', 'core']
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args: [ '-c', 'ls -la']

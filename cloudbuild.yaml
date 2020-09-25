@@ -3,6 +3,14 @@ steps:
   entrypoint: 'bash'
   args: [ '-c', 'ls -la']
   dir: core/java/iesi-core
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args: [ '-c', 'ls -la']
+  dir: build/ext
+- name: maven:3-jdk-8
+  entrypoint: mvn
+  args: ['install:install-file', '-Dfile=xeger-1.0.jar', '-DgroupId=nl.flotsam', '-DartifactId=xeger', '-Dversion=1.0', '-Dpackaging=jar']
+  dir: build/ext
 - name: maven:3-jdk-8
   entrypoint: mvn
   args: ['test']

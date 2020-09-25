@@ -66,10 +66,9 @@ public class SqlEvaluateResult extends ActionTypeExecution {
         boolean hasResult = convertHasResult(getExpectedResult().getValue());
         String connectionName = convertConnectionName(getConnectionName().getValue());
 
-        Connection connection;
-        connection = ConnectionConfiguration.getInstance()
+        Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .orElseThrow(() -> new RuntimeException("Unknown connection name"));
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
 

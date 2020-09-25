@@ -55,10 +55,9 @@ public class SqlExecuteStatement extends ActionTypeExecution {
         String sqlStatement = convertSqlStatement(getSqlStatement().getValue());
         String connectionName = convertConnectionName(getConnectionName().getValue());
         // Get Connection
-        Connection connection;
-        connection = ConnectionConfiguration.getInstance()
+        Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .orElseThrow(() -> new RuntimeException("Unknown connection name"));
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
 

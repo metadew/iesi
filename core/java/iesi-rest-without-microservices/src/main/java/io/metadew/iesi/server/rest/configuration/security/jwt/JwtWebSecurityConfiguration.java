@@ -1,11 +1,13 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
+import io.metadew.iesi.server.rest.configuration.security.IESIRole;
 import io.metadew.iesi.server.rest.user.CustomUserDetailsManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -75,6 +77,18 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .mvcMatchers("/users/login").permitAll()
                 .mvcMatchers("/actuator/health").permitAll()
+                // Action Types
+                .mvcMatchers(HttpMethod.GET, "/action-types/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
+                // Connection Types
+                .mvcMatchers(HttpMethod.GET, "/connection-types/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
+                // Components
+                .mvcMatchers(HttpMethod.GET, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
+                .mvcMatchers(HttpMethod.POST, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
+                .mvcMatchers(HttpMethod.PUT, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
+                .mvcMatchers(HttpMethod.DELETE, "/components").hasAnyRole(IESIRole.ADMIN.label)
+                .mvcMatchers(HttpMethod.DELETE, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
+
+
                 .anyRequest().authenticated()
                 .and()
                 .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);

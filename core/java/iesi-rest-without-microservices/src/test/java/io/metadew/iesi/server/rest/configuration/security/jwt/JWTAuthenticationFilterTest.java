@@ -16,7 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebMvcTest(JWTAuthenticationFilter.class)
 @ContextConfiguration(classes = {JWTAuthenticationFilter.class, JWTAuthenticationConverter.class, JwtService.class})
 @ActiveProfiles({"test", "security"})
-
 public class JWTAuthenticationFilterTest {
 
     @Autowired

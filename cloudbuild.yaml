@@ -14,10 +14,9 @@ steps:
     && cd ../iesi-rest-without-microservices \
     && mkdir -p run/cache \
     && mkdir -p metadata/gen \
-    && ls -lah \
     && mvn test \
-    && mvn -Dmaven.test.skip=true -P package project-info-reports:dependencies \
+    && mvn -Dmaven.test.skip=true package project-info-reports:dependencies \
     && cd ../iesi-core \
-    && ls -lah target/dependencies \
     && java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
   dir: core/java/iesi-core
+# https://cloud.google.com/cloud-build/docs/build-config#volumes

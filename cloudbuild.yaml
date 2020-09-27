@@ -79,13 +79,25 @@ steps:
     cp -r /iesi_rest_target ../../../core/java/iesi-rest-without-microservices \
     && cp -r /iesi_core_target ./ \
     && java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build \
-    && zip instance.zip ../../../sandbox/0.6.0/build
+    && cp -r ../../../sandbox/0.6.0/build /iesi_instance
   dir: core/java/iesi-core
   volumes:
   - name: 'iesi_rest_target'
     path: '/iesi_rest_target'
   - name: 'iesi_core_target'
     path: '/iesi_core_target'
+  - name: 'iesi_instance'
+    path: '/iesi_instance'
+- name: gcr.io/google.com/cloudsdktool/cloud-sdk
+  entrypoint: 'bash'
+  args:
+  - -c
+  - |
+    apt-get install -y zip
+    zip -r instance.zip /iesi_instance
+  volumes:
+  - name: 'iesi_instance'
+    path: '/iesi_instance'
 artifacts:
   objects:
     location: 'gs://iesi-backend-artifacts'

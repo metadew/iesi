@@ -19,7 +19,9 @@ steps:
   args:
   - '-c'
   - |
-    mkdir /root/.m2/repository \
+    ls -lah /root/ \
+    ls -lah /root/.m2 \
+    && mkdir /root/.m2/repository \
     && cp -r /maven_repository /root/.m2/repository \
     && mvn test
   dir: core/java/iesi-core

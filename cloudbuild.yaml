@@ -21,6 +21,9 @@ steps:
     cp -r /maven_repository /root/.m2/repository \
     && mvn test
   dir: core/java/iesi-core
+  volumes:
+  - name: 'maven_repository'
+    path: '/maven_repository'
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:

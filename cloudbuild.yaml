@@ -35,7 +35,7 @@ steps:
     && cp -r /maven_repository/* /root/.m2/repository/ \
     && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies \
     && cp -r /root/.m2/repository/* /maven_repository \
-    && cp -r /target /iesi_core_target
+    && cp -r target /iesi_core_target
   dir: core/java/iesi-core
   volumes:
   - name: 'maven_repository'
@@ -64,7 +64,7 @@ steps:
     && mkdir -p run/cache \
     && mkdir -p metadata/gen \
     && mvn -Dmaven.test.skip=true package project-info-reports:dependencies\
-    && cp -r /target /iesi_rest_target
+    && cp -r target /iesi_rest_target
   volumes:
   - name: 'iesi_rest_target'
     path: '/iesi_rest_target'

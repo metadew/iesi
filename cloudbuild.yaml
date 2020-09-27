@@ -77,7 +77,7 @@ steps:
   - '-c'
   - |
     cp -r /iesi_rest_target ../../../core/java/iesi-rest-without-microservices \
-    && cp -r /iesi_core_target core/java/iesi-core \
+    && cp -r /iesi_core_target ./ \
     && java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build \
     && zip instance.zip ../../../sandbox/0.6.0/build
   dir: core/java/iesi-core

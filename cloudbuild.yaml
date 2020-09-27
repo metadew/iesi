@@ -16,6 +16,7 @@ steps:
     && mvn install:install-file -Dfile=../../../build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar \
     && mvn install:install-file -Dfile=../../../build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar \
     && mvn test \
+    && ls -lah \
     && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies \
     && cd ../iesi-rest-without-microservices \
     && mkdir -p run/cache \

@@ -10,7 +10,7 @@ steps:
     && mvn install:install-file -Dfile=build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar \
     && mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar \
     && cp -r /root/.m2/repository /maven_repository \
-    && ls -lah /root/.m2/
+    && ls -lah /maven_repository
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'
@@ -19,10 +19,7 @@ steps:
   args:
   - '-c'
   - |
-    mvn help:evaluate -Dexpression=settings.localRepository \
-    && ls -lah /root \
-    && ls -lah /root/.m2 \
-    && mkdir /root/.m2/repository \
+    mkdir -p /root/.m2/repository \
     && cp -r /maven_repository /root/.m2/repository \
     && mvn test
   dir: core/java/iesi-core

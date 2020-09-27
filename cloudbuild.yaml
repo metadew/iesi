@@ -40,7 +40,6 @@ steps:
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'
-  volumes:
   - name: 'iesi_core_target'
     path: '/iesi_core_target'
 - name: maven:3-jdk-8

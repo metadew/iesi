@@ -66,6 +66,8 @@ steps:
     && mvn -Dmaven.test.skip=true package project-info-reports:dependencies\
     && cp -r target /iesi_rest_target
   volumes:
+  - name: 'maven_repository'
+    path: '/maven_repository'
   - name: 'iesi_rest_target'
     path: '/iesi_rest_target'
   dir: core/java/iesi-rest-without-microservices

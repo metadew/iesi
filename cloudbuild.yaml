@@ -47,8 +47,21 @@ steps:
     && cp -r /maven_repository/* /root/.m2/repository/ \
     && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies \
     && cp -r /maven_repository/* /root/.m2/repository/ \
+    && ls -lah /root/.m2/repository/ \
     && ls -lah /maven_repository
   dir: core/java/iesi-core
+  volumes:
+  - name: 'maven_repository'
+    path: '/maven_repository'
+- name: maven:3-jdk-8
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p /root/.m2/repository \
+    && cp -r /maven_repository/* /root/.m2/repository/ \
+    && mvn test
+  dir: core/java/iesi-rest-without-microservices
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'

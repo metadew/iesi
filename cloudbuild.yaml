@@ -85,8 +85,8 @@ steps:
     path: '/iesi_rest_target'
   - name: 'iesi_core_target'
     path: '/iesi_core_target'
-  artifacts:
-    objects:
-      location: 'gs://iesi-backend-artifacts'
-      paths: ['instance.zip']
+artifacts:
+  objects:
+    location: 'gs://iesi-backend-artifacts'
+    paths: ['instance.zip']
 # https://cloud.google.com/cloud-build/docs/build-config#volumes

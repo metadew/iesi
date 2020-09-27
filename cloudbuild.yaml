@@ -33,26 +33,16 @@ steps:
   - |
     mkdir -p /root/.m2/repository \
     && cp -r /maven_repository/* /root/.m2/repository/ \
-    && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies
-  dir: core/java/iesi-core
-  volumes:
-  - name: 'maven_repository'
-    path: '/maven_repository'
-- name: maven:3-jdk-8
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    mkdir -p /root/.m2/repository \
-    && cp -r /maven_repository/* /root/.m2/repository/ \
     && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies \
-    && cp -r /maven_repository/* /root/.m2/repository/ \
-    && ls -lah /root/.m2/repository/ \
-    && ls -lah /maven_repository
+    && cp -r /root/.m2/repository/* /maven_repository \
+    && cp -r /target /iesi_core_target
   dir: core/java/iesi-core
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'
+  volumes:
+  - name: 'iesi_core_target'
+    path: '/iesi_core_target'
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
@@ -74,14 +64,29 @@ steps:
     && cp -r /maven_repository/* /root/.m2/repository/ \
     && mkdir -p run/cache \
     && mkdir -p metadata/gen \
-    && mvn test \
-    && mvn -Dmaven.test.skip=true package project-info-reports:dependencies \
-    && cd ../iesi-core \
-    && java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
+    && mvn -Dmaven.test.skip=true package project-info-reports:dependencies\
+    && cp -r /target /iesi_rest_target
+  volumes:
+  - name: 'iesi_rest_target'
+    path: '/iesi_rest_target'
   dir: core/java/iesi-rest-without-microservices
-
-#  artifacts:
-#    objects:
-#      location: 'gs://iesi-backend-artifacts'
-#      paths: ['target/iesi-core-0.6.0.jar']
+- name: maven:3-jdk-8
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    cp -r /iesi_rest_target core/java/iesi-rest-without-microservices \
+    && cp -r /iesi_core_target core/java/iesi-core \
+    && java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build \
+    && zip instance.zip ../../../sandbox/0.6.0/build
+  dir: core/java/iesi-core
+  volumes:
+  - name: 'iesi_rest_target'
+    path: '/iesi_rest_target'
+  - name: 'iesi_core_target'
+    path: '/iesi_core_target'
+  artifacts:
+    objects:
+      location: 'gs://iesi-backend-artifacts'
+      paths: ['instance.zip']
 # https://cloud.google.com/cloud-build/docs/build-config#volumes

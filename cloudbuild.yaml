@@ -4,16 +4,16 @@ steps:
   args:
   - '-c'
   - |
-    mvn install:install-file -Dfile=build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=build/ext/artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=build/ext/artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar \
+    mvn install:install-file -Dfile=xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar \
+    && mvn install:install-file -Dfile=artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar \
+    && mvn install:install-file -Dfile=artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar \
+    && mvn install:install-file -Dfile=artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar \
+    && mvn install:install-file -Dfile=artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar \
     && cp -r /root/.m2/repository/* /maven_repository \
-    && ls -lah /maven_repository
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'
+  dir: build/ext
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
@@ -21,7 +21,6 @@ steps:
   - |
     mkdir -p /root/.m2/repository \
     && cp -r /maven_repository/* /root/.m2/repository/ \
-    && ls -lah /root/.m2/repository/ \
     && mvn test
   dir: core/java/iesi-core
   volumes:
@@ -32,20 +31,43 @@ steps:
   args:
   - '-c'
   - |
-    mvn install:install-file -Dfile=../../../build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=../../../build/ext/artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=../../../build/ext/artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=../../../build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=../../../build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar \
-    && mvn test \
-    && ls -lah \
+    mkdir -p /root/.m2/repository \
+    && cp -r /maven_repository/* /root/.m2/repository/ \
+    && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies
+  dir: core/java/iesi-core
+  volumes:
+  - name: 'maven_repository'
+    path: '/maven_repository'
+- name: maven:3-jdk-8
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p /root/.m2/repository \
+    && cp -r /maven_repository/* /root/.m2/repository/ \
     && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies \
-    && cd ../iesi-rest-without-microservices \
+    && cp -r /maven_repository/* /root/.m2/repository/ \
+    && ls -lah /maven_repository
+  dir: core/java/iesi-core
+  volumes:
+  - name: 'maven_repository'
+    path: '/maven_repository'
+  artifacts:
+    objects:
+      location: 'gs://iesi-backend-artifacts'
+      paths: ['target/iesi-core-0.6.0.jar']
+- name: maven:3-jdk-8
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mkdir -p /root/.m2/repository \
+    && cp -r /maven_repository/* /root/.m2/repository/ \
     && mkdir -p run/cache \
     && mkdir -p metadata/gen \
     && mvn test \
     && mvn -Dmaven.test.skip=true package project-info-reports:dependencies \
     && cd ../iesi-core \
     && java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
-  dir: core/java/iesi-core
+  dir: core/java/iesi-rest-without-microservices
 # https://cloud.google.com/cloud-build/docs/build-config#volumes

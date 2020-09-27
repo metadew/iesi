@@ -52,10 +52,6 @@ steps:
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'
-  artifacts:
-    objects:
-      location: 'gs://iesi-backend-artifacts'
-      paths: ['target/iesi-core-0.6.0.jar']
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
@@ -70,4 +66,9 @@ steps:
     && cd ../iesi-core \
     && java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
   dir: core/java/iesi-rest-without-microservices
+
+#  artifacts:
+#    objects:
+#      location: 'gs://iesi-backend-artifacts'
+#      paths: ['target/iesi-core-0.6.0.jar']
 # https://cloud.google.com/cloud-build/docs/build-config#volumes

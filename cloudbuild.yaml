@@ -14,31 +14,22 @@ steps:
     path: '/root/.m2/repository'
   dir: build/ext
 - name: maven:3-jdk-8
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    mvn test
+  entrypoint: 'mvn'
+  args: ['test']
   dir: core/java/iesi-core
   volumes:
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
 - name: maven:3-jdk-8
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies
+  entrypoint: 'mvn'
+  args: ['-Dmaven.test.skip=true', '-P', 'dependencies', 'install', 'project-info-reports:dependencies']
   dir: core/java/iesi-core
   volumes:
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
 - name: maven:3-jdk-8
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    mvn test
+  entrypoint: 'mvn'
+  args: [test]
   dir: core/java/iesi-rest-without-microservices
   volumes:
   - name: 'persistent_maven_repository'
@@ -48,6 +39,7 @@ steps:
   args:
   - '-c'
   - |
+    ls -lah
     mkdir -p run/cache 
     mkdir -p metadata/gen 
     mvn -Dmaven.test.skip=true package project-info-reports:dependencies
@@ -56,12 +48,8 @@ steps:
     path: '/root/.m2/repository'
   dir: core/java/iesi-rest-without-microservices
 - name: maven:3-jdk-8
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    ls -lah
-    java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
+  entrypoint: 'java'
+  args: ['-cp', 'target/iesi-core-0.6.0.jar:target/dependencies/*', 'io.metadew.iesi.launch.AssemblyLauncher', '-repository', '../../..', '-sandbox', '../../../sandbox', '-version', '0.6.0', '-instance', 'build']
   dir: core/java/iesi-core
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: 'bash'

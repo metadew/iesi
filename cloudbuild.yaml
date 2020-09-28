@@ -13,12 +13,17 @@ steps:
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'
+  - name: 'persistent_maven_repository'
+    path: '/root/.m2/repository'
   dir: build/ext
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
   - '-c'
   - |
+    ls -lah ../../../build/ext
+    ls -lah /root/
+    ls -lah /root/.m2
     mkdir -p /root/.m2/repository
     cp -r /maven_repository/* /root/.m2/repository/
     mvn test

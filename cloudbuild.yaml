@@ -103,6 +103,8 @@ steps:
   args:
   - '-c'
   - |
+    ls -lah
+    ls -lah core/java/iesi-rest-without-microservices
     echo $BRANCH_NAME
     if [[ "$BRANCH_NAME" == "master" ]]; then
       echo "deploying to production environment"

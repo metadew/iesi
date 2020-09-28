@@ -4,17 +4,6 @@ steps:
   args:
   - '-c'
   - |
-    echo $BRANCH_NAME
-    if [[ "$BRANCH_NAME" == "develop" ]]; then
-      echo "Strings are equal."
-    else
-      echo "Strings are not equal."
-    fi
-- name: maven:3-jdk-8
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
     mvn install:install-file -Dfile=xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
     mvn install:install-file -Dfile=artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
     mvn install:install-file -Dfile=artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
@@ -109,6 +98,19 @@ steps:
   volumes:
   - name: 'iesi_instance'
     path: '/iesi_instance'
+- name: gcr.io/google.com/cloudsdktool/cloud-sdk
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    echo $BRANCH_NAME
+    if [[ "$BRANCH_NAME" == "master" ]]; then
+      echo "deploying to production environment"
+    elif [[ "$BRANCH_NAME" == "develop" ]]; then
+      echo "deploying to non-production environment"
+    else
+      echo "deploying to development environment"
+    fi
 artifacts:
   objects:
     location: 'gs://iesi-backend-artifacts'

@@ -102,4 +102,5 @@ artifacts:
   objects:
     location: 'gs://iesi-backend-artifacts'
     paths: ['instance.zip']
+# https://cloud.google.com/source-repositories/docs/quickstart-triggering-builds-with-source-repositories
 # https://cloud.google.com/cloud-build/docs/build-config#volumes

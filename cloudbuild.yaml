@@ -79,8 +79,11 @@ steps:
   args:
   - -c
   - |
+    ls -lah
+    ls -lah core/java/iesi-rest-without-microservices
+    ls -lah core/java/iesi-core
     apt-get install -y zip
-    zip -r instance.zip core/sandbox/0.6.0/build
+    zip -r instance.zip sandbox/0.6.0/build
 #  volumes:
 #  - name: 'iesi_instance'
 #    path: '/workspace/core/sandbox/0.6.0/build'
@@ -89,8 +92,6 @@ steps:
   args:
   - '-c'
   - |
-    ls -lah
-    ls -lah core/java/iesi-rest-without-microservices
     echo $BRANCH_NAME
     if [[ "$BRANCH_NAME" == "master" ]]; then
       echo "deploying to production environment"

@@ -39,7 +39,6 @@ steps:
   args:
   - '-c'
   - |
-    ls -lah
     mkdir -p run/cache 
     mkdir -p metadata/gen 
     mvn -Dmaven.test.skip=true package project-info-reports:dependencies
@@ -63,7 +62,6 @@ steps:
   args:
   - '-c'
   - |
-    echo $BRANCH_NAME
     if [[ "$BRANCH_NAME" == "master" ]]; then
       echo "deploying to production environment"
     elif [[ "$BRANCH_NAME" == "develop" ]]; then
@@ -73,7 +71,5 @@ steps:
     fi
 artifacts:
   objects:
-    location: 'gs://iesi-backend-artifacts'
+    location: 'gs://iesi-backend-artifacts/$BUILD_ID'
     paths: ['instance.zip', 'core/java/iesi-rest-without-microservices/target/iesi-rest-0.6.0.jar', 'core/java/iesi-rest-without-microservices/target/iesi-rest-0.6.0.jar.original', 'core/java/iesi-core/target/iesi-core-0.6.0.jar']
-# https://cloud.google.com/source-repositories/docs/quickstart-triggering-builds-with-source-repositories
-# https://cloud.google.com/cloud-build/docs/build-config#volumes

@@ -4,12 +4,23 @@ steps:
   args:
   - '-c'
   - |
-    mvn install:install-file -Dfile=xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar \
-    && mvn install:install-file -Dfile=artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar \
-    && cp -r /root/.m2/repository/* /maven_repository \
+    echo $BRANCH_NAME
+    if [[ "$BRANCH_NAME" == "develop" ]]; then
+      echo "Strings are equal."
+    else
+      echo "Strings are not equal."
+    fi
+- name: maven:3-jdk-8
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    mvn install:install-file -Dfile=xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
+    mvn install:install-file -Dfile=artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
+    mvn install:install-file -Dfile=artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
+    mvn install:install-file -Dfile=artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar
+    mvn install:install-file -Dfile=artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
+    cp -r /root/.m2/repository/* /maven_repository
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'
@@ -19,9 +30,9 @@ steps:
   args:
   - '-c'
   - |
-    mkdir -p /root/.m2/repository \
-    && cp -r /maven_repository/* /root/.m2/repository/ \
-    && mvn test
+    mkdir -p /root/.m2/repository
+    cp -r /maven_repository/* /root/.m2/repository/
+    mvn test
   dir: core/java/iesi-core
   volumes:
   - name: 'maven_repository'
@@ -31,11 +42,11 @@ steps:
   args:
   - '-c'
   - |
-    mkdir -p /root/.m2/repository \
-    && cp -r /maven_repository/* /root/.m2/repository/ \
-    && mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies \
-    && cp -r /root/.m2/repository/* /maven_repository \
-    && cp -r target /iesi_core_target
+    mkdir -p /root/.m2/repository
+    cp -r /maven_repository/* /root/.m2/repository/
+    mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies
+    cp -r /root/.m2/repository/* /maven_repository
+    cp -r target /iesi_core_target
   dir: core/java/iesi-core
   volumes:
   - name: 'maven_repository'
@@ -47,9 +58,9 @@ steps:
   args:
   - '-c'
   - |
-    mkdir -p /root/.m2/repository \
-    && cp -r /maven_repository/* /root/.m2/repository/ \
-    && mvn test
+    mkdir -p /root/.m2/repository
+    cp -r /maven_repository/* /root/.m2/repository/
+    mvn test
   dir: core/java/iesi-rest-without-microservices
   volumes:
   - name: 'maven_repository'
@@ -59,12 +70,12 @@ steps:
   args:
   - '-c'
   - |
-    mkdir -p /root/.m2/repository \
-    && cp -r /maven_repository/* /root/.m2/repository/ \
-    && mkdir -p run/cache \
-    && mkdir -p metadata/gen \
-    && mvn -Dmaven.test.skip=true package project-info-reports:dependencies\
-    && cp -r target /iesi_rest_target
+    mkdir -p /root/.m2/repository
+    cp -r /maven_repository/* /root/.m2/repository/
+    mkdir -p run/cache 
+    mkdir -p metadata/gen 
+    mvn -Dmaven.test.skip=true package project-info-reports:dependencies
+    cp -r target /iesi_rest_target
   volumes:
   - name: 'maven_repository'
     path: '/maven_repository'
@@ -76,10 +87,10 @@ steps:
   args:
   - '-c'
   - |
-    cp -r /iesi_rest_target ../../../core/java/iesi-rest-without-microservices \
-    && cp -r /iesi_core_target ./ \
-    && java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build \
-    && cp -r ../../../sandbox/0.6.0/build /iesi_instance
+    cp -r /iesi_rest_target ../../../core/java/iesi-rest-without-microservices
+    cp -r /iesi_core_target ./
+    java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
+    cp -r ../../../sandbox/0.6.0/build /iesi_instance
   dir: core/java/iesi-core
   volumes:
   - name: 'iesi_rest_target'

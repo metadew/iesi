@@ -79,9 +79,8 @@ steps:
   args:
   - -c
   - |
-    ls -lah
-    ls -lah core/java/iesi-rest-without-microservices
-    ls -lah core/java/iesi-core
+    ls -lah core/java/iesi-rest-without-microservices/target
+    ls -lah core/java/iesi-core/target
     apt-get install -y zip
     zip -r instance.zip sandbox/0.6.0/build
 #  volumes:

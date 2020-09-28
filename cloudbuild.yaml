@@ -114,6 +114,6 @@ steps:
 artifacts:
   objects:
     location: 'gs://iesi-backend-artifacts'
-    paths: ['instance.zip']
+    paths: ['instance.zip', '/iesi_rest_target/target/iesi-rest.jar', '/iesi_core_target/target/iesi-core-0.6.0.jar']
 # https://cloud.google.com/source-repositories/docs/quickstart-triggering-builds-with-source-repositories
 # https://cloud.google.com/cloud-build/docs/build-config#volumes

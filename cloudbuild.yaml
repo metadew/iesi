@@ -28,17 +28,13 @@ steps:
   args:
   - '-c'
   - |
-    mkdir -p /root/.m2/repository
-    cp -r /maven_repository/* /root/.m2/repository/
     mvn -Dmaven.test.skip=true -P dependencies install project-info-reports:dependencies
-    cp -r /root/.m2/repository/* /maven_repository
-    cp -r target /iesi_core_target
   dir: core/java/iesi-core
   volumes:
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
-  - name: 'persistent_iesi_core_target'
-    path: '/workspace/core/java/iesi-core/target'
+#  - name: 'persistent_iesi_core_target'
+#    path: '/workspace/core/java/iesi-core/target'
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
@@ -60,8 +56,8 @@ steps:
   volumes:
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
-  - name: 'persistent_iesi_rest_target'
-    path: '/workspace/core/java/iesi-rest-without-microservices/target'
+#  - name: 'persistent_iesi_rest_target'
+#    path: '/workspace/core/java/iesi-rest-without-microservices/target'
   dir: core/java/iesi-rest-without-microservices
 - name: maven:3-jdk-8
   entrypoint: 'bash'
@@ -71,13 +67,13 @@ steps:
     ls -lah
     java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
   dir: core/java/iesi-core
-  volumes:
-  - name: 'persistent_iesi_rest_target'
-    path: '/workspace/core/java/iesi-rest-without-microservices/target'
-  - name: 'persistent_iesi_core_target'
-    path: '/workspace/core/java/iesi-core/target'
-  - name: 'iesi_instance'
-    path: '/workspace/core/sandbox/0.6.0/build'
+#  volumes:
+#  - name: 'persistent_iesi_rest_target'
+#    path: '/workspace/core/java/iesi-rest-without-microservices/target'
+#  - name: 'persistent_iesi_core_target'
+#    path: '/workspace/core/java/iesi-core/target'
+#  - name: 'iesi_instance'
+#    path: '/workspace/core/sandbox/0.6.0/build'
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: 'bash'
   args:
@@ -85,9 +81,9 @@ steps:
   - |
     apt-get install -y zip
     zip -r instance.zip /iesi_instance
-  volumes:
-  - name: 'iesi_instance'
-    path: '/iesi_instance'
+#  volumes:
+#  - name: 'iesi_instance'
+#    path: '/workspace/core/sandbox/0.6.0/build'
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: 'bash'
   args:

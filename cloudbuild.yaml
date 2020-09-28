@@ -21,10 +21,7 @@ steps:
   args:
   - '-c'
   - |
-    ls -lah ../../../build/ext
-    ls -lah /root/
-    ls -lah /root/.m2
-    ls -lah
+    ls -lah /root/.m2/repository
     mkdir -p /root/.m2/repository
     cp -r /maven_repository/* /root/.m2/repository/
     mvn test

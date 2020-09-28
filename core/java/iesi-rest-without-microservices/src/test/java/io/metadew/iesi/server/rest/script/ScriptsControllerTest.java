@@ -34,12 +34,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@RunWith(SpringRunner.class)
-@WebMvcTest(ScriptController.class)
+@WebMvcTest(ScriptsController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = {ScriptController.class, CustomGlobalExceptionHandler.class, ScriptDtoModelAssembler.class,
+@ContextConfiguration(classes = {ScriptsController.class, CustomGlobalExceptionHandler.class, ScriptDtoModelAssembler.class,
         ScriptPostDtoService.class, ScriptParameterDtoService.class, ScriptLabelDtoService.class, ScriptActionDtoService.class,
         ScriptVersionDtoService.class, ScriptService.class, IesiConfiguration.class})
-class ScriptControllerTest {
+class ScriptsControllerTest {
 
     @Autowired
     private MockMvc mvc;

@@ -75,7 +75,6 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .cors().and()
                 .csrf().disable()
                 .authorizeRequests()
-                .mvcMatchers("/users/login").permitAll()
                 .mvcMatchers("/actuator/health").permitAll()
                 // Action Types
                 .mvcMatchers(HttpMethod.GET, "/action-types/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
@@ -83,13 +82,44 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(HttpMethod.GET, "/connection-types/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
                 // Components
                 .mvcMatchers(HttpMethod.GET, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-                .mvcMatchers(HttpMethod.POST, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
+                .mvcMatchers(HttpMethod.POST, "/components").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
                 .mvcMatchers(HttpMethod.PUT, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
                 .mvcMatchers(HttpMethod.DELETE, "/components").hasAnyRole(IESIRole.ADMIN.label)
                 .mvcMatchers(HttpMethod.DELETE, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
+                // Scripts
+                .mvcMatchers(HttpMethod.GET, "/scripts/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
+                .mvcMatchers(HttpMethod.POST, "/scripts").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
+                .mvcMatchers(HttpMethod.PUT, "/scripts/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
+                //.mvcMatchers(HttpMethod.DELETE, "/scripts").hasAnyRole(IESIRole.ADMIN.label)
+                .mvcMatchers(HttpMethod.DELETE, "/scripts/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
+                // Connections
+                .mvcMatchers(HttpMethod.GET, "/connections/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
+                .mvcMatchers(HttpMethod.POST, "/connections").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
+                .mvcMatchers(HttpMethod.PUT, "/connections/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
+                .mvcMatchers(HttpMethod.DELETE, "/connections").hasAnyRole(IESIRole.ADMIN.label)
+                .mvcMatchers(HttpMethod.DELETE, "/connections/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
+                // Environments
+                .mvcMatchers(HttpMethod.GET, "/environments/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
+                .mvcMatchers(HttpMethod.POST, "/environments").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
+                .mvcMatchers(HttpMethod.PUT, "/environments/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
+                .mvcMatchers(HttpMethod.DELETE, "/environments").hasAnyRole(IESIRole.ADMIN.label)
+                .mvcMatchers(HttpMethod.DELETE, "/environments/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
+                // Execution Requests
+                .mvcMatchers(HttpMethod.GET, "/execution-requests/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
+                .mvcMatchers(HttpMethod.POST, "/execution-requests").hasAnyRole(IESIRole.ADMIN.label, IESIRole.EXECUTOR.label, IESIRole.TEST_ENGINEER.label)
+                .mvcMatchers(HttpMethod.PUT, "/execution-requests/**").hasAnyRole(IESIRole.ADMIN.label)
+                .mvcMatchers(HttpMethod.DELETE, "/execution-requests/**").hasAnyRole(IESIRole.ADMIN.label)
+                // Script Executions
+                .mvcMatchers(HttpMethod.GET, "/script-executions/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
+                //.mvcMatchers(HttpMethod.POST, "/script-executions").hasAnyRole(IESIRole.ADMIN.label, IESIRole.EXECUTOR.label, IESIRole.TEST_ENGINEER.label)
+                //.mvcMatchers(HttpMethod.PUT, "/script-executions/**").hasAnyRole(IESIRole.ADMIN.label)
+                //.mvcMatchers(HttpMethod.DELETE, "/script-executions/**").hasAnyRole(IESIRole.ADMIN.label)
+                // Users
+                .mvcMatchers(HttpMethod.POST, "/users/login").permitAll()
+                .mvcMatchers(HttpMethod.POST, "/users/").hasAnyRole(IESIRole.ADMIN.label)
+                .mvcMatchers(HttpMethod.GET, "/users/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
 
-
-                .anyRequest().authenticated()
+                .anyRequest().hasAnyRole(IESIRole.ADMIN.label)
                 .and()
                 .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
     }

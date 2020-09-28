@@ -2,7 +2,7 @@ package io.metadew.iesi.server.rest.script.dto;
 
 
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.server.rest.script.ScriptController;
+import io.metadew.iesi.server.rest.script.ScriptsController;
 import io.metadew.iesi.server.rest.script.dto.action.IScriptActionDtoService;
 import io.metadew.iesi.server.rest.script.dto.label.IScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.IScriptParameterDtoService;
@@ -29,7 +29,7 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
 
     @Autowired
     public ScriptDtoModelAssembler(IScriptParameterDtoService scriptParameterDtoService, IScriptLabelDtoService scriptLabelDtoService, IScriptActionDtoService scriptActionDtoService, IScriptVersionDtoService scriptVersionDtoService) {
-        super(ScriptController.class, ScriptDto.class);
+        super(ScriptsController.class, ScriptDto.class);
         this.scriptParameterDtoService = scriptParameterDtoService;
         this.scriptLabelDtoService = scriptLabelDtoService;
         this.scriptActionDtoService = scriptActionDtoService;
@@ -57,11 +57,11 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
     }
 
     public void addLinksToExistingDto(ScriptDto scriptDto) {
-        Link selfLink = linkTo(methodOn(ScriptController.class).get(scriptDto.getName(), scriptDto.getVersion().getNumber(), new ArrayList<>()))
+        Link selfLink = linkTo(methodOn(ScriptsController.class).get(scriptDto.getName(), scriptDto.getVersion().getNumber(), new ArrayList<>()))
                 .withSelfRel();
-        Link linkToAllVersionOfTheScript = linkTo(methodOn(ScriptController.class).getByName(PageRequest.of(0, 20), scriptDto.getName(), new ArrayList<>(), ""))
+        Link linkToAllVersionOfTheScript = linkTo(methodOn(ScriptsController.class).getByName(PageRequest.of(0, 20), scriptDto.getName(), new ArrayList<>(), ""))
                 .withRel("AllVersionOfTheScript");
-        Link linkToAll = linkTo(methodOn(ScriptController.class).getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null))
+        Link linkToAll = linkTo(methodOn(ScriptsController.class).getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null))
                 .withRel("scripts");
         scriptDto.add(selfLink, linkToAllVersionOfTheScript, linkToAll);
     }

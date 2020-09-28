@@ -9,7 +9,7 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.script.ScriptController;
+import io.metadew.iesi.server.rest.script.ScriptsController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -100,7 +100,7 @@ public class ExecutionRequestController {
         HalMultipleEmbeddedResource<ExecutionRequestDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         for (ExecutionRequestDto executionRequestDto : executionRequestDtos) {
             halMultipleEmbeddedResource.embedResource(executionRequestDto);
-            halMultipleEmbeddedResource.add(WebMvcLinkBuilder.linkTo(methodOn(ScriptController.class)
+            halMultipleEmbeddedResource.add(WebMvcLinkBuilder.linkTo(methodOn(ScriptsController.class)
                     .getByName(PageRequest.of(0, 20), executionRequestDto.getName(), null, ""))
                     .withRel(executionRequestDto.getName()));
         }

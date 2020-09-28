@@ -29,7 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Tag(name = "scripts", description = "Everything about scripts")
 @RequestMapping("/scripts")
 @CrossOrigin
-public class ScriptController {
+public class ScriptsController {
 
     private final IScriptService scriptService;
     private final IScriptDtoService scriptDtoService;
@@ -38,11 +38,11 @@ public class ScriptController {
     private final PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
 
     @Autowired
-    ScriptController(IScriptService scriptService,
-                     ScriptDtoModelAssembler scriptDtoModelAssembler,
-                     IScriptPostDtoService scriptPostDtoService,
-                     IScriptDtoService scriptDtoService,
-                     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    ScriptsController(IScriptService scriptService,
+                      ScriptDtoModelAssembler scriptDtoModelAssembler,
+                      IScriptPostDtoService scriptPostDtoService,
+                      IScriptDtoService scriptDtoService,
+                      @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
                              PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
         this.scriptService = scriptService;
         this.scriptDtoService = scriptDtoService;
@@ -119,7 +119,7 @@ public class ScriptController {
             halMultipleEmbeddedResource.embedResource(scriptPostDto);
         }
         halMultipleEmbeddedResource.add(
-                linkTo(methodOn(ScriptController.class)
+                linkTo(methodOn(ScriptsController.class)
                         .getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null))
                         .withRel("scripts"));
         return halMultipleEmbeddedResource;

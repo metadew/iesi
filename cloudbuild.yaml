@@ -33,8 +33,6 @@ steps:
   volumes:
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
-#  - name: 'persistent_iesi_core_target'
-#    path: '/workspace/core/java/iesi-core/target'
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
@@ -56,8 +54,6 @@ steps:
   volumes:
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
-#  - name: 'persistent_iesi_rest_target'
-#    path: '/workspace/core/java/iesi-rest-without-microservices/target'
   dir: core/java/iesi-rest-without-microservices
 - name: maven:3-jdk-8
   entrypoint: 'bash'
@@ -67,25 +63,13 @@ steps:
     ls -lah
     java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
   dir: core/java/iesi-core
-#  volumes:
-#  - name: 'persistent_iesi_rest_target'
-#    path: '/workspace/core/java/iesi-rest-without-microservices/target'
-#  - name: 'persistent_iesi_core_target'
-#    path: '/workspace/core/java/iesi-core/target'
-#  - name: 'iesi_instance'
-#    path: '/workspace/core/sandbox/0.6.0/build'
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: 'bash'
   args:
   - -c
   - |
-    ls -lah core/java/iesi-rest-without-microservices/target
-    ls -lah core/java/iesi-core/target
     apt-get install -y zip
     zip -r instance.zip sandbox/0.6.0/build
-#  volumes:
-#  - name: 'iesi_instance'
-#    path: '/workspace/core/sandbox/0.6.0/build'
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: 'bash'
   args:
@@ -102,6 +86,6 @@ steps:
 artifacts:
   objects:
     location: 'gs://iesi-backend-artifacts'
-    paths: ['instance.zip', 'core/java/iesi-rest-without-microservices/target/iesi-rest.jar', 'core/java/iesi-core/target/iesi-core-0.6.0.jar']
+    paths: ['instance.zip', 'core/java/iesi-rest-without-microservices/target/iesi-rest-0.6.0.jar', 'core/java/iesi-rest-without-microservices/target/iesi-rest-0.6.0.jar.original', 'core/java/iesi-core/target/iesi-core-0.6.0.jar']
 # https://cloud.google.com/source-repositories/docs/quickstart-triggering-builds-with-source-repositories
 # https://cloud.google.com/cloud-build/docs/build-config#volumes

@@ -80,7 +80,7 @@ steps:
   - -c
   - |
     apt-get install -y zip
-    zip -r instance.zip /iesi_instance
+    zip -r instance.zip core/sandbox/0.6.0/build
 #  volumes:
 #  - name: 'iesi_instance'
 #    path: '/workspace/core/sandbox/0.6.0/build'

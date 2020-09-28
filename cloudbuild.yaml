@@ -38,7 +38,7 @@ steps:
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
   - name: 'persistent_iesi_core_target'
-    path: 'target'
+    path: '/workspace/core/java/iesi-core/target'
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
@@ -54,17 +54,14 @@ steps:
   args:
   - '-c'
   - |
-    mkdir -p /root/.m2/repository
-    cp -r /maven_repository/* /root/.m2/repository/
     mkdir -p run/cache 
     mkdir -p metadata/gen 
     mvn -Dmaven.test.skip=true package project-info-reports:dependencies
-    cp -r target /iesi_rest_target
   volumes:
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
   - name: 'persistent_iesi_rest_target'
-    path: 'target'
+    path: '/workspace/core/java/iesi-rest-without-microservices/target'
   dir: core/java/iesi-rest-without-microservices
 - name: maven:3-jdk-8
   entrypoint: 'bash'
@@ -76,11 +73,11 @@ steps:
   dir: core/java/iesi-core
   volumes:
   - name: 'persistent_iesi_rest_target'
-    path: '../iesi-rest-without-microservices/target'
+    path: '/workspace/core/java/iesi-rest-without-microservices/target'
   - name: 'persistent_iesi_core_target'
-    path: 'target'
+    path: '/workspace/core/java/iesi-core/target'
   - name: 'iesi_instance'
-    path: '../../../sandbox/0.6.0/build'
+    path: '/workspace/core/sandbox/0.6.0/build'
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: 'bash'
   args:

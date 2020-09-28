@@ -9,10 +9,7 @@ steps:
     mvn install:install-file -Dfile=artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
     mvn install:install-file -Dfile=artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar
     mvn install:install-file -Dfile=artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
-    cp -r /root/.m2/repository/* /maven_repository
   volumes:
-  - name: 'maven_repository'
-    path: '/maven_repository'
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
   dir: build/ext
@@ -21,14 +18,9 @@ steps:
   args:
   - '-c'
   - |
-    ls -lah /root/.m2/repository
-    mkdir -p /root/.m2/repository
-    cp -r /maven_repository/* /root/.m2/repository/
     mvn test
   dir: core/java/iesi-core
   volumes:
-  - name: 'maven_repository'
-    path: '/maven_repository'
   - name: 'persistent_maven_repository'
     path: '/root/.m2/repository'
 - name: maven:3-jdk-8
@@ -43,22 +35,20 @@ steps:
     cp -r target /iesi_core_target
   dir: core/java/iesi-core
   volumes:
-  - name: 'maven_repository'
-    path: '/maven_repository'
-  - name: 'iesi_core_target'
-    path: '/iesi_core_target'
+  - name: 'persistent_maven_repository'
+    path: '/root/.m2/repository'
+  - name: 'persistent_iesi_core_target'
+    path: 'target'
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    mkdir -p /root/.m2/repository
-    cp -r /maven_repository/* /root/.m2/repository/
     mvn test
   dir: core/java/iesi-rest-without-microservices
   volumes:
-  - name: 'maven_repository'
-    path: '/maven_repository'
+  - name: 'persistent_maven_repository'
+    path: '/root/.m2/repository'
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
@@ -71,28 +61,26 @@ steps:
     mvn -Dmaven.test.skip=true package project-info-reports:dependencies
     cp -r target /iesi_rest_target
   volumes:
-  - name: 'maven_repository'
-    path: '/maven_repository'
-  - name: 'iesi_rest_target'
-    path: '/iesi_rest_target'
+  - name: 'persistent_maven_repository'
+    path: '/root/.m2/repository'
+  - name: 'persistent_iesi_rest_target'
+    path: 'target'
   dir: core/java/iesi-rest-without-microservices
 - name: maven:3-jdk-8
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    cp -r /iesi_rest_target ../../../core/java/iesi-rest-without-microservices
-    cp -r /iesi_core_target ./
+  ls -lah
     java -cp target/iesi-core-0.6.0.jar:target/dependencies/* io.metadew.iesi.launch.AssemblyLauncher -repository ../../.. -sandbox ../../../sandbox -version 0.6.0 -instance build
-    cp -r ../../../sandbox/0.6.0/build /iesi_instance
   dir: core/java/iesi-core
   volumes:
-  - name: 'iesi_rest_target'
-    path: '/iesi_rest_target'
-  - name: 'iesi_core_target'
-    path: '/iesi_core_target'
+  - name: 'persistent_iesi_rest_target'
+    path: '../iesi-rest-without-microservices/target'
+  - name: 'persistent_iesi_core_target'
+    path: 'target'
   - name: 'iesi_instance'
-    path: '/iesi_instance'
+    path: '../../../sandbox/0.6.0/build'
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: 'bash'
   args:
@@ -121,6 +109,6 @@ steps:
 artifacts:
   objects:
     location: 'gs://iesi-backend-artifacts'
-    paths: ['instance.zip', '/iesi_rest_target/target/iesi-rest.jar', '/iesi_core_target/target/iesi-core-0.6.0.jar']
+    paths: ['instance.zip', 'core/java/iesi-rest-without-microservices/target/iesi-rest.jar', 'core/java/iesi-core/target/iesi-core-0.6.0.jar']
 # https://cloud.google.com/source-repositories/docs/quickstart-triggering-builds-with-source-repositories
 # https://cloud.google.com/cloud-build/docs/build-config#volumes

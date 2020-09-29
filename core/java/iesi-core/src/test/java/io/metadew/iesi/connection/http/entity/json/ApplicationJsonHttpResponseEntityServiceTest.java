@@ -29,7 +29,6 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", dataTypeHandler);
 
-
         HttpResponse httpResponse = mock(HttpResponse.class);
         HttpEntity httpEntity = mock(HttpEntity.class);
         when(httpResponse.getEntityContent())
@@ -59,7 +58,6 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", dataTypeHandler);
 
-
         HttpResponse httpResponse = mock(HttpResponse.class);
         when(httpResponse.getEntityContent())
                 .thenReturn(Optional.of(new String("{\"test\":\"test\"}".getBytes(Consts.UTF_8), Consts.UTF_8).getBytes(Consts.UTF_8)));
@@ -85,7 +83,6 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         Whitebox.setInternalState(DatasetHandler.class, "INSTANCE", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", dataTypeHandler);
-
 
         HttpResponse httpResponse = mock(HttpResponse.class);
         HttpEntity httpEntity = mock(HttpEntity.class);

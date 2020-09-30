@@ -152,6 +152,13 @@ class TemplateConfigurationTest {
         assertThat(TemplateConfiguration.getInstance().get(TemplateKey.builder().id(UUID.randomUUID()).build()))
                 .isEmpty();
     }
+    @Test
+    void testDelete() {
+        TemplateConfiguration.getInstance().insert(template1);
+        TemplateConfiguration.getInstance().delete(template1.getMetadataKey());
+        assertThat(TemplateConfiguration.getInstance().get(template1.getMetadataKey()))
+               .isEmpty();
+    }
 
     @Test
     void testInsert() {

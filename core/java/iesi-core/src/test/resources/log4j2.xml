@@ -14,6 +14,19 @@
 			</Policies>
 			<DefaultRolloverStrategy max="5" />
 		</RollingFile>
+        <RollingFile
+                name="JdbcTemplate"
+                fileName="../logs/jdbc.log"
+                filePattern="../logs/jdbc.%i.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
 		<RollingFile
 			name="rest"
 			fileName="../logs/rest.log"
@@ -152,6 +165,10 @@
         <Logger name="org.springframework" additivity="false">
             <AppenderRef ref="STDOUT" level="info" />
             <AppenderRef ref="rest" level="all" />
+        </Logger>
+        <Logger name="org.springframework.jdbc.core.JdbcTemplate" additivity="false">
+            <AppenderRef ref="STDOUT" level="trace" />
+            <AppenderRef ref="JdbcTemplate" level="all" />
         </Logger>
         <Root level="all" additivity="false">
             <AppenderRef ref="STDOUT" level="warn" />

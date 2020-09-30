@@ -10,3 +10,10 @@ iesi:
 #    threads:
 #      timeout: 30
   home: "."
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate: trace

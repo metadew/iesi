@@ -26,12 +26,12 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
 
     @Override
     public List<ScriptExecutionDto> getAll() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ScriptExecutionDto> getByRunId(String runId) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override

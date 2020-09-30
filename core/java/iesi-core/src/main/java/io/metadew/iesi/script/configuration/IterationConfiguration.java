@@ -4,8 +4,9 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.h2.H2Database;
 import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
-import io.metadew.iesi.script.operation.ConditionOperation;
+import io.metadew.iesi.script.service.ConditionService;
 
 import javax.script.ScriptException;
 import javax.sql.rowset.CachedRowSet;
@@ -184,21 +185,15 @@ public class IterationConfiguration {
         return iterationInstance;
     }
 
-    public IterationInstance hasNext(String condition)  {
+    public IterationInstance hasNext(String condition, ActionExecution actionExecution)  {
         IterationInstance iterationInstance = new IterationInstance();
 
-        boolean conditionResult = true;
-        ConditionOperation conditionOperation = new ConditionOperation(executionControl, condition);
         try {
-            conditionResult = conditionOperation.evaluateCondition();
-        } catch (ScriptException exception) {
-            conditionResult = true;
-        }
-
-        if (conditionResult) {
-            iterationInstance.setEmpty(false);
-            iterationInstance.getVariableMap().put("iterate", "y");
-        }
+            if (ConditionService.getInstance().evaluateCondition(condition, executionControl.getExecutionRuntime(), actionExecution)) {
+                iterationInstance.setEmpty(false);
+                iterationInstance.getVariableMap().put("iterate", "y");
+            }
+        } catch (ScriptException ignored) {}
 
         return iterationInstance;
     }

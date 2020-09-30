@@ -141,6 +141,8 @@ public class ActionExecution {
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
+            actionControl.logOutput("action.error", e.getMessage());
+            actionControl.logOutput("action.stacktrace", stackTrace.toString());
             LOGGER.info("action.error=" + e);
             LOGGER.debug("action.stacktrace=" + stackTrace);
             actionControl.increaseErrorCount();

@@ -1,9 +1,11 @@
-package io.metadew.iesi.metadata.definition.component.trace.design;
+package io.metadew.iesi.metadata.configuration.component.trace;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.definition.component.trace.design.ComponentDesignTrace;
+import io.metadew.iesi.metadata.definition.component.trace.design.ComponentDesignTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.design.http.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +31,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
     }
 
     private ComponentDesignTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override
@@ -98,6 +100,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
 
     @Override
     public void delete(ComponentDesignTraceKey metadataKey) {
+        log.trace("deleting " + metadataKey.toString());
         String deleteTraceComponentDesign = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponentDesign").getName() +
                 " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceComponentDesign);
@@ -116,7 +119,6 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
     @Override
     public void insert(HttpComponentDesignTrace metadata) {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
-
         String insertStatementTraceComponentDesign = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponentDesign").getName() +
                 " (ID, RUN_ID,  PRC_ID, ACTION_PAR_NM, COMP_TYP_NM, COMP_NM, COMP_DSC, COMP_VRS_NB ) VALUES (" +
                 SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()) + ", " +

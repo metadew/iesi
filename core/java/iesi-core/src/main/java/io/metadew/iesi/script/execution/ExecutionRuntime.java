@@ -369,6 +369,7 @@ public class ExecutionRuntime {
             input = input.substring(0, lookupConceptStartIndex) +
                     resolvement +
                     input.substring(lookupConceptStopIndex + lookupConceptStopKey.length());
+            lookupConceptStopIndex = lookupConceptStartIndex + resolvement.length();
         }
         LOGGER.debug(MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input));
 

@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTrace;
 import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTraceKey;
 import io.metadew.iesi.metadata.definition.connection.trace.http.HttpConnectionTrace;
+import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -16,9 +17,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Log4j2
 public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace, ConnectionTraceKey> {
 
-    private static String fetchByIdQuery = "SELECT " +
+    private static final String fetchByIdQuery = "SELECT " +
             "connection_traces.ID as connection_traces_id, connection_traces.RUN_ID as connection_traces_run_id, " +
             "connection_traces.PRC_ID as connection_traces_prc_id, connection_traces.ACTION_PAR_NM as connection_traces_action_par_nm, " +
             "connection_traces.CONN_NM as connection_traces_conn_nm, connection_traces.CONN_TYP_NM as connection_traces_conn_type_nm, " +
@@ -30,7 +32,7 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("HttpConnectionTraces").getName() + " http_connection_traces " +
             "ON connection_traces.ID=http_connection_traces.ID " +
             "WHERE connection_traces.ID={0};";
-    private static String fetchAllQuery = "SELECT " +
+    private static final String fetchAllQuery = "SELECT " +
             "connection_traces.ID as connection_traces_id, connection_traces.RUN_ID as connection_traces_run_id, " +
             "connection_traces.PRC_ID as connection_traces_prc_id, connection_traces.ACTION_PAR_NM as connection_traces_action_par_nm, " +
             "connection_traces.CONN_NM as connection_traces_conn_nm, connection_traces.CONN_TYP_NM as connection_traces_conn_type_nm, " +
@@ -41,13 +43,13 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionTraces").getName() + " connection_traces " +
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("HttpConnectionTraces").getName() + " http_connection_traces " +
             "ON connection_traces.ID=http_connection_traces.ID;";
-    private static String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionTraces").getName() +
+    private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionTraces").getName() +
             " (ID, RUN_ID, PRC_ID, ACTION_PAR_NM, CONN_NM, CONN_TYP_NM, CONN_DESC) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6});";
-    private static String insertHttpQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("HttpConnectionTraces").getName() +
+    private static final String insertHttpQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("HttpConnectionTraces").getName() +
             " (ID, HOST, PORT, BASE_URL, TLS) VALUES ({0}, {1}, {2}, {3}, {4});";
-    private static String deleteByIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionTraces").getName() +
+    private static final String deleteByIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionTraces").getName() +
             " WHERE ID={0};";
-    private static String deleteByIdHttpQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("HttpConnectionTraces").getName() +
+    private static final String deleteByIdHttpQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("HttpConnectionTraces").getName() +
             " WHERE ID={0};";
 
     private static ConnectionTraceConfiguration INSTANCE;
@@ -100,6 +102,7 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
 
     @Override
     public void delete(ConnectionTraceKey metadataKey) {
+        log.trace("deleting " + metadataKey.toString());
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteByIdQuery,
                         SQLTools.GetStringForSQL(metadataKey.getUuid()))
@@ -112,6 +115,7 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
 
     @Override
     public void insert(ConnectionTrace metadata) {
+        log.info("inserting " + metadata.toString());
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(insertQuery,
                         SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
@@ -123,6 +127,7 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
                         SQLTools.GetStringForSQL(metadata.getDescription())
                 ));
         if (metadata instanceof HttpConnectionTrace) {
+            log.info("inserting http connection" + metadata.toString());
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertHttpQuery,
                             SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),

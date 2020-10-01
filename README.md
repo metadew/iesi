@@ -9,7 +9,6 @@ Intelligent, Enhanced & Seamless Industrialization or IESI is a MIT licensed aut
 It allows the configuration, execution and reporting on automated executions driving development, testing and deployment automation. 
 
 See the [homepage](https://metadew.github.io/iesi/index.html) for more information. 
-Curious to know more about our upcoming release? Read more on our [preview](https://github.com/metadew/iesi/wiki/Next-release-preview) page.
 
 ![automation-approach](https://metadew.github.io/iesi/images/introduction/automation-approach.png)
 

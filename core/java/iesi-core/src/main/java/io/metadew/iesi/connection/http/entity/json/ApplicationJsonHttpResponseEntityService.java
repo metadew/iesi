@@ -45,10 +45,14 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
-            log.debug("raw JSON content: " + new String(httpResponse.getEntityContent().get(), charset));
-            JsonNode jsonNode = new ObjectMapper().readTree(new String(httpResponse.getEntityContent().get(), charset));
-            //DatasetHandler.getInstance().clean(dataset, executionRuntime);
-            InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
+            String jsonContent = new String(httpResponse.getEntityContent().get(), charset);
+            log.debug("raw JSON content: " + jsonContent);
+            JsonNode jsonNode = new ObjectMapper().readTree(jsonContent);
+            if (jsonNode == null) {
+                log.warn("response does not contain a valid JSON message: " + jsonContent + ". ");
+            } else {
+                InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
+            }
         }
     }
 

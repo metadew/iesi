@@ -4,9 +4,11 @@ import io.metadew.iesi.metadata.definition.Metadata;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public abstract class ConnectionTrace extends Metadata<ConnectionTraceKey> {
 
     private final String runId;

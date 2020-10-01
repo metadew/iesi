@@ -5,9 +5,11 @@ import io.metadew.iesi.metadata.configuration.connection.trace.ConnectionTraceCo
 import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTraceKey;
 import io.metadew.iesi.metadata.definition.connection.trace.http.HttpConnectionTrace;
 import io.metadew.iesi.script.execution.ActionExecution;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.UUID;
 
+@Log4j2
 public class HttpConnectionTraceService implements IHttpConnectionTraceService {
     private static final String CONNECTION_TYPE = "http";
 
@@ -24,8 +26,8 @@ public class HttpConnectionTraceService implements IHttpConnectionTraceService {
     }
 
     public HttpConnectionTrace convert(HttpConnection httpConnection, ActionExecution actionExecution, String actionParameterName) {
-        return HttpConnectionTrace.builder().
-                metadataKey(new ConnectionTraceKey(UUID.randomUUID()))
+        return HttpConnectionTrace.builder()
+                .metadataKey(new ConnectionTraceKey(UUID.randomUUID()))
                 .runId(actionExecution.getExecutionControl().getRunId())
                 .processId(actionExecution.getProcessId())
                 .actionParameter(actionParameterName)
@@ -40,7 +42,8 @@ public class HttpConnectionTraceService implements IHttpConnectionTraceService {
     }
 
     public void trace(HttpConnection httpConnection, ActionExecution actionExecution, String actionParameterName) {
-        ConnectionTraceConfiguration.getInstance().insert(convert(httpConnection, actionExecution, actionParameterName));
+        HttpConnectionTrace httpConnectionTrace = convert(httpConnection, actionExecution, actionParameterName);
+        ConnectionTraceConfiguration.getInstance().insert(httpConnectionTrace);
     }
 
 }

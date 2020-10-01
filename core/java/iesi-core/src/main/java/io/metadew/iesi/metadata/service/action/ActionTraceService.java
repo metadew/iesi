@@ -5,8 +5,6 @@ import io.metadew.iesi.metadata.configuration.action.trace.ActionTraceConfigurat
 import io.metadew.iesi.metadata.definition.action.trace.ActionTrace;
 import io.metadew.iesi.script.execution.ActionExecution;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

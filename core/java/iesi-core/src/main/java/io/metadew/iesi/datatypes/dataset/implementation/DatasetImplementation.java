@@ -2,10 +2,10 @@ package io.metadew.iesi.datatypes.dataset.implementation;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
+import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.definition.Metadata;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -13,9 +13,9 @@ import io.metadew.iesi.connection.database.netezza.NetezzaDatabaseConnectionServ
 import io.metadew.iesi.connection.database.oracle.OracleDatabaseConnectionService;
 import io.metadew.iesi.connection.database.postgresql.PostgresqlDatabaseConnectionService;
 import io.metadew.iesi.connection.database.presto.PrestoDatabaseConnectionService;
+import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.database.sqlite.SqliteDatabaseConnectionService;
 import io.metadew.iesi.connection.database.teradata.TeradataDatabaseConnectionService;
-import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.LogManager;

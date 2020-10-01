@@ -2,13 +2,11 @@ package io.metadew.iesi.metadata.definition.execution.script;
 
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

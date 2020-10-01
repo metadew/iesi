@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.configuration.type;
 
 import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
 import io.metadew.iesi.metadata.definition.action.type.ActionType;
-import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
 public class ActionTypeConfiguration {
 

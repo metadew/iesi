@@ -13,10 +13,6 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
-import io.metadew.iesi.metadata.definition.environment.Environment;
-import io.metadew.iesi.metadata.definition.environment.EnvironmentJsonComponent;
-import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
-import io.metadew.iesi.metadata.definition.environment.EnvironmentParameterJsonComponent;
 
 import java.io.IOException;
 import java.util.ArrayList;

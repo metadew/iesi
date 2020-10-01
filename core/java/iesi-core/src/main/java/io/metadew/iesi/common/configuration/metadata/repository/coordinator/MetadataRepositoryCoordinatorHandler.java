@@ -1,7 +1,7 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator;
 
-import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mssql.MssqlMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.h2.H2MetadataRepositoryCoordinatorService;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mssql.MssqlMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.mysql.MysqlMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.netezza.NetezzaMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.oracle.OracleMetadataRepositoryCoordinatorService;

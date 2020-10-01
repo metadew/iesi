@@ -1,15 +1,15 @@
 package io.metadew.iesi.connection.database.presto;
 
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * Connection object for Presto SQL . This class extends the default database connection object.
  *
  * @author peter.billen
  */
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)

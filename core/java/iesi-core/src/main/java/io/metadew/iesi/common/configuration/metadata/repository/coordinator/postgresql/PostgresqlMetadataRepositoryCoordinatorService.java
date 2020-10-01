@@ -1,11 +1,11 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.postgresql;
 
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.postgresql.PostgresqlDatabase;
 import io.metadew.iesi.connection.database.postgresql.PostgresqlDatabaseConnection;
-import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;

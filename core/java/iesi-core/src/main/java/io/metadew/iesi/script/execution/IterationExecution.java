@@ -22,7 +22,7 @@ public class IterationExecution {
 
     // Methods
     public void initialize(ExecutionControl executionControl,
-                           ActionExecution actionExecution, String iterationName)  {
+                           ActionExecution actionExecution, String iterationName) {
         this.setExecutionControl(executionControl);
         this.setIterationName(iterationName);
         this.setIterationOperation(
@@ -55,7 +55,7 @@ public class IterationExecution {
         }
     }
 
-    public boolean hasNext()  {
+    public boolean hasNext(ActionExecution actionExecution) {
         this.iterationNumber++;
         if (this.isIterationOff()) {
             if (this.getIterationNumber() == 1) {
@@ -69,7 +69,7 @@ public class IterationExecution {
                         .hasNext(this.getExecutionControl().getRunId(), this.getIterationNumber()));
             } else if (this.getIterationType().equalsIgnoreCase("condition")) {
                 this.setIterationInstance(this.getIterationConfiguration().hasNext(
-                        this.getIterationOperation().getIteration().getCondition()));
+                        this.getIterationOperation().getIteration().getCondition(), actionExecution));
             } else if (this.getIterationType().equalsIgnoreCase("list")) {
                 this.setIterationInstance(this.getIterationConfiguration().hasNextListItem(
                         this.getExecutionControl().getRunId(), this.getIterationName(), this.getIterationNumber()));

@@ -30,9 +30,8 @@ public class BigqueryDataset {
 
     public void create() {
         try {
-            BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
             DatasetInfo datasetInfo = DatasetInfo.newBuilder(this.getName()).build();
-            com.google.cloud.bigquery.Dataset newDataset = bigquery.create(datasetInfo);
+            com.google.cloud.bigquery.Dataset newDataset = BigqueryConnection.getInstance().getService().create(datasetInfo);
             String newDatasetName = newDataset.getDatasetId().getDataset();
             System.out.println(newDatasetName + " created successfully");
         } catch (BigQueryException e) {
@@ -41,9 +40,8 @@ public class BigqueryDataset {
     }
 
     public void delete() {
-        BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
         DatasetId datasetId = DatasetId.of(this.getProject(), this.getName());
-        boolean deleted = bigquery.delete(datasetId, BigQuery.DatasetDeleteOption.deleteContents());
+        boolean deleted = BigqueryConnection.getInstance().getService().delete(datasetId, BigQuery.DatasetDeleteOption.deleteContents());
         if (deleted) {
             System.out.println("Dataset was deleted.");
         } else {

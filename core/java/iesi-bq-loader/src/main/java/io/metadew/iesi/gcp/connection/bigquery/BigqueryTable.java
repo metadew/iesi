@@ -29,7 +29,6 @@ public class BigqueryTable {
     }
 
     public void create() {
-        BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
         TableId tableId = TableId.of(this.getBigqueryDataset().getName(), this.getName());
 
         // Table field definition
@@ -42,22 +41,20 @@ public class BigqueryTable {
         TableDefinition tableDefinition = StandardTableDefinition.of(schema);
         TableInfo tableInfo = TableInfo.newBuilder(tableId, tableDefinition).build();
 
-        com.google.cloud.bigquery.Table table = bigquery.create(tableInfo);
+        com.google.cloud.bigquery.Table table = BigqueryConnection.getInstance().getService().create(tableInfo);
     }
 
     public void create(Schema schema) {
-        BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
         TableId tableId = TableId.of(this.getBigqueryDataset().getName(), this.getName());
 
         TableDefinition tableDefinition = StandardTableDefinition.of(schema);
         TableInfo tableInfo = TableInfo.newBuilder(tableId, tableDefinition).build();
 
-        com.google.cloud.bigquery.Table table = bigquery.create(tableInfo);
+        com.google.cloud.bigquery.Table table = BigqueryConnection.getInstance().getService().create(tableInfo);
     }
 
 
     public void create2() {
-        BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
         TableId tableId = TableId.of(this.getBigqueryDataset().getName(), "test");
 
         Schema schema =
@@ -84,13 +81,12 @@ public class BigqueryTable {
         TableDefinition tableDefinition = StandardTableDefinition.of(schema);
         TableInfo tableInfo = TableInfo.newBuilder(tableId, tableDefinition).build();
 
-        com.google.cloud.bigquery.Table table = bigquery.create(tableInfo);
+        com.google.cloud.bigquery.Table table = BigqueryConnection.getInstance().getService().create(tableInfo);
     }
 
     public void delete() {
-        BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
         TableId tableId = TableId.of(this.getBigqueryDataset().getProject(), this.getBigqueryDataset().getName(), this.getName());
-        boolean deleted = bigquery.delete(tableId);
+        boolean deleted = BigqueryConnection.getInstance().getService().delete(tableId);
         if (deleted) {
             System.out.println("Table was deleted.");
         } else {

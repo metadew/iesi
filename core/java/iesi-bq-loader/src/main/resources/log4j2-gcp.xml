@@ -19,7 +19,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="io.metadew.iesi.gcp.bqloader" additivity="false" level="all">
+        <Logger name="io.metadew.iesi.gcp.services.bqloader" additivity="false" level="all">
             <AppenderRef ref="STDOUT" level="info" />
             <AppenderRef ref="default" level="all" />
         </Logger>

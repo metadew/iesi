@@ -12,7 +12,27 @@ iesi:
             - name: "dlp-out"
               subscriptions:
                 - name: "dlp-out-sub"
+        - name: "bql-sample"
+          topics:
+            - name: "iesi-scriptresults"
+              subscriptions:
+                - name: "iesi-scriptresults-bigquery"
       dlp:
         - name: "dlp-sample"
           input: "dlp-in-sub"
-          output: "dlp-out" 
+          output: "dlp-out"
+      bql:
+        - name: "bql-sample"
+          input: "iesi-scriptresults-bigquery"
+          bigquery:
+            scriptresult:
+              dataset: "iesi_script_results_sample"
+          output: ""
+      bigquery:
+        - name: "bql-sample"
+          datasets:
+            - name: "iesi_script_results_sample"
+              tables:
+                - name: "script-results"
+                  type: "scriptresults"
+                - name: "script-exections"

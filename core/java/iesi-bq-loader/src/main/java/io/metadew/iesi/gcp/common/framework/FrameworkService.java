@@ -1,7 +1,6 @@
 package io.metadew.iesi.gcp.common.framework;
 
 import io.metadew.iesi.gcp.common.tools.FolderTools;
-import org.jfrog.artifactory.client.model.Folder;
 
 import java.io.File;
 import java.util.Map;

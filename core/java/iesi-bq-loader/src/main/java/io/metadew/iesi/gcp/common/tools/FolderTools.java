@@ -1,7 +1,6 @@
 package io.metadew.iesi.gcp.common.tools;
 
-import io.metadew.iesi.common.text.ParsingTools;
-import io.metadew.iesi.connection.FileConnection;
+import io.metadew.iesi.gcp.connection.filesystem.FileConnection;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 

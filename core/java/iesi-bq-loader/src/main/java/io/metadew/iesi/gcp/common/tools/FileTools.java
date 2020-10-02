@@ -1,6 +1,6 @@
 package io.metadew.iesi.gcp.common.tools;
 
-import io.metadew.iesi.common.FrameworkControl;
+import io.metadew.iesi.gcp.common.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -125,14 +125,14 @@ public final class FileTools {
 
 
     // Convert to inputsteeam and resolve configuration
-    public static InputStream convertToInputStream(File file, FrameworkControl frameworkControl) {
+    public static InputStream convertToInputStream(File file) {
         String output = "";
         try {
             @SuppressWarnings("resource")
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String readLine = "";
             while ((readLine = bufferedReader.readLine()) != null) {
-                output += frameworkControl.resolveConfiguration(readLine);
+                output += Configuration.getInstance().resolve(readLine);
                 output += "\n";
             }
             bufferedReader.close();
@@ -142,14 +142,14 @@ public final class FileTools {
         return new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static InputStream convertToInputStream(String input, FrameworkControl frameworkControl) {
+    public static InputStream convertToInputStream(String input) {
         String output = "";
         try {
             Reader inputString = new StringReader(input);
             BufferedReader bufferedReader = new BufferedReader(inputString);
             String readLine = "";
             while ((readLine = bufferedReader.readLine()) != null) {
-                output += frameworkControl.resolveConfiguration(readLine);
+                output += Configuration.getInstance().resolve(readLine);
                 output += "\n";
             }
             bufferedReader.close();

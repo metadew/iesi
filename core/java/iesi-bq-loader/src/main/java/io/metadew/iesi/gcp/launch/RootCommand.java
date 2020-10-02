@@ -1,13 +1,15 @@
 package io.metadew.iesi.gcp.launch;
 
-import io.metadew.iesi.gcp.bqloader.launch.BqlCommand;
-import io.metadew.iesi.gcp.dlp.launch.DlpCommand;
-import io.metadew.iesi.gcp.pubsub.launch.PubsubCommand;
+import io.metadew.iesi.gcp.services.bigquery.launch.BigqueryCommand;
+import io.metadew.iesi.gcp.services.bqloader.launch.BqlCommand;
+import io.metadew.iesi.gcp.services.dlp.launch.DlpCommand;
+import io.metadew.iesi.gcp.services.pubsub.launch.PubsubCommand;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command (
         subcommands = {
+                BigqueryCommand.class,
                 BqlCommand.class,
                 DlpCommand.class,
                 PubsubCommand.class,

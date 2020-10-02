@@ -39,6 +39,29 @@ public class Configuration {
         log.debug("configuration after system variable loading: " + properties);
     }
 
+    public String resolve(String input) {
+        int openPos;
+        int closePos;
+        String variable_char = "#";
+        String midBit;
+        String temp = input;
+        while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
+            openPos = temp.indexOf(variable_char);
+            closePos = temp.indexOf(variable_char, openPos + 1);
+            midBit = temp.substring(openPos + 1, closePos);
+
+            // Replacing the value if found
+            if (getProperty(midBit).isPresent()) {
+                input = input.replaceAll(variable_char + midBit + variable_char, getProperty(midBit)
+                        .map(o -> (String) o)
+                        .get());
+            }
+            temp = temp.substring(closePos + 1, temp.length());
+
+        }
+        return input;
+    }
+
     public Optional<Object> getProperty(String key) {
         if (key.startsWith(iesiKeyword + "." + configurationKeyword + ".")) {
             return getProperty(key.substring(iesiKeyword.length() + 1 + configurationKeyword.length() + 1), properties);

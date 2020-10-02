@@ -65,7 +65,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
             "WHERE template.name= :name;";
     private static final String deleteByTemplateIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " where id= :id;";
 
-    private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " (ID, NAME, VERSION, DESCRIPTION) VALUES (:id,:name,:version,:description );";
+    private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " (ID, NAME, VERSION, DESCRIPTION) VALUES (:id, :name, :version, :description);";
 
     private static final String updateQuery = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " " +
             "SET NAME= :name, VERSION= :version, DESCRIPTION= :description WHERE ID= :id;";
@@ -152,17 +152,16 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
 
     @Override
     public void insert(Template template) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", template.getMetadataKey().getId())
-                .addValue("name", template.getName())
-                .addValue("version", template.getVersion())
-                .addValue("description", template.getDescription())
-                ;
-//        Map<String, Object> param = new HashMap<>();
-//        param.put("id", template.getMetadataKey().getId());
-//        param.put("name", template.getName());
-//        param.put("version", template.getVersion());
-//        param.put("description", template.getDescription());
+//        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+//                .addValue("id", template.getMetadataKey().getId())
+//                .addValue("name", template.getName())
+//                .addValue("version", template.getVersion())
+//                .addValue("description", template.getDescription());
+        Map<String, Object> param = new HashMap<>();
+        param.put("id", template.getMetadataKey().getId());
+        param.put("name", template.getName());
+        param.put("version", template.getVersion());
+        param.put("description", template.getDescription());
 //        getMetadataRepository().executeUpdate(
 //                MessageFormat.format(insertQuery,
 //                        SQLTools.GetStringForSQL(template.getMetadataKey().getId()),
@@ -171,7 +170,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
 //                        SQLTools.GetStringForSQL(template.getDescription())));
         namedParameterJdbcTemplate.update(
                 insertQuery,
-                sqlParameterSource);
+                param);
         for (Matcher matcher : template.getMatchers()) {
             MatcherConfiguration.getInstance().insert(matcher);
         }

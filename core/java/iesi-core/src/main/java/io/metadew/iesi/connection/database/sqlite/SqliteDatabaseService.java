@@ -34,25 +34,25 @@ public class SqliteDatabaseService extends DatabaseService<SqliteDatabase> imple
         return keyword;
     }
 
-    public Connection getConnection(SqliteDatabase sqliteDatabase) {
-        synchronized (sqliteDatabase.getConnectionPoolLock()) {
-            return DatabaseConnectionHandler.getInstance().getConnection(sqliteDatabase.getDatabaseConnection());
-        }
-    }
+//    public Connection getConnection(SqliteDatabase sqliteDatabase) {
+//        synchronized (sqliteDatabase.getConnectionPoolLock()) {
+//            return DatabaseConnectionHandler.getInstance().getConnection(sqliteDatabase.getDatabaseConnection());
+//        }
+//    }
 
 
-    public boolean isInitializeConnectionPool() {
-        return false;
-    }
+//    public boolean isInitializeConnectionPool() {
+//        return false;
+//    }
 
 
-    public void releaseConnection(SqliteDatabase sqliteDatabase, Connection connection) {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void releaseConnection(SqliteDatabase sqliteDatabase, Connection connection) {
+//        try {
+//            connection.close();
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
 

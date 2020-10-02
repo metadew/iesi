@@ -96,9 +96,9 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
     private String deleteStatement(ComponentAttributeKey componentAttributeKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
                 " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentKey().getId()) +
-                "AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentKey().getVersionNumber()) +
-                "AND ENV_NM = " + SQLTools.GetStringForSQL(componentAttributeKey.getEnvironmentKey().getName()) +
-                "AND COMP_ATT_NM = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentAttributeName()) + ";";
+                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentKey().getVersionNumber()) +
+                " AND ENV_NM = " + SQLTools.GetStringForSQL(componentAttributeKey.getEnvironmentKey().getName()) +
+                " AND COMP_ATT_NM = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentAttributeName()) + ";";
     }
 
     @Override

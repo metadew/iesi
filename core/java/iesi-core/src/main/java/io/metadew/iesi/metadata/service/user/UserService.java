@@ -56,23 +56,23 @@ public class UserService {
         UserConfiguration.getInstance().delete(username);
     }
 
-    public List<Authority> getAuthorities(UserKey userKey) {
+    public List<Privilege> getAuthorities(UserKey userKey) {
         return UserConfiguration.getInstance().getAuthorities(userKey);
     }
 
-    public List<Authority> getAuthorities(String username) {
+    public List<Privilege> getAuthorities(String username) {
         return UserConfiguration.getInstance().getAuthorities(username);
     }
 
-    public List<Group> getGroups(UserKey userKey) {
+    public List<Team> getGroups(UserKey userKey) {
         return UserConfiguration.getInstance().getGroups(userKey);
     }
 
-    public List<Group> getGroups(String username) {
+    public List<Team> getGroups(String username) {
         return UserConfiguration.getInstance().getGroups(username);
     }
 
-    public void addAuthority(UserKey user, AuthorityKey authority) {
+    public void addAuthority(UserKey user, PrivilegeKey authority) {
         UserConfiguration.getInstance().addAuthority(user, authority);
     }
 
@@ -80,8 +80,8 @@ public class UserService {
         UserConfiguration.getInstance().addAuthority(username, authority);
     }
 
-    public void removeAuthority(User user, Authority authority) {
-        UserConfiguration.getInstance().removeAuthority(user.getMetadataKey(), authority.getMetadataKey());
+    public void removeAuthority(User user, Privilege privilege) {
+        UserConfiguration.getInstance().removeAuthority(user.getMetadataKey(), privilege.getMetadataKey());
     }
 
     public void removeAuthority(String username, String authority) {

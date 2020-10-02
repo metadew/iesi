@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.definition.user;
+package io.metadew.iesi.metadata.definition.security;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AuthorityKey extends MetadataKey {
+public class SecurityGroupKey extends MetadataKey {
 
     private final UUID uuid;
 

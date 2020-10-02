@@ -19,13 +19,13 @@ class UserConfigurationTest {
     private User user2;
 
 
-    private Group group1;
-    private Group group2;
+    private Team team1;
+    private Team team2;
 
-    private Authority authority1;
-    private Authority authority2;
-    private Authority authority3;
-    private Authority authority4;
+    private Privilege privilege1;
+    private Privilege privilege2;
+    private Privilege privilege3;
+    private Privilege privilege4;
 
     @BeforeAll
     static void prepare() {
@@ -60,41 +60,41 @@ class UserConfigurationTest {
                 .locked(false)
                 .password("password3")
                 .build();
-        authority1 = Authority.builder()
-                .authorityKey(AuthorityKey.builder()
+        privilege1 = Privilege.builder()
+                .privilegeKey(PrivilegeKey.builder()
                         .uuid(UUID.randomUUID())
                         .build())
                 .authority("authority1")
                 .build();
-        authority2 = Authority.builder()
-                .authorityKey(AuthorityKey.builder()
+        privilege2 = Privilege.builder()
+                .privilegeKey(PrivilegeKey.builder()
                         .uuid(UUID.randomUUID())
                         .build())
                 .authority("authority2")
                 .build();
-        authority3 = Authority.builder()
-                .authorityKey(AuthorityKey.builder()
+        privilege3 = Privilege.builder()
+                .privilegeKey(PrivilegeKey.builder()
                         .uuid(UUID.randomUUID())
                         .build())
                 .authority("authority3")
                 .build();
-        authority4 = Authority.builder()
-                .authorityKey(AuthorityKey.builder()
+        privilege4 = Privilege.builder()
+                .privilegeKey(PrivilegeKey.builder()
                         .uuid(UUID.randomUUID())
                         .build())
                 .authority("authority4")
                 .build();
-        group1 = Group.builder()
-                .groupKey(GroupKey.builder()
+        team1 = Team.builder()
+                .teamKey(TeamKey.builder()
                         .uuid(UUID.randomUUID())
                         .build())
-                .groupName("group1")
+                .teamName("group1")
                 .build();
-        group2 = Group.builder()
-                .groupKey(GroupKey.builder()
+        team2 = Team.builder()
+                .teamKey(TeamKey.builder()
                         .uuid(UUID.randomUUID())
                         .build())
-                .groupName("group2")
+                .teamName("group2")
                 .build();
     }
 
@@ -278,142 +278,142 @@ class UserConfigurationTest {
     void getGroups() {
         UserConfiguration.getInstance().insert(user1);
         UserConfiguration.getInstance().insert(user2);
-        GroupConfiguration.getInstance().insert(group1);
-        GroupConfiguration.getInstance().insert(group2);
-        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
-        GroupConfiguration.getInstance().addUser(group2.getMetadataKey(), user1.getMetadataKey());
-        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user2.getMetadataKey());
+        GroupConfiguration.getInstance().insert(team1);
+        GroupConfiguration.getInstance().insert(team2);
+        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(team2.getMetadataKey(), user1.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user2.getMetadataKey());
 
         assertThat(UserConfiguration.getInstance().getGroups(user1.getMetadataKey()))
-                .containsOnly(group1, group2);
+                .containsOnly(team1, team2);
         assertThat(UserConfiguration.getInstance().getGroups(user2.getMetadataKey()))
-                .containsOnly(group1);
+                .containsOnly(team1);
     }
 
     @Test
     void addAuthority() {
         UserConfiguration.getInstance().insert(user1);
         UserConfiguration.getInstance().insert(user2);
-        AuthorityConfiguration.getInstance().insert(authority1);
-        AuthorityConfiguration.getInstance().insert(authority2);
-        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority1.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority2.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), authority2.getMetadataKey());
+        AuthorityConfiguration.getInstance().insert(privilege1);
+        AuthorityConfiguration.getInstance().insert(privilege2);
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege2.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), privilege2.getMetadataKey());
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
-                .containsOnly(authority1, authority2);
+                .containsOnly(privilege1, privilege2);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
-                .containsOnly(authority2);
+                .containsOnly(privilege2);
     }
 
     @Test
     void addAuthorityByName() {
         UserConfiguration.getInstance().insert(user1);
         UserConfiguration.getInstance().insert(user2);
-        AuthorityConfiguration.getInstance().insert(authority1);
-        AuthorityConfiguration.getInstance().insert(authority2);
-        UserConfiguration.getInstance().addAuthority(user1.getUsername(), authority1.getAuthority());
-        UserConfiguration.getInstance().addAuthority(user1.getUsername(), authority2.getAuthority());
-        UserConfiguration.getInstance().addAuthority(user2.getUsername(), authority2.getAuthority());
+        AuthorityConfiguration.getInstance().insert(privilege1);
+        AuthorityConfiguration.getInstance().insert(privilege2);
+        UserConfiguration.getInstance().addAuthority(user1.getUsername(), privilege1.getAuthority());
+        UserConfiguration.getInstance().addAuthority(user1.getUsername(), privilege2.getAuthority());
+        UserConfiguration.getInstance().addAuthority(user2.getUsername(), privilege2.getAuthority());
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
-                .containsOnly(authority1, authority2);
+                .containsOnly(privilege1, privilege2);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
-                .containsOnly(authority2);
+                .containsOnly(privilege2);
     }
 
     @Test
     void removeAuthority() {
         UserConfiguration.getInstance().insert(user1);
         UserConfiguration.getInstance().insert(user2);
-        AuthorityConfiguration.getInstance().insert(authority1);
-        AuthorityConfiguration.getInstance().insert(authority2);
-        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority1.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority2.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), authority2.getMetadataKey());
+        AuthorityConfiguration.getInstance().insert(privilege1);
+        AuthorityConfiguration.getInstance().insert(privilege2);
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege2.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), privilege2.getMetadataKey());
 
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
-                .containsOnly(authority1, authority2);
+                .containsOnly(privilege1, privilege2);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
-                .containsOnly(authority2);
+                .containsOnly(privilege2);
 
-        UserConfiguration.getInstance().removeAuthority(user1.getMetadataKey(), authority1.getMetadataKey());
+        UserConfiguration.getInstance().removeAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
 
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
-                .containsOnly(authority2);
+                .containsOnly(privilege2);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
-                .containsOnly(authority2);
+                .containsOnly(privilege2);
     }
 
     @Test
     void removeAuthorityByName() {
         UserConfiguration.getInstance().insert(user1);
         UserConfiguration.getInstance().insert(user2);
-        AuthorityConfiguration.getInstance().insert(authority1);
-        AuthorityConfiguration.getInstance().insert(authority2);
-        UserConfiguration.getInstance().addAuthority(user1.getUsername(), authority1.getAuthority());
-        UserConfiguration.getInstance().addAuthority(user1.getUsername(), authority2.getAuthority());
-        UserConfiguration.getInstance().addAuthority(user2.getUsername(), authority2.getAuthority());
+        AuthorityConfiguration.getInstance().insert(privilege1);
+        AuthorityConfiguration.getInstance().insert(privilege2);
+        UserConfiguration.getInstance().addAuthority(user1.getUsername(), privilege1.getAuthority());
+        UserConfiguration.getInstance().addAuthority(user1.getUsername(), privilege2.getAuthority());
+        UserConfiguration.getInstance().addAuthority(user2.getUsername(), privilege2.getAuthority());
 
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getUsername()))
-                .containsOnly(authority1, authority2);
+                .containsOnly(privilege1, privilege2);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getUsername()))
-                .containsOnly(authority2);
+                .containsOnly(privilege2);
 
-        UserConfiguration.getInstance().removeAuthority(user1.getUsername(), authority1.getAuthority());
+        UserConfiguration.getInstance().removeAuthority(user1.getUsername(), privilege1.getAuthority());
 
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
-                .containsOnly(authority2);
+                .containsOnly(privilege2);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
-                .containsOnly(authority2);
+                .containsOnly(privilege2);
     }
 
     @Test
     void getAuthorities() {
         UserConfiguration.getInstance().insert(user1);
         UserConfiguration.getInstance().insert(user2);
-        AuthorityConfiguration.getInstance().insert(authority1);
-        AuthorityConfiguration.getInstance().insert(authority2);
-        AuthorityConfiguration.getInstance().insert(authority3);
-        AuthorityConfiguration.getInstance().insert(authority4);
-        GroupConfiguration.getInstance().insert(group1);
-        GroupConfiguration.getInstance().insert(group2);
-        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority3.getMetadataKey());
-        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority4.getMetadataKey());
-        GroupConfiguration.getInstance().addAuthority(group2.getMetadataKey(), authority3.getMetadataKey());
-        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
-        GroupConfiguration.getInstance().addUser(group2.getMetadataKey(), user2.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority1.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority2.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), authority2.getMetadataKey());
+        AuthorityConfiguration.getInstance().insert(privilege1);
+        AuthorityConfiguration.getInstance().insert(privilege2);
+        AuthorityConfiguration.getInstance().insert(privilege3);
+        AuthorityConfiguration.getInstance().insert(privilege4);
+        GroupConfiguration.getInstance().insert(team1);
+        GroupConfiguration.getInstance().insert(team2);
+        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege3.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege4.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(team2.getMetadataKey(), privilege3.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(team2.getMetadataKey(), user2.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege2.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), privilege2.getMetadataKey());
 
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
-                .containsOnly(authority1, authority2, authority3, authority4);
+                .containsOnly(privilege1, privilege2, privilege3, privilege4);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
-                .containsOnly(authority2, authority3);
+                .containsOnly(privilege2, privilege3);
     }
 
     @Test
     void getAuthoritiesByName() {
         UserConfiguration.getInstance().insert(user1);
         UserConfiguration.getInstance().insert(user2);
-        AuthorityConfiguration.getInstance().insert(authority1);
-        AuthorityConfiguration.getInstance().insert(authority2);
-        AuthorityConfiguration.getInstance().insert(authority3);
-        AuthorityConfiguration.getInstance().insert(authority4);
-        GroupConfiguration.getInstance().insert(group1);
-        GroupConfiguration.getInstance().insert(group2);
-        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority3.getMetadataKey());
-        GroupConfiguration.getInstance().addAuthority(group1.getMetadataKey(), authority4.getMetadataKey());
-        GroupConfiguration.getInstance().addAuthority(group2.getMetadataKey(), authority3.getMetadataKey());
-        GroupConfiguration.getInstance().addUser(group1.getMetadataKey(), user1.getMetadataKey());
-        GroupConfiguration.getInstance().addUser(group2.getMetadataKey(), user2.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority1.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), authority2.getMetadataKey());
-        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), authority2.getMetadataKey());
+        AuthorityConfiguration.getInstance().insert(privilege1);
+        AuthorityConfiguration.getInstance().insert(privilege2);
+        AuthorityConfiguration.getInstance().insert(privilege3);
+        AuthorityConfiguration.getInstance().insert(privilege4);
+        GroupConfiguration.getInstance().insert(team1);
+        GroupConfiguration.getInstance().insert(team2);
+        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege3.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege4.getMetadataKey());
+        GroupConfiguration.getInstance().addAuthority(team2.getMetadataKey(), privilege3.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
+        GroupConfiguration.getInstance().addUser(team2.getMetadataKey(), user2.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege2.getMetadataKey());
+        UserConfiguration.getInstance().addAuthority(user2.getMetadataKey(), privilege2.getMetadataKey());
 
         assertThat(UserConfiguration.getInstance().getAuthorities(user1.getUsername()))
-                .containsOnly(authority1, authority2, authority3, authority4);
+                .containsOnly(privilege1, privilege2, privilege3, privilege4);
         assertThat(UserConfiguration.getInstance().getAuthorities(user2.getUsername()))
-                .containsOnly(authority2, authority3);
+                .containsOnly(privilege2, privilege3);
     }
 
 

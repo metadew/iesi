@@ -110,8 +110,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
         getMetadataRepository().executeUpdate(updateStatement);
     }
 
-    public List<Group> getGroups(UserKey userKey) {
-        List<Group> groups = new ArrayList<>();
+    public List<Team> getGroups(UserKey userKey) {
+        List<Team> teams = new ArrayList<>();
         try {
             String queryScript = "select groups.ID, groups.GROUP_NAME " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupMembers").getName() + " group_members " +
@@ -120,16 +120,16 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                     "USER_ID =" + SQLTools.GetStringForSQL(userKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
-                groups.add(GroupConfiguration.getInstance().mapGroup(cachedRowSet));
+                teams.add(GroupConfiguration.getInstance().mapGroup(cachedRowSet));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return groups;
+        return teams;
     }
 
-    public List<Group> getGroups(String username) {
-        List<Group> groups = new ArrayList<>();
+    public List<Team> getGroups(String username) {
+        List<Team> teams = new ArrayList<>();
         try {
             String queryScript = "select groups.ID, groups.GROUP_NAME " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupMembers").getName() + " group_members " +
@@ -140,16 +140,16 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                     "USERNAME=" + SQLTools.GetStringForSQL(username) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
-                groups.add(GroupConfiguration.getInstance().mapGroup(cachedRowSet));
+                teams.add(GroupConfiguration.getInstance().mapGroup(cachedRowSet));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return groups;
+        return teams;
     }
 
-    public List<Authority> getAuthorities(UserKey userKey) {
-        List<Authority> authorities = new ArrayList<>();
+    public List<Privilege> getAuthorities(UserKey userKey) {
+        List<Privilege> authorities = new ArrayList<>();
         try {
             String queryScript = "select authorities.ID, authorities.AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupMembers").getName() + " group_members " +
@@ -174,8 +174,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
         return authorities;
     }
 
-    public List<Authority> getAuthorities(String username) {
-        List<Authority> authorities = new ArrayList<>();
+    public List<Privilege> getAuthorities(String username) {
+        List<Privilege> authorities = new ArrayList<>();
         try {
             String queryScript = "select authorities.ID, authorities.AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupMembers").getName() + " group_members " +
@@ -204,11 +204,11 @@ public class UserConfiguration extends Configuration<User, UserKey> {
         return authorities;
     }
 
-    public void addAuthority(UserKey userKey, AuthorityKey authorityKey) {
+    public void addAuthority(UserKey userKey, PrivilegeKey privilegeKey) {
         String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserAuthorities").getName() +
                 " (USER_ID, AUTHORITY_ID) VALUES (" +
                 SQLTools.GetStringForSQL(userKey.getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(authorityKey.getUuid().toString()) + ");";
+                SQLTools.GetStringForSQL(privilegeKey.getUuid().toString()) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -222,9 +222,9 @@ public class UserConfiguration extends Configuration<User, UserKey> {
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
-    public void removeAuthority(UserKey userKey, AuthorityKey authorityKey) {
+    public void removeAuthority(UserKey userKey, PrivilegeKey privilegeKey) {
         String insertStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserAuthorities").getName() +
-                " WHERE AUTHORITY_ID=" + SQLTools.GetStringForSQL(authorityKey.getUuid().toString()) + " and " +
+                " WHERE AUTHORITY_ID=" + SQLTools.GetStringForSQL(privilegeKey.getUuid().toString()) + " and " +
                 "USER_ID= " + SQLTools.GetStringForSQL(userKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -263,8 +263,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                 SQLTools.getBooleanFromSql(cachedRowSet.getString("ENABLED")),
                 SQLTools.getBooleanFromSql(cachedRowSet.getString("EXPIRED")),
                 SQLTools.getBooleanFromSql(cachedRowSet.getString("CREDENTIALS_EXPIRED")),
-                SQLTools.getBooleanFromSql(cachedRowSet.getString("LOCKED"))
-        );
+                SQLTools.getBooleanFromSql(cachedRowSet.getString("LOCKED")),
+                privileges, teams);
     }
 
 }

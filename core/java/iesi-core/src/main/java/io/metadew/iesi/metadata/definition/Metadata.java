@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.definition;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import lombok.Data;
 

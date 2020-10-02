@@ -7,14 +7,16 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Authority extends Metadata<AuthorityKey> {
+public class Privilege extends Metadata<PrivilegeKey> {
 
     private String authority;
+    private final RoleKey roleKey;
 
     @Builder
-    public Authority(AuthorityKey authorityKey, String authority) {
-        super(authorityKey);
+    public Privilege(PrivilegeKey privilegeKey, String authority, RoleKey roleKey) {
+        super(privilegeKey);
         this.authority = authority;
+        this.roleKey = roleKey;
     }
 
 }

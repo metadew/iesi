@@ -12,7 +12,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class GroupKey extends MetadataKey {
+public class PrivilegeKey extends MetadataKey {
 
     private final UUID uuid;
 

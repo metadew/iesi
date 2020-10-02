@@ -4,8 +4,8 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.definition.user.Authority;
-import io.metadew.iesi.metadata.definition.user.AuthorityKey;
+import io.metadew.iesi.metadata.definition.user.Privilege;
+import io.metadew.iesi.metadata.definition.user.PrivilegeKey;
 import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
-public class AuthorityConfiguration extends Configuration<Authority, AuthorityKey> {
+public class AuthorityConfiguration extends Configuration<Privilege, PrivilegeKey> {
     private static AuthorityConfiguration INSTANCE;
 
     public synchronized static AuthorityConfiguration getInstance() {
@@ -32,7 +32,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     }
 
     @Override
-    public Optional<Authority> get(AuthorityKey metadataKey) {
+    public Optional<Privilege> get(PrivilegeKey metadataKey) {
         try {
             String queryScript = "select ID, AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
@@ -48,7 +48,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         }
     }
 
-    public Optional<Authority> get(String authority) {
+    public Optional<Privilege> get(String authority) {
         try {
             String queryScript = "select ID, AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
@@ -69,8 +69,8 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     }
 
     @Override
-    public List<Authority> getAll() {
-        List<Authority> authorities = new ArrayList<>();
+    public List<Privilege> getAll() {
+        List<Privilege> authorities = new ArrayList<>();
         try {
             String queryScript = "select ID, AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + ";";
@@ -85,7 +85,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     }
 
     @Override
-    public void delete(AuthorityKey metadataKey) {
+    public void delete(PrivilegeKey metadataKey) {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
         String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                 " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
@@ -99,7 +99,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     }
 
     @Override
-    public void insert(Authority metadata) {
+    public void insert(Privilege metadata) {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
         String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                 " (ID, AUTHORITY) VALUES (" +
@@ -109,7 +109,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     }
 
     @Override
-    public void update(Authority metadata) {
+    public void update(Privilege metadata) {
         log.trace(MessageFormat.format("Updating {0}.", metadata.toString()));
         String updateStatement = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                 " SET AUTHORITY = " + SQLTools.GetStringForSQL(metadata.getAuthority()) +
@@ -117,7 +117,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         getMetadataRepository().executeUpdate(updateStatement);
     }
 
-    public Optional<Authority> getByName(String name) {
+    public Optional<Privilege> getByName(String name) {
         try {
             String queryScript = "select ID, AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
@@ -133,8 +133,8 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         }
     }
 
-    public Authority mapAuthority(CachedRowSet cachedRowSet) throws SQLException {
-        return new Authority(new AuthorityKey(UUID.fromString(cachedRowSet.getString("ID"))),
-                cachedRowSet.getString("AUTHORITY"));
+    public Privilege mapAuthority(CachedRowSet cachedRowSet) throws SQLException {
+        return new Privilege(new PrivilegeKey(UUID.fromString(cachedRowSet.getString("ID"))),
+                cachedRowSet.getString("AUTHORITY"), roleKey);
     }
 }

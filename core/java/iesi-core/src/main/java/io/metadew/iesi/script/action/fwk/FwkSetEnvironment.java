@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.Optional;
 
 
 public class FwkSetEnvironment extends ActionTypeExecution {
@@ -47,15 +46,12 @@ public class FwkSetEnvironment extends ActionTypeExecution {
         String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
 
         //Check if environment exists
-        Optional<Environment> environment = EnvironmentConfiguration.getInstance().get(new EnvironmentKey(environmentName));
-        if (environment.isPresent()) {
-            this.getExecutionControl().setEnvironment(getActionExecution(), environmentName);
-            this.getActionExecution().getActionControl().increaseSuccessCount();
-            return true;
-        } else {
-            this.getActionExecution().getActionControl().increaseErrorCount();
-            return false;
-        }
+        Environment environment = EnvironmentConfiguration.getInstance()
+                .get(new EnvironmentKey(environmentName))
+                .orElseThrow(() -> new RuntimeException("Could not find environment " + environmentName));
+        this.getExecutionControl().setEnvironment(getActionExecution(), environmentName);
+        this.getActionExecution().getActionControl().increaseSuccessCount();
+        return true;
     }
 
     private String convertEnvironmentName(DataType environmentName) {

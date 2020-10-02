@@ -45,6 +45,7 @@ public class EvalAssertEquals extends ActionTypeExecution {
         if (evaluation) {
             getActionExecution().getActionControl().increaseSuccessCount();
         } else {
+            getActionExecution().getActionControl().logOutput("action.error", "Actual value '" + actualValue.getValue() + "' does not match '" + expectedValue.getValue() + "'");
             getActionExecution().getActionControl().increaseErrorCount();
         }
         return evaluation;

@@ -81,6 +81,8 @@ public class SqlEvaluateResult extends ActionTypeExecution {
                 this.getActionExecution().getActionControl().increaseSuccessCount();
                 return true;
             } else {
+                getActionExecution().getActionControl().logOutput("action.error",
+                        "sql query '" + query + "' does not contain any rows");
                 this.getActionExecution().getActionControl().increaseErrorCount();
                 return false;
             }
@@ -89,6 +91,8 @@ public class SqlEvaluateResult extends ActionTypeExecution {
                 this.getActionExecution().getActionControl().increaseSuccessCount();
                 return true;
             } else {
+                getActionExecution().getActionControl().logOutput("action.error",
+                        "sql query '" + query + "' contains " + rowCount + " rows");
                 this.getActionExecution().getActionControl().increaseErrorCount();
                 return false;
             }

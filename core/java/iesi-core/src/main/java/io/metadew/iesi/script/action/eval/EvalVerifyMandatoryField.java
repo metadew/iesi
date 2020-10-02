@@ -145,7 +145,7 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
             return true;
         } else {
             this.getActionExecution().getActionControl().increaseErrorCount();
-            return true;
+            return false;
         }
     }
 

@@ -158,7 +158,7 @@ public class WfaExecuteFilePing extends ActionTypeExecution {
         } else {
             this.getActionExecution().getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("out", "time-out");
+            this.getActionExecution().getActionControl().logOutput("action.error", "File ping timed out");
             this.getActionExecution().getActionControl().logOutput("time", Long.toString(elapsedTime));
         }
         return true;

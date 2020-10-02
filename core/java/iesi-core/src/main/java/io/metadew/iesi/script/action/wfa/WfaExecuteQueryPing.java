@@ -165,7 +165,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         } else {
             this.getActionExecution().getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("out", "time-out");
+            this.getActionExecution().getActionControl().logOutput("action.error", "Query ping timed out");
             this.getActionExecution().getActionControl().logOutput("time", Long.toString(elapsedTime));
             return false;
         }

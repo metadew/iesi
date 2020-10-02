@@ -40,18 +40,13 @@ public class EvalExecuteExpression extends ActionTypeExecution {
         this.expression = convertExpression(evaluationExpression.getValue());
     }
 
-    protected boolean executeAction() throws InterruptedException {
-        try {
-            if (ConditionService.getInstance().evaluateCondition(expression, getExecutionControl().getExecutionRuntime(), getActionExecution())) {
-                getActionExecution().getActionControl().increaseSuccessCount();
-                return true;
-            } else {
-                getActionExecution().getActionControl().increaseErrorCount();
-                return false;
-            }
-        } catch (ScriptException exception) {
-            getActionExecution().getActionControl().logWarning("expression", expression);
-            getActionExecution().getActionControl().logWarning("expression.error", exception.getMessage());
+    protected boolean executeAction() throws InterruptedException, ScriptException {
+        if (ConditionService.getInstance().evaluateCondition(expression, getExecutionControl().getExecutionRuntime(), getActionExecution())) {
+            getActionExecution().getActionControl().increaseSuccessCount();
+            return true;
+        } else {
+            getActionExecution().getActionControl().logOutput("action.error", "Expression " + expression + " evaluated to false");
+            getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }
     }

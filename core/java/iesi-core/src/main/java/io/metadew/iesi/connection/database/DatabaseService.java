@@ -51,7 +51,8 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         hikariConfig.setPoolName(UUID.randomUUID().toString());
         hikariConfig.setMaximumPoolSize(database.getMaximalPoolSize());
         hikariConfig.setMinimumIdle(database.getInitialPoolSize());
-        hikariConfig.setAutoCommit(false);
+        // hikariConfig.setAutoCommit(false);
+        hikariConfig.setAutoCommit(true);
         DatabaseConnectionHandler.getInstance().configure(databaseConnection, hikariConfig);
         return new HikariDataSource(hikariConfig);
     }
@@ -76,7 +77,7 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         try {
             connection = getConnection(database);
             DatabaseConnectionHandler.getInstance().executeUpdate(database.getDatabaseConnection(), query, connection);
-            connection.commit();
+            // connection.commit();
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -119,7 +120,7 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         try {
             connection = getConnection(database);
             DatabaseConnectionHandler.getInstance().executeBatch(database.getDatabaseConnection(), queries, connection);
-            connection.commit();
+            // connection.commit();
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -190,7 +191,7 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         try {
             connection = getConnection(database);
             sqlScriptResult = DatabaseConnectionHandler.getInstance().executeScript(database.getDatabaseConnection(), filename, connection);
-            connection.commit();
+            // connection.commit();
         } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -225,7 +226,7 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         try {
             connection = getConnection(database);
             sqlScriptResult = DatabaseConnectionHandler.getInstance().executeScript(database.getDatabaseConnection(), inputStream, connection);
-            connection.commit();
+            // connection.commit();
         } catch (SQLException | IOException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -260,7 +261,7 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         try {
             connection = getConnection(database);
             cachedRowSet = DatabaseConnectionHandler.getInstance().executeProcedure(database.getDatabaseConnection(), sqlProcedure, sqlParameters, connection);
-            connection.commit();
+            // connection.commit();
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));

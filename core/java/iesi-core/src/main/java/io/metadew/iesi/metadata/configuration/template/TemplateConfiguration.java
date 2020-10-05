@@ -3,25 +3,19 @@ package io.metadew.iesi.metadata.configuration.template;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.template.matcher.MatcherConfiguration;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
-import io.metadew.iesi.metadata.definition.template.matcher.MatcherKey;
-import io.metadew.iesi.metadata.definition.template.matcher.value.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
-import java.text.MessageFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 
 @Log4j2
@@ -65,10 +59,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
             "WHERE template.name= :name;";
     private static final String deleteByTemplateIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " where id= :id;";
 
-    private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " (ID, NAME, VERSION, DESCRIPTION) VALUES  (:id,:name,:version,:description );";
-//            "({0} ,{1},{2},{3} );";
-//            "" +
-//            "(:id,:name,:version,:description );";
+    private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " (ID, NAME, VERSION, DESCRIPTION) VALUES (:id, :name, :version, :description);";
 
     private static final String updateQuery = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " " +
             "SET NAME= :name, VERSION= :version, DESCRIPTION= :description WHERE ID= :id;";
@@ -109,9 +100,9 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     public boolean exists(String name) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", name);
-          List<Template> templates = namedParameterJdbcTemplate.query(
-                        existsByNameQuery,sqlParameterSource, new TemplateListResultSetExtractor());
-          return templates.size() >= 1;
+        List<Template> templates = namedParameterJdbcTemplate.query(
+                existsByNameQuery, sqlParameterSource, new TemplateListResultSetExtractor());
+        return templates.size() >= 1;
     }
 
     public Optional<Template> getByNameAndVersion(String name, Long version) {
@@ -160,18 +151,6 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                 .addValue("name", template.getName())
                 .addValue("version", template.getVersion())
                 .addValue("description", template.getDescription());
-//        Map<String, Object> param = new HashMap<>();
-//        param.put("id", template.getMetadataKey().getId());
-//        param.put("name", template.getName());
-//        param.put("version", template.getVersion());
-//        param.put("description", template.getDescription());
-        System.out.println(template.getMetadataKey().getId());
-//        getMetadataRepository().executeUpdate(
-//                MessageFormat.format(insertQuery,
-//                        SQLTools.GetStringForSQL(template.getMetadataKey().getId()),
-//                        SQLTools.GetStringForSQL(template.getName()),
-//                        SQLTools.GetStringForSQL(template.getVersion()),
-//                        SQLTools.GetStringForSQL(template.getDescription())));
         namedParameterJdbcTemplate.update(
                 insertQuery,
                 sqlParameterSource);

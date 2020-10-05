@@ -10,7 +10,8 @@ public abstract class SchemaDatabaseConnectionService<T extends SchemaDatabaseCo
         hikariConfig.setJdbcUrl(schemaDatabaseConnection.getConnectionURL());
         hikariConfig.setUsername(schemaDatabaseConnection.getUserName());
         hikariConfig.setPassword(schemaDatabaseConnection.getUserPassword());
-        hikariConfig.setAutoCommit(false);
+        hikariConfig.setAutoCommit(true);
+        //hikariConfig.setAutoCommit(false);
         if (schemaDatabaseConnection.getConnectionInitSql() != null) {
             hikariConfig.setConnectionInitSql(schemaDatabaseConnection.getConnectionInitSql());
         }

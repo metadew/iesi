@@ -8,7 +8,7 @@
 test.db3
 test.mv.db
 test.trace.db
-
+/coverage/
 ### Eclipse template
 .metadata
 bin/

@@ -7,7 +7,7 @@ public class SqliteDatabase extends Database {
     private Object connectionPoolLock = new Object();
 
     public SqliteDatabase(SqliteDatabaseConnection databaseConnection) {
-        super(databaseConnection);
+        super(databaseConnection, 1, 1);
     }
 
     public Object getConnectionPoolLock() {

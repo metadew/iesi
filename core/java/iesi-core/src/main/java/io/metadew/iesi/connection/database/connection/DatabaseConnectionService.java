@@ -34,7 +34,8 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
         hikariConfig.setJdbcUrl(databaseConnection.getConnectionURL());
         hikariConfig.setUsername(databaseConnection.getUserName());
         hikariConfig.setPassword(databaseConnection.getUserPassword());
-        hikariConfig.setAutoCommit(false);
+        hikariConfig.setAutoCommit(true);
+        //hikariConfig.setAutoCommit(false);
         if (databaseConnection.getConnectionInitSql() != null) {
             hikariConfig.setConnectionInitSql(databaseConnection.getConnectionInitSql());
         }

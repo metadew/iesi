@@ -6,18 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Team extends Metadata<TeamKey> {
 
     private String teamName;
-    private final List<SecurityGroupKey> securityGroupKeys;
-    private final List<Role> roles;
+    private final Set<SecurityGroupKey> securityGroupKeys;
+    private final Set<Role> roles;
 
     @Builder
-    public Team(TeamKey teamKey, String teamName, List<SecurityGroupKey> securityGroupKeys, List<Role> roles) {
+    public Team(TeamKey teamKey, String teamName, Set<SecurityGroupKey> securityGroupKeys, Set<Role> roles) {
         super(teamKey);
         this.teamName = teamName;
         this.securityGroupKeys = securityGroupKeys;

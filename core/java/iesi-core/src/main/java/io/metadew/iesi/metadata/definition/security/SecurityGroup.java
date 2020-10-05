@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -15,13 +16,14 @@ import java.util.List;
 public class SecurityGroup extends Metadata<SecurityGroupKey> {
 
     private final String name;
-    private List<TeamKey> teamKeys;
-    private List<MetadataKey> securedObjects;
+    private Set<TeamKey> teamKeys;
+    private Set<MetadataKey> securedObjects;
 
-    public SecurityGroup(SecurityGroupKey metadataKey, String name, List<TeamKey> teamKeys, List<MetadataKey> securedObjects) {
+    public SecurityGroup(SecurityGroupKey metadataKey, String name, Set<TeamKey> teamKeys, Set<MetadataKey> securedObjects) {
         super(metadataKey);
         this.name = name;
         this.teamKeys = teamKeys;
         this.securedObjects = securedObjects;
     }
+
 }

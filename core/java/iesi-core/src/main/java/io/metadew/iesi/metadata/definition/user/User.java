@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -17,12 +18,11 @@ public class User extends Metadata<UserKey> {
     private boolean expired;
     private boolean credentialsExpired;
     private boolean locked;
-    private List<TeamKey> teamKeys;
-    private List<RoleKey> roleKeys;
+    private Set<RoleKey> roleKeys;
 
     @Builder
     public User(UserKey userKey, String username, String password, boolean enabled, boolean expired,
-                boolean credentialsExpired, boolean locked, List<TeamKey> teamKeys, List<RoleKey> roleKeys) {
+                boolean credentialsExpired, boolean locked, Set<RoleKey> roleKeys) {
         super(userKey);
         this.username = username;
         this.password = password;
@@ -30,7 +30,6 @@ public class User extends Metadata<UserKey> {
         this.expired = expired;
         this.credentialsExpired = credentialsExpired;
         this.locked = locked;
-        this.teamKeys = teamKeys;
         this.roleKeys = roleKeys;
     }
 

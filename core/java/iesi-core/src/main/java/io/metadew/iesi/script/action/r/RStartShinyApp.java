@@ -10,10 +10,12 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 
 import java.text.MessageFormat;
 
+@Log4j2
 public class RStartShinyApp extends ActionTypeExecution {
 
     private static final String portKey = "port";
@@ -72,16 +74,16 @@ public class RStartShinyApp extends ActionTypeExecution {
         RWorkspace rWorkspace = getExecutionControl().getExecutionRuntime().getRWorkspace(workspaceReferenceName)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find R workspace with name {0}", workspaceReferenceName)));
         RCommandResult rCommandResult = rWorkspace.executeCommand("shiny::runApp('" + FilenameUtils.separatorsToUnix(rWorkspace.getWorkspacePath().toString()) + "',port=" + port + ")", true);
-//            LOGGER.info("status:" + rCommandResult.getStatusCode());
-//            LOGGER.info("output:" + rCommandResult.getOutput());
-//            if (rCommandResult.getStatusCode().map(integer -> integer==0).orElse(false)) {
-//                actionExecution.getActionControl().increaseSuccessCount();
-//                return true;
-//            } else {
-//                actionExecution.getActionControl().increaseErrorCount();
-//                return false;
-//            }
-        return true;
+        log.info("status:" + rCommandResult.getStatusCode());
+        log.info("output:" + rCommandResult.getOutput());
+        if (rCommandResult.getStatusCode().map(integer -> integer == 0).orElse(false)) {
+            getActionExecution().getActionControl().increaseSuccessCount();
+            return true;
+        } else {
+            getActionExecution().getActionControl().logOutput("action.error", "Could not start Shiny app, return code" + rCommandResult.getStatusCode().map(Object::toString).orElse("unknown"));
+            getActionExecution().getActionControl().increaseErrorCount();
+            return false;
+        }
     }
 
 }

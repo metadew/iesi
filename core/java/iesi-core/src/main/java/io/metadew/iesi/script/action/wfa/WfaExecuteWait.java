@@ -69,7 +69,7 @@ public class WfaExecuteWait extends ActionTypeExecution {
         } else {
             this.getActionExecution().getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("out", "time-out");
+            this.getActionExecution().getActionControl().logOutput("action.error", "Waiting period interrupted");
             this.getActionExecution().getActionControl().logOutput("time", Long.toString(elapsedTime));
         }
         return true;

@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.user.RoleKey;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
-import org.springframework.dao.DataAccessException;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -12,7 +11,7 @@ import java.util.*;
 
 public class UserListResultSetExtractor {
 
-    public List<User> extractData(CachedRowSet rs) throws SQLException, DataAccessException {
+    public List<User> extractData(CachedRowSet rs) throws SQLException {
         Map<UUID, User> userMap = new HashMap<>();
         User user;
         while (rs.next()) {

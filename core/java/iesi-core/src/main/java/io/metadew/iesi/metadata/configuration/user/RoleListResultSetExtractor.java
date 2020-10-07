@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.configuration.user;
 import io.metadew.iesi.metadata.definition.user.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.dao.DataAccessException;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class RoleListResultSetExtractor {
 
-    public List<Role> extractData(CachedRowSet cachedRowSet) throws SQLException, DataAccessException {
+    public List<Role> extractData(CachedRowSet cachedRowSet) throws SQLException {
         Map<String, RoleBuilder> userMap = new HashMap<>();
         while (cachedRowSet.next()) {
             RoleBuilder roleBuilder = userMap.get(cachedRowSet.getString("role_id"));

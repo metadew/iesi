@@ -6,20 +6,21 @@ import io.metadew.iesi.metadata.definition.user.TeamKey;
 import io.metadew.iesi.metadata.definition.user.UserKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.dao.DataAccessException;
+import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class TeamListResultSetExtractor {
 
-    public List<Team> extractData(CachedRowSet rs) throws SQLException, DataAccessException {
+    public List<Team> extractData(CachedRowSet rs) throws SQLException {
         Map<UUID, TeamBuilder> teamBuilderMap = new HashMap<>();
         TeamBuilder teamBuilder;
         while (rs.next()) {
-            UUID uuid = UUID.fromString(rs.getString("user_id"));
+            UUID uuid = UUID.fromString(rs.getString("team_id"));
             teamBuilder = teamBuilderMap.get(uuid);
             if (teamBuilder == null) {
                 teamBuilder = mapRow(rs);
@@ -42,12 +43,14 @@ public class TeamListResultSetExtractor {
 
     private void addSecurityGroup(TeamBuilder teamBuilder, CachedRowSet cachedRowSet) throws SQLException {
         // security_group_teams.security_group_id as security_group_id
-        if (cachedRowSet.getString("user_role_user_id") != null) {
+        log.info("security group: " + cachedRowSet.getString("security_group_id"));
+        if (cachedRowSet.getString("security_group_id") != null) {
             teamBuilder.getSecurityGroupKeys().add(new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("security_group_id"))));
         }
     }
 
     private void addRole(TeamBuilder teamBuilder, CachedRowSet cachedRowSet) throws SQLException {
+        log.info("role :" + cachedRowSet.getString("role_id"));
         if (cachedRowSet.getString("role_id") != null) {
             RoleListResultSetExtractor.RoleBuilder roleBuilder = teamBuilder.getRoleBuilders().get(cachedRowSet.getString("role_id"));
             if (roleBuilder == null) {
@@ -69,6 +72,7 @@ public class TeamListResultSetExtractor {
     }
 
     private void addPrivilege(RoleListResultSetExtractor.RoleBuilder roleBuilder, CachedRowSet cachedRowSet) throws SQLException {
+        log.info("privilege: " + cachedRowSet.getString("privilege_id"));
         // privileges.id as privilege_id, privileges.role_id as privilege_role_id, privilege.privilege as privilege_privilege,
         if (cachedRowSet.getString("privilege_id") != null) {
             RoleListResultSetExtractor.PrivilegeBuilder privilegeBuilder = roleBuilder.getPrivilegeMap().get(cachedRowSet.getString("privilege_id"));
@@ -87,6 +91,7 @@ public class TeamListResultSetExtractor {
     }
 
     private void addUserId(RoleListResultSetExtractor.RoleBuilder roleBuilder, CachedRowSet cachedRowSet) throws SQLException {
+        log.info("user: " + cachedRowSet.getString("user_role_user_id"));
         if (cachedRowSet.getString("user_role_user_id") != null) {
             roleBuilder.getUserKeys().add(new UserKey(UUID.fromString(cachedRowSet.getString("user_role_user_id"))));
         }

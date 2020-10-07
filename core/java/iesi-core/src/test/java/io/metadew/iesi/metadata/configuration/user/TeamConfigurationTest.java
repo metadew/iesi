@@ -1,528 +1,425 @@
-//package io.metadew.iesi.metadata.configuration.user;
+package io.metadew.iesi.metadata.configuration.user;
+
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.definition.user.*;
+import org.junit.jupiter.api.*;
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+class TeamConfigurationTest {
+
+    private TeamKey teamKey1;
+    private Team team1;
+    private TeamKey teamKey2;
+    private Team team2;
+
+    private SecurityGroupKey securityGroupKey1;
+    private SecurityGroup securityGroup1;
+    private SecurityGroupKey securityGroupKey2;
+    private SecurityGroup securityGroup2;
+
+    private UserKey userKey1;
+    private User user1;
+    private UserKey userKey2;
+    private User user2;
+
+    private RoleKey roleKey1;
+    private Role role1;
+    private RoleKey roleKey2;
+    private Role role2;
+
+    private Privilege privilege1;
+    private Privilege privilege2;
+    private Privilege privilege3;
+    private Privilege privilege4;
+
+
+    @BeforeAll
+    static void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getControlMetadataRepository()
+                .createAllTables();
+    }
+
+    @BeforeEach
+    void setup() {
+        teamKey1 = new TeamKey(UUID.randomUUID());
+        teamKey2 = new TeamKey(UUID.randomUUID());
+        roleKey1 = new RoleKey(UUID.randomUUID());
+        roleKey2 = new RoleKey(UUID.randomUUID());
+        userKey1 = new UserKey(UUID.randomUUID());
+        userKey2 = new UserKey(UUID.randomUUID());
+        securityGroupKey1 = new SecurityGroupKey(UUID.randomUUID());
+        securityGroupKey2 = new SecurityGroupKey(UUID.randomUUID());
+
+        privilege1 = Privilege.builder()
+                .privilegeKey(PrivilegeKey.builder()
+                        .uuid(UUID.randomUUID())
+                        .build())
+                .privilege("authority1")
+                .roleKey(roleKey1)
+                .build();
+        privilege2 = Privilege.builder()
+                .privilegeKey(PrivilegeKey.builder()
+                        .uuid(UUID.randomUUID())
+                        .build())
+                .privilege("authority2")
+                .roleKey(roleKey1)
+                .build();
+        privilege3 = Privilege.builder()
+                .privilegeKey(PrivilegeKey.builder()
+                        .uuid(UUID.randomUUID())
+                        .build())
+                .privilege("authority3")
+                .roleKey(roleKey2)
+                .build();
+        privilege4 = Privilege.builder()
+                .privilegeKey(PrivilegeKey.builder()
+                        .uuid(UUID.randomUUID())
+                        .build())
+                .roleKey(roleKey2)
+                .privilege("authority4")
+                .build();
+        role1 = Role.builder()
+                .metadataKey(roleKey1)
+                .teamKey(teamKey1)
+                .name("role1")
+                .userKeys(Stream.of(userKey1, userKey2).collect(Collectors.toSet()))
+                .privileges(Stream.of(privilege1, privilege2).collect(Collectors.toSet()))
+                .build();
+        role2 = Role.builder()
+                .metadataKey(roleKey2)
+                .teamKey(teamKey2)
+                .name("role2")
+                .userKeys(Stream.of(userKey1).collect(Collectors.toSet()))
+                .privileges(Stream.of(privilege3, privilege4).collect(Collectors.toSet()))
+                .build();
+        user1 = User.builder()
+                .userKey(userKey1)
+                .username("user1")
+                .enabled(true)
+                .expired(false)
+                .credentialsExpired(false)
+                .locked(false)
+                .password("password1")
+                .roleKeys(Stream.of(role1.getMetadataKey(), role2.getMetadataKey()).collect(Collectors.toSet()))
+                .build();
+        user2 = User.builder()
+                .userKey(userKey2)
+                .username("user2")
+                .enabled(true)
+                .expired(false)
+                .credentialsExpired(false)
+                .locked(false)
+                .password("password3")
+                .roleKeys(Stream.of(role1.getMetadataKey()).collect(Collectors.toSet()))
+                .build();
+
+        team1 = Team.builder()
+                .teamKey(teamKey1)
+                .teamName("team1")
+                .roles(Stream.of(role1).collect(Collectors.toSet()))
+                .securityGroupKeys(Stream.of(securityGroupKey1).collect(Collectors.toSet()))
+                .build();
+        team2 = Team.builder()
+                .teamKey(teamKey2)
+                .teamName("team2")
+                .roles(Stream.of(role2).collect(Collectors.toSet()))
+                .securityGroupKeys(Stream.of(securityGroupKey2).collect(Collectors.toSet()))
+                .build();
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getControlMetadataRepository().cleanAllTables();
+    }
+
+    @AfterAll
+    static void teardown() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getControlMetadataRepository().dropAllTables();
+    }
+
+    @Test
+    void userDoesNotExistsTest() {
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1)).isFalse();
+    }
+
+    @Test
+    void userExistsTest() {
+        TeamConfiguration.getInstance().insert(team1);
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1)).isTrue();
+    }
+
+    @Test
+    void userGetDoesNotExistsTest() {
+        assertThat(TeamConfiguration.getInstance().get(teamKey1)).isEmpty();
+        TeamConfiguration.getInstance().insert(team1);
+        assertThat(TeamConfiguration.getInstance().get(teamKey2)).isEmpty();
+    }
+
+    @Test
+    void userGetExistsTest() {
+        TeamConfiguration.getInstance().insert(team1);
+        assertThat(TeamConfiguration.getInstance().get(teamKey1))
+                .isPresent()
+                .hasValue(team1);
+    }
+
+    @Test
+    void userInsertTest() {
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1))
+                .isFalse();
+        TeamConfiguration.getInstance().insert(team1);
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1))
+                .isTrue();
+        assertThat(TeamConfiguration.getInstance().get(teamKey1))
+                .isPresent()
+                .hasValue(team1);
+    }
+
+    @Test
+    void userInsertAlreadyExistingTest() {
+        TeamConfiguration.getInstance().insert(team1);
+        assertThatThrownBy(() -> TeamConfiguration.getInstance().insert(team1))
+                .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void userInsertMultipleUsersTest() {
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1))
+                .isFalse();
+        TeamConfiguration.getInstance().insert(team1);
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1))
+                .isTrue();
+        assertThat(TeamConfiguration.getInstance().get(teamKey1))
+                .isPresent()
+                .hasValue(team1);
+        TeamConfiguration.getInstance().insert(team2);
+        assertThat(TeamConfiguration.getInstance().exists(teamKey2))
+                .isTrue();
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1))
+                .isTrue();
+        assertThat(TeamConfiguration.getInstance().get(teamKey2))
+                .isPresent()
+                .hasValue(team2);
+        assertThat(TeamConfiguration.getInstance().get(teamKey1))
+                .isPresent()
+                .hasValue(team1);
+    }
+
+    @Test
+    void userDeleteDoesNotExistTest() {
+        TeamConfiguration.getInstance().delete(team1.getMetadataKey());
+    }
+
+    @Test
+    void userDeleteTest() {
+        TeamConfiguration.getInstance().insert(team1);
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1))
+                .isTrue();
+        TeamConfiguration.getInstance().delete(team1.getMetadataKey());
+
+        assertThat(TeamConfiguration.getInstance().exists(teamKey1))
+                .isFalse();
+    }
+
+
+    @Test
+    void userUpdateTest() {
+        TeamConfiguration.getInstance().insert(team1);
+        Optional<Team> team = TeamConfiguration.getInstance().get(teamKey1);
+        assertThat(team)
+                .isPresent()
+                .hasValue(team1);
+        assertThat(team.get().getTeamName())
+                .isEqualTo("team1");
+
+        team1.setTeamName("role3");
+        TeamConfiguration.getInstance().update(team1);
+
+        assertThat(TeamConfiguration.getInstance().get(teamKey1).get().getTeamName())
+                .isEqualTo("role3");
+    }
+
+    @Test
+    void userUpdateMultipleTest() {
+        TeamConfiguration.getInstance().insert(team1);
+        TeamConfiguration.getInstance().insert(team2);
+        Optional<Team> fetchedteam1 = TeamConfiguration.getInstance().get(teamKey1);
+        assertThat(fetchedteam1)
+                .isPresent()
+                .hasValue(team1);
+        assertThat(fetchedteam1.get().getTeamName())
+                .isEqualTo("team1");
+        Optional<Team> fetchedteam2 = TeamConfiguration.getInstance().get(teamKey2);
+        assertThat(fetchedteam2)
+                .isPresent()
+                .hasValue(team2);
+        assertThat(fetchedteam2.get().getTeamName())
+                .isEqualTo("team2");
+
+        team1.setTeamName("role3");
+        TeamConfiguration.getInstance().update(team1);
+
+        assertThat(TeamConfiguration.getInstance().get(teamKey1).get().getTeamName())
+                .isEqualTo("role3");
+        assertThat(TeamConfiguration.getInstance().get(teamKey2).get().getTeamName())
+                .isEqualTo("team2");
+    }
+
+//    @Test
+//    void getGroups() {
+//        TeamConfiguration.getInstance().insert(user1);
+//        TeamConfiguration.getInstance().insert(team2);
+//        TeamConfiguration.getInstance().insert(role1);
+//        TeamConfiguration.getInstance().insert(role2);
+//        TeamConfiguration.getInstance().addUser(role1.getMetadataKey(), user1.getMetadataKey());
+//        TeamConfiguration.getInstance().addUser(role2.getMetadataKey(), user1.getMetadataKey());
+//        TeamConfiguration.getInstance().addUser(role1.getMetadataKey(), user2.getMetadataKey());
 //
-//import io.metadew.iesi.common.configuration.Configuration;
-//import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-//import io.metadew.iesi.metadata.definition.user.*;
-//import org.junit.jupiter.api.*;
-//
-//import java.util.Optional;
-//import java.util.UUID;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.assertj.core.api.Assertions.assertThatThrownBy;
-//
-//class TeamConfigurationTest {
-//
-//    private UUID uuid1;
-//    private Team team1;
-//    private UUID uuid2;
-//    private Team team2;
-//
-//    private User user1;
-//    private User user2;
-//    private User user3;
-//
-//    private Privilege privilege1;
-//    private Privilege privilege2;
-//    private Privilege privilege3;
-//
-//    @BeforeAll
-//    static void prepare() {
-//        Configuration.getInstance();
-//        MetadataRepositoryConfiguration.getInstance()
-//                .getControlMetadataRepository()
-//                .createAllTables();
-//    }
-//
-//    @BeforeEach
-//    void setup() {
-//        uuid1 = UUID.randomUUID();
-//        team1 = Team.builder()
-//                .teamKey(TeamKey.builder()
-//                        .uuid(uuid1)
-//                        .build())
-//                .teamName("group1")
-//                .build();
-//        uuid2 = UUID.randomUUID();
-//        team2 = Team.builder()
-//                .teamKey(TeamKey.builder()
-//                        .uuid(uuid2)
-//                        .build())
-//                .teamName("group2")
-//                .build();
-//        user1 = User.builder()
-//                .userKey(UserKey.builder()
-//                        .uuid(UUID.randomUUID())
-//                        .build())
-//                .username("user1")
-//                .enabled(true)
-//                .expired(false)
-//                .credentialsExpired(false)
-//                .locked(false)
-//                .password("password1").build();
-//        user2 = User.builder()
-//                .userKey(UserKey.builder()
-//                        .uuid(UUID.randomUUID())
-//                        .build())
-//                .username("user2")
-//                .enabled(true)
-//                .expired(false)
-//                .credentialsExpired(false)
-//                .locked(false)
-//                .password("password2")
-//                .build();
-//        user3 = User.builder()
-//                .userKey(UserKey.builder()
-//                        .uuid(UUID.randomUUID())
-//                        .build())
-//                .username("user3")
-//                .enabled(true)
-//                .expired(false)
-//                .credentialsExpired(false)
-//                .locked(false)
-//                .password("password3")
-//                .build();
-//        privilege1 = Privilege.builder()
-//                .privilegeKey(PrivilegeKey.builder()
-//                        .uuid(UUID.randomUUID())
-//                        .build())
-//                .authority("authority1")
-//                .build();
-//        privilege2 = Privilege.builder()
-//                .privilegeKey(PrivilegeKey.builder()
-//                        .uuid(UUID.randomUUID())
-//                        .build())
-//                .authority("authority2")
-//                .build();
-//        privilege3 = Privilege.builder()
-//                .privilegeKey(PrivilegeKey.builder()
-//                        .uuid(UUID.randomUUID())
-//                        .build())
-//                .authority("authority3")
-//                .build();
-//    }
-//
-//    @AfterEach
-//    void clearDatabase() {
-//        MetadataRepositoryConfiguration.getInstance()
-//                .getControlMetadataRepository().cleanAllTables();
-//    }
-//
-//    @AfterAll
-//    static void teardown() {
-//        MetadataRepositoryConfiguration.getInstance()
-//                .getControlMetadataRepository().dropAllTables();
+//        assertThat(TeamConfiguration.getInstance().getGroups(user1.getMetadataKey()))
+//                .containsOnly(role1, role2);
+//        assertThat(TeamConfiguration.getInstance().getGroups(user2.getMetadataKey()))
+//                .containsOnly(role1);
 //    }
 //
 //    @Test
-//    void groupDoesNotExistsTest() {
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1))).isFalse();
-//    }
-//
-//    @Test
-//    void groupByNameDoesNotExistsTest() {
-//        assertThat(GroupConfiguration.getInstance().exists(team1.getTeamName())).isFalse();
-//    }
-//
-//    @Test
-//    void groupExistsTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1))).isTrue();
-//    }
-//
-//    @Test
-//    void groupExistsByNameTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().exists(team1.getTeamName())).isTrue();
-//    }
-//
-//    @Test
-//    void groupGetDoesNotExistsTest() {
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid1))).isEmpty();
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid2))).isEmpty();
-//    }
-//
-//    @Test
-//    void groupGetByNameDoesNotExistsTest() {
-//        assertThat(GroupConfiguration.getInstance().get(team1.getTeamName())).isEmpty();
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().get(team2.getTeamName())).isEmpty();
-//    }
-//
-//    @Test
-//    void groupGetExistsTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid1)))
-//                .isPresent()
-//                .hasValue(team1);
-//    }
-//
-//    @Test
-//    void groupGetByNameExistsTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().get(team1.getTeamName()))
-//                .isPresent()
-//                .hasValue(team1);
-//    }
-//
-//    @Test
-//    void groupInsertTest() {
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isFalse();
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isTrue();
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid1)))
-//                .isPresent()
-//                .hasValue(team1);
-//    }
-//
-//    @Test
-//    void groupInsertAlreadyExistingTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThatThrownBy(() -> GroupConfiguration.getInstance().insert(team1))
-//                .isInstanceOf(RuntimeException.class);
-//    }
-//
-//    @Test
-//    void groupInsertMultipleUsersTest() {
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isFalse();
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isTrue();
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid1)))
-//                .isPresent()
-//                .hasValue(team1);
-//        GroupConfiguration.getInstance().insert(team2);
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid2)))
-//                .isTrue();
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isTrue();
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid2)))
-//                .isPresent()
-//                .hasValue(team2);
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid1)))
-//                .isPresent()
-//                .hasValue(team1);
-//    }
-//
-//    @Test
-//    void groupDeleteDoesNotExistTest() {
-//        GroupConfiguration.getInstance().delete(team1.getMetadataKey());
-//    }
-//
-//    @Test
-//    void groupDeleteByNameDoesNotExistTest() {
-//        GroupConfiguration.getInstance().delete(team1.getTeamName());
-//    }
-//
-//    @Test
-//    void groupDeleteTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isTrue();
-//        GroupConfiguration.getInstance().delete(team1.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isFalse();
-//    }
-//
-//    @Test
-//    void groupDeleteByNameTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isTrue();
-//        GroupConfiguration.getInstance().delete(team1.getTeamName());
-//
-//        assertThat(GroupConfiguration.getInstance().exists(new TeamKey(uuid1)))
-//                .isFalse();
-//    }
-//
-//    @Test
-//    void userUpdateTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        Optional<Team> user = GroupConfiguration.getInstance().get(new TeamKey(uuid1));
-//        assertThat(user)
-//                .isPresent()
-//                .hasValue(team1);
-//        assertThat(user.get().getTeamName())
-//                .isEqualTo("group1");
-//
-//        team1.setTeamName("groupA");
-//        GroupConfiguration.getInstance().update(team1);
-//
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid1)).get().getTeamName())
-//                .isEqualTo("groupA");
-//    }
-//
-//
-//    @Test
-//    void groupUpdateMultipleTest() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
-//        Optional<Team> fetchedUser1 = GroupConfiguration.getInstance().get(new TeamKey(uuid1));
-//        assertThat(fetchedUser1)
-//                .isPresent()
-//                .hasValue(team1);
-//        assertThat(fetchedUser1.get().getTeamName())
-//                .isEqualTo("group1");
-//        Optional<Team> fetchedUser2 = GroupConfiguration.getInstance().get(new TeamKey(uuid2));
-//        assertThat(fetchedUser2)
-//                .isPresent()
-//                .hasValue(team2);
-//        assertThat(fetchedUser2.get().getTeamName())
-//                .isEqualTo("group2");
-//
-//        team1.setTeamName("groupA");
-//        GroupConfiguration.getInstance().update(team1);
-//
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid1)).get().getTeamName())
-//                .isEqualTo("groupA");
-//        assertThat(GroupConfiguration.getInstance().get(new TeamKey(uuid2)).get().getTeamName())
-//                .isEqualTo("group2");
-//    }
-//
-//    @Test
-//    void getUsers() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
-//        UserConfiguration.getInstance().insert(user1);
-//        UserConfiguration.getInstance().insert(user2);
-//        UserConfiguration.getInstance().insert(user3);
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user2.getMetadataKey());
-//        GroupConfiguration.getInstance().addUser(team2.getMetadataKey(), user3.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().getUsers(team1.getMetadataKey()))
-//                .containsOnly(user1, user2);
-//        assertThat(GroupConfiguration.getInstance().getUsers(team2.getMetadataKey()))
-//                .containsOnly(user3);
-//    }
-//
-//    @Test
-//    void getUsersByteamName() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
-//        UserConfiguration.getInstance().insert(user1);
-//        UserConfiguration.getInstance().insert(user2);
-//        UserConfiguration.getInstance().insert(user3);
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user2.getMetadataKey());
-//        GroupConfiguration.getInstance().addUser(team2.getMetadataKey(), user3.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().getUsers(team1.getTeamName()))
-//                .containsOnly(user1, user2);
-//        assertThat(GroupConfiguration.getInstance().getUsers(team2.getTeamName()))
-//                .containsOnly(user3);
-//    }
-//
-//    @Test
-//    void removeUser() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
-//        UserConfiguration.getInstance().insert(user1);
-//        UserConfiguration.getInstance().insert(user2);
-//        UserConfiguration.getInstance().insert(user3);
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user2.getMetadataKey());
-//        GroupConfiguration.getInstance().addUser(team2.getMetadataKey(), user3.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().getUsers(team1.getMetadataKey()))
-//                .containsOnly(user1, user2);
-//        assertThat(GroupConfiguration.getInstance().getUsers(team2.getMetadataKey()))
-//                .containsOnly(user3);
-//
-//        GroupConfiguration.getInstance().removeUser(team1.getMetadataKey(), user1.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().getUsers(team1.getMetadataKey()))
-//                .containsOnly(user2);
-//        assertThat(GroupConfiguration.getInstance().getUsers(team2.getMetadataKey()))
-//                .containsOnly(user3);
-//    }
-//
-//    @Test
-//    void removeUserByName() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
-//        UserConfiguration.getInstance().insert(user1);
-//        UserConfiguration.getInstance().insert(user2);
-//        UserConfiguration.getInstance().insert(user3);
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user2.getMetadataKey());
-//        GroupConfiguration.getInstance().addUser(team2.getMetadataKey(), user3.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().getUsers(team1.getMetadataKey()))
-//                .containsOnly(user1, user2);
-//        assertThat(GroupConfiguration.getInstance().getUsers(team2.getMetadataKey()))
-//                .containsOnly(user3);
-//
-//        GroupConfiguration.getInstance().removeUser(team1.getTeamName(), user1.getUsername());
-//
-//        assertThat(GroupConfiguration.getInstance().getUsers(team1.getMetadataKey()))
-//                .containsOnly(user2);
-//        assertThat(GroupConfiguration.getInstance().getUsers(team2.getMetadataKey()))
-//                .containsOnly(user3);
-//    }
-//
-//    @Test
-//    void removeNonExistingUser() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        UserConfiguration.getInstance().insert(user1);
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
-//
-//        GroupConfiguration.getInstance().removeUser(team1.getMetadataKey(), user2.getMetadataKey());
-//    }
-//
-//    @Test
-//    void removeNonExistingUserByName() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        UserConfiguration.getInstance().insert(user1);
-//        GroupConfiguration.getInstance().addUser(team1.getTeamName(), user1.getUsername());
-//
-//        GroupConfiguration.getInstance().removeUser(team1.getTeamName(), user2.getUsername());
-//    }
-//
-//    @Test
-//    void addAlreadyMemberUser() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        UserConfiguration.getInstance().insert(user1);
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
-//
-//        assertThatThrownBy(() -> GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey()))
-//                .isInstanceOf(RuntimeException.class);
-//    }
-//
-//    @Test
-//    void addAlreadyMemberUserByName() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        UserConfiguration.getInstance().insert(user1);
-//        GroupConfiguration.getInstance().addUser(team1.getMetadataKey(), user1.getMetadataKey());
-//
-//        assertThatThrownBy(() -> GroupConfiguration.getInstance().addUser(team1.getTeamName(), user1.getUsername()))
-//                .isInstanceOf(RuntimeException.class);
-//    }
-//
-//    @Test
-//    void getAuthorities() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
+//    void addAuthority() {
+//        TeamConfiguration.getInstance().insert(user1);
+//        TeamConfiguration.getInstance().insert(user2);
 //        AuthorityConfiguration.getInstance().insert(privilege1);
 //        AuthorityConfiguration.getInstance().insert(privilege2);
-//        AuthorityConfiguration.getInstance().insert(privilege3);
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege2.getMetadataKey());
-//        GroupConfiguration.getInstance().addAuthority(team2.getMetadataKey(), privilege3.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team1.getMetadataKey()))
+//        TeamConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege2.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user2.getMetadataKey(), privilege2.getMetadataKey());
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
 //                .containsOnly(privilege1, privilege2);
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team2.getMetadataKey()))
-//                .containsOnly(privilege3);
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
+//                .containsOnly(privilege2);
 //    }
 //
 //    @Test
-//    void getAuthoritiesByName() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
+//    void addAuthorityByName() {
+//        TeamConfiguration.getInstance().insert(user1);
+//        TeamConfiguration.getInstance().insert(user2);
 //        AuthorityConfiguration.getInstance().insert(privilege1);
 //        AuthorityConfiguration.getInstance().insert(privilege2);
-//        AuthorityConfiguration.getInstance().insert(privilege3);
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege2.getMetadataKey());
-//        GroupConfiguration.getInstance().addAuthority(team2.getMetadataKey(), privilege3.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team1.getTeamName()))
+//        TeamConfiguration.getInstance().addAuthority(user1.getUsername(), privilege1.getPrivilege());
+//        TeamConfiguration.getInstance().addAuthority(user1.getUsername(), privilege2.getPrivilege());
+//        TeamConfiguration.getInstance().addAuthority(user2.getUsername(), privilege2.getPrivilege());
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
 //                .containsOnly(privilege1, privilege2);
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team2.getTeamName()))
-//                .containsOnly(privilege3);
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
+//                .containsOnly(privilege2);
 //    }
 //
 //    @Test
 //    void removeAuthority() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
+//        TeamConfiguration.getInstance().insert(user1);
+//        TeamConfiguration.getInstance().insert(user2);
 //        AuthorityConfiguration.getInstance().insert(privilege1);
 //        AuthorityConfiguration.getInstance().insert(privilege2);
-//        AuthorityConfiguration.getInstance().insert(privilege3);
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege2.getMetadataKey());
-//        GroupConfiguration.getInstance().addAuthority(team2.getMetadataKey(), privilege3.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege2.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user2.getMetadataKey(), privilege2.getMetadataKey());
 //
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team1.getMetadataKey()))
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
 //                .containsOnly(privilege1, privilege2);
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team2.getMetadataKey()))
-//                .containsOnly(privilege3);
-//
-//        GroupConfiguration.getInstance().removeAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
-//
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team1.getMetadataKey()))
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
 //                .containsOnly(privilege2);
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team2.getMetadataKey()))
-//                .containsOnly(privilege3);
+//
+//        TeamConfiguration.getInstance().removeAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+//
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
+//                .containsOnly(privilege2);
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
+//                .containsOnly(privilege2);
 //    }
 //
 //    @Test
 //    void removeAuthorityByName() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        GroupConfiguration.getInstance().insert(team2);
+//        TeamConfiguration.getInstance().insert(user1);
+//        TeamConfiguration.getInstance().insert(user2);
+//        AuthorityConfiguration.getInstance().insert(privilege1);
+//        AuthorityConfiguration.getInstance().insert(privilege2);
+//        TeamConfiguration.getInstance().addAuthority(user1.getUsername(), privilege1.getPrivilege());
+//        TeamConfiguration.getInstance().addAuthority(user1.getUsername(), privilege2.getPrivilege());
+//        TeamConfiguration.getInstance().addAuthority(user2.getUsername(), privilege2.getPrivilege());
+//
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user1.getUsername()))
+//                .containsOnly(privilege1, privilege2);
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user2.getUsername()))
+//                .containsOnly(privilege2);
+//
+//        TeamConfiguration.getInstance().removeAuthority(user1.getUsername(), privilege1.getPrivilege());
+//
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
+//                .containsOnly(privilege2);
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
+//                .containsOnly(privilege2);
+//    }
+//
+//    @Test
+//    void getAuthorities() {
+//        TeamConfiguration.getInstance().insert(user1);
+//        TeamConfiguration.getInstance().insert(user2);
 //        AuthorityConfiguration.getInstance().insert(privilege1);
 //        AuthorityConfiguration.getInstance().insert(privilege2);
 //        AuthorityConfiguration.getInstance().insert(privilege3);
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege2.getMetadataKey());
-//        GroupConfiguration.getInstance().addAuthority(team2.getMetadataKey(), privilege3.getMetadataKey());
+//        AuthorityConfiguration.getInstance().insert(privilege4);
+//        TeamConfiguration.getInstance().insert(role1);
+//        TeamConfiguration.getInstance().insert(role2);
+//        TeamConfiguration.getInstance().addAuthority(role1.getMetadataKey(), privilege3.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(role1.getMetadataKey(), privilege4.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(role2.getMetadataKey(), privilege3.getMetadataKey());
+//        TeamConfiguration.getInstance().addUser(role1.getMetadataKey(), user1.getMetadataKey());
+//        TeamConfiguration.getInstance().addUser(role2.getMetadataKey(), user2.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege2.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user2.getMetadataKey(), privilege2.getMetadataKey());
 //
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team1.getMetadataKey()))
-//                .containsOnly(privilege1, privilege2);
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team2.getMetadataKey()))
-//                .containsOnly(privilege3);
-//
-//        GroupConfiguration.getInstance().removeAuthority(team1.getTeamName(), privilege1.getPrivilege());
-//
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team1.getMetadataKey()))
-//                .containsOnly(privilege2);
-//        assertThat(GroupConfiguration.getInstance().getAuthorities(team2.getMetadataKey()))
-//                .containsOnly(privilege3);
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user1.getMetadataKey()))
+//                .containsOnly(privilege1, privilege2, privilege3, privilege4);
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user2.getMetadataKey()))
+//                .containsOnly(privilege2, privilege3);
 //    }
 //
 //    @Test
-//    void removeNonExistingAuthority() {
-//        GroupConfiguration.getInstance().insert(team1);
+//    void getAuthoritiesByName() {
+//        TeamConfiguration.getInstance().insert(user1);
+//        TeamConfiguration.getInstance().insert(user2);
 //        AuthorityConfiguration.getInstance().insert(privilege1);
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
+//        AuthorityConfiguration.getInstance().insert(privilege2);
+//        AuthorityConfiguration.getInstance().insert(privilege3);
+//        AuthorityConfiguration.getInstance().insert(privilege4);
+//        TeamConfiguration.getInstance().insert(role1);
+//        TeamConfiguration.getInstance().insert(role2);
+//        TeamConfiguration.getInstance().addAuthority(role1.getMetadataKey(), privilege3.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(role1.getMetadataKey(), privilege4.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(role2.getMetadataKey(), privilege3.getMetadataKey());
+//        TeamConfiguration.getInstance().addUser(role1.getMetadataKey(), user1.getMetadataKey());
+//        TeamConfiguration.getInstance().addUser(role2.getMetadataKey(), user2.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege1.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user1.getMetadataKey(), privilege2.getMetadataKey());
+//        TeamConfiguration.getInstance().addAuthority(user2.getMetadataKey(), privilege2.getMetadataKey());
 //
-//        GroupConfiguration.getInstance().removeAuthority(team1.getMetadataKey(), privilege2.getMetadataKey());
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user1.getUsername()))
+//                .containsOnly(privilege1, privilege2, privilege3, privilege4);
+//        assertThat(TeamConfiguration.getInstance().getAuthorities(user2.getUsername()))
+//                .containsOnly(privilege2, privilege3);
 //    }
-//
-//    @Test
-//    void removeNonExistingAuthorityByName() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        AuthorityConfiguration.getInstance().insert(privilege1);
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
-//
-//        GroupConfiguration.getInstance().removeAuthority(team1.getTeamName(), privilege2.getPrivilege());
-//    }
-//
-//    @Test
-//    void addAlreadyAuthority() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        AuthorityConfiguration.getInstance().insert(privilege1);
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
-//
-//        assertThatThrownBy(() -> GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey()))
-//                .isInstanceOf(RuntimeException.class);
-//    }
-//
-//    @Test
-//    void addAlreadyAuthorityByName() {
-//        GroupConfiguration.getInstance().insert(team1);
-//        AuthorityConfiguration.getInstance().insert(privilege1);
-//        GroupConfiguration.getInstance().addAuthority(team1.getMetadataKey(), privilege1.getMetadataKey());
-//
-//        assertThatThrownBy(() -> GroupConfiguration.getInstance().addAuthority(team1.getTeamName(), privilege1.getPrivilege()))
-//                .isInstanceOf(RuntimeException.class);
-//    }
-//
-//
-//}
+
+
+}

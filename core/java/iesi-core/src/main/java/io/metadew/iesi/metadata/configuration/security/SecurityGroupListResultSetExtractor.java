@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.configuration.security;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
-import org.springframework.dao.DataAccessException;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -11,7 +10,7 @@ import java.util.*;
 
 public class SecurityGroupListResultSetExtractor {
 
-    public List<SecurityGroup> extractData(CachedRowSet rs) throws SQLException, DataAccessException {
+    public List<SecurityGroup> extractData(CachedRowSet rs) throws SQLException {
         Map<UUID, SecurityGroup> securityGroupMap = new HashMap<>();
         SecurityGroup securityGroup;
         while (rs.next()) {

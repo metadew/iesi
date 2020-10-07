@@ -11,7 +11,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class Role extends Metadata<RoleKey> {
 
-    private final String name;
+    private String name;
     private final TeamKey teamKey;
     private final Set<Privilege> privileges;
     private final Set<UserKey> userKeys;

@@ -17,29 +17,29 @@ import java.util.Optional;
 public class RoleConfiguration extends Configuration<Role, RoleKey> {
 
     private static String fetchSingleQuery = "select roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +
-            "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privilege.privilege as privilege_privilege, " +
-            "user_roles.user_id = user_role_user_id " +
+            "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privileges.privilege as privilege_privilege, " +
+            "user_roles.user_id as user_role_user_id " +
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
-            " ON roles.ID = privilege.ROLE_ID " +
+            " ON roles.ID = privileges.ROLE_ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
             " ON roles.ID = user_roles.ROLE_ID " +
-            " WHERE teams.ID={0};";
+            " WHERE roles.ID={0};";
     private static String fetchByTeamIdQuery = "select roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +
-            "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privilege.privilege as privilege_privilege, " +
-            "user_roles.user_id = user_role_user_id " +
+            "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privileges.privilege as privilege_privilege, " +
+            "user_roles.user_id as user_role_user_id " +
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
-            " ON roles.ID = privilege.ROLE_ID " +
+            " ON roles.ID = privileges.ROLE_ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
             " ON roles.ID = user_roles.ROLE_ID " +
             " WHERE roles.team_id={0};";
     private static String fetchAllQuery = "select roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +
-            "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privilege.privilege as privilege_privilege, " +
-            "user_roles.user_id = user_role_user_id " +
+            "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privileges.privilege as privilege_privilege, " +
+            "user_roles.user_id as user_role_user_id " +
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
-            " ON roles.ID = privilege.ROLE_ID " +
+            " ON roles.ID = privileges.ROLE_ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
             " ON roles.ID = user_roles.ROLE_ID;";
     private static String deleteSingleQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() +
@@ -50,8 +50,8 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
             " WHERE USER_ID={0} AND ROLE_ID={1};";
     private static String deletePrivilegesByRoleIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() +
             " WHERE ROLE_ID={0};";
-    private static String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
-            " (ID, TEAM_ID, ROLENAME) VALUES ({0}, {1}, {2});";
+    private static String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() +
+            " (ID, TEAM_ID, ROLE_NAME) VALUES ({0}, {1}, {2});";
     private static String insertPrivilegeQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() +
             " (ID, ROLE_ID, PRIVILEGE) VALUES ({0}, {1}, {2});";
     private static String insertUserRoleQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() +
@@ -125,11 +125,11 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
                         SQLTools.GetStringForSQL(metadata.getTeamKey().getUuid()),
                         SQLTools.GetStringForSQL(metadata.getName()));
         getMetadataRepository().executeUpdate(insertStatement);
-        for (UserKey roleKey : metadata.getUserKeys()) {
+        for (UserKey userKey : metadata.getUserKeys()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertUserRoleQuery,
-                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                            SQLTools.GetStringForSQL(roleKey.getUuid()))
+                            SQLTools.GetStringForSQL(userKey.getUuid()),
+                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()))
             );
         }
         for (Privilege privilege : metadata.getPrivileges()) {

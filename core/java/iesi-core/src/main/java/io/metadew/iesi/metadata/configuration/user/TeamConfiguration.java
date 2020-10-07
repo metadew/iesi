@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupListResultSetExtractor;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.Role;
@@ -15,9 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Log4j2
 public class TeamConfiguration extends Configuration<Team, TeamKey> {
@@ -69,6 +68,20 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
             " ON roles.ID = user_roles.ROLE_ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
             " ON teams.ID = security_group_teams.TEAM_ID;";
+    private static String fetchUsersByTeamIdQuery = "select users.ID as user_id, users.USERNAME as user_username, users.PASSWORD as user_password, " +
+            "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, user_roles.ROLE_ID as role_id" +
+            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+            " INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UsersRoles").getName() + " user_roles " +
+            " ON user_roles.ROLE_ID = roles.ID " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users" +
+            " ON users.ID = user_roles.USER_ID " +
+            " WHERE roles.TEAM_ID={0};";
+    private static String fetchSecurityGroupsByTeamIdQuery = "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
+            "security_group_teams.team_id as security_group_teams_team_id " +
+            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
+            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
+            " WHERE security_group_teams.TEAM_ID={0};";
 
     private static String deleteSingleQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() +
             " WHERE ID={0};";
@@ -205,14 +218,26 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
         }
     }
 
-    public List<SecurityGroup> getSecurityGroups(TeamKey userKey) {
-        // TODO
-        return null;
+    public Set<SecurityGroup> getSecurityGroups(TeamKey teamKey) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(fetchSecurityGroupsByTeamIdQuery, SQLTools.GetStringForSQL(teamKey.getUuid())),
+                    "reader");
+            return new HashSet<>(new SecurityGroupListResultSetExtractor().extractData(cachedRowSet));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<User> getUsers(TeamKey TeamKey) {
-        // TODO
-        return null;
+    public Set<User> getUsers(TeamKey teamKey) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(fetchUsersByTeamIdQuery, SQLTools.GetStringForSQL(teamKey.getUuid())),
+                    "reader");
+            return new HashSet<>(new UserListResultSetExtractor().extractData(cachedRowSet));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {

@@ -10,10 +10,8 @@ import lombok.extern.log4j.Log4j2;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class UserConfiguration extends Configuration<User, UserKey> {
@@ -53,6 +51,32 @@ public class UserConfiguration extends Configuration<User, UserKey> {
     private static String updateQuery = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
             " SET USERNAME = {0}, PASSWORD ={1}, ENABLED = {2}, EXPIRED = {3}, CREDENTIALS_EXPIRED = {4}, LOCKED = {5}" +
             " WHERE ID = {6};";
+    private static String fetchRolesByUserIdQuery = "select roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +
+            "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privileges.privilege as privilege_privilege, " +
+            "user_roles.user_id as user_role_user_id " +
+            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UsersRoles").getName() + " user_roles " +
+            " INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+            " on user_roles.ROLE_ID = roles.ID " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
+            " ON roles.ID = privileges.ROLE_ID " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
+            " ON roles.ID = user_roles.ROLE_ID " +
+            " WHERE user_roles.USER_ID={0};";
+    private static String fetchTeamsByUserIdQuery = "select teams.ID as team_id, teams.TEAM_NAME as team_name, " +
+            "roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +
+            "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privileges.privilege as privilege_privilege, " +
+            "user_roles.user_id as user_role_user_id, " +
+            "security_group_teams.security_group_id as security_group_id " +
+            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams" +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+            " ON teams.ID = roles.TEAM_ID " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
+            " ON roles.ID = privileges.ROLE_ID " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
+            " ON roles.ID = user_roles.ROLE_ID " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
+            " ON teams.ID = security_group_teams.TEAM_ID " +
+            " WHERE user_roles.ID={0};";
 
     private static UserConfiguration INSTANCE;
 
@@ -172,19 +196,32 @@ public class UserConfiguration extends Configuration<User, UserKey> {
         }
     }
 
-    public List<Role> getRoles(UserKey userKey) {
-        // TODO
-        return null;
+    public Set<Role> getRoles(UserKey userKey) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(fetchRolesByUserIdQuery, SQLTools.GetStringForSQL(userKey.getUuid())),
+                    "reader");
+            return new HashSet<>(new RoleListResultSetExtractor().extractData(cachedRowSet));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<Team> getTeams(UserKey userKey) {
-        // TODO
-        return null;
+    public Set<Team> getTeams(UserKey userKey) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(fetchTeamsByUserIdQuery, SQLTools.GetStringForSQL(userKey.getUuid())),
+                    "reader");
+            return new HashSet<>(new TeamListResultSetExtractor().extractData(cachedRowSet));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<Privilege> getPrivileges(UserKey userKey) {
-        // TODO
-        return new ArrayList<>();
+    public Set<Privilege> getPrivileges(UserKey userKey) {
+        return getRoles(userKey).stream().map(Role::getPrivileges)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 
     public void addRole(UserKey userKey, RoleKey roleKey) {

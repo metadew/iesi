@@ -42,6 +42,12 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
             " ON roles.ID = privileges.ROLE_ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
             " ON roles.ID = user_roles.ROLE_ID;";
+    private static String fetchUsersByRoleIdQuery = "select users.ID as user_id, users.USERNAME as user_username, users.PASSWORD as user_password, " +
+            "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, user_roles.ROLE_ID as role_id" +
+            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users" +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UsersRoles").getName() + " user_roles " +
+            " ON users.ID = user_roles.USER_ID " +
+            " WHERE user_roles.ROLE_ID={0};";
     private static String deleteSingleQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() +
             " WHERE ID={0};";
     private static String deleteUserRolesByRoleIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() +
@@ -143,8 +149,14 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
     }
 
     public List<User> getUsers(UserKey userKey) {
-        // TODO
-        return null;
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(fetchUsersByRoleIdQuery, SQLTools.GetStringForSQL(userKey.getUuid())),
+                    "reader");
+            return new UserListResultSetExtractor().extractData(cachedRowSet);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addUser(RoleKey roleKey, UserKey userKey) {

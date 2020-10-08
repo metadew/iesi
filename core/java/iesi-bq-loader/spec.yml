@@ -26,6 +26,10 @@ iesi:
           input: "iesi-scriptresults-bigquery"
           bigquery:
             scriptresult:
+              load: true
+              dataset: "iesi_script_results_sample"
+            scriptexecution:
+              load: false
               dataset: "iesi_script_results_sample"
           output: ""
       bigquery:
@@ -33,6 +37,5 @@ iesi:
           datasets:
             - name: "iesi_script_results_sample"
               tables:
-                - name: "script-results"
-                  type: "scriptresults"
-                - name: "script-exections"
+                - name: "scriptresult"
+                - name: "scriptexecution"

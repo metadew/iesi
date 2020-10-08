@@ -38,18 +38,8 @@ public class PubsubSpecCreateCommand implements Runnable {
         //Create the pubsub service
         PubsubService.getInstance().init(whichProject,pubsubName);
 
-        //Run through and apply the spec
-        if (PubsubService.getInstance().getPubsubSpec() != null) {
-            //Create the topics and subscriptions
-            for (PubsubTopicSpec pubsubTopicSpec : PubsubService.getInstance().getPubsubSpec().getTopics()) {
-                PubsubConnection.getInstance().createTopic(whichProject,pubsubTopicSpec.getName());
-                if ( pubsubTopicSpec.getSubscriptions() != null) {
-                    for (PubsubSubscriptionSpec pubsubSubscriptionSpec : pubsubTopicSpec.getSubscriptions()) {
-                        PubsubConnection.getInstance().createSubscription(whichProject, pubsubTopicSpec.getName(), pubsubSubscriptionSpec.getName());
-                    }
-                }
-            }
-        }
+        //Create the spec
+        PubsubService.getInstance().create();
 
     }
 }

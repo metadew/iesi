@@ -6,6 +6,5 @@ import lombok.Data;
 public class BigqueryTableSpec {
 
     private String name;
-    private String type;
 
 }

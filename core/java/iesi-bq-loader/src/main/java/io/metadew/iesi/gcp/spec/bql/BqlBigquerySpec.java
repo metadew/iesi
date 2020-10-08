@@ -6,5 +6,6 @@ import lombok.Data;
 public class BqlBigquerySpec {
 
     private BqlBigqueryScriptResultSpec scriptresult;
+    private BqlBigqueryScriptExecutionSpec scriptexecution;
 
 }

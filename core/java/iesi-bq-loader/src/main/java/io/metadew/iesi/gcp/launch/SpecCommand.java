@@ -6,6 +6,8 @@ import picocli.CommandLine.Command;
 @Command (
         name = "spec",
         subcommands = {
+                SpecCreateCommand.class,
+                SpecDeleteCommand.class,
                 SpecViewCommand.class
         }
 )

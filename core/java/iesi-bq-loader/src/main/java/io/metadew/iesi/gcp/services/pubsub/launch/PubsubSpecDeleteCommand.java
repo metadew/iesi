@@ -38,18 +38,7 @@ public class PubsubSpecDeleteCommand implements Runnable {
         //Create the pubsub service
         PubsubService.getInstance().init(whichProject,pubsubName);
 
-        //Run through and apply the spec
-        if (PubsubService.getInstance().getPubsubSpec() != null) {
-            //Delete the topics and subscriptions
-            for (PubsubTopicSpec pubsubTopicSpec : PubsubService.getInstance().getPubsubSpec().getTopics()) {
-                if ( pubsubTopicSpec.getSubscriptions() != null) {
-                    for (PubsubSubscriptionSpec pubsubSubscriptionSpec : pubsubTopicSpec.getSubscriptions()) {
-                        PubsubConnection.getInstance().deleteSubscription(whichProject, pubsubTopicSpec.getName(), pubsubSubscriptionSpec.getName());
-                    }
-                }
-                PubsubConnection.getInstance().deleteTopic(whichProject,pubsubTopicSpec.getName());
-            }
-        }
-
+        //Apply the spec
+        PubsubService.getInstance().delete();
     }
 }

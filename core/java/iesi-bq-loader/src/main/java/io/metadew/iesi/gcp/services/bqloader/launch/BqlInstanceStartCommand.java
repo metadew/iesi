@@ -72,10 +72,19 @@ public class BqlInstanceStartCommand implements Runnable {
 
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                Map<String, Object> map = objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {});
-                ScriptResultCco scriptResultCco = objectMapper.convertValue(map, ScriptResultCco.class);
-                ScriptResultConfiguration scriptResultConfiguration = new ScriptResultConfiguration();
-                BigqueryConnection.getInstance().tableInsertRows(BqlService.getInstance().getBqlSpec().getBigquery().getScriptresult().getDataset(), scriptResultConfiguration.getTableName(), scriptResultConfiguration.getRowContent(scriptResultCco));
+                // Script result
+                if (BqlService.getInstance().getBqlSpec().getBigquery().getScriptresult().isLoad()) {
+                    Map<String, Object> map = objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {});
+                    ScriptResultCco scriptResultCco = objectMapper.convertValue(map, ScriptResultCco.class);
+                    ScriptResultConfiguration scriptResultConfiguration = new ScriptResultConfiguration();
+                    BigqueryConnection.getInstance().tableInsertRows(BqlService.getInstance().getBqlSpec().getBigquery().getScriptresult().getDataset(), scriptResultConfiguration.getTableName(), scriptResultConfiguration.getRowContent(scriptResultCco));
+                }
+
+                //Script execution
+                if (BqlService.getInstance().getBqlSpec().getBigquery().getScriptexecution().isLoad()) {
+                    //Get script execution
+                    System.out.println("Scriptexec do");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 // TODO handle exceptions

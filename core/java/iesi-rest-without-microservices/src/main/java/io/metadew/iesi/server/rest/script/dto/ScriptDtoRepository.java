@@ -45,7 +45,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     }
 
     private String getFetchAllQuery(Pageable pageable, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters, List<String> expansions) {
-        return "select script_designs.SCRIPT_ID, script_designs.SCRIPT_NM, script_designs.SCRIPT_DSC, " +
+        return "select script_designs.SCRIPT_ID, script_designs.SECURITY_GROUP_NAME, script_designs.SCRIPT_NM, script_designs.SCRIPT_DSC, " +
                 "versions.SCRIPT_VRS_NB, versions.SCRIPT_VRS_DSC, " +
                 "script_labels.ID as LABEL_ID, script_labels.NAME as LABEL_NAME, script_labels.VALUE as LABEL_VALUE, " +
                 "actions.ACTION_ID, actions.ACTION_NB, actions.ACTION_DSC, actions.ACTION_NM, actions.ACTION_TYP_NM, actions.COMP_NM, actions.CONDITION_VAL, actions.ITERATION_VAL, actions.EXP_ERR_FL, actions.RETRIES_VAL, actions.STOP_ERR_FL, " +
@@ -67,13 +67,14 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
 
     /**
      * This method will return a subquery only returning unique script ids according to the provided arguments
-     * @param pageable: Pageable object containing pagination and sorting information
+     *
+     * @param pageable:           Pageable object containing pagination and sorting information
      * @param onlyLatestVersions: boolean stating whether all or only latest version of a script should be retreived
-     * @param scriptFilters: List of ScriptFilters describing which results should be filtered from the query resultset
+     * @param scriptFilters:      List of ScriptFilters describing which results should be filtered from the query resultset
      * @return query
      */
     private String getBaseQuery(Pageable pageable, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters) {
-        return "select distinct script_designs.SCRIPT_ID, script_designs.SCRIPT_NM, versions.SCRIPT_VRS_NB " +
+        return "select distinct script_designs.SCRIPT_ID, script_designs.SECURITY_GROUP_NAME, script_designs.SCRIPT_NM, versions.SCRIPT_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
                 "on script_designs.SCRIPT_ID = versions.SCRIPT_ID " +
@@ -237,13 +238,18 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     @Getter
     private class ScriptDtoBuilder {
         private String name;
+        private String securityGroupName;
         private String description;
         private ScriptVersionDto version;
         private Map<Long, ActionDtoBuilder> actions;
         private Map<String, ScriptLabelDto> labels;
 
         public ScriptDto build() {
-            return new ScriptDto(name, description, version, new HashSet<>(),
+            return new ScriptDto(name,
+                    securityGroupName,
+                    description,
+                    version,
+                    new HashSet<>(),
                     actions.values().stream().map(ActionDtoBuilder::build).collect(Collectors.toSet()),
                     new HashSet<>(labels.values()),
                     null,
@@ -275,7 +281,9 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     }
 
     private ScriptDtoBuilder mapScriptDto2(CachedRowSet cachedRowSet) throws SQLException {
-        return new ScriptDtoBuilder(cachedRowSet.getString("SCRIPT_NM"), cachedRowSet.getString("SCRIPT_DSC"),
+        return new ScriptDtoBuilder(cachedRowSet.getString("SCRIPT_NM"),
+                cachedRowSet.getString("SECURITY_GROUP_NAME"),
+                cachedRowSet.getString("SCRIPT_DSC"),
                 new ScriptVersionDto(cachedRowSet.getLong("SCRIPT_VRS_NB"),
                         cachedRowSet.getString("SCRIPT_VRS_DSC")),
                 new HashMap<>(),

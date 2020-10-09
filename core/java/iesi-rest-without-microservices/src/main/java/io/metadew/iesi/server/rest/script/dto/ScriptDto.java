@@ -24,6 +24,7 @@ import java.util.Set;
 public class ScriptDto extends RepresentationModel<ScriptDto> {
 
     private String name;
+    private String securityGroupName;
     private String description;
     private ScriptVersionDto version;
     private Set<ScriptParameterDto> parameters = new HashSet<>();

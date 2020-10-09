@@ -14,10 +14,12 @@ import lombok.ToString;
 public abstract class SecuredObject<T extends MetadataKey> extends Metadata<T> {
 
     private final SecurityGroupKey securityGroupKey;
+    private final String securityGroupName;
 
-    public SecuredObject(T metadataKey, SecurityGroupKey securityGroupKey) {
+    public SecuredObject(T metadataKey, SecurityGroupKey securityGroupKey, String securityGroupName) {
         super(metadataKey);
         this.securityGroupKey = securityGroupKey;
+        this.securityGroupName = securityGroupName;
     }
 
 }

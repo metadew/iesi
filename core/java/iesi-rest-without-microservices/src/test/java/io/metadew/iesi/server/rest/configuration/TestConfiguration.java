@@ -14,7 +14,9 @@ public class TestConfiguration {
     @Order(0)
     @DependsOn("frameworkInstance")
     public MetadataRepositoryConfiguration metadataRepositoryConfiguration() {
-        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+        try {
+        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);}
+        catch (Exception e) {}
         return MetadataRepositoryConfiguration.getInstance();
     }
 }

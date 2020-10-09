@@ -19,6 +19,7 @@ import java.util.List;
 public class ScriptPostDto extends RepresentationModel<ScriptPostDto> {
 
     private String name;
+    private String securityGroupName;
     private String description;
     private ScriptVersionDto version;
     private List<ScriptParameterDto> parameters;

@@ -87,7 +87,7 @@ public class FwkRoute extends ActionTypeExecution {
         ScriptVersion scriptVersion = getScriptExecution().getScript().getVersion();
         List<Action> scriptActions = new ArrayList<>();
         List<ScriptParameter> scriptParameters = getScriptExecution().getScript().getParameters();
-        Script script = new Script(scriptKey, scriptName, scriptDescription, scriptVersion,
+        Script script = new Script(scriptKey, getScriptExecution().getScript().getSecurityGroupKey(), getScriptExecution().getScript().getSecurityGroupName(), scriptName, scriptDescription, scriptVersion,
                 scriptParameters, scriptActions, getScriptExecution().getScript().getLabels());
 
         //Prepare action runtime

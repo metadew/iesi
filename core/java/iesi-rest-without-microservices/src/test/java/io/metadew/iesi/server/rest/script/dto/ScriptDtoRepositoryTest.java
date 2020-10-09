@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.script.dto;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
@@ -13,6 +14,8 @@ import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
@@ -57,6 +60,8 @@ class ScriptDtoRepositoryTest {
 
     @Autowired
     private ScriptConfiguration scriptConfiguration;
+    @Autowired
+    private SecurityGroupConfiguration securityGroupConfiguration;
 
     @Autowired
     private ScriptDtoModelAssembler scriptDtoModelAssembler;
@@ -80,8 +85,29 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+
+        UUID securityGroupKey = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
+
+        securityGroupConfiguration.insert(securityGroup);
+
         Script script1 = Script.builder()
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .version(ScriptVersion.builder()
@@ -154,13 +180,10 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .version(ScriptVersion.builder()
@@ -237,6 +260,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script2);
         ScriptDto script1Dto = ScriptDto.builder()
                 .name("script1")
+                .securityGroupName(securityGroup.getName())
                 .description("script description")
                 .parameters(new HashSet<>())
                 .version(new ScriptVersionDto(1L, "version description"))
@@ -280,6 +304,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -335,8 +360,30 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+
+
+        UUID securityGroupKey = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
+
+        securityGroupConfiguration.insert(securityGroup);
+
+
         Script script1 = Script.builder()
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .version(ScriptVersion.builder()
@@ -409,13 +456,10 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .version(ScriptVersion.builder()
@@ -492,6 +536,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script2);
         ScriptDto script1Dto = ScriptDto.builder()
                 .name("script1")
+                .securityGroupName(securityGroup.getName())
                 .description("script description")
                 .parameters(new HashSet<>())
                 .version(new ScriptVersionDto(1L, "version description"))
@@ -535,6 +580,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -590,7 +636,26 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
+
+        securityGroupConfiguration.insert(securityGroup);
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -664,12 +729,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -746,6 +808,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
         ScriptDto script1Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -801,7 +864,23 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -875,12 +954,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -957,6 +1033,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
         ScriptDto script1Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -1001,6 +1078,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -1056,7 +1134,23 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -1130,12 +1224,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -1212,6 +1303,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
         ScriptDto script1Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -1256,6 +1348,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -1311,7 +1404,23 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -1385,12 +1494,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -1467,6 +1573,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
         ScriptDto script1Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -1511,6 +1618,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -1569,7 +1677,23 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -1643,12 +1767,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -1725,6 +1846,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
         ScriptDto script1Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -1769,6 +1891,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -1829,7 +1952,22 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script1Uuid.toString(), 2L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -1903,11 +2041,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 2L))
                 .name("script1")
                 .description("script description")
@@ -1984,6 +2120,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -2038,7 +2175,32 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        UUID script3Uuid = UUID.randomUUID();
+        UUID script3Action1Uuid = UUID.randomUUID();
+        UUID script3Action2Uuid = UUID.randomUUID();
+        UUID script3Label1Uuid = UUID.randomUUID();
+        UUID script3Label2Uuid = UUID.randomUUID();
+        UUID script4Uuid = UUID.randomUUID();
+        UUID script4Action1Uuid = UUID.randomUUID();
+        UUID script4Action2Uuid = UUID.randomUUID();
+        UUID script4Label1Uuid = UUID.randomUUID();
+        UUID script4Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script1Uuid.toString(), 2L), new ScriptKey(script3Uuid.toString(), 2L), new ScriptKey(script4Uuid.toString(), 3L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("scriptB")
                 .description("script description")
@@ -2112,11 +2274,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 2L))
                 .name("scriptB")
                 .description("script description")
@@ -2190,12 +2350,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script3Uuid = UUID.randomUUID();
-        UUID script3Action1Uuid = UUID.randomUUID();
-        UUID script3Action2Uuid = UUID.randomUUID();
-        UUID script3Label1Uuid = UUID.randomUUID();
-        UUID script3Label2Uuid = UUID.randomUUID();
         Script script3 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script3Uuid.toString(), 2L))
                 .name("scriptA")
                 .description("script description")
@@ -2269,12 +2426,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script4Uuid = UUID.randomUUID();
-        UUID script4Action1Uuid = UUID.randomUUID();
-        UUID script4Action2Uuid = UUID.randomUUID();
-        UUID script4Label1Uuid = UUID.randomUUID();
-        UUID script4Label2Uuid = UUID.randomUUID();
         Script script4 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script4Uuid.toString(), 3L))
                 .name("scriptBA")
                 .description("script description")
@@ -2353,6 +2507,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script3);
         scriptConfiguration.insert(script4);
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("scriptB")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -2397,6 +2552,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script4Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("scriptBA")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -2463,7 +2619,27 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        UUID script3Action1Uuid = UUID.randomUUID();
+        UUID script3Action2Uuid = UUID.randomUUID();
+        UUID script3Label1Uuid = UUID.randomUUID();
+        UUID script3Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 2L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -2537,12 +2713,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -2616,11 +2789,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script3Action1Uuid = UUID.randomUUID();
-        UUID script3Action2Uuid = UUID.randomUUID();
-        UUID script3Label1Uuid = UUID.randomUUID();
-        UUID script3Label2Uuid = UUID.randomUUID();
         Script script3 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 2L))
                 .name("script2")
                 .description("script description")
@@ -2698,6 +2869,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script2);
         scriptConfiguration.insert(script3);
         ScriptDto script1Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -2742,6 +2914,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -2786,6 +2959,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script3Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -2843,7 +3017,23 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -2917,12 +3107,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -3010,7 +3197,27 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        UUID script3Action1Uuid = UUID.randomUUID();
+        UUID script3Action2Uuid = UUID.randomUUID();
+        UUID script3Label1Uuid = UUID.randomUUID();
+        UUID script3Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 2L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -3084,12 +3291,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -3163,11 +3367,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script3Action1Uuid = UUID.randomUUID();
-        UUID script3Action2Uuid = UUID.randomUUID();
-        UUID script3Label1Uuid = UUID.randomUUID();
-        UUID script3Label2Uuid = UUID.randomUUID();
         Script script3 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 2L))
                 .name("script2")
                 .description("script description")
@@ -3245,6 +3447,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script2);
         scriptConfiguration.insert(script3);
         ScriptDto script1Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -3289,6 +3492,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script3Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -3346,7 +3550,27 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        UUID script3Action1Uuid = UUID.randomUUID();
+        UUID script3Action2Uuid = UUID.randomUUID();
+        UUID script3Label1Uuid = UUID.randomUUID();
+        UUID script3Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 2L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -3420,12 +3644,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -3499,11 +3720,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script3Action1Uuid = UUID.randomUUID();
-        UUID script3Action2Uuid = UUID.randomUUID();
-        UUID script3Label1Uuid = UUID.randomUUID();
-        UUID script3Label2Uuid = UUID.randomUUID();
         Script script3 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 2L))
                 .name("script2")
                 .description("script description")
@@ -3581,6 +3800,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script2);
         scriptConfiguration.insert(script3);
         ScriptDto script1Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -3625,6 +3845,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         ScriptDto script3Dto = ScriptDto.builder()
+                .securityGroupName(securityGroup.getName())
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
@@ -3681,7 +3902,27 @@ class ScriptDtoRepositoryTest {
         UUID script1Action2Uuid = UUID.randomUUID();
         UUID script1Label1Uuid = UUID.randomUUID();
         UUID script1Label2Uuid = UUID.randomUUID();
+        UUID securityGroupKey = UUID.randomUUID();
+        UUID script2Uuid = UUID.randomUUID();
+        UUID script2Action1Uuid = UUID.randomUUID();
+        UUID script2Action2Uuid = UUID.randomUUID();
+        UUID script2Label1Uuid = UUID.randomUUID();
+        UUID script2Label2Uuid = UUID.randomUUID();
+        UUID script3Action1Uuid = UUID.randomUUID();
+        UUID script3Action2Uuid = UUID.randomUUID();
+        UUID script3Label1Uuid = UUID.randomUUID();
+        UUID script3Label2Uuid = UUID.randomUUID();
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .name("securityGroup")
+                .metadataKey(new SecurityGroupKey(securityGroupKey))
+                .securedObjects(Stream.of(
+                        new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 2L)
+                ).collect(Collectors.toSet()))
+                .teamKeys(new HashSet<>())
+                .build();
         Script script1 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
                 .name("script1")
                 .description("script description")
@@ -3755,12 +3996,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script2Uuid = UUID.randomUUID();
-        UUID script2Action1Uuid = UUID.randomUUID();
-        UUID script2Action2Uuid = UUID.randomUUID();
-        UUID script2Label1Uuid = UUID.randomUUID();
-        UUID script2Label2Uuid = UUID.randomUUID();
         Script script2 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
                 .name("script2")
                 .description("script description")
@@ -3834,11 +4072,9 @@ class ScriptDtoRepositoryTest {
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
-        UUID script3Action1Uuid = UUID.randomUUID();
-        UUID script3Action2Uuid = UUID.randomUUID();
-        UUID script3Label1Uuid = UUID.randomUUID();
-        UUID script3Label2Uuid = UUID.randomUUID();
         Script script3 = Script.builder()
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 2L))
                 .name("script2")
                 .description("script description")

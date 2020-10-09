@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +25,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
@@ -54,7 +56,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         // had to change this to only get the script, because the script doesn't have version as id
         // return get(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
         LOGGER.trace(MessageFormat.format("Fetching script {0}-{1}.", scriptKey.getScriptId(), scriptKey.getScriptVersion()));
-        String queryScript = "select SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC from "
+        String queryScript = "select SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC from "
                 + getMetadataRepository().getTableNameByLabel("Scripts") + " where SCRIPT_ID = "
                 + SQLTools.GetStringForSQL(scriptKey.getScriptId()) + ";";
         CachedRowSet crsScript = getMetadataRepository().executeQuery(queryScript, "reader");
@@ -81,8 +83,16 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             // Get labels
             List<ScriptLabel> scriptLabels = ScriptLabelConfiguration.getInstance().getByScript(scriptKey);
 
-            Script script = new Script(scriptKey, crsScript.getString("SCRIPT_NM"), crsScript.getString("SCRIPT_DSC"),
-                    scriptVersion.get(), scriptParameters, actions, scriptLabels);
+            Script script = new Script(
+                    scriptKey,
+                    new SecurityGroupKey(UUID.fromString(crsScript.getString("SECURITY_GROUP_ID"))),
+                    crsScript.getString("SECURITY_GROUP_NAME"),
+                    crsScript.getString("SCRIPT_NM"),
+                    crsScript.getString("SCRIPT_DSC"),
+                    scriptVersion.get(),
+                    scriptParameters,
+                    actions,
+                    scriptLabels);
             crsScript.close();
             return Optional.of(script);
         } catch (Exception e) {
@@ -217,8 +227,10 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     private String getInsertStatement(Script script) {
         if (!exists(script)) {
             return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Scripts") +
-                    " (SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
+                    " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
                     SQLTools.GetStringForSQL(script.getMetadataKey().getScriptId()) + "," +
+                    SQLTools.GetStringForSQL(script.getSecurityGroupKey().getUuid()) + "," +
+                    SQLTools.GetStringForSQL(script.getSecurityGroupName()) + "," +
                     SQLTools.GetStringForSQL(script.getName()) + "," +
                     SQLTools.GetStringForSQL(script.getDescription()) + ");";
         } else {

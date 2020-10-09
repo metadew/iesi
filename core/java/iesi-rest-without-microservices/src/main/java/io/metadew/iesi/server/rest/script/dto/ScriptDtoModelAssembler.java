@@ -37,7 +37,9 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
     }
 
     public ScriptDto convertToDto(Script script) {
-        return new ScriptDto(script.getName(), script.getDescription(),
+        return new ScriptDto(script.getName(),
+                script.getSecurityGroupName(),
+                script.getDescription(),
                 scriptVersionDtoService.convertToDto(script.getVersion()),
                 script.getParameters().stream().map(scriptParameterDtoService::convertToDto).collect(Collectors.toSet()),
                 script.getActions().stream().map(scriptActionDtoService::convertToDto).collect(Collectors.toSet()),

@@ -71,7 +71,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     private static String fetchUsersByTeamIdQuery = "select users.ID as user_id, users.USERNAME as user_username, users.PASSWORD as user_password, " +
             "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, user_roles.ROLE_ID as role_id" +
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
-            " INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UsersRoles").getName() + " user_roles " +
+            " INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
             " ON user_roles.ROLE_ID = roles.ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users" +
             " ON users.ID = user_roles.USER_ID " +

@@ -46,9 +46,9 @@ public class UserController {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
             return jwtService.generateAuthenticationResponse(authentication);
         } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            log.info(StackTrace.toString());
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            log.info(stackTrace.toString());
             throw e;
         }
     }

@@ -35,6 +35,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+
       - name: CXN_CONN_IMP
         label: Impersonations
         description: Design metadata for connection impersonations
@@ -58,6 +59,39 @@ iesi:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 3
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: CTL_SECURITY_OBJECT
+        label: SecurityObjects
+        description: data related to security objects
+        category: control
+        fields:
+          ID:
+            description: UUID of the security object
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          SECURITY_GROUP_NAME:
+            description: name of the security group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
             type: timestamp
             length: 0
             nullable: false
@@ -2227,6 +2261,18 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+          SECURITY_GROUP_NAME:
+            description: name of the security group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
           SCRIPT_TYP_NM:
             description: Keyword for the script type
             order: 2

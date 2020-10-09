@@ -7,8 +7,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.builder.scriptresult.ScriptResultBuilder;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,9 +32,19 @@ public class ScriptResultServiceTest {
     @Autowired
     private ScriptResultConfiguration scriptResultConfiguration;
 
-    @BeforeEach
-    void setup() {
+    @BeforeAll
+    static void initialize() {
+        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void cleanup() {
         metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
     }
 
     @Test

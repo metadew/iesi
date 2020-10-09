@@ -25,8 +25,7 @@ import io.metadew.iesi.server.rest.script.dto.action.ActionDto;
 import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
@@ -66,9 +65,19 @@ class ScriptDtoRepositoryTest {
     @Autowired
     private ScriptDtoModelAssembler scriptDtoModelAssembler;
 
-    @BeforeEach
-    void setup() {
+    @BeforeAll
+    static void initialize() {
+        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void cleanup() {
         metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
     }
 
     @Test
@@ -94,7 +103,7 @@ class ScriptDtoRepositoryTest {
 
         UUID securityGroupKey = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
@@ -369,7 +378,7 @@ class ScriptDtoRepositoryTest {
 
         UUID securityGroupKey = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
@@ -644,7 +653,7 @@ class ScriptDtoRepositoryTest {
         UUID script2Label2Uuid = UUID.randomUUID();
         UUID securityGroupKey = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
@@ -871,7 +880,7 @@ class ScriptDtoRepositoryTest {
         UUID script2Label2Uuid = UUID.randomUUID();
         UUID securityGroupKey = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
@@ -1141,7 +1150,7 @@ class ScriptDtoRepositoryTest {
         UUID script2Label1Uuid = UUID.randomUUID();
         UUID script2Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
@@ -1411,7 +1420,7 @@ class ScriptDtoRepositoryTest {
         UUID script2Label1Uuid = UUID.randomUUID();
         UUID script2Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
@@ -1684,7 +1693,7 @@ class ScriptDtoRepositoryTest {
         UUID script2Label1Uuid = UUID.randomUUID();
         UUID script2Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
@@ -1958,7 +1967,7 @@ class ScriptDtoRepositoryTest {
         UUID script2Label1Uuid = UUID.randomUUID();
         UUID script2Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script1Uuid.toString(), 2L)
@@ -2191,7 +2200,7 @@ class ScriptDtoRepositoryTest {
         UUID script4Label1Uuid = UUID.randomUUID();
         UUID script4Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script1Uuid.toString(), 2L), new ScriptKey(script3Uuid.toString(), 2L), new ScriptKey(script4Uuid.toString(), 3L)
@@ -2630,7 +2639,7 @@ class ScriptDtoRepositoryTest {
         UUID script3Label1Uuid = UUID.randomUUID();
         UUID script3Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 2L)
@@ -3024,7 +3033,7 @@ class ScriptDtoRepositoryTest {
         UUID script2Label1Uuid = UUID.randomUUID();
         UUID script2Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L)
@@ -3208,7 +3217,7 @@ class ScriptDtoRepositoryTest {
         UUID script3Label1Uuid = UUID.randomUUID();
         UUID script3Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 2L)
@@ -3561,7 +3570,7 @@ class ScriptDtoRepositoryTest {
         UUID script3Label1Uuid = UUID.randomUUID();
         UUID script3Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 2L)
@@ -3913,7 +3922,7 @@ class ScriptDtoRepositoryTest {
         UUID script3Label1Uuid = UUID.randomUUID();
         UUID script3Label2Uuid = UUID.randomUUID();
         SecurityGroup securityGroup = SecurityGroup.builder()
-                .name("securityGroup")
+                .name("PUBLIC")
                 .metadataKey(new SecurityGroupKey(securityGroupKey))
                 .securedObjects(Stream.of(
                         new ScriptKey(script1Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 1L), new ScriptKey(script2Uuid.toString(), 2L)

@@ -33,12 +33,4 @@ public class DisabledWebSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .authorizeRequests().anyRequest().permitAll();
     }
 
-    //    @Bean
-//    CorsConfigurationSource corsConfigurationSource() {
-//        log.info("set CORS bean");
-//        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-//        return source;
-//    }
-
 }

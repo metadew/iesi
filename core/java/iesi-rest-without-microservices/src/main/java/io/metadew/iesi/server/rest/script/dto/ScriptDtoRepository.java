@@ -13,6 +13,7 @@ import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
+import io.metadew.iesi.server.rest.user.IESIGrantedAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
@@ -44,13 +47,13 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private String getFetchAllQuery(Pageable pageable, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters, List<String> expansions) {
+    private String getFetchAllQuery(Authentication authentication, Pageable pageable, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters, List<String> expansions) {
         return "select script_designs.SCRIPT_ID, script_designs.SECURITY_GROUP_NAME, script_designs.SCRIPT_NM, script_designs.SCRIPT_DSC, " +
                 "versions.SCRIPT_VRS_NB, versions.SCRIPT_VRS_DSC, " +
                 "script_labels.ID as LABEL_ID, script_labels.NAME as LABEL_NAME, script_labels.VALUE as LABEL_VALUE, " +
                 "actions.ACTION_ID, actions.ACTION_NB, actions.ACTION_DSC, actions.ACTION_NM, actions.ACTION_TYP_NM, actions.COMP_NM, actions.CONDITION_VAL, actions.ITERATION_VAL, actions.EXP_ERR_FL, actions.RETRIES_VAL, actions.STOP_ERR_FL, " +
                 "action_parameters.ACTION_PAR_NM, action_parameters.ACTION_PAR_VAL " +
-                "from (" + getBaseQuery(pageable, onlyLatestVersions, scriptFilters) + ") base_scripts " + //base table
+                "from (" + getBaseQuery(authentication, pageable, onlyLatestVersions, scriptFilters) + ") base_scripts " + //base table
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
                 "on base_scripts.SCRIPT_ID = script_designs.SCRIPT_ID " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
@@ -68,24 +71,25 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     /**
      * This method will return a subquery only returning unique script ids according to the provided arguments
      *
-     * @param pageable:           Pageable object containing pagination and sorting information
-     * @param onlyLatestVersions: boolean stating whether all or only latest version of a script should be retreived
-     * @param scriptFilters:      List of ScriptFilters describing which results should be filtered from the query resultset
+     * @param authentication
+     * @param pageable           :           Pageable object containing pagination and sorting information
+     * @param onlyLatestVersions : boolean stating whether all or only latest version of a script should be retreived
+     * @param scriptFilters      :      List of ScriptFilters describing which results should be filtered from the query resultset
      * @return query
      */
-    private String getBaseQuery(Pageable pageable, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters) {
+    private String getBaseQuery(Authentication authentication, Pageable pageable, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters) {
         return "select distinct script_designs.SCRIPT_ID, script_designs.SECURITY_GROUP_NAME, script_designs.SCRIPT_NM, versions.SCRIPT_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
                 "on script_designs.SCRIPT_ID = versions.SCRIPT_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
                 "on script_designs.SCRIPT_ID = script_labels.SCRIPT_ID and versions.SCRIPT_VRS_NB = script_labels.SCRIPT_VRS_NB " +
-                getWhereClause(scriptFilters, onlyLatestVersions) +
+                getWhereClause(authentication, scriptFilters, onlyLatestVersions) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
     }
 
-    private String getWhereClause(List<ScriptFilter> scriptFilters, boolean onlyLatestVersions) {
+    private String getWhereClause(Authentication authentication, List<ScriptFilter> scriptFilters, boolean onlyLatestVersions) {
         String filterStatements = scriptFilters.stream().map(scriptFilter -> {
                     if (scriptFilter.getScriptFilterOption().equals(ScriptFilterOption.NAME)) {
                         return " script_designs.SCRIPT_NM " + (scriptFilter.isExactMatch() ? "=" : "LIKE") + " '" + (scriptFilter.isExactMatch() ? "" : "%") + scriptFilter.getValue() + (scriptFilter.isExactMatch() ? "" : "%") + "' ";
@@ -101,14 +105,22 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         )
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
-        if (!onlyLatestVersions && filterStatements.isEmpty()) {
-            return "";
+        Set<String> securityGroups = new HashSet<>();
+        securityGroups.add("'PUBLIC'");
+        if (authentication != null) {
+            securityGroups.addAll(authentication.getAuthorities().stream()
+                    .map(authority -> (IESIGrantedAuthority) authority)
+                    .map(IESIGrantedAuthority::getSecurityGroupName)
+                    .map(authority -> "'" + authority + "'")
+                    .collect(Collectors.toSet()));
         }
-        String onlyLatestVersionStatement = (onlyLatestVersions ? " (versions.SCRIPT_ID, versions.SCRIPT_VRS_NB) in (select scripts.SCRIPT_ID, max(script_versions.SCRIPT_VRS_NB) SCRIPT_VRS_NB " +
+        filterStatements = filterStatements + (filterStatements.isEmpty() ? "" : " and ") +
+                " script_designs.SECURITY_GROUP_NAME IN (" + String.join(", ", securityGroups) + ") ";
+        String onlyLatestVersionStatement = (onlyLatestVersions ? " and (versions.SCRIPT_ID, versions.SCRIPT_VRS_NB) in (select scripts.SCRIPT_ID, max(script_versions.SCRIPT_VRS_NB) SCRIPT_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_versions " +
                 "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) " : "");
-        return " WHERE " + filterStatements + (!filterStatements.isEmpty() && onlyLatestVersions ? " and " : "") + onlyLatestVersionStatement;
+        return " WHERE " + filterStatements + onlyLatestVersionStatement;
     }
 
     /**
@@ -145,11 +157,20 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         return "";
     }
 
-    @Override
     public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return getAll(authentication,
+                pageable,
+                expansions,
+                isLatestVersionOnly,
+                scriptFilters);
+    }
+
+    @Override
+    public Page<ScriptDto> getAll(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
         try {
             Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders = new LinkedHashMap<>();
-            String query = getFetchAllQuery(pageable, isLatestVersionOnly, scriptFilters, expansions);
+            String query = getFetchAllQuery(authentication, pageable, isLatestVersionOnly, scriptFilters, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtoBuilders);
@@ -157,20 +178,20 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
             List<ScriptDto> scriptDtoList = scriptDtoBuilders.values().stream()
                     .map(ScriptDtoBuilder::build)
                     .collect(Collectors.toList());
-            return new PageImpl<>(scriptDtoList, pageable, getRowSize(isLatestVersionOnly, scriptFilters));
+            return new PageImpl<>(scriptDtoList, pageable, getRowSize(authentication, isLatestVersionOnly, scriptFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private long getRowSize(boolean onlyLatestVersions, List<ScriptFilter> scriptFilters) throws SQLException {
+    private long getRowSize(Authentication authentication, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct script_designs.SCRIPT_ID, versions.SCRIPT_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
                 "on script_designs.SCRIPT_ID = versions.SCRIPT_ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
                 "on script_designs.SCRIPT_ID = script_labels.SCRIPT_ID and versions.SCRIPT_VRS_NB = script_labels.SCRIPT_VRS_NB " +
-                getWhereClause(scriptFilters, onlyLatestVersions) +
+                getWhereClause(authentication, scriptFilters, onlyLatestVersions) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
@@ -290,12 +311,22 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 new HashMap<>());
     }
 
-    @Override
     public Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestVersionOnly) {
+        return getByName(
+                SecurityContextHolder.getContext().getAuthentication(),
+                //new UsernamePasswordAuthenticationToken("<anonymous>", Stream.of(new IESIGrantedAuthority("PUBLIC", "SCRIPTS_READ"))),
+                pageable,
+                name,
+                expansions,
+                isLatestVersionOnly);
+    }
+
+    @Override
+    public Page<ScriptDto> getByName(Authentication authentication, Pageable pageable, String name, List<String> expansions, boolean isLatestVersionOnly) {
         try {
             Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders = new LinkedHashMap<>();
             List<ScriptFilter> scriptFilters = Stream.of(new ScriptFilter(ScriptFilterOption.NAME, name, true)).collect(Collectors.toList());
-            String query = getFetchAllQuery(pageable, isLatestVersionOnly, scriptFilters, expansions);
+            String query = getFetchAllQuery(authentication, pageable, isLatestVersionOnly, scriptFilters, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtoBuilders);
@@ -305,7 +336,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                             .map(ScriptDtoBuilder::build)
                             .collect(Collectors.toList()),
                     pageable,
-                    getRowSize(isLatestVersionOnly, scriptFilters));
+                    getRowSize(authentication, isLatestVersionOnly, scriptFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -313,12 +344,22 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
 
     @Override
     public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions) {
+        return getByNameAndVersion(
+                SecurityContextHolder.getContext().getAuthentication(),
+                // new UsernamePasswordAuthenticationToken("<anonymous>", Stream.of(new IESIGrantedAuthority("PUBLIC", "SCRIPTS_READ"))),
+                name,
+                version,
+                expansions);
+    }
+
+    @Override
+    public Optional<ScriptDto> getByNameAndVersion(Authentication authentication, String name, long version, List<String> expansions) {
         try {
             Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders = new HashMap<>();
             List<ScriptFilter> scriptFilters = Stream.of(new ScriptFilter(ScriptFilterOption.NAME, name, true),
                     new ScriptFilter(ScriptFilterOption.VERSION, Long.toString(version), true))
                     .collect(Collectors.toList());
-            String query = getFetchAllQuery(Pageable.unpaged(), false, scriptFilters, expansions);
+            String query = getFetchAllQuery(authentication, Pageable.unpaged(), false, scriptFilters, expansions);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtoBuilders);

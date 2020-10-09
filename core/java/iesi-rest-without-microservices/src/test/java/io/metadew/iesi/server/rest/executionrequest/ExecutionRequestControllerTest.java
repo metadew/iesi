@@ -2,8 +2,11 @@ package io.metadew.iesi.server.rest.executionrequest;
 
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.user.IESIGrantedAuthority;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,7 +19,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -37,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Log4j2
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ContextConfiguration(classes = TestConfiguration.class)
+@ContextConfiguration(classes = {TestConfiguration.class, MethodSecurityConfiguration.class})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @AutoConfigureMockMvc
 @ActiveProfiles({"test", "security"})
@@ -47,6 +54,21 @@ class ExecutionRequestControllerTest {
     private MockMvc mvc;
     @MockBean
     private ExecutionRequestService executionRequestService;
+
+    @BeforeEach
+    void setup() {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "user",
+                null,
+                Stream.of(
+                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_WRITE"),
+                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_READ"),
+                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_DELETE")
+                ).collect(Collectors.toSet())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    }
 
     @Test
     @WithMockUser(username = "spring")

@@ -2,8 +2,10 @@ package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.user.Privilege;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
+@Data
 public class IESIGrantedAuthority implements GrantedAuthority {
 
     private final String securityGroupName;

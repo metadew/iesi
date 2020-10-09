@@ -1,20 +1,26 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.DenyAllPermissionEvaluator;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Log4j2
+// https://www.baeldung.com/spring-security-create-new-custom-security-expression
 public class MethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
- 
+    @Value("${iesi.security.enabled:false}")
+    private boolean enableSecurity;
+
     @Override
     protected MethodSecurityExpressionHandler createExpressionHandler() {
-        DefaultMethodSecurityExpressionHandler expressionHandler =
-          new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setPermissionEvaluator(new IesiPermissionEvaluator());
-        return expressionHandler;
+        log.info("setting custom IESI security expressions");
+        IesiMethodSecurityExpressionHandler methodSecurityExpressionHandler = new IesiMethodSecurityExpressionHandler(enableSecurity);
+        methodSecurityExpressionHandler.setPermissionEvaluator(new DenyAllPermissionEvaluator());
+        return methodSecurityExpressionHandler;
     }
 }

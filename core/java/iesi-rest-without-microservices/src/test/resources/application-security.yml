@@ -1,5 +1,6 @@
 iesi:
   security:
+    enabled: true
     jwt:
       secret: secret
       expiry-date: 10

@@ -68,8 +68,10 @@ public class SqlEvaluateResult extends ActionTypeExecution {
 
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
+
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
+
         // Run the action
         CachedRowSet crs;
         crs = DatabaseHandler.getInstance().executeQueryLimitRows(database, query, 10);

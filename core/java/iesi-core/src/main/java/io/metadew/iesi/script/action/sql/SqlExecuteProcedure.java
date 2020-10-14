@@ -88,12 +88,9 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
-        if (database == null) {
-            throw new RuntimeException("Error establishing DB connection");
-        }
 
         SqlScriptResult sqlScriptResult = null;
         CachedRowSet crs = null;

@@ -119,12 +119,9 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
-        if (database == null) {
-            throw new RuntimeException("Error establishing DB connection");
-        }
 
         // Run the action
         // Make sure the SQL statement is ended with a ;

@@ -4,6 +4,7 @@ package io.metadew.iesi.metadata.definition.connection;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

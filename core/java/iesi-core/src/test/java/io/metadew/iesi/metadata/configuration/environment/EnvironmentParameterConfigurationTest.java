@@ -32,10 +32,10 @@ class EnvironmentParameterConfigurationTest {
         environmentParameter11 = new EnvironmentParameterBuilder("env1", "parameter name 1")
                 .value("parameter value")
                 .build();
-        environmentParameter12 = new EnvironmentParameterBuilder("env1", "parameter name 2")
+        environmentParameter12 = new EnvironmentParameterBuilder("env2", "parameter name 2")
                 .value("parameter value")
                 .build();
-        environmentParameter2 = new EnvironmentParameterBuilder("env2", "parameter name")
+        environmentParameter2 = new EnvironmentParameterBuilder("env3", "parameter name")
                 .value("parameter value")
                 .build();
     }
@@ -120,6 +120,7 @@ class EnvironmentParameterConfigurationTest {
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter11);
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter12);
         EnvironmentParameterConfiguration.getInstance().insert(environmentParameter2);
+        System.out.println(environmentParameter11.getMetadataKey());
         Optional<EnvironmentParameter> fetchedEnvironmentParameter11 = EnvironmentParameterConfiguration.getInstance().get(environmentParameter11.getMetadataKey());
         Optional<EnvironmentParameter> fetchedEnvironmentParameter12 = EnvironmentParameterConfiguration.getInstance().get(environmentParameter12.getMetadataKey());
         Optional<EnvironmentParameter> fetchedEnvironmentParameter2 = EnvironmentParameterConfiguration.getInstance().get(environmentParameter2.getMetadataKey());

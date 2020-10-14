@@ -16,7 +16,7 @@ import java.util.*;
 public class ConnectionParameterExtractor implements ResultSetExtractor<List<ConnectionParameter>> {
     @Override
     public List<ConnectionParameter> extractData(ResultSet rs) throws SQLException, DataAccessException {
-        Map<String, ConnectionParameter> connectionParameterMap = new LinkedHashMap<>();
+        Map<String, ConnectionParameter> connectionParameterMap = new HashMap<>();
         ConnectionParameter connectionParameter;
         List<ConnectionParameter> connectionParameterList = new ArrayList<>();
         while (rs.next()) {

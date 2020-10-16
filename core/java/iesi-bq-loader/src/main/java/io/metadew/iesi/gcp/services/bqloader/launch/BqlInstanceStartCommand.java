@@ -7,7 +7,15 @@ import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
+import io.metadew.iesi.gcp.common.configuration.Configuration;
+import io.metadew.iesi.gcp.common.configuration.iesi.IesiRestConfiguration;
+import io.metadew.iesi.gcp.configuration.bigquery.ScriptExecutionConfiguration;
+import io.metadew.iesi.gcp.configuration.cco.rest.ScriptExecutionCco;
 import io.metadew.iesi.gcp.connection.bigquery.BigqueryConnection;
+import io.metadew.iesi.gcp.connection.http.HttpRequest;
+import io.metadew.iesi.gcp.connection.http.HttpRequestBuilder;
+import io.metadew.iesi.gcp.connection.http.HttpRequestService;
+import io.metadew.iesi.gcp.connection.http.HttpResponse;
 import io.metadew.iesi.gcp.services.bqloader.common.BqlService;
 import io.metadew.iesi.gcp.common.configuration.Mount;
 import io.metadew.iesi.gcp.common.configuration.Spec;
@@ -18,7 +26,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+import java.net.URI;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,10 +82,11 @@ public class BqlInstanceStartCommand implements Runnable {
 
             ObjectMapper objectMapper = new ObjectMapper();
             try {
+                Map<String, Object> map = objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {});
+                ScriptResultCco scriptResultCco = objectMapper.convertValue(map, ScriptResultCco.class);
+
                 // Script result
                 if (BqlService.getInstance().getBqlSpec().getBigquery().getScriptresult().isLoad()) {
-                    Map<String, Object> map = objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {});
-                    ScriptResultCco scriptResultCco = objectMapper.convertValue(map, ScriptResultCco.class);
                     ScriptResultConfiguration scriptResultConfiguration = new ScriptResultConfiguration();
                     BigqueryConnection.getInstance().tableInsertRows(BqlService.getInstance().getBqlSpec().getBigquery().getScriptresult().getDataset(), scriptResultConfiguration.getTableName(), scriptResultConfiguration.getRowContent(scriptResultCco));
                 }
@@ -83,7 +94,43 @@ public class BqlInstanceStartCommand implements Runnable {
                 //Script execution
                 if (BqlService.getInstance().getBqlSpec().getBigquery().getScriptexecution().isLoad()) {
                     //Get script execution
-                    System.out.println("Scriptexec do");
+                    System.out.println("Scriptexec do" + IesiRestConfiguration.getUrl());
+                    String restUrl = IesiRestConfiguration.getUrl() + "script-executions/" + scriptResultCco.getRunID();
+
+                    HashMap<String, String> headers = new HashMap<>();
+                    headers.put("User-Agent","Java 8 HttpClient");
+                    HashMap<String, String> queryParameters = new HashMap<>();
+                    HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder()
+                            .type("GET")
+                            .uri(URI.create(restUrl))
+                            .headers(headers)
+                            .queryParameters(queryParameters);
+                    HttpRequest httpRequest = httpRequestBuilder.build();
+                    HttpRequestService httpRequestService = new HttpRequestService();
+                    HttpResponse httpResponse = httpRequestService.send(httpRequest);
+                    String data2 = httpResponse.getEntityString().orElse("");
+                    System.out.println(httpResponse.getEntityString().orElse(""));
+
+                    Map<String, Object> map2
+                            = objectMapper.readValue(data2, new TypeReference<Map<String,Object>>(){});
+
+                    System.out.println(map2.get("_embedded"));
+
+                    List<Object> items =
+                            (List<Object>) map2.get("_embedded");
+
+                    for (Object entry : items) {
+                        ScriptExecutionCco scriptExecutionCco = objectMapper.convertValue(entry, ScriptExecutionCco.class);
+                        System.out.println(scriptExecutionCco);
+                        ScriptExecutionConfiguration scriptExecutionConfiguration = new ScriptExecutionConfiguration();
+                        System.out.println(scriptExecutionConfiguration.getRowContent(scriptExecutionCco).toString());
+
+                        BigqueryConnection.getInstance().tableInsertRows("iesi_script_results_sample", scriptExecutionConfiguration.getTableName(), scriptExecutionConfiguration.getRowContent(scriptExecutionCco));
+
+                        //MetadataTableCco metadataTable = objectMapper.convertValue(entry, MetadataTableCco.class);
+                    }
+
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();

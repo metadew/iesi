@@ -38,7 +38,7 @@ public class Worker
         // set subscriber id, eg. my-sub
         String subscriptionId = "iesi-scriptresults-bigquery";
         ProjectSubscriptionName subscriptionName =
-                ProjectSubscriptionName.of("iesi-01", subscriptionId);
+                ProjectSubscriptionName.of("", subscriptionId);
         Subscriber subscriber;
         try {
             // create a subscriber bound to the asynchronous message receiver

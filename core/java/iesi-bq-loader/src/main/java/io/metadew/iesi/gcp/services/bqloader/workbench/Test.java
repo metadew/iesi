@@ -1,4 +1,4 @@
-package io.metadew.iesi.gcp.services.bqloader.launch;
+package io.metadew.iesi.gcp.services.bqloader.workbench;
 
 import io.metadew.iesi.gcp.common.configuration.Configuration;
 

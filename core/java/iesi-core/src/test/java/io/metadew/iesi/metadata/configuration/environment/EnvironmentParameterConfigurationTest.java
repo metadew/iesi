@@ -19,7 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EnvironmentParameterConfigurationTest {
-    
+
     private EnvironmentParameter environmentParameter11;
     private ConnectivityMetadataRepository connectivityMetadataRepository;
     private EnvironmentParameter environmentParameter12;

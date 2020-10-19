@@ -28,7 +28,6 @@ class TemplateConfigurationTest {
     private Template template2;
     private UUID templateUuid2;
 
-
     @BeforeAll
     static void prepare() {
         Configuration.getInstance();

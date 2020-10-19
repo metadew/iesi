@@ -1,4 +1,5 @@
 #!/bin/bash
+calling_dir=$(pwd)
 current_dir=$(dirname "${BASH_SOURCE[0]}")
 lib_dir=$current_dir/../lib
 
@@ -11,4 +12,4 @@ done
 
 java -cp $classpath io.metadew.iesi.launch.MetadataLauncher "$@"
 
-cd $current_dir
+cd $calling_dir

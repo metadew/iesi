@@ -245,6 +245,8 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             if (expectedStatusCodes.contains(String.valueOf(httpResponse.getStatusLine().getStatusCode()))) {
                 getActionExecution().getActionControl().increaseSuccessCount();
             } else {
+                getActionExecution().getActionControl().logOutput("action.error", MessageFormat.format("Status code of response {0} is not member of expected status codes {1}",
+                        httpResponse.getStatusLine().getStatusCode(), expectedStatusCodes));
                 LOGGER.warn(MessageFormat.format("Status code of response {0} is not member of expected status codes {1}",
                         httpResponse.getStatusLine().getStatusCode(), expectedStatusCodes));
                 getActionExecution().getActionControl().increaseErrorCount();
@@ -262,8 +264,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (REDIRECT_STATUS_CODE.matcher(Integer.toString(httpResponse.getStatusLine().getStatusCode())).find()) {
             getActionExecution().getActionControl().increaseSuccessCount();
         } else {
-            LOGGER.warn((MessageFormat.format("Status code of response {0} is not member of success status codes (1XX, 2XX, 3XX).",
-                    httpResponse.getStatusLine().getStatusCode())));
+            getActionExecution().getActionControl().logOutput("action.error", MessageFormat.format("Status code of response {0} is not member of success status codes (1XX, 2XX, 3XX).",
+                    httpResponse.getStatusLine().getStatusCode()));
+            LOGGER.warn(MessageFormat.format("Status code of response {0} is not member of success status codes (1XX, 2XX, 3XX).",
+                    httpResponse.getStatusLine().getStatusCode()));
             getActionExecution().getActionControl().increaseErrorCount();
         }
     }

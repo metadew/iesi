@@ -76,7 +76,7 @@ public class RExecuteScript extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseSuccessCount();
             return true;
         } else {
-
+            getActionExecution().getActionControl().logOutput("action.error", "R script '" + script + "' resulted with return code " + rCommandResult.getStatusCode().map(Object::toString).orElse("unknown"));
             getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }

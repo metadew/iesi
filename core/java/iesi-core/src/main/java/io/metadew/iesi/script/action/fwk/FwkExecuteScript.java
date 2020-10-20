@@ -134,8 +134,10 @@ public class FwkExecuteScript extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseWarningCount();
         } else if (subScriptScriptExecution.getResult()
                 .equalsIgnoreCase(ScriptRunStatus.ERROR.value())) {
+            getActionExecution().getActionControl().logOutput("action.error", "script " + script.getName() + "-" + script.getVersion().getNumber() + " ended in " + subScriptScriptExecution.getResult());
             getActionExecution().getActionControl().increaseErrorCount();
         } else {
+            getActionExecution().getActionControl().logOutput("action.error", "script " + script.getName() + "-" + script.getVersion().getNumber() + " ended in " + subScriptScriptExecution.getResult());
             getActionExecution().getActionControl().increaseErrorCount();
         }
 

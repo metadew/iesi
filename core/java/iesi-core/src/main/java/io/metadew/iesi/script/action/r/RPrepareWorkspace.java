@@ -58,6 +58,7 @@ public class RPrepareWorkspace extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseSuccessCount();
             return true;
         } else {
+            getActionExecution().getActionControl().logOutput("action.error", "adding preparation script '" + script + "' resulted with return code " + rCommandResult.getStatusCode().map(Object::toString).orElse("unknown"));
             getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }

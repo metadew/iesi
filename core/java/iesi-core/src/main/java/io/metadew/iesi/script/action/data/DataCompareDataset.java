@@ -88,6 +88,8 @@ public class DataCompareDataset extends ActionTypeExecution {
             if (!leftFieldValue.equals(rightFieldValue)) {
                 this.getActionExecution().getActionControl().logError("field.mismatch", MessageFormat.format(
                         "{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue.map(DataType::toString).orElse("null"), transformation.getRightField(), rightFieldValue.map(DataType::toString).orElse("null")));
+                this.getActionExecution().getActionControl().logOutput("field.mismatch", MessageFormat.format(
+                        "{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue.map(DataType::toString).orElse("null"), transformation.getRightField(), rightFieldValue.map(DataType::toString).orElse("null")));
                 this.getActionExecution().getActionControl().increaseErrorCount();
                 errorsDetected++;
             } else {

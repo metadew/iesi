@@ -126,6 +126,8 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
         if (fileTransferResult.getReturnCode() == 0) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         } else {
+            getActionExecution().getActionControl().logOutput("action.error",
+                    "file transfer ended in return code " + fileTransferResult.getReturnCode());
             this.getActionExecution().getActionControl().increaseErrorCount();
         }
 

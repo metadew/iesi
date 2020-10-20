@@ -116,9 +116,11 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         boolean setRuntimeVariables = converSetRuntimeVariable(getSetRuntimeVariables().getValue());
         int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
         int waitInterval = convertWaitInterval(getWaitInterval().getValue());
+
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
+
         ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
 
@@ -165,7 +167,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         } else {
             this.getActionExecution().getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("out", "time-out");
+            this.getActionExecution().getActionControl().logOutput("action.error", "Query ping timed out");
             this.getActionExecution().getActionControl().logOutput("time", Long.toString(elapsedTime));
             return false;
         }

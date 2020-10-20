@@ -15,8 +15,8 @@ import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DatasetJsonComponent {
 
@@ -44,9 +44,9 @@ public class DatasetJsonComponent {
             DatasetKey datasetKey = DatasetConfiguration.getInstance().getByName(name)
                     .map(Metadata::getMetadataKey)
                     .orElse(new DatasetKey());
-            List<DatasetImplementation> datasetImplementations = new ArrayList<>();
+            Set<DatasetImplementation> datasetImplementations = new HashSet<>();
             for (JsonNode implementationNode : node.get(Field.IMPLEMENTATIONS_KEY.value())) {
-                List<DatasetImplementationLabel> datasetImplementationLabels = new ArrayList<>();
+                Set<DatasetImplementationLabel> datasetImplementationLabels = new HashSet<>();
                 DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
                 for (JsonNode labelNode : implementationNode.get(DatasetImplementationJsonComponent.Field.LABELS_KEY.value())) {
                     datasetImplementationLabels.add(DatasetImplementationLabel.builder()
@@ -58,7 +58,7 @@ public class DatasetJsonComponent {
 
                 String type = implementationNode.get(DatasetImplementationJsonComponent.Field.TYPE_KEY.value()).asText();
                 if (type.equalsIgnoreCase(InMemoryDatasetImplementationJsonComponent.Field.TYPE.value())) {
-                    List<InMemoryDatasetImplementationKeyValue> keyValues = new ArrayList<>();
+                    Set<InMemoryDatasetImplementationKeyValue> keyValues = new HashSet<>();
                     for (JsonNode keyValueNode : implementationNode.get(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
                         keyValues.add(InMemoryDatasetImplementationKeyValue.builder()
                                 .metadataKey(new InMemoryDatasetImplementationKeyValueKey())
@@ -112,7 +112,7 @@ public class DatasetJsonComponent {
                 if (datasetImplementation instanceof InMemoryDatasetImplementation) {
                     jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), InMemoryDatasetImplementationJsonComponent.Field.TYPE.value());
                     jsonGenerator.writeArrayFieldStart(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
-                    for (InMemoryDatasetImplementationKeyValue inMemoryDatasetImplementationKeyValue : ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues())  {
+                    for (InMemoryDatasetImplementationKeyValue inMemoryDatasetImplementationKeyValue : ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues()) {
                         jsonGenerator.writeStartObject();
                         jsonGenerator.writeStringField(InMemoryDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), inMemoryDatasetImplementationKeyValue.getKey());
                         jsonGenerator.writeStringField(InMemoryDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), inMemoryDatasetImplementationKeyValue.getValue());

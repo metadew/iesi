@@ -226,7 +226,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
         public Dataset build() {
             return new Dataset(datasetKey, name, datasetImplementationBuilders.values().stream()
                     .map(DatasetImplementationConfiguration.DatasetImplementationBuilder::build)
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toSet()));
         }
 
     }

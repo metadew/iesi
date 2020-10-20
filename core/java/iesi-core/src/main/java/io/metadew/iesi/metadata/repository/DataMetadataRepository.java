@@ -36,7 +36,7 @@ public class DataMetadataRepository extends MetadataRepository {
 
     public void save(Dataset dataset) {
         log.info(MessageFormat.format("Saving dataset {0} into data repository", dataset.getName()));
-        if (DatasetConfiguration.getInstance().exists(dataset.getMetadataKey())) {
+        if (!DatasetConfiguration.getInstance().exists(dataset.getMetadataKey())) {
             DatasetConfiguration.getInstance().insert(dataset);
         } else {
             log.info(MessageFormat.format("dataset {0} already exists in data repository. Updating to new definition", dataset.getName()));

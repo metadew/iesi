@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -18,9 +19,9 @@ public abstract class DatasetImplementation extends Metadata<DatasetImplementati
 
     private final DatasetKey datasetKey;
     private final String name;
-    private final List<DatasetImplementationLabel> datasetImplementationLabels;
+    private final Set<DatasetImplementationLabel> datasetImplementationLabels;
 
-    public DatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, List<DatasetImplementationLabel> datasetImplementationLabels) {
+    public DatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, Set<DatasetImplementationLabel> datasetImplementationLabels) {
         super(metadataKey);
         this.datasetKey = datasetKey;
         this.name = name;

@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -19,10 +20,10 @@ import java.util.List;
 public class Dataset extends Metadata<DatasetKey> {
 
     private final String name;
-    private final List<DatasetImplementation> datasetImplementations;
+    private final Set<DatasetImplementation> datasetImplementations;
 
     @Builder
-    public Dataset(DatasetKey metadataKey, String name, List<DatasetImplementation> datasetImplementations) {
+    public Dataset(DatasetKey metadataKey, String name, Set<DatasetImplementation> datasetImplementations) {
         super(metadataKey);
         this.name = name;
         this.datasetImplementations = datasetImplementations;

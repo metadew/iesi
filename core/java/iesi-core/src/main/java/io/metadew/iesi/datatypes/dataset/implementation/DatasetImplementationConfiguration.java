@@ -394,8 +394,8 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                     getDatasetImplementationKey(),
                     getDatasetKey(),
                     getName(),
-                    new ArrayList<>(getDatasetImplementationLabels().values()),
-                    new ArrayList<>(getKeyValues().values()));
+                    new HashSet<>(getDatasetImplementationLabels().values()),
+                    new HashSet<>(getKeyValues().values()));
         }
     }
 }

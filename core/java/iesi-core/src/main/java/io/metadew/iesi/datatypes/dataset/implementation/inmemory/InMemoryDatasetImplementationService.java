@@ -49,7 +49,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
         if (DatasetConfiguration.getInstance().getByName(name).isPresent()) {
             dataset = DatasetConfiguration.getInstance().getByName(name).get();
         } else {
-            dataset = new Dataset(new DatasetKey(), name, new ArrayList<>());
+            dataset = new Dataset(new DatasetKey(), name, new HashSet<>());
             DatasetConfiguration.getInstance().insert(dataset);
         }
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
@@ -59,8 +59,8 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
                 dataset.getName(),
                 labels.stream()
                         .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
-                        .collect(Collectors.toList()),
-                new ArrayList<>()
+                        .collect(Collectors.toSet()),
+                new HashSet<>()
         );
         DatasetImplementationConfiguration.getInstance().insert(inMemoryDatasetImplementation);
         return inMemoryDatasetImplementation;
@@ -68,7 +68,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public void clean(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
-        datasetImplementation.setKeyValues(new ArrayList<>());
+        datasetImplementation.setKeyValues(new HashSet<>());
         DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
     }
 

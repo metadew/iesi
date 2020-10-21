@@ -31,7 +31,7 @@ public class DatasetDto extends RepresentationModel<DatasetDto> {
                 name,
                 implementations.stream()
                         .map(datasetImplementationDto -> datasetImplementationDto.convertToEntity(uuid, name))
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toSet())
         );
     }
 
@@ -42,7 +42,7 @@ public class DatasetDto extends RepresentationModel<DatasetDto> {
                 name,
                 implementations.stream()
                         .map(datasetImplementationDto -> datasetImplementationDto.convertToNewEntity(datasetUuid, name))
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toSet())
         );
     }
 

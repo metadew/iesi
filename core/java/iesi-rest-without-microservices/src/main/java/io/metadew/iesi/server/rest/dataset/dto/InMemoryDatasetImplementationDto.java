@@ -32,10 +32,10 @@ public class InMemoryDatasetImplementationDto extends DatasetImplementationDto {
                 datasetName,
                 getLabels().stream()
                         .map(datasetImplementationLabelDto -> datasetImplementationLabelDto.convertToEntity(getUuid()))
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.toSet()),
                 keyValues.stream()
                         .map(keyValue -> keyValue.convertToEntity(getUuid()))
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toSet())
         );
     }
 
@@ -47,10 +47,10 @@ public class InMemoryDatasetImplementationDto extends DatasetImplementationDto {
                 datasetName,
                 getLabels().stream()
                         .map(datasetImplementationLabelDto -> datasetImplementationLabelDto.convertToNewEntity(datasetImplementationUuid))
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.toSet()),
                 keyValues.stream()
                         .map(keyValue -> keyValue.convertToNewEntity(datasetImplementationUuid))
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toSet())
         );
     }
 

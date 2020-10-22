@@ -46,9 +46,9 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
     private final static String delete = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
             " where COMP_ID = :componentId  AND COMP_VRS_NB = :componentVersionNb AND  ENV_NM = :environmentName AND COMP_ATT_NM = :componentAttributeName ;";
-    //    private final static String getByComponentAndEnvironment = "select * from "
-//            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
-//            " where COMP_ID = :componentId AND COMP_VRS_NB = :versionNumber AND  ENV_NM = :environmentName ;";
+    private final static String getByComponentAndEnvironment = "select * from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+            " where COMP_ID = :componentId AND COMP_VRS_NB = :versionNumber AND  ENV_NM = :environmentName ;";
     private final static String deleteByComponent = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
             " where COMP_ID = :componentId  AND COMP_VRS_NB = :versionNumber ;";
@@ -86,15 +86,11 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
                 .addValue("versionNb", componentAttributeKey.getComponentKey().getVersionNumber())
                 .addValue("componentAttributeName", componentAttributeKey.getComponentAttributeName())
                 .addValue("environmentName", componentAttributeKey.getEnvironmentKey().getName());
-        Optional<ComponentAttribute> componentAttribute = Optional.ofNullable(
+        return Optional.ofNullable(
                 DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
                         queryComponentAttribute,
                         sqlParameterSource,
                         new ComponentAttributeExtractor())));
-        if (!componentAttribute.isPresent()) {
-            return Optional.empty();
-        }
-        return componentAttribute;
     }
 
     @Override
@@ -139,16 +135,11 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("componentId", componentKey.getId())
                 .addValue("versionNumber", componentKey.getVersionNumber());
-        return
-                namedParameterJdbcTemplate.query(
+        return namedParameterJdbcTemplate.query(
                         getByComponent,
                         sqlParameterSource,
                         new ComponentAttributeExtractor());
     }
-
-    private final static String getByComponentAndEnvironment = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
-            " where COMP_ID = :componentId AND COMP_VRS_NB = :versionNumber AND  ENV_NM = :environmentName ;";
 
     public List<ComponentAttribute> getByComponentAndEnvironment(ComponentKey componentKey, EnvironmentKey environmentKey) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()

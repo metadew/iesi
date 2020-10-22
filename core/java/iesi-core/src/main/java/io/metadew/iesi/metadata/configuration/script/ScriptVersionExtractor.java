@@ -32,7 +32,6 @@ public class ScriptVersionExtractor implements ResultSetExtractor<List<ScriptVer
         return scriptVersionList;
     }
 
-
     private ScriptVersion mapRow(ResultSet rs) throws SQLException {
         ScriptVersionKey scriptVersionKey = ScriptVersionKey.builder()
                 .scriptKey(new ScriptKey(rs.getString("SCRIPT_ID"), rs.getLong("SCRIPT_VRS_NB")))

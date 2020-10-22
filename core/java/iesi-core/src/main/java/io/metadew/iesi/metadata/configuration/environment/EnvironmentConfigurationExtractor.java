@@ -29,7 +29,7 @@ public class EnvironmentConfigurationExtractor implements ResultSetExtractor<Lis
             environment = mapRow(resultSet);
             environments.add(environment);
         }
-        return new ArrayList<>(environments);
+        return environments;
     }
 
     private Environment mapRow(ResultSet rs) throws SQLException {

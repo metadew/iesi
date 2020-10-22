@@ -30,7 +30,7 @@ public class ComponentAttributeExtractor implements ResultSetExtractor<List<Comp
             componentAttribute = mapRow(rs);
             componentAttributes.add(componentAttribute);
         }
-        return new ArrayList<>(componentAttributes);
+        return componentAttributes;
     }
 
     private ComponentAttribute mapRow(ResultSet rs) throws SQLException {

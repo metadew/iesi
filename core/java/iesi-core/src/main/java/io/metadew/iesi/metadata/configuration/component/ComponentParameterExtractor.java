@@ -31,7 +31,7 @@ public class ComponentParameterExtractor implements ResultSetExtractor<List<Comp
             componentParameter = mapRow(rs);
             componentParameters.add(componentParameter);
         }
-        return new ArrayList<>(componentParameters);
+        return componentParameters;
     }
 
     private ComponentParameter mapRow(ResultSet rs) throws SQLException {

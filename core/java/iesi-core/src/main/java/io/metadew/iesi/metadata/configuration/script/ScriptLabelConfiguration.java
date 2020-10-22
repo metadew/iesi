@@ -1,5 +1,8 @@
 package io.metadew.iesi.metadata.configuration.script;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -10,11 +13,12 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,53 +34,58 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         return INSTANCE;
     }
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ScriptLabelConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
     }
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private static final String queryScriptLabel = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
+            " where ID = :id  ; ";
+    private static final String getAll = "select * from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
+            "  ; ";
+    private static final String getByScript = "select * from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
+            " WHERE SCRIPT_ID = :id and SCRIPT_VRS_NB = :version ;";
+    private static final String deleteByScript = "DELETE FROM   "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
+            " where SCRIPT_ID = :id AND SCRIPT_VRS_NB = :version ; ";
+    private static final String insert = "INSERT INTO  "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
+            " (ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE) VALUES (:id, :scriptId, :version, :name, :value); ";
+    private static final String deleteStatement = "DELETE FROM  "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
+            " WHERE ID = :id ; ";
+    private static final String exists = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
+            " where ID = :id ; ";
+
     @Override
     public Optional<ScriptLabel> get(ScriptLabelKey scriptLabelKey) {
-        try {
-            String queryScriptLabel = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                    + " where ID = " + SQLTools.GetStringForSQL(scriptLabelKey.getId()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptLabel, "reader");
-            if (cachedRowSet.size() == 0) {
-                return Optional.empty();
-            } else if (cachedRowSet.size() > 1) {
-                LOGGER.info(MessageFormat.format("Found multiple implementations for {0}. Returning first implementation", scriptLabelKey.toString()));
-            }
-            cachedRowSet.next();
-            return Optional.of(new ScriptLabel(scriptLabelKey,
-                    new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
-                    cachedRowSet.getString("NAME"),
-                    cachedRowSet.getString("VALUE")));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("name", scriptLabelKey.getId());
+        return Optional.ofNullable(
+                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
+                        queryScriptLabel,
+                        sqlParameterSource,
+                        new ScriptLabelExtractor())));
     }
 
     @Override
     public List<ScriptLabel> getAll() {
-        List<ScriptLabel> scriptLabels = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptLabels");
-        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-        try {
-            while (cachedRowSet.next()) {
-                scriptLabels.add(new ScriptLabel(
-                        new ScriptLabelKey(cachedRowSet.getString("ID")),
-                        new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
-                        cachedRowSet.getString("NAME"),
-                        cachedRowSet.getString("VALUE")));
-
-            }
-            cachedRowSet.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return scriptLabels;
+        return namedParameterJdbcTemplate.query(getAll, new ScriptLabelExtractor());
     }
 
     @Override
@@ -85,8 +94,12 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         if (!exists(scriptLabelKey)) {
             throw new MetadataDoesNotExistException(scriptLabelKey);
         }
-        String deleteStatement = deleteStatement(scriptLabelKey);
-        getMetadataRepository().executeUpdate(deleteStatement);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptLabelKey.getId());
+
+        namedParameterJdbcTemplate.update(
+                deleteStatement,
+                sqlParameterSource);
     }
 
     private String deleteStatement(ScriptLabelKey scriptLabelKey) {
@@ -100,50 +113,39 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         if (exists(scriptLabel)) {
             throw new MetadataAlreadyExistsException(scriptLabel);
         }
-        getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
-                " (ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE) VALUES (" +
-                SQLTools.GetStringForSQL(scriptLabel.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getScriptKey().getScriptId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getScriptKey().getScriptVersion()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getName()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getValue()) + ");");
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptLabel.getMetadataKey().getId())
+                .addValue("scriptId", scriptLabel.getScriptKey().getScriptId())
+                .addValue("version", scriptLabel.getScriptKey().getScriptVersion())
+                .addValue("name", scriptLabel.getName())
+                .addValue("value", scriptLabel.getValue());
 
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     public boolean exists(ScriptLabelKey scriptLabelKey) {
-        String queryScriptParameter = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                + " where ID = " + SQLTools.GetStringForSQL(scriptLabelKey.getId()) + ";";
-        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
-        return cachedRowSet.size() >= 1;
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptLabelKey.getId());
+        List<ScriptLabel> scriptLabels = namedParameterJdbcTemplate.query(exists, sqlParameterSource, new ScriptLabelExtractor());
+        return scriptLabels.size() >= 1;
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
-        String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
-                " WHERE " +
-                " SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) + " AND " +
-                " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
-        getMetadataRepository().executeUpdate(deleteStatement);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptKey.getScriptId())
+                .addValue("version", scriptKey.getScriptVersion());
+
+        namedParameterJdbcTemplate.update(
+                deleteByScript,
+                sqlParameterSource);
     }
 
     public List<ScriptLabel> getByScript(ScriptKey scriptKey) {
-        List<ScriptLabel> scriptLabels = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
-        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-        try {
-            while (cachedRowSet.next()) {
-                scriptLabels.add(new ScriptLabel(
-                        new ScriptLabelKey(cachedRowSet.getString("ID")),
-                        new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
-                        cachedRowSet.getString("NAME"),
-                        cachedRowSet.getString("VALUE")));
-
-            }
-            cachedRowSet.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return scriptLabels;
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptKey.getScriptId())
+                .addValue("version", scriptKey.getScriptVersion());
+        return namedParameterJdbcTemplate.query(getByScript, sqlParameterSource, new ScriptLabelExtractor());
     }
 }

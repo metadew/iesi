@@ -30,7 +30,7 @@ public class EnvironmentParameterExtractor implements ResultSetExtractor<List<En
             environmentParameter = mapRow(rs);
             environmentList.add(environmentParameter);
         }
-        return new ArrayList<>(environmentList);
+        return environmentList;
     }
 
     private EnvironmentParameter mapRow(ResultSet rs) throws SQLException {

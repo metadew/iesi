@@ -67,7 +67,6 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     private static final String deleteStatement = "DELETE FROM  "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
             " WHERE SCRIPT_ID = :id AND SCRIPT_VRS_NB = :version ; ";
-
     private static final String exists = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from  "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
             " where SCRIPT_ID = :id and SCRIPT_VRS_NB = :version ; ";

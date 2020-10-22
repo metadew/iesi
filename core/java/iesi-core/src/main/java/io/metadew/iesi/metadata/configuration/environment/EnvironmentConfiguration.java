@@ -18,7 +18,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,42 +52,35 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
 
     private static final String queryAll = "select ENV_NM, ENV_DSC from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " order by ENV_NM ASC";
     private static final String queryEnvironment = "select ENV_NM, ENV_DSC from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " where ENV_NM = :name";
-    private static final String queryEnvironmentParameters = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName() + " where ENV_NM = :name";
     private static final String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " WHERE ENV_NM = :name";
     private static final String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " (ENV_NM, ENV_DSC) VALUES (:name, :description );";
-//    private static final String deleteAllStatement = ""
+    private static final String deleteAllEnvironments = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + ";";
+    private static final String deleteAllEnvironmentParameters = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName() + ";";
+    private static final String exists = "select * from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " where ENV_NM = :name";
+
 
     @Override
     public Optional<Environment> get(EnvironmentKey environmentKey) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", environmentKey.getName());
-        List<Environment> environments = namedParameterJdbcTemplate.query(
-                queryEnvironment,
-                sqlParameterSource,
-                new EnvironmentConfigurationExtractor());
-        if (environments.size() == 0) {
-            return Optional.empty();
-        }
-        SqlParameterSource sqlParameterSourceParameters = new MapSqlParameterSource()
-                .addValue("name", environmentKey.getName());
-
-
-        Optional<EnvironmentParameter> environmentParameter = Optional.ofNullable(
-                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
-                        queryEnvironmentParameters,
-                        sqlParameterSourceParameters,
-                        new EnvironmentParameterExtractor())));
-
-        return Optional.ofNullable(
+        Optional<Environment> environment = Optional.ofNullable(
                 DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
                         queryEnvironment,
                         sqlParameterSource,
                         new EnvironmentConfigurationExtractor())));
+        if (!environment.isPresent()) {
+            return Optional.empty();
+        }
+        List<EnvironmentParameter> environmentParameters = EnvironmentParameterConfiguration.getInstance().getByEnvironment(environmentKey);
+        Environment environment1 = new Environment(environmentKey);
+        environment1.setDescription(environment.get().getDescription());
+        environment1.setParameters(environmentParameters);
+        return Optional.of(environment1);
     }
 
     @Override
     public List<Environment> getAll() {
-        return namedParameterJdbcTemplate.query(queryAll,new EnvironmentConfigurationExtractor());
+        return namedParameterJdbcTemplate.query(queryAll, new EnvironmentConfigurationExtractor());
     }
 
     @Override
@@ -111,12 +103,12 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         if (exists(environment.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(environment.getMetadataKey());
         }
-//        for (EnvironmentParameter environmentParameter : environment.getParameters()) {
-//            EnvironmentParameterConfiguration.getInstance().insert(environment.getParameters());
-//        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", environment.getName())
                 .addValue("description", environment.getDescription());
+        for (EnvironmentParameter environmentParameter : environment.getParameters()) {
+            EnvironmentParameterConfiguration.getInstance().insert(environmentParameter);
+        }
         namedParameterJdbcTemplate.update(
                 insertStatement,
                 sqlParameterSource);
@@ -124,27 +116,26 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
 
     public boolean exists(EnvironmentKey environmentKey) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", environmentKey);
-        EnvironmentParameterConfiguration.getInstance().deleteByEnvironment(environmentKey);
+                .addValue("name", environmentKey.getName());
         List<Environment> environments = namedParameterJdbcTemplate.query(
-                queryEnvironment,
+                exists,
                 sqlParameterSource,
                 new EnvironmentConfigurationExtractor());
-        return environments.size() >= 1;
+        if (environments.size() == 0) {
+            return false;
+        } else if (environments.size() > 1) {
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", environmentKey.toString()));
+        }
+        return true;
     }
 
     public void deleteAll() {
-        List<String> query = getDeleteAllStatement();
-        getMetadataRepository().executeBatch(query);
-    }
-
-    private List<String> getDeleteAllStatement() {
-        List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Environments") + ";");
-        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("EnvironmentParameters") + ";");
-        return queries;
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        namedParameterJdbcTemplate.update(
+                deleteAllEnvironments,
+                sqlParameterSource);
+        namedParameterJdbcTemplate.update(
+                deleteAllEnvironmentParameters,
+                sqlParameterSource);
     }
 }
-
-
-

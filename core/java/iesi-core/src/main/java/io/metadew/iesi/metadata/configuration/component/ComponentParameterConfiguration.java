@@ -1,6 +1,8 @@
 package io.metadew.iesi.metadata.configuration.component;
 
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -10,13 +12,12 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,130 +33,128 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
         return INSTANCE;
     }
 
-    // Constructors
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ComponentParameterConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
     }
 
-    public void init(MetadataRepository metadataRepository){
+    public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private final static String queryComponentParameter = "select COMP_ID,COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
+            " where COMP_ID = :id and COMP_VRS_NB = :versionNumber and COMP_PAR_NM = :parameterName  ";
+    private final static String queryAll = "select COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() + ";";
+    private final static String delete = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
+            " where COMP_ID = :id and COMP_VRS_NB = :versionNumber and COMP_PAR_NM = :parameterName  ";
+    private final static String insert = "INSERT INTO "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName()
+            + " (COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL) VALUES (:id, :versionNumber,:parameterName,:value) ";
+    private final static String getByComponent = "select COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
+            " where COMP_ID = :id and COMP_VRS_NB = :versionNumber ";
+    private final static String deleteByComponent = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
+            " where COMP_ID = :id AND COMP_VRS_NB = :versionNumber ";
+    private final static String deleteByComponentId = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
+            " where COMP_ID = :id ";
+
     @Override
     public Optional<ComponentParameter> get(ComponentParameterKey componentParameterKey) {
-        String queryComponentParameter = "select COMP_ID, COMP_PAR_NM, COMP_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ComponentParameters")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getId()) +
-                " and COMP_PAR_NM = " + SQLTools.GetStringForSQL(componentParameterKey.getParameterName()) +
-                " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) + ";";
-        CachedRowSet crsComponentParameter = getMetadataRepository().executeQuery(queryComponentParameter, "reader");
-        try {
-            if (crsComponentParameter.size()==0){
-                return Optional.empty();
-            }
-            crsComponentParameter.next();
-            ComponentParameter componentParameter = new ComponentParameter(componentParameterKey,
-                    crsComponentParameter.getString("COMP_PAR_VAL"));
-            crsComponentParameter.close();
-            return Optional.of(componentParameter);
-        } catch (SQLException e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            throw new RuntimeException();
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", componentParameterKey.getComponentKey().getId())
+                .addValue("versionNumber", componentParameterKey.getComponentKey().getVersionNumber())
+                .addValue("parameterName", componentParameterKey.getParameterName());
+
+        Optional<ComponentParameter> connections = Optional.ofNullable(
+                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
+                        queryComponentParameter,
+                        sqlParameterSource,
+                        new ComponentParameterExtractor())));
+        return connections;
     }
 
     @Override
     public List<ComponentParameter> getAll() {
-        try {
-            List<ComponentParameter> componentParameters = new ArrayList<>();
-            String query = "select COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
-                    + getMetadataRepository().getTableNameByLabel("ComponentParameters") + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                ComponentParameterKey componentParameterKey = new ComponentParameterKey(
-                        cachedRowSet.getString("COMP_ID"),
-                        cachedRowSet.getLong("COMP_VRS_NB"),
-                        cachedRowSet.getString("COMP_PAR_NM"));
-                componentParameters.add(new ComponentParameter(
-                        componentParameterKey,
-                        cachedRowSet.getString("COMP_PAR_VAL")));
-            }
-            return componentParameters;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return namedParameterJdbcTemplate.query(queryAll, new ComponentParameterExtractor());
     }
 
     @Override
-    public void delete(ComponentParameterKey metadataKey) {
-        LOGGER.trace(MessageFormat.format("Deleting ComponentParameter {0}.", metadataKey.toString()));
-        if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException(metadataKey);
+    public void delete(ComponentParameterKey componentParameterKey) {
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", componentParameterKey.getComponentKey().getId())
+                .addValue("versionNumber", componentParameterKey.getComponentKey().getVersionNumber())
+                .addValue("parameterName", componentParameterKey.getParameterName());
+        LOGGER.trace(MessageFormat.format("Deleting ComponentParameter {0}.", componentParameterKey.toString()));
+        if (!exists(componentParameterKey)) {
+            throw new MetadataDoesNotExistException(componentParameterKey);
         }
-        String deleteStatement = deleteStatement(metadataKey);
-        getMetadataRepository().executeUpdate(deleteStatement);
-    }
 
-    private String deleteStatement(ComponentParameterKey componentParameterKey){
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getId()) +
-                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) +
-                " AND COMP_PAR_NM = " + SQLTools.GetStringForSQL(componentParameterKey.getParameterName()) + ";";
+        namedParameterJdbcTemplate.update(
+                delete,
+                sqlParameterSource);
     }
 
     @Override
-    public void insert(ComponentParameter metadata) {
-        LOGGER.trace(MessageFormat.format("Inserting ComponentParameter {0}.", metadata.getMetadataKey().toString()));
-        if (exists(metadata.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
+    public void insert(ComponentParameter componentParameter) {
+        LOGGER.trace(MessageFormat.format("Inserting ComponentParameter {0}.", componentParameter.getMetadataKey().toString()));
+        if (exists(componentParameter.getMetadataKey())) {
+            throw new MetadataAlreadyExistsException(componentParameter.getMetadataKey());
         }
-        String insertQuery = getInsertStatement(metadata);
-        getMetadataRepository().executeUpdate(insertQuery);
-    }
-
-    // Insert
-    public String getInsertStatement(ComponentParameter componentParameter) {
-        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
-                " (COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getComponentKey().getId()) + "," +
-                SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getComponentKey().getVersionNumber()) + "," +
-                SQLTools.GetStringForSQL(componentParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.GetStringForSQL(componentParameter.getValue()) + ");";
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", componentParameter.getMetadataKey().getComponentKey().getId())
+                .addValue("versionNumber", componentParameter.getMetadataKey().getComponentKey().getVersionNumber())
+                .addValue("parameterName", componentParameter.getMetadataKey().getParameterName())
+                .addValue("value", componentParameter.getValue());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     public List<ComponentParameter> getByComponent(ComponentKey componentKey) {
-        try {
-            List<ComponentParameter> componentParameters = new ArrayList<>();
-            String query = "select COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
-                    + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
-                    " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
-                    " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                componentParameters.add(new ComponentParameter(
-                        new ComponentParameterKey(componentKey, cachedRowSet.getString("COMP_PAR_NM")),
-                        cachedRowSet.getString("COMP_PAR_VAL")));
-            }
-            return componentParameters;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", componentKey.getId())
+                .addValue("versionNumber", componentKey.getVersionNumber());
+        return namedParameterJdbcTemplate.query(getByComponent, sqlParameterSource, new ComponentParameterExtractor());
     }
 
     public void deleteByComponent(ComponentKey componentKey) {
-        String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
-                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
-        getMetadataRepository().executeUpdate(deleteStatement);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", componentKey.getId())
+                .addValue("versionNumber", componentKey.getVersionNumber());
+        namedParameterJdbcTemplate.update(
+                deleteByComponent,
+                sqlParameterSource);
+
     }
 
     public void deleteByComponentId(String componentId) {
-        String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
-        getMetadataRepository().executeUpdate(deleteStatement);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", componentId);
+        namedParameterJdbcTemplate.update(
+                deleteByComponentId,
+                sqlParameterSource);
     }
 
+    private final static String deleteAll = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() + " ;";
+
     public void deleteAll() {
-        getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") + ";");
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        namedParameterJdbcTemplate.update(
+                deleteAll,
+                sqlParameterSource);
     }
 
 }

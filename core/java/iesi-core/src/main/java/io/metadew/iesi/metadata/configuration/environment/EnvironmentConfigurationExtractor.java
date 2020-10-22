@@ -18,6 +18,7 @@ public class EnvironmentConfigurationExtractor implements ResultSetExtractor<Lis
     public List<Environment> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
         Map<String, Environment> environmentMap = new HashMap<>();
         Environment environment;
+        List<Environment> environments = new ArrayList<>();
         while (resultSet.next()) {
             String name = resultSet.getString("ENV_NM");
             environment = environmentMap.get(name);
@@ -25,8 +26,10 @@ public class EnvironmentConfigurationExtractor implements ResultSetExtractor<Lis
                 environment = mapRow(resultSet);
                 environmentMap.put(name, environment);
             }
+            environment = mapRow(resultSet);
+            environments.add(environment);
         }
-        return new ArrayList<>(environmentMap.values());
+        return new ArrayList<>(environments);
     }
 
     private Environment mapRow(ResultSet rs) throws SQLException {
@@ -36,7 +39,7 @@ public class EnvironmentConfigurationExtractor implements ResultSetExtractor<Lis
                         .name(rs.getString("ENV_NM"))
                         .build())
                 .description(rs.getString("ENV_DSC"))
-                .parameters(EnvironmentParameterConfiguration.getInstance().getByEnvironment(environmentKey))
+//                .parameters(null)
                 .build();
     }
 }

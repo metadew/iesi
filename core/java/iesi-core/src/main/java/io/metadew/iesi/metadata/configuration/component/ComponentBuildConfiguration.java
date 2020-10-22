@@ -36,7 +36,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
     private ComponentBuildConfiguration() {
     }
 
-    public void init(MetadataRepository metadataRepository){
+    public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
@@ -78,7 +78,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    private String deleteStatement(ComponentBuildKey componentBuildKey){
+    private String deleteStatement(ComponentBuildKey componentBuildKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersionBuilds") +
                 " WHERE COMP_ID = " +
                 SQLTools.GetStringForSQL(componentBuildKey.getComponentId()) +
@@ -127,7 +127,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
                 + SQLTools.GetStringForSQL(componentBuildName) + ";";
         CachedRowSet crsComponentBuild = getMetadataRepository().executeQuery(queryComponentBuild, "reader");
         try {
-            if (crsComponentBuild.size()==0){
+            if (crsComponentBuild.size() == 0) {
                 return Optional.empty();
             }
             crsComponentBuild.next();

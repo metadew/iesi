@@ -8,14 +8,18 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class EnvironmentParameterExtractor implements ResultSetExtractor<List<EnvironmentParameter>>{
+public class EnvironmentParameterExtractor implements ResultSetExtractor<List<EnvironmentParameter>> {
 
     @Override
     public List<EnvironmentParameter> extractData(ResultSet rs) throws SQLException, DataAccessException {
         Map<String, EnvironmentParameter> environmentParameterHashMap = new HashMap<>();
         EnvironmentParameter environmentParameter;
+        List<EnvironmentParameter> environmentList = new ArrayList<>();
         while (rs.next()) {
             String name = rs.getString("ENV_NM");
             environmentParameter = environmentParameterHashMap.get(name);
@@ -23,9 +27,10 @@ public class EnvironmentParameterExtractor implements ResultSetExtractor<List<En
                 environmentParameter = mapRow(rs);
                 environmentParameterHashMap.put(name, environmentParameter);
             }
-
+            environmentParameter = mapRow(rs);
+            environmentList.add(environmentParameter);
         }
-        return new ArrayList<>(environmentParameterHashMap.values());
+        return new ArrayList<>(environmentList);
     }
 
     private EnvironmentParameter mapRow(ResultSet rs) throws SQLException {

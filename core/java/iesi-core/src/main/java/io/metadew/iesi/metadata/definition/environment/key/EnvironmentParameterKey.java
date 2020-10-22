@@ -8,12 +8,13 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class EnvironmentParameterKey extends MetadataKey {
-
-    private final EnvironmentKey environmentKey;
-    private final String parameterName;
     @Builder
     public EnvironmentParameterKey(EnvironmentKey environmentKey, String parameterName) {
         this.environmentKey = environmentKey;
         this.parameterName = parameterName;
     }
+
+    private final EnvironmentKey environmentKey;
+    private final String parameterName;
+
 }

@@ -45,7 +45,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
         ActionConfiguration.getInstance().init(metadataRepository);
-        ScriptVersionConfiguration.getInstance().init(metadataRepository);
+//        ScriptVersionConfiguration.getInstance().init(metadataRepository);
         ScriptLabelConfiguration.getInstance().init(metadataRepository);
         ScriptParameterConfiguration.getInstance().init(metadataRepository);
     }

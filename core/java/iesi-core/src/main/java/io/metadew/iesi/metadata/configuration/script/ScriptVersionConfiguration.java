@@ -1,6 +1,8 @@
 package io.metadew.iesi.metadata.configuration.script;
 
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -10,13 +12,12 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,60 +33,64 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         return INSTANCE;
     }
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ScriptVersionConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
     }
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private static final String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from  "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " where SCRIPT_ID = :id and SCRIPT_VRS_NB = :version ; ";
+    private static final String getAll = "select * from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " order by SCRIPT_ID ; ";
+    private static final String getByScriptId = "select * from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " WHERE SCRIPT_ID = :id ;";
+    private static final String getLatestVersionNumber = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from   "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " where SCRIPT_ID = :id  ; ";
+    private static final String insert = "INSERT INTO  "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (:id, :version, :description); ";
+    private static final String deleteStatement = "DELETE FROM  "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " WHERE SCRIPT_ID = :id AND SCRIPT_VRS_NB = :version ; ";
+
+    private static final String exists = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from  "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " where SCRIPT_ID = :id and SCRIPT_VRS_NB = :version ; ";
+
     @Override
     public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) {
-        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
-        CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
-        try {
-            if (crsScriptVersion.size() == 0) {
-                return Optional.empty();
-            } else if (crsScriptVersion.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for script version {0}. Returning first implementation", scriptVersionKey.toString()));
-            }
-            crsScriptVersion.next();
-            ScriptVersion scriptVersion = new ScriptVersion(scriptVersionKey, crsScriptVersion.getString("SCRIPT_VRS_DSC"));
-            crsScriptVersion.close();
-            return Optional.of(scriptVersion);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            return Optional.empty();
-        }
-
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptVersionKey.getScriptKey().getScriptId())
+                .addValue("version", scriptVersionKey.getScriptKey().getScriptVersion());
+        List<ScriptVersion> scriptVersions = namedParameterJdbcTemplate.query(
+                queryScriptVersion,
+                sqlParameterSource,
+                new ScriptVersionExtractor());
+        return Optional.ofNullable(
+                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
+                        queryScriptVersion,
+                        sqlParameterSource,
+                        new ScriptVersionExtractor())));
     }
 
     @Override
     public List<ScriptVersion> getAll() {
-        List<ScriptVersion> scriptVersions = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " order by SCRIPT_ID";
-        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
-        try {
-            while (crs.next()) {
-                ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
-                        new ScriptKey(crs.getString("SCRIPT_ID"),
-                        crs.getLong("SCRIPT_VRS_NB")));
-                scriptVersions.add(new ScriptVersion(
-                        scriptVersionKey,
-                        crs.getString("SCRIPT_VRS_DSC")));
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-        }
-        return scriptVersions;
+        return namedParameterJdbcTemplate.query(getAll, new ScriptVersionExtractor());
     }
 
     @Override
@@ -94,52 +99,32 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         if (!exists(scriptVersionKey)) {
             throw new MetadataDoesNotExistException(scriptVersionKey);
         }
-        String deleteStatement = deleteStatement(scriptVersionKey);
-        getMetadataRepository().executeUpdate(deleteStatement);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptVersionKey.getScriptKey().getScriptId())
+                .addValue("version", scriptVersionKey.getScriptKey().getScriptVersion());
+        namedParameterJdbcTemplate.update(
+                deleteStatement,
+                sqlParameterSource);
     }
 
     public List<ScriptVersion> getByScriptId(String scriptId) {
-        List<ScriptVersion> scriptVersions = new ArrayList<>();
-        String queryVersionScript = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId);
-        CachedRowSet crsVersionScript = getMetadataRepository().executeQuery(queryVersionScript, "reader");
-        try {
-            while (crsVersionScript.next()) {
-                scriptVersions.add(new ScriptVersion(
-                        crsVersionScript.getString("SCRIPT_ID"),
-                        crsVersionScript.getLong("SCRIPT_VRS_NB"),
-                        crsVersionScript.getString("SCRIPT_VRS_DSC")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return scriptVersions;
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptId);
+        return namedParameterJdbcTemplate.query(
+                getByScriptId,
+                sqlParameterSource,
+                new ScriptVersionExtractor());
     }
 
     public Optional<ScriptVersion> getLatestVersionNumber(String scriptId) {
         LOGGER.trace(MessageFormat.format("Fetching latest version for script {0}.", scriptId));
-        String queryScriptVersion = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from "
-                + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
-                " where script_id = " + SQLTools.GetStringForSQL(scriptId) + ";";
-        CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
-        try {
-            if (crsScriptVersion.size() == 0) {
-                crsScriptVersion.close();
-                return Optional.empty();
-            } else {
-                crsScriptVersion.next();
-                long latestScriptVersion = crsScriptVersion.getLong("MAX_VRS_NB");
-                crsScriptVersion.close();
-                return get(new ScriptVersionKey(new ScriptKey(scriptId, latestScriptVersion)));
-            }
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            LOGGER.info("exception=" + e);
-            LOGGER.info("exception.stacktrace=" + StackTrace);
-
-            return Optional.empty();
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptId);
+        Long scriptVersions = namedParameterJdbcTemplate.query(
+                getLatestVersionNumber,
+                sqlParameterSource,
+                new ScriptVersionExtractorTotal());
+        return get(new ScriptVersionKey(new ScriptKey(scriptId, scriptVersions)));
     }
 
     @Override
@@ -148,29 +133,24 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         if (exists(scriptVersion)) {
             throw new MetadataAlreadyExistsException(scriptVersion);
         }
-        getMetadataRepository().executeUpdate(getInsertStatement(scriptVersion));
-    }
-
-    private String deleteStatement(ScriptVersionKey scriptVersionKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptVersion.getMetadataKey().getScriptKey().getScriptId())
+                .addValue("version", scriptVersion.getMetadataKey().getScriptKey().getScriptVersion())
+                .addValue("description", scriptVersion.getDescription());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     public boolean exists(ScriptVersionKey scriptVersionKey) {
-        String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
-        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-        return cachedRowSet.size() >= 1;
-    }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptVersionKey.getScriptKey().getScriptId())
+                .addValue("version", scriptVersionKey.getScriptKey().getScriptVersion());
 
-    public String getInsertStatement(ScriptVersion scriptVersion) {
-        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
-                " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) + ", " +
-                SQLTools.GetStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptVersion()) + ", " +
-                SQLTools.GetStringForSQL(scriptVersion.getDescription()) + ");";
+        List<ScriptVersion> scriptVersions = namedParameterJdbcTemplate.query(
+                exists,
+                sqlParameterSource,
+                new ScriptVersionExtractor());
+        return scriptVersions.size() >= 1;
     }
-
 }

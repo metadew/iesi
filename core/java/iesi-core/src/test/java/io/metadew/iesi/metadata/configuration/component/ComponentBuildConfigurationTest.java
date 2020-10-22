@@ -26,16 +26,17 @@
 //    @Before
 //    public void setup() {
 //        this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+//        designMetadataRepository.createAllTables();
 //        String componentId = "1";
 //        long buildNb = 1;
 //        componentBuild = new ComponentBuild(new ComponentBuildKey("1", 1,
 //                "build name"),
 //                "build of component");
-//        try{
-//            ComponentBuildConfiguration.getInstance().insert(componentBuild);
-//        }catch(MetadataAlreadyExistsException ignored){
-//            // if component already is in database do nothing
-//        }
+////        try{
+////            ComponentBuildConfiguration.getInstance().insert(componentBuild);
+////        }catch(MetadataAlreadyExistsException ignored){
+////            // if component already is in database do nothing
+////        }
 //    }
 //
 //    @After

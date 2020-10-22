@@ -22,14 +22,19 @@ public class Environment extends Metadata<EnvironmentKey> {
         this.description = description;
         this.parameters = parameters;
     }
+
     @Builder
-    public Environment(EnvironmentKey environmentKey,String description, List<EnvironmentParameter> parameters) {
+    public Environment(EnvironmentKey environmentKey, String description, List<EnvironmentParameter> parameters) {
         super(environmentKey);
         this.description = description;
         this.parameters = parameters;
     }
 
-	//Getters and Setters
+    public Environment(EnvironmentKey environmentKey) {
+        super(environmentKey);
+    }
+
+    //Getters and Setters
     public String getName() {
         return getMetadataKey().getName();
     }
@@ -50,8 +55,8 @@ public class Environment extends Metadata<EnvironmentKey> {
         this.parameters = parameters;
     }
 
-	public boolean isEmpty() {
-		return (getName()== null || getName().isEmpty()) ;
-	}
+    public boolean isEmpty() {
+        return (getName() == null || getName().isEmpty());
+    }
 
 }

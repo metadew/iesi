@@ -3,6 +3,8 @@ package io.metadew.iesi.metadata.configuration.connection;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.AfterEach;
@@ -59,6 +61,14 @@ class ConnectionParameterConfigurationTest {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
         assertTrue(ConnectionParameterConfiguration.getInstance().exists(connectionParameter11.getMetadataKey()));
     }
+    @Test
+    void getByConnection() {
+        EnvironmentKey environmentKey = new EnvironmentKey("h");
+        ConnectionKey connectionKey = new ConnectionKey("hello",environmentKey);
+        ConnectionParameterConfiguration.getInstance().getByConnection(connectionKey);
+        System.out.println(ConnectionParameterConfiguration.getInstance().getByConnection(connectionKey));
+//        assertTrue(ConnectionParameterConfiguration.getInstance().exists(connectionParameter11.getMetadataKey()));
+    }
 
     @Test
     void connectionParameterInsertTest() {
@@ -94,7 +104,7 @@ class ConnectionParameterConfigurationTest {
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
         ConnectionParameterConfiguration.getInstance().insert(connectionParameter12);
         assertEquals(2, ConnectionParameterConfiguration.getInstance().getAll().size());
-
+        System.out.println( ConnectionParameterConfiguration.getInstance().getAll());
         ConnectionParameterConfiguration.getInstance().delete(connectionParameter11.getMetadataKey());
 
         assertEquals(1, ConnectionParameterConfiguration.getInstance().getAll().size());

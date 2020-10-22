@@ -30,6 +30,7 @@ class ComponentParameterConfigurationTest {
     @BeforeEach
     void setup() {
         this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
+        designMetadataRepository.createAllTables();
         componentParameter11 = new ComponentParameterBuilder("1", 1, "parameter name 1")
                 .value("value")
                 .build();
@@ -42,7 +43,6 @@ class ComponentParameterConfigurationTest {
         componentParameter3 = new ComponentParameterBuilder("2", 1, "parameter name 1")
                 .value("value")
                 .build();
-        designMetadataRepository.createAllTables();
     }
 
     @AfterEach

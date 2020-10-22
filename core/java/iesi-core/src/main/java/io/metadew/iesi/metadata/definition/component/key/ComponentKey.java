@@ -9,11 +9,16 @@ import lombok.RequiredArgsConstructor;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
-@Builder
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class ComponentKey extends MetadataKey {
 
     private final String id;
+    @Builder
+    public ComponentKey(String id, long versionNumber) {
+        this.id = id;
+        this.versionNumber = versionNumber;
+    }
+
     private final long versionNumber;
 
 }

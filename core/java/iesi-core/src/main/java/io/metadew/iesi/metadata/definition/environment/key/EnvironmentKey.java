@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class EnvironmentKey extends MetadataKey {
+
     private final String name;
 
     @Builder

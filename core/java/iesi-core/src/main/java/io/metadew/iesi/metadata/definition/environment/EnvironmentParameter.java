@@ -1,6 +1,5 @@
 package io.metadew.iesi.metadata.definition.environment;
 
-
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
@@ -22,8 +21,6 @@ public class EnvironmentParameter extends Metadata<EnvironmentParameterKey> {
         super(new EnvironmentParameterKey(new EnvironmentKey(environmentName), environmentParameterName));
         this.value = value;
     }
-
-
 
     //Getters and Setters
     public String getName() {

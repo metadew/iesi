@@ -1,6 +1,8 @@
 package io.metadew.iesi.metadata.configuration.component;
 
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -11,11 +13,12 @@ import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +35,44 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
         return INSTANCE;
     }
 
+    private final static String queryComponentAttribute = "select COMP_ID, COMP_VRS_NB, COMP_ATT_NM, ENV_NM, COMP_ATT_VAL from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+            " where COMP_ID = :componentId AND COMP_VRS_NB = :versionNb AND  ENV_NM = :environmentName AND COMP_ATT_NM = :componentAttributeName ;";
+    private final static String insert = "INSERT INTO "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+            " (COMP_ID, COMP_VRS_NB, ENV_NM, COMP_ATT_NM, COMP_ATT_VAL) VALUES (:id,:versionNumber,:environmentName,:attributeName, :value)  ;";
+    private final static String queryAll = "select * FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() + ";";
+    private final static String delete = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+            " where COMP_ID = :componentId  AND COMP_VRS_NB = :componentVersionNb AND  ENV_NM = :environmentName AND COMP_ATT_NM = :componentAttributeName ;";
+    //    private final static String getByComponentAndEnvironment = "select * from "
+//            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+//            " where COMP_ID = :componentId AND COMP_VRS_NB = :versionNumber AND  ENV_NM = :environmentName ;";
+    private final static String deleteByComponent = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+            " where COMP_ID = :componentId  AND COMP_VRS_NB = :versionNumber ;";
+    private final static String deleteByComponentId = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+            " where COMP_ID = :componentId ;";
+    private final static String deleteByComponentAndEnvironment = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+            " where COMP_ID = :componentId AND COMP_VRS_NB =:versionNumber AND ENV_NM = :environmentName ;";
+    private final static String deleteAll = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() + " ;";
+    private final static String getByComponent = "select * FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() + " WHERE COMP_ID = :componentId AND COMP_VRS_NB = :versionNumber";
+
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ComponentAttributeConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
     }
 
     public void init(MetadataRepository metadataRepository) {
@@ -41,155 +81,119 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
 
     @Override
     public Optional<ComponentAttribute> get(ComponentAttributeKey componentAttributeKey) {
-        String queryComponentAttribute = "select COMP_ID, COMP_ATT_NM, ENV_NM, COMP_ATT_VAL from " + getMetadataRepository().getTableNameByLabel("ComponentAttributes")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentKey().getId()) +
-                " and COMP_ATT_NM = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentAttributeName()) +
-                " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentKey().getVersionNumber()) +
-                " and ENV_NM = " + SQLTools.GetStringForSQL(componentAttributeKey.getEnvironmentKey().getName()) + ";";
-        CachedRowSet crsComponentAttribute = getMetadataRepository().executeQuery(queryComponentAttribute, "reader");
-        try {
-            if (crsComponentAttribute.size() == 0) {
-                return Optional.empty();
-            }
-            crsComponentAttribute.next();
-            ComponentAttribute componentAttribute = new ComponentAttribute(componentAttributeKey,
-                    crsComponentAttribute.getString("COMP_ATT_VAL"));
-            crsComponentAttribute.close();
-            return Optional.of(componentAttribute);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("componentId", componentAttributeKey.getComponentKey().getId())
+                .addValue("versionNb", componentAttributeKey.getComponentKey().getVersionNumber())
+                .addValue("componentAttributeName", componentAttributeKey.getComponentAttributeName())
+                .addValue("environmentName", componentAttributeKey.getEnvironmentKey().getName());
+        Optional<ComponentAttribute> componentAttribute = Optional.ofNullable(
+                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
+                        queryComponentAttribute,
+                        sqlParameterSource,
+                        new ComponentAttributeExtractor())));
+        if (!componentAttribute.isPresent()) {
+            return Optional.empty();
         }
+        return componentAttribute;
     }
 
     @Override
     public List<ComponentAttribute> getAll() {
-        try {
-            List<ComponentAttribute> componentBuilds = new ArrayList<>();
-            String query = "select * from "
-                    + getMetadataRepository().getTableNameByLabel("ComponentAttributes") + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                ComponentAttributeKey componentAttributeKey = new ComponentAttributeKey(
-                        new ComponentKey(cachedRowSet.getString("COMP_ID"), cachedRowSet.getLong("COMP_VRS_NB")),
-                        new EnvironmentKey(cachedRowSet.getString("ENV_NM")),
-                        cachedRowSet.getString("COMP_ATT_NM"));
-                componentBuilds.add(new ComponentAttribute(
-                        componentAttributeKey,
-                        cachedRowSet.getString("COMP_ATT_VAL")));
-            }
-            return componentBuilds;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return namedParameterJdbcTemplate.query(queryAll, new ComponentAttributeExtractor());
     }
 
     @Override
-    public void delete(ComponentAttributeKey metadataKey) {
-        LOGGER.trace(MessageFormat.format("Deleting ComponentAttribute {0}.", metadataKey.toString()));
-        if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException(metadataKey);
+    public void delete(ComponentAttributeKey componentAttributeKey) {
+        LOGGER.trace(MessageFormat.format("Deleting ComponentAttribute {0}.", componentAttributeKey.toString()));
+        if (!exists(componentAttributeKey)) {
+            throw new MetadataDoesNotExistException(componentAttributeKey);
         }
-        String deleteStatement = deleteStatement(metadataKey);
-        getMetadataRepository().executeUpdate(deleteStatement);
-    }
-
-    private String deleteStatement(ComponentAttributeKey componentAttributeKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentKey().getId()) +
-                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentKey().getVersionNumber()) +
-                " AND ENV_NM = " + SQLTools.GetStringForSQL(componentAttributeKey.getEnvironmentKey().getName()) +
-                " AND COMP_ATT_NM = " + SQLTools.GetStringForSQL(componentAttributeKey.getComponentAttributeName()) + ";";
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("componentId", componentAttributeKey.getComponentKey().getId())
+                .addValue("componentVersionNb", componentAttributeKey.getComponentKey().getVersionNumber())
+                .addValue("environmentName", componentAttributeKey.getEnvironmentKey().getName())
+                .addValue("componentAttributeName", componentAttributeKey.getComponentAttributeName());
+        namedParameterJdbcTemplate.update(
+                delete,
+                sqlParameterSource);
     }
 
     @Override
-    public void insert(ComponentAttribute metadata) {
-        LOGGER.trace(MessageFormat.format("Inserting ComponentAttribute {0}.", metadata.getMetadataKey().toString()));
-        if (exists(metadata.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
+    public void insert(ComponentAttribute componentAttribute) {
+        LOGGER.trace(MessageFormat.format("Inserting ComponentAttribute {0}.", componentAttribute.getMetadataKey().toString()));
+        if (exists(componentAttribute.getMetadataKey())) {
+            throw new MetadataAlreadyExistsException(componentAttribute.getMetadataKey());
         }
-        String insertQuery = getInsertStatement(metadata);
-        getMetadataRepository().executeUpdate(insertQuery);
-    }
-
-    // Insert
-    public String getInsertStatement(ComponentAttribute componentAttribute) {
-        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                " (COMP_ID, COMP_VRS_NB, ENV_NM, COMP_ATT_NM, COMP_ATT_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(componentAttribute.getMetadataKey().getComponentKey().getId()) + "," +
-                SQLTools.GetStringForSQL(componentAttribute.getMetadataKey().getComponentKey().getVersionNumber()) + "," +
-                SQLTools.GetStringForSQL(componentAttribute.getMetadataKey().getEnvironmentKey().getName()) + "," +
-                SQLTools.GetStringForSQL(componentAttribute.getMetadataKey().getComponentAttributeName()) + "," +
-                SQLTools.GetStringForSQL(componentAttribute.getValue()) + ");";
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", componentAttribute.getMetadataKey().getComponentKey().getId())
+                .addValue("versionNumber", componentAttribute.getMetadataKey().getComponentKey().getVersionNumber())
+                .addValue("environmentName", componentAttribute.getMetadataKey().getEnvironmentKey().getName())
+                .addValue("attributeName", componentAttribute.getMetadataKey().getComponentAttributeName())
+                .addValue("value", componentAttribute.getValue());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     public List<ComponentAttribute> getByComponent(ComponentKey componentKey) {
-        try {
-            List<ComponentAttribute> componentBuilds = new ArrayList<>();
-            String query = "select * from " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                    " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
-                    " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                ComponentAttributeKey componentAttributeKey = new ComponentAttributeKey(
-                        new ComponentKey(cachedRowSet.getString("COMP_ID"), cachedRowSet.getLong("COMP_VRS_NB")),
-                        new EnvironmentKey(cachedRowSet.getString("ENV_NM")),
-                        cachedRowSet.getString("COMP_ATT_NM"));
-                componentBuilds.add(new ComponentAttribute(
-                        componentAttributeKey,
-                        cachedRowSet.getString("COMP_ATT_VAL")));
-            }
-            return componentBuilds;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("componentId", componentKey.getId())
+                .addValue("versionNumber", componentKey.getVersionNumber());
+        return
+                namedParameterJdbcTemplate.query(
+                        getByComponent,
+                        sqlParameterSource,
+                        new ComponentAttributeExtractor());
     }
 
+    private final static String getByComponentAndEnvironment = "select * from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
+            " where COMP_ID = :componentId AND COMP_VRS_NB = :versionNumber AND  ENV_NM = :environmentName ;";
+
     public List<ComponentAttribute> getByComponentAndEnvironment(ComponentKey componentKey, EnvironmentKey environmentKey) {
-        try {
-            List<ComponentAttribute> componentBuilds = new ArrayList<>();
-            String query = "select * from " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                    " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
-                    " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) +
-                    " AND ENV_NM = " + SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                ComponentAttributeKey componentAttributeKey = new ComponentAttributeKey(
-                        new ComponentKey(cachedRowSet.getString("COMP_ID"), cachedRowSet.getLong("COMP_VRS_NB")),
-                        new EnvironmentKey(cachedRowSet.getString("ENV_NM")),
-                        cachedRowSet.getString("COMP_ATT_NM"));
-                componentBuilds.add(new ComponentAttribute(
-                        componentAttributeKey,
-                        cachedRowSet.getString("COMP_ATT_VAL")));
-            }
-            return componentBuilds;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("componentId", componentKey.getId())
+                .addValue("versionNumber", componentKey.getVersionNumber())
+                .addValue("environmentName", environmentKey.getName());
+        return namedParameterJdbcTemplate.query(
+                getByComponentAndEnvironment,
+                sqlParameterSource,
+                new ComponentAttributeExtractor());
     }
 
     public void deleteByComponent(ComponentKey componentKey) {
-        String query = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
-                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
-        getMetadataRepository().executeUpdate(query);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("componentId", componentKey.getId())
+                .addValue("versionNumber", componentKey.getVersionNumber());
+        namedParameterJdbcTemplate.update(
+                deleteByComponent,
+                sqlParameterSource);
     }
 
     public void deleteByComponentId(String componentId) {
-        String query = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
-        getMetadataRepository().executeUpdate(query);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("componentId", componentId);
+        namedParameterJdbcTemplate.update(
+                deleteByComponentId,
+                sqlParameterSource);
     }
 
     public void deleteByComponentAndEnvironment(ComponentKey componentKey, EnvironmentKey environmentKey) {
-        String query = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) +
-                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) +
-                " AND ENV_NM = " + SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
-        getMetadataRepository().executeUpdate(query);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("componentId", componentKey.getId())
+                .addValue("versionNumber", componentKey.getVersionNumber())
+                .addValue("environmentName", environmentKey.getName());
+
+        namedParameterJdbcTemplate.update(
+                deleteByComponentAndEnvironment,
+                sqlParameterSource);
     }
 
     public void deleteAll() {
-        getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentAttributes") + ";");
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        namedParameterJdbcTemplate.update(
+                deleteAll,
+                sqlParameterSource);
     }
 
 }

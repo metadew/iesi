@@ -93,7 +93,7 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
     }
 
     @Override
-    public List<SecurityGroup> getAll() throws SQLException {
+    public List<SecurityGroup> getAll() {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(fetchAllQuery, "reader");
             return new SecurityGroupListResultSetExtractor().extractData(cachedRowSet);

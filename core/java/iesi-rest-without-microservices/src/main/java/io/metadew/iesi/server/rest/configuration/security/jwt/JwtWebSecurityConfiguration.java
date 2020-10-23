@@ -1,13 +1,11 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
-import io.metadew.iesi.server.rest.configuration.security.IESIRole;
-import io.metadew.iesi.server.rest.user.CustomUserDetailsManager;
+import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -26,10 +24,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @Profile("security")
 @Log4j2
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private CustomUserDetailsManager customUserDetailsManager;
+    private IesiUserDetailsManager iesiUserDetailsManager;
     private PasswordEncoder passwordEncoder;
     private JWTAuthenticationFilter jwtAuthenticationFilter;
 
@@ -39,8 +36,8 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void setCustomUserDetailsManager(CustomUserDetailsManager customUserDetailsManager) {
-        this.customUserDetailsManager = customUserDetailsManager;
+    public void setCustomUserDetailsManager(IesiUserDetailsManager iesiUserDetailsManager) {
+        this.iesiUserDetailsManager = iesiUserDetailsManager;
     }
 
     @Autowired
@@ -51,7 +48,7 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(customUserDetailsManager)
+                .userDetailsService(iesiUserDetailsManager)
                 .passwordEncoder(passwordEncoder);
     }
 
@@ -76,50 +73,10 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .mvcMatchers("/actuator/health").permitAll()
-//                // Action Types
-//                .mvcMatchers(HttpMethod.GET, "/action-types/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-//                // Connection Types
-//                .mvcMatchers(HttpMethod.GET, "/connection-types/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-//                // Components
-//                .mvcMatchers(HttpMethod.GET, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-//                .mvcMatchers(HttpMethod.POST, "/components").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
-//                .mvcMatchers(HttpMethod.PUT, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
-//                .mvcMatchers(HttpMethod.DELETE, "/components").hasAnyRole(IESIRole.ADMIN.label)
-//                .mvcMatchers(HttpMethod.DELETE, "/components/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
-//                // Scripts
-//                .mvcMatchers(HttpMethod.GET, "/scripts/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-//                .mvcMatchers(HttpMethod.POST, "/scripts").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
-//                .mvcMatchers(HttpMethod.PUT, "/scripts/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
-//                //.mvcMatchers(HttpMethod.DELETE, "/scripts").hasAnyRole(IESIRole.ADMIN.label)
-//                .mvcMatchers(HttpMethod.DELETE, "/scripts/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TEST_ENGINEER.label)
-//                // Connections
-//                .mvcMatchers(HttpMethod.GET, "/connections/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-//                .mvcMatchers(HttpMethod.POST, "/connections").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
-//                .mvcMatchers(HttpMethod.PUT, "/connections/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
-//                .mvcMatchers(HttpMethod.DELETE, "/connections").hasAnyRole(IESIRole.ADMIN.label)
-//                .mvcMatchers(HttpMethod.DELETE, "/connections/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
-//                // Environments
-//                .mvcMatchers(HttpMethod.GET, "/environments/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-//                .mvcMatchers(HttpMethod.POST, "/environments").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
-//                .mvcMatchers(HttpMethod.PUT, "/environments/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
-//                .mvcMatchers(HttpMethod.DELETE, "/environments").hasAnyRole(IESIRole.ADMIN.label)
-//                .mvcMatchers(HttpMethod.DELETE, "/environments/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label)
-//                // Execution Requests
-//                .mvcMatchers(HttpMethod.GET, "/execution-requests/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-//                .mvcMatchers(HttpMethod.POST, "/execution-requests").hasAnyRole(IESIRole.ADMIN.label, IESIRole.EXECUTOR.label, IESIRole.TEST_ENGINEER.label)
-//                .mvcMatchers(HttpMethod.PUT, "/execution-requests/**").hasAnyRole(IESIRole.ADMIN.label)
-//                .mvcMatchers(HttpMethod.DELETE, "/execution-requests/**").hasAnyRole(IESIRole.ADMIN.label)
-//                // Script Executions
-//                .mvcMatchers(HttpMethod.GET, "/script-executions/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-//                //.mvcMatchers(HttpMethod.POST, "/script-executions").hasAnyRole(IESIRole.ADMIN.label, IESIRole.EXECUTOR.label, IESIRole.TEST_ENGINEER.label)
-//                //.mvcMatchers(HttpMethod.PUT, "/script-executions/**").hasAnyRole(IESIRole.ADMIN.label)
-//                //.mvcMatchers(HttpMethod.DELETE, "/script-executions/**").hasAnyRole(IESIRole.ADMIN.label)
-//                // Users
-//                .mvcMatchers(HttpMethod.POST, "/users/login").permitAll()
-//                .mvcMatchers(HttpMethod.POST, "/users/").hasAnyRole(IESIRole.ADMIN.label)
-//                .mvcMatchers(HttpMethod.GET, "/users/**").hasAnyRole(IESIRole.ADMIN.label, IESIRole.TECHNICAL_ENGINEER.label, IESIRole.TEST_ENGINEER.label, IESIRole.EXECUTOR.label, IESIRole.VIEWER.label)
-
-//                .anyRequest().hasAnyRole(IESIRole.ADMIN.label)
+                .mvcMatchers("/users/**").permitAll()
+                .mvcMatchers("/users").permitAll()
+                .mvcMatchers("/teams/**").permitAll()
+                .mvcMatchers("/teams").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);

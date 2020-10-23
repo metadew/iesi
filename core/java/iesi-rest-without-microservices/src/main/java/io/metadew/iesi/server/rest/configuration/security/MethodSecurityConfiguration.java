@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @Log4j2
 // https://www.baeldung.com/spring-security-create-new-custom-security-expression
 public class MethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {

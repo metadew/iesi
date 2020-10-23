@@ -1,11 +1,10 @@
-package io.metadew.iesi.server.rest.user;
+package io.metadew.iesi.server.rest.configuration.security;
 
 import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.user.Privilege;
 import io.metadew.iesi.metadata.definition.user.Role;
 import io.metadew.iesi.metadata.definition.user.User;
-import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,25 +20,17 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 
 @Component
 @Profile("security")
 @DependsOn("metadataRepositoryConfiguration")
-public class CustomUserDetailsManager implements UserDetailsManager {
+public class IesiUserDetailsManager implements UserDetailsManager {
 
     private TeamConfiguration teamConfiguration;
 
-    //@Autowired
-    //public void setGroupService(GroupService groupService) {
-
-    //    this.groupService = groupService;
-    //}
-
     //TODO: move to Spring, extend JDBCUserDetailsManager. Override getXSql() methods to adhere to custom data model
     private UserService userService;
-    // private GroupService groupService;
 
     @Autowired
     public void setUserService(UserService userService) {
@@ -53,7 +43,7 @@ public class CustomUserDetailsManager implements UserDetailsManager {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+    public IesiUserDetails loadUserByUsername(String name) {
         Set<IESIGrantedAuthority> iesiGrantedAuthorities = new HashSet<>();
         User user = userService
                 .get(name)
@@ -68,22 +58,17 @@ public class CustomUserDetailsManager implements UserDetailsManager {
             }
 
         }
-        return new CustomUserDetails(user, iesiGrantedAuthorities);
+        return new IesiUserDetails(user, iesiGrantedAuthorities);
     }
 
     @Override
     public void createUser(UserDetails user) {
         throw new UnsupportedOperationException("A user cannot be created in this way");
-//        userService.addUser(convert(user));
-//        for (GrantedAuthority grantedAuthority : user.getAuthorities()) {
-//            userService.addRole(user.getUsername(), grantedAuthority.getAuthority());
-//        }
     }
 
     @Override
     public void updateUser(UserDetails user) {
         throw new UnsupportedOperationException("A user cannot be created in this way");
-        //userService.update(convert(user));
     }
 
     @Override
@@ -122,8 +107,7 @@ public class CustomUserDetailsManager implements UserDetailsManager {
                 createNewAuthentication(currentUser, newPassword));
     }
 
-    private Authentication createNewAuthentication(Authentication currentAuth,
-                                                   String newPassword) {
+    private Authentication createNewAuthentication(Authentication currentAuth, String newPassword) {
         UserDetails user = loadUserByUsername(currentAuth.getName());
 
         UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(
@@ -138,64 +122,4 @@ public class CustomUserDetailsManager implements UserDetailsManager {
         return userService.exists(username);
     }
 
-//    @Override
-//    public List<String> findAllGroups() {
-//        return groupService.getAll().stream()
-//                .map(Group::getGroupName)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    public List<String> findUsersInGroup(String groupName) {
-//        return groupService.getUsers(groupName).stream()
-//                .map(User::getUsername)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    public void createGroup(String groupName, List<GrantedAuthority> authorities) {
-//        groupService.addGroup(new Group(new GroupKey(UUID.randomUUID()), groupName));
-//        authorities.forEach(
-//                grantedAuthority -> groupService.addAuthority(groupName, grantedAuthority.getAuthority())
-//        );
-//    }
-//
-//    @Override
-//    public void deleteGroup(String groupName) {
-//        groupService.delete(groupName);
-//    }
-//
-//    @Override
-//    public void renameGroup(String oldName, String newName) {
-//        Group group = groupService.get(oldName).orElseThrow(() -> new RuntimeException("Could not find group " + oldName));
-//        group.setGroupName(newName);
-//        groupService.update(group);
-//    }
-//
-//    @Override
-//    public void addUserToGroup(String username, String group) {
-//        groupService.addUser(group, username);
-//    }
-//
-//    @Override
-//    public void removeUserFromGroup(String username, String groupName) {
-//        groupService.removeUser(groupName, username);
-//    }
-//
-//    @Override
-//    public List<GrantedAuthority> findGroupAuthorities(String groupName) {
-//        return groupService.getAuthorities(groupName).stream()
-//                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    public void addGroupAuthority(String groupName, GrantedAuthority authority) {
-//        groupService.addAuthority(groupName, authority.getAuthority());
-//    }
-//
-//    @Override
-//    public void removeGroupAuthority(String groupName, GrantedAuthority authority) {
-//        groupService.removeAuthority(groupName, authority.getAuthority());
-//    }
 }

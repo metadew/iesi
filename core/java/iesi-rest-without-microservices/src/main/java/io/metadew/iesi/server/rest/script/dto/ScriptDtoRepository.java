@@ -13,7 +13,7 @@ import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.expansions.ScriptExecutionDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
-import io.metadew.iesi.server.rest.user.IESIGrantedAuthority;
+import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;

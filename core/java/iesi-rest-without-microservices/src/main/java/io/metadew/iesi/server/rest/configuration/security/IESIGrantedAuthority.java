@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.user;
+package io.metadew.iesi.server.rest.configuration.security;
 
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.user.Privilege;

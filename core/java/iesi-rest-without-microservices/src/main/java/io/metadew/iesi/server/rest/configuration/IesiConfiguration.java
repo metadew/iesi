@@ -15,6 +15,10 @@ import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfigur
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
+import io.metadew.iesi.metadata.service.user.RoleService;
+import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.springframework.context.annotation.Bean;
@@ -100,6 +104,24 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public UserService userService() {
         return UserService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public TeamService teamService() {
+        return TeamService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public RoleService roleService() {
+        return RoleService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public SecurityGroupService securityGroupService() {
+        return SecurityGroupService.getInstance();
     }
 
     @Bean

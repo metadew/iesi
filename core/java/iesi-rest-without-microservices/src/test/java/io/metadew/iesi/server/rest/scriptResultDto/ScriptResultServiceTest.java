@@ -34,7 +34,7 @@ public class ScriptResultServiceTest {
 
     @BeforeAll
     static void initialize() {
-        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+        //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
@@ -44,7 +44,7 @@ public class ScriptResultServiceTest {
 
     @AfterAll
     static void teardown() {
-        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
+        //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
     }
 
     @Test

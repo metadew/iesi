@@ -1,22 +1,26 @@
 package io.metadew.iesi.server.rest.user;
 
+import io.metadew.iesi.metadata.definition.user.User;
+import io.metadew.iesi.metadata.definition.user.UserKey;
+import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 
 @RestController
@@ -29,14 +33,16 @@ public class UserController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final CustomUserDetailsManager userDetailsManager;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final UserDtoService userDtoService;
 
-    public UserController(AuthenticationManager authenticationManager, JwtService jwtService, CustomUserDetailsManager userDetailsManager, PasswordEncoder passwordEncoder) {
+    public UserController(AuthenticationManager authenticationManager, JwtService jwtService, PasswordEncoder passwordEncoder, UserService userService, UserDtoService userDtoService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        this.userDetailsManager = userDetailsManager;
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
+        this.userDtoService = userDtoService;
     }
 
     @PostMapping("/login")
@@ -54,34 +60,38 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity create(@RequestBody UserPostDto userPostDto) {
-        if (userDetailsManager.userExists(userPostDto.getUsername())) {
+    //@PreAuthorize("hasPrivilege('USERS_WRITE')")
+    public ResponseEntity<?> create(@RequestBody UserPostDto userPostDto) {
+        if (userService.exists(userPostDto.getUsername())) {
             return ResponseEntity.badRequest().body("username is already taken");
         }
-        User user = new User(userPostDto.getUsername(),
+        User user = new User(
+                new UserKey(UUID.randomUUID()),
+                userPostDto.getUsername(),
                 passwordEncoder.encode(userPostDto.getPassword()),
-                userPostDto.getAuthorities().stream()
-                        .map(authorityDto -> new SimpleGrantedAuthority(authorityDto.getAuthority()))
-                        .collect(Collectors.toList()));
-        userDetailsManager.createUser(user);
-        return ResponseEntity.noContent().build();
+                true,
+                false,
+                false,
+                false,
+                new HashSet<>());
+        userService.addUser(user);
+        Optional<UserDto> userDto = userDtoService.get(user.getMetadataKey().getUuid());
+        if (userDto.isPresent()) {
+            return ResponseEntity.ok(userDto.get());
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<UserDto> fetch(@PathVariable String username) {
-        if (!userDetailsManager.userExists(username)) {
-            return ResponseEntity.notFound().build();
-        }
-        UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
-        UserDto user = new UserDto(userDetails.getUsername(),
-                userDetails.isEnabled(),
-                !userDetails.isAccountNonExpired(),
-                !userDetails.isCredentialsNonExpired(),
-                !userDetails.isAccountNonLocked(),
-                userDetails.getAuthorities().stream()
-                        .map(authority -> new AuthorityDto(authority.getAuthority()))
-                        .collect(Collectors.toList()));
-        return ResponseEntity.ok(user);
+    @GetMapping("/{uuid}")
+    public ResponseEntity<UserDto> fetch(@PathVariable UUID uuid) {
+        return ResponseEntity
+                .of(userDtoService.get(uuid));
+    }
+
+    @GetMapping("")
+    public Set<UserDto> fetchAll() {
+        return userDtoService.getAll();
     }
 
 }

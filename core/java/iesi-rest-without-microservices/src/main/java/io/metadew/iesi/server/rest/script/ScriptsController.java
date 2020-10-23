@@ -16,6 +16,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -52,6 +53,7 @@ public class ScriptsController {
     }
 
     @GetMapping("")
+    @PreAuthorize("hasPrivilege('SCRIPTS_READ')")
     public PagedModel<ScriptDto> getAll(Pageable pageable,
                                         @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
                                         @RequestParam(required = false, name = "version") String version,
@@ -83,6 +85,7 @@ public class ScriptsController {
     }
 
     @GetMapping("/{name}")
+    @PreAuthorize("hasPrivilege('SCRIPTS_READ')")
     public PagedModel<ScriptDto> getByName(Pageable pageable,
                                            @PathVariable String name,
                                            @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
@@ -96,6 +99,7 @@ public class ScriptsController {
     }
 
     @GetMapping("/{name}/{version}")
+    @PreAuthorize("hasPrivilege('SCRIPTS_READ')")
     public ScriptDto get(@PathVariable String name,
                          @PathVariable Long version,
                          @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException {
@@ -105,6 +109,7 @@ public class ScriptsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasPrivilege('SCRIPTS_WRITE')")
     public ScriptDto post(@Valid @RequestBody ScriptPostDto scriptPostDto) throws MetadataAlreadyExistsException {
         scriptService.createScript(scriptPostDto);
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
@@ -112,6 +117,7 @@ public class ScriptsController {
 
 
     @PutMapping("")
+    @PreAuthorize("hasPrivilege('SCRIPTS_WRITE')")
     public HalMultipleEmbeddedResource<ScriptPostDto> putAll(@Valid @RequestBody List<ScriptPostDto> scriptDtos) throws MetadataDoesNotExistException {
         scriptService.updateScripts(scriptDtos);
         HalMultipleEmbeddedResource<ScriptPostDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
@@ -126,6 +132,7 @@ public class ScriptsController {
     }
 
     @PutMapping("/{name}/{version}")
+    @PreAuthorize("hasPrivilege('SCRIPTS_WRITE')")
     public ScriptDto put(@PathVariable String name,
                          @PathVariable long version,
                          @RequestBody ScriptPostDto scriptPostDto) throws MetadataDoesNotExistException {
@@ -136,12 +143,14 @@ public class ScriptsController {
     }
 
     @DeleteMapping("/{name}")
+    @PreAuthorize("hasPrivilege('SCRIPTS_DELETE')")
     public ResponseEntity<?> deleteByName(@PathVariable String name) {
         scriptService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}/{version}")
+    @PreAuthorize("hasPrivilege('SCRIPTS_DELETE')")
     public ResponseEntity<?> delete(@PathVariable String name, @PathVariable long version) throws MetadataDoesNotExistException {
         scriptService.deleteByNameAndVersion(name, version);
         return ResponseEntity.status(HttpStatus.OK).build();

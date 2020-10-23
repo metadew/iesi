@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionJsonComponent;
@@ -60,10 +61,10 @@ public class ScriptJsonComponent {
             if (node.get(SecurityGroupJsonComponent.Field.SECURITY_GROUP_NAME.value()) != null) {
                 securityGroupName = node.get(SecurityGroupJsonComponent.Field.SECURITY_GROUP_NAME.value()).asText();
             } else {
-                securityGroupName = "DEFAULT";
+                securityGroupName = "PUBLIC";
             }
             SecurityGroupKey securityGroupKey = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
-                    .map(securityGroup -> securityGroup.getMetadataKey())
+                    .map(Metadata::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("could not find Security Group " + securityGroupName));
             ScriptVersion scriptVersion;
 
@@ -95,20 +96,20 @@ public class ScriptJsonComponent {
             //script actions
             List<Action> scriptActions = new ArrayList<>();
             for (JsonNode scriptActionNode : node.get(Field.ACTIONS_KEY.value())) {
-                String action_id = IdentifierTools.getActionIdentifier(scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText());
+                String actionId = IdentifierTools.getActionIdentifier(scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText());
 
                 // action parameters
                 List<ActionParameter> actionParameters = new ArrayList<>();
                 for (JsonNode scriptActionParNode : scriptActionNode.get(ActionJsonComponent.Field.PARAMETERS_KEY.value())) {
                     actionParameters.add(new ActionParameter(
-                            new ActionParameterKey(new ActionKey(scriptKey, action_id),
+                            new ActionParameterKey(new ActionKey(scriptKey, actionId),
                                     scriptActionParNode.get(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()
                             ),
                             scriptActionParNode.get(ActionParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value()).asText()
                     ));
                 }
 
-                scriptActions.add(new Action(new ActionKey(scriptKey, action_id),
+                scriptActions.add(new Action(new ActionKey(scriptKey, actionId),
                         scriptActionNode.get(ActionJsonComponent.Field.NUMBER_KEY.value()).asLong(),
                         scriptActionNode.get(ActionJsonComponent.Field.TYPE_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText(),

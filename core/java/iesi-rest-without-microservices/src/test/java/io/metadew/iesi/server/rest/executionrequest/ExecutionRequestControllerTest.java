@@ -4,7 +4,7 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.user.IESIGrantedAuthority;
+import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;

@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.repository.*;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Log4j2
 public class MetadataRepositoryConfiguration {
@@ -17,6 +19,7 @@ public class MetadataRepositoryConfiguration {
     private static final String repositoryTableKey = "repository";
 
     private List<MetadataRepositoryDefinition> metadataRepositoryDefinitions;
+    @Getter
     private List<MetadataRepository> metadataRepositories;
 
     public synchronized static MetadataRepositoryConfiguration getInstance() {

@@ -1,19 +1,24 @@
-package io.metadew.iesi.server.rest.user;
+package io.metadew.iesi.server.rest.configuration.security;
 
 import io.metadew.iesi.metadata.definition.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.UUID;
 
-public class CustomUserDetails implements UserDetails {
+public class IesiUserDetails implements UserDetails {
 
-    private User user;
-    private Collection<? extends GrantedAuthority> grantedAuthorities;
+    private final User user;
+    private final Collection<? extends IESIGrantedAuthority> grantedAuthorities;
 
-    public CustomUserDetails(User user, Collection<? extends GrantedAuthority> grantedAuthorities) {
+    public IesiUserDetails(User user, Collection<? extends IESIGrantedAuthority> grantedAuthorities) {
         this.user = user;
         this.grantedAuthorities = grantedAuthorities;
+    }
+
+    public UUID getId() {
+        return user.getMetadataKey().getUuid();
     }
 
     @Override

@@ -156,9 +156,10 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
         String deleteStatement = MessageFormat.format(deleteSingleQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteStatement);
-        String deleteRolesStatement = MessageFormat.format(deleteSecurityGroupTeamsByTeamIdQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
-        getMetadataRepository().executeUpdate(deleteRolesStatement);
+        String deleteSecurityGroupMembershipsStatement = MessageFormat.format(deleteSecurityGroupTeamsByTeamIdQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
+        getMetadataRepository().executeUpdate(deleteSecurityGroupMembershipsStatement);
         // TODO delete roles
+        // TODO: take care of role memberships
     }
 
     public void delete(String username) {
@@ -212,9 +213,14 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
             getMetadataRepository().executeUpdate(insertSecurityGroupStatement);
         }
 
-        for (Role role : metadata.getRoles()) {
+        Set<Role> oldRoles = new HashSet<>(RoleConfiguration.getInstance().getByTeamId(metadata.getMetadataKey()));
+        oldRoles.removeAll(metadata.getRoles());
+        for (Role role : oldRoles) {
             RoleConfiguration.getInstance().delete(role.getMetadataKey());
-            RoleConfiguration.getInstance().insert(role);
+        }
+
+        for (Role role : metadata.getRoles()) {
+            RoleConfiguration.getInstance().update(role);
         }
     }
 

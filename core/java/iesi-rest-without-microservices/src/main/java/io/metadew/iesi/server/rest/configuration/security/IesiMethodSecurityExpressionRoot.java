@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
 import io.metadew.iesi.metadata.definition.SecuredObject;
-import io.metadew.iesi.server.rest.user.IESIGrantedAuthority;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;

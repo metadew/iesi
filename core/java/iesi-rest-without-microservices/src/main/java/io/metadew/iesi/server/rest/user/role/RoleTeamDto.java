@@ -1,18 +1,17 @@
-package io.metadew.iesi.server.rest.user;
+package io.metadew.iesi.server.rest.user.role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
-public class AuthorityDto {
+public class RoleTeamDto {
 
-    private String authority;
-
-
+    private final UUID id;
+    private final String name;
 
 }

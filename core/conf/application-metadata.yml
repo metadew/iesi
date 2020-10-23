@@ -35,6 +35,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+
       - name: CXN_CONN_IMP
         label: Impersonations
         description: Design metadata for connection impersonations
@@ -58,6 +59,39 @@ iesi:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 3
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: CTL_SECURITY_OBJECT
+        label: SecurityObjects
+        description: data related to security objects
+        category: control
+        fields:
+          ID:
+            description: UUID of the security object
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          SECURITY_GROUP_NAME:
+            description: name of the security group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
             type: timestamp
             length: 0
             nullable: false
@@ -119,20 +153,20 @@ iesi:
             nullable: false
             defaultTimestamp: true
 
-      - name: CTL_GROUPS
-        label: Groups
-        description: Group data
+      - name: CTL_TEAMS
+        label: Teams
+        description: Team data
         category: control
         fields:
           ID:
-            description: Unique short name for the impersonation
+            description: UUID of the team
             order: 1
             type: string
             length: 255
             nullable: false
             primaryKey: true
-          GROUP_NAME:
-            description: name of the group
+          TEAM_NAME:
+            description: name of the team
             order: 2
             type: string
             length: 255
@@ -146,8 +180,8 @@ iesi:
             nullable: false
             defaultTimestamp: true
 
-      - name: CTL_AUTHORITIES
-        label: Authorities
+      - name: CTL_PRIVILEGES
+        label: Privileges
         description: authority data
         category: control
         fields:
@@ -157,10 +191,16 @@ iesi:
             type: string
             length: 255
             nullable: false
-            defaultTimestamp:
             primaryKey: true
-          AUTHORITY:
-            description: name of the authority
+          ROLE_ID:
+            description: foreign id of the role
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          PRIVILEGE:
+            description: name of the privilege
             order: 2
             type: string
             length: 255
@@ -174,9 +214,9 @@ iesi:
             nullable: false
             defaultTimestamp: true
 
-      - name: CTL_USER_AUTHORITIES
-        label: UserAuthorities
-        description: authorities linked to users
+      - name: CTL_USERS_ROLES
+        label: UserRoles
+        description: roles linked to users
         category: control
         fields:
           USER_ID:
@@ -185,9 +225,8 @@ iesi:
             type: string
             length: 255
             nullable: false
-            defaultTimestamp:
             primaryKey: true
-          AUTHORITY_ID:
+          ROLE_ID:
             description: authority id
             order: 2
             type: string
@@ -202,21 +241,47 @@ iesi:
             nullable: false
             defaultTimestamp: true
 
-      - name: CTL_GROUP_AUTHORITIES
-        label: GroupAuthorities
-        description: Link authorities to groups
+      - name: CTL_SECURITY_GROUPS
+        label: SecurityGroups
+        description: security groups data
         category: control
         fields:
-          GROUP_ID:
-            description: Id of the group
+          ID:
+            description: Id of the security group
             order: 1
             type: string
             length: 255
             nullable: false
-            defaultTimestamp:
             primaryKey: true
-          AUTHORITY_ID:
-            description: Id of the authority
+          NAME:
+            description: Id of the team
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: timestamp
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+
+      - name: CTL_SECURITY_GROUP_TEAMS
+        label: SecurityGroupTeams
+        description: Link security groups to teams
+        category: control
+        fields:
+          SECURITY_GROUP_ID:
+            description: Id of the security group
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            primaryKey: true
+          TEAM_ID:
+            description: Id of the team
             order: 2
             type: string
             length: 255
@@ -230,27 +295,32 @@ iesi:
             nullable: false
             defaultTimestamp: true
 
-
-      - name: CTL_GROUP_MEMBERS
-        label: GroupMembers
-        description: Link users to groups
+      - name: CTL_ROLES
+        label: Roles
+        description: role data
         category: control
         fields:
-          GROUP_ID:
-            description: Id of the group
+          ID:
+            description: Id of the role
             order: 1
             type: string
             length: 255
             nullable: false
-            defaultTimestamp:
             primaryKey: true
-          USER_ID:
-            description: Id of the user
+          ROLE_NAME:
+            description: name of the role
+            order: 1
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          TEAM_ID:
+            description: foreign key of the team
             order: 2
             type: string
             length: 255
             nullable: false
-            primaryKey: true
+            unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
@@ -2191,6 +2261,20 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
+          SECURITY_GROUP_NAME:
+            description: name of the security group
+            order: 2
+            type: string
+            length: 255
+            nullable: false
+            unique: true
           SCRIPT_TYP_NM:
             description: Keyword for the script type
             order: 2

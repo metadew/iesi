@@ -12,11 +12,11 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleDto {
+public class RolePutDto {
 
     private UUID id;
     private String name;
     private Set<PrivilegeDto> privileges;
-    private Set<RoleUserDto> users;
+    private Set<UUID> users;
 
 }

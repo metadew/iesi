@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.user.team;
 
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
 import io.metadew.iesi.metadata.service.user.IESIRole;
 import io.metadew.iesi.metadata.service.user.TeamService;
@@ -35,7 +36,7 @@ public class TeamsController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody TeamPostDto userPostDto) {
+    public ResponseEntity<TeamDto> create(@RequestBody TeamPostDto userPostDto) {
         TeamKey teamKey = new TeamKey(UUID.randomUUID());
         Team team = Team.builder()
                 .teamKey(teamKey)
@@ -79,7 +80,38 @@ public class TeamsController {
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<TeamDto> update(@PathVariable UUID uuid, @RequestBody UserPostDto userPostDto) {
+    public ResponseEntity<TeamDto> update(@PathVariable UUID uuid, @RequestBody TeamPutDto teamPutDto) {
+        Team team = Team.builder()
+                .teamKey(new TeamKey(teamPutDto.getId()))
+                .teamName(teamPutDto.getTeamName())
+                .securityGroupKeys(
+                        teamPutDto.getSecurityGroupIds().stream()
+                                .map(SecurityGroupKey::new)
+                                .collect(Collectors.toSet())
+                )
+                .roles(
+                        teamPutDto.getRoles().stream()
+                                .map(role -> Role.builder()
+                                        .metadataKey(new RoleKey(role.getId()))
+                                        .name(role.getName())
+                                        .teamKey(new TeamKey(teamPutDto.getId()))
+                                        .privileges(
+                                                role.getPrivileges().stream()
+                                                        .map(privilege -> Privilege.builder()
+                                                                .privilegeKey(new PrivilegeKey(privilege.getUuid()))
+                                                                .roleKey(new RoleKey(role.getId()))
+                                                                .privilege(privilege.getPrivilege())
+                                                                .build()
+                                                        ).collect(Collectors.toSet()))
+                                        .userKeys(
+                                                role.getUsers().stream()
+                                                        .map(UserKey::new)
+                                                        .collect(Collectors.toSet())
+                                        )
+                                        .build()
+                                ).collect(Collectors.toSet()))
+                .build();
+        teamService.update(team);
         return ResponseEntity
                 .of(teamDtoService.get(uuid));
     }

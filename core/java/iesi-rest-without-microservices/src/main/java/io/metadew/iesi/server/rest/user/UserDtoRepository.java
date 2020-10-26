@@ -17,7 +17,7 @@ import java.util.UUID;
 @Repository
 public class UserDtoRepository implements IUserDtoRepository {
 
-    private final static String fetchSingleQuery = "select " +
+    private static final String fetchSingleQuery = "select " +
             "users.ID as user_id, users.USERNAME as user_username, " +
             "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
             "roles.ID as role_id, roles.role_name as role_role_name, " +
@@ -34,7 +34,7 @@ public class UserDtoRepository implements IUserDtoRepository {
             " ON teams.ID = roles.TEAM_ID " +
             " WHERE users.ID={0};";
 
-    private final static String fetchAllQuery = "select " +
+    private static final String fetchAllQuery = "select " +
             "users.ID as user_id, users.USERNAME as user_username, " +
             "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
             "roles.ID as role_id, roles.role_name as role_role_name, " +
@@ -50,7 +50,7 @@ public class UserDtoRepository implements IUserDtoRepository {
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
             " ON teams.ID = roles.TEAM_ID;";
 
-    private final static String fetchSingleByNameQuery = "select " +
+    private static final String fetchSingleByNameQuery = "select " +
             "users.ID as user_id, users.USERNAME as user_username, " +
             "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
             "roles.ID as role_id, roles.role_name as role_role_name, " +

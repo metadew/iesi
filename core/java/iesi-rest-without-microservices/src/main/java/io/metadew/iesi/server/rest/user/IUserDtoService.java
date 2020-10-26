@@ -6,10 +6,10 @@ import java.util.UUID;
 
 public interface IUserDtoService {
 
-    public Optional<UserDto> get(String username);
+    Optional<UserDto> get(String username);
 
-    public Optional<UserDto> get(UUID uuid);
+    Optional<UserDto> get(UUID uuid);
 
-    public Set<UserDto> getAll();
+    Set<UserDto> getAll();
 
 }

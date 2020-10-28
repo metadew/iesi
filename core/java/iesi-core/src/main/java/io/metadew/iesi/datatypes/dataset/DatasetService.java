@@ -28,6 +28,11 @@ public class DatasetService implements IDatasetService {
     }
 
     @Override
+    public boolean getIdByName(String name) {
+        return DatasetConfiguration.getInstance().existsByName(name);
+    }
+
+    @Override
     public Optional<Dataset> get(DatasetKey datasetKey) {
         return DatasetConfiguration.getInstance().get(datasetKey);
     }

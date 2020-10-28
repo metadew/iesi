@@ -46,6 +46,9 @@ public class DataTypeHandler {
         In case of multiple dataset types (keyvalue, resultset..) --> proposition dataset.kv and dataset.rs as keys
     */
     public DataType resolve(String input, ExecutionRuntime executionRuntime) {
+        if (input == null) {
+            return null;
+        }
         log.trace(MessageFormat.format("resolving {0} for datatype", input));
         if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
             Matcher matcher = DatatypePattern.matcher(input.substring(DatatypeStartCharacters.length(), input.length() - DatatypeStopCharacters.length()));

@@ -5,22 +5,24 @@ import java.util.Optional;
 
 public interface IDatasetService {
 
-    public boolean exists(DatasetKey datasetKey);
+    boolean exists(DatasetKey datasetKey);
 
-    public boolean exists(String name);
+    boolean exists(String name);
 
-    public Optional<Dataset> get(DatasetKey datasetKey);
+    boolean getIdByName(String name);
 
-    public List<Dataset> getAll();
+    Optional<Dataset> get(DatasetKey datasetKey);
 
-    public Optional<Dataset> getByName(String name);
+    List<Dataset> getAll();
 
-    public void create(Dataset dataset);
+    Optional<Dataset> getByName(String name);
 
-    public void delete(Dataset dataset);
+    void create(Dataset dataset);
 
-    public void delete(DatasetKey datasetKey);
+    void delete(Dataset dataset);
 
-    public void update(Dataset dataset);
+    void delete(DatasetKey datasetKey);
+
+    void update(Dataset dataset);
 
 }

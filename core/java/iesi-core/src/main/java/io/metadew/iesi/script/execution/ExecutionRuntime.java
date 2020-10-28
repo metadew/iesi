@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.metadata.definition.Iteration;
@@ -527,16 +528,8 @@ public class ExecutionRuntime {
         this.getStageOperationMap().put(stageName, stageOperation);
     }
 
-    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) {
-        referenceName = resolveVariables(referenceName);
-        datasetLabels = datasetLabels.stream()
-                .peek(this::resolveVariables)
-                .collect(Collectors.toList());
-        List<String> finalDatasetLabels = datasetLabels;
-        InMemoryDatasetImplementation inMemoryDatasetImplementation = InMemoryDatasetImplementationService.getInstance()
-                .getDatasetImplementation(datasetName, datasetLabels)
-                .orElseGet(() -> InMemoryDatasetImplementationService.getInstance().createNewDatasetImplementation(datasetName, finalDatasetLabels));
-        datasetMap.put(referenceName, inMemoryDatasetImplementation);
+    public void setKeyValueDataset(String referenceName, InMemoryDatasetImplementation datasetImplementation) {
+        datasetMap.put(referenceName, datasetImplementation);
     }
 
     public Optional<InMemoryDatasetImplementation> getDataset(String referenceName) {

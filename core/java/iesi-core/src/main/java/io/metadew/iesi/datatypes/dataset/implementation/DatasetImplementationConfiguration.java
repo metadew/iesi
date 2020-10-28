@@ -103,11 +103,19 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
-            "where datasets.NAME={0} and dataset_impls.ID in (" +
-            "SELECT dataset_impl_labels.DATASET_IMPL_ID FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
-            " where dataset_impl_labels.VALUE in ({1})" +
-            " GROUP BY dataset_impl_labels.DATASET_IMPL_ID " +
-            "HAVING COUNT(DISTINCT dataset_impl_labels.VALUE) = {2});";
+            "where datasets.NAME={0} and dataset_impls.ID in ({1});";
+
+    private static String getByLabelSetValueSubQuery = "SELECT " +
+            "dataset_impl_labels.DATASET_IMPL_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+            "WHERE dataset_impl_labels.VALUE = {0}";
+
+    private static String getByLabelSetCountSubQuery = "SELECT " +
+            "dataset_impl_labels.DATASET_IMPL_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+            "GROUP BY dataset_impl_labels.DATASET_IMPL_ID " +
+            "HAVING COUNT(DISTINCT dataset_impl_labels.VALUE) = {0}";
+
 
     private static String insertQuery = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() +
             " (ID, DATASET_ID) " +
@@ -201,11 +209,14 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     public Optional<DatasetImplementation> getByNameAndLabels(String name, List<String> labels) {
         try {
             Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
+            String labelSetQuery = labels.stream()
+                    .map(s -> MessageFormat.format(getByLabelSetValueSubQuery, SQLTools.GetStringForSQL(s)))
+                    .collect(Collectors.joining(" intersect "));
+            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(getByLabelSetCountSubQuery, SQLTools.GetStringForSQL(labels.size()));
+
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(selectByNameAndLabelsQuery,
-                            SQLTools.GetStringForSQL(name),
-                            labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")),
-                            SQLTools.GetStringForSQL(labels.size())),
+                            SQLTools.GetStringForSQL(name), labelSetQuery),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetImplementationBuilderMap);

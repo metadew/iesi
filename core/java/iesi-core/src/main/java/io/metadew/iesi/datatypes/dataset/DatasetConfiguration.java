@@ -43,7 +43,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
-            "where dataset_impls.ID={0};";
+            "where datasets.ID={0};";
 
     private static String fetchQuery = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
@@ -76,6 +76,11 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
+            "WHERE datasets.NAME={0};";
+
+    private static String existsByNameQuery = "SELECT " +
+            "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
+            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "WHERE datasets.NAME={0};";
 
     private static String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
@@ -132,10 +137,10 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
         }
     }
 
-    public boolean existsByName(String datasetName) {
+    public boolean existsById(DatasetKey datasetKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(existQuery, SQLTools.GetStringForSQL(datasetName)),
+                    MessageFormat.format(existQuery, SQLTools.GetStringForSQL(datasetKey.getUuid())),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -155,6 +160,32 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             return datasetBuilderMap.values().stream()
                     .findFirst()
                     .map(DatasetBuilder::build);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean existsByName(String name) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(existsByNameQuery, SQLTools.GetStringForSQL(name)),
+                    "reader");
+            return cachedRowSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<DatasetKey> getIdByName(String name) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(existsByNameQuery, SQLTools.GetStringForSQL(name)),
+                    "reader");
+            if (cachedRowSet.next()) {
+                return Optional.of(new DatasetKey(UUID.fromString(cachedRowSet.getString("dataset_id"))));
+            } else {
+                return Optional.empty();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

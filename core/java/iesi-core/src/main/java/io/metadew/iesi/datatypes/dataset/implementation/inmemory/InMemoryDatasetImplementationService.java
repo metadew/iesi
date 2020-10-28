@@ -83,11 +83,15 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public Map<String, DataType> getDataItems(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
-        return datasetImplementation.getKeyValues().stream()
-                .collect(Collectors.toMap(
-                        InMemoryDatasetImplementationKeyValue::getKey,
-                        inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime)
-                ));
+        // https://bugs.openjdk.java.net/browse/JDK-8148463
+        HashMap<String, DataType> map = new HashMap<>();
+        datasetImplementation.getKeyValues().forEach(
+                inMemoryDatasetImplementationKeyValue -> {
+                    DataType dataType = DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime);
+                    map.put(inMemoryDatasetImplementationKeyValue.getKey(), dataType);
+                }
+        );
+        return map;
     }
 
     @Override
@@ -142,13 +146,16 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public InMemoryDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
+        log.trace(MessageFormat.format("resolving {0} for Dataset", arguments));
         arguments = executionRuntime.resolveVariables(arguments);
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
         if (splittedArguments.size() == 2) {
             List<DataType> resolvedArguments = splittedArguments.stream()
                     .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
                     .collect(Collectors.toList());
-            return getDatasetImplementation(convertDatasetName(resolvedArguments.get(0)), convertDatasetLabels(resolvedArguments.get(1), executionRuntime))
+            return getDatasetImplementation(
+                    convertDatasetName(resolvedArguments.get(0)),
+                    convertDatasetLabels(resolvedArguments.get(1), executionRuntime))
                     .orElseGet(() -> createNewDatasetImplementation(convertDatasetName(resolvedArguments.get(0)), convertDatasetLabels(resolvedArguments.get(1), executionRuntime)));
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));

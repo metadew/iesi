@@ -32,20 +32,12 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
         return INSTANCE;
     }
 
-    private final static String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from  "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() +
-            " where COMP_ID = :id and COMP_VRS_NB = :versionNumber ";
-    private final static String queryAll = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + ";";
     private final static String delete = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() +
             " where COMP_ID = :id AND COMP_VRS_NB = :versionNumber";
     private final static String insert = "INSERT INTO "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() +
             " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) VALUES (:id,:versionNumber,:description) ";
-    private final static String getByComponent = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() +
-            " where COMP_ID = :id";
     private final static String deleteByComponentId = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() +
             " where COMP_ID = :id ";
@@ -73,30 +65,17 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
 
     @Override
     public Optional<ComponentVersion> get(ComponentVersionKey componentVersionKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", componentVersionKey.getComponentKey().getId())
-                .addValue("versionNumber", componentVersionKey.getComponentKey().getVersionNumber());
-
-        Optional<ComponentVersion> componentVersion = Optional.ofNullable(
-                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
-                        queryComponentVersion,
-                        sqlParameterSource,
-                        new ComponentVersionExtractor())));
-
-        return componentVersion;
+       throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ComponentVersion> getAll() {
-        return namedParameterJdbcTemplate.query(queryAll, new ComponentVersionExtractor());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void delete(ComponentVersionKey componentVersionKey) {
         LOGGER.trace(MessageFormat.format("Deleting ComponentVersion {0}.", componentVersionKey.toString()));
-        if (!exists(componentVersionKey)) {
-            throw new MetadataDoesNotExistException(componentVersionKey);
-        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", componentVersionKey.getComponentKey().getId())
                 .addValue("versionNumber", componentVersionKey.getComponentKey().getVersionNumber());
@@ -109,9 +88,6 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     @Override
     public void insert(ComponentVersion componentVersion) {
         LOGGER.trace(MessageFormat.format("Inserting ComponentVersion {0}.", componentVersion.getMetadataKey().toString()));
-        if (exists(componentVersion.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(componentVersion.getMetadataKey());
-        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", componentVersion.getMetadataKey().getComponentKey().getId())
                 .addValue("versionNumber", componentVersion.getMetadataKey().getComponentKey().getVersionNumber())
@@ -120,17 +96,6 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
                 insert,
                 sqlParameterSource);
     }
-
-    public List<ComponentVersion> getByComponent(String componentId) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", componentId);
-
-        return namedParameterJdbcTemplate.query(
-                getByComponent,
-                sqlParameterSource,
-                new ComponentVersionExtractor());
-    }
-
 
     public void deleteByComponentId(String componentId) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()

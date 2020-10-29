@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import lombok.*;
 
 import java.util.List;
@@ -43,5 +44,9 @@ public class Connection extends Metadata<ConnectionKey> {
 
     public String getName() {
         return getMetadataKey().getName();
+    }
+
+    public void addParameters(ConnectionParameter parameters) {
+        this.parameters.add(parameters);
     }
 }

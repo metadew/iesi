@@ -103,7 +103,6 @@ class ConnectionConfigurationTest {
         ConnectionConfiguration.getInstance().delete(connection1.getMetadataKey());
 
         assertEquals(0, ConnectionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ConnectionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -117,7 +116,7 @@ class ConnectionConfigurationTest {
         ConnectionConfiguration.getInstance().delete(connection1.getMetadataKey());
 
         assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
+//        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -131,7 +130,7 @@ class ConnectionConfigurationTest {
         ConnectionConfiguration.getInstance().delete(connection2.getMetadataKey());
 
         assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
+//        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -145,7 +144,7 @@ class ConnectionConfigurationTest {
         ConnectionConfiguration.getInstance().delete(connection3.getMetadataKey());
 
         assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
+//        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test

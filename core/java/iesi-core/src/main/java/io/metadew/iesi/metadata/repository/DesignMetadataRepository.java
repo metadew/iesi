@@ -26,7 +26,7 @@ public class DesignMetadataRepository extends MetadataRepository {
 
     public DesignMetadataRepository(String instance, RepositoryCoordinator repositoryCoordinator) {
         super(instance, repositoryCoordinator);
-        ScriptConfiguration.getInstance().init(this);
+//        ScriptConfiguration.getInstance().init(this);
 //        ComponentConfiguration.getInstance().init(this);
     }
 

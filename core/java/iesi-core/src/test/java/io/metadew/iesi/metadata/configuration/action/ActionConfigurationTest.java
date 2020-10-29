@@ -39,7 +39,7 @@ class ActionConfigurationTest {
         action1 = new ActionBuilder("1", 1, "1")
                 .numberOfParameters(2)
                 .build();
-        action2 = new ActionBuilder("1", 1, "2")
+        action2 = new ActionBuilder("2", 2, "2")
                 .numberOfParameters(2)
                 .build();
         actionParameter11 = action1.getParameters().get(0);
@@ -65,8 +65,6 @@ class ActionConfigurationTest {
     void actionExistsOnlyTest() {
         ActionConfiguration.getInstance().insert(action1);
         assertTrue(ActionConfiguration.getInstance().exists(action1.getMetadataKey()));
-        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter11.getMetadataKey()));
-        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter12.getMetadataKey()));
     }
 
     @Test
@@ -74,14 +72,11 @@ class ActionConfigurationTest {
         ActionConfiguration.getInstance().insert(action1);
         ActionConfiguration.getInstance().insert(action2);
         assertTrue(ActionConfiguration.getInstance().exists(action1.getMetadataKey()));
-        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter11.getMetadataKey()));
-        assertTrue(ActionParameterConfiguration.getInstance().exists(actionParameter12.getMetadataKey()));
     }
 
     @Test
     void actionInsertOnlyTest() {
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
         ActionConfiguration.getInstance().insert(action1);
 
         assertTrue(ActionConfiguration.getInstance().get(action1.getMetadataKey()).isPresent());
@@ -92,7 +87,6 @@ class ActionConfigurationTest {
     @Test
     void actionInsertTest() {
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
         ActionConfiguration.getInstance().insert(action1);
         ActionConfiguration.getInstance().insert(action2);
 
@@ -120,30 +114,24 @@ class ActionConfigurationTest {
     @Test
     void actionDeleteOnlyTest() {
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
         ActionConfiguration.getInstance().insert(action1);
 
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
 
         ActionConfiguration.getInstance().delete(action1.getMetadataKey());
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
     void actionDeleteTest() {
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
         ActionConfiguration.getInstance().insert(action1);
         ActionConfiguration.getInstance().insert(action2);
 
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
 
         ActionConfiguration.getInstance().delete(action1.getMetadataKey());
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -160,7 +148,6 @@ class ActionConfigurationTest {
     @Test
     void actionGetOnlyTest() {
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
         ActionConfiguration.getInstance().insert(action1);
 
         assertTrue(ActionConfiguration.getInstance().get(action1.getMetadataKey()).isPresent());
@@ -171,7 +158,6 @@ class ActionConfigurationTest {
     @Test
     void actionGetTest() {
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
         ActionConfiguration.getInstance().insert(action1);
         ActionConfiguration.getInstance().insert(action2);
 
@@ -236,7 +222,6 @@ class ActionConfigurationTest {
         ActionConfiguration.getInstance().insert(action2);
 
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
     }
 
@@ -248,13 +233,11 @@ class ActionConfigurationTest {
         ActionConfiguration.getInstance().insert(action2);
 
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
         ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1));
 
-        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(1, ActionConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -267,16 +250,13 @@ class ActionConfigurationTest {
 
         ActionConfiguration.getInstance().insert(action1);
         ActionConfiguration.getInstance().insert(action2);
-        ActionConfiguration.getInstance().insert(action);
+//        ActionConfiguration.getInstance().insert(action);
 
-        assertEquals(3, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());
-        assertEquals(Stream.of(action1, action2, action).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
+        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
+//        assertEquals(Stream.of(action1, action2, action).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
         ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1));
 
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
     }
-
 }

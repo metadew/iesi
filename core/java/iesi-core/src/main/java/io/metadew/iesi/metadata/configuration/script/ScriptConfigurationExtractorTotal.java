@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ScriptVersionExtractorTotal implements ResultSetExtractor<Long> {
+public class ScriptConfigurationExtractorTotal implements ResultSetExtractor<Long> {
     @Override
     public Long extractData(ResultSet rs) throws SQLException, DataAccessException {
         Long maxVersionNumber = null;
@@ -17,6 +17,6 @@ public class ScriptVersionExtractorTotal implements ResultSetExtractor<Long> {
     }
 
     private Long mapRow(ResultSet rs) throws SQLException {
-        return rs.getLong("MAX_VRS_NB");
+        return rs.getLong("total_versions");
     }
 }

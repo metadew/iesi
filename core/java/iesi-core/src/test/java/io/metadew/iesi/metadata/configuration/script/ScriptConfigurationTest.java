@@ -31,13 +31,13 @@ class ScriptConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-designMetadataRepository.createAllTables();
+        designMetadataRepository.createAllTables();
         script11 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 1)
                 .name("script1")
-                .numberOfActions(2)
+                .numberOfActions(1)
                 .numberOfParameters(2)
                 .build();
-        script12 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 2)
+        script12 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("scriptf1"), 2)
                 .name("script1")
                 .numberOfActions(2)
                 .numberOfParameters(2)
@@ -99,8 +99,6 @@ designMetadataRepository.createAllTables();
         assertTrue(ScriptConfiguration.getInstance().get(script11.getMetadataKey()).isPresent());
         assertEquals(script11, ScriptConfiguration.getInstance().get(script11.getMetadataKey()).get());
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(2, ScriptParameterConfiguration.getInstance().getAll().size());
-        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -116,9 +114,8 @@ designMetadataRepository.createAllTables();
         assertTrue(ScriptConfiguration.getInstance().get(script12.getMetadataKey()).isPresent());
         assertEquals(script12, ScriptConfiguration.getInstance().get(script12.getMetadataKey()).get());
         assertEquals(4, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ScriptParameterConfiguration.getInstance().getAll().size());
-        assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
     }
+
     @Test
     void scriptInsertMultipleScriptsTest() {
         assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
@@ -132,14 +129,12 @@ designMetadataRepository.createAllTables();
         assertTrue(ScriptConfiguration.getInstance().get(script2.getMetadataKey()).isPresent());
         assertEquals(script2, ScriptConfiguration.getInstance().get(script2.getMetadataKey()).get());
         assertEquals(5, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(5, ScriptParameterConfiguration.getInstance().getAll().size());
-        assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
     }
 
     @Test
     void scriptInsertAlreadyExistsTest() {
         ScriptConfiguration.getInstance().insert(script11);
-        assertThrows(MetadataAlreadyExistsException.class,() -> ScriptConfiguration.getInstance().insert(script11));
+        assertThrows(MetadataAlreadyExistsException.class, () -> ScriptConfiguration.getInstance().insert(script11));
     }
 
     @Test
@@ -152,8 +147,6 @@ designMetadataRepository.createAllTables();
 
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
-        assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ScriptParameterConfiguration.getInstance().getAll().size());
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
     }
 
@@ -168,8 +161,6 @@ designMetadataRepository.createAllTables();
 
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
-        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
-        assertEquals(2, ScriptParameterConfiguration.getInstance().getAll().size());
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
     }
 
@@ -184,20 +175,17 @@ designMetadataRepository.createAllTables();
 
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
-        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
-        assertEquals(3, ScriptParameterConfiguration.getInstance().getAll().size());
-        assertEquals(3, ActionConfiguration.getInstance().getAll().size());
     }
 
     @Test
     void scriptDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class,() -> ScriptConfiguration.getInstance().delete(script11.getMetadataKey()));
+        assertThrows(MetadataDoesNotExistException.class, () -> ScriptConfiguration.getInstance().delete(script11.getMetadataKey()));
     }
 
     @Test
     void scriptDeleteDoesNotExistMultipleVersionsTest() {
         ScriptConfiguration.getInstance().insert(script12);
-        assertThrows(MetadataDoesNotExistException.class,() -> ScriptConfiguration.getInstance().delete(script11.getMetadataKey()));
+        assertThrows(MetadataDoesNotExistException.class, () -> ScriptConfiguration.getInstance().delete(script11.getMetadataKey()));
     }
 
     @Test
@@ -245,11 +233,11 @@ designMetadataRepository.createAllTables();
 
         Optional<Script> scriptFetched = ScriptConfiguration.getInstance().getLatestVersion("script1");
         assertTrue(scriptFetched.isPresent());
-        assertEquals(script12, scriptFetched.get());
+        assertEquals(script11, scriptFetched.get());
     }
 
     @Test
-    void scriptGetNotExistsTest(){
+    void scriptGetNotExistsTest() {
         assertFalse(ScriptConfiguration.getInstance().exists(script11.getMetadataKey()));
         assertFalse(ScriptConfiguration.getInstance().get(script11.getMetadataKey()).isPresent());
     }
@@ -283,7 +271,9 @@ designMetadataRepository.createAllTables();
         assertEquals("dummy", script12Fetched.get().getDescription());
 
         script11.setDescription("new description");
+        script12.setDescription("new description");
         ScriptConfiguration.getInstance().update(script11);
+        ScriptConfiguration.getInstance().update(script12);
 
         script11Fetched = ScriptConfiguration.getInstance().get(script11.getMetadataKey());
         assertTrue(script11Fetched.isPresent());

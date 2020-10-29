@@ -72,22 +72,12 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
 
     @Override
     public Optional<ComponentParameter> get(ComponentParameterKey componentParameterKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", componentParameterKey.getComponentKey().getId())
-                .addValue("versionNumber", componentParameterKey.getComponentKey().getVersionNumber())
-                .addValue("parameterName", componentParameterKey.getParameterName());
-
-        Optional<ComponentParameter> connections = Optional.ofNullable(
-                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
-                        queryComponentParameter,
-                        sqlParameterSource,
-                        new ComponentParameterExtractor())));
-        return connections;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ComponentParameter> getAll() {
-        return namedParameterJdbcTemplate.query(queryAll, new ComponentParameterExtractor());
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -109,9 +99,6 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
     @Override
     public void insert(ComponentParameter componentParameter) {
         LOGGER.trace(MessageFormat.format("Inserting ComponentParameter {0}.", componentParameter.getMetadataKey().toString()));
-        if (exists(componentParameter.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(componentParameter.getMetadataKey());
-        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", componentParameter.getMetadataKey().getComponentKey().getId())
                 .addValue("versionNumber", componentParameter.getMetadataKey().getComponentKey().getVersionNumber())
@@ -120,13 +107,6 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
         namedParameterJdbcTemplate.update(
                 insert,
                 sqlParameterSource);
-    }
-
-    public List<ComponentParameter> getByComponent(ComponentKey componentKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", componentKey.getId())
-                .addValue("versionNumber", componentKey.getVersionNumber());
-        return namedParameterJdbcTemplate.query(getByComponent, sqlParameterSource, new ComponentParameterExtractor());
     }
 
     public void deleteByComponent(ComponentKey componentKey) {

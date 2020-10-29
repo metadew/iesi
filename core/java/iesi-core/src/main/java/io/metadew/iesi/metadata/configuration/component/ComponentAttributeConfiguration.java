@@ -41,8 +41,6 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
     private final static String insert = "INSERT INTO "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
             " (COMP_ID, COMP_VRS_NB, ENV_NM, COMP_ATT_NM, COMP_ATT_VAL) VALUES (:id,:versionNumber,:environmentName,:attributeName, :value)  ;";
-    private final static String queryAll = "select * FROM "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() + ";";
     private final static String delete = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
             " where COMP_ID = :componentId  AND COMP_VRS_NB = :componentVersionNb AND  ENV_NM = :environmentName AND COMP_ATT_NM = :componentAttributeName ;";
@@ -81,21 +79,12 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
 
     @Override
     public Optional<ComponentAttribute> get(ComponentAttributeKey componentAttributeKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("componentId", componentAttributeKey.getComponentKey().getId())
-                .addValue("versionNb", componentAttributeKey.getComponentKey().getVersionNumber())
-                .addValue("componentAttributeName", componentAttributeKey.getComponentAttributeName())
-                .addValue("environmentName", componentAttributeKey.getEnvironmentKey().getName());
-        return Optional.ofNullable(
-                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
-                        queryComponentAttribute,
-                        sqlParameterSource,
-                        new ComponentAttributeExtractor())));
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ComponentAttribute> getAll() {
-        return namedParameterJdbcTemplate.query(queryAll, new ComponentAttributeExtractor());
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -117,9 +106,6 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
     @Override
     public void insert(ComponentAttribute componentAttribute) {
         LOGGER.trace(MessageFormat.format("Inserting ComponentAttribute {0}.", componentAttribute.getMetadataKey().toString()));
-        if (exists(componentAttribute.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(componentAttribute.getMetadataKey());
-        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", componentAttribute.getMetadataKey().getComponentKey().getId())
                 .addValue("versionNumber", componentAttribute.getMetadataKey().getComponentKey().getVersionNumber())
@@ -129,16 +115,6 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
         namedParameterJdbcTemplate.update(
                 insert,
                 sqlParameterSource);
-    }
-
-    public List<ComponentAttribute> getByComponent(ComponentKey componentKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("componentId", componentKey.getId())
-                .addValue("versionNumber", componentKey.getVersionNumber());
-        return namedParameterJdbcTemplate.query(
-                        getByComponent,
-                        sqlParameterSource,
-                        new ComponentAttributeExtractor());
     }
 
     public List<ComponentAttribute> getByComponentAndEnvironment(ComponentKey componentKey, EnvironmentKey environmentKey) {
@@ -186,5 +162,4 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
                 deleteAll,
                 sqlParameterSource);
     }
-
 }

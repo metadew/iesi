@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.environment;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -58,5 +59,7 @@ public class Environment extends Metadata<EnvironmentKey> {
     public boolean isEmpty() {
         return (getName() == null || getName().isEmpty());
     }
-
+    public void addParameters(EnvironmentParameter parameters) {
+        this.parameters.add(parameters);
+    }
 }

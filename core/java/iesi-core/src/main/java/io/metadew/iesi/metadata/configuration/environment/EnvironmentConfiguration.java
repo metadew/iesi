@@ -50,32 +50,37 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         EnvironmentParameterConfiguration.getInstance().init(metadataRepository);
     }
 
-    private static final String queryAll = "select ENV_NM, ENV_DSC from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " order by ENV_NM ASC";
-    private static final String queryEnvironment = "select ENV_NM, ENV_DSC from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " where ENV_NM = :name";
-    private static final String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " WHERE ENV_NM = :name";
-    private static final String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " (ENV_NM, ENV_DSC) VALUES (:name, :description );";
+    private static final String queryAll = "select Environments.ENV_NM as Environments_ENV_NM  " +
+            ", Environments.ENV_DSC as Environments_ENV_DSC , EnvironmentParameters.ENV_NM as EnvironmentParameters_ENV_NM, EnvironmentParameters.ENV_PAR_NM as EnvironmentParameters_ENV_PAR_NM, EnvironmentParameters.ENV_PAR_VAL as EnvironmentParameters_ENV_PAR_VAL from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName()
+            + " Environments  LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName()
+            + " EnvironmentParameters on Environments.ENV_NM=EnvironmentParameters.ENV_NM order by Environments.ENV_NM ASC";
+    private static final String queryEnvironment = "select Environments.ENV_NM as Environments_ENV_NM, Environments.ENV_DSC as Environments_ENV_DSC , EnvironmentParameters.ENV_NM as EnvironmentParameters_ENV_NM, EnvironmentParameters.ENV_PAR_NM as EnvironmentParameters_ENV_PAR_NM, EnvironmentParameters.ENV_PAR_VAL as EnvironmentParameters_ENV_PAR_VAL from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " Environments  "
+            + " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName()
+            + " EnvironmentParameters on Environments.ENV_NM=EnvironmentParameters.ENV_NM  where Environments.ENV_NM = :name";
+    private static final String deleteStatement = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " WHERE ENV_NM = :name";
+    private static final String insertStatement = "INSERT INTO "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName()
+            + " (ENV_NM, ENV_DSC) VALUES (:name, :description );";
     private static final String deleteAllEnvironments = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + ";";
     private static final String deleteAllEnvironmentParameters = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName() + ";";
-    private static final String exists = "select * from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " where ENV_NM = :name";
-
+    private static final String exists = "select Environments.ENV_NM as Environments_ENV_NM, Environments.ENV_DSC as Environments_ENV_DSC , EnvironmentParameters.ENV_NM as EnvironmentParameters_ENV_NM, EnvironmentParameters.ENV_PAR_NM as EnvironmentParameters_ENV_PAR_NM, EnvironmentParameters.ENV_PAR_VAL as EnvironmentParameters_ENV_PAR_VAL from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " Environments  "
+            + " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName()
+            + " EnvironmentParameters on Environments.ENV_NM=EnvironmentParameters.ENV_NM  where Environments.ENV_NM = :name";
 
     @Override
     public Optional<Environment> get(EnvironmentKey environmentKey) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", environmentKey.getName());
-        Optional<Environment> environment = Optional.ofNullable(
+        return Optional.ofNullable(
                 DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
                         queryEnvironment,
                         sqlParameterSource,
                         new EnvironmentConfigurationExtractor())));
-        if (!environment.isPresent()) {
-            return Optional.empty();
-        }
-        List<EnvironmentParameter> environmentParameters = EnvironmentParameterConfiguration.getInstance().getByEnvironment(environmentKey);
-        Environment environment1 = new Environment(environmentKey);
-        environment1.setDescription(environment.get().getDescription());
-        environment1.setParameters(environmentParameters);
-        return Optional.of(environment1);
     }
 
     @Override
@@ -121,12 +126,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
                 exists,
                 sqlParameterSource,
                 new EnvironmentConfigurationExtractor());
-        if (environments.size() == 0) {
-            return false;
-        } else if (environments.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", environmentKey.toString()));
-        }
-        return true;
+        return environments.size() >= 1;
     }
 
     public void deleteAll() {
@@ -137,5 +137,12 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         namedParameterJdbcTemplate.update(
                 deleteAllEnvironmentParameters,
                 sqlParameterSource);
+    }
+
+    public List<Environment> getByEnvironment(EnvironmentKey environmentKey) {
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("name", environmentKey.getName());
+        List<Environment> environments = namedParameterJdbcTemplate.query(queryEnvironment, sqlParameterSource, new EnvironmentConfigurationExtractor());
+        return environments;
     }
 }

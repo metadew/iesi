@@ -95,9 +95,6 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     @Override
     public void delete(ScriptVersionKey scriptVersionKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptVersion {0}.", scriptVersionKey.toString()));
-        if (!exists(scriptVersionKey)) {
-            throw new MetadataDoesNotExistException(scriptVersionKey);
-        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", scriptVersionKey.getScriptKey().getScriptId())
                 .addValue("version", scriptVersionKey.getScriptKey().getScriptVersion());
@@ -129,9 +126,6 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     @Override
     public void insert(ScriptVersion scriptVersion) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptVersion {0}-{1}.", scriptVersion.getScriptId(), scriptVersion.getNumber()));
-        if (exists(scriptVersion)) {
-            throw new MetadataAlreadyExistsException(scriptVersion);
-        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", scriptVersion.getMetadataKey().getScriptKey().getScriptId())
                 .addValue("version", scriptVersion.getMetadataKey().getScriptKey().getScriptVersion())

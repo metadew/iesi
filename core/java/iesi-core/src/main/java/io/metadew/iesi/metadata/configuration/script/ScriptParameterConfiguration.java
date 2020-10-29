@@ -4,8 +4,6 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
@@ -73,35 +71,30 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
 
     @Override
     public Optional<ScriptParameter> get(ScriptParameterKey scriptParameterKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", scriptParameterKey.getScriptKey().getScriptId())
-                .addValue("version", scriptParameterKey.getScriptKey().getScriptVersion())
-                .addValue("parameter", scriptParameterKey.getParameterName());
-        return Optional.ofNullable(
-                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
-                        queryScriptParameter,
-                        sqlParameterSource,
-                        new ScriptParameterExtractor())));
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ScriptParameter> getAll() {
+        throw new UnsupportedOperationException();
+    }
+    public List<ScriptParameter> getByScript(ScriptKey scriptKey) {
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptKey.getScriptId())
+                .addValue("version", scriptKey.getScriptVersion());
         return namedParameterJdbcTemplate.query(
-                getAll,
+                getByScript,
+                sqlParameterSource,
                 new ScriptParameterExtractor());
     }
 
     @Override
     public void delete(ScriptParameterKey scriptParameterKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptParameter {0}.", scriptParameterKey.toString()));
-        if (!exists(scriptParameterKey)) {
-            throw new MetadataDoesNotExistException(scriptParameterKey);
-        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", scriptParameterKey.getScriptKey().getScriptId())
                 .addValue("version", scriptParameterKey.getScriptKey().getScriptVersion())
                 .addValue("parameter", scriptParameterKey.getParameterName());
-
         namedParameterJdbcTemplate.update(
                 deleteStatement,
                 sqlParameterSource);
@@ -111,9 +104,6 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     @Override
     public void insert(ScriptParameter scriptParameter) {
         LOGGER.trace(MessageFormat.format("Inserting ScriptParameter {0}.", scriptParameter.toString()));
-        if (exists(scriptParameter)) {
-            throw new MetadataAlreadyExistsException(scriptParameter);
-        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", scriptParameter.getMetadataKey().getScriptKey().getScriptId())
                 .addValue("version", scriptParameter.getMetadataKey().getScriptKey().getScriptVersion())
@@ -122,18 +112,6 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         namedParameterJdbcTemplate.update(
                 insert,
                 sqlParameterSource);
-    }
-
-    public boolean exists(ScriptParameterKey scriptParameterKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", scriptParameterKey.getScriptKey().getScriptId())
-                .addValue("version", scriptParameterKey.getScriptKey().getScriptVersion())
-                .addValue("parameter", scriptParameterKey.getParameterName());
-        List<ScriptParameter> scriptParameters = namedParameterJdbcTemplate.query(
-                exists,
-                sqlParameterSource,
-                new ScriptParameterExtractor());
-        return scriptParameters.size() >= 1;
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
@@ -146,13 +124,4 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
                 sqlParameterSource);
     }
 
-    public List<ScriptParameter> getByScript(ScriptKey scriptKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", scriptKey.getScriptId())
-                .addValue("version", scriptKey.getScriptVersion());
-        return namedParameterJdbcTemplate.query(
-                getByScript,
-                sqlParameterSource,
-                new ScriptParameterExtractor());
-    }
 }

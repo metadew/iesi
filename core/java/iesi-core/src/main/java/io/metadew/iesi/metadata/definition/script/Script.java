@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
+import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import lombok.Builder;
 import lombok.Data;
@@ -38,4 +40,15 @@ public class Script extends Metadata<ScriptKey> {
         this.labels = labels;
     }
 
+    public void addParameters(ScriptParameter parameters) {
+        this.parameters.add(parameters);
+    }
+
+    public void addAction(Action actions) {
+        this.actions.add(actions);
+    }
+
+    public void addLabels(ScriptLabel labels) {
+        this.labels.add(labels);
+    }
 }

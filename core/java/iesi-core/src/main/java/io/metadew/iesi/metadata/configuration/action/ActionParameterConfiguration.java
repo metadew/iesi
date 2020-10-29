@@ -1,9 +1,9 @@
 package io.metadew.iesi.metadata.configuration.action;
 
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
@@ -11,13 +11,11 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,146 +24,96 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     private final static Logger LOGGER = LogManager.getLogger();
     private static ActionParameterConfiguration INSTANCE;
 
-    public synchronized static ActionParameterConfiguration getInstance(){
-        if (INSTANCE == null){
+    public synchronized static ActionParameterConfiguration getInstance() {
+        if (INSTANCE == null) {
             INSTANCE = new ActionParameterConfiguration();
         }
         return INSTANCE;
     }
 
-    private ActionParameterConfiguration() {    }
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    private ActionParameterConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
+    }
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private final static String insert = "INSERT INTO "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() +
+            " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) " +
+            " VALUES (:id, :version, :actionId, :parameter, :value)";
+    private final static String deleteStatement = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName()
+            + " WHERE SCRIPT_ID = :id AND SCRIPT_VRS_NB = :versionNumber AND ACTION_ID = :actionId AND ACTION_PAR_NM = :parameter;";
+    private final static String deleteByAction = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName()
+            + " WHERE SCRIPT_ID = :id AND SCRIPT_VRS_NB = :versionNumber AND ACTION_ID = :actionId ;";
+    private final static String deleteByScript = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName()
+            + " WHERE SCRIPT_ID = :id AND SCRIPT_VRS_NB = :versionNumber ;";
+
     @Override
     public Optional<ActionParameter> get(ActionParameterKey actionParameterKey) {
-        try {
-            String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                    + getMetadataRepository().getTableNameByLabel("ActionParameters")
-                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
-                    " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
-                    + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                    " and ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterKey.getParameterName()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository()
-                    .executeQuery(queryActionParameter, "reader");
-            if (cachedRowSet.size() == 0) {
-                return Optional.empty();
-            } else if (cachedRowSet.size() > 1) {
-                LOGGER.info(MessageFormat.format("Found multiple implementations for ActionParameter {0}. Returning first implementation", actionParameterKey.toString()));
-            }
-            cachedRowSet.next();
-            return Optional.of(new ActionParameter(actionParameterKey, cachedRowSet.getString("ACTION_PAR_VAL")));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ActionParameter> getAll() {
-        List<ActionParameter> actionParameters = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") + ";";
-        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
-        try {
-            while (crs.next()) {
-                ActionParameterKey actionParameterKey = new ActionParameterKey(
-                        crs.getString("SCRIPT_ID"),
-                        crs.getLong("SCRIPT_VRS_NB"),
-                        crs.getString("ACTION_ID"),
-                        crs.getString("ACTION_PAR_NM"));
-                actionParameters.add(new ActionParameter(actionParameterKey, crs.getString("ACTION_PAR_VAL")));
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-        }
-        return actionParameters;
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void delete(ActionParameterKey metadataKey) {
-        LOGGER.trace(MessageFormat.format("Deleting ActionParameter {0}.", metadataKey.toString()));
-        if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException(metadataKey);
-        }
-        String deleteStatement = deleteStatement(metadataKey);
-        getMetadataRepository().executeUpdate(deleteStatement);
-    }
-
-    public String deleteStatement(ActionParameterKey actionParameterKey){
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                " AND ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterKey.getParameterName()) + ";";
+    public void delete(ActionParameterKey actionParameterKey) {
+        LOGGER.trace(MessageFormat.format("Deleting ActionParameter {0}.", actionParameterKey.toString()));
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionParameterKey.getActionKey().getScriptKey().getScriptId())
+                .addValue("versionNumber", actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
+                .addValue("actionId", actionParameterKey.getActionKey().getActionId())
+                .addValue("parameter", actionParameterKey.getParameterName());
+        namedParameterJdbcTemplate.update(
+                deleteStatement,
+                sqlParameterSource);
     }
 
     @Override
     public void insert(ActionParameter actionParameter) {
         LOGGER.trace(MessageFormat.format("Inserting ActionParameter {0}.", actionParameter.toString()));
-        if (exists(actionParameter)) {
-            throw new MetadataAlreadyExistsException(actionParameter);
-        }
-        String insertQuery = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptId()) + "," +
-                SQLTools.GetStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptVersion()) + "," +
-                SQLTools.GetStringForSQL(actionParameter.getMetadataKey().getActionKey().getActionId()) + "," +
-                SQLTools.GetStringForSQL(actionParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.GetStringForSQL(actionParameter.getValue()) + ");";
-        getMetadataRepository().executeUpdate(insertQuery);
-    }
-
-    public boolean exists(ActionParameterKey actionParameterKey) {
-        String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                + getMetadataRepository().getTableNameByLabel("ActionParameters")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
-                + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                " and ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterKey.getParameterName()) + ";";
-        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-        return cachedRowSet.size() >= 1;
-    }
-
-    public List<ActionParameter> getByAction(ActionKey actionKey) {
-        List<ActionParameter> actionParameters = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId());
-        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
-        try {
-            while (crs.next()) {
-                actionParameters.add(new ActionParameter(new ActionParameterKey(actionKey, crs.getString("ACTION_PAR_NM")),
-                        crs.getString("ACTION_PAR_VAL")));
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exeption=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-        }
-        return actionParameters;
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptId())
+                .addValue("version", actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptVersion())
+                .addValue("actionId", actionParameter.getMetadataKey().getActionKey().getActionId())
+                .addValue("parameter", actionParameter.getMetadataKey().getParameterName())
+                .addValue("value", actionParameter.getValue());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     public void deleteByAction(ActionKey actionKey) {
-        String query = "delete from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) + ";";
-        getMetadataRepository().executeUpdate(query);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionKey.getScriptKey().getScriptId())
+                .addValue("versionNumber", actionKey.getScriptKey().getScriptVersion())
+                .addValue("actionId", actionKey.getActionId());
+        namedParameterJdbcTemplate.update(
+                deleteByAction,
+                sqlParameterSource);
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
-        String query = "delete from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
-        getMetadataRepository().executeUpdate(query);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptKey.getScriptId())
+                .addValue("versionNumber", scriptKey.getScriptVersion());
+        namedParameterJdbcTemplate.update(
+                deleteByScript,
+                sqlParameterSource);
     }
-
 }

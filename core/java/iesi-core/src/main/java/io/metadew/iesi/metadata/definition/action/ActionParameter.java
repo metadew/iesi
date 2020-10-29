@@ -19,5 +19,4 @@ public class ActionParameter extends Metadata<ActionParameterKey> {
         super(actionParameterKey);
         this.value = value;
     }
-
 }

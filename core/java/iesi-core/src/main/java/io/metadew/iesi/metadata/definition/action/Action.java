@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition.action;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,6 +30,12 @@ public class Action extends Metadata<ActionKey> {
 
     // TODO: make optional Paramaters of type Optional instead of ""
 
+    public String ErrorExpectedGet() {
+        return errorExpected;
+    }
+    public String ErrorStopGet() {
+        return errorStop;
+    }
     @Builder
     public Action(ActionKey actionKey, long number, String type, String name, String description, String component,
                   String condition, String iteration, String errorExpected, String errorStop, String retries, List<ActionParameter> parameters) {
@@ -53,6 +60,10 @@ public class Action extends Metadata<ActionKey> {
 
     public boolean getErrorStop() {
         return errorStop.equalsIgnoreCase("y");
+    }
+
+    public void addParameters(ActionParameter parameters) {
+        this.parameters.add(parameters);
     }
 
 }

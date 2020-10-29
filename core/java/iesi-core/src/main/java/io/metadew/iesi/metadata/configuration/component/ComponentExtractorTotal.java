@@ -17,6 +17,6 @@ public class ComponentExtractorTotal implements ResultSetExtractor<Integer> {
     }
 
     private Integer mapRow(ResultSet rs) throws SQLException {
-        return rs.getInt("total_environments");
+        return rs.getInt("total_versions");
     }
 }

@@ -3,12 +3,12 @@ package io.metadew.iesi.metadata.definition.execution.script;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -18,13 +18,13 @@ public abstract class ScriptExecutionRequest extends Metadata<ScriptExecutionReq
     private ExecutionRequestKey executionRequestKey;
     private boolean exit;
     private String environment;
-    private List<ScriptExecutionRequestImpersonation> impersonations;
-    private List<ScriptExecutionRequestParameter> parameters;
+    private Set<ScriptExecutionRequestImpersonation> impersonations;
+    private Set<ScriptExecutionRequestParameter> parameters;
     private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
 
     public ScriptExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey, ExecutionRequestKey executionRequestKey,
-                                  String environment, boolean exit, List<ScriptExecutionRequestImpersonation> impersonations,
-                                  List<ScriptExecutionRequestParameter> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus) {
+                                  String environment, boolean exit, Set<ScriptExecutionRequestImpersonation> impersonations,
+                                  Set<ScriptExecutionRequestParameter> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus) {
         super(scriptExecutionRequestKey);
         this.executionRequestKey = executionRequestKey;
         this.environment = environment;

@@ -17,9 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 public class ScriptExecutionRequestImpersonationConfiguration extends Configuration<ScriptExecutionRequestImpersonation, ScriptExecutionRequestImpersonationKey> {
@@ -123,7 +121,7 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
                 SQLTools.GetStringForSQL(scriptExecutionRequest.getImpersonationKey().getName()) + ");";
     }
 
-    public List<ScriptExecutionRequestImpersonation> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
+    public Set<ScriptExecutionRequestImpersonation> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
         try {
             List<ScriptExecutionRequestImpersonation> scriptExecutionRequestParameters = new ArrayList<>();
             String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, IMP_ID FROM " +
@@ -136,7 +134,7 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                         new ImpersonationKey(cachedRowSet.getString("IMP_ID"))));
             }
-            return scriptExecutionRequestParameters;
+            return new HashSet<>(scriptExecutionRequestParameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -84,10 +84,14 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                         ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
             } else if (cachedRowSet.getString("NAME_REQ") != null) {
                 return Optional.of(new ScriptNameExecutionRequest(scriptExecutionRequestKey,
-                        new ExecutionRequestKey(cachedRowSet.getString("ID")),
-                        cachedRowSet.getString("ENVIRONMENT"), SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")), ScriptExecutionRequestImpersonationConfiguration.getInstance()
-                        .getByScriptExecutionRequest(scriptExecutionRequestKey), ScriptExecutionRequestParameterConfiguration.getInstance()
-                        .getByScriptExecutionRequest(scriptExecutionRequestKey), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
+                        new ExecutionRequestKey(
+                                cachedRowSet.getString("ID")),
+                        cachedRowSet.getString("ENVIRONMENT"),
+                        SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
+                        ScriptExecutionRequestImpersonationConfiguration.getInstance().getByScriptExecutionRequest(scriptExecutionRequestKey),
+                        ScriptExecutionRequestParameterConfiguration.getInstance().getByScriptExecutionRequest(scriptExecutionRequestKey),
+                        ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                        cachedRowSet.getString("SCRPT_NAME"),
                         cachedRowSet.getLong("SCRPT_VRS")
                 ));
             } else {

@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
@@ -233,6 +234,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("script_exe_req_st")),
                     cachedRowSet.getString("script_exe_req_name_name"),
                     cachedRowSet.getLong("script_exe_req_name_vrs"),
+                    null,
                     null
             );
             executionRequestBuilder.getScriptExecutionRequests().put(scriptExecutionRequestId, scriptExecutionRequestBuilder);
@@ -249,6 +251,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         }
         if (scriptExecutionRequestBuilder.getRunId() == null) {
             scriptExecutionRequestBuilder.setRunId(runId);
+            scriptExecutionRequestBuilder.setScriptRunStatus(ScriptRunStatus.valueOf(cachedRowSet.getString("script_exec_status")));
         }
     }
 
@@ -340,7 +343,9 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
 
         public ExecutionRequestDto build() {
             return new ExecutionRequestDto(executionRequestId, requestTimestamp, name, description, scope, context, email, executionRequestStatus,
-                    scriptExecutionRequests.values().stream().map(ScriptExecutionRequestBuilder::build).collect(Collectors.toList()),
+                    scriptExecutionRequests.values().stream()
+                            .map(ScriptExecutionRequestBuilder::build)
+                            .collect(Collectors.toSet()),
                     new HashSet<>(executionRequestLabels.values()));
         }
     }
@@ -359,14 +364,22 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         private Long scriptVersion;
         @Setter
         private String runId;
+        @Setter
+        private ScriptRunStatus scriptRunStatus;
 
         public ScriptExecutionRequestDto build() {
-            return new ScriptExecutionRequestDto(scriptExecutionRequestId, executionRequestId, environment, exit,
-                    new ArrayList<>(impersonations.values()),
-                    new ArrayList<>(parameters.values()),
+            return new ScriptExecutionRequestDto(
+                    scriptExecutionRequestId,
+                    executionRequestId,
+                    environment,
+                    exit,
+                    new HashSet<>(impersonations.values()),
+                    new HashSet<>(parameters.values()),
                     scriptExecutionRequestStatus,
                     scriptName, scriptVersion,
-                    runId);
+                    runId,
+                    scriptRunStatus
+            );
         }
 
     }

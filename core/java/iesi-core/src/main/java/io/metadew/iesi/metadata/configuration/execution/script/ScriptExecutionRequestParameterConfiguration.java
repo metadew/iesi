@@ -14,9 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 public class ScriptExecutionRequestParameterConfiguration extends Configuration<ScriptExecutionRequestParameter, ScriptExecutionRequestParameterKey> {
@@ -111,7 +109,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
                         .truncateAccordingToConfiguration("ScriptExecutionRequestParameters", "VALUE", scriptExecutionRequest.getValue())) + ");";
     }
 
-    public List<ScriptExecutionRequestParameter> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
+    public Set<ScriptExecutionRequestParameter> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
         try {
             List<ScriptExecutionRequestParameter> scriptExecutionRequestParameters = new ArrayList<>();
             String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE FROM " +
@@ -125,7 +123,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
                         cachedRowSet.getString("NAME"),
                         cachedRowSet.getString("VALUE")));
             }
-            return scriptExecutionRequestParameters;
+            return new HashSet<>(scriptExecutionRequestParameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

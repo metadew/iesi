@@ -31,10 +31,14 @@ public  class ScriptExecutionRequestDtoModelAssembler extends RepresentationMode
                     scriptExecutionRequest.getExecutionRequestKey().getId(),
                     scriptExecutionRequest.getEnvironment(),
                     scriptExecutionRequest.isExit(),
-                    scriptExecutionRequest.getImpersonations().stream().map(this::convertToDto).collect(Collectors.toList()),
-                    scriptExecutionRequest.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()),
+                    scriptExecutionRequest.getImpersonations().stream()
+                            .map(this::convertToDto).collect(Collectors.toSet()),
+                    scriptExecutionRequest.getParameters().stream()
+                            .map(this::convertToDto).collect(Collectors.toSet()),
                     scriptExecutionRequest.getScriptExecutionRequestStatus(),
-                    ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName(), ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(-1L),
+                    ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName(),
+                    ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(-1L),
+                    null,
                     null);
         } else {
             throw new RuntimeException("");

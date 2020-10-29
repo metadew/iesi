@@ -77,8 +77,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
         return datasetImplementation.getKeyValues().stream()
                 .filter(inMemoryDatasetImplementationKeyValue -> inMemoryDatasetImplementationKeyValue.getKey().equals(dataItem))
                 .findFirst()
-                .map(InMemoryDatasetImplementationKeyValue::getValue)
-                .map(dataValue -> DataTypeHandler.getInstance().resolve(dataValue, executionRuntime));
+                .map(inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime));
     }
 
     @Override

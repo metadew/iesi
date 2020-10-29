@@ -1,7 +1,12 @@
 package io.metadew.iesi.datatypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.*;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
+import io.metadew.iesi.datatypes._null.Null;
+import io.metadew.iesi.datatypes._null.NullService;
 import io.metadew.iesi.datatypes.array.ArrayService;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
@@ -19,15 +24,15 @@ import java.util.regex.Pattern;
 @Log4j2
 public class DataTypeHandler {
 
-    private final static String DatatypeStartCharacters = "{{";
-    private final static String DatatypeStopCharacters = "}}";
-    private final static Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
+    private static final String DatatypeStartCharacters = "{{";
+    private static final String DatatypeStopCharacters = "}}";
+    private static final Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
     private Map<ClassStringPair, IDataTypeService> dataTypeServiceMap;
 
     private static DataTypeHandler INSTANCE;
 
-    public synchronized static DataTypeHandler getInstance() {
+    public static synchronized DataTypeHandler getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new DataTypeHandler();
         }
@@ -40,6 +45,7 @@ public class DataTypeHandler {
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(TemplateService.getInstance().keyword(), TemplateService.getInstance().appliesTo()), TemplateService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(InMemoryDatasetImplementationService.getInstance().keyword(), InMemoryDatasetImplementationService.getInstance().appliesTo()), InMemoryDatasetImplementationService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(NullService.getInstance().keyword(), NullService.getInstance().appliesTo()), NullService.getInstance());
     }
 
     /*
@@ -47,7 +53,7 @@ public class DataTypeHandler {
     */
     public DataType resolve(String input, ExecutionRuntime executionRuntime) {
         if (input == null) {
-            return null;
+            return new Null();
         }
         log.trace(MessageFormat.format("resolving {0} for datatype", input));
         if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
@@ -55,19 +61,6 @@ public class DataTypeHandler {
             if (matcher.find()) {
                 return getDataTypeService(matcher.group("datatype"))
                         .resolve(matcher.group("arguments"), executionRuntime);
-//
-//                switch (matcher.group("datatype")) {
-//                    case "list":
-//                        return ArrayService.getInstance().resolve(matcher.group("arguments"), executionRuntime);
-//                    case "dataset":
-//                        try {
-//                            return KeyValueDatasetService.getInstance().resolve(matcher.group("arguments"), executionRuntime);
-//                        } catch (IOException e) {
-//                            throw new RuntimeException(e);
-//                        }
-//                    default:
-//                        throw new RuntimeException(MessageFormat.format("Input ''{0}'' does not have a correct datatype", input));
-//                }
             } else {
                 return TextService.getInstance().resolve(input, executionRuntime);
             }
@@ -146,7 +139,7 @@ public class DataTypeHandler {
         if (jsonNode.getNodeType().equals(JsonNodeType.ARRAY)) {
             return ArrayService.getInstance().resolve(inMemoryDatasetImplementation, key, (ArrayNode) jsonNode, executionRuntime);
         } else if (jsonNode.getNodeType().equals(JsonNodeType.NULL)) {
-            return TextService.getInstance().resolve((NullNode) jsonNode);
+            return new Null();
         } else if (jsonNode.isValueNode()) {
             return TextService.getInstance().resolve((ValueNode) jsonNode);
         }

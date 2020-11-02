@@ -3,8 +3,12 @@ package io.metadew.iesi.script.execution.instruction.data.text;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class TextSubstring implements DataInstruction {
 
@@ -44,6 +48,20 @@ public class TextSubstring implements DataInstruction {
         if (start > end) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". start {0} cannot be greater than end {1}", start, end));
         }
+    }
+
+    public String substring(String string, int beginIndex, int endIndex){
+        return string.substring(beginIndex-1,endIndex);
+    }
+
+    public String substring(String string, int beginIndex){
+        String s1 = string.substring(beginIndex-1);
+        List<String> list = new ArrayList<>();
+        List<String> collect = new ArrayList<>();
+        list = Arrays.asList(s1.split("\\b"));
+        collect = list.stream().filter(s-> s.matches("\\w+")).collect(Collectors.toList());
+
+        return collect.get(0);
     }
 
     @Override

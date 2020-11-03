@@ -52,7 +52,7 @@ public class TextSubstring implements DataInstruction {
 
 
     public String substring(String string, int beginIndex, int endIndex){
-        if (beginIndex < 0 || endIndex > string.length()) {
+        if (beginIndex <= 0 || endIndex > string.length()) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". begin {0} cannot be less than 0 and endIndex cannot be greater than string.length {1}", beginIndex, endIndex));
         }else{
             return string.substring(beginIndex-1,endIndex);

@@ -51,19 +51,28 @@ public class TextSubstring implements DataInstruction {
     }
 
 
-    public static String substring(String string, int beginIndex, int endIndex){
-        return string.substring(beginIndex-1,endIndex);
+    public String substring(String string, int beginIndex, int endIndex){
+        if (beginIndex < 0 || endIndex > string.length()) {
+            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". begin {0} cannot be less than 0 and endIndex cannot be greater than string.length {1}", beginIndex, endIndex));
+        }else{
+            return string.substring(beginIndex-1,endIndex);
+        }
     }
 
-    public static String substring(String string, int beginIndex){
-        String s1 = string.substring(beginIndex-1);
-        List<String> collect ;
+    public String substring(String string, int beginIndex){
+        if (beginIndex <= 0 ) {
+            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". begin {0} cannot be less or equal to 0", beginIndex));
+        }else{
+            String s1 = string.substring(beginIndex-1);
+            List<String> collect ;
 
-        collect = Arrays.asList(s1.split("\\b"))
-                .stream().filter(s-> s.matches("\\w+"))
-                .collect(Collectors.toList());
+            collect = Arrays.asList(s1.split("\\b"))
+                    .stream().filter(s-> s.matches("\\w+"))
+                    .collect(Collectors.toList());
 
-        return collect.get(0);
+            return collect.get(0);
+        }
+
     }
 
     @Override

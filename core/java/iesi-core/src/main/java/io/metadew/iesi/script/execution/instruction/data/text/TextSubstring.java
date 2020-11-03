@@ -50,11 +50,12 @@ public class TextSubstring implements DataInstruction {
         }
     }
 
-    public String substring(String string, int beginIndex, int endIndex){
+
+    public static String substring(String string, int beginIndex, int endIndex){
         return string.substring(beginIndex-1,endIndex);
     }
 
-    public String substring(String string, int beginIndex){
+    public static String substring(String string, int beginIndex){
         String s1 = string.substring(beginIndex-1);
         List<String> collect = new ArrayList<>();
 

@@ -57,7 +57,7 @@ public class TextSubstring implements DataInstruction {
 
     public static String substring(String string, int beginIndex){
         String s1 = string.substring(beginIndex-1);
-        List<String> collect = new ArrayList<>();
+        List<String> collect ;
 
         collect = Arrays.asList(s1.split("\\b"))
                 .stream().filter(s-> s.matches("\\w+"))

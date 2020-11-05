@@ -21,7 +21,7 @@ public class ResultMetadataRepository extends MetadataRepository {
         ActionResultConfiguration.getInstance().init(this);
         ActionResultOutputConfiguration.getInstance().init(this);
         ScriptResultOutputConfiguration.getInstance().init(this);
-        ActionPerformanceConfiguration.getInstance().init(this);
+//        ActionPerformanceConfiguration.getInstance().init(this);
     }
 
     @Override

@@ -6,15 +6,11 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.script.ScriptConfigurationExtractor;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
-import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
-import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +20,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,17 +85,6 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     private final static String deleteById = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() +
             "  where COMP_ID = :id ;";
-    private final static String getByID = "select distinct( Components.COMP_ID), Components.COMP_ID AS Components_COMP_ID, Components.COMP_TYP_NM AS Components_COMP_TYP_NM, Components.COMP_NM AS Components_COMP_NM, Components.COMP_DSC AS Components_COMP_DSC, " +
-            " ComponentAttributes.COMP_ID AS ComponentAttributes_COMP_ID, ComponentAttributes.COMP_VRS_NB AS  ComponentAttributes_COMP_VRS_NB, ComponentAttributes.COMP_ATT_NM AS ComponentAttributes_COMP_ATT_NM, ComponentAttributes.ENV_NM AS ComponentAttributes_ENV_NM , ComponentAttributes.COMP_ATT_VAL AS  ComponentAttributes_COMP_ATT_VAL," +
-            " ComponentVersions.COMP_ID AS ComponentVersions_COMP_ID, ComponentVersions.COMP_VRS_NB AS ComponentVersions_COMP_VRS_NB, ComponentVersions.COMP_VRS_DSC AS ComponentVersions_COMP_VRS_DSC, " +
-            " ComponentParameters.COMP_ID AS ComponentParameters_COMP_ID,ComponentParameters.COMP_VRS_NB AS ComponentParameters_COMP_VRS_NB, ComponentParameters.COMP_PAR_NM AS ComponentParameters_COMP_PAR_NM, ComponentParameters.COMP_PAR_VAL AS ComponentParameters_COMP_PAR_VAL " +
-            " from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName()
-            + " Components  LEFT OUTER JOIN "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
-            " ComponentAttributes ON Components.COMP_ID=ComponentAttributes.COMP_ID LEFT OUTER JOIN "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " ComponentVersions ON Components.COMP_ID=ComponentVersions.COMP_ID LEFT OUTER JOIN "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() + " ComponentParameters ON Components.COMP_ID=ComponentParameters.COMP_ID where  Components.COMP_ID  = :id";
     private final static String exists =
             "select Components.COMP_ID AS Components_COMP_ID , Components.COMP_TYP_NM AS Components_COMP_TYP_NM, Components.COMP_NM AS Components_COMP_NM, Components.COMP_DSC AS Components_COMP_DSC, " +
                     " ComponentAttributes.COMP_ID AS ComponentAttributes_COMP_ID, ComponentAttributes.COMP_VRS_NB AS  ComponentAttributes_COMP_VRS_NB, ComponentAttributes.COMP_ATT_NM AS ComponentAttributes_COMP_ATT_NM, ComponentAttributes.ENV_NM AS ComponentAttributes_ENV_NM , ComponentAttributes.COMP_ATT_VAL AS  ComponentAttributes_COMP_ATT_VAL," +
@@ -166,13 +150,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
                         queryComponent,
                         sqlParameterSource,
                         new ComponentExtractor())));
-        return Optional.of(new Component(componentKey,
-                components.get().getType(),
-                components.get().getName(),
-                components.get().getDescription(),
-                components.get().getVersion(),
-                components.get().getParameters(),
-                components.get().getAttributes()));
+        return components;
     }
 
     @Override
@@ -203,21 +181,6 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
                 deleteById,
                 sqlParameterSource);
     }
-
-//    public List<Component> getByID(String componentId) {
-//        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-//                .addValue("id", componentId);
-//        List<Component> components = namedParameterJdbcTemplate.query(getByID, sqlParameterSource, new ComponentExtractor());
-//        if (components.size() == 0) {
-//            LOGGER.warn(MessageFormat.format("component.version=no implementations for component {0}.", componentId));
-//            return components;
-//        }
-//        List<ComponentVersion> componentVersions = ComponentVersionConfiguration.getInstance().getByComponent(componentId);
-//        componentVersions
-//                .forEach(componentVersion -> get(componentVersion.getMetadataKey().getComponentKey())
-//                        .ifPresent(components::add));
-//        return components;
-//    }
 
     public boolean exists(ComponentKey componentKey) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()

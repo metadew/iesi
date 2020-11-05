@@ -4,6 +4,7 @@ package io.metadew.iesi.metadata.definition.impersonation;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -23,6 +24,7 @@ public class ImpersonationParameter extends Metadata<ImpersonationParameterKey> 
         this.description = description;
     }
 
+    @Builder
     public ImpersonationParameter(ImpersonationParameterKey impersonationParameterKey, String impersonatedConnection, String description){
         super(impersonationParameterKey);
         this.impersonatedConnection = impersonatedConnection;

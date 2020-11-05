@@ -1,14 +1,9 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
-import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
-import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
-import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
-import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
-import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
@@ -60,8 +55,9 @@ public class ScriptConfigurationExtractor implements ResultSetExtractor<List<Scr
                                 .build())
                         .description(rs.getString("ScriptVersions_SCRIPT_VRS_NB"))
                         .build())
-                .labels(new ArrayList<>())
                 .parameters(new ArrayList<>())
+                .labels(new ArrayList<>())
+                .actions(new ArrayList<>())
                 .build();
     }
 
@@ -69,12 +65,12 @@ public class ScriptConfigurationExtractor implements ResultSetExtractor<List<Scr
         ScriptParameterKey scriptParameterKey = ScriptParameterKey.builder()
                 .scriptKey(ScriptKey.builder().scriptId(rs.getString("ScriptParameters_SCRIPT_ID")).scriptVersion(rs.getLong("ScriptParameters_SCRIPT_VRS_NB")).build())
                 .parameterName(rs.getString("ScriptParameters_SCRIPT_PAR_NM")).build();
-        ScriptParameter scriptParameter = null;
-        if(rs.getString("ScriptParameters_SCRIPT_ID") != null){
-         scriptParameter = ScriptParameter.builder().scriptParameterKey(scriptParameterKey)
-                .value(rs.getString("ScriptParameters_SCRIPT_PAR_VAL")).build();
+        ScriptParameter scriptParameter;
+        if (rs.getString("ScriptParameters_SCRIPT_ID") != null) {
+            scriptParameter = ScriptParameter.builder().scriptParameterKey(scriptParameterKey)
+                    .value(rs.getString("ScriptParameters_SCRIPT_PAR_VAL")).build();
+            script.addParameters(scriptParameter);
         }
-        script.addParameters(scriptParameter);
 
         ScriptLabelKey scriptLabelKey = ScriptLabelKey.builder()
                 .id(rs.getString("ScriptLabels_ID"))
@@ -83,15 +79,58 @@ public class ScriptConfigurationExtractor implements ResultSetExtractor<List<Scr
                 .scriptId(rs.getString("ScriptLabels_SCRIPT_ID"))
                 .scriptVersion(rs.getLong("ScriptLabels_SCRIPT_VRS_NB"))
                 .build();
-       ScriptLabel scriptLabel = null;
-        if(rs.getString("ScriptLabels_SCRIPT_ID") != null){
-            scriptLabel   = ScriptLabel.builder()
-                .scriptLabelKey(scriptLabelKey)
-                .scriptKey(scriptKey)
-                .name(rs.getString("ScriptLabels_NAME"))
-                .value(rs.getString("ScriptLabels_VALUE"))
-                .build();
+        ScriptLabel scriptLabel;
+        if (rs.getString("ScriptLabels_SCRIPT_ID") != null) {
+            scriptLabel = ScriptLabel.builder()
+                    .scriptLabelKey(scriptLabelKey)
+                    .scriptKey(scriptKey)
+                    .name(rs.getString("ScriptLabels_NAME"))
+                    .value(rs.getString("ScriptLabels_VALUE"))
+                    .build();
+            script.addLabels(scriptLabel);
         }
-        script.addLabels(scriptLabel);
+
+        ActionKey actionKey = ActionKey.builder()
+                .scriptKey(ScriptKey.builder()
+                        .scriptId(rs.getString("Actions_SCRIPT_ID"))
+                        .scriptVersion(rs.getLong("Actions_SCRIPT_VRS_NB"))
+                        .build())
+                .actionId(rs.getString("Actions_ACTION_ID")).build();
+
+        Action action = Action.builder()
+                .actionKey(actionKey)
+                .number(rs.getLong("Actions_ACTION_NB"))
+                .type(rs.getString("Actions_ACTION_TYP_NM"))
+                .name(rs.getString("Actions_ACTION_NM"))
+                .description(rs.getString("Actions_ACTION_DSC"))
+                .component(rs.getString("Actions_COMP_NM"))
+                .condition(rs.getString("Actions_CONDITION_VAL"))
+                .iteration(rs.getString("Actions_ITERATION_VAL"))
+                .errorExpected(rs.getString("Actions_EXP_ERR_FL"))
+                .errorStop(rs.getString("Actions_STOP_ERR_FL"))
+                .retries(rs.getString("Actions_RETRIES_VAL"))
+                .parameters(new ArrayList<>())
+                .build();
+
+
+        ActionParameterKey actionParameterKey = ActionParameterKey.builder()
+                .actionKey(ActionKey.builder()
+                        .scriptKey(ScriptKey.builder()
+                                .scriptId(rs.getString("ActionParameters_SCRIPT_ID"))
+                                .scriptVersion(rs.getLong("ActionParameters_SCRIPT_VRS_NB"))
+                                .build())
+                        .actionId(rs.getString("ActionParameters_ACTION_ID")).build()
+                )
+                .parameterName(rs.getString("ActionParameters_ACTION_PAR_NM"))
+                .build();
+        ActionParameter actionParameter;
+        if (rs.getString("ActionParameters_SCRIPT_ID") != null) {
+            actionParameter = ActionParameter.builder().actionParameterKey(actionParameterKey)
+                    .value(rs.getString("ActionParameters_ACTION_PAR_VAL")).build();
+            action.addParameters(actionParameter);
+        }
+        if (rs.getString("Actions_SCRIPT_ID") != null) {
+            script.addAction(action);
+        }
     }
 }

@@ -30,7 +30,7 @@ public class TraceMetadataRepository extends MetadataRepository {
         ScriptVersionDesignTraceConfiguration.getInstance().init(this);
         ScriptParameterDesignTraceConfiguration.getInstance().init(this);
         ScriptLabelTraceConfiguration.getInstance().init(this);
-        ActionTraceConfiguration.getInstance().init(this);
+//        ActionTraceConfiguration.getInstance().init(this);
         ScriptTraceConfiguration.getInstance().init(this);
         ScriptVersionTraceConfiguration.getInstance().init(this);
         ScriptParameterTraceConfiguration.getInstance().init(this);

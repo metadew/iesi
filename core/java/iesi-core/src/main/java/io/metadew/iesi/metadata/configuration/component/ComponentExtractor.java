@@ -53,19 +53,23 @@ public class ComponentExtractor implements ResultSetExtractor<List<Component>> {
     }
 
     private void addMapping(Component component, ResultSet rs) throws SQLException {
-        ComponentAttributeKey componentAttributeKey = ComponentAttributeKey.builder()
-                .componentKey(ComponentKey.builder().id(rs.getString("ComponentAttributes_COMP_ID")).versionNumber(rs.getLong("ComponentAttributes_COMP_VRS_NB")).build())
-                .environmentKey(new EnvironmentKey(rs.getString("ComponentAttributes_ENV_NM")))
-                .componentAttributeName(rs.getString("ComponentAttributes_COMP_ATT_NM")).build();
-        ComponentAttribute componentAttribute = ComponentAttribute.builder().componentAttributeKey(componentAttributeKey)
-                .value(rs.getString("ComponentAttributes_COMP_ATT_VAL")).build();
-        component.addAttributes(componentAttribute);
-
-        ComponentParameterKey componentParameterKey = ComponentParameterKey.builder()
-                .componentKey(ComponentKey.builder().id(rs.getString("ComponentParameters_COMP_ID")).versionNumber(rs.getLong("ComponentParameters_COMP_VRS_NB")).build())
-                .parameterName(rs.getString("ComponentParameters_COMP_PAR_NM")).build();
-        ComponentParameter componentParameter = ComponentParameter.builder().componentParameterKey(componentParameterKey)
-                .value(rs.getString("ComponentParameters_COMP_PAR_VAL")).build();
-        component.addParameters(componentParameter);
+        if (rs.getString("ComponentAttributes_COMP_ID") != null) {
+            ComponentAttributeKey componentAttributeKey = ComponentAttributeKey.builder()
+                    .componentKey(ComponentKey.builder().id(rs.getString("ComponentAttributes_COMP_ID")).versionNumber(rs.getLong("ComponentAttributes_COMP_VRS_NB")).build())
+                    .environmentKey(new EnvironmentKey(rs.getString("ComponentAttributes_ENV_NM")))
+                    .componentAttributeName(rs.getString("ComponentAttributes_COMP_ATT_NM")).build();
+            ComponentAttribute componentAttribute = ComponentAttribute.builder().componentAttributeKey(componentAttributeKey)
+                    .value(rs.getString("ComponentAttributes_COMP_ATT_VAL")).build();
+            component.addAttributes(componentAttribute);
+        }
+        ComponentParameterKey componentParameterKey;
+        if (rs.getString("ComponentParameters_COMP_ID") != null) {
+            componentParameterKey = ComponentParameterKey.builder()
+                    .componentKey(ComponentKey.builder().id(rs.getString("ComponentParameters_COMP_ID")).versionNumber(rs.getLong("ComponentParameters_COMP_VRS_NB")).build())
+                    .parameterName(rs.getString("ComponentParameters_COMP_PAR_NM")).build();
+            ComponentParameter componentParameter = ComponentParameter.builder().componentParameterKey(componentParameterKey)
+                    .value(rs.getString("ComponentParameters_COMP_PAR_VAL")).build();
+            component.addParameters(componentParameter);
+        }
     }
 }

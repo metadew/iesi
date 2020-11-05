@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -273,48 +271,6 @@ class ComponentConfigurationTest {
         assertEquals(2, component3.getParameters().size());
     }
 
-//    @Test
-//    void componentGetByComponentId1Test() {
-//        ComponentConfiguration.getInstance().insert(component1);
-//        ComponentConfiguration.getInstance().insert(component2);
-//        ComponentConfiguration.getInstance().insert(component3);
-//
-//        assertEquals(Stream.of(component1, component2).collect(Collectors.toList()),
-//                ComponentConfiguration.getInstance().getByComponent(component1.getMetadataKey().getComponentKey().getId()));
-//    }
-//    @Test
-//    void componentGetByComponentId2Test() {
-//        ComponentConfiguration.getInstance().insert(component1);
-//        ComponentConfiguration.getInstance().insert(component2);
-//        ComponentConfiguration.getInstance().insert(component3);
-//
-//        assertEquals(Stream.of(component3).collect(Collectors.toList()),
-//                ComponentConfiguration.getInstance().getByComponent(component3.getMetadataKey().getComponentKey().getId()));
-//    }
-//
-//    @Test
-//    void componentDeleteByComponentId1Test() throws MetadataAlreadyExistsException, MetadataDoesNotExistException {
-//        ComponentConfiguration.getInstance().insert(component1);
-//        ComponentConfiguration.getInstance().insert(component2);
-//        ComponentConfiguration.getInstance().insert(component3);
-//
-//        ComponentConfiguration.getInstance().deleteByComponent(component3.getMetadataKey().getComponentKey());
-//
-//        assertEquals(Stream.of(component1, component2).collect(Collectors.toList()),
-//                ComponentConfiguration.getInstance().getByComponent(component1.getMetadataKey().getComponentKey().getId()));
-//    }
-//    @Test
-//    void componentDeleteByComponentId2Test() throws MetadataAlreadyExistsException, MetadataDoesNotExistException {
-//        ComponentConfiguration.getInstance().insert(component1);
-//        ComponentConfiguration.getInstance().insert(component2);
-//        ComponentConfiguration.getInstance().insert(component3);
-//
-//        ComponentConfiguration.getInstance().deleteByComponent(component1.getMetadataKey().getComponentKey());
-//
-//        assertEquals(Stream.of(component3).collect(Collectors.toList()),
-//                ComponentConfiguration.getInstance().getByComponent(component3.getMetadataKey().getComponentKey().getId()));
-//    }
-
     @Test
     void componentDeleteAllTest() {
         ComponentConfiguration.getInstance().insert(component1);
@@ -322,16 +278,11 @@ class ComponentConfigurationTest {
         ComponentConfiguration.getInstance().insert(component3);
 
         assertEquals(3, ComponentConfiguration.getInstance().getAll().size());
-        //assertEquals(3, ComponentVersionConfiguration.getInstance().getAll().size());
-        //assertEquals(6, ComponentAttributeConfiguration.getInstance().getAll().size());
-        //assertEquals(9, ComponentParameterConfiguration.getInstance().getAll().size());
 
         ComponentConfiguration.getInstance().deleteAll();
 
         assertEquals(0, ComponentConfiguration.getInstance().getAll().size());
-        //assertEquals(0, ComponentVersionConfiguration.getInstance().getAll().size());
-        //assertEquals(0, ComponentAttributeConfiguration.getInstance().getAll().size());
-        // assertEquals(0, ComponentParameterConfiguration.getInstance().getAll().size());
+
     }
 
     @Test
@@ -342,6 +293,6 @@ class ComponentConfigurationTest {
 
         Optional<Component> fetchedComponent = ComponentConfiguration.getInstance().get(component1.getMetadataKey().getId());
         assertTrue(fetchedComponent.isPresent());
-        assertEquals(component2, fetchedComponent.get());
+        assertEquals(component1, fetchedComponent.get());
     }
 }

@@ -19,5 +19,4 @@ public class ComponentVersionExtractorLatestVersion implements ResultSetExtracto
     private Long mapRow(ResultSet rs) throws SQLException {
         return rs.getLong("MAX_VRS_NB");
     }
-
 }

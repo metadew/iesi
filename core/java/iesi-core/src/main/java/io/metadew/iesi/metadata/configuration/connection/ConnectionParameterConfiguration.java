@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.configuration.connection;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -11,17 +10,11 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,16 +46,11 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
         setMetadataRepository(metadataRepository);
     }
 
-    private static final String query = "select CONN_NM, CONN_PAR_NM, CONN_PAR_VAL, ENV_NM from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName()
-            + " WHERE CONN_NM= :name AND ENV_NM  = :environment AND CONN_PAR_NM = :parameterName;";
-    private static final String queryAll = "select * from  " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName()
-            + " order by CONN_NM ASC;";
+
     private static final String deleteStatement = "DELETE FROM  " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName()
             + " WHERE CONN_NM= :name AND ENV_NM  = :environment AND CONN_PAR_NM = :parameterName;";
     private static final String insert = " INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName()
             + " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) VALUES ( :name, :environment, :parameterName, :value)";
-    private static final String getByConnection = "select CONN_NM, CONN_PAR_NM, CONN_PAR_VAL, ENV_NM from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName()
-            + " WHERE CONN_NM= :name AND ENV_NM  = :environment order by CONN_NM ASC;";
     private static final String update = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName()
             + " SET CONN_PAR_VAL = :value WHERE CONN_NM= :name AND ENV_NM  = :environment AND CONN_PAR_NM = :parameterName;";
     private static final String deleteByConnection = "DELETE FROM  " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName()
@@ -112,46 +100,14 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
                 sqlParameterSource);
     }
 
-    public List<ConnectionParameter> getByConnection(ConnectionKey connectionKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", connectionKey.getName())
-                .addValue("environment", connectionKey.getEnvironmentKey().getName());
-//        namedParameterJdbcTemplate.update(
-//                insert,
-//                sqlParameterSource);
-//         namedParameterJdbcTemplate.query(getByConnection, sqlParameterSource, new ConnectionParameterExtractor());
-        List<ConnectionParameter> connectionParameters = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
-                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connectionKey.getName()) +
-                " AND ENV_NM = " + SQLTools.GetStringForSQL(connectionKey.getEnvironmentKey().getName()) +
-                " order by CONN_NM ASC";
-        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
-        try {
-            while (crs.next()) {
-                connectionParameters.add(new ConnectionParameter(
-                        crs.getString("CONN_NM"),
-                        crs.getString("ENV_NM"),
-                        crs.getString("CONN_PAR_NM"),
-                        crs.getString("CONN_PAR_VAL")));
-            }
-            crs.close();
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-            LOGGER.warn("exception=" + e.getMessage());
-            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
-        }
-        return connectionParameters;
-    }
-
     public void update(ConnectionParameter connectionParameter) {
-            SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                    .addValue("value", connectionParameter.getValue())
-                    .addValue("name", connectionParameter.getMetadataKey().getConnectionKey().getName())
-                    .addValue("environment", connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName())
-                    .addValue("parameterName", connectionParameter.getMetadataKey().getParameterName());
-            namedParameterJdbcTemplate.update(
-                    update,
-                    sqlParameterSource);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("value", connectionParameter.getValue())
+                .addValue("name", connectionParameter.getMetadataKey().getConnectionKey().getName())
+                .addValue("environment", connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName())
+                .addValue("parameterName", connectionParameter.getMetadataKey().getParameterName());
+        namedParameterJdbcTemplate.update(
+                update,
+                sqlParameterSource);
     }
 }

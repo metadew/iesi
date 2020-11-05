@@ -3,11 +3,11 @@ package io.metadew.iesi.metadata.definition.action.design;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.design.key.ActionParameterDesignTraceKey;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 
-@Getter
+@Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class ActionParameterDesignTrace extends Metadata<ActionParameterDesignTraceKey> {

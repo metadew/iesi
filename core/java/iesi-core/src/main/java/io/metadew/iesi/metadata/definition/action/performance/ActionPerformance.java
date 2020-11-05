@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition.action.performance;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.performance.key.ActionPerformanceKey;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ public class ActionPerformance extends Metadata<ActionPerformanceKey> {
     private LocalDateTime endTimestamp;
     private Double duration;
 
+    @Builder
     public ActionPerformance(ActionPerformanceKey actionPerformanceKey, String context, String actionId, LocalDateTime startTimestamp, LocalDateTime stopTimestamp, Double duration) {
         super(actionPerformanceKey);
         this.context = context;

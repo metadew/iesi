@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.execution.script;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -17,6 +18,7 @@ public class ScriptFileExecutionRequest extends ScriptExecutionRequest {
 
     private String fileName;
 
+    @Builder
     public ScriptFileExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey, ExecutionRequestKey executionRequestKey,
                                       String fileName, String environment, boolean exit,
                                       List<ScriptExecutionRequestImpersonation> impersonations, List<ScriptExecutionRequestParameter> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus) {

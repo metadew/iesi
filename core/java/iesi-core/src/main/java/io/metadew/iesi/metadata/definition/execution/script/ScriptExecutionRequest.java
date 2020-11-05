@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.definition.execution.script;
 
 import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import lombok.Builder;
@@ -34,4 +35,11 @@ public abstract class ScriptExecutionRequest extends Metadata<ScriptExecutionReq
         this.scriptExecutionRequestStatus = scriptExecutionRequestStatus;
     }
 
+    public void addScriptExecutionRequestImpersonation(ScriptExecutionRequestImpersonation impersonations) {
+        this.impersonations.add(impersonations);
+    }
+
+    public void addScriptExecutionRequestParameter(ScriptExecutionRequestParameter parameters) {
+        this.parameters.add(parameters);
+    }
 }

@@ -4,10 +4,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
-import io.metadew.iesi.metadata.definition.environment.Environment;
-import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
-import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -30,7 +27,7 @@ public class ConnectionConfigurationExtractor implements ResultSetExtractor<List
                 connection = mapRow(rs);
                 connectionMap.put(name, connection);
             }
-            addMapping(connection,rs);
+            addMapping(connection, rs);
         }
         return new ArrayList<>(connectionMap.values());
     }
@@ -47,7 +44,7 @@ public class ConnectionConfigurationExtractor implements ResultSetExtractor<List
 
     private void addMapping(Connection connection, ResultSet rs) throws SQLException {
         ConnectionKey connectionKey = ConnectionKey.builder().name(rs.getString("ConnectionParameters_CONN_NM")).environmentKey(new EnvironmentKey(rs.getString("ConnectionParameters_ENV_NM"))).build();
-        ConnectionParameter connectionParameter =  ConnectionParameter.builder()
+        ConnectionParameter connectionParameter = ConnectionParameter.builder()
                 .connectionParameterKey(ConnectionParameterKey.builder()
                         .connectionKey(connectionKey)
                         .parameterName(rs.getString("ConnectionParameters_CONN_PAR_NM"))

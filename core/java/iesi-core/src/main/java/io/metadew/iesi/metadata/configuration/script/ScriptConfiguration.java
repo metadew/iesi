@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.configuration.script;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -12,7 +11,6 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
-import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -24,14 +22,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
@@ -65,62 +60,89 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     private final static String queryScript = "select Scripts.SCRIPT_ID as Scripts_SCRIPT_ID, Scripts.SCRIPT_NM as Scripts_SCRIPT_NM, Scripts.SCRIPT_DSC as Scripts_SCRIPT_DSC, " +
             " ScriptLabels.ID as ScriptLabels_ID, ScriptLabels.SCRIPT_ID as ScriptLabels_SCRIPT_ID, ScriptLabels.SCRIPT_VRS_NB as ScriptLabels_SCRIPT_VRS_NB, ScriptLabels.NAME as ScriptLabels_NAME, ScriptLabels.VALUE as ScriptLabels_VALUE, " +
             " ScriptParameters.SCRIPT_ID as ScriptParameters_SCRIPT_ID, ScriptParameters.SCRIPT_VRS_NB as ScriptParameters_SCRIPT_VRS_NB , ScriptParameters.SCRIPT_PAR_NM as ScriptParameters_SCRIPT_PAR_NM, ScriptParameters.SCRIPT_PAR_VAL as ScriptParameters_SCRIPT_PAR_VAL," +
-            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC" +
+            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC, " +
+            " Actions.SCRIPT_ID as Actions_SCRIPT_ID, Actions.SCRIPT_VRS_NB as Actions_SCRIPT_VRS_NB, Actions.ACTION_ID as Actions_ACTION_ID , Actions.ACTION_NB as Actions_ACTION_NB , Actions.ACTION_TYP_NM as Actions_ACTION_TYP_NM , Actions.ACTION_NM as Actions_ACTION_NM  , Actions.ACTION_DSC as Actions_ACTION_DSC, Actions.COMP_NM as Actions_COMP_NM , Actions.ITERATION_VAL as Actions_ITERATION_VAL, Actions.CONDITION_VAL as Actions_CONDITION_VAL, Actions.EXP_ERR_FL as Actions_EXP_ERR_FL, Actions.STOP_ERR_FL as Actions_STOP_ERR_FL, Actions.RETRIES_VAL as Actions_RETRIES_VAL, " +
+            " ActionParameters.SCRIPT_ID as ActionParameters_SCRIPT_ID, ActionParameters.SCRIPT_VRS_NB as ActionParameters_SCRIPT_VRS_NB, ActionParameters.ACTION_ID as ActionParameters_ACTION_ID , ActionParameters.ACTION_PAR_NM as ActionParameters_ACTION_PAR_NM , ActionParameters.ACTION_PAR_VAL  as ActionParameters_ACTION_PAR_VAL  " +
             " from "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " Scripts LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
             " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.SCRIPT_ID  LEFT OUTER JOIN "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN "  + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID " +
-            " where Scripts.SCRIPT_ID = :id ";
+            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions").getName() +
+            " Actions on Scripts.SCRIPT_ID=Actions.SCRIPT_ID  LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() +
+            " ActionParameters ON Scripts.SCRIPT_ID=ActionParameters.SCRIPT_ID where Scripts.SCRIPT_ID = :id order by Scripts.SCRIPT_ID ASC ";
     private final static String getAll = "select Scripts.SCRIPT_ID as Scripts_SCRIPT_ID, Scripts.SCRIPT_NM as Scripts_SCRIPT_NM, Scripts.SCRIPT_DSC as Scripts_SCRIPT_DSC, " +
             " ScriptLabels.ID as ScriptLabels_ID, ScriptLabels.SCRIPT_ID as ScriptLabels_SCRIPT_ID, ScriptLabels.SCRIPT_VRS_NB as ScriptLabels_SCRIPT_VRS_NB, ScriptLabels.NAME as ScriptLabels_NAME, ScriptLabels.VALUE as ScriptLabels_VALUE, " +
             " ScriptParameters.SCRIPT_ID as ScriptParameters_SCRIPT_ID, ScriptParameters.SCRIPT_VRS_NB as ScriptParameters_SCRIPT_VRS_NB , ScriptParameters.SCRIPT_PAR_NM as ScriptParameters_SCRIPT_PAR_NM, ScriptParameters.SCRIPT_PAR_VAL as ScriptParameters_SCRIPT_PAR_VAL," +
-            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC" +
+            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC, " +
+            " Actions.SCRIPT_ID as Actions_SCRIPT_ID, Actions.SCRIPT_VRS_NB as Actions_SCRIPT_VRS_NB, Actions.ACTION_ID as Actions_ACTION_ID , Actions.ACTION_NB as Actions_ACTION_NB , Actions.ACTION_TYP_NM as Actions_ACTION_TYP_NM , Actions.ACTION_NM as Actions_ACTION_NM  , Actions.ACTION_DSC as Actions_ACTION_DSC, Actions.COMP_NM as Actions_COMP_NM , Actions.ITERATION_VAL as Actions_ITERATION_VAL, Actions.CONDITION_VAL as Actions_CONDITION_VAL, Actions.EXP_ERR_FL as Actions_EXP_ERR_FL, Actions.STOP_ERR_FL as Actions_STOP_ERR_FL, Actions.RETRIES_VAL as Actions_RETRIES_VAL, " +
+            " ActionParameters.SCRIPT_ID as ActionParameters_SCRIPT_ID, ActionParameters.SCRIPT_VRS_NB as ActionParameters_SCRIPT_VRS_NB, ActionParameters.ACTION_ID as ActionParameters_ACTION_ID , ActionParameters.ACTION_PAR_NM as ActionParameters_ACTION_PAR_NM , ActionParameters.ACTION_PAR_VAL  as ActionParameters_ACTION_PAR_VAL  " +
             " from "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " Scripts LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
-            " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.ID LEFT OUTER JOIN "
+            " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.SCRIPT_ID  LEFT OUTER JOIN "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN "  + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID order by Scripts.SCRIPT_NM ASC ";
+            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions").getName() +
+            " Actions on Scripts.SCRIPT_ID=Actions.SCRIPT_ID  LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() +
+            " ActionParameters ON Scripts.SCRIPT_ID=ActionParameters.SCRIPT_ID  order by Scripts.SCRIPT_NM ASC ";
     private final static String exists = "select Scripts.SCRIPT_ID as Scripts_SCRIPT_ID, Scripts.SCRIPT_NM as Scripts_SCRIPT_NM, Scripts.SCRIPT_DSC as Scripts_SCRIPT_DSC, " +
             " ScriptLabels.ID as ScriptLabels_ID, ScriptLabels.SCRIPT_ID as ScriptLabels_SCRIPT_ID, ScriptLabels.SCRIPT_VRS_NB as ScriptLabels_SCRIPT_VRS_NB, ScriptLabels.NAME as ScriptLabels_NAME, ScriptLabels.VALUE as ScriptLabels_VALUE, " +
             " ScriptParameters.SCRIPT_ID as ScriptParameters_SCRIPT_ID, ScriptParameters.SCRIPT_VRS_NB as ScriptParameters_SCRIPT_VRS_NB , ScriptParameters.SCRIPT_PAR_NM as ScriptParameters_SCRIPT_PAR_NM, ScriptParameters.SCRIPT_PAR_VAL as ScriptParameters_SCRIPT_PAR_VAL," +
-            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC" +
+            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC, " +
+            " Actions.SCRIPT_ID as Actions_SCRIPT_ID, Actions.SCRIPT_VRS_NB as Actions_SCRIPT_VRS_NB, Actions.ACTION_ID as Actions_ACTION_ID , Actions.ACTION_NB as Actions_ACTION_NB , Actions.ACTION_TYP_NM as Actions_ACTION_TYP_NM , Actions.ACTION_NM as Actions_ACTION_NM  , Actions.ACTION_DSC as Actions_ACTION_DSC, Actions.COMP_NM as Actions_COMP_NM , Actions.ITERATION_VAL as Actions_ITERATION_VAL, Actions.CONDITION_VAL as Actions_CONDITION_VAL, Actions.EXP_ERR_FL as Actions_EXP_ERR_FL, Actions.STOP_ERR_FL as Actions_STOP_ERR_FL, Actions.RETRIES_VAL as Actions_RETRIES_VAL, " +
+            " ActionParameters.SCRIPT_ID as ActionParameters_SCRIPT_ID, ActionParameters.SCRIPT_VRS_NB as ActionParameters_SCRIPT_VRS_NB, ActionParameters.ACTION_ID as ActionParameters_ACTION_ID , ActionParameters.ACTION_PAR_NM as ActionParameters_ACTION_PAR_NM , ActionParameters.ACTION_PAR_VAL  as ActionParameters_ACTION_PAR_VAL  " +
             " from "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " Scripts LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
-            " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.ID LEFT OUTER JOIN "
+            " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.SCRIPT_ID  LEFT OUTER JOIN "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN "  + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID " +
-            " where Scripts.SCRIPT_ID = :id ;";
-    private final static String exists2 = "select Scripts.SCRIPT_ID as Scripts_SCRIPT_ID, Scripts.SCRIPT_NM as Scripts_SCRIPT_NM, Scripts.SCRIPT_DSC as Scripts_SCRIPT_DSC, " +
+            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions").getName() +
+            " Actions on Scripts.SCRIPT_ID=Actions.SCRIPT_ID  LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() +
+            " ActionParameters ON Scripts.SCRIPT_ID=ActionParameters.SCRIPT_ID where Scripts.SCRIPT_ID = :id " +
+            " ;";
+    private final static String existsScriptName = "select Scripts.SCRIPT_ID as Scripts_SCRIPT_ID, Scripts.SCRIPT_NM as Scripts_SCRIPT_NM, Scripts.SCRIPT_DSC as Scripts_SCRIPT_DSC, " +
             " ScriptLabels.ID as ScriptLabels_ID, ScriptLabels.SCRIPT_ID as ScriptLabels_SCRIPT_ID, ScriptLabels.SCRIPT_VRS_NB as ScriptLabels_SCRIPT_VRS_NB, ScriptLabels.NAME as ScriptLabels_NAME, ScriptLabels.VALUE as ScriptLabels_VALUE, " +
             " ScriptParameters.SCRIPT_ID as ScriptParameters_SCRIPT_ID, ScriptParameters.SCRIPT_VRS_NB as ScriptParameters_SCRIPT_VRS_NB , ScriptParameters.SCRIPT_PAR_NM as ScriptParameters_SCRIPT_PAR_NM, ScriptParameters.SCRIPT_PAR_VAL as ScriptParameters_SCRIPT_PAR_VAL," +
-            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC" +
+            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC, " +
+            " Actions.SCRIPT_ID as Actions_SCRIPT_ID, Actions.SCRIPT_VRS_NB as Actions_SCRIPT_VRS_NB, Actions.ACTION_ID as Actions_ACTION_ID , Actions.ACTION_NB as Actions_ACTION_NB , Actions.ACTION_TYP_NM as Actions_ACTION_TYP_NM , Actions.ACTION_NM as Actions_ACTION_NM  , Actions.ACTION_DSC as Actions_ACTION_DSC, Actions.COMP_NM as Actions_COMP_NM , Actions.ITERATION_VAL as Actions_ITERATION_VAL, Actions.CONDITION_VAL as Actions_CONDITION_VAL, Actions.EXP_ERR_FL as Actions_EXP_ERR_FL, Actions.STOP_ERR_FL as Actions_STOP_ERR_FL, Actions.RETRIES_VAL as Actions_RETRIES_VAL, " +
+            " ActionParameters.SCRIPT_ID as ActionParameters_SCRIPT_ID, ActionParameters.SCRIPT_VRS_NB as ActionParameters_SCRIPT_VRS_NB, ActionParameters.ACTION_ID as ActionParameters_ACTION_ID , ActionParameters.ACTION_PAR_NM as ActionParameters_ACTION_PAR_NM , ActionParameters.ACTION_PAR_VAL  as ActionParameters_ACTION_PAR_VAL  " +
             " from "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " Scripts LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
-            " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.ID LEFT OUTER JOIN "
+            " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.SCRIPT_ID  LEFT OUTER JOIN "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN "  + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID " +
-            " WHERE Scripts.SCRIPT_NM  = :name  ;";
+            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions").getName() +
+            " Actions on Scripts.SCRIPT_ID=Actions.SCRIPT_ID  LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() +
+            " ActionParameters ON Scripts.SCRIPT_ID=ActionParameters.SCRIPT_ID  WHERE Scripts.SCRIPT_NM  = :name  ;";
     private final static String getByName = "select Scripts.SCRIPT_ID as Scripts_SCRIPT_ID, Scripts.SCRIPT_NM as Scripts_SCRIPT_NM, Scripts.SCRIPT_DSC as Scripts_SCRIPT_DSC, " +
             " ScriptLabels.ID as ScriptLabels_ID, ScriptLabels.SCRIPT_ID as ScriptLabels_SCRIPT_ID, ScriptLabels.SCRIPT_VRS_NB as ScriptLabels_SCRIPT_VRS_NB, ScriptLabels.NAME as ScriptLabels_NAME, ScriptLabels.VALUE as ScriptLabels_VALUE, " +
             " ScriptParameters.SCRIPT_ID as ScriptParameters_SCRIPT_ID, ScriptParameters.SCRIPT_VRS_NB as ScriptParameters_SCRIPT_VRS_NB , ScriptParameters.SCRIPT_PAR_NM as ScriptParameters_SCRIPT_PAR_NM, ScriptParameters.SCRIPT_PAR_VAL as ScriptParameters_SCRIPT_PAR_VAL," +
-            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC" +
+            " ScriptVersions.SCRIPT_ID as ScriptVersions_SCRIPT_ID, ScriptVersions.SCRIPT_VRS_NB as ScriptVersions_SCRIPT_VRS_NB , ScriptVersions.SCRIPT_VRS_DSC as ScriptVersions_SCRIPT_VRS_DSC, " +
+            " Actions.SCRIPT_ID as Actions_SCRIPT_ID, Actions.SCRIPT_VRS_NB as Actions_SCRIPT_VRS_NB, Actions.ACTION_ID as Actions_ACTION_ID , Actions.ACTION_NB as Actions_ACTION_NB , Actions.ACTION_TYP_NM as Actions_ACTION_TYP_NM , Actions.ACTION_NM as Actions_ACTION_NM  , Actions.ACTION_DSC as Actions_ACTION_DSC, Actions.COMP_NM as Actions_COMP_NM , Actions.ITERATION_VAL as Actions_ITERATION_VAL, Actions.CONDITION_VAL as Actions_CONDITION_VAL, Actions.EXP_ERR_FL as Actions_EXP_ERR_FL, Actions.STOP_ERR_FL as Actions_STOP_ERR_FL, Actions.RETRIES_VAL as Actions_RETRIES_VAL, " +
+            " ActionParameters.SCRIPT_ID as ActionParameters_SCRIPT_ID, ActionParameters.SCRIPT_VRS_NB as ActionParameters_SCRIPT_VRS_NB, ActionParameters.ACTION_ID as ActionParameters_ACTION_ID , ActionParameters.ACTION_PAR_NM as ActionParameters_ACTION_PAR_NM , ActionParameters.ACTION_PAR_VAL  as ActionParameters_ACTION_PAR_VAL  " +
             " from "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " Scripts LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
-            " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.ID LEFT OUTER JOIN "
+            " ScriptLabels on Scripts.SCRIPT_ID=ScriptLabels.SCRIPT_ID  LEFT OUTER JOIN "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN "  + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID " +
-            " WHERE Scripts.SCRIPT_NM  = :name  ;";
+            " ScriptParameters on Scripts.SCRIPT_ID=ScriptParameters.SCRIPT_ID LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
+            " ScriptVersions on Scripts.SCRIPT_ID=ScriptVersions.SCRIPT_ID LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions").getName() +
+            " Actions on Scripts.SCRIPT_ID=Actions.SCRIPT_ID  LEFT OUTER JOIN "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() +
+            " ActionParameters ON Scripts.SCRIPT_ID=ActionParameters.SCRIPT_ID WHERE Scripts.SCRIPT_NM  = :name  ;";
     private final static String insert = "INSERT INTO "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " (SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC) VALUES (:id, :name, :description)";
@@ -137,18 +159,18 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     @Override
     public Optional<Script> get(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Fetching script {0}-{1}.", scriptKey.getScriptId(), scriptKey.getScriptVersion()));
-
+        if (!exists(scriptKey)) {
+            throw new MetadataDoesNotExistException(scriptKey);
+        }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", scriptKey.getScriptId());
         Optional<Script> scripts = Optional.ofNullable(
                 DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
-                queryScript,
-                sqlParameterSource,
-                new ScriptConfigurationExtractor())));
-        List<Action> actions = ActionConfiguration.getInstance().getByScript(scriptKey);
-
-        return Optional.of( Script.builder().scriptKey(scriptKey).name(scripts.get().getName()).description(scripts.get().getDescription()).version(scripts.get().getVersion())
-                .actions(actions).parameters(scripts.get().getParameters()).labels(scripts.get().getLabels()).build());
+                        queryScript,
+                        sqlParameterSource,
+                        new ScriptConfigurationExtractor())));
+        return Optional.of(Script.builder().scriptKey(scriptKey).name(scripts.get().getName()).description(scripts.get().getDescription()).version(scripts.get().getVersion())
+                .actions(scripts.get().getActions().stream().distinct().collect(Collectors.toList())).parameters(scripts.get().getParameters().stream().distinct().collect(Collectors.toList())).labels(scripts.get().getLabels().stream().distinct().collect(Collectors.toList())).build());
     }
 
     public boolean exists(ScriptKey scriptKey) {
@@ -165,7 +187,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", scriptName);
         List<Script> scripts = namedParameterJdbcTemplate.query(
-                exists2,
+                existsScriptName,
                 sqlParameterSource,
                 new ScriptConfigurationExtractor());
         return scripts.size() > 0;
@@ -191,14 +213,19 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     }
 
     public List<Script> getByName(String scriptName) {
+        List<Script> script = new ArrayList<>();
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", scriptName);
         List<Script> scripts = namedParameterJdbcTemplate.query(
                 getByName,
                 sqlParameterSource,
                 new ScriptConfigurationExtractor());
-        return scripts;
+        for (Script scriptVersion : scripts) {
+            get(new ScriptKey(scriptVersion.getVersion().getScriptId(), scriptVersion.getVersion().getNumber())).ifPresent(script::add);
+        }
+        return script;
     }
+
 
     public void deleteByName(String scriptName) {
         for (Script script : getByName(scriptName)) {
@@ -248,25 +275,25 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", scriptVersionKey.getScriptId())
                 .addValue("version", scriptVersionKey.getScriptVersion());
-       long total = namedParameterJdbcTemplate.query(
-               countQuery,
+        long total = namedParameterJdbcTemplate.query(
+                countQuery,
                 sqlParameterSource,
                 new ScriptConfigurationExtractorTotal());
-            if (total == 0) {
-                SqlParameterSource sqlParameterSource1 = new MapSqlParameterSource()
-                        .addValue("id", scriptVersionKey.getScriptId());
-                namedParameterJdbcTemplate.update(
-                        delete,
-                        sqlParameterSource1);
-            } else {
-                 Optional.empty();
-            }
+        if (total == 0) {
+            SqlParameterSource sqlParameterSource1 = new MapSqlParameterSource()
+                    .addValue("id", scriptVersionKey.getScriptId());
+            namedParameterJdbcTemplate.update(
+                    delete,
+                    sqlParameterSource1);
+        } else {
+            Optional.empty();
+        }
     }
 
     public Optional<Script> getLatestVersion(String scriptName) {
-        Optional<ScriptVersion> latestVersion = ScriptVersionConfiguration.getInstance().getLatestVersionNumber(IdentifierTools.getScriptIdentifier(scriptName));
+        Optional<Script> latestVersion = ScriptVersionConfiguration.getInstance().getLatestVersionNumber(IdentifierTools.getScriptIdentifier(scriptName));
         if (latestVersion.isPresent()) {
-            return get(new ScriptKey(latestVersion.get().getScriptId(), latestVersion.get().getNumber()));
+            return get(new ScriptKey(latestVersion.get().getMetadataKey().getScriptId(), latestVersion.get().getVersion().getNumber()));
         } else {
             return Optional.empty();
         }

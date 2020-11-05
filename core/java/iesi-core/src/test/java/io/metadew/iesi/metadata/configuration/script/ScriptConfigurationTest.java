@@ -1,16 +1,28 @@
 package io.metadew.iesi.metadata.configuration.script;
 
-import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptLabel;
+import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,11 +44,34 @@ class ScriptConfigurationTest {
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         designMetadataRepository.createAllTables();
-        script11 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 1)
-                .name("script1")
-                .numberOfActions(1)
-                .numberOfParameters(2)
+//        script11 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 1)
+//                .name("script1")
+//                .numberOfActions(2)
+//                .numberOfParameters(2)
+//                .build();
+        List<ActionParameter> actionParameterList = new ArrayList<>();
+        ActionParameter actionParameter = ActionParameter.builder()
+                .actionParameterKey(ActionParameterKey.builder().actionKey(ActionKey.builder().scriptKey(ScriptKey.builder().scriptId("id").scriptVersion(1L)
+                        .build()).actionId("id").build()).parameterName("param").build()).value("value").build();
+        actionParameterList.add(actionParameter);
+        Action action = Action.builder().actionKey(ActionKey.builder().actionId("id").scriptKey(ScriptKey.builder().scriptVersion(1L).scriptId("id").build()).build())
+                .component("component").condition("condition").errorExpected("error").description("desc").errorStop("stop").iteration("ite").name("name").number(1L).retries("2").type("type")
+                .parameters(actionParameterList)
                 .build();
+        List<Action> actions = new ArrayList<>();
+        actions.add(action);
+        List<ScriptLabel> labels =  new ArrayList<>();
+        ScriptLabel scriptLabel = ScriptLabel.builder().scriptLabelKey(ScriptLabelKey.builder().id("id").build()).scriptKey(ScriptKey.builder().scriptVersion(1L).scriptId("id").build())
+                .name("name").value("value").build();
+        labels.add(scriptLabel);
+        List<ScriptParameter> parameters = new ArrayList<>();
+        ScriptParameter scriptParameter = ScriptParameter.builder().scriptParameterKey(ScriptParameterKey.builder().parameterName("param").scriptKey(ScriptKey.builder()
+                .scriptId("id").scriptVersion(1L).build()).build()).build();
+        parameters.add(scriptParameter);
+        ScriptVersion version = ScriptVersion.builder().description("desc").scriptVersionKey(ScriptVersionKey.builder().scriptKey(ScriptKey.builder()
+                .scriptVersion(1L).scriptId("id").build()).build()).build();
+        script11 = Script.builder().scriptKey(ScriptKey.builder().scriptId("id").scriptVersion(1L).build()).actions(actions).description("desc").labels(labels).name("name")
+                .parameters(parameters).version(version).build();
         script12 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("scriptf1"), 2)
                 .name("script1")
                 .numberOfActions(2)
@@ -94,11 +129,10 @@ class ScriptConfigurationTest {
         assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
 
         ScriptConfiguration.getInstance().insert(script11);
-
+        Optional<Script> scriptFetched = ScriptConfiguration.getInstance().get(script11.getMetadataKey());
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
         assertTrue(ScriptConfiguration.getInstance().get(script11.getMetadataKey()).isPresent());
-        assertEquals(script11, ScriptConfiguration.getInstance().get(script11.getMetadataKey()).get());
-        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
+        Assertions.assertEquals(script11, scriptFetched.get());
     }
 
     @Test
@@ -113,7 +147,6 @@ class ScriptConfigurationTest {
         assertEquals(script11, ScriptConfiguration.getInstance().get(script11.getMetadataKey()).get());
         assertTrue(ScriptConfiguration.getInstance().get(script12.getMetadataKey()).isPresent());
         assertEquals(script12, ScriptConfiguration.getInstance().get(script12.getMetadataKey()).get());
-        assertEquals(4, ActionConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -128,7 +161,6 @@ class ScriptConfigurationTest {
         assertEquals(script11, ScriptConfiguration.getInstance().get(script11.getMetadataKey()).get());
         assertTrue(ScriptConfiguration.getInstance().get(script2.getMetadataKey()).isPresent());
         assertEquals(script2, ScriptConfiguration.getInstance().get(script2.getMetadataKey()).get());
-        assertEquals(5, ActionConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -147,7 +179,6 @@ class ScriptConfigurationTest {
 
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -161,7 +192,6 @@ class ScriptConfigurationTest {
 
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
-        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
     }
 
     @Test

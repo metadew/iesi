@@ -25,7 +25,7 @@ public class Component extends Metadata<ComponentKey> {
     private String description;
     private ComponentVersion version;
     private List<ComponentParameter> parameters;
-    private List<ComponentAttribute> attributes = new ArrayList<>();
+    private List<ComponentAttribute> attributes;
 
     @Builder
     public Component(ComponentKey componentKey, String type, String name, String description, ComponentVersion version,

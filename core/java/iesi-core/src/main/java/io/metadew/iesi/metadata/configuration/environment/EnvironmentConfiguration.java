@@ -71,6 +71,8 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " Environments  "
             + " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName()
             + " EnvironmentParameters on Environments.ENV_NM=EnvironmentParameters.ENV_NM  where Environments.ENV_NM = :name";
+    private static final String update = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " " +
+            "SET ENV_DSC= :description WHERE ENV_NM= :name;";
 
     @Override
     public Optional<Environment> get(EnvironmentKey environmentKey) {
@@ -95,7 +97,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
             throw new MetadataDoesNotExistException(environmentKey);
         }
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", environmentKey);
+                .addValue("name", environmentKey.getName());
         EnvironmentParameterConfiguration.getInstance().deleteByEnvironment(environmentKey);
         namedParameterJdbcTemplate.update(
                 deleteStatement,
@@ -139,10 +141,17 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
                 sqlParameterSource);
     }
 
-    public List<Environment> getByEnvironment(EnvironmentKey environmentKey) {
+    public void update(Environment environment) {
+        LOGGER.trace(MessageFormat.format("Inserting Environment {0}.", environment.getMetadataKey().toString()));
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", environmentKey.getName());
-        List<Environment> environments = namedParameterJdbcTemplate.query(queryEnvironment, sqlParameterSource, new EnvironmentConfigurationExtractor());
-        return environments;
+                .addValue("name", environment.getName())
+                .addValue("description", environment.getDescription());
+        namedParameterJdbcTemplate.update(
+                update,
+                sqlParameterSource);
+        EnvironmentParameterConfiguration.getInstance().deleteByEnvironment(environment.getMetadataKey());
+        for (EnvironmentParameter environmentParameter : environment.getParameters()) {
+            EnvironmentParameterConfiguration.getInstance().insert(environmentParameter);
+        }
     }
 }

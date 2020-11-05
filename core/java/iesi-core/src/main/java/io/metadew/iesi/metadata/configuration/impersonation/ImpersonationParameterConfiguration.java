@@ -1,26 +1,23 @@
 package io.metadew.iesi.metadata.configuration.impersonation;
 
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
-import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class ImpersonationParameterConfiguration extends Configuration<ImpersonationParameter, ImpersonationParameterKey> {
-
-    private ImpersonationParameter impersonationParameter;
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static ImpersonationParameterConfiguration INSTANCE;
@@ -32,125 +29,59 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
         return INSTANCE;
     }
 
-    public void init(MetadataRepository metadataRepository){
+    public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ImpersonationParameterConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
     }
+
+    private static final String insert = "INSERT INTO "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ImpersonationParameters").getName()
+            + " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC)  VALUES (:name, :parameter, :ImpersonatedConnection , :desc );";
+    private static final String delete = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ImpersonationParameters").getName() + " WHERE  IMP_NM = :name and CONN_NM =  :conn ;";
 
     @Override
     public Optional<ImpersonationParameter> get(ImpersonationParameterKey impersonationParameterKey) {
-        return getImpersonationParameter(impersonationParameterKey.getImpersonationKey().getName(), impersonationParameterKey.getParameterName());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ImpersonationParameter> getAll() {
-        try {
-            List<ImpersonationParameter> impersonationParameters = new ArrayList<>();
-            String query = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from "
-                    + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                impersonationParameters.add(new ImpersonationParameter(new ImpersonationParameterKey(
-                        new ImpersonationKey(cachedRowSet.getString("IMP_NM")),
-                        cachedRowSet.getString("CONN_NM")),
-                        cachedRowSet.getString("CONN_IMP_NM"),
-                        cachedRowSet.getString("CONN_IMP_DSC")));
-            }
-            return impersonationParameters;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void delete(ImpersonationParameterKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionResultOutput {0}.", metadataKey.toString()));
-        if (!exists(metadataKey)) {
-            throw new MetadataDoesNotExistException(metadataKey);
-        }
-        String deleteStatement = deleteStatement(metadataKey);
-        getMetadataRepository().executeUpdate(deleteStatement);
-    }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("name", metadataKey.getImpersonationKey().getName())
+                .addValue("conn", metadataKey.getParameterName());
 
-    private String deleteStatement(ImpersonationParameterKey metadataKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
-                " WHERE " +
-                " IMP_NM = " + SQLTools.GetStringForSQL(metadataKey.getImpersonationKey().getName()) + " AND " +
-                " CONN_NM = " + SQLTools.GetStringForSQL(metadataKey.getParameterName()) + ";";
+        namedParameterJdbcTemplate.update(
+                delete,
+                sqlParameterSource);
     }
 
     @Override
     public void insert(ImpersonationParameter metadata) {
-        LOGGER.trace(MessageFormat.format("Inserting ImpersonationParameter {0}.", metadata.getMetadataKey().toString()));
-        if (exists(metadata.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(metadata.getMetadataKey());
-        }
-        String insertStatement = getInsertStatement(metadata.getMetadataKey().getImpersonationKey().getName(), metadata);
-        getMetadataRepository().executeUpdate(insertStatement);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("name", metadata.getMetadataKey().getImpersonationKey().getName())
+                .addValue("parameter", metadata.getMetadataKey().getParameterName())
+                .addValue("ImpersonatedConnection", metadata.getImpersonatedConnection())
+                .addValue("desc", metadata.getDescription());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
-
-    public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
-        String query =  "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
-                " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(impersonationName) + "," +
-                SQLTools.GetStringForSQL(impersonationParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.GetStringForSQL(impersonationParameter.getImpersonatedConnection()) +  "," +
-                SQLTools.GetStringForSQL(impersonationParameter.getDescription()) + ");";
-        return query;
-    }
-
-    // Insert
-    public String getInsertStatement(String impersonationName) {
-        String sql = "";
-
-        sql += "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters");
-        sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
-        sql += "VALUES ";
-        sql += "(";
-        sql += SQLTools.GetStringForSQL(impersonationName);
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getMetadataKey().getParameterName());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getImpersonatedConnection());
-        sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getDescription());
-        sql += ")";
-        sql += ";";
-
-        return sql;
-    }
-
-    Optional<ImpersonationParameter> getImpersonationParameter(String impersonationName, String impersonationParameterName) {
-        try {
-            String queryImpersonationParameter = "select IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC from " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters")
-                    + " where IMP_NM = '" + impersonationName + "' and CONN_NM = '" + impersonationParameterName + "'";
-            CachedRowSet crsImpersonationParameter = getMetadataRepository().executeQuery(queryImpersonationParameter, "reader");
-            ImpersonationParameterKey impersonationParameterKey = new ImpersonationParameterKey(
-                    new ImpersonationKey(impersonationName), impersonationParameterName);
-            if (crsImpersonationParameter.size() == 0) {
-                return Optional.empty();
-            } else if (crsImpersonationParameter.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionResultOutput {0}. Returning first implementation", impersonationParameterKey.toString()));
-            }
-            crsImpersonationParameter.next();
-            return Optional.of(new ImpersonationParameter(impersonationParameterKey,
-                    crsImpersonationParameter.getString("CONN_IMP_NM"),
-                    crsImpersonationParameter.getString("CONN_IMP_DSC")));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    // Getters and Setters
-    public ImpersonationParameter getImpersonationParameter() {
-        return impersonationParameter;
-    }
-
-    public void setImpersonationParameter(ImpersonationParameter impersonationParameter) {
-        this.impersonationParameter = impersonationParameter;
-    }
-
 }

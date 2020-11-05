@@ -1,17 +1,20 @@
 package io.metadew.iesi.metadata.configuration.action.trace;
 
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.trace.ActionTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,146 +30,116 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
         return INSTANCE;
     }
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ActionTraceConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
     }
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private final static String query = "select  ActionTraces.RUN_ID  as ActionTraces_RUN_ID , ActionTraces.PRC_ID  as ActionTraces_PRC_ID , ActionTraces.ACTION_ID  as ActionTraces_ACTION_ID , ActionTraces.ACTION_NB  as ActionTraces_ACTION_NB, ActionTraces.ACTION_TYP_NM  as  ActionTraces_ACTION_TYP_NM , ActionTraces.ACTION_NM  as ActionTraces_ACTION_NM , ActionTraces.ACTION_DSC  as ActionTraces_ACTION_DSC, ActionTraces.COMP_NM  as ActionTraces_COMP_NM, ActionTraces.ITERATION_VAL  as ActionTraces_ITERATION_VAL , ActionTraces.CONDITION_VAL  as  ActionTraces_CONDITION_VAL, ActionTraces.RETRIES_VAL  as ActionTraces_RETRIES_VAL , ActionTraces.EXP_ERR_FL  as ActionTraces_EXP_ERR_FL , ActionTraces.STOP_ERR_FL  as ActionTraces_STOP_ERR_FL   " +
+            " from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionTraces").getName() +
+            " ActionTraces where ActionTraces.RUN_ID = :id and ActionTraces.PRC_ID = :process and  ActionTraces.ACTION_ID = :action ;";
+    private final static String getAll = "select  ActionTraces.RUN_ID  as ActionTraces_RUN_ID , ActionTraces.PRC_ID  as ActionTraces_PRC_ID , ActionTraces.ACTION_ID  as ActionTraces_ACTION_ID , ActionTraces.ACTION_NB  as ActionTraces_ACTION_NB, ActionTraces.ACTION_TYP_NM  as  ActionTraces_ACTION_TYP_NM , ActionTraces.ACTION_NM  as ActionTraces_ACTION_NM , ActionTraces.ACTION_DSC  as ActionTraces_ACTION_DSC, ActionTraces.COMP_NM  as ActionTraces_COMP_NM, ActionTraces.ITERATION_VAL  as ActionTraces_ITERATION_VAL , ActionTraces.CONDITION_VAL  as  ActionTraces_CONDITION_VAL, ActionTraces.RETRIES_VAL  as ActionTraces_RETRIES_VAL , ActionTraces.EXP_ERR_FL  as ActionTraces_EXP_ERR_FL , ActionTraces.STOP_ERR_FL  as ActionTraces_STOP_ERR_FL   " +
+            " from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionTraces").getName() + " ActionTraces  ;";
+    private final static String deleteStatement = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionTraces").getName() +
+            "  WHERE  RUN_ID = :id and PRC_ID =:process and ACTION_ID =:action ;";
+    private final static String insert = "INSERT INTO  "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionTraces").getName() +
+            " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM," +
+            " ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES " +
+            " ( :id, :process, :actionId, :actionNumber, :actionType, :actionName, :description,  :component, :iteration, :condition, :retries, :error,:errorStop )";
+    private final static String updateStatement = "UPDATE "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionTraces").getName() +
+            " SET ACTION_NB = :actionNumber, ACTION_TYP_NM = :actionType ,ACTION_NM = :actionName, ACTION_DSC = :description, " +
+            " COMP_NM = :component, ITERATION_VAL = :iteration, CONDITION_VAL = :condition, RETRIES_VAL = :retries, EXP_ERR_FL = :error, STOP_ERR_FL = :errorStop" +
+            " WHERE RUN_ID = :id AND PRC_ID = :process AND ACTION_ID= :actionId ;";
+
     @Override
     public Optional<ActionTrace> get(ActionTraceKey actionTraceKey) {
-        try {
-            String query = "SELECT ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL FROM " +
-                    getMetadataRepository().getTableNameByLabel("ActionTraces") +
-                    " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getProcessId()) + " AND " +
-                    " ACTION_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getActionId()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            if (cachedRowSet.size() == 0) {
-                return Optional.empty();
-            } else if (cachedRowSet.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionTrace {0}. Returning first implementation", actionTraceKey.toString()));
-            }
-            cachedRowSet.next();
-            return Optional.of(new ActionTrace(actionTraceKey,
-                    cachedRowSet.getLong("ACTION_NB"),
-                    cachedRowSet.getString("ACTION_TYP_NM"),
-                    cachedRowSet.getString("ACTION_NM"),
-                    cachedRowSet.getString("ACTION_DSC"),
-                    cachedRowSet.getString("COMP_NM"),
-                    cachedRowSet.getString("ITERATION_VAL"),
-                    cachedRowSet.getString("CONDITION_VAL"),
-                    cachedRowSet.getInt("RETRIES_VAL"),
-                    cachedRowSet.getString("EXP_ERR_FL"),
-                    cachedRowSet.getString("STOP_ERR_FL")));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionTraceKey.getRunId())
+                .addValue("process", actionTraceKey.getProcessId())
+                .addValue("action", actionTraceKey.getActionId());
+        return Optional.ofNullable(
+                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
+                        query,
+                        sqlParameterSource,
+                        new ActionTraceExtractor())));
     }
 
     @Override
     public List<ActionTrace> getAll() {
-        try {
-            List<ActionTrace> actionTraces = new ArrayList<>();
-            String query = "SELECT RUN_ID, PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL FROM " +
-                    getMetadataRepository().getTableNameByLabel("ActionTraces") + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                actionTraces.add(new ActionTrace(new ActionTraceKey(
-                        cachedRowSet.getString("RUN_ID"),
-                        cachedRowSet.getLong("PRC_ID"),
-                        cachedRowSet.getString("ACTION_ID")),
-                        cachedRowSet.getLong("ACTION_NB"),
-                        cachedRowSet.getString("ACTION_TYP_NM"),
-                        cachedRowSet.getString("ACTION_NM"),
-                        cachedRowSet.getString("ACTION_DSC"),
-                        cachedRowSet.getString("COMP_NM"),
-                        cachedRowSet.getString("ITERATION_VAL"),
-                        cachedRowSet.getString("CONDITION_VAL"),
-                        cachedRowSet.getInt("RETRIES_VAL"),
-                        cachedRowSet.getString("EXP_ERR_FL"),
-                        cachedRowSet.getString("STOP_ERR_FL")));
-            }
-            return actionTraces;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return namedParameterJdbcTemplate.query(
+                getAll,
+                new ActionTraceExtractor());
     }
 
     @Override
     public void delete(ActionTraceKey actionTraceKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionTrace {0}.", actionTraceKey.toString()));
-        String deleteStatement = deleteStatement(actionTraceKey);
-        getMetadataRepository().executeUpdate(deleteStatement);
-    }
-
-    private String deleteStatement(ActionTraceKey actionTraceKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionTraces") +
-                " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getProcessId()) + " AND " +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getActionId()) + ";";
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionTraceKey.getRunId())
+                .addValue("process", actionTraceKey.getProcessId())
+                .addValue("action", actionTraceKey.getActionId());
+        namedParameterJdbcTemplate.update(
+                deleteStatement,
+                sqlParameterSource);
     }
 
     @Override
     public void insert(ActionTrace actionTrace) {
         LOGGER.trace(MessageFormat.format("Inserting ActionTrace {0}.", actionTrace.getMetadataKey().toString()));
-        String insertStatement = insertStatement(actionTrace);
-        getMetadataRepository().executeUpdate(insertStatement);
-    }
-
-    private String insertStatement(ActionTrace actionTrace) {
-        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ActionTraces") +
-                " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM," +
-                " ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
-                SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getActionId()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getNumber()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getType()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getName()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getDescription()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getComponent()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getIteration()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getCondition()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getRetries()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getErrorExpected()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getErrorStop()) + ");";
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionTrace.getMetadataKey().getRunId())
+                .addValue("process", actionTrace.getMetadataKey().getProcessId())
+                .addValue("actionId", actionTrace.getMetadataKey().getActionId())
+                .addValue("actionNumber", actionTrace.getNumber())
+                .addValue("actionType", actionTrace.getType())
+                .addValue("actionName", actionTrace.getName())
+                .addValue("description", actionTrace.getDescription())
+                .addValue("component", actionTrace.getComponent())
+                .addValue("iteration", actionTrace.getIteration())
+                .addValue("condition", actionTrace.getCondition())
+                .addValue("retries", actionTrace.getRetries())
+                .addValue("error", actionTrace.getErrorExpected())
+                .addValue("errorStop", actionTrace.getErrorStop());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     @Override
     public void update(ActionTrace actionTrace) {
         LOGGER.trace(MessageFormat.format("Updating ActionTrace {0}.", actionTrace.getMetadataKey().toString()));
-        String updateStatement = updateStatement(actionTrace);
-        getMetadataRepository().executeUpdate(updateStatement);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionTrace.getMetadataKey().getRunId())
+                .addValue("process", actionTrace.getMetadataKey().getProcessId())
+                .addValue("actionId", actionTrace.getMetadataKey().getActionId())
+                .addValue("actionNumber", actionTrace.getNumber())
+                .addValue("actionType", actionTrace.getType())
+                .addValue("actionName", actionTrace.getName())
+                .addValue("description", actionTrace.getDescription())
+                .addValue("component", actionTrace.getComponent())
+                .addValue("iteration", actionTrace.getIteration())
+                .addValue("condition", actionTrace.getCondition())
+                .addValue("retries", actionTrace.getRetries())
+                .addValue("error", actionTrace.getErrorExpected())
+                .addValue("errorStop", actionTrace.getErrorStop());
+        namedParameterJdbcTemplate.update(
+                updateStatement,
+                sqlParameterSource);
     }
-
-    private String updateStatement(ActionTrace actionTrace) {
-        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionTraces") +
-                " SET ACTION_NB = " + SQLTools.GetStringForSQL(actionTrace.getNumber()) + "," +
-                "ACTION_TYP_NM = " + SQLTools.GetStringForSQL(actionTrace.getType()) + "," +
-                "ACTION_NM = " + SQLTools.GetStringForSQL(actionTrace.getName()) + "," +
-                "ACTION_DSC = " + SQLTools.GetStringForSQL(actionTrace.getDescription()) + "," +
-                "COMP_NM = " + SQLTools.GetStringForSQL(actionTrace.getComponent()) + "," +
-                "ITERATION_VAL = " + SQLTools.GetStringForSQL(actionTrace.getIteration()) + "," +
-                "CONDITION_VAL = " + SQLTools.GetStringForSQL(actionTrace.getCondition()) + "," +
-                "RETRIES_VAL = " + SQLTools.GetStringForSQL(actionTrace.getRetries()) + "," +
-                "EXP_ERR_FL = " + SQLTools.GetStringForSQL(actionTrace.getErrorExpected()) + "," +
-                "STOP_ERR_FL =" + SQLTools.GetStringForSQL(actionTrace.getErrorStop()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getProcessId()) +
-                " AND ACTION_ID= " + SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getActionId()) + ";";
-    }
-
-
-//    public void insert(List<ActionTrace> actionTraces) throws MetadataAlreadyExistsException, SQLException {
-//        LOGGER.trace(MessageFormat.format("Inserting ActionParameterTraces {0}.", actionTraces.stream().map(ActionTrace::getMetadataKey).collect(Collectors.toList()).toString()));
-//        List<String> insertQueries = new ArrayList<>();
-//        for (ActionTrace actionTrace : actionTraces) {
-//            insertQueries.add(insertStatement(actionTrace));
-//        }
-//        getMetadataRepository().executeBatch(insertQueries);
-//    }
 }

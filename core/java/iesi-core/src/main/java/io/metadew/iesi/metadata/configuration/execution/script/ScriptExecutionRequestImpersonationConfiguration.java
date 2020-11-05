@@ -1,23 +1,21 @@
 package io.metadew.iesi.metadata.configuration.execution.script;
 
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestImpersonation;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestImpersonationKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
-import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,52 +31,40 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
         return INSTANCE;
     }
 
-    private ScriptExecutionRequestImpersonationConfiguration() {}
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    // Constructors
+    private ScriptExecutionRequestImpersonationConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
+    }
+
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private final static String insert = "INSERT INTO "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() +
+            " (ID, SCRIPT_EXEC_REQ_ID, IMP_ID) VALUES (:id, :scriptId, :impId)";
+    private final static String update = "UPDATE "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() +
+            " SET SCRIPT_EXEC_REQ_ID = :scriptId, IMP_ID = :impId WHERE ID = :id ; ";
+    private static final String deleteByImpersonation = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " WHERE IMP_ID =  :id  ;";
+    private static final String deleteByScriptExecutionRequest = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " WHERE SCRIPT_EXEC_REQ_ID =  :id  ;";
+    private static final String delete = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " WHERE ID =  :id  ;";
+
     @Override
     public Optional<ScriptExecutionRequestImpersonation> get(ScriptExecutionRequestImpersonationKey scriptExecutionRequestKey) {
-        try {
-            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, IMP_ID FROM " +
-                    getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                    " WHERE ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            if (cachedRowSet.size() == 0) {
-                return Optional.empty();
-            } else if (cachedRowSet.size() > 1) {
-                log.warn(MessageFormat.format("Found multiple implementations for {0}. Returning first implementation", scriptExecutionRequestKey.toString()));
-            }
-            cachedRowSet.next();
-            return Optional.of(new ScriptExecutionRequestImpersonation(scriptExecutionRequestKey,
-                    new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
-                    new ImpersonationKey(cachedRowSet.getString("IMP_ID"))));
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ScriptExecutionRequestImpersonation> getAll() {
-        try {
-            List<ScriptExecutionRequestImpersonation> scriptExecutionRequests = new ArrayList<>();
-            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, IMP_ID FROM " +
-                    getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                scriptExecutionRequests.add(new ScriptExecutionRequestImpersonation(
-                        new ScriptExecutionRequestImpersonationKey(cachedRowSet.getString("ID")),
-                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
-                        new ImpersonationKey(cachedRowSet.getString("IMP_ID"))));
-            }
-            return scriptExecutionRequests;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -87,104 +73,51 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
         if (!exists(scriptExecutionRequestKey)) {
             throw new MetadataDoesNotExistException(scriptExecutionRequestKey);
         }
-        getMetadataRepository().executeUpdate(deleteStatement(scriptExecutionRequestKey));
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptExecutionRequestKey.getId());
+        namedParameterJdbcTemplate.update(
+                delete,
+                sqlParameterSource);
     }
-
-    private String deleteStatement(ScriptExecutionRequestImpersonationKey executionRequestKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                " WHERE ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
-    }
-
-    private String deleteStatement(ScriptExecutionRequestKey executionRequestKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
-    }
-
-    private String deleteStatement(ImpersonationKey executionRequestKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                " WHERE IMP_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getName()) + ";";
-    }
-
 
     @Override
     public void insert(ScriptExecutionRequestImpersonation scriptExecutionRequest) {
         log.trace(MessageFormat.format("Inserting ScriptExecutionRequest {0}.", scriptExecutionRequest.toString()));
-        if (exists(scriptExecutionRequest.getMetadataKey())) {
-            throw new MetadataAlreadyExistsException(scriptExecutionRequest);
-        }
-        getMetadataRepository().executeUpdate(insertStatement(scriptExecutionRequest));
-    }
-
-    public String insertStatement(ScriptExecutionRequestImpersonation scriptExecutionRequest) {
-        return  "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                " (ID, SCRIPT_EXEC_REQ_ID, IMP_ID) VALUES (" +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getImpersonationKey().getName()) + ");";
-    }
-
-    public List<ScriptExecutionRequestImpersonation> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
-        try {
-            List<ScriptExecutionRequestImpersonation> scriptExecutionRequestParameters = new ArrayList<>();
-            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, IMP_ID FROM " +
-                    getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                    " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                scriptExecutionRequestParameters.add(new ScriptExecutionRequestImpersonation(
-                        new ScriptExecutionRequestImpersonationKey(cachedRowSet.getString("ID")),
-                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
-                        new ImpersonationKey(cachedRowSet.getString("IMP_ID"))));
-            }
-            return scriptExecutionRequestParameters;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<ScriptExecutionRequestImpersonation> getByImpersonation(ImpersonationKey executionRequestKey) {
-        try {
-            List<ScriptExecutionRequestImpersonation> scriptExecutionRequestParameters = new ArrayList<>();
-            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, IMP_ID FROM " +
-                    getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                    " WHERE IMP_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getName()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                scriptExecutionRequestParameters.add(new ScriptExecutionRequestImpersonation(
-                        new ScriptExecutionRequestImpersonationKey(cachedRowSet.getString("ID")),
-                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
-                        new ImpersonationKey(cachedRowSet.getString("IMP_ID"))));
-            }
-            return scriptExecutionRequestParameters;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptExecutionRequest.getMetadataKey().getId())
+                .addValue("scriptId", scriptExecutionRequest.getScriptExecutionRequestKey().getId())
+                .addValue("impId", scriptExecutionRequest.getImpersonationKey().getName());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     public void deleteByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
         log.trace(MessageFormat.format("Deleting ScriptExecutionRequestImpersonation by {0}.", executionRequestKey.toString()));
-        getMetadataRepository().executeUpdate(deleteStatement(executionRequestKey));
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", executionRequestKey.getId());
+        namedParameterJdbcTemplate.update(
+                deleteByScriptExecutionRequest,
+                sqlParameterSource);
     }
 
     public void deleteByImpersonation(ImpersonationKey executionRequestKey) {
         log.trace(MessageFormat.format("Deleting ScriptExecutionRequestImpersonation by {0}.", executionRequestKey.toString()));
-        getMetadataRepository().executeUpdate(deleteStatement(executionRequestKey));
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", executionRequestKey.getName());
+        namedParameterJdbcTemplate.update(
+                deleteByImpersonation,
+                sqlParameterSource);
     }
 
     @Override
     public void update(ScriptExecutionRequestImpersonation executionRequest) {
-        if (!exists(executionRequest.getMetadataKey())) {
-            throw new MetadataDoesNotExistException(executionRequest);
-        }
-        getMetadataRepository().executeUpdate(updateStatement(executionRequest));
-
-    }
-
-    public String updateStatement(ScriptExecutionRequestImpersonation scriptExecutionRequest) {
-        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") + " SET " +
-                "SCRIPT_EXEC_REQ_ID=" + SQLTools.GetStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
-                "IMP_ID=" + SQLTools.GetStringForSQL(scriptExecutionRequest.getImpersonationKey().getName()) + "," +
-                " WHERE " +
-                "ID = " + SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";";
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("scriptId", executionRequest.getScriptExecutionRequestKey().getId())
+                .addValue("impId", executionRequest.getImpersonationKey().getName())
+                .addValue("id", executionRequest.getMetadataKey().getId());
+        namedParameterJdbcTemplate.update(
+                update,
+                sqlParameterSource);
     }
 }

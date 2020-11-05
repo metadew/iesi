@@ -132,7 +132,6 @@ class EnvironmentConfigurationTest {
         environmentList.add(environment1);
         environmentList.add(environment2);
         assertEquals(2, EnvironmentConfiguration.getInstance().getAll().size());
-
     }
 
     @Test
@@ -144,7 +143,6 @@ class EnvironmentConfigurationTest {
         EnvironmentConfiguration.getInstance().deleteAll();
 
         assertEquals(0, EnvironmentConfiguration.getInstance().getAll().size());
-        assertEquals(0, EnvironmentParameterConfiguration.getInstance().getAll().size());
     }
 
 }

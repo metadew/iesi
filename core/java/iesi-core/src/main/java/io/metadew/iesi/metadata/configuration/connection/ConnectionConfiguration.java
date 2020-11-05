@@ -3,14 +3,12 @@ package io.metadew.iesi.metadata.configuration.connection;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.database.Database;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,12 +17,14 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ConnectionConfiguration extends Configuration<Connection, ConnectionKey> {
 
@@ -44,7 +44,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             " Connections LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() +
             " ConnectionParameters ON Connections.CONN_NM=ConnectionParameters.CONN_NM" +
             " order by Connections.CONN_NM ASC;";
-    private static final String query ="select Connections.CONN_NM AS Connections_CONN_NM, Connections.CONN_TYP_NM AS Connections_CONN_TYP_NM, Connections.CONN_DSC AS Connections_CONN_DSC, " +
+    private static final String query = "select Connections.CONN_NM AS Connections_CONN_NM, Connections.CONN_TYP_NM AS Connections_CONN_TYP_NM, Connections.CONN_DSC AS Connections_CONN_DSC, " +
             "  ConnectionParameters.CONN_NM AS ConnectionParameters_CONN_NM, ConnectionParameters.CONN_PAR_NM AS ConnectionParameters_CONN_PAR_NM , ConnectionParameters.CONN_PAR_VAL AS ConnectionParameters_CONN_PAR_VAL , ConnectionParameters.ENV_NM AS ConnectionParameters_ENV_NM  " +
             " from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() +
             " Connections LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() +
@@ -62,8 +62,16 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             " Connections LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() +
             " ConnectionParameters ON Connections.CONN_NM=ConnectionParameters.CONN_NM" +
             " WHERE Connections.CONN_NM = :name;";
-    private static final String queryConnectionParameters = "select DISTINCT ENV_NM from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() +
-            " WHERE CONN_NM  = :name;";
+    private static final String queryConnectionParameters = "select Connections.CONN_NM AS Connections_CONN_NM, Connections.CONN_TYP_NM AS Connections_CONN_TYP_NM, Connections.CONN_DSC AS Connections_CONN_DSC, " +
+            "  ConnectionParameters.CONN_NM AS ConnectionParameters_CONN_NM, ConnectionParameters.CONN_PAR_NM AS ConnectionParameters_CONN_PAR_NM , ConnectionParameters.CONN_PAR_VAL AS ConnectionParameters_CONN_PAR_VAL , ConnectionParameters.ENV_NM AS ConnectionParameters_ENV_NM  " +
+            " from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() +
+            " Connections LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() +
+            " ConnectionParameters ON Connections.CONN_NM=ConnectionParameters.CONN_NM  WHERE ConnectionParameters.CONN_NM  = :name ;";
+    private static final String getByEnvironment = "select Connections.CONN_NM AS Connections_CONN_NM, Connections.CONN_TYP_NM AS Connections_CONN_TYP_NM, Connections.CONN_DSC AS Connections_CONN_DSC, " +
+            "  ConnectionParameters.CONN_NM AS ConnectionParameters_CONN_NM, ConnectionParameters.CONN_PAR_NM AS ConnectionParameters_CONN_PAR_NM , ConnectionParameters.CONN_PAR_VAL AS ConnectionParameters_CONN_PAR_VAL , ConnectionParameters.ENV_NM AS ConnectionParameters_ENV_NM  " +
+            " from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() +
+            " Connections LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() +
+            " ConnectionParameters ON Connections.CONN_NM=ConnectionParameters.CONN_NM WHERE ConnectionParameters.ENV_NM  = :name ;";
     private static final String deleteAllConnections = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " ;";
     private static final String deleteAllConnectionParameters = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() + " ;";
     private static final String getDeleteByNameQueryConnections = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName()
@@ -122,11 +130,22 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     }
 
     private void getDeleteQuery(ConnectionKey connectionKey) {
-              SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", connectionKey.getName());
-        namedParameterJdbcTemplate.update(
-                getDeleteQuery,
-                sqlParameterSource);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", connectionKey.getEnvironmentKey().getName())
+                .addValue("versionNumber", connectionKey.getName());
+        int total_environments = namedParameterJdbcTemplate.query(
+                countQuery,
+                sqlParameterSource,
+                new ConnectionConfigurationExtractorTotal());
+        if (total_environments == 0) {
+            SqlParameterSource sqlParameterSourceQuery = new MapSqlParameterSource()
+                    .addValue("name", connectionKey.getName());
+            namedParameterJdbcTemplate.update(
+                    getDeleteQuery,
+                    sqlParameterSourceQuery);
+        } else {
+            Optional.empty();
+        }
     }
 
     @Override
@@ -157,41 +176,53 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         }
     }
 
-//    public List<Connection> getByName(String connectionName) {
-//        List<Connection> connectionList = namedParameterJdbcTemplate.query(query,
-//                new ConnectionConfigurationExtractor());
-//        if (connectionList.size() == 0) {
-//            return connectionList;
-//        } else if (connectionList.size() > 1) {
-//            LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", connectionName));
-//        }
-//        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-//                .addValue("name", connectionName);
-//        List<ConnectionParameter> connectionParameters = namedParameterJdbcTemplate.query(
-//                queryConnectionParameters,
-//                sqlParameterSource, new ConnectionParameterExtractor());
-//        get(new ConnectionKey(connectionName, (EnvironmentKey) connectionParameters))
-//                .ifPresent(connectionList::add);
-//        return connectionList;
-//    }
+    public static <T> Predicate<T> distinctByKey(
+            Function<? super T, ?> keyExtractor) {
+
+        Map<Object, Boolean> seen = new HashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
+    public List<Connection> getByName(String connectionName) {
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("name", connectionName);
+        List<Connection> connectionList = namedParameterJdbcTemplate.query(
+                queryConnectionParameters,
+                sqlParameterSource, new ConnectionConfigurationExtractor());
+        if (connectionList.size() == 0) {
+            return connectionList;
+        } else if (connectionList.size() > 1) {
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", connectionName));
+        }
+        List<ConnectionParameter> connectionParameterList = connectionList.stream()
+                .flatMap(x -> x.getParameters().stream())
+                .filter(distinctByKey(p -> p.getMetadataKey().getConnectionKey().getEnvironmentKey())
+                ).collect(Collectors.toList());
+        for (Connection connection : connectionList) {
+            connection.setParameters(connectionParameterList);
+        }
+        return connectionList;
+    }
 
     public List<Connection> getByEnvironment(String environmentName) {
-        List<Connection> connections = new ArrayList<>();
-
-        String connectionsByEnvironmentQuery = "select distinct CONN_NM from "
-                + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
-                + " where ENV_NM = " + SQLTools.GetStringForSQL(environmentName) + ";";
-        CachedRowSet connectionsByEnvironment = getMetadataRepository().executeQuery(connectionsByEnvironmentQuery, "reader");
-        try {
-            while (connectionsByEnvironment.next()) {
-                get(new ConnectionKey(connectionsByEnvironment.getString("CONN_NM"), environmentName))
-                        .ifPresent(connections::add);
-            }
-            connectionsByEnvironment.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("name", environmentName);
+        List<Connection> connectionList = namedParameterJdbcTemplate.query(
+                getByEnvironment,
+                sqlParameterSource, new ConnectionConfigurationExtractor());
+        if (connectionList.size() == 0) {
+            return connectionList;
+        } else if (connectionList.size() > 1) {
+            LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", environmentName));
         }
-        return connections;
+        List<ConnectionParameter> connectionParameterList = connectionList.stream()
+                .flatMap(x -> x.getParameters().stream())
+                .filter(distinctByKey(p -> p.getMetadataKey().getConnectionKey().getName())
+                ).collect(Collectors.toList());
+        for (Connection connection : connectionList) {
+            connection.setParameters(connectionParameterList);
+        }
+        return connectionList;
     }
 
     public void deleteAll() {

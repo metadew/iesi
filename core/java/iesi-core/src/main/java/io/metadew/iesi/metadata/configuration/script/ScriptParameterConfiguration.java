@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -47,15 +46,6 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         setMetadataRepository(metadataRepository);
     }
 
-    private static final String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from  "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " where SCRIPT_ID = :id and SCRIPT_VRS_NB = :version and SCRIPT_PAR_NM = :parameter ; ";
-    private static final String getAll = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " order by SCRIPT_ID ASC ; ";
-    private static final String getByScript = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " WHERE SCRIPT_ID = :id  and SCRIPT_VRS_NB = :version;";
     private static final String deleteByScript = "DELETE FROM  "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
             " WHERE SCRIPT_ID = :id AND SCRIPT_VRS_NB = :version ; ";
@@ -65,9 +55,6 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     private static final String deleteStatement = "DELETE FROM  "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
             " WHERE SCRIPT_ID = :id AND SCRIPT_VRS_NB = :version AND SCRIPT_PAR_NM = :parameter ; ";
-    private static final String exists = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from   "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptParameters").getName() +
-            " where SCRIPT_ID = :id and SCRIPT_VRS_NB = :version and SCRIPT_PAR_NM = :parameter ; ";
 
     @Override
     public Optional<ScriptParameter> get(ScriptParameterKey scriptParameterKey) {
@@ -77,15 +64,6 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     @Override
     public List<ScriptParameter> getAll() {
         throw new UnsupportedOperationException();
-    }
-    public List<ScriptParameter> getByScript(ScriptKey scriptKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", scriptKey.getScriptId())
-                .addValue("version", scriptKey.getScriptVersion());
-        return namedParameterJdbcTemplate.query(
-                getByScript,
-                sqlParameterSource,
-                new ScriptParameterExtractor());
     }
 
     @Override

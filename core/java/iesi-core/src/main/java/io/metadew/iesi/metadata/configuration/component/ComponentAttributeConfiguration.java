@@ -4,7 +4,6 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
@@ -13,7 +12,6 @@ import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -35,18 +33,12 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
         return INSTANCE;
     }
 
-    private final static String queryComponentAttribute = "select COMP_ID, COMP_VRS_NB, COMP_ATT_NM, ENV_NM, COMP_ATT_VAL from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
-            " where COMP_ID = :componentId AND COMP_VRS_NB = :versionNb AND  ENV_NM = :environmentName AND COMP_ATT_NM = :componentAttributeName ;";
     private final static String insert = "INSERT INTO "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
             " (COMP_ID, COMP_VRS_NB, ENV_NM, COMP_ATT_NM, COMP_ATT_VAL) VALUES (:id,:versionNumber,:environmentName,:attributeName, :value)  ;";
     private final static String delete = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
             " where COMP_ID = :componentId  AND COMP_VRS_NB = :componentVersionNb AND  ENV_NM = :environmentName AND COMP_ATT_NM = :componentAttributeName ;";
-    private final static String getByComponentAndEnvironment = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
-            " where COMP_ID = :componentId AND COMP_VRS_NB = :versionNumber AND  ENV_NM = :environmentName ;";
     private final static String deleteByComponent = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() +
             " where COMP_ID = :componentId  AND COMP_VRS_NB = :versionNumber ;";
@@ -58,8 +50,6 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
             " where COMP_ID = :componentId AND COMP_VRS_NB =:versionNumber AND ENV_NM = :environmentName ;";
     private final static String deleteAll = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() + " ;";
-    private final static String getByComponent = "select * FROM "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentAttributes").getName() + " WHERE COMP_ID = :componentId AND COMP_VRS_NB = :versionNumber";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -115,17 +105,6 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
         namedParameterJdbcTemplate.update(
                 insert,
                 sqlParameterSource);
-    }
-
-    public List<ComponentAttribute> getByComponentAndEnvironment(ComponentKey componentKey, EnvironmentKey environmentKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("componentId", componentKey.getId())
-                .addValue("versionNumber", componentKey.getVersionNumber())
-                .addValue("environmentName", environmentKey.getName());
-        return namedParameterJdbcTemplate.query(
-                getByComponentAndEnvironment,
-                sqlParameterSource,
-                new ComponentAttributeExtractor());
     }
 
     public void deleteByComponent(ComponentKey componentKey) {

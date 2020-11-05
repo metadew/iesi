@@ -46,15 +46,6 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         setMetadataRepository(metadataRepository);
     }
 
-    private static final String queryScriptLabel = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
-            " where ID = :id  ; ";
-    private static final String getAll = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
-            "  ; ";
-    private static final String getByScript = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
-            " WHERE SCRIPT_ID = :id and SCRIPT_VRS_NB = :version ;";
     private static final String deleteByScript = "DELETE FROM   "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
             " where SCRIPT_ID = :id AND SCRIPT_VRS_NB = :version ; ";
@@ -64,9 +55,6 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
     private static final String deleteStatement = "DELETE FROM  "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
             " WHERE ID = :id ; ";
-    private static final String exists = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() +
-            " where ID = :id ; ";
 
     @Override
     public Optional<ScriptLabel> get(ScriptLabelKey scriptLabelKey) {
@@ -87,12 +75,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                 deleteStatement,
                 sqlParameterSource);
     }
-    public List<ScriptLabel> getByScript(ScriptKey scriptKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", scriptKey.getScriptId())
-                .addValue("version", scriptKey.getScriptVersion());
-        return namedParameterJdbcTemplate.query(getByScript, sqlParameterSource, new ScriptLabelExtractor());
-    }
+
     @Override
     public void insert(ScriptLabel scriptLabel) {
         LOGGER.trace(MessageFormat.format("Inserting {0}.", scriptLabel.toString()));

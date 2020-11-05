@@ -4,7 +4,6 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
@@ -12,7 +11,6 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -49,26 +47,21 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
         setMetadataRepository(metadataRepository);
     }
 
-    private final static String queryComponentParameter = "select COMP_ID,COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
-            " where COMP_ID = :id and COMP_VRS_NB = :versionNumber and COMP_PAR_NM = :parameterName  ";
-    private final static String queryAll = "select COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() + ";";
+
     private final static String delete = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
             " where COMP_ID = :id and COMP_VRS_NB = :versionNumber and COMP_PAR_NM = :parameterName  ";
     private final static String insert = "INSERT INTO "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName()
             + " (COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL) VALUES (:id, :versionNumber,:parameterName,:value) ";
-    private final static String getByComponent = "select COMP_ID, COMP_VRS_NB, COMP_PAR_NM, COMP_PAR_VAL from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
-            " where COMP_ID = :id and COMP_VRS_NB = :versionNumber ";
     private final static String deleteByComponent = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
             " where COMP_ID = :id AND COMP_VRS_NB = :versionNumber ";
     private final static String deleteByComponentId = "DELETE FROM "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() +
             " where COMP_ID = :id ";
+    private final static String deleteAll = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() + " ;";
 
     @Override
     public Optional<ComponentParameter> get(ComponentParameterKey componentParameterKey) {
@@ -126,9 +119,6 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
                 deleteByComponentId,
                 sqlParameterSource);
     }
-
-    private final static String deleteAll = "DELETE FROM "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() + " ;";
 
     public void deleteAll() {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource();

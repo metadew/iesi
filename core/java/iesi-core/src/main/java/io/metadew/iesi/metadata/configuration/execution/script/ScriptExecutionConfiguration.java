@@ -1,7 +1,8 @@
 package io.metadew.iesi.metadata.configuration.execution.script;
 
-import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.common.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -11,11 +12,12 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,58 +33,56 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
         return INSTANCE;
     }
 
-    private ScriptExecutionConfiguration() {}
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    private ScriptExecutionConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
+    }
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private final static String query = "SELECT ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() +
+            " WHERE ID = :id ;";
+    private static final String insert = "INSERT INTO "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " (ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS) " +
+            "VALUES (:id, :requestId, :runId, :value, :start, :end) ;";
+    private final static String getAll = "SELECT ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() +
+            " ;";
+    private static final String delete = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " WHERE ID = :id  ;";
+    private final static String update = "UPDATE "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() +
+            " SET SCRPT_REQUEST_ID = :id, RUN_ID = :runId, ST_NM = :value, STRT_TMS = :start, END_TMS = :end " +
+            "  WHERE ID = :requestId ; ";
+    private static final String deleteByScriptExecutionRequestKey = "DELETE FROM "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " WHERE SCRPT_REQUEST_ID = :id  ;";
+
     @Override
     public Optional<ScriptExecution> get(ScriptExecutionKey scriptExecutionRequestKey) {
-        try {
-            String query = "SELECT ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS " +
-                    "FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
-                    " WHERE ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
-
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            if (cachedRowSet.size() == 0) {
-                return Optional.empty();
-            } else if (cachedRowSet.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptExecution {0}. Returning first implementation", scriptExecutionRequestKey.toString()));
-            }
-            cachedRowSet.next();
-            return Optional.of(new ScriptExecution(scriptExecutionRequestKey,
-                    new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
-                    cachedRowSet.getString("RUN_ID"),
-                    ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptExecutionRequestKey.getId());
+        return Optional.ofNullable(
+                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
+                        query,
+                        sqlParameterSource,
+                        new ScriptExecutionExtractor())));
     }
 
     @Override
     public List<ScriptExecution> getAll() {
-        try {
-            List<ScriptExecution> scriptExecutions = new ArrayList<>();
-            String query = "SELECT ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") + ";";
-
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                scriptExecutions.add(new ScriptExecution(new ScriptExecutionKey(
-                        cachedRowSet.getString("ID")),
-                        new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
-                        cachedRowSet.getString("RUN_ID"),
-                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
-            }
-            return scriptExecutions;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return namedParameterJdbcTemplate.query(getAll, new ScriptExecutionExtractor());
     }
+
 
     @Override
     public void delete(ScriptExecutionKey scriptExecutionKey) {
@@ -90,16 +90,11 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
         if (!exists(scriptExecutionKey)) {
             throw new MetadataDoesNotExistException(scriptExecutionKey);
         }
-        List<String> deleteStatement = deleteStatement(scriptExecutionKey);
-        getMetadataRepository().executeBatch(deleteStatement);
-    }
-
-    private List<String> deleteStatement(ScriptExecutionKey scriptExecutionKey) {
-        List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
-                " WHERE " +
-                " ID = " + SQLTools.GetStringForSQL(scriptExecutionKey.getId()) + ";");
-        return queries;
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptExecutionKey.getId());
+        namedParameterJdbcTemplate.update(
+                delete,
+                sqlParameterSource);
     }
 
     @Override
@@ -108,55 +103,25 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
         if (exists(scriptExecutionRequest.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(scriptExecutionRequest);
         }
-        String insertStatement = insertStatement(scriptExecutionRequest);
-        getMetadataRepository().executeUpdate(insertStatement);
-    }
-
-    private String insertStatement(ScriptExecution scriptExecution) {
-        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
-                " (ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS) VALUES (" +
-                SQLTools.GetStringForSQL(scriptExecution.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionRequestKey().getId()) + ", " +
-                SQLTools.GetStringForSQL(scriptExecution.getRunId()) + ", " +
-                SQLTools.GetStringForSQL(scriptExecution.getScriptRunStatus().value()) + ", " +
-                SQLTools.GetStringForSQL(scriptExecution.getStartTimestamp()) + ", " +
-                SQLTools.GetStringForSQL(scriptExecution.getEndTimestamp()) + ");";
-    }
-
-    public List<ScriptExecution> getByScriptExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey) {
-        try {
-            List<ScriptExecution> scriptExecutions = new ArrayList<>();
-            String query = "SELECT ID, SCRPT_REQUEST_ID, RUN_ID, ST_NM, STRT_TMS, END_TMS FROM " +
-                    getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
-                    " WHERE SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
-
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
-            while (cachedRowSet.next()) {
-                scriptExecutions.add(new ScriptExecution(new ScriptExecutionKey(
-                        cachedRowSet.getString("ID")),
-                        scriptExecutionRequestKey,
-                        cachedRowSet.getString("RUN_ID"),
-                        ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
-            }
-            return scriptExecutions;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptExecutionRequest.getMetadataKey().getId())
+                .addValue("requestId", scriptExecutionRequest.getScriptExecutionRequestKey().getId())
+                .addValue("runId", scriptExecutionRequest.getRunId())
+                .addValue("value", scriptExecutionRequest.getScriptRunStatus().value())
+                .addValue("start", scriptExecutionRequest.getStartTimestamp())
+                .addValue("end", scriptExecutionRequest.getEndTimestamp());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     public void deleteByScriptExecutionRequestKey(ScriptExecutionRequestKey scriptExecutionRequestKey) {
         LOGGER.trace(MessageFormat.format("Deleting ScriptExecution by ExecutionKey {0}.", scriptExecutionRequestKey.toString()));
-        List<String> deleteStatement = deleteStatement(scriptExecutionRequestKey);
-        getMetadataRepository().executeBatch(deleteStatement);
-    }
-
-    private List<String> deleteStatement(ScriptExecutionRequestKey scriptExecutionRequestKey) {
-        List<String> queries = new ArrayList<>();
-        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") +
-                " WHERE SCRPT_REQUEST_ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";");
-        return queries;
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptExecutionRequestKey.getId());
+        namedParameterJdbcTemplate.update(
+                deleteByScriptExecutionRequestKey,
+                sqlParameterSource);
     }
 
     @Override
@@ -164,17 +129,15 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
         if (!exists(scriptExecution.getMetadataKey())) {
             throw new MetadataDoesNotExistException(scriptExecution);
         }
-        String updateStatement = updateStatement(scriptExecution);
-        getMetadataRepository().executeUpdate(updateStatement);
-    }
-
-    public String updateStatement(ScriptExecution scriptExecution) {
-        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") + " SET " +
-                "SCRPT_REQUEST_ID= " + SQLTools.GetStringForSQL(scriptExecution.getScriptExecutionRequestKey().getId()) + ", " +
-                "RUN_ID=" + SQLTools.GetStringForSQL(scriptExecution.getRunId()) + ", " +
-                "ST_NM=" + SQLTools.GetStringForSQL(scriptExecution.getScriptRunStatus().value()) + ", " +
-                "STRT_TMS=" + SQLTools.GetStringForSQL(scriptExecution.getStartTimestamp()) + ", " +
-                "END_TMS=" + SQLTools.GetStringForSQL(scriptExecution.getEndTimestamp()) +
-                " WHERE ID = " + SQLTools.GetStringForSQL(scriptExecution.getMetadataKey().getId()) + ";";
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", scriptExecution.getScriptExecutionRequestKey().getId())
+                .addValue("runId", scriptExecution.getRunId())
+                .addValue("value", scriptExecution.getScriptRunStatus().value())
+                .addValue("start", scriptExecution.getStartTimestamp())
+                .addValue("end", scriptExecution.getEndTimestamp())
+                .addValue("requestId", scriptExecution.getMetadataKey().getId());
+        namedParameterJdbcTemplate.update(
+                update,
+                sqlParameterSource);
     }
 }

@@ -21,9 +21,6 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
 
     public ConnectivityMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(instanceName, repositoryCoordinator);
-//        ConnectionConfiguration.getInstance().init(this);
-//        EnvironmentConfiguration.getInstance().init(this);
-//        ImpersonationConfiguration.getInstance().init(this);
     }
 
     @Override
@@ -80,7 +77,7 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
                 impersonation.getMetadataKey().getName()));
         try {
-            ImpersonationConfiguration.getInstance().insertImpersonation(impersonation);
+            ImpersonationConfiguration.getInstance().insert(impersonation);
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
                     impersonation.getMetadataKey().getName()));

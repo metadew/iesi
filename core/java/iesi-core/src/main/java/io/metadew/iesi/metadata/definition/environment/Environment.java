@@ -59,6 +59,7 @@ public class Environment extends Metadata<EnvironmentKey> {
     public boolean isEmpty() {
         return (getName() == null || getName().isEmpty());
     }
+
     public void addParameters(EnvironmentParameter parameters) {
         this.parameters.add(parameters);
     }

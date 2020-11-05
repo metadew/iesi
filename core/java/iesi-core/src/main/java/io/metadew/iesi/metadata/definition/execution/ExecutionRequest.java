@@ -39,4 +39,7 @@ public abstract class ExecutionRequest extends Metadata<ExecutionRequestKey> {
         this.executionRequestLabels = executionRequestLabels;
     }
 
+    public void addExecutionRequestLabel(ExecutionRequestLabel executionRequestLabel) {
+        this.executionRequestLabels.add(executionRequestLabel);
+    }
 }

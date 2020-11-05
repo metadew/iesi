@@ -16,4 +16,18 @@ public class RepositoryTestSetup {
         return MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository();
     }
 
+    public static ExecutionServerMetadataRepository getExecutionServerMetadataRepository() {
+        Configuration.getInstance();
+        return MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository();
+    }
+
+    public static TraceMetadataRepository getTraceMetadataRepository() {
+        Configuration.getInstance();
+        return MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository();
+    }
+
+    public static ResultMetadataRepository getResultMetadataRepository() {
+        Configuration.getInstance();
+        return MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository();
+    }
 }

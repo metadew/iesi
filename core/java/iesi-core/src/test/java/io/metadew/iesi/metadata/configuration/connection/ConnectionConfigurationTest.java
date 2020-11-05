@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
@@ -116,7 +117,6 @@ class ConnectionConfigurationTest {
         ConnectionConfiguration.getInstance().delete(connection1.getMetadataKey());
 
         assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-//        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -125,12 +125,9 @@ class ConnectionConfigurationTest {
         ConnectionConfiguration.getInstance().insert(connection2);
         ConnectionConfiguration.getInstance().insert(connection3);
 
-//        assertEquals(3, ConnectionConfiguration.getInstance().getAll().size());
-
         ConnectionConfiguration.getInstance().delete(connection2.getMetadataKey());
 
         assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-//        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -139,12 +136,9 @@ class ConnectionConfigurationTest {
         ConnectionConfiguration.getInstance().insert(connection2);
         ConnectionConfiguration.getInstance().insert(connection3);
 
-//        assertEquals(3, ConnectionConfiguration.getInstance().getAll().size());
-
         ConnectionConfiguration.getInstance().delete(connection3.getMetadataKey());
 
         assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-//        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -157,6 +151,15 @@ class ConnectionConfigurationTest {
     void connectionGetNotExistsTest() {
         assertFalse(ConnectionConfiguration.getInstance().exists(connection1));
         assertFalse(ConnectionConfiguration.getInstance().get(connection1.getMetadataKey()).isPresent());
+    }
+
+    @Test
+    void connectiongetByEnvironment() {
+        ConnectionConfiguration.getInstance().insert(connection1);
+        List<Connection> fetchedConnection1 = ConnectionConfiguration.getInstance().getByEnvironment("env1");
+        assertEquals(1, fetchedConnection1.size());
+        List<Connection> fetchedConnection2 = ConnectionConfiguration.getInstance().getByEnvironment("env8");
+        assertEquals(0, fetchedConnection2.size());
     }
 
     @Test

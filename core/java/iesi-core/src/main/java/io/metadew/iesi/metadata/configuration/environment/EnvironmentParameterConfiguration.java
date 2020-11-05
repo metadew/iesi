@@ -58,7 +58,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
 
     private static final String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName() + " WHERE " + " ENV_NM = :name AND ENV_PAR_NM = :parameterName ;";
     private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName() + " (ENV_NM, ENV_PAR_NM, ENV_PAR_VAL) VALUES (:env_nm,:env_par_nm,:env_par_val);";
-    private static final String deleteByEnvironment = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " WHERE ENV_NM= :name";
+    private static final String deleteByEnvironment = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("EnvironmentParameters").getName() + " WHERE ENV_NM= :name";
 
     public void deleteByEnvironment(EnvironmentKey environmentKey) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
@@ -78,7 +78,6 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
                 deleteStatement,
                 sqlParameterSource);
     }
-
 
     @Override
     public void insert(EnvironmentParameter metadata) {

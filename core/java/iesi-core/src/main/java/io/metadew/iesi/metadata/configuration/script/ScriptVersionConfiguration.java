@@ -4,15 +4,13 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -49,15 +47,6 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         setMetadataRepository(metadataRepository);
     }
 
-    private static final String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from  "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " where SCRIPT_ID = :id and SCRIPT_VRS_NB = :version ; ";
-    private static final String getAll = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " order by SCRIPT_ID ; ";
-    private static final String getByScriptId = "select * from "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " WHERE SCRIPT_ID = :id ;";
     private static final String getLatestVersionNumber = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from   "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
             " where SCRIPT_ID = :id  ; ";
@@ -67,29 +56,15 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     private static final String deleteStatement = "DELETE FROM  "
             + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
             " WHERE SCRIPT_ID = :id AND SCRIPT_VRS_NB = :version ; ";
-    private static final String exists = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from  "
-            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " where SCRIPT_ID = :id and SCRIPT_VRS_NB = :version ; ";
 
     @Override
     public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", scriptVersionKey.getScriptKey().getScriptId())
-                .addValue("version", scriptVersionKey.getScriptKey().getScriptVersion());
-        List<ScriptVersion> scriptVersions = namedParameterJdbcTemplate.query(
-                queryScriptVersion,
-                sqlParameterSource,
-                new ScriptVersionExtractor());
-        return Optional.ofNullable(
-                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
-                        queryScriptVersion,
-                        sqlParameterSource,
-                        new ScriptVersionExtractor())));
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public List<ScriptVersion> getAll() {
-        return namedParameterJdbcTemplate.query(getAll, new ScriptVersionExtractor());
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -103,16 +78,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 sqlParameterSource);
     }
 
-    public List<ScriptVersion> getByScriptId(String scriptId) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", scriptId);
-        return namedParameterJdbcTemplate.query(
-                getByScriptId,
-                sqlParameterSource,
-                new ScriptVersionExtractor());
-    }
-
-    public Optional<ScriptVersion> getLatestVersionNumber(String scriptId) {
+    public Optional<Script> getLatestVersionNumber(String scriptId) {
         LOGGER.trace(MessageFormat.format("Fetching latest version for script {0}.", scriptId));
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("id", scriptId);
@@ -120,7 +86,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 getLatestVersionNumber,
                 sqlParameterSource,
                 new ScriptVersionExtractorTotal());
-        return get(new ScriptVersionKey(new ScriptKey(scriptId, scriptVersions)));
+        return ScriptConfiguration.getInstance().get(new ScriptKey(scriptId, scriptVersions));
     }
 
     @Override
@@ -133,17 +99,5 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         namedParameterJdbcTemplate.update(
                 insert,
                 sqlParameterSource);
-    }
-
-    public boolean exists(ScriptVersionKey scriptVersionKey) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", scriptVersionKey.getScriptKey().getScriptId())
-                .addValue("version", scriptVersionKey.getScriptKey().getScriptVersion());
-
-        List<ScriptVersion> scriptVersions = namedParameterJdbcTemplate.query(
-                exists,
-                sqlParameterSource,
-                new ScriptVersionExtractor());
-        return scriptVersions.size() >= 1;
     }
 }

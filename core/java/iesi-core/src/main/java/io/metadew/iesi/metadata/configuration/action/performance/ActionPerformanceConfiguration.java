@@ -1,17 +1,19 @@
 package io.metadew.iesi.metadata.configuration.action.performance;
 
-import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.performance.ActionPerformance;
 import io.metadew.iesi.metadata.definition.action.performance.key.ActionPerformanceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-import javax.sql.rowset.CachedRowSet;
-import java.sql.SQLException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,105 +29,98 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
         return INSTANCE;
     }
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ActionPerformanceConfiguration() {
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(MetadataRepositoryConfiguration.getInstance()
+                .getDesignMetadataRepository()
+                .getRepositoryCoordinator()
+                .getDatabases().values().stream()
+                .findFirst()
+                .map(Database::getConnectionPool)
+                .orElseThrow(RuntimeException::new));
     }
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
     }
 
+    private final static String queryAction = "select RUN_ID, PRC_ID, ACTION_ID, CONTEXT_NM, SCOPE_NM, STRT_TMS, END_TMS, DURATION_VAL  " +
+            " from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultPerformances").getName() +
+            " where RUN_ID = :id AND PRC_ID = :procedureId AND SCOPE_NM = :scope ";
+    private final static String getAll = "select RUN_ID, PRC_ID, ACTION_ID, CONTEXT_NM, SCOPE_NM, STRT_TMS, END_TMS, DURATION_VAL  " +
+            " from "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultPerformances").getName() + " ; ";
+    private final static String insert = "insert into  "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultPerformances").getName() +
+            " (RUN_ID, PRC_ID, ACTION_ID, SCOPE_NM, CONTEXT_NM, STRT_TMS, END_TMS, DURATION_VAL) values (:id, :procedureId, :action, :scope, :context, :start, :end, :duration" + " ) ";
+    private final static String update = "UPDATE "
+            + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultPerformances").getName() +
+            " SET  CONTEXT_NM=:context, STRT_TMS= start,  END_TMS=:end, DURATION_VAL=:duration WHERE RUN_ID = :id  AND PRC_ID = :procedureId ACTION_ID = :action AND SCOPE_NM = :scope ;";
+    private final static String delete = "delete from  " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultPerformances").getName()
+            + " RUN_ID = :id AND PRC_ID = :procedureId AND SCOPE_NM = :scope ; ";
 
     @Override
     public Optional<ActionPerformance> get(ActionPerformanceKey key) {
-        try {
-            String queryAction = "select RUN_ID, PRC_ID, ACTION_ID, CONTEXT_NM, SCOPE_NM, STRT_TMS, END_TMS, DURATION_VAL from "
-                    + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
-                    "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
-                    "PRC_ID = " + key.getProcedureId() + " AND " +
-                    "SCOPE_NM = " + SQLTools.GetStringForSQL(key.getScope()) + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryAction, "reader");
-            if (cachedRowSet.size() == 0) {
-                return Optional.empty();
-            } else if (cachedRowSet.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameterTrace {0}. Returning first implementation", key.toString()));
-            }
-            cachedRowSet.next();
-            return Optional.of(new ActionPerformance(new ActionPerformanceKey(cachedRowSet.getString("RUN_ID"),
-                    cachedRowSet.getLong("PRC_ID"),
-                    cachedRowSet.getString("SCOPE_NM")),
-                    cachedRowSet.getString("CONTEXT_NM"),
-                    cachedRowSet.getString("ACTION_ID"),
-                    cachedRowSet.getTimestamp("STRT_TMS").toLocalDateTime(),
-                    cachedRowSet.getTimestamp("END_TMS").toLocalDateTime(),
-                    cachedRowSet.getDouble("DURATION_VAL")));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", key.getRunId())
+                .addValue("procedureId", key.getProcedureId())
+                .addValue("scope", key.getScope());
+        return Optional.ofNullable(
+                DataAccessUtils.singleResult(namedParameterJdbcTemplate.query(
+                        queryAction,
+                        sqlParameterSource,
+                        new ActionPerformanceExtractorConfiguration())));
     }
 
     @Override
     public List<ActionPerformance> getAll() {
-        try {
-            List<ActionPerformance> actionPerformances = new ArrayList<>();
-            String queryAction = "select RUN_ID, PRC_ID, ACTION_ID, CONTEXT_NM, SCOPE_NM, STRT_TMS, END_TMS, DURATION_VAL from "
-                    + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + ";";
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryAction, "reader");
-            while (cachedRowSet.next()) {
-                actionPerformances.add(new ActionPerformance(new ActionPerformanceKey(cachedRowSet.getString("RUN_ID"),
-                        cachedRowSet.getLong("PRC_ID"),
-                        cachedRowSet.getString("SCOPE_NM")),
-                        cachedRowSet.getString("CONTEXT_NM"),
-                        cachedRowSet.getString("ACTION_ID"),
-                        cachedRowSet.getTimestamp("STRT_TMS").toLocalDateTime(),
-                        cachedRowSet.getTimestamp("END_TMS").toLocalDateTime(),
-                        cachedRowSet.getDouble("DURATION_VAL")));
-            }
-            return actionPerformances;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return namedParameterJdbcTemplate.query(
+                getAll,
+                new ActionPerformanceExtractorConfiguration());
     }
 
     @Override
     public void delete(ActionPerformanceKey key) {
-        String queryAction = "delete from "
-                + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
-                "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
-                "PRC_ID = " + SQLTools.GetStringForSQL(key.getProcedureId()) + " AND " +
-                "SCOPE_NM = " + SQLTools.GetStringForSQL(key.getScope()) + ";";
-        getMetadataRepository().executeUpdate(queryAction);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", key.getRunId())
+                .addValue("procedureId", key.getProcedureId())
+                .addValue("scope", key.getScope());
+        namedParameterJdbcTemplate.update(
+                delete,
+                sqlParameterSource);
     }
 
     @Override
     public void insert(ActionPerformance actionPerformance) {
-        String queryAction = "insert into "
-                + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
-                " (RUN_ID, PRC_ID, ACTION_ID, SCOPE_NM, CONTEXT_NM, STRT_TMS, END_TMS, DURATION_VAL) values (" +
-                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getActionId()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getDuration()) + ");";
-        getMetadataRepository().executeUpdate(queryAction);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionPerformance.getMetadataKey().getRunId())
+                .addValue("procedureId", actionPerformance.getMetadataKey().getProcedureId())
+                .addValue("action", actionPerformance.getActionId())
+                .addValue("scope", actionPerformance.getMetadataKey().getScope())
+                .addValue("context", actionPerformance.getContext())
+                .addValue("start", actionPerformance.getStartTimestamp())
+                .addValue("end", actionPerformance.getEndTimestamp())
+                .addValue("duration", actionPerformance.getDuration());
+        namedParameterJdbcTemplate.update(
+                insert,
+                sqlParameterSource);
     }
 
     @Override
     public void update(ActionPerformance actionPerformance) {
-        String queryAction = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
-                " SET " +
-                "CONTEXT_NM = " + SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
-                "STRT_TMS = " + SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
-                "END_TMS = " + SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
-                "DURATION_VAL = " + SQLTools.GetStringForSQL(actionPerformance.getDuration()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionPerformance.getActionId()) +
-                " AND SCOPE_NM =" + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ";";
-
-
-        getMetadataRepository().executeUpdate(queryAction);
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
+                .addValue("id", actionPerformance.getMetadataKey().getRunId())
+                .addValue("procedureId", actionPerformance.getMetadataKey().getProcedureId())
+                .addValue("action", actionPerformance.getActionId())
+                .addValue("scope", actionPerformance.getMetadataKey().getScope())
+                .addValue("context", actionPerformance.getContext())
+                .addValue("start", actionPerformance.getStartTimestamp())
+                .addValue("end", actionPerformance.getEndTimestamp())
+                .addValue("duration", actionPerformance.getDuration());
+        namedParameterJdbcTemplate.update(
+                update,
+                sqlParameterSource);
     }
 }

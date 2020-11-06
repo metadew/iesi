@@ -86,7 +86,12 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 getLatestVersionNumber,
                 sqlParameterSource,
                 new ScriptVersionExtractorTotal());
-        return ScriptConfiguration.getInstance().get(new ScriptKey(scriptId, scriptVersions));
+        System.out.println(scriptVersions);
+        if (scriptVersions == 0) {
+            return Optional.empty();
+        } else {
+            return ScriptConfiguration.getInstance().get(new ScriptKey(scriptId, scriptVersions));
+        }
     }
 
     @Override

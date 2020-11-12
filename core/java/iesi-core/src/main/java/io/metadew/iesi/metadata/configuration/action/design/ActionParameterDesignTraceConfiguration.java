@@ -41,10 +41,10 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
             String query = "SELECT ACTION_PAR_VAL FROM " +
                     getMetadataRepository().getTableNameByLabel("ActionParameterDesignTraces") +
                     " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTraceKey.getProcessId()) + " AND " +
-                    " ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTraceKey.getActionId()) + " AND " +
-                    " ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterDesignTraceKey.getName()) + ";";
+                    " RUN_ID = " + SQLTools.getStringForSQL(actionParameterDesignTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.getStringForSQL(actionParameterDesignTraceKey.getProcessId()) + " AND " +
+                    " ACTION_ID = " + SQLTools.getStringForSQL(actionParameterDesignTraceKey.getActionId()) + " AND " +
+                    " ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterDesignTraceKey.getName()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -89,10 +89,10 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
     private String deleteStatement(ActionParameterDesignTraceKey actionParameterDesignTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameterDesignTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTraceKey.getProcessId()) + " AND " +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTraceKey.getActionId()) + " AND " +
-                " ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterDesignTraceKey.getName()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(actionParameterDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(actionParameterDesignTraceKey.getProcessId()) + " AND " +
+                " ACTION_ID = " + SQLTools.getStringForSQL(actionParameterDesignTraceKey.getActionId()) + " AND " +
+                " ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterDesignTraceKey.getName()) + ";";
     }
 
     @Override
@@ -115,11 +115,11 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
     public String insertStatement(ActionParameterDesignTrace actionParameterDesignTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ActionParameterDesignTraces") +
                 " (RUN_ID, PRC_ID, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getActionId()) + "," +
-                SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getName()) + "," +
-                SQLTools.GetStringForSQL(actionParameterDesignTrace.getValue()) + ");";
+                SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getActionId()) + "," +
+                SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getName()) + "," +
+                SQLTools.getStringForSQL(actionParameterDesignTrace.getValue()) + ");";
     }
 
     @Override
@@ -131,10 +131,10 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
 
     private String updateStatement(ActionParameterDesignTrace actionParameterDesignTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameterDesignTraces") +
-                " SET ACTION_PAR_VAL = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getValue()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getProcessId()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getActionId()) +
-                " AND ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterDesignTrace.getMetadataKey().getName()) + ";";
+                " SET ACTION_PAR_VAL = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getValue()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getProcessId()) +
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getActionId()) +
+                " AND ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getName()) + ";";
     }
 }

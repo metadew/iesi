@@ -166,7 +166,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     public boolean exists(DatasetImplementationKey datasetImplementationKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(existsQuery, SQLTools.GetStringForSQL(datasetImplementationKey.getUuid())),
+                    MessageFormat.format(existsQuery, SQLTools.getStringForSQL(datasetImplementationKey.getUuid())),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -178,9 +178,9 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(existsByNameAndLabelsQuery,
-                            SQLTools.GetStringForSQL(name),
-                            labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")),
-                            SQLTools.GetStringForSQL(labels.size())),
+                            SQLTools.getStringForSQL(name),
+                            labels.stream().map(SQLTools::getStringForSQL).collect(Collectors.joining(",")),
+                            SQLTools.getStringForSQL(labels.size())),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -193,7 +193,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
         try {
             Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(selectSingleQuery, SQLTools.GetStringForSQL(datasetImplementationKey.getUuid())),
+                    MessageFormat.format(selectSingleQuery, SQLTools.getStringForSQL(datasetImplementationKey.getUuid())),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetImplementationBuilderMap);
@@ -210,13 +210,13 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
         try {
             Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
             String labelSetQuery = labels.stream()
-                    .map(s -> MessageFormat.format(getByLabelSetValueSubQuery, SQLTools.GetStringForSQL(s)))
+                    .map(s -> MessageFormat.format(getByLabelSetValueSubQuery, SQLTools.getStringForSQL(s)))
                     .collect(Collectors.joining(" intersect "));
-            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(getByLabelSetCountSubQuery, SQLTools.GetStringForSQL(labels.size()));
+            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(getByLabelSetCountSubQuery, SQLTools.getStringForSQL(labels.size()));
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(selectByNameAndLabelsQuery,
-                            SQLTools.GetStringForSQL(name), labelSetQuery),
+                            SQLTools.getStringForSQL(name), labelSetQuery),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetImplementationBuilderMap);
@@ -234,7 +234,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(selectByDatasetIdQuery,
-                            SQLTools.GetStringForSQL(datasetKey.getUuid())),
+                            SQLTools.getStringForSQL(datasetKey.getUuid())),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetImplementationBuilderMap);
@@ -266,33 +266,33 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     @Override
     public void delete(DatasetImplementationKey metadataKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteQuery,
-                SQLTools.GetStringForSQL(metadataKey.getUuid())));
+                SQLTools.getStringForSQL(metadataKey.getUuid())));
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteDatasetImplementationLabelByDatasetImplementationIdQuery,
-                SQLTools.GetStringForSQL(metadataKey.getUuid())));
+                SQLTools.getStringForSQL(metadataKey.getUuid())));
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteInMemoryDatasetImplementationByDatasetImplementationIdQuery,
-                SQLTools.GetStringForSQL(metadataKey.getUuid())));
+                SQLTools.getStringForSQL(metadataKey.getUuid())));
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteInMemoryDatasetImplementationKeyValueByDatasetImplementationIdQuery,
-                SQLTools.GetStringForSQL(metadataKey.getUuid())));
+                SQLTools.getStringForSQL(metadataKey.getUuid())));
     }
 
     @Override
     public void insert(DatasetImplementation metadata) {
         if (metadata instanceof InMemoryDatasetImplementation) {
             getMetadataRepository().executeUpdate(MessageFormat.format(insertQuery,
-                    SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                    SQLTools.GetStringForSQL(metadata.getDatasetKey().getUuid())));
-            getMetadataRepository().executeUpdate(MessageFormat.format(insertInMemoryDatasetImplementationQuery, SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid())));
+                    SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
+                    SQLTools.getStringForSQL(metadata.getDatasetKey().getUuid())));
+            getMetadataRepository().executeUpdate(MessageFormat.format(insertInMemoryDatasetImplementationQuery, SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid())));
             metadata.getDatasetImplementationLabels().forEach(datasetImplementationLabel ->
                     getMetadataRepository().executeUpdate(MessageFormat.format(insertDatasetImplementationLabelQuery,
-                            SQLTools.GetStringForSQL(datasetImplementationLabel.getMetadataKey().getUuid()),
-                            SQLTools.GetStringForSQL(datasetImplementationLabel.getDatasetImplementationKey().getUuid()),
-                            SQLTools.GetStringForSQL(datasetImplementationLabel.getValue()))));
+                            SQLTools.getStringForSQL(datasetImplementationLabel.getMetadataKey().getUuid()),
+                            SQLTools.getStringForSQL(datasetImplementationLabel.getDatasetImplementationKey().getUuid()),
+                            SQLTools.getStringForSQL(datasetImplementationLabel.getValue()))));
             ((InMemoryDatasetImplementation) metadata).getKeyValues().forEach(inMemoryDatasetImplementationKeyValue ->
                     getMetadataRepository().executeUpdate(MessageFormat.format(insertInMemoryDatasetImplementationKeyValueQuery,
-                            SQLTools.GetStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid()),
-                            SQLTools.GetStringForSQL(inMemoryDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
-                            SQLTools.GetStringForSQL(inMemoryDatasetImplementationKeyValue.getKey()),
-                            SQLTools.GetStringForSQL(inMemoryDatasetImplementationKeyValue.getValue()))));
+                            SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid()),
+                            SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
+                            SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getKey()),
+                            SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getValue()))));
         } else {
             throw new RuntimeException("Cannot insert dataset implementation of type " + metadata.getClass().getSimpleName());
         }

@@ -39,9 +39,9 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     public Optional<ActionResultOutput> get(ActionResultOutputKey actionResultOutputKey) {
         try {
             String query = "select RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL from " + getMetadataRepository().getTableNameByLabel("ActionResultOutputs")
-                    + " where RUN_ID = " + SQLTools.GetStringForSQL(actionResultOutputKey.getRunId())
-                    + " and ACTION_ID = " + SQLTools.GetStringForSQL(actionResultOutputKey.getActionId())
-                    + " and OUT_NM = " + SQLTools.GetStringForSQL(actionResultOutputKey.getOutputName())
+                    + " where RUN_ID = " + SQLTools.getStringForSQL(actionResultOutputKey.getRunId())
+                    + " and ACTION_ID = " + SQLTools.getStringForSQL(actionResultOutputKey.getActionId())
+                    + " and OUT_NM = " + SQLTools.getStringForSQL(actionResultOutputKey.getOutputName())
                     + " and PRC_ID = " + actionResultOutputKey.getProcessId() + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
@@ -88,10 +88,10 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     private String deleteStatement(ActionResultOutputKey resultOutputKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionResultOutputs") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(resultOutputKey.getRunId()) + " AND " +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(resultOutputKey.getActionId()) + " AND " +
-                " OUT_NM = " + SQLTools.GetStringForSQL(resultOutputKey.getOutputName()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(resultOutputKey.getProcessId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(resultOutputKey.getRunId()) + " AND " +
+                " ACTION_ID = " + SQLTools.getStringForSQL(resultOutputKey.getActionId()) + " AND " +
+                " OUT_NM = " + SQLTools.getStringForSQL(resultOutputKey.getOutputName()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(resultOutputKey.getProcessId()) + ";";
     }
 
     @Override
@@ -105,11 +105,11 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
         return "INSERT INTO " +
                 getMetadataRepository().getTableNameByLabel("ActionResultOutputs") +
                 " (RUN_ID, PRC_ID, ACTION_ID, OUT_NM, OUT_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + "," +
-                SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + "," +
-                SQLTools.GetStringForSQL(MetadataFieldService.getInstance()
+                SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + "," +
+                SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + "," +
+                SQLTools.getStringForSQL(MetadataFieldService.getInstance()
                         .truncateAccordingToConfiguration("ActionResultOutputs", "OUT_VAL", actionResultOutput.getValue())) + ");";
     }
 
@@ -122,12 +122,12 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
 
     private String updateStatement(ActionResultOutput actionResultOutput) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultOutputs") +
-                " SET ACTION_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + ", " +
-                "OUT_VAL = " + SQLTools.GetStringForSQL(MetadataFieldService.getInstance()
+                " SET ACTION_ID = " + SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + ", " +
+                "OUT_VAL = " + SQLTools.getStringForSQL(MetadataFieldService.getInstance()
                     .truncateAccordingToConfiguration("ActionResultOutputs", "OUT_VAL", actionResultOutput.getValue())) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) +
-                " AND OUT_NM = " + SQLTools.GetStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + ";";
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) +
+                " AND OUT_NM = " + SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + ";";
     }
 
 }

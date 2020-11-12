@@ -47,7 +47,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " +
                     getMetadataRepository().getTableNameByLabel("Connections") +
                     " WHERE " +
-                    " CONN_NM  = " + SQLTools.GetStringForSQL(connectionKey.getName()) + ";";
+                    " CONN_NM  = " + SQLTools.getStringForSQL(connectionKey.getName()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -77,7 +77,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             while (crs.next()) {
                 String queryConnectionParameters = "select DISTINCT ENV_NM from "
                         + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
-                        + " where CONN_NM = " + SQLTools.GetStringForSQL(crs.getString("CONN_NM")) + ";";
+                        + " where CONN_NM = " + SQLTools.getStringForSQL(crs.getString("CONN_NM")) + ";";
                 CachedRowSet environmentCachedRowSet = getMetadataRepository().executeQuery(queryConnectionParameters, "reader");
                 while (environmentCachedRowSet.next()) {
                     ConnectionKey connectionKey = new ConnectionKey(crs.getString("CONN_NM"), environmentCachedRowSet.getString("ENV_NM"));
@@ -114,13 +114,13 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             // If this was the last remaining connection with name CONN_NM, remove entirely from connections
             String countQuery = "SELECT COUNT(DISTINCT ENV_NM) AS total_environments FROM "
                     + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
-                    + " WHERE ENV_NM != " + SQLTools.GetStringForSQL(connectionKey.getEnvironmentKey().getName()) +
-                    " AND CONN_NM = " + SQLTools.GetStringForSQL(connectionKey.getName()) + ";";
+                    + " WHERE ENV_NM != " + SQLTools.getStringForSQL(connectionKey.getEnvironmentKey().getName()) +
+                    " AND CONN_NM = " + SQLTools.getStringForSQL(connectionKey.getName()) + ";";
             CachedRowSet crs = getMetadataRepository().executeQuery(countQuery, "reader");
 
             if (crs.next() && Integer.parseInt(crs.getString("total_environments")) == 0) {
                 return Optional.of("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Connections") +
-                        " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connectionKey.getName()) + ";");
+                        " WHERE CONN_NM = " + SQLTools.getStringForSQL(connectionKey.getName()) + ";");
             } else {
                 return Optional.empty();
             }
@@ -143,13 +143,13 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
 
     private Optional<String> insertStatement(Connection connection) {
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery("SELECT * FROM " + getMetadataRepository().getTableNameByLabel("Connections") +
-                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connection.getMetadataKey().getName()) + ";", "reader");
+                " WHERE CONN_NM = " + SQLTools.getStringForSQL(connection.getMetadataKey().getName()) + ";", "reader");
         if (cachedRowSet.size() == 0) {
             return Optional.of("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Connections") +
                     " (CONN_NM, CONN_TYP_NM, CONN_DSC) VALUES (" +
-                    SQLTools.GetStringForSQL(connection.getMetadataKey().getName()) + "," +
-                    SQLTools.GetStringForSQL(connection.getType()) + "," +
-                    SQLTools.GetStringForSQL(connection.getDescription()) + ");");
+                    SQLTools.getStringForSQL(connection.getMetadataKey().getName()) + "," +
+                    SQLTools.getStringForSQL(connection.getType()) + "," +
+                    SQLTools.getStringForSQL(connection.getDescription()) + ");");
         } else {
             return Optional.empty();
         }
@@ -160,7 +160,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     public List<Connection> getByName(String connectionName) {
         List<Connection> connections = new ArrayList<>();
         String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + getMetadataRepository().getTableNameByLabel("Connections")
-                + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+                + " where CONN_NM = " + SQLTools.getStringForSQL(connectionName) + ";";
         CachedRowSet crsConnection = getMetadataRepository().executeQuery(queryConnection, "reader");
 
         try {
@@ -174,7 +174,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             // Get parameters
             String queryConnectionParameters = "select DISTINCT ENV_NM from "
                     + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
-                    + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+                    + " where CONN_NM = " + SQLTools.getStringForSQL(connectionName) + ";";
             CachedRowSet crsConnectionEnvironments = getMetadataRepository().executeQuery(queryConnectionParameters, "reader");
             while (crsConnectionEnvironments.next()) {
                 get(new ConnectionKey(connectionName, crsConnectionEnvironments.getString("ENV_NM")))
@@ -191,7 +191,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
 
         String connectionsByEnvironmentQuery = "select distinct CONN_NM from "
                 + getMetadataRepository().getTableNameByLabel("ConnectionParameters")
-                + " where ENV_NM = " + SQLTools.GetStringForSQL(environmentName) + ";";
+                + " where ENV_NM = " + SQLTools.getStringForSQL(environmentName) + ";";
         CachedRowSet connectionsByEnvironment = getMetadataRepository().executeQuery(connectionsByEnvironmentQuery, "reader");
         try {
             while (connectionsByEnvironment.next()) {
@@ -226,17 +226,17 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         List<String> queries = new ArrayList<>();
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Connections") +
                 " WHERE CONN_NM = "
-                + SQLTools.GetStringForSQL(connectionName) + ";");
+                + SQLTools.getStringForSQL(connectionName) + ";");
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                 " WHERE CONN_NM = "
-                + SQLTools.GetStringForSQL(connectionName) + ";");
+                + SQLTools.getStringForSQL(connectionName) + ";");
         return queries;
     }
 
     public boolean exists(String connectionName) {
         CachedRowSet crsConnection;
         String queryConnection = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + getMetadataRepository().getTableNameByLabel("Connections")
-                + " where CONN_NM = " + SQLTools.GetStringForSQL(connectionName) + ";";
+                + " where CONN_NM = " + SQLTools.getStringForSQL(connectionName) + ";";
         crsConnection = getMetadataRepository().executeQuery(queryConnection, "reader");
         return crsConnection.size() > 0;
     }
@@ -246,8 +246,8 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             ConnectionParameterConfiguration.getInstance().update(connectionParameter);
         }
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Connections") +
-                " SET CONN_TYP_NM = " + SQLTools.GetStringForSQL(connection.getType()) +
-                " , CONN_DSC = " + SQLTools.GetStringForSQL(connection.getDescription()) +
-                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connection.getMetadataKey().getName()) + ";");
+                " SET CONN_TYP_NM = " + SQLTools.getStringForSQL(connection.getType()) +
+                " , CONN_DSC = " + SQLTools.getStringForSQL(connection.getDescription()) +
+                " WHERE CONN_NM = " + SQLTools.getStringForSQL(connection.getMetadataKey().getName()) + ";");
     }
 }

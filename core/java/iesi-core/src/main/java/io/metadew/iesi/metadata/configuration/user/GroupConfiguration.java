@@ -36,7 +36,7 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
         try {
             String queryScript = "select ID, GROUP_NAME " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() +
-                    " WHERE ID=" + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                    " WHERE ID=" + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(mapGroup(cachedRowSet));
@@ -68,14 +68,14 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
     public void delete(GroupKey metadataKey) {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
         String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() +
-                " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
 
     public void delete(String groupName) {
         String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() +
-                " WHERE GROUP_NAME = " + SQLTools.GetStringForSQL(groupName) + ";";
+                " WHERE GROUP_NAME = " + SQLTools.getStringForSQL(groupName) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
@@ -84,8 +84,8 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
         String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() +
                 " (ID, GROUP_NAME) VALUES (" +
-                SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getGroupName()) + ");";
+                SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
+                SQLTools.getStringForSQL(metadata.getGroupName()) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -98,8 +98,8 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
     @Override
     public void update(Group metadata) {
         String updateStatement = "UPDATE " + getMetadataRepository().getTableNameByLabel("Groups") +
-                " SET GROUP_NAME = " + SQLTools.GetStringForSQL(metadata.getGroupName()) +
-                " WHERE ID = " + SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ";";
+                " SET GROUP_NAME = " + SQLTools.getStringForSQL(metadata.getGroupName()) +
+                " WHERE ID = " + SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(updateStatement);
     }
 
@@ -110,7 +110,7 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupMembers").getName() + " group_members " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
                     "on group_members.USER_ID=users.ID WHERE " +
-                    "GROUP_ID =" + SQLTools.GetStringForSQL(groupKey.getUuid().toString()) + ";";
+                    "GROUP_ID =" + SQLTools.getStringForSQL(groupKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 users.add(UserConfiguration.getInstance().mapUser(cachedRowSet));
@@ -130,7 +130,7 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
                     "on group_members.GROUP_ID=groups.ID " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
                     "on group_members.USER_ID=users.ID WHERE " +
-                    "GROUP_NAME =" + SQLTools.GetStringForSQL(groupName) + ";";
+                    "GROUP_NAME =" + SQLTools.getStringForSQL(groupName) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 users.add(UserConfiguration.getInstance().mapUser(cachedRowSet));
@@ -148,7 +148,7 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupAuthorities").getName() + " group_authorities " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
                     "on group_authorities.AUTHORITY_ID=authorities.ID WHERE " +
-                    "GROUP_ID =" + SQLTools.GetStringForSQL(groupKey.getUuid().toString()) + ";";
+                    "GROUP_ID =" + SQLTools.getStringForSQL(groupKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 authorities.add(AuthorityConfiguration.getInstance().mapAuthority(cachedRowSet));
@@ -168,7 +168,7 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
                     "on groups.ID=group_authorities.GROUP_ID " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
                     "on group_authorities.AUTHORITY_ID=authorities.ID WHERE " +
-                    "GROUP_NAME =" + SQLTools.GetStringForSQL(groupName) + ";";
+                    "GROUP_NAME =" + SQLTools.getStringForSQL(groupName) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 authorities.add(AuthorityConfiguration.getInstance().mapAuthority(cachedRowSet));
@@ -182,8 +182,8 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
     public void addUser(GroupKey groupKey, UserKey userKey) {
         String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupMembers").getName() +
                 " (USER_ID, GROUP_ID) VALUES (" +
-                SQLTools.GetStringForSQL(userKey.getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(groupKey.getUuid().toString()) + ");";
+                SQLTools.getStringForSQL(userKey.getUuid().toString()) + ", " +
+                SQLTools.getStringForSQL(groupKey.getUuid().toString()) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -192,15 +192,15 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
                 " (GROUP_ID, USER_ID) SELECT groups.ID, users.ID FROM " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() + " groups, " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
-                " where groups.GROUP_NAME=" + SQLTools.GetStringForSQL(groupName) + " and " +
-                "users.USERNAME=" + SQLTools.GetStringForSQL(username) + ";";
+                " where groups.GROUP_NAME=" + SQLTools.getStringForSQL(groupName) + " and " +
+                "users.USERNAME=" + SQLTools.getStringForSQL(username) + ";";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
     public void removeUser(GroupKey groupKey, UserKey userKey) {
         String insertStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupMembers").getName() +
-                " WHERE USER_ID=" + SQLTools.GetStringForSQL(userKey.getUuid().toString()) + " and " +
-                "GROUP_ID= " + SQLTools.GetStringForSQL(groupKey.getUuid().toString()) + ";";
+                " WHERE USER_ID=" + SQLTools.getStringForSQL(userKey.getUuid().toString()) + " and " +
+                "GROUP_ID= " + SQLTools.getStringForSQL(groupKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -210,16 +210,16 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
                 "SELECT groups.ID, users.ID FROM " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() + " groups, " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
-                " where groups.GROUP_NAME=" + SQLTools.GetStringForSQL(groupName) + " and " +
-                "users.USERNAME=" + SQLTools.GetStringForSQL(username) + ");";
+                " where groups.GROUP_NAME=" + SQLTools.getStringForSQL(groupName) + " and " +
+                "users.USERNAME=" + SQLTools.getStringForSQL(username) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
     public void addAuthority(GroupKey groupKey, AuthorityKey authorityKey) {
         String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupAuthorities").getName() +
                 " (GROUP_ID, AUTHORITY_ID) VALUES (" +
-                SQLTools.GetStringForSQL(groupKey.getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(authorityKey.getUuid().toString()) + ");";
+                SQLTools.getStringForSQL(groupKey.getUuid().toString()) + ", " +
+                SQLTools.getStringForSQL(authorityKey.getUuid().toString()) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -228,8 +228,8 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
                 " (GROUP_ID, AUTHORITY_ID) SELECT groups.ID, authorities.ID FROM " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() + " groups, " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
-                " where groups.GROUP_NAME=" + SQLTools.GetStringForSQL(groupName) + " and " +
-                "authorities.AUTHORITY=" + SQLTools.GetStringForSQL(authority) + ";";
+                " where groups.GROUP_NAME=" + SQLTools.getStringForSQL(groupName) + " and " +
+                "authorities.AUTHORITY=" + SQLTools.getStringForSQL(authority) + ";";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -239,15 +239,15 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
                 "SELECT groups.ID, authorities.ID FROM " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() + " groups, " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
-                " where groups.GROUP_NAME=" + SQLTools.GetStringForSQL(groupName) + " and " +
-                "authorities.AUTHORITY=" + SQLTools.GetStringForSQL(authority) + ");";
+                " where groups.GROUP_NAME=" + SQLTools.getStringForSQL(groupName) + " and " +
+                "authorities.AUTHORITY=" + SQLTools.getStringForSQL(authority) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
     public void removeAuthority(GroupKey groupKey, AuthorityKey authorityKey) {
         String insertStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupAuthorities").getName() +
-                " WHERE AUTHORITY_ID=" + SQLTools.GetStringForSQL(authorityKey.getUuid().toString()) + " and " +
-                "GROUP_ID= " + SQLTools.GetStringForSQL(groupKey.getUuid().toString()) + ";";
+                " WHERE AUTHORITY_ID=" + SQLTools.getStringForSQL(authorityKey.getUuid().toString()) + " and " +
+                "GROUP_ID= " + SQLTools.getStringForSQL(groupKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -255,7 +255,7 @@ public class GroupConfiguration extends Configuration<Group, GroupKey> {
         try {
             String queryScript = "select ID, GROUP_NAME " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() +
-                    " WHERE GROUP_NAME=" + SQLTools.GetStringForSQL(name) + ";";
+                    " WHERE GROUP_NAME=" + SQLTools.getStringForSQL(name) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(mapGroup(cachedRowSet));

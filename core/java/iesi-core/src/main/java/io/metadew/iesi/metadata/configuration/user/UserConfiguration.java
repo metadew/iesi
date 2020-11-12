@@ -36,7 +36,7 @@ public class UserConfiguration extends Configuration<User, UserKey> {
         try {
             String queryScript = "select ID, USERNAME, PASSWORD, ENABLED, EXPIRED, CREDENTIALS_EXPIRED, LOCKED " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
-                    " WHERE ID=" + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                    " WHERE ID=" + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(mapUser(cachedRowSet));
@@ -72,13 +72,13 @@ public class UserConfiguration extends Configuration<User, UserKey> {
     public void delete(UserKey metadataKey) {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
         String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
-                " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     public void delete(String username) {
         String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
-                " WHERE USERNAME = " + SQLTools.GetStringForSQL(username) + ";";
+                " WHERE USERNAME = " + SQLTools.getStringForSQL(username) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
@@ -87,26 +87,26 @@ public class UserConfiguration extends Configuration<User, UserKey> {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
         String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
                 " (ID, USERNAME, PASSWORD, ENABLED, EXPIRED, CREDENTIALS_EXPIRED, LOCKED) VALUES (" +
-                SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getUsername()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getPassword()) + ", " +
-                SQLTools.GetStringForSQL(metadata.isEnabled()) + ", " +
-                SQLTools.GetStringForSQL(metadata.isExpired()) + ", " +
-                SQLTools.GetStringForSQL(metadata.isCredentialsExpired()) + ", " +
-                SQLTools.GetStringForSQL(metadata.isLocked()) + ");";
+                SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
+                SQLTools.getStringForSQL(metadata.getUsername()) + ", " +
+                SQLTools.getStringForSQL(metadata.getPassword()) + ", " +
+                SQLTools.getStringForSQL(metadata.isEnabled()) + ", " +
+                SQLTools.getStringForSQL(metadata.isExpired()) + ", " +
+                SQLTools.getStringForSQL(metadata.isCredentialsExpired()) + ", " +
+                SQLTools.getStringForSQL(metadata.isLocked()) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
     @Override
     public void update(User metadata) {
         String updateStatement = "UPDATE " + getMetadataRepository().getTableNameByLabel("Users") +
-                " SET USERNAME = " + SQLTools.GetStringForSQL(metadata.getUsername()) + ", " +
-                "PASSWORD = " + SQLTools.GetStringForSQL(metadata.getPassword()) + ", " +
-                "ENABLED = " + SQLTools.GetStringForSQL(metadata.isEnabled()) + ", " +
-                "EXPIRED = " + SQLTools.GetStringForSQL(metadata.isExpired()) + ", " +
-                "CREDENTIALS_EXPIRED = " + SQLTools.GetStringForSQL(metadata.isCredentialsExpired()) + ", " +
-                "LOCKED = " + SQLTools.GetStringForSQL(metadata.isLocked()) +
-                " WHERE ID = " + SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ";";
+                " SET USERNAME = " + SQLTools.getStringForSQL(metadata.getUsername()) + ", " +
+                "PASSWORD = " + SQLTools.getStringForSQL(metadata.getPassword()) + ", " +
+                "ENABLED = " + SQLTools.getStringForSQL(metadata.isEnabled()) + ", " +
+                "EXPIRED = " + SQLTools.getStringForSQL(metadata.isExpired()) + ", " +
+                "CREDENTIALS_EXPIRED = " + SQLTools.getStringForSQL(metadata.isCredentialsExpired()) + ", " +
+                "LOCKED = " + SQLTools.getStringForSQL(metadata.isLocked()) +
+                " WHERE ID = " + SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(updateStatement);
     }
 
@@ -117,7 +117,7 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("GroupMembers").getName() + " group_members " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() + " groups " +
                     "on group_members.GROUP_ID=groups.ID WHERE " +
-                    "USER_ID =" + SQLTools.GetStringForSQL(userKey.getUuid().toString()) + ";";
+                    "USER_ID =" + SQLTools.getStringForSQL(userKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 groups.add(GroupConfiguration.getInstance().mapGroup(cachedRowSet));
@@ -137,7 +137,7 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                     "on group_members.USER_ID=users.ID " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Groups").getName() + " groups " +
                     "on group_members.GROUP_ID=groups.ID WHERE " +
-                    "USERNAME=" + SQLTools.GetStringForSQL(username) + ";";
+                    "USERNAME=" + SQLTools.getStringForSQL(username) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 groups.add(GroupConfiguration.getInstance().mapGroup(cachedRowSet));
@@ -157,13 +157,13 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                     "on group_authorities.GROUP_ID=group_members.GROUP_ID " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
                     "on group_authorities.AUTHORITY_ID=authorities.ID " +
-                    "WHERE group_members.USER_ID = " + SQLTools.GetStringForSQL(userKey.getUuid().toString()) +
+                    "WHERE group_members.USER_ID = " + SQLTools.getStringForSQL(userKey.getUuid().toString()) +
                     " UNION " +
                     "select authorities.ID, authorities.AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserAuthorities").getName() + " user_authorities " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
                     "on user_authorities.AUTHORITY_ID=authorities.ID WHERE " +
-                    "user_authorities.USER_ID =" + SQLTools.GetStringForSQL(userKey.getUuid().toString()) + ";";
+                    "user_authorities.USER_ID =" + SQLTools.getStringForSQL(userKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 authorities.add(AuthorityConfiguration.getInstance().mapAuthority(cachedRowSet));
@@ -185,7 +185,7 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                     "on group_authorities.GROUP_ID=group_members.GROUP_ID " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
                     "on group_authorities.AUTHORITY_ID=authorities.ID " +
-                    "WHERE users.username = " + SQLTools.GetStringForSQL(username) +
+                    "WHERE users.username = " + SQLTools.getStringForSQL(username) +
                     " UNION " +
                     "select authorities.ID, authorities.AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserAuthorities").getName() + " user_authorities " +
@@ -193,7 +193,7 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                     "on users.ID=user_authorities.USER_ID " +
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
                     "on user_authorities.AUTHORITY_ID=authorities.ID WHERE " +
-                    "users.username =" + SQLTools.GetStringForSQL(username) + ";";
+                    "users.username =" + SQLTools.getStringForSQL(username) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 authorities.add(AuthorityConfiguration.getInstance().mapAuthority(cachedRowSet));
@@ -207,8 +207,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
     public void addAuthority(UserKey userKey, AuthorityKey authorityKey) {
         String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserAuthorities").getName() +
                 " (USER_ID, AUTHORITY_ID) VALUES (" +
-                SQLTools.GetStringForSQL(userKey.getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(authorityKey.getUuid().toString()) + ");";
+                SQLTools.getStringForSQL(userKey.getUuid().toString()) + ", " +
+                SQLTools.getStringForSQL(authorityKey.getUuid().toString()) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -217,15 +217,15 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                 " (USER_ID, AUTHORITY_ID) SELECT users.ID, authorities.ID FROM " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users, " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
-                " where users.USERNAME=" + SQLTools.GetStringForSQL(username) + " and " +
-                " authorities.AUTHORITY=" + SQLTools.GetStringForSQL(authority) + ";";
+                " where users.USERNAME=" + SQLTools.getStringForSQL(username) + " and " +
+                " authorities.AUTHORITY=" + SQLTools.getStringForSQL(authority) + ";";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
     public void removeAuthority(UserKey userKey, AuthorityKey authorityKey) {
         String insertStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserAuthorities").getName() +
-                " WHERE AUTHORITY_ID=" + SQLTools.GetStringForSQL(authorityKey.getUuid().toString()) + " and " +
-                "USER_ID= " + SQLTools.GetStringForSQL(userKey.getUuid().toString()) + ";";
+                " WHERE AUTHORITY_ID=" + SQLTools.getStringForSQL(authorityKey.getUuid().toString()) + " and " +
+                "USER_ID= " + SQLTools.getStringForSQL(userKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -235,8 +235,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                 "SELECT users.ID, authorities.ID FROM " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users, " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() + " authorities " +
-                " where users.USERNAME=" + SQLTools.GetStringForSQL(username) + " and " +
-                " authorities.AUTHORITY=" + SQLTools.GetStringForSQL(authority) + ");";
+                " where users.USERNAME=" + SQLTools.getStringForSQL(username) + " and " +
+                " authorities.AUTHORITY=" + SQLTools.getStringForSQL(authority) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -244,7 +244,7 @@ public class UserConfiguration extends Configuration<User, UserKey> {
         try {
             String queryScript = "select ID, USERNAME, PASSWORD, ENABLED, EXPIRED, CREDENTIALS_EXPIRED, LOCKED " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
-                    " WHERE USERNAME=" + SQLTools.GetStringForSQL(name) + ";";
+                    " WHERE USERNAME=" + SQLTools.getStringForSQL(name) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(mapUser(cachedRowSet));

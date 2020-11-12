@@ -43,7 +43,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
         try {
             String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
-                    " WHERE ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
+                    " WHERE ID = " + SQLTools.getStringForSQL(scriptExecutionRequestKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -104,10 +104,10 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     public String insertStatement(ScriptExecutionRequestParameter scriptExecutionRequest) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
                 " (ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE) VALUES (" +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getName()) + "," +
-                SQLTools.GetStringForSQL(MetadataFieldService.getInstance()
+                SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
+                SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
+                SQLTools.getStringForSQL(scriptExecutionRequest.getName()) + "," +
+                SQLTools.getStringForSQL(MetadataFieldService.getInstance()
                         .truncateAccordingToConfiguration("ScriptExecutionRequestParameters", "VALUE", scriptExecutionRequest.getValue())) + ");";
     }
 
@@ -116,7 +116,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
             List<ScriptExecutionRequestParameter> scriptExecutionRequestParameters = new ArrayList<>();
             String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
-                    " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                    " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptExecutionRequestParameters.add(new ScriptExecutionRequestParameter(
@@ -138,12 +138,12 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
 
     private String deleteStatement(ScriptExecutionRequestKey executionRequestKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
-                " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
     }
 
     private String deleteStatement(ScriptExecutionRequestParameterKey executionRequestKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
-                " WHERE ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
     }
 
     @Override
@@ -157,9 +157,9 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
 
     public String updateStatement(ScriptExecutionRequestParameter scriptExecutionRequest) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") + " SET " +
-                "NAME=" + SQLTools.GetStringForSQL(scriptExecutionRequest.getName()) + "," +
-                "VALUE=" + SQLTools.GetStringForSQL(MetadataFieldService.getInstance()
+                "NAME=" + SQLTools.getStringForSQL(scriptExecutionRequest.getName()) + "," +
+                "VALUE=" + SQLTools.getStringForSQL(MetadataFieldService.getInstance()
                 .truncateAccordingToConfiguration("ScriptExecutionRequestParameters", "VALUE", scriptExecutionRequest.getValue())) +
-                " WHERE ID = " + SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";";
     }
 }

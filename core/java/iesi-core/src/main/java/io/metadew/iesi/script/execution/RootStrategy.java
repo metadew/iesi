@@ -22,7 +22,7 @@ public class RootStrategy implements RootingStrategy {
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
                         + MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
-                        + " where env_nm = " + SQLTools.GetStringForSQL(scriptExecution.getEnvironment()) + " order by env_par_nm asc, env_par_val asc", "reader"));
+                        + " where env_nm = " + SQLTools.getStringForSQL(scriptExecution.getEnvironment()) + " order by env_par_nm asc, env_par_val asc", "reader"));
     }
 
     @Override

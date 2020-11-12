@@ -30,11 +30,11 @@ public class SubroutineConfiguration {
 
         if (this.exists()) {
             sql += "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
-            sql += " WHERE SRT_NM = " + SQLTools.GetStringForSQL(this.getSubroutine().getName());
+            sql += " WHERE SRT_NM = " + SQLTools.getStringForSQL(this.getSubroutine().getName());
             sql += ";";
             sql += "\n";
             sql += "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
-            sql += " WHERE SRT_NM = " + SQLTools.GetStringForSQL(this.getSubroutine().getName());
+            sql += " WHERE SRT_NM = " + SQLTools.getStringForSQL(this.getSubroutine().getName());
             sql += ";";
             sql += "\n";
         }
@@ -43,11 +43,11 @@ public class SubroutineConfiguration {
         sql += " (SRT_NM, SRT_TYP_NM, SRT_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += SQLTools.GetStringForSQL(this.getSubroutine().getName());
+        sql += SQLTools.getStringForSQL(this.getSubroutine().getName());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getSubroutine().getType());
+        sql += SQLTools.getStringForSQL(this.getSubroutine().getType());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getSubroutine().getDescription());
+        sql += SQLTools.getStringForSQL(this.getSubroutine().getDescription());
         sql += ")";
         sql += ";";
 

@@ -43,7 +43,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
     public Optional<Environment> get(EnvironmentKey environmentKey) {
         String queryEnvironment = "select ENV_NM, ENV_DSC from "
                 + getMetadataRepository().getTableNameByLabel("Environments") + " where ENV_NM = "
-                + SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
+                + SQLTools.getStringForSQL(environmentKey.getName()) + ";";
         CachedRowSet crsEnvironment = getMetadataRepository().executeQuery(queryEnvironment, "reader");
         try {
             if (crsEnvironment.size() == 0) {
@@ -117,7 +117,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         String queryEnvironment = "select * from "
                 + getMetadataRepository().getTableNameByLabel("Environments")
                 + " where ENV_NM = "
-                + SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
+                + SQLTools.getStringForSQL(environmentKey.getName()) + ";";
         CachedRowSet crsEnvironment = getMetadataRepository().executeQuery(queryEnvironment, "reader");
         return crsEnvironment.size() >= 1;
     }
@@ -125,7 +125,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
     public String getDeleteStatement(EnvironmentKey environmentKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("Environments") +
                 " WHERE ENV_NM = " +
-                SQLTools.GetStringForSQL(environmentKey.getName()) + ";";
+                SQLTools.getStringForSQL(environmentKey.getName()) + ";";
     }
 
     public void deleteAll() {
@@ -143,8 +143,8 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
     public String getInsertStatement(Environment environment) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Environments") +
                 " (ENV_NM, ENV_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(environment.getName()) + "," +
-                SQLTools.GetStringForSQL(environment.getDescription())+ ");";
+                SQLTools.getStringForSQL(environment.getName()) + "," +
+                SQLTools.getStringForSQL(environment.getDescription())+ ");";
     }
 
 }

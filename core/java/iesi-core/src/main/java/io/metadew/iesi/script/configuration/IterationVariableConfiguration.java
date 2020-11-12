@@ -47,21 +47,21 @@ public class IterationVariableConfiguration {
 
     // Methods
     public void cleanIterationVariables(String runId)  {
-        String query = "delete from " + PRC_ITERATION_VAR + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
+        String query = "delete from " + PRC_ITERATION_VAR + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + ";";
         DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, long processId)  {
         String query = "delete from " + PRC_ITERATION_VAR
-                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
-                + " and PRC_ID = " + SQLTools.GetStringForSQL(processId) + ";";
+                + " where RUN_ID = " + SQLTools.getStringForSQL(runId)
+                + " and PRC_ID = " + SQLTools.getStringForSQL(processId) + ";";
         DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, String iterationList)  {
         String query = "delete from " + PRC_ITERATION_VAR
-                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
-                + " and LIST_NM = " + SQLTools.GetStringForSQL(iterationList) + ";";
+                + " where RUN_ID = " + SQLTools.getStringForSQL(runId)
+                + " and LIST_NM = " + SQLTools.getStringForSQL(iterationList) + ";";
         DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
@@ -97,22 +97,22 @@ public class IterationVariableConfiguration {
         value = truncateRuntimeVariableValue(value);
         String query = "INSERT INTO " + PRC_ITERATION_VAR
                 + "(run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val) VALUES ("
-                + SQLTools.GetStringForSQL(runId) + ","
-                + SQLTools.GetStringForSQL(-1) + ","
-                + SQLTools.GetStringForSQL(listId) + ","
-                + SQLTools.GetStringForSQL(listName) + ","
-                + SQLTools.GetStringForSQL(setId) + ","
-                + SQLTools.GetStringForSQL(setName) + ","
-                + SQLTools.GetStringForSQL(order) + ","
-                + SQLTools.GetStringForSQL(name) + ","
-                + SQLTools.GetStringForSQL(value) + ");";
+                + SQLTools.getStringForSQL(runId) + ","
+                + SQLTools.getStringForSQL(-1) + ","
+                + SQLTools.getStringForSQL(listId) + ","
+                + SQLTools.getStringForSQL(listName) + ","
+                + SQLTools.getStringForSQL(setId) + ","
+                + SQLTools.getStringForSQL(setName) + ","
+                + SQLTools.getStringForSQL(order) + ","
+                + SQLTools.getStringForSQL(name) + ","
+                + SQLTools.getStringForSQL(value) + ");";
         DatabaseHandler.getInstance().executeUpdate(database, query);
 
     }
 
     public CachedRowSet getIterationList(String runId, String name)  {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
-                + PRC_ITERATION_VAR + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and list_nm = " + SQLTools.GetStringForSQL(name)
+                + PRC_ITERATION_VAR + " where run_id = " + SQLTools.getStringForSQL(runId) + " and list_nm = " + SQLTools.getStringForSQL(name)
                 + " order by order_nb asc, var_nm asc";
         return DatabaseHandler.getInstance().executeQuery(database, query);
     }

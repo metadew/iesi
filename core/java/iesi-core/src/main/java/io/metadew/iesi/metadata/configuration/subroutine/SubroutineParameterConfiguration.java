@@ -29,11 +29,11 @@ public class SubroutineParameterConfiguration {
         sql += " (SRT_NM, SRT_PAR_NM, SRT_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += SQLTools.GetStringForSQL(subroutineName);
+        sql += SQLTools.getStringForSQL(subroutineName);
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getSubroutineParameter().getName());
+        sql += SQLTools.getStringForSQL(this.getSubroutineParameter().getName());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getSubroutineParameter().getValue());
+        sql += SQLTools.getStringForSQL(this.getSubroutineParameter().getValue());
         sql += ")";
         sql += ";";
 

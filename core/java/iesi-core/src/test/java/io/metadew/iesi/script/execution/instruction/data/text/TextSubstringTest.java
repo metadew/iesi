@@ -13,19 +13,19 @@ class TextSubstringTest {
     }
 
     @Test
-    void subtringEndMax() {
+    void substringEndMax() {
         TextSubstring textSubstring = new TextSubstring();
         assertEquals("tring", textSubstring.generateOutput("teststring, 5, 10"));
     }
 
     @Test
-    void subtringStartMin() {
+    void substringStartMin() {
         TextSubstring textSubstring = new TextSubstring();
         assertEquals("tests", textSubstring.generateOutput("teststring, 0, 5"));
     }
 
     @Test
-    void subtringStartMinEndMax() {
+    void substringStartMinEndMax() {
         TextSubstring textSubstring = new TextSubstring();
         assertEquals("teststring", textSubstring.generateOutput("teststring, 0, 10"));
     }

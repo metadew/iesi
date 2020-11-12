@@ -65,6 +65,9 @@ public class TextSubstring implements DataInstruction {
             return collect.get(0);
     }
 
+
+
+
     @Override
     public String getKeyword() {
         return "text.substring";

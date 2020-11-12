@@ -42,5 +42,4 @@ class TextSubstringTest {
         assertEquals("tests", textSubstring.generateOutput("teststring, -10, -5"));
     }
 
-
 }

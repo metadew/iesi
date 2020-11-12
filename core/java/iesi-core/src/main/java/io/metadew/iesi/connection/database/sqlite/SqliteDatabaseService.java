@@ -83,17 +83,14 @@ public class SqliteDatabaseService extends DatabaseService<SqliteDatabase> imple
         StringBuilder fieldQuery = new StringBuilder();
         // Data Types
         switch (field.getType()) {
-            case "string":
+            case STRING:
+            case FLAG:
+            case CLOB:
+            case TIMESTAMP:
                 fieldQuery.append("TEXT");
                 break;
-            case "flag":
-                fieldQuery.append("TEXT");
-                break;
-            case "number":
+            case NUMBER:
                 fieldQuery.append("NUMERIC");
-                break;
-            case "timestamp":
-                fieldQuery.append("TEXT");
                 break;
         }
 

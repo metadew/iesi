@@ -3,7 +3,6 @@ package io.metadew.iesi.script.execution.instruction.data.text;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TextSubstringTest {
 
@@ -34,14 +33,13 @@ class TextSubstringTest {
     @Test
     void substringNegativeArguments() {
         TextSubstring textSubstring = new TextSubstring();
-        assertThrows(IllegalArgumentException.class, () -> textSubstring.generateOutput("teststring, -8, -6"));
+        assertEquals("sts", textSubstring.generateOutput("teststring, -8, -6"));
     }
 
     @Test
     void substringNegativeArgumentsStartMin() {
         TextSubstring textSubstring = new TextSubstring();
-        assertThrows(IllegalArgumentException.class, () -> textSubstring.generateOutput("teststring, -10, -6"));
-
+        assertEquals("tests", textSubstring.generateOutput("teststring, -10, -6"));
     }
 
     @Test
@@ -60,6 +58,7 @@ class TextSubstringTest {
     @Test
     void substringTwoArgumentsNegativeArguments() {
         TextSubstring textSubstring = new TextSubstring();
-        assertThrows(IllegalArgumentException.class, () -> textSubstring.generateOutput("teststring, -8"));
+        assertEquals("ststring", textSubstring.generateOutput("teststring, -8"));
     }
+
 }

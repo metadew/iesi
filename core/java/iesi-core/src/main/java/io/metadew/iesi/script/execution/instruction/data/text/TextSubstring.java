@@ -28,9 +28,6 @@ public class TextSubstring implements DataInstruction {
             int start = Integer.parseInt(inputParameterMatcher.group(SECOND_OPERATOR));
             int end = Integer.parseInt(inputParameterMatcher.group(THIRD_OPERATOR));
 
-            if(start==0)
-                start=1;
-
             if (start < 0)
                 start += text.length()+1;
 
@@ -44,9 +41,6 @@ public class TextSubstring implements DataInstruction {
 
             String text = inputParameterMatcherTwoArguments.group(FIRST_OPERATOR);
             int start = Integer.parseInt(inputParameterMatcherTwoArguments.group(SECOND_OPERATOR));
-
-            if(start==0)
-                start=1;
 
             if (start < 0)
                 start += text.length()+1;

@@ -21,13 +21,13 @@ class TextSubstringTest {
     @Test
     void substringStartMin() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("tests", textSubstring.generateOutput("teststring, 0, 5"));
+        assertEquals("tests", textSubstring.generateOutput("teststring, 1, 5"));
     }
 
     @Test
     void substringStartMinEndMax() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("teststring", textSubstring.generateOutput("teststring, 0, 10"));
+        assertEquals("teststring", textSubstring.generateOutput("teststring, 1, 10"));
     }
 
     @Test
@@ -51,7 +51,7 @@ class TextSubstringTest {
     @Test
     void substringTwoArgumentsStartMin() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("teststring", textSubstring.generateOutput("teststring, 0"));
+        assertEquals("teststring", textSubstring.generateOutput("teststring, 1"));
     }
 
 

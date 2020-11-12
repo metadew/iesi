@@ -56,7 +56,7 @@ public class TextSubstring implements DataInstruction {
 
     private void verifyArguments(String text, int start, int end) {
         if (start < 0) {
-            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". start {0} cannot be smaller than 0", start));
+            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". start {0} cannot be smaller or equal than 0", start));
         }
         if (end > text.length()) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". end {0} cannot be greater than length of the text {1}", end, text.length()));
@@ -67,7 +67,7 @@ public class TextSubstring implements DataInstruction {
     }
     private void verifyArguments(String text, int start) {
         if (start < 0) {
-            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". start {0} cannot be smaller than 0", start));
+            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". start {0} cannot be smaller or equal than 0", start));
         }
     }
 

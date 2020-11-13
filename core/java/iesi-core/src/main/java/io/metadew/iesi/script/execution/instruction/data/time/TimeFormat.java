@@ -20,14 +20,14 @@ public class TimeFormat implements DataInstruction {
 
     private final String ORIGINAL_TIME_REPRESENTATION_FORMAT = "OriginalTimeRepresentationFormat";
 
-    private final String DESIRED_TIME_REPRESENTATION_FORMAT = "DesiredTimeRepresentationFormat";
+    private final String DESIRED_TIME_REPRESENTATION = "DesiredTimeRepresentation";
 
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern.compile(
             "\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION + ">\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3})\"?\\s*" +
-                    ",\\s*\"?(?<" + DESIRED_TIME_REPRESENTATION_FORMAT + ">[^\",]+)\"?\\s*" +
+                    ",\\s*\"?(?<" + DESIRED_TIME_REPRESENTATION + ">[^\",]+)\"?\\s*" +
                     "(,\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION_FORMAT + ">[^\"]+)\"?)?");
 
-    private final SimpleDateFormat ORIGINAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private SimpleDateFormat ORIGINAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
     public String generateOutput(String parameters) {
@@ -37,10 +37,11 @@ public class TimeFormat implements DataInstruction {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         } else {
             if (inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT) != null) {
+                SimpleDateFormat CUSTOM_DATE_FORMAT = new SimpleDateFormat(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT)) ;
                 try {
-                    Date originalDate = ORIGINAL_DATE_FORMAT.parse(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION));
+                    Date originalDate = CUSTOM_DATE_FORMAT.parse(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION));
                     SimpleDateFormat desiredDateRepresentation = new SimpleDateFormat(
-                            inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION_FORMAT));
+                            inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION));
                     return desiredDateRepresentation.format(originalDate);
                 } catch (ParseException e) {
                     throw new IllegalArgumentException(MessageFormat.format("Cannot generate Time from {0}",
@@ -51,7 +52,7 @@ public class TimeFormat implements DataInstruction {
                 try {
                     Date originalDate = ORIGINAL_DATE_FORMAT.parse(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION));
                     SimpleDateFormat desiredDateRepresentation = new SimpleDateFormat(
-                            inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION_FORMAT));
+                            inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION));
                     return desiredDateRepresentation.format(originalDate);
                 } catch (ParseException e) {
                     throw new IllegalArgumentException(MessageFormat.format("Cannot generate Time from {0}",

@@ -24,8 +24,8 @@ public class TimeFormat implements DataInstruction {
 
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern.compile(
             "\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION + ">\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3})\"?\\s*" +
-                    ",\\s*\"?(?<" + DESIRED_TIME_REPRESENTATION_FORMAT + ">[^\"]+)\"?\\s*" +
-                    ",\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION_FORMAT + ">[^\"]+)\"?\\s*");
+                    ",\\s*\"?(?<" + DESIRED_TIME_REPRESENTATION_FORMAT + ">[^\",]+)\"?\\s*" +
+                    "(,\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION_FORMAT + ">[^\"]+)\"?)?");
 
     private final SimpleDateFormat ORIGINAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -36,31 +36,36 @@ public class TimeFormat implements DataInstruction {
         if (!inputParameterMatcher.find()) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         } else {
-
-
             if (inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT) != null) {
-                return formatTime(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION), inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION_FORMAT), inputParameterMatcher.group(THIRD_PARAMETER));
+                try {
+                    Date originalDate = ORIGINAL_DATE_FORMAT.parse(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION));
+                    SimpleDateFormat desiredDateRepresentation = new SimpleDateFormat(
+                            inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION_FORMAT));
+                    return desiredDateRepresentation.format(originalDate);
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(MessageFormat.format("Cannot generate Time from {0}",
+                            inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION)));
+                }
             } else {
-                return formatTime(inputParameterMatcher.group(FIRST_PARAMETER), inputParameterMatcher.group(SECOND_PARAMETER));
+                System.out.println("ICI C 2 ARGUMENTS");
+                try {
+                    Date originalDate = ORIGINAL_DATE_FORMAT.parse(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION));
+                    SimpleDateFormat desiredDateRepresentation = new SimpleDateFormat(
+                            inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION_FORMAT));
+                    return desiredDateRepresentation.format(originalDate);
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(MessageFormat.format("Cannot generate Time from {0}",
+                            inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION)));
+                }
             }
 
 
 
-
-            try {
-                Date originalDate = ORIGINAL_DATE_FORMAT.parse(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION));
-                SimpleDateFormat desiredDateRepresentation = new SimpleDateFormat(
-                        inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION_FORMAT));
-                return desiredDateRepresentation.format(originalDate);
-            } catch (ParseException e) {
-                throw new IllegalArgumentException(MessageFormat.format("Cannot generate Time from {0}",
-                        inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION)));
-            }
 
 
         }
     }
-
+/*
     private String formatTime(String originalTimeRepresentation, String desiredTimeRepresentation,Matcher inputParameterMatcher) {
 
                 SimpleDateFormat desiredDateRepresentation = new SimpleDateFormat(
@@ -71,7 +76,7 @@ public class TimeFormat implements DataInstruction {
     private String formatTime(String originalTimeRepresentation, String originalTimeRepresentationFormat, String desiredTimeRepresentation,Matcher inputParameterMatcher) {
         return LocalDate.parse(originalDate, DateTimeFormatter.ofPattern(originalFormat)).format(DateTimeFormatter.ofPattern(targetedFormat));
     }
-
+*/
     @Override
     public String getKeyword() {
         return "time.format";

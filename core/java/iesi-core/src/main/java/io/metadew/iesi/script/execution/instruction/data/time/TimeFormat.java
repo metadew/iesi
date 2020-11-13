@@ -14,20 +14,20 @@ import java.util.regex.Pattern;
  */
 public class TimeFormat implements DataInstruction {
 
-    private final String ORIGINAL_TIME_REPRESENTATION = "OriginalTimeRepresentation";
+    private final static String ORIGINAL_TIME_REPRESENTATION = "OriginalTimeRepresentation";
 
-    private final String ORIGINAL_TIME_REPRESENTATION_FORMAT = "OriginalTimeRepresentationFormat";
+    private final static String ORIGINAL_TIME_REPRESENTATION_FORMAT = "OriginalTimeRepresentationFormat";
 
-    private final String DESIRED_TIME_REPRESENTATION = "DesiredTimeRepresentation";
+    private final static String DESIRED_TIME_REPRESENTATION = "DesiredTimeRepresentation";
 
-    private final Pattern INPUT_PARAMETERS_PATTERN = Pattern.compile(
+    private final static Pattern INPUT_PARAMETERS_PATTERN = Pattern.compile(
             "\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION + ">\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3})\"?\\s*" +
                     "(,\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION_FORMAT + ">[^\",]+)\"?\\s*)?"+
                     ",\\s*\"?(?<" +  DESIRED_TIME_REPRESENTATION + ">[^\"]+)\"?");
 
 
     //date format by default
-    private SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
     public String generateOutput(String parameters) {
@@ -45,11 +45,11 @@ public class TimeFormat implements DataInstruction {
 
     private String formatTime(SimpleDateFormat dateFormat,Matcher inputParameterMatcher) {
         try {
-            Date originalDate = dateFormat.parse(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION));
+            Date dateFormatTargeted = dateFormat.parse(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION));
             SimpleDateFormat desiredDateRepresentation = new SimpleDateFormat(
                     inputParameterMatcher.group(DESIRED_TIME_REPRESENTATION));
 
-            return desiredDateRepresentation.format(originalDate);
+            return desiredDateRepresentation.format(dateFormatTargeted);
         } catch (ParseException e) {
             throw new IllegalArgumentException(MessageFormat.format("Cannot generate Time from {0}",
                     inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION)));

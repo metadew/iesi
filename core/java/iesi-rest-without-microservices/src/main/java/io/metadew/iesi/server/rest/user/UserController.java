@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Profile("security")
 @Tag(name = "users", description = "Everything about users")
 @RequestMapping("/users")
-@CrossOrigin
 @Log4j2
 public class UserController {
 

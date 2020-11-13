@@ -21,8 +21,8 @@ public class TimeFormat implements DataInstruction {
     private final static String DESIRED_TIME_REPRESENTATION = "DesiredTimeRepresentation";
 
     private final static Pattern INPUT_PARAMETERS_PATTERN = Pattern.compile(
-            "\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION + ">\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3})\"?\\s*" +
-                    "(,\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION_FORMAT + ">[^\",]+)\"?\\s*)?"+
+            "\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION + ">[^\"]+)\"?\\s*" +
+                    "(,\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION_FORMAT + ">[^\"]+)\"?\\s*)?"+
                     ",\\s*\"?(?<" +  DESIRED_TIME_REPRESENTATION + ">[^\"]+)\"?");
 
 

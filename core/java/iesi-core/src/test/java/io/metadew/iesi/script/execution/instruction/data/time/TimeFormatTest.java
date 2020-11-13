@@ -38,7 +38,7 @@ class TimeFormatTest {
     void generateOutputText2() {
         TimeFormat timeFormat = new TimeFormat();
         assertEquals("02 of 05 of 2000 12:12:12",
-                timeFormat.generateOutput("2000-05-02 12:12:12.121, \"yyyy-MM-dd HH:mm:ss.SSS\", \"dd 'of' MM 'of' yyyy HH:mm:ss\""));
+                timeFormat.generateOutput("05-02-2000 12:12:12, \"MM-dd-yyyy HH:mm:ss\", \"dd 'of' MM 'of' yyyy HH:mm:ss\""));
     }
 
     @Test

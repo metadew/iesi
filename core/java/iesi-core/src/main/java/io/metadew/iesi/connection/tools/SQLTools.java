@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.tools;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandler;
 
 import javax.sql.rowset.serial.SerialClob;
 import java.io.*;
@@ -29,9 +30,15 @@ public final class SQLTools {
 
 
     public static String getStringFromSQLClob(Clob clob) {
+        if (clob == null) {
+            return null;
+        }
         StringBuilder sb = new StringBuilder();
         try {
             Reader reader = clob.getCharacterStream();
+            if (reader == null) {
+                return null;
+            }
             BufferedReader br = new BufferedReader(reader);
             String line;
             while(null != (line = br.readLine())) {
@@ -44,12 +51,29 @@ public final class SQLTools {
         return sb.toString();
     }
 
-    public static String getStringForSQLClob(String clobString, Database database) throws SQLException {
-        Connection connection = database.getConnectionPool().getConnection();
-        Clob clob = connection.createClob();
-        connection.close();
-        clob.setString(0, clobString);
-        return "'" + getStringFromSQLClob(clob) + "'";
+    public static String getStringForSQLClob(String clobString, Database database) {
+        try {
+            Connection connection = database.getConnectionPool().getConnection();
+            Clob clob = connection.createClob();
+            connection.close();
+            clob.setString(1, clobString);
+            return DatabaseConnectionHandler.getInstance()
+                    .generateClobInsertValue(database.getDatabaseConnection(), getStringFromSQLClob(clob));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Clob getClobForSQL(String clobString, Database database) {
+        try {
+            Connection connection = database.getConnectionPool().getConnection();
+            Clob clob = connection.createClob();
+            clob.setString(1, clobString);
+            connection.close();
+            return clob;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Insert statement tools

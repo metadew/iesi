@@ -1,6 +1,7 @@
 package io.metadew.iesi.datatypes.dataset.implementation;
 
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
@@ -14,6 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -32,11 +38,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
             "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "on dataset_impls.DATASET_ID=datasets.ID " +
-            "where datasets.NAME={0} and dataset_impls.ID in (" +
-            "SELECT dataset_impl_labels.DATASET_IMPL_ID FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
-            " where dataset_impl_labels.VALUE in ({1})" +
-            " GROUP BY dataset_impl_labels.DATASET_IMPL_ID " +
-            "HAVING COUNT(DISTINCT dataset_impl_labels.VALUE) = {2});";
+            "where datasets.NAME={0} and dataset_impls.ID in ({1});";
 
     private static String selectQuery = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
@@ -176,11 +178,15 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     public boolean exists(String name, List<String> labels) {
         try {
+            String labelSetQuery = labels.stream()
+                    .map(s -> MessageFormat.format(getByLabelSetValueSubQuery, SQLTools.getStringForSQL(s)))
+                    .collect(Collectors.joining(" intersect "));
+            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(getByLabelSetCountSubQuery, SQLTools.getStringForSQL(labels.size()));
+
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(existsByNameAndLabelsQuery,
                             SQLTools.getStringForSQL(name),
-                            labels.stream().map(SQLTools::getStringForSQL).collect(Collectors.joining(",")),
-                            SQLTools.getStringForSQL(labels.size())),
+                            labelSetQuery),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -292,7 +298,11 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid()),
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getKey()),
-                            SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getValue()))));
+                            SQLTools.getStringForSQLClob(inMemoryDatasetImplementationKeyValue.getValue(),
+                                    getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                            .findFirst()
+                                            .orElseThrow(RuntimeException::new)
+                                    ))));
         } else {
             throw new RuntimeException("Cannot insert dataset implementation of type " + metadata.getClass().getSimpleName());
         }
@@ -322,7 +332,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                             new InMemoryDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                             new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
                             cachedRowSet.getString("dataset_in_mem_impl_kvs_key"),
-                            cachedRowSet.getString("dataset_in_mem_impl_kvs_value"))
+                            SQLTools.getStringFromSQLClob(cachedRowSet.getClob("dataset_in_mem_impl_kvs_value")))
             );
         }
     }

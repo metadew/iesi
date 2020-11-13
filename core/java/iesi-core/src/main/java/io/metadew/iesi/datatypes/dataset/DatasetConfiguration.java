@@ -245,7 +245,6 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
         );
     }
 
-
     @AllArgsConstructor
     @Getter
     @ToString

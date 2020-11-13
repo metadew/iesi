@@ -28,7 +28,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @Tag(name = "scripts", description = "Everything about scripts")
 @RequestMapping("/scripts")
-@CrossOrigin
 public class ScriptController {
 
     private final IScriptService scriptService;

@@ -9,36 +9,56 @@ class TextSubstringTest {
     @Test
     void substring() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("tri", textSubstring.generateOutput("teststring, 5, 8"));
+        assertEquals("stri", textSubstring.generateOutput("teststring, 5, 8"));
     }
 
     @Test
-    void subtringEndMax() {
+    void substringEndMax() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("tring", textSubstring.generateOutput("teststring, 5, 10"));
+        assertEquals("string", textSubstring.generateOutput("teststring, 5, 10"));
     }
 
     @Test
-    void subtringStartMin() {
+    void substringStartMin() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("tests", textSubstring.generateOutput("teststring, 0, 5"));
+        assertEquals("tests", textSubstring.generateOutput("teststring, 1, 5"));
     }
 
     @Test
-    void subtringStartMinEndMax() {
+    void substringStartMinEndMax() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("teststring", textSubstring.generateOutput("teststring, 0, 10"));
+        assertEquals("teststring", textSubstring.generateOutput("teststring, 1, 10"));
     }
 
     @Test
     void substringNegativeArguments() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("sts", textSubstring.generateOutput("teststring, -8, -5"));
+        assertEquals("sts", textSubstring.generateOutput("teststring, -8, -6"));
     }
 
     @Test
     void substringNegativeArgumentsStartMin() {
         TextSubstring textSubstring = new TextSubstring();
-        assertEquals("tests", textSubstring.generateOutput("teststring, -10, -5"));
+        assertEquals("tests", textSubstring.generateOutput("teststring, -10, -6"));
     }
+
+    @Test
+    void substringTwoArguments() {
+        TextSubstring textSubstring = new TextSubstring();
+        assertEquals("string", textSubstring.generateOutput("teststring, 5"));
+    }
+
+    @Test
+    void substringTwoArgumentsStartMin() {
+        TextSubstring textSubstring = new TextSubstring();
+        assertEquals("teststring", textSubstring.generateOutput("teststring, 1"));
+    }
+
+
+    @Test
+    void substringTwoArgumentsNegativeArguments() {
+        TextSubstring textSubstring = new TextSubstring();
+        assertEquals("ststring", textSubstring.generateOutput("teststring, -8"));
+    }
+
 }

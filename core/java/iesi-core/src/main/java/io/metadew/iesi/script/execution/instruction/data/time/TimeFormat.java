@@ -20,9 +20,13 @@ public class TimeFormat implements DataInstruction {
 
     private final static String DESIRED_TIME_REPRESENTATION = "DesiredTimeRepresentation";
 
-    private final static Pattern INPUT_PARAMETERS_PATTERN = Pattern.compile(
-            "\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION + ">[^\"]+)\"?\\s*" +
-                    "(,\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION_FORMAT + ">[^\"]+)\"?\\s*)?"+
+    private final static Pattern THREE_ARGUMENTS_PATTERN = Pattern.compile(
+                    "\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION + ">[^\"]+)\"?\\s*" +
+                    ",\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION_FORMAT + ">[^\"]+)\"?\\s*"+
+                    ",\\s*\"?(?<" +  DESIRED_TIME_REPRESENTATION + ">[^\"]+)\"?");
+
+    private final static Pattern TWO_ARGUMENTS_PATTERN = Pattern.compile(
+                    "\\s*\"?(?<" + ORIGINAL_TIME_REPRESENTATION + ">[^\"]+)\"?\\s*" +
                     ",\\s*\"?(?<" +  DESIRED_TIME_REPRESENTATION + ">[^\"]+)\"?");
 
 
@@ -31,17 +35,21 @@ public class TimeFormat implements DataInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        Matcher inputParameterMatcher = INPUT_PARAMETERS_PATTERN.matcher(parameters);
+        Matcher threeParameterMatcher = THREE_ARGUMENTS_PATTERN.matcher(parameters);
+        Matcher twoParameterMatcher = TWO_ARGUMENTS_PATTERN.matcher(parameters);
 
-        if (!inputParameterMatcher.find()) {
-            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
+        if(threeParameterMatcher.find()){
+
+            SimpleDateFormat  dateFormatCustom = new SimpleDateFormat(threeParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT));
+            return formatTime(dateFormatCustom,threeParameterMatcher);
+
+        } else if (twoParameterMatcher.find()){
+            return formatTime(DATE_FORMAT,twoParameterMatcher);
+
         } else {
-            if (inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT) != null) {
-             SimpleDateFormat  DATE_FORMAT_CUSTOM = new SimpleDateFormat(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT));
-                return formatTime(DATE_FORMAT_CUSTOM,inputParameterMatcher);
-            }
-            return formatTime(DATE_FORMAT,inputParameterMatcher);
+            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         }
+
     }
 
     private String formatTime(SimpleDateFormat dateFormat,Matcher inputParameterMatcher) {

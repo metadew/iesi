@@ -11,9 +11,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
 @Configuration
@@ -31,19 +37,24 @@ public class DisabledWebSecurityConfiguration extends WebSecurityConfigurerAdapt
     public void configure(HttpSecurity http) throws Exception {
         log.info("IESI REST endpoint security disabled");
         http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .cors(withDefaults())
                 .cors().and()
                 .csrf().disable()
                 .authorizeRequests().anyRequest().permitAll();
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsFilter corsFilter() {
+            log.info("setting CORS configuration");
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
-        corsConfiguration.addAllowedMethod(HttpMethod.PUT);
-        corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
+        final CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Stream.of("*").collect(Collectors.toList()));
+        configuration.setAllowedMethods(Stream.of(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.OPTIONS.name(), HttpMethod.DELETE.name())
+                .collect(Collectors.toList()));
+        source.registerCorsConfiguration("/**", configuration);
+        return new CorsFilter(source);
     }
 
 }

@@ -109,7 +109,6 @@ public class ScriptController {
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
     }
 
-
     @PutMapping("")
     public HalMultipleEmbeddedResource<ScriptPostDto> putAll(@Valid @RequestBody List<ScriptPostDto> scriptDtos) throws MetadataDoesNotExistException {
         scriptService.updateScripts(scriptDtos);

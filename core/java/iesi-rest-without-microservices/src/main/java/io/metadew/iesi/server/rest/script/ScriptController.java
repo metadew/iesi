@@ -9,16 +9,24 @@ import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +108,30 @@ public class ScriptController {
                          @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException {
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version, expansions)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+
         return scriptDtoModelAssembler.toModel(scriptDto);
+    }
+
+    @GetMapping("/{name}/{version}/download")
+    public ResponseEntity<Resource> getJsonFile(@PathVariable String name,
+                                                @PathVariable Long version,
+                                                @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException, IOException {
+
+        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version, expansions)
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+
+
+        ByteArrayResource resource = new ByteArrayResource();
+
+      //  InputStreamResource resource1 = new InputStreamResource();
+
+        return ResponseEntity.ok()
+              //  .headers(headers)
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+
+       // return scriptDtoModelAssembler.toModel(scriptDto);
     }
 
     @PostMapping("")

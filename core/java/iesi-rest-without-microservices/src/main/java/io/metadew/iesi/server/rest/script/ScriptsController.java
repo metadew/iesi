@@ -29,7 +29,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @Tag(name = "scripts", description = "Everything about scripts")
 @RequestMapping("/scripts")
-@CrossOrigin
 public class ScriptsController {
 
     private final IScriptService scriptService;
@@ -43,8 +42,7 @@ public class ScriptsController {
                       ScriptDtoModelAssembler scriptDtoModelAssembler,
                       IScriptPostDtoService scriptPostDtoService,
                       IScriptDtoService scriptDtoService,
-                      @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-                             PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
+                      PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
         this.scriptService = scriptService;
         this.scriptDtoService = scriptDtoService;
         this.scriptDtoModelAssembler = scriptDtoModelAssembler;
@@ -70,7 +68,7 @@ public class ScriptsController {
     }
 
     private boolean extractLastVersion(String version) {
-        return version != null && version.toLowerCase().equals("latest");
+        return version != null && version.equalsIgnoreCase("latest");
     }
 
     private List<ScriptFilter> extractScriptFilterOptions(String name, String labelKeyCombination) {
@@ -91,7 +89,7 @@ public class ScriptsController {
                                            @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
                                            @RequestParam(required = false, name = "version") String version) {
         Page<ScriptDto> scriptDtoPage = scriptDtoService
-                .getByName(pageable, name, expansions, version != null && version.toLowerCase().equals("latest"));
+                .getByName(pageable, name, expansions, version != null && version.equalsIgnoreCase("latest"));
         if (scriptDtoPage.hasContent())
             return scriptDtoPagedResourcesAssembler.toModel(scriptDtoPage, scriptDtoModelAssembler::toModel);
         //noinspection unchecked - disable warning on casting
@@ -114,7 +112,6 @@ public class ScriptsController {
         scriptService.createScript(scriptPostDto);
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
     }
-
 
     @PutMapping("")
     @PreAuthorize("hasPrivilege('SCRIPTS_WRITE')")

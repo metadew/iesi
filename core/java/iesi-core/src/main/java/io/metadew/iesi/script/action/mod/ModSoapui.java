@@ -119,6 +119,7 @@ public class ModSoapui extends ActionTypeExecution {
         if (shellCommandResult.getReturnCode() == 0) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         } else {
+            getActionExecution().getActionControl().logOutput("action.error", "'" + command + "' resulted with return code " + shellCommandResult.getReturnCode());
             this.getActionExecution().getActionControl().increaseErrorCount();
         }
 

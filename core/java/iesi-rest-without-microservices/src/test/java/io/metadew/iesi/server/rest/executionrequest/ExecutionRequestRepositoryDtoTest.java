@@ -125,7 +125,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -136,7 +136,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -173,16 +173,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>())).containsOnly(executionRequestDto);
     }
@@ -231,7 +231,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.ACCEPTED)
@@ -242,7 +242,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -289,18 +289,20 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .runId(runId.toString())
+                                .runStatus(ScriptRunStatus.RUNNING)
                                 .build())
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .build();
-        assertThat(executionRequestDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>())).containsOnly(executionRequestDto);
+        assertThat(executionRequestDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>()))
+                .containsOnly(executionRequestDto);
     }
 
     @Test
@@ -346,7 +348,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -357,7 +359,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -403,7 +405,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -414,7 +416,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -452,16 +454,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -495,16 +497,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>())).containsOnly(executionRequestDto, executionRequestDto2);
     }
@@ -552,7 +554,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -563,7 +565,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -609,7 +611,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -620,7 +622,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -658,16 +660,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -701,16 +703,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 1), new ArrayList<>()))
                 .hasSize(1);
@@ -761,7 +763,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -772,7 +774,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -818,7 +820,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -829,7 +831,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -867,16 +869,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -910,16 +912,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         System.out.println(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "REQUEST_TIMESTAMP")), new ArrayList<>()).getContent());
         System.out.println(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "REQUEST_TIMESTAMP")), new ArrayList<>()).getContent());
@@ -970,7 +972,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -981,7 +983,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1027,7 +1029,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script2")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1038,7 +1040,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1076,16 +1078,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -1119,16 +1121,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "SCRIPT")), new ArrayList<>())).containsExactly(executionRequestDto2, executionRequestDto);
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "SCRIPT")), new ArrayList<>())).containsExactly(executionRequestDto, executionRequestDto2);
@@ -1177,7 +1179,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1188,7 +1190,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1234,7 +1236,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(2L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1245,7 +1247,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1283,16 +1285,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -1326,16 +1328,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "VERSION")), new ArrayList<>())).containsExactly(executionRequestDto2, executionRequestDto);
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "VERSION")), new ArrayList<>())).containsExactly(executionRequestDto, executionRequestDto2);
@@ -1384,7 +1386,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1395,7 +1397,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1441,7 +1443,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script2")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1452,7 +1454,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1490,16 +1492,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -1533,16 +1535,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, "ript", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto, executionRequestDto2);
@@ -1595,7 +1597,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1606,7 +1608,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1652,7 +1654,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script2")
                                 .scriptVersion(2L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1663,7 +1665,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1701,16 +1703,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -1744,16 +1746,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, "1", true)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto);
@@ -1804,7 +1806,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1815,7 +1817,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1861,7 +1863,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script2")
                                 .scriptVersion(2L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -1872,7 +1874,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -1910,16 +1912,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -1953,16 +1955,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.ENVIRONMENT, "es", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto);
@@ -2013,7 +2015,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -2024,7 +2026,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -2070,7 +2072,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script2")
                                 .scriptVersion(2L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -2081,7 +2083,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -2119,16 +2121,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -2162,16 +2164,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.LABEL, "label2:lue2", false)).collect(Collectors.toList())))
                 .containsOnly(executionRequestDto, executionRequestDto2);
@@ -2229,7 +2231,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -2240,7 +2242,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -2277,16 +2279,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getById(executionRequestId)).hasValue(executionRequestDto);
     }
@@ -2334,7 +2336,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -2345,7 +2347,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -2391,7 +2393,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestImpersonationKey(new ScriptExecutionRequestImpersonationKey(UUID.randomUUID().toString()))
                                                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestId2.toString()))
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -2402,7 +2404,7 @@ class ExecutionRequestRepositoryDtoTest {
                                                 .scriptExecutionRequestParameterKey(new ScriptExecutionRequestParameterKey(UUID.randomUUID().toString()))
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -2440,16 +2442,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         ExecutionRequestDto executionRequestDto2 = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp2)
@@ -2483,16 +2485,16 @@ class ExecutionRequestRepositoryDtoTest {
                                         ScriptExecutionRequestImpersonationDto.builder()
                                                 .name("impersonation")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .parameters(Stream.of(
                                         ScriptExecutionRequestParameterDto.builder()
                                                 .name("param1")
                                                 .value("value1")
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .collect(Collectors.toSet()))
                                 .build()
 
-                ).collect(Collectors.toList()))
+                ).collect(Collectors.toSet()))
                 .build();
         assertThat(executionRequestDtoRepository.getById(executionRequestId)).hasValue(executionRequestDto);
         assertThat(executionRequestDtoRepository.getById(executionRequestId2)).hasValue(executionRequestDto2);

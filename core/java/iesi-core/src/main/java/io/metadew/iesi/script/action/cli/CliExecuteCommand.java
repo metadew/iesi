@@ -145,6 +145,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         if (shellCommandResult.getReturnCode() == 0) {
             getActionExecution().getActionControl().increaseSuccessCount();
         } else {
+            getActionExecution().getActionControl().logOutput("action.error", "Command executed with return code " + shellCommandResult.getReturnCode());
             getActionExecution().getActionControl().increaseErrorCount();
         }
 

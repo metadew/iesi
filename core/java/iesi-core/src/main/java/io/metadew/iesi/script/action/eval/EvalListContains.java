@@ -54,6 +54,7 @@ public class EvalListContains extends ActionTypeExecution {
     protected boolean executeAction() throws InterruptedException {
         boolean result = executeOperation(list, value);
         if (!result) {
+            getActionExecution().getActionControl().logOutput("action.error", "List " + list.toString() + " does not contain " + value.toString());
             getActionExecution().getActionControl().increaseErrorCount();
         }
         return result;

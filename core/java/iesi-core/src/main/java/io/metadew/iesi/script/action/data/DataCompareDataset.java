@@ -17,7 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -88,6 +87,8 @@ public class DataCompareDataset extends ActionTypeExecution {
             }
             if (!leftFieldValue.equals(rightFieldValue)) {
                 this.getActionExecution().getActionControl().logError("field.mismatch", MessageFormat.format(
+                        "{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue.map(DataType::toString).orElse("null"), transformation.getRightField(), rightFieldValue.map(DataType::toString).orElse("null")));
+                this.getActionExecution().getActionControl().logOutput("field.mismatch", MessageFormat.format(
                         "{0}:{1}<>{2}:{3}", transformation.getLeftField(), leftFieldValue.map(DataType::toString).orElse("null"), transformation.getRightField(), rightFieldValue.map(DataType::toString).orElse("null")));
                 this.getActionExecution().getActionControl().increaseErrorCount();
                 errorsDetected++;

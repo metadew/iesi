@@ -30,14 +30,22 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
     private String context;
     private String email;
     private ExecutionRequestStatus executionRequestStatus;
-    private List<ScriptExecutionRequestDto> scriptExecutionRequests = new ArrayList<>();
+    private Set<ScriptExecutionRequestDto> scriptExecutionRequests = new HashSet<>();
     private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
 
     public ExecutionRequest convertToEntity() {
-        return new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(executionRequestId), requestTimestamp, name,
-                context, description, scope, context, executionRequestStatus, scriptExecutionRequests.stream()
-                .map(ScriptExecutionRequestDto::convertToEntity)
-                .collect(Collectors.toList()),
+        return new NonAuthenticatedExecutionRequest(
+                new ExecutionRequestKey(executionRequestId),
+                requestTimestamp,
+                name,
+                context,
+                description,
+                scope,
+                context,
+                executionRequestStatus,
+                scriptExecutionRequests.stream()
+                        .map(ScriptExecutionRequestDto::convertToEntity)
+                        .collect(Collectors.toList()),
                 executionRequestLabels.stream()
                         .map(label -> label.convertToEntity(new ExecutionRequestKey(executionRequestId)))
                         .collect(Collectors.toSet()));
@@ -67,7 +75,5 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
         executionRequest.setScriptExecutionRequests(scriptExecutionRequests);
         return executionRequest;
     }
-
-    // public abstract ExecutionRequest convertToEntity(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
 
 }

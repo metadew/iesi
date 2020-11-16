@@ -27,7 +27,7 @@ public class TimeFormat implements DataInstruction {
 
 
     //date format by default
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
     public String generateOutput(String parameters) {
@@ -37,7 +37,8 @@ public class TimeFormat implements DataInstruction {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         } else {
             if (inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT) != null) {
-                DATE_FORMAT = new SimpleDateFormat(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT));
+             SimpleDateFormat  DATE_FORMAT_CUSTOM = new SimpleDateFormat(inputParameterMatcher.group(ORIGINAL_TIME_REPRESENTATION_FORMAT));
+                return formatTime(DATE_FORMAT_CUSTOM,inputParameterMatcher);
             }
             return formatTime(DATE_FORMAT,inputParameterMatcher);
         }

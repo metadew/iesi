@@ -707,6 +707,16 @@ class ScriptControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void getByNameAndVersionFile() throws Exception {
+        // Mock Service
+        Optional<ScriptDto> optionalScriptDto = Optional.of(ScriptDtoBuilder.simpleScriptDto("nameTest", 0));
+        given(scriptDtoService.getByNameAndVersion("nameTest", 0, null)).willReturn(optionalScriptDto);
+
+        mvc.perform(get("/scripts/nameTest/0/download").contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(status().isNotFound());
+    }
+
 //    @Test
 //    void getByNameAndVersionSerializationTest() {
 //        // Todo: Write Test : use getByNameAndVersion400AndPropertyPresenceCheck and replace "jsonPath(x).exist()" by "jsonPath(x, is(y))"

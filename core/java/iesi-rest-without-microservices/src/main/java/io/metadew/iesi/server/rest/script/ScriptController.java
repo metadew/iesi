@@ -1,32 +1,34 @@
 package io.metadew.iesi.server.rest.script;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.jsonschema.JsonSerializableSchema;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
+import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,25 +115,40 @@ public class ScriptController {
     }
 
     @GetMapping("/{name}/{version}/download")
-    public ResponseEntity<Resource> getJsonFile(@PathVariable String name,
+    public ResponseEntity<Resource> getDownloadFileByNameAndVersion(@PathVariable String name,
                                                 @PathVariable Long version,
                                                 @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException, IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept","application/octet-stream");
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
 
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version, expansions)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
 
+        /* TO TEST MAKE THE SERVICE ABOVE ON "COMMENT" AND THE CODE BELOW UNCOMMENT (BECAUSE THE CORE HAS NOT ACCESS TO DATABASE)
+        THEN ON THE URL TARGET THIS PATH => /nameTest/0/download
 
-        ByteArrayResource resource = new ByteArrayResource();
+        ScriptDto scriptDto = new ScriptDto();
+        scriptDto.setName("nameTest");
 
-      //  InputStreamResource resource1 = new InputStreamResource();
+        ScriptVersionDto versionDto = new ScriptVersionDto();
+        versionDto.setNumber(0);
+        scriptDto.setVersion(versionDto);
+
+        */
+
+        oos.writeObject(scriptDto);
+        oos.flush();
+        byte [] data = bos.toByteArray();
+        ByteArrayResource resource = new ByteArrayResource(data);
 
         return ResponseEntity.ok()
-              //  .headers(headers)
-                .contentLength(file.length())
+                .headers(headers)
+                .contentLength(data.length)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
 
-       // return scriptDtoModelAssembler.toModel(scriptDto);
     }
 
     @PostMapping("")

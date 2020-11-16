@@ -12,6 +12,8 @@ import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(value = "script", collectionRelation = "scripts")
-public class ScriptDto extends RepresentationModel<ScriptDto> {
+public class ScriptDto extends RepresentationModel<ScriptDto> implements Serializable {
 
     private String name;
     private String description;

@@ -115,7 +115,7 @@ public class ScriptController {
 
     @GetMapping("/{name}/{version}/download")
     public ResponseEntity<Resource> getFile(@PathVariable String name,
-                                                @PathVariable Long version) throws MetadataDoesNotExistException, IOException {
+                                                @PathVariable Long version) throws IOException {
 
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version,new ArrayList<>())
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));

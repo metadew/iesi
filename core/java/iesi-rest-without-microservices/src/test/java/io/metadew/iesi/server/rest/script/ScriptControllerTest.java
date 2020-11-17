@@ -30,8 +30,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 //@RunWith(SpringRunner.class)
 @WebMvcTest(ScriptController.class)
@@ -713,8 +712,9 @@ class ScriptControllerTest {
         Optional<ScriptDto> optionalScriptDto = Optional.of(ScriptDtoBuilder.simpleScriptDto("nameTest", 0));
         given(scriptDtoService.getByNameAndVersion("nameTest", 0, null)).willReturn(optionalScriptDto);
 
-        mvc.perform(get("/scripts/nameTest/0/download").contentType(MediaType.APPLICATION_OCTET_STREAM))
-                .andExpect(status().isOk());
+        mvc.perform(get("/scripts/nameTest/0/download"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM));
     }
 
 //    @Test

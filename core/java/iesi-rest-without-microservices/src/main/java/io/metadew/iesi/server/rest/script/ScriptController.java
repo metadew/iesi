@@ -1,16 +1,14 @@
 package io.metadew.iesi.server.rest.script;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
-import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -20,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +41,9 @@ public class ScriptController {
     private final ScriptDtoModelAssembler scriptDtoModelAssembler;
     private final IScriptPostDtoService scriptPostDtoService;
     private final PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
+
+    @Autowired
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     ScriptController(IScriptService scriptService,
@@ -114,39 +114,19 @@ public class ScriptController {
     }
 
     @GetMapping("/{name}/{version}/download")
-    public ResponseEntity<Resource> getDownloadFileByNameAndVersion(@PathVariable String name,
-                                                @PathVariable Long version,
-                                                @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException, IOException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Accept","application/octet-stream");
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
+    public ResponseEntity<Resource> getFile(@PathVariable String name,
+                                                @PathVariable Long version) throws MetadataDoesNotExistException, IOException {
 
-        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version, expansions)
+        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version,null)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
 
-        /* TO TEST MAKE THE SERVICE ABOVE ON "COMMENT" AND THE CODE BELOW UNCOMMENT (BECAUSE THE CORE HAS NOT ACCESS TO DATABASE)
-        THEN ON THE URL TARGET THIS PATH => /nameTest/0/download
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        objectMapper.writeValue((OutputStream) new ObjectOutputStream(bos),scriptDto);
 
-        ScriptDto scriptDto = new ScriptDto();
-        scriptDto.setName("nameTest");
-
-        ScriptVersionDto versionDto = new ScriptVersionDto();
-        versionDto.setNumber(0);
-        scriptDto.setVersion(versionDto);
-
-        */
-
-        oos.writeObject(scriptDto);
-        oos.flush();
         byte [] data = bos.toByteArray();
         ByteArrayResource resource = new ByteArrayResource(data);
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(data.length)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 
     }
 

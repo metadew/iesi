@@ -714,7 +714,7 @@ class ScriptControllerTest {
         given(scriptDtoService.getByNameAndVersion("nameTest", 0, null)).willReturn(optionalScriptDto);
 
         mvc.perform(get("/scripts/nameTest/0/download").contentType(MediaType.APPLICATION_OCTET_STREAM))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
 //    @Test

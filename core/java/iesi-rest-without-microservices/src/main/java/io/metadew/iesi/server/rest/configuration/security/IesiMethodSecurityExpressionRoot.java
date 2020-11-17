@@ -25,11 +25,6 @@ public class IesiMethodSecurityExpressionRoot extends SecurityExpressionRoot imp
     }
 
     public boolean hasPrivilege(String privilege) {
-        log.info(String.format("Check if %s has privilege %s", getAuthentication().getPrincipal(), privilege));
-        log.info(getAuthentication().getAuthorities().stream()
-                .filter(authority -> authority instanceof IESIGrantedAuthority)
-                .map(authority -> (IESIGrantedAuthority) authority)
-                .map(IESIGrantedAuthority::getPrivilegeName).collect(Collectors.joining(", ")));
         return !securityEnabled || getAuthentication().getAuthorities().stream()
                 .filter(authority -> authority instanceof IESIGrantedAuthority)
                 .map(authority -> (IESIGrantedAuthority) authority)

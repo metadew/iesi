@@ -78,7 +78,6 @@ public class TeamsController {
 
     @PutMapping("/{uuid}")
     public ResponseEntity<TeamDto> update(@PathVariable UUID uuid, @RequestBody TeamPutDto teamPutDto) {
-        log.info(teamPutDto);
         Team team = Team.builder()
                 .teamKey(new TeamKey(teamPutDto.getId()))
                 .teamName(teamPutDto.getTeamName())
@@ -109,7 +108,6 @@ public class TeamsController {
                                         .build()
                                 ).collect(Collectors.toSet()))
                 .build();
-        log.info(team);
         teamService.update(team);
         return ResponseEntity
                 .of(teamDtoService.get(uuid));

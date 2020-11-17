@@ -710,11 +710,21 @@ class ScriptControllerTest {
     void getByNameAndVersionFile() throws Exception {
         // Mock Service
         Optional<ScriptDto> optionalScriptDto = Optional.of(ScriptDtoBuilder.simpleScriptDto("nameTest", 0));
-        given(scriptDtoService.getByNameAndVersion("nameTest", 0, null)).willReturn(optionalScriptDto);
+        given(scriptDtoService.getByNameAndVersion("nameTest", 0, new ArrayList<>())).willReturn(optionalScriptDto);
 
         mvc.perform(get("/scripts/nameTest/0/download"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM));
+    }
+
+    @Test
+    void getByNameAndVersionFileDoesNotExist() throws Exception {
+
+        Optional<ScriptDto> optionalScriptDto = Optional.of(ScriptDtoBuilder.simpleScriptDto("nameTest", 0));
+        given(scriptDtoService.getByNameAndVersion("nameTest", 0, new ArrayList<>())).willReturn(optionalScriptDto);
+
+        mvc.perform(get("/scripts/nameTest/1/download"))
+                .andExpect(status().isNotFound());
     }
 
 //    @Test

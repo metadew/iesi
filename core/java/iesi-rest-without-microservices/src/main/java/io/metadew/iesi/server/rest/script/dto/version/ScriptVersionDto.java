@@ -6,13 +6,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.io.Serializable;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScriptVersionDto extends RepresentationModel<ScriptVersionDto> implements Serializable {
+public class ScriptVersionDto extends RepresentationModel<ScriptVersionDto> {
 
     private long number;
     private String description;

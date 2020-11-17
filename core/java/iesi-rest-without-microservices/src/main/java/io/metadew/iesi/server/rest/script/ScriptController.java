@@ -117,7 +117,7 @@ public class ScriptController {
     public ResponseEntity<Resource> getFile(@PathVariable String name,
                                                 @PathVariable Long version) throws MetadataDoesNotExistException, IOException {
 
-        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version,null)
+        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version,new ArrayList<>())
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 // https://www.baeldung.com/spring-security-create-new-custom-security-expression
 public class IesiMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
     private final boolean securityEnabled;
-    private AuthenticationTrustResolver trustResolver;
+    private final AuthenticationTrustResolver trustResolver;
 
     public IesiMethodSecurityExpressionHandler(boolean securityEnabled) {
         this.securityEnabled = securityEnabled;

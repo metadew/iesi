@@ -124,6 +124,10 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
         getMetadataRepository().executeUpdate(deleteUserRolesStatement);
     }
 
+    public void deleteByTeamKey(TeamKey teamKey) {
+        getByTeamId(teamKey)
+                .forEach(role -> delete(role.getMetadataKey()));
+    }
 
     @Override
     public void insert(Role metadata) {

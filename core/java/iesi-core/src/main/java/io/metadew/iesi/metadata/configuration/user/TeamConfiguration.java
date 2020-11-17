@@ -5,18 +5,17 @@ import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfig
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupListResultSetExtractor;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.definition.user.Role;
-import io.metadew.iesi.metadata.definition.user.Team;
-import io.metadew.iesi.metadata.definition.user.TeamKey;
-import io.metadew.iesi.metadata.definition.user.User;
+import io.metadew.iesi.metadata.definition.user.*;
 import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class TeamConfiguration extends Configuration<Team, TeamKey> {
@@ -86,6 +85,8 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     private static String deleteSingleQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() +
             " WHERE ID={0};";
     private static String deleteSecurityGroupTeamsByTeamIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() +
+            " WHERE TEAM_ID={0};";
+    private static String deleteTeamRolesByTeamIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() +
             " WHERE TEAM_ID={0};";
     private static String deleteSecurityGroupTeamsBySecurityGroupIdAndTeamIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() +
             " WHERE TEAM_ID={0} AND SECURITY_GROUP_ID={1};";
@@ -158,13 +159,12 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
         getMetadataRepository().executeUpdate(deleteStatement);
         String deleteSecurityGroupMembershipsStatement = MessageFormat.format(deleteSecurityGroupTeamsByTeamIdQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteSecurityGroupMembershipsStatement);
-        // TODO delete roles
-        // TODO: take care of role memberships
+        RoleConfiguration.getInstance().deleteByTeamKey(metadataKey);
     }
 
-    public void delete(String username) {
-        log.trace(MessageFormat.format("Deleting {0}.", username));
-        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(MessageFormat.format(fetchIdByNameQuery, SQLTools.GetStringForSQL(username)), "reader");
+    public void delete(String teamName) {
+        log.trace(MessageFormat.format("Deleting {0}.", teamName));
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(MessageFormat.format(fetchIdByNameQuery, SQLTools.GetStringForSQL(teamName)), "reader");
         try {
             if (cachedRowSet.next()) {
                 TeamKey teamKey = new TeamKey(UUID.fromString(cachedRowSet.getString("team_id")));
@@ -208,15 +208,19 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
         for (SecurityGroupKey securityGroupKey : metadata.getSecurityGroupKeys()) {
             String insertSecurityGroupStatement =
                     MessageFormat.format(insertSecurityGroupTeamsQuery,
-                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                            SQLTools.GetStringForSQL(securityGroupKey.getUuid()));
+                            SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
+                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()));
             getMetadataRepository().executeUpdate(insertSecurityGroupStatement);
         }
 
-        Set<Role> oldRoles = new HashSet<>(RoleConfiguration.getInstance().getByTeamId(metadata.getMetadataKey()));
-        oldRoles.removeAll(metadata.getRoles());
-        for (Role role : oldRoles) {
-            RoleConfiguration.getInstance().delete(role.getMetadataKey());
+        Set<RoleKey> oldRoleKeyss = RoleConfiguration.getInstance().getByTeamId(metadata.getMetadataKey()).stream()
+                .map(Metadata::getMetadataKey)
+                .collect(Collectors.toSet());
+        oldRoleKeyss.removeAll(metadata.getRoles().stream()
+                .map(Metadata::getMetadataKey)
+                .collect(Collectors.toSet()));
+        for (RoleKey roleKey : oldRoleKeyss) {
+            RoleConfiguration.getInstance().delete(roleKey);
         }
 
         for (Role role : metadata.getRoles()) {
@@ -249,8 +253,8 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     public void addSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(
                 insertSecurityGroupTeamsQuery,
-                SQLTools.GetStringForSQL(teamKey.getUuid()),
-                SQLTools.GetStringForSQL(securityGroupKey.getUuid())
+                SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
+                SQLTools.GetStringForSQL(teamKey.getUuid())
         ));
     }
 

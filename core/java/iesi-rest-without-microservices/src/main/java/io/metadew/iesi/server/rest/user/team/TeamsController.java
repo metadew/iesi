@@ -4,8 +4,6 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
 import io.metadew.iesi.metadata.service.user.IESIRole;
 import io.metadew.iesi.metadata.service.user.TeamService;
-import io.metadew.iesi.server.rest.user.UserDto;
-import io.metadew.iesi.server.rest.user.UserPostDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Profile;
@@ -17,7 +15,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 
 @RestController
 @Profile("security")
@@ -81,6 +78,7 @@ public class TeamsController {
 
     @PutMapping("/{uuid}")
     public ResponseEntity<TeamDto> update(@PathVariable UUID uuid, @RequestBody TeamPutDto teamPutDto) {
+        log.info(teamPutDto);
         Team team = Team.builder()
                 .teamKey(new TeamKey(teamPutDto.getId()))
                 .teamName(teamPutDto.getTeamName())
@@ -111,6 +109,7 @@ public class TeamsController {
                                         .build()
                                 ).collect(Collectors.toSet()))
                 .build();
+        log.info(team);
         teamService.update(team);
         return ResponseEntity
                 .of(teamDtoService.get(uuid));
@@ -119,6 +118,12 @@ public class TeamsController {
     @GetMapping("")
     public Set<TeamDto> fetchAll() {
         return teamDtoService.getAll();
+    }
+
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<Object> deleteById(@PathVariable UUID uuid) {
+        teamService.delete(new TeamKey(uuid));
+        return ResponseEntity.noContent().build();
     }
 
 }

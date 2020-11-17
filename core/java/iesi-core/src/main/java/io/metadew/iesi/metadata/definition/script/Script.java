@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.definition.script;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.SecuredObject;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;

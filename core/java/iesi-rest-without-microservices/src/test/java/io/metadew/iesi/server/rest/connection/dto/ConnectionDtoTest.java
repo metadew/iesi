@@ -4,17 +4,17 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
-public class ConnectionDtoTest {
+class ConnectionDtoTest {
 
     @Test
-    public void convertToEntityTest() {
+    void convertToEntityTest() {
         Connection connection = new Connection(new ConnectionKey("name", "tst"),
                 "type",
                 "description",

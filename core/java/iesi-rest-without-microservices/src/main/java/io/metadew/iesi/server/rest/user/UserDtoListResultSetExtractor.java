@@ -71,7 +71,7 @@ public class UserDtoListResultSetExtractor {
         try {
             return new UserRoleDtoBuilder(
                     UUID.fromString(cachedRowSet.getString("role_id")),
-                    cachedRowSet.getString("role_name"),
+                    cachedRowSet.getString("role_role_name"),
                     new RoleTeamDto(
                             UUID.fromString(cachedRowSet.getString("team_id")),
                             cachedRowSet.getString("team_name")

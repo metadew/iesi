@@ -2267,14 +2267,12 @@ iesi:
             type: string
             length: 255
             nullable: false
-            unique: true
           SECURITY_GROUP_NAME:
             description: name of the security group
             order: 2
             type: string
             length: 255
             nullable: false
-            unique: true
           SCRIPT_TYP_NM:
             description: Keyword for the script type
             order: 2

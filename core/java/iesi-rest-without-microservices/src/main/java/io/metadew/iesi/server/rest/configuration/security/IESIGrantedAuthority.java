@@ -21,8 +21,14 @@ public class IESIGrantedAuthority implements GrantedAuthority {
         this.privilegeName = privilegeName;
     }
 
+    public IESIGrantedAuthority(String securityGroupPrivilegeName) {
+        String[] splitSecurityGroupPrivilegeName = securityGroupPrivilegeName.split("@", 2);
+        this.securityGroupName = splitSecurityGroupPrivilegeName[1];
+        this.privilegeName = splitSecurityGroupPrivilegeName[0];
+    }
+
     @Override
     public String getAuthority() {
-        return securityGroupName + "_" + privilegeName;
+        return privilegeName + "@" + securityGroupName;
     }
 }

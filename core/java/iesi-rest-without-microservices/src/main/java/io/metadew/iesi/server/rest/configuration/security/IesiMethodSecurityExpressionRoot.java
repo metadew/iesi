@@ -1,11 +1,16 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
 import io.metadew.iesi.metadata.definition.SecuredObject;
+import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.stream.Collectors;
+
+@Log4j2
 // https://www.baeldung.com/spring-security-create-new-custom-security-expression
 public class IesiMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 
@@ -20,6 +25,11 @@ public class IesiMethodSecurityExpressionRoot extends SecurityExpressionRoot imp
     }
 
     public boolean hasPrivilege(String privilege) {
+        log.info(String.format("Check if %s has privilege %s", getAuthentication().getPrincipal(), privilege));
+        log.info(getAuthentication().getAuthorities().stream()
+                .filter(authority -> authority instanceof IESIGrantedAuthority)
+                .map(authority -> (IESIGrantedAuthority) authority)
+                .map(IESIGrantedAuthority::getPrivilegeName).collect(Collectors.joining(", ")));
         return !securityEnabled || getAuthentication().getAuthorities().stream()
                 .filter(authority -> authority instanceof IESIGrantedAuthority)
                 .map(authority -> (IESIGrantedAuthority) authority)
@@ -40,7 +50,7 @@ public class IesiMethodSecurityExpressionRoot extends SecurityExpressionRoot imp
             if (securedObject instanceof SecuredObject) {
                 return authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
-                        .anyMatch(authority -> authority.equals(((SecuredObject) securedObject).getSecurityGroupName() + "_" + permission));
+                        .anyMatch(authority -> authority.equals(permission + "@" + ((SecuredObject<? extends MetadataKey>) securedObject).getSecurityGroupName()));
             } else {
                 return true;
             }

@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,8 +19,9 @@ import java.io.IOException;
 @Profile("security")
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private  JWTAuthenticationConverter jwtAuthenticationConverter;
+    private final JWTAuthenticationConverter jwtAuthenticationConverter;
 
+    @Autowired
     public JWTAuthenticationFilter(JWTAuthenticationConverter jwtAuthenticationConverter) {
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
     }

@@ -19,6 +19,7 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupJsonComponent;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -63,7 +64,7 @@ public class ScriptJsonComponent {
             } else {
                 securityGroupName = "PUBLIC";
             }
-            SecurityGroupKey securityGroupKey = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
+            SecurityGroupKey securityGroupKey = SecurityGroupService.getInstance().get(securityGroupName)
                     .map(Metadata::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("could not find Security Group " + securityGroupName));
             ScriptVersion scriptVersion;

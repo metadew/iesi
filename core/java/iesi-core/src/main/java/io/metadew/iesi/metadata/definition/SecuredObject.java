@@ -13,8 +13,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public abstract class SecuredObject<T extends MetadataKey> extends Metadata<T> {
 
-    private final SecurityGroupKey securityGroupKey;
-    private final String securityGroupName;
+    private SecurityGroupKey securityGroupKey;
+    private String securityGroupName;
 
     public SecuredObject(T metadataKey, SecurityGroupKey securityGroupKey, String securityGroupName) {
         super(metadataKey);

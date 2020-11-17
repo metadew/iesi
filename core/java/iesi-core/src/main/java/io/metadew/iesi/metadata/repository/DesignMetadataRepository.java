@@ -10,19 +10,20 @@ import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.subroutine.Subroutine;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
+import lombok.extern.log4j.Log4j2;
 
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class DesignMetadataRepository extends MetadataRepository {
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public DesignMetadataRepository(String instance, RepositoryCoordinator repositoryCoordinator) {
         super(instance, repositoryCoordinator);
@@ -47,46 +48,55 @@ public class DesignMetadataRepository extends MetadataRepository {
             Component component = (Component) objectMapper.convertValue(dataObject, Metadata.class);
             save(component);
         } else if (dataObject.getType().equalsIgnoreCase("subroutine")) {
-            System.out.println("subroutine");
+            Subroutine subroutine = objectMapper.convertValue(dataObject, Subroutine.class);
+            log.warn(String.format("Trying to save %s. Not implemented yet", subroutine));
         } else if (dataObject.getType().equalsIgnoreCase("template")) {
             Template template = objectMapper.convertValue(dataObject.getData(), Template.class);
             save(template);
         } else {
-            LOGGER.trace(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()));
+            log.trace(MessageFormat.format("Design repository is not responsible for loading saving {0}", dataObject.getType()));
         }
     }
 
     public void save(Script script) {
-        LOGGER.info(MessageFormat.format("Saving script {0}-{1} into design repository", script.getName(), script.getVersion().getNumber()));
+        log.info(MessageFormat.format("Saving {0} into design repository", script));
         if (!verifyScript(script)) {
-            LOGGER.error(MessageFormat.format("Script {0}-{1} cannot be saved as it contains errors", script.getName(), script.getVersion().getNumber()));
+            log.error(MessageFormat.format("Script {0} cannot be saved as it contains errors", script));
             return;
         }
         try {
+            // if a script does not have a security group, it is linked to the PUBLIC security group
+            if (script.getSecurityGroupKey() == null) {
+                log.warn("{0} not linked to a security group, linking it to the public security group");
+                SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
+                        .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
+                script.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
+                script.setSecurityGroupName(publicSecurityGroup.getName());
+            }
             ScriptConfiguration.getInstance().insert(script);
         } catch (MetadataAlreadyExistsException e) {
-            LOGGER.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
+            log.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             ScriptConfiguration.getInstance().update(script);
         }
     }
 
     public void save(Template template) {
-        LOGGER.info(MessageFormat.format("Saving {0} into design repository", template));
+        log.info(MessageFormat.format("Saving {0} into design repository", template));
         try {
             TemplateConfiguration.getInstance().insert(template);
         } catch (MetadataAlreadyExistsException e) {
-            LOGGER.info(MessageFormat.format("Template {0} already exists in design repository. Updating to new definition", template));
+            log.info(MessageFormat.format("Template {0} already exists in design repository. Updating to new definition", template));
             TemplateConfiguration.getInstance().update(template);
         }
 
     }
 
     public void save(Component component) {
-        LOGGER.info(MessageFormat.format("Saving component {0} into design repository", component.getName()));
+        log.info(MessageFormat.format("Saving {0} into design repository", component));
         try {
             ComponentConfiguration.getInstance().insert(component);
         } catch (MetadataAlreadyExistsException e) {
-            LOGGER.warn(MessageFormat.format("Component {0} already exists in design repository. Updating to new definition", component.getName()), Level.INFO);
+            log.warn(MessageFormat.format("{0} already exists in design repository. Updating to new definition", component));
             ComponentConfiguration.getInstance().update(component);
         }
     }
@@ -99,14 +109,14 @@ public class DesignMetadataRepository extends MetadataRepository {
                 .filter(parameter -> Collections.frequency(parameterNames, parameter) > 1)
                 .collect(Collectors.toList());
         if (duplicateParameters.size() > 1) {
-            LOGGER.error(MessageFormat.format("Script {0}-{1} has duplicate parameters: {2}", script.getName(), script.getVersion().getNumber(), duplicateParameters.toString()));
+            log.error(MessageFormat.format("Script {0}-{1} has duplicate parameters: {2}", script.getName(), script.getVersion().getNumber(), duplicateParameters));
         }
         List<String> actionNames = script.getActions().stream().map(Action::getName).collect(Collectors.toList());
         List<String> duplicateActions = actionNames.stream().filter(i -> Collections.frequency(actionNames, i) > 1).collect(Collectors.toList());
         if (duplicateActions.size() > 1) {
-            LOGGER.error(MessageFormat.format("Script {0}-{1} has duplicate actions: {2}", script.getName(), script.getVersion().getNumber(), duplicateActions.toString()));
+            log.error(MessageFormat.format("Script {0}-{1} has duplicate actions: {2}", script.getName(), script.getVersion().getNumber(), duplicateActions));
         }
-        return duplicateParameters.size() == 0 && duplicateActions.size() == 0;
+        return duplicateParameters.isEmpty() && duplicateActions.isEmpty();
 
     }
 

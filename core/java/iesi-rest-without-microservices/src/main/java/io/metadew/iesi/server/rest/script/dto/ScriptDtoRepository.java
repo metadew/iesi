@@ -105,8 +105,10 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         )
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
+        // TODO: currently only look at the PUBLIC security group
         Set<String> securityGroups = new HashSet<>();
         securityGroups.add("'PUBLIC'");
+
         if (authentication != null) {
             securityGroups.addAll(authentication.getAuthorities().stream()
                     .map(authority -> (IESIGrantedAuthority) authority)

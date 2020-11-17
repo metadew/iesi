@@ -59,8 +59,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
             " on user_roles.ROLE_ID = roles.ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
             " ON roles.ID = privileges.ROLE_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
-            " ON roles.ID = user_roles.ROLE_ID " +
+//            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
+//            " ON roles.ID = user_roles.ROLE_ID " +
             " WHERE user_roles.USER_ID={0};";
     private static String fetchTeamsByUserIdQuery = "select teams.ID as team_id, teams.TEAM_NAME as team_name, " +
             "roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +

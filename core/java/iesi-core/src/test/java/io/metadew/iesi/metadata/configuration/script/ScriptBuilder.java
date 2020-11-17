@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +93,7 @@ public class ScriptBuilder {
             securityGroupName = "DEFAULT";
         }
         if (securityGroupKey == null) {
-            securityGroupKey = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
+            securityGroupKey = SecurityGroupService.getInstance().get(securityGroupName)
                     .map(SecurityGroup::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("Could not find Security Group with name" + securityGroupName));
         }

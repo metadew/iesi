@@ -1495,6 +1495,32 @@ paths:
                   type: string
         '404':
           description: default response
+  '/scripts/{name}/{version}/download':
+    get:
+      tags:
+        - scripts
+      operationId: get_file
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: JSON file got has response
+          content:
+            'OCTET_STREAM':
+              schema:
+                $ref: '#/components/schemas/ScriptGetDto'
+        '404':
+          description: default response
   /scripts:
     get:
       tags:

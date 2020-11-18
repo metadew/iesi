@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
+import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -120,10 +121,9 @@ public class ScriptController {
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version,new ArrayList<>())
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        objectMapper.writeValue((OutputStream) new ObjectOutputStream(bos),scriptDto);
+        String jsonString = objectMapper.writeValueAsString(scriptDto);
 
-        byte [] data = bos.toByteArray();
+        byte [] data = jsonString.getBytes();
         ByteArrayResource resource = new ByteArrayResource(data);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);

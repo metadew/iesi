@@ -712,10 +712,41 @@ class ScriptControllerTest {
         Optional<ScriptDto> optionalScriptDto = Optional.of(ScriptDtoBuilder.simpleScriptDto("nameTest", 0));
         given(scriptDtoService.getByNameAndVersion("nameTest", 0, new ArrayList<>())).willReturn(optionalScriptDto);
 
+
         mvc.perform(get("/scripts/nameTest/0/download"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM));
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(jsonPath("$.name", is("nameTest")))
+                .andExpect(jsonPath("$.description").exists())
+                .andExpect(jsonPath("$.version.number").exists())
+                .andExpect(jsonPath("$.version.description").exists())
+                .andExpect(jsonPath("$.parameters").exists())
+                .andExpect(jsonPath("$.parameters[0].name").exists())
+                .andExpect(jsonPath("$.parameters[0].value").exists())
+                .andExpect(jsonPath("$.parameters[1].name").exists())
+                .andExpect(jsonPath("$.parameters[1].value").exists())
+                .andExpect(jsonPath("$.actions").exists())
+                .andExpect(jsonPath("$.actions[0].number").exists())
+                .andExpect(jsonPath("$.actions[0].name").exists())
+                .andExpect(jsonPath("$.actions[0].type").exists())
+                .andExpect(jsonPath("$.actions[0].description").exists())
+                .andExpect(jsonPath("$.actions[0].component").exists())
+                .andExpect(jsonPath("$.actions[0].condition").exists())
+                .andExpect(jsonPath("$.actions[0].iteration").exists())
+                .andExpect(jsonPath("$.actions[0].errorExpected").exists())
+                .andExpect(jsonPath("$.actions[0].errorStop").exists())
+                .andExpect(jsonPath("$.actions[0].retries").exists())
+                .andExpect(jsonPath("$.actions[0].parameters[0].name").exists())
+                .andExpect(jsonPath("$.actions[0].parameters[0].value").exists())
+                .andExpect(jsonPath("$.actions[0].parameters[1].name").exists())
+                .andExpect(jsonPath("$.actions[0].parameters[1].value").exists())
+                .andExpect(jsonPath("$.labels[0].name").exists())
+                .andExpect(jsonPath("$.labels[0].value").exists())
+                .andExpect(jsonPath("$.labels[1].name").exists())
+                .andExpect(jsonPath("$.labels[1].value").exists());
+
     }
+
 
     @Test
     void getByNameAndVersionFileDoesNotExist() throws Exception {

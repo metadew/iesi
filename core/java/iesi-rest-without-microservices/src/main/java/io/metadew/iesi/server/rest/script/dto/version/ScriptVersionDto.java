@@ -16,19 +16,4 @@ public class ScriptVersionDto extends RepresentationModel<ScriptVersionDto> {
     private long number;
     private String description;
 
-    public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

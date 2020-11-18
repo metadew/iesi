@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -41,6 +42,26 @@ public class SecurityGroupController {
                 .build();
         securityGroupService.addSecurityGroup(securityGroup);
         return ResponseEntity.of(securityGroupDtoService.get(securityGroup.getMetadataKey().getUuid()));
+    }
+
+    @PostMapping("/{uuid}/teams")
+    public ResponseEntity<SecurityGroupDto> addTeam(@PathVariable UUID uuid, @RequestBody SecurityGroupTeamPutDto securityGroupTeamPutDto) {
+        if (securityGroupService.exists(new SecurityGroupKey(uuid))) {
+            securityGroupService.addTeam(new SecurityGroupKey(uuid), new TeamKey(securityGroupTeamPutDto.getId()));
+            return ResponseEntity.of(securityGroupDtoService.get(uuid));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{security-group-uuid}/teams/{team-uuid}")
+    public ResponseEntity<SecurityGroupDto> deleteTeam(@PathVariable("security-group-uuid") UUID securityGroupUuid, @PathVariable("team-uuid") UUID teamUuid) {
+        if (securityGroupService.exists(new SecurityGroupKey(securityGroupUuid))) {
+            securityGroupService.deleteTeam(new SecurityGroupKey(securityGroupUuid), new TeamKey(teamUuid));
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{uuid}")

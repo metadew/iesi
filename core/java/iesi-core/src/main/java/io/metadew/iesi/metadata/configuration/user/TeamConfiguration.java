@@ -100,13 +100,13 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
             " SET TEAM_NAME = {0} " +
             " WHERE ID = {1};";
 
-    private static TeamConfiguration INSTANCE;
+    private static TeamConfiguration instance;
 
-    public synchronized static TeamConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TeamConfiguration();
+    public static synchronized TeamConfiguration getInstance() {
+        if (instance == null) {
+            instance = new TeamConfiguration();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private TeamConfiguration() {
@@ -154,7 +154,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
 
     @Override
     public void delete(TeamKey metadataKey) {
-        log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
+        log.trace(MessageFormat.format("Deleting {0}.", metadataKey));
         String deleteStatement = MessageFormat.format(deleteSingleQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteStatement);
         String deleteSecurityGroupMembershipsStatement = MessageFormat.format(deleteSecurityGroupTeamsByTeamIdQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
@@ -177,7 +177,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
 
     @Override
     public void insert(Team metadata) {
-        log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
+        log.trace(MessageFormat.format("Inserting {0}.", metadata));
         String insertStatement =
                 MessageFormat.format(insertQuery,
                         SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),

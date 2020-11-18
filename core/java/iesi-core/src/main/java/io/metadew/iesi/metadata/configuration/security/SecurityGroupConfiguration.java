@@ -44,6 +44,9 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
     private static String deleteTeamMembershipsBySecurityGroupIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() +
             " WHERE SECURITY_GROUP_ID={0};";
 
+    private static String deleteTeamMembershipsBySecurityGroupIdAndTeamIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() +
+            " WHERE SECURITY_GROUP_ID={0} and TEAM_ID={1};";
+
     private static String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() +
             " (ID, NAME) VALUES ({0}, {1});";
 
@@ -145,6 +148,18 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
             );
         }
 
+    }
+
+    public void addTeam(SecurityGroupKey securityGroupKey, TeamKey teamKey) {
+        getMetadataRepository().executeUpdate(MessageFormat.format(insertSecurityGroupTeamMembershipQuery,
+                SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
+                SQLTools.GetStringForSQL(teamKey.getUuid())));
+    }
+
+    public void deleteTeam(SecurityGroupKey securityGroupKey, TeamKey teamKey) {
+        getMetadataRepository().executeUpdate(MessageFormat.format(deleteTeamMembershipsBySecurityGroupIdAndTeamIdQuery,
+                SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
+                SQLTools.GetStringForSQL(teamKey.getUuid())));
     }
 
 }

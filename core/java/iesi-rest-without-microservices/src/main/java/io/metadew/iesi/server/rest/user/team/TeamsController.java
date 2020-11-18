@@ -3,7 +3,10 @@ package io.metadew.iesi.server.rest.user.team;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
 import io.metadew.iesi.metadata.service.user.IESIRole;
+import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.metadata.service.user.TeamService;
+import io.metadew.iesi.server.rest.user.role.RolePostDto;
+import io.metadew.iesi.server.rest.user.role.RoleUserPutDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Profile;
@@ -26,10 +29,12 @@ public class TeamsController {
 
     private final TeamService teamService;
     private final ITeamDtoService teamDtoService;
+    private final RoleService roleService;
 
-    public TeamsController(TeamService teamService, ITeamDtoService teamDtoService) {
+    public TeamsController(TeamService teamService, ITeamDtoService teamDtoService, RoleService roleService) {
         this.teamService = teamService;
         this.teamDtoService = teamDtoService;
+        this.roleService = roleService;
     }
 
     @PostMapping("")
@@ -122,6 +127,65 @@ public class TeamsController {
     public ResponseEntity<Object> deleteById(@PathVariable UUID uuid) {
         teamService.delete(new TeamKey(uuid));
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{uuid}/roles")
+    public ResponseEntity<TeamDto> addRole(@PathVariable UUID uuid, @RequestBody RolePostDto rolePostDto) {
+        if (teamService.exists(new TeamKey(uuid))) {
+            RoleKey roleKey = new RoleKey(UUID.randomUUID());
+            teamService.addRole(new TeamKey(uuid), Role.builder()
+                    .metadataKey(roleKey)
+                    .teamKey(new TeamKey(uuid))
+                    .name(rolePostDto.getName())
+                    .userKeys(new HashSet<>())
+                    .privileges(rolePostDto.getPrivileges().stream()
+                            .map(privilegePostDto -> Privilege.builder()
+                                    .privilegeKey(new PrivilegeKey(UUID.randomUUID()))
+                                    .roleKey(roleKey)
+                                    .privilege(privilegePostDto.getPrivilege())
+                                    .build())
+                            .collect(Collectors.toSet()))
+                    .build());
+            return ResponseEntity.of(teamDtoService.get(uuid));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{team-uuid}/roles/{role-uuid}")
+    public ResponseEntity<Object> deleteRole(@PathVariable("team-uuid") UUID teamUuid, @PathVariable("role-uuid") UUID roleUuid) {
+        // TODO: check role-team key and team key
+        if (teamService.exists(new TeamKey(teamUuid))) {
+            teamService.deleteRole(new TeamKey(teamUuid), new RoleKey(roleUuid));
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{team-uuid}/roles/{role-uuid}/users")
+    public ResponseEntity<Object> addUserToRole(@PathVariable("team-uuid") UUID teamUuid,
+                                           @PathVariable("role-uuid") UUID roleUuid,
+                                           @RequestBody RoleUserPutDto rolePostDto) {
+        if (teamService.exists(new TeamKey(teamUuid)) && roleService.exists(new RoleKey(roleUuid))) {
+            roleService.addUser(new RoleKey(roleUuid), new UserKey(rolePostDto.getId()));
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @DeleteMapping("/{team-uuid}/roles/{role-uuid}/users/{user-uuid}")
+    public ResponseEntity<Object> deleteUserFromRole(@PathVariable("team-uuid") UUID teamUuid,
+                                                     @PathVariable("role-uuid") UUID roleUuid,
+                                                     @PathVariable("user-uuid") UUID userUuid) {
+        if (teamService.exists(new TeamKey(teamUuid)) && roleService.exists(new RoleKey(roleUuid))) {
+            roleService.removeUser(new RoleKey(roleUuid), new UserKey(userUuid));
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

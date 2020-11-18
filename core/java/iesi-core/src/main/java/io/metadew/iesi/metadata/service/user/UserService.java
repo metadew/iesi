@@ -9,13 +9,13 @@ import java.util.Set;
 
 public class UserService {
 
-    private static UserService INSTANCE;
+    private static UserService instance;
 
-    public synchronized static UserService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new UserService();
+    public static synchronized UserService getInstance() {
+        if (instance == null) {
+            instance = new UserService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private UserService() {

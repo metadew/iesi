@@ -4,6 +4,7 @@ package io.metadew.iesi.metadata.service.security;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.definition.user.TeamKey;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.HashSet;
@@ -63,6 +64,14 @@ public class SecurityGroupService {
 
     public void delete(SecurityGroupKey securityGroupKey) {
         SecurityGroupConfiguration.getInstance().delete(securityGroupKey);
+    }
+
+    public void addTeam(SecurityGroupKey securityGroupKey, TeamKey teamKey) {
+        SecurityGroupConfiguration.getInstance().addTeam(securityGroupKey, teamKey);
+    }
+
+    public void deleteTeam(SecurityGroupKey securityGroupKey, TeamKey teamKey) {
+        SecurityGroupConfiguration.getInstance().deleteTeam(securityGroupKey, teamKey);
     }
 
 }

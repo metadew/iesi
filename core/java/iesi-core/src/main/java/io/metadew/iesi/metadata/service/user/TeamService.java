@@ -1,12 +1,11 @@
 package io.metadew.iesi.metadata.service.user;
 
 
+import io.metadew.iesi.metadata.configuration.user.RoleConfiguration;
 import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.definition.user.Team;
-import io.metadew.iesi.metadata.definition.user.TeamKey;
-import io.metadew.iesi.metadata.definition.user.User;
+import io.metadew.iesi.metadata.definition.user.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +13,13 @@ import java.util.Set;
 
 public class TeamService {
 
-    private static TeamService INSTANCE;
+    private static TeamService instance;
 
     public static synchronized TeamService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TeamService();
+        if (instance == null) {
+            instance = new TeamService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private TeamService() {
@@ -64,6 +63,14 @@ public class TeamService {
 
     public Set<SecurityGroup> getSecurityGroups(TeamKey teamKey) {
         return TeamConfiguration.getInstance().getSecurityGroups(teamKey);
+    }
+
+    public void addRole(TeamKey teamKey, Role role) {
+        RoleConfiguration.getInstance().insert(role);
+    }
+
+    public void deleteRole(TeamKey teamKey, RoleKey roleKey) {
+        RoleConfiguration.getInstance().delete(roleKey);
     }
 
     public Set<User> getUsers(TeamKey teamKey) {

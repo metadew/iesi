@@ -14,13 +14,13 @@ import java.util.Set;
 
 public class RoleService {
 
-    private static RoleService INSTANCE;
+    private static RoleService instance;
 
     public static synchronized RoleService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new RoleService();
+        if (instance == null) {
+            instance = new RoleService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private RoleService() {

@@ -66,13 +66,13 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
     private static String insertUserRoleQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() +
             " (USER_ID, ROLE_ID) VALUES ({0}, {1});";
 
-    private static RoleConfiguration INSTANCE;
+    private static RoleConfiguration instance;
 
-    public synchronized static RoleConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new RoleConfiguration();
+    public static synchronized RoleConfiguration getInstance() {
+        if (instance == null) {
+            instance = new RoleConfiguration();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private RoleConfiguration() {

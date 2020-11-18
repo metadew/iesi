@@ -1514,7 +1514,7 @@ paths:
             format: int64
       responses:
         '200':
-          description: JSON file got has response
+          description: script content got as JSON file response
           content:
             'OCTET_STREAM':
               schema:

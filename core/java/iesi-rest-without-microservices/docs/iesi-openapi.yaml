@@ -60,7 +60,7 @@ paths:
                   type: string
         '404':
           description: default response
-    
+
 
   '/script-executions':
     get:
@@ -242,7 +242,7 @@ paths:
                 $ref: '#/components/schemas/ConnectionTypeDto'
         '404':
           description: default response
- 
+
   '/components/{name}/{version}':
     get:
       tags:
@@ -449,7 +449,7 @@ paths:
                   type: string
         '404':
           description: default response
-  
+
   '/components/{name}':
     get:
       tags:
@@ -609,7 +609,7 @@ paths:
                   type: string
         '404':
           description: default response
-  
+
   '/connections':
     get:
       tags:
@@ -709,7 +709,7 @@ paths:
                   type: string
         '404':
           description: default response
-  
+
   '/connections/{name}':
     get:
       tags:
@@ -765,7 +765,7 @@ paths:
                   type: string
         '404':
           description: default response
-    
+
   '/environments':
     get:
       tags:
@@ -865,7 +865,7 @@ paths:
                   type: string
         '404':
           description: default response
-  
+
   '/environments/{name}':
     get:
       tags:
@@ -1128,7 +1128,7 @@ paths:
             See https://stackoverflow.com/questions/33018127/spring-data-rest-sort-by-multiple-properties for query parameter formatting. Sort the result set according to the provided keywords. The order of sorting follows the order of the list. By default sorting is applied in the ascending direction but this can be altered by explicitly providing the sorting direction:
              * `script[,desc|,asc]` - Sort by script name of script execution request.
              * `version[,desc|,asc]` - Sort by script version of script execution request.
-             * `request_timestamp[,desc|,asc]` - Sort by execution request timestamp. 
+             * `request_timestamp[,desc|,asc]` - Sort by execution request timestamp.
       operationId: getAll_3
       responses:
         '200':
@@ -1392,7 +1392,7 @@ paths:
                   type: string
         '404':
           description: default response
-  
+
   '/scripts/{name}/{version}':
     get:
       tags:
@@ -1495,6 +1495,32 @@ paths:
                   type: string
         '404':
           description: default response
+  '/scripts/{name}/{version}/download':
+    get:
+      tags:
+        - scripts
+      operationId: get_file
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: JSON file got has response
+          content:
+            'OCTET_STREAM':
+              schema:
+                $ref: '#/components/schemas/ScriptGetDto'
+        '404':
+          description: default response
   /scripts:
     get:
       tags:
@@ -1546,7 +1572,7 @@ paths:
           explode: false
           description: >
             See https://stackoverflow.com/questions/33018127/spring-data-rest-sort-by-multiple-properties for query parameter formatting. Sort the result set according to the provided keywords. The order of sorting follows the order of the list. By default sorting is applied in the ascending direction but this can be altered by explicitly providing the sorting direction:
-             * `name[,desc|,asc]` - Sort by script name. 
+             * `name[,desc|,asc]` - Sort by script name.
       responses:
         '200':
           description: default response
@@ -1699,10 +1725,10 @@ paths:
                   type: string
         '404':
           description: default response
-  
+
 components:
   parameters:
-    paginationPageParameter: 
+    paginationPageParameter:
       in: query
       name: page
       required: false
@@ -1722,7 +1748,7 @@ components:
       description: The numbers of items to return.
 
   schemas:
-  
+
     ComponentAttributeDto:
       type: object
       properties:
@@ -1791,7 +1817,7 @@ components:
       properties:
         href:
           type: string
-        
+
     HalMultipleEmbeddedResourceComponentDto:
       type: object
       properties:
@@ -2102,7 +2128,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Link'
-            
+
     ExecutionRequestPostDto:
       type: object
       properties:
@@ -2472,16 +2498,16 @@ components:
     PaginationProperties:
       type: object
       properties:
-        size: 
+        size:
           type: integer
           description: Number of element displayed on the page
-        totalElements: 
+        totalElements:
           type: integer
           description: Number of element Avalaible in the API through this endpoint
-        totalPages: 
+        totalPages:
           type: integer
           description: Number of page with the parameter size and totalElements
-        number: 
+        number:
           type: integer
           description: Actual Number of the page (starts from 1 to n)
 
@@ -2510,21 +2536,21 @@ components:
     ScriptExecutionDto:
       type: object
       properties:
-        runId: 
+        runId:
           type: string
-        processId: 
+        processId:
           type: string
-        parentProcessId: 
+        parentProcessId:
           type: number
-        scriptId: 
+        scriptId:
           type: string
-        scriptName: 
+        scriptName:
           type: string
-        scriptVersion: 
+        scriptVersion:
           type: number
-        environment: 
+        environment:
           type: string
-        status: 
+        status:
           type: string
           enum:
             - RUNNING
@@ -2533,10 +2559,10 @@ components:
             - ERROR
             - STOPPED
             - SKIPPED
-        startTimestamp: 
+        startTimestamp:
           type: string
           format: date-time
-        endTimestamp: 
+        endTimestamp:
           type: string
           format: date-time
         inputParameters:
@@ -2568,38 +2594,38 @@ components:
     InputParameter:
       type: object
       properties:
-        name: 
+        name:
           type: string
-        rawValue: 
+        rawValue:
           type: string
-        resolvedValue: 
+        resolvedValue:
           type: string
 
     ActionResult:
       type: object
       properties:
-        runId: 
+        runId:
           type: string
-        processId: 
+        processId:
           type: number
-        type: 
+        type:
           type: string
-        name: 
+        name:
           type: string
-        description: 
+        description:
           type: string
-        condition: 
+        condition:
           type: string
-        errorStop: 
+        errorStop:
           type: boolean
-        errorExpected: 
+        errorExpected:
           type: boolean
-        status: 
+        status:
           type: string
-        startTimestamp: 
+        startTimestamp:
           type: string
           format: date-time
-        endTimestamp: 
+        endTimestamp:
           type: string
           format: date-time
         inputParameters:
@@ -2660,7 +2686,7 @@ components:
               $ref: '#/components/schemas/Link'
             scriptResultsOfThisRunId:
               $ref: '#/components/schemas/Link'
-    
+
     ScriptGetDto:
       type: object
       properties:
@@ -2736,7 +2762,7 @@ components:
           type: string
         expiresIn:
           type: number
-            
+
 
 
   securitySchemes:

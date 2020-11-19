@@ -3,4 +3,4 @@ iesi:
     enabled: true
     jwt:
       secret: secret
-      expiry-date: 10
+      expiry-date: 60000

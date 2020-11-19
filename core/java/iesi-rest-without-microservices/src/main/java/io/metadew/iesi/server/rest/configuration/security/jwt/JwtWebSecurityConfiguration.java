@@ -73,12 +73,7 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .mvcMatchers("/actuator/health").permitAll()
-                .mvcMatchers("/users/**").permitAll()
-                .mvcMatchers("/users").permitAll()
-                .mvcMatchers("/teams/**").permitAll()
-                .mvcMatchers("/teams").permitAll()
-                .mvcMatchers("/security-groups/**").permitAll()
-                .mvcMatchers("/security-groups").permitAll()
+                .mvcMatchers("/users/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);

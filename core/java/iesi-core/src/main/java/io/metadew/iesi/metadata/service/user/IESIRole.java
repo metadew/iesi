@@ -32,7 +32,12 @@ public enum IESIRole {
                     // Script Executions
                     SCRIPT_EXECUTIONS_CREATE,
                     SCRIPT_EXECUTIONS_READ,
-                    SCRIPT_EXECUTIONS_DELETE
+                    SCRIPT_EXECUTIONS_DELETE,
+                    USERS_READ,
+                    TEAMS_READ,
+                    ROLES_DELETE,
+                    ROLES_WRITE,
+                    SECURITY_GROUP_READ
             ).collect(Collectors.toSet())),
     TECHNICAL_ENGINEER("TECHNICAL_ENGINEER",
             Stream.of(
@@ -51,7 +56,10 @@ public enum IESIRole {
                     // Execution Requests
                     EXECUTION_REQUESTS_READ,
                     // Script Executions
-                    SCRIPT_EXECUTIONS_READ
+                    SCRIPT_EXECUTIONS_READ,
+                    USERS_READ,
+                    TEAMS_READ,
+                    SECURITY_GROUP_READ
             ).collect(Collectors.toSet())),
     TEST_ENGINEER("TEST_ENGINEER",
             Stream.of(
@@ -71,7 +79,10 @@ public enum IESIRole {
                     EXECUTION_REQUESTS_CREATE,
                     EXECUTION_REQUESTS_READ,
                     // Script Executions
-                    SCRIPT_EXECUTIONS_READ
+                    SCRIPT_EXECUTIONS_READ,
+                    USERS_READ,
+                    TEAMS_READ,
+                    SECURITY_GROUP_READ
             ).collect(Collectors.toSet())),
     EXECUTOR("EXECUTOR",
             Stream.of(
@@ -87,7 +98,10 @@ public enum IESIRole {
                     EXECUTION_REQUESTS_CREATE,
                     EXECUTION_REQUESTS_READ,
                     // Script Executions
-                    SCRIPT_EXECUTIONS_READ
+                    SCRIPT_EXECUTIONS_READ,
+                    USERS_READ,
+                    TEAMS_READ,
+                    SECURITY_GROUP_READ
             ).collect(Collectors.toSet())),
     VIEWER("VIEWER",
             Stream.of(
@@ -102,8 +116,25 @@ public enum IESIRole {
                     // Execution Requests
                     EXECUTION_REQUESTS_READ,
                     // Script Executions
-                    SCRIPT_EXECUTIONS_READ
-            ).collect(Collectors.toSet()));
+                    SCRIPT_EXECUTIONS_READ,
+                    USERS_READ,
+                    TEAMS_READ,
+                    SECURITY_GROUP_READ
+            ).collect(Collectors.toSet())),
+    SYS_ADMIN("SYSADMIN",
+            Stream.of(
+                    USERS_READ,
+                    USERS_WRITE,
+                    TEAMS_READ,
+                    TEAMS_WRITE,
+                    TEAMS_DELETE,
+                    ROLES_DELETE,
+                    ROLES_WRITE,
+                    SECURITY_GROUP_READ,
+                    SECURITY_GROUP_WRITE,
+                    SECURITY_GROUP_DELETE
+            ).collect(Collectors.toSet())),
+    ;
 
     private final String name;
     private final Set<IESIPrivilege> iesiPrivileges;

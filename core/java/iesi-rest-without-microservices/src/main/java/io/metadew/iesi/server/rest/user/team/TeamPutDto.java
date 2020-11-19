@@ -1,6 +1,5 @@
 package io.metadew.iesi.server.rest.user.team;
 
-import io.metadew.iesi.server.rest.user.role.RoleDto;
 import io.metadew.iesi.server.rest.user.role.RolePutDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;

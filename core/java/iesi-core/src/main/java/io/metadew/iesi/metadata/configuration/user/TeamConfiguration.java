@@ -52,7 +52,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
             " ON roles.ID = user_roles.ROLE_ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
             " ON teams.ID = security_group_teams.TEAM_ID " +
-            " WHERE teams.NAME={0};";
+            " WHERE teams.TEAM_NAME={0};";
     private static String fetchAllQuery = "select teams.ID as team_id, teams.TEAM_NAME as team_name, " +
             "roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +
             "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privileges.privilege as privilege_privilege, " +

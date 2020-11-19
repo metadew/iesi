@@ -2,11 +2,13 @@ package io.metadew.iesi.metadata.service.user;
 
 import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Log4j2
 public class UserService {
 
     private static UserService instance;

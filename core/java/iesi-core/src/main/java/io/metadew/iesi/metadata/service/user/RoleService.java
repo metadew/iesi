@@ -2,15 +2,10 @@ package io.metadew.iesi.metadata.service.user;
 
 
 import io.metadew.iesi.metadata.configuration.user.RoleConfiguration;
-import io.metadew.iesi.metadata.definition.user.Role;
-import io.metadew.iesi.metadata.definition.user.RoleKey;
-import io.metadew.iesi.metadata.definition.user.User;
-import io.metadew.iesi.metadata.definition.user.UserKey;
+import io.metadew.iesi.metadata.definition.user.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RoleService {
 
@@ -60,6 +55,24 @@ public class RoleService {
 
     public void removeUser(RoleKey roleKey, UserKey userKey) {
         RoleConfiguration.getInstance().removeUser(roleKey, userKey);
+    }
+
+    public Role convertDefaultRole(IESIRole iesiRole, TeamKey teamKey) {
+        RoleKey roleKey = new RoleKey(UUID.randomUUID());
+        return Role.builder()
+                .metadataKey(roleKey)
+                .teamKey(teamKey)
+                .userKeys(new HashSet<>())
+                .name(iesiRole.getName())
+                .privileges(
+                        iesiRole.getIesiPrivileges().stream().map(
+                                iesiPrivilege -> Privilege.builder()
+                                        .privilegeKey(new PrivilegeKey(UUID.randomUUID()))
+                                        .roleKey(roleKey)
+                                        .privilege(iesiPrivilege.getPrivilege())
+                                        .build()
+                        ).collect(Collectors.toSet())
+                ).build();
     }
 
 }

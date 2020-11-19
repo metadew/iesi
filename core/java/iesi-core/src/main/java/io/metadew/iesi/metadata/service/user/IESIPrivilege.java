@@ -32,12 +32,24 @@ public enum IESIPrivilege {
     // SCRIPT_RESULTS
     SCRIPT_RESULTS_READ("SCRIPT_RESULTS_READ"),
     // USERS
-    USERS_WRITE("USERS_WRITE")
-    ;
+    USERS_WRITE("USERS_WRITE"),
+    USERS_READ("USERS_READ"),
+    USERS_DELETE("USERS_DELETE"),
+    // TEAMS
+    TEAMS_WRITE("TEAMS_WRITE"),
+    TEAMS_READ("TEAMS_READ"),
+    TEAMS_DELETE("TEAMS_DELETE"),
+    // ROLES
+    ROLES_WRITE("ROLES_WRITE"),
+    ROLES_DELETE("ROLES_DELETE"),
+    // SECURITY_GROUP
+    SECURITY_GROUP_WRITE("GROUPS_WRITE"),
+    SECURITY_GROUP_READ("GROUPS_READ"),
+    SECURITY_GROUP_DELETE("GROUPS_DELETE");
 
     private final String privilege;
 
-    private IESIPrivilege(String privilege) {
+    IESIPrivilege(String privilege) {
         this.privilege = privilege;
     }
 

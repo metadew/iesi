@@ -75,7 +75,6 @@ public class ComponentsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Component " + component.getName() + " already exists");
         }
-
     }
 
     @PutMapping("")

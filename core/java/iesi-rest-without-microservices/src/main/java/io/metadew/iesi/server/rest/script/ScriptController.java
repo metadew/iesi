@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
+import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,9 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -120,12 +119,19 @@ public class ScriptController {
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version,new ArrayList<>())
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
 
+        ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+                .filename(String.format("%s-%d.json",name,version))
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentDisposition(contentDisposition);
+
+
         String jsonString = objectMapper.writeValueAsString(scriptDto);
 
         byte [] data = jsonString.getBytes();
         ByteArrayResource resource = new ByteArrayResource(data);
 
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+        return ResponseEntity.ok().headers(httpHeaders).contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 
     }
 

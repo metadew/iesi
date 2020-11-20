@@ -119,7 +119,7 @@ public class ScriptController {
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
 
         ContentDisposition contentDisposition = ContentDisposition.builder("inline")
-                .filename(String.format("%s-%d.json",name,version))
+                .filename(String.format("script_%s_%d.json",name,version))
                 .build();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentDisposition(contentDisposition);

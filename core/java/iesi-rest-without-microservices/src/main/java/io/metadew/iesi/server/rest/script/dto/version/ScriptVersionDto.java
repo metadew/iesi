@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 @RestController
 @Tag(name = "connectionTypes", description = "Everything about connection types")
 @RequestMapping("/connection-types")
-@CrossOrigin
 public class ConnectionTypeController {
 
     private IConnectionTypeDtoService connectionTypeDtoService;

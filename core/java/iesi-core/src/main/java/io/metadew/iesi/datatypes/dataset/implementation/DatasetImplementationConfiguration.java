@@ -1,7 +1,6 @@
 package io.metadew.iesi.datatypes.dataset.implementation;
 
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
-import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
@@ -15,11 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -55,6 +49,11 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID;";
+
+    private static final String IS_EMPTY_QUERY = "SELECT " +
+            "count(*) as key_value_pairs " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+            "WHERE dataset_in_mem_impl_kvs={0};";
 
     private static String selectSingleQuery = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
@@ -189,6 +188,21 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                             labelSetQuery),
                     "reader");
             return cachedRowSet.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public boolean isEmpty(DatasetImplementationKey datasetImplementationKey) {
+        try {
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(
+                            IS_EMPTY_QUERY,
+                            SQLTools.getStringForSQL(datasetImplementationKey.getUuid())),
+                    "reader");
+            cachedRowSet.next();
+            return Integer.parseInt(cachedRowSet.getString("key_value_pairs")) == 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

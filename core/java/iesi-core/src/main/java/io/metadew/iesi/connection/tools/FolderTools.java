@@ -16,7 +16,7 @@ import java.util.List;
 public final class FolderTools {
 
     public static File[] getFilesInFolder(String folderName, String filterType, String filterExpression) {
-        File[] files = null;
+        File[] files;
 
         if (filterType.equalsIgnoreCase("all")) {
             files = getAllFilesInFolder(folderName);
@@ -24,6 +24,8 @@ public final class FolderTools {
             files = getFilesInFolderUsingMatch(folderName, filterExpression);
         } else if (filterType.equalsIgnoreCase("regex")) {
             files = getFilesInFolderUsingRegex(folderName, filterExpression);
+        } else {
+            files = new File[0];
         }
 
         return files;
@@ -112,14 +114,9 @@ public final class FolderTools {
         final File folder = new File(folderName);
 
         final String fileFilter = filterExpression;
-        final File[] files = folder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return name.matches(fileFilter);
-            }
-        });
 
-        return files;
+        File[] files = folder.listFiles((dir, name) -> name.matches(fileFilter));
+        return files == null ? new File[0] : files;
     }
 
     private static File[] getFilesInFolderUsingMatch(String folderName, String filterExpression) {

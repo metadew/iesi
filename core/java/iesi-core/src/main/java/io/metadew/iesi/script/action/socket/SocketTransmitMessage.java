@@ -134,7 +134,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
                 message.getBytes(Charset.forName(socket.getEncoding())).length);
         datagramSocket.send(datagramPacketToSend);
         if (getOutputDataset().isPresent()) {
-            InMemoryDatasetImplementationService.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
+            InMemoryDatasetImplementationService.getInstance().clean(outputDataset);
             byte[] buffer = new byte[65508];
             DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
             datagramSocket.receive(datagramPacketToReceive);
@@ -150,7 +150,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         dOut.write(message.getBytes(Charset.forName(socket.getEncoding())));
         dOut.flush();
         if (getOutputDataset().isPresent()) {
-            InMemoryDatasetImplementationService.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
+            InMemoryDatasetImplementationService.getInstance().clean(outputDataset);
             LocalDateTime endDateTime;
             if (timeout == null) {
                 endDateTime = LocalDateTime.now()

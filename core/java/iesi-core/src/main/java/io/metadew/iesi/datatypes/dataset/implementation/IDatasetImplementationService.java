@@ -10,34 +10,36 @@ import java.util.Optional;
 
 public interface IDatasetImplementationService<T extends DatasetImplementation> {
 
-    public Optional<T> getDatasetImplementation(String name, List<String> labels);
+    Optional<T> getDatasetImplementation(String name, List<String> labels);
 
-    public T createNewDatasetImplementation(String name, List<String> labels);
+    T createNewDatasetImplementation(String name, List<String> labels);
 
-    public void clean(T datasetImplementation, ExecutionRuntime executionRuntime);
+    void clean(T datasetImplementation);
 
-    public Optional<DataType> getDataItem(T datasetImplementation, String dataItem, ExecutionRuntime executionRuntime);
+    Optional<DataType> getDataItem(T datasetImplementation, String dataItem, ExecutionRuntime executionRuntime);
 
-    public Map<String, DataType> getDataItems(T datasetImplementation, ExecutionRuntime executionRuntime);
+    Map<String, DataType> getDataItems(T datasetImplementation, ExecutionRuntime executionRuntime);
 
-    public void setDataItem(T datasetImplementation, String key, DataType value);
+    void setDataItem(T datasetImplementation, String key, DataType value);
 
-    public boolean exists(DatasetImplementationKey datasetImplementationKey);
+    boolean exists(DatasetImplementationKey datasetImplementationKey);
 
-    public boolean exists(String name, List<String> labels);
+    boolean exists(String name, List<String> labels);
 
-    public Optional<DatasetImplementation> get(DatasetImplementationKey datasetImplementationKey);
+    Optional<DatasetImplementation> get(DatasetImplementationKey datasetImplementationKey);
 
-    public void create(T datasetImplementation);
+    void create(T datasetImplementation);
 
-    public void delete(T datasetImplementation);
+    void delete(T datasetImplementation);
 
-    public void delete(DatasetImplementationKey datasetImplementationKey);
+    void delete(DatasetImplementationKey datasetImplementationKey);
 
-    public void update(T datasetImplementation);
+    void update(T datasetImplementation);
 
-    public List<DatasetImplementation> getAll();
+    List<DatasetImplementation> getAll();
 
-    public List<DatasetImplementation> getByDatasetId(DatasetKey datasetKey);
+    boolean isEmpty(T datasetImplementation);
+
+    List<DatasetImplementation> getByDatasetId(DatasetKey datasetKey);
 
 }

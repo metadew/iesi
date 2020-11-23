@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
 @Log4j2
 public class InMemoryDatasetImplementationService extends DatasetImplementationService<InMemoryDatasetImplementation> implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
 
-    private static InMemoryDatasetImplementationService INSTANCE;
+    private static InMemoryDatasetImplementationService instance;
 
-    public synchronized static InMemoryDatasetImplementationService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new InMemoryDatasetImplementationService();
+    public static synchronized InMemoryDatasetImplementationService getInstance() {
+        if (instance == null) {
+            instance = new InMemoryDatasetImplementationService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private InMemoryDatasetImplementationService() {
@@ -67,7 +67,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
     }
 
     @Override
-    public void clean(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
+    public void clean(InMemoryDatasetImplementation datasetImplementation) {
         datasetImplementation.setKeyValues(new HashSet<>());
         DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
     }
@@ -107,6 +107,11 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
                     return datasetImplementation;
                 });
         DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
+    }
+
+    @Override
+    public boolean isEmpty(InMemoryDatasetImplementation datasetImplementation) {
+        return DatasetImplementationConfiguration.getInstance().isEmpty(datasetImplementation.getMetadataKey());
     }
 
     public DataType resolve(InMemoryDatasetImplementation dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) {

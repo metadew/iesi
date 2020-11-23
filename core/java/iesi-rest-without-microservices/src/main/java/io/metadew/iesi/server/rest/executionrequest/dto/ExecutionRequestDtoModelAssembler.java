@@ -57,7 +57,7 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
                     executionRequest.getContext(), executionRequest.getEmail(), executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
                             .map(scriptExecutionRequestDtoModelAssembler::toModel)
-                            .collect(Collectors.toList()),
+                            .collect(Collectors.toSet()),
                     executionRequest.getExecutionRequestLabels().stream()
                             .map(this::convertToDto)
                             .collect(Collectors.toSet()));

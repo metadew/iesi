@@ -1,5 +1,7 @@
 package io.metadew.iesi.server.rest.script;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
@@ -9,16 +11,18 @@ import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +32,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @Tag(name = "scripts", description = "Everything about scripts")
 @RequestMapping("/scripts")
-@CrossOrigin
 public class ScriptController {
 
     private final IScriptService scriptService;
@@ -36,6 +39,9 @@ public class ScriptController {
     private final ScriptDtoModelAssembler scriptDtoModelAssembler;
     private final IScriptPostDtoService scriptPostDtoService;
     private final PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
+
+    @Autowired
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     ScriptController(IScriptService scriptService,
@@ -101,7 +107,30 @@ public class ScriptController {
                          @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions) throws MetadataDoesNotExistException {
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version, expansions)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+
         return scriptDtoModelAssembler.toModel(scriptDto);
+    }
+
+    @GetMapping("/{name}/{version}/download")
+    public ResponseEntity<Resource> getFile(@PathVariable String name,
+                                                @PathVariable Long version) throws IOException {
+
+        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(name, version,new ArrayList<>())
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+                .filename(String.format("script_%s_%d.json",name,version))
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentDisposition(contentDisposition);
+
+        String jsonString = objectMapper.writeValueAsString(scriptDto);
+
+        byte [] data = jsonString.getBytes();
+        ByteArrayResource resource = new ByteArrayResource(data);
+
+        return ResponseEntity.ok().headers(httpHeaders).contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+
     }
 
     @PostMapping("")
@@ -109,7 +138,6 @@ public class ScriptController {
         scriptService.createScript(scriptPostDto);
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
     }
-
 
     @PutMapping("")
     public HalMultipleEmbeddedResource<ScriptPostDto> putAll(@Valid @RequestBody List<ScriptPostDto> scriptDtos) throws MetadataDoesNotExistException {

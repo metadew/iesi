@@ -175,7 +175,7 @@ class TemplateServiceTest {
 
         InMemoryDatasetImplementationService datasetHandler = InMemoryDatasetImplementationService.getInstance();
         InMemoryDatasetImplementationService datasetHandlerSpy = Mockito.spy(datasetHandler);
-        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "INSTANCE", datasetHandlerSpy);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandlerSpy);
 
         InMemoryDatasetImplementation dataset1 = mock(InMemoryDatasetImplementation.class);
         InMemoryDatasetImplementation dataset2 = mock(InMemoryDatasetImplementation.class);
@@ -197,7 +197,7 @@ class TemplateServiceTest {
         assertThat(TemplateService.getInstance().matches(dataset2, template2, executionRuntime))
                 .isTrue();
 
-        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "INSTANCE", (InMemoryDatasetImplementationService) null);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
     }
 
 }

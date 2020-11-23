@@ -5,12 +5,14 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionK
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "script-executions", description = "Everything about script_executions")
 @RestController
 @RequestMapping("/script-executions")
-@CrossOrigin
 public class ScriptExecutionDtoController {
 
     IScriptExecutionDtoService scriptExecutionService;

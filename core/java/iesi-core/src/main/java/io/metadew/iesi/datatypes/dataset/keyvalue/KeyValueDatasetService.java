@@ -60,6 +60,22 @@ public class KeyValueDatasetService extends DatasetService<KeyValueDataset> impl
     private KeyValueDatasetService() {
     }
 
+    public boolean isEmpty(KeyValueDataset keyValueDataset) {
+        String query = "select count(*) as row_count from " + SQLTools.GetStringForSQLTable(keyValueDataset.getTableName()) + ";";
+        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(keyValueDataset.getDatasetDatabase(), query);
+        if (crs.size() == 0) {
+            throw new RuntimeException(String.format("Unable to check if dataset %s contains data items", keyValueDataset));
+        }
+        try {
+            crs.next();
+            int count = Integer.parseInt(crs.getString("ROW_COUNT"));
+            crs.close();
+            return count == 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(String.format("Unable to check if dataset %s contains data items", keyValueDataset));
+        }
+    }
+
     public KeyValueDataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) {
         name = executionRuntime.resolveVariables(name);
         labels = labels.stream()

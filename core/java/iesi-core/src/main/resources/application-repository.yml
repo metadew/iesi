@@ -11,6 +11,10 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
+
+#          type: sqlite
+#          file: 
+
           type: h2
           mode: memory
           database: test

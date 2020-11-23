@@ -70,7 +70,7 @@ public class KeyValueDatasetService extends DatasetService<KeyValueDataset> impl
             crs.next();
             int count = Integer.parseInt(crs.getString("ROW_COUNT"));
             crs.close();
-            return count > 0;
+            return count == 0;
         } catch (SQLException e) {
             throw new RuntimeException(String.format("Unable to check if dataset %s contains data items", keyValueDataset));
         }

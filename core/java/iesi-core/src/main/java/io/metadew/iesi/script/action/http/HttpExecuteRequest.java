@@ -179,7 +179,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private void outputResponse(HttpResponse httpResponse) throws IOException {
         Optional<KeyValueDataset> outputDataset = getOutputDataset();
         if (outputDataset.isPresent()) {
-            if (KeyValueDatasetService.getInstance().isEmpty(outputDataset.get())) {
+            if (!KeyValueDatasetService.getInstance().isEmpty(outputDataset.get())) {
                 log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
                 KeyValueDatasetService.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
             }

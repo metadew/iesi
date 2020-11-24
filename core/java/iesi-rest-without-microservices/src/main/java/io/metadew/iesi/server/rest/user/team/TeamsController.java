@@ -103,12 +103,12 @@ public class TeamsController {
         return ResponseEntity.of(teamDtoService.get(team.getMetadataKey().getUuid()));
     }
 
-    private boolean checkSysadminRoles(RolePutDto rolePutDto) {
+    private boolean checkNoSysadminPrivileges(RolePutDto rolePutDto) {
         return rolePutDto.getPrivileges().stream()
                 .noneMatch(privilegeDto -> SYS_ADMIN_ONLY_PRIVILEGES.contains(privilegeDto.getPrivilege()));
     }
 
-    private boolean checkSysadminRoles(RolePostDto rolePostDto) {
+    private boolean checkNoSysadminPrivileges(RolePostDto rolePostDto) {
         return rolePostDto.getPrivileges().stream()
                 .noneMatch(privilegeDto -> SYS_ADMIN_ONLY_PRIVILEGES.contains(privilegeDto.getPrivilege()));
     }
@@ -123,7 +123,7 @@ public class TeamsController {
     @PutMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('TEAMS_WRITE')")
     public ResponseEntity<TeamDto> update(@PathVariable UUID uuid, @RequestBody TeamPutDto teamPutDto) {
-        if (!teamPutDto.getRoles().stream().allMatch(this::checkSysadminRoles)) {
+        if (!teamPutDto.getRoles().stream().allMatch(this::checkNoSysadminPrivileges)) {
             ResponseEntity.badRequest().body("Cannot add sys admin privileges to a role");
         }
 
@@ -178,7 +178,7 @@ public class TeamsController {
     @PostMapping("/{uuid}/roles")
     @PreAuthorize("hasPrivilege('ROLES_WRITE')")
     public ResponseEntity<TeamDto> addRole(@PathVariable UUID uuid, @RequestBody RolePostDto rolePostDto) {
-        if (!checkSysadminRoles(rolePostDto)) {
+        if (!checkNoSysadminPrivileges(rolePostDto)) {
             ResponseEntity.badRequest().body("Cannot add role with sys admin privileges");
         }
         if (teamService.exists(new TeamKey(uuid))) {

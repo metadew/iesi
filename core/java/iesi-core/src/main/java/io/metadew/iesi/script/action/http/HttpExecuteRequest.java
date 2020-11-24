@@ -181,7 +181,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (outputDataset.isPresent()) {
             if (!InMemoryDatasetImplementationService.getInstance().isEmpty(outputDataset.get())) {
                 log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
-                InMemoryDatasetImplementationService.getInstance().clean(outputDataset.get());
+                InMemoryDatasetImplementationService.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
             }
             HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
         }

@@ -67,9 +67,26 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
     }
 
     @Override
-    public void clean(InMemoryDatasetImplementation datasetImplementation) {
+    public void clean(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
         datasetImplementation.setKeyValues(new HashSet<>());
+        InMemoryDatasetImplementationService.getInstance().getDataItems(datasetImplementation, executionRuntime)
+                .forEach((s, dataType) -> deleteDataType(dataType, executionRuntime));
         DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
+    }
+
+    @Override
+    public void delete(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
+        InMemoryDatasetImplementationService.getInstance().getDataItems(datasetImplementation, executionRuntime)
+                .forEach((s, dataType) -> deleteDataType(dataType, executionRuntime));
+        DatasetImplementationConfiguration.getInstance().delete(datasetImplementation.getMetadataKey());
+    }
+
+    private void deleteDataType(DataType dataType, ExecutionRuntime executionRuntime) {
+        if (dataType instanceof InMemoryDatasetImplementation) {
+            delete((InMemoryDatasetImplementation) dataType, executionRuntime);
+        } else if (dataType instanceof Array) {
+            ((Array) dataType).getList().forEach(element -> deleteDataType(element, executionRuntime));
+        }
     }
 
     @Override

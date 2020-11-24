@@ -14,7 +14,9 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
 
     T createNewDatasetImplementation(String name, List<String> labels);
 
-    void clean(T datasetImplementation);
+    void clean(T datasetImplementation, ExecutionRuntime executionRuntime);
+
+    void delete(T datasetImplementation, ExecutionRuntime executionRuntime);
 
     Optional<DataType> getDataItem(T datasetImplementation, String dataItem, ExecutionRuntime executionRuntime);
 

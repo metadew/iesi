@@ -87,16 +87,19 @@ public class Db2DatabaseService extends SchemaDatabaseService<Db2Database> imple
         StringBuilder fieldQuery = new StringBuilder();
         // Data Types
         switch (field.getType()) {
-            case "string":
+            case STRING:
                 fieldQuery.append("VARCHAR (").append(field.getLength()).append(")");
                 break;
-            case "flag":
+            case CLOB:
+                fieldQuery.append("CLOB").append(field.getLength()).append(")");
+                break;
+            case FLAG:
                 fieldQuery.append("CHAR (").append(field.getLength()).append(")");
                 break;
-            case "number":
+            case NUMBER:
                 fieldQuery.append("NUMERIC");
                 break;
-            case "timestamp":
+            case TIMESTAMP:
                 fieldQuery.append("DATE");
                 break;
         }

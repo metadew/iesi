@@ -83,7 +83,7 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
     public Optional<Role> get(RoleKey metadataKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSingleQuery, SQLTools.GetStringForSQL(metadataKey.getUuid())),
+                    MessageFormat.format(fetchSingleQuery, SQLTools.getStringForSQL(metadataKey.getUuid())),
                     "reader");
             return new RoleListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();
@@ -105,7 +105,7 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
     public List<Role> getByTeamId(TeamKey teamKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchByTeamIdQuery, SQLTools.GetStringForSQL(teamKey.getUuid())),
+                    MessageFormat.format(fetchByTeamIdQuery, SQLTools.getStringForSQL(teamKey.getUuid())),
                     "reader");
             return new RoleListResultSetExtractor().extractData(cachedRowSet);
         } catch (SQLException e) {
@@ -116,11 +116,11 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
     @Override
     public void delete(RoleKey metadataKey) {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey));
-        String deleteStatement = MessageFormat.format(deleteSingleQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
+        String deleteStatement = MessageFormat.format(deleteSingleQuery, SQLTools.getStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteStatement);
-        String deletePrivilegesStatement = MessageFormat.format(deletePrivilegesByRoleIdQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
+        String deletePrivilegesStatement = MessageFormat.format(deletePrivilegesByRoleIdQuery, SQLTools.getStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deletePrivilegesStatement);
-        String deleteUserRolesStatement = MessageFormat.format(deleteUserRolesByRoleIdQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
+        String deleteUserRolesStatement = MessageFormat.format(deleteUserRolesByRoleIdQuery, SQLTools.getStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteUserRolesStatement);
     }
 
@@ -134,24 +134,24 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
         log.trace(MessageFormat.format("Inserting {0}.", metadata));
         String insertStatement =
                 MessageFormat.format(insertQuery,
-                        SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                        SQLTools.GetStringForSQL(metadata.getTeamKey().getUuid()),
-                        SQLTools.GetStringForSQL(metadata.getName()));
+                        SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
+                        SQLTools.getStringForSQL(metadata.getTeamKey().getUuid()),
+                        SQLTools.getStringForSQL(metadata.getName()));
         getMetadataRepository().executeUpdate(insertStatement);
         for (UserKey userKey : metadata.getUserKeys()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertUserRoleQuery,
-                            SQLTools.GetStringForSQL(userKey.getUuid()),
-                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()))
+                            SQLTools.getStringForSQL(userKey.getUuid()),
+                            SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()))
             );
         }
 
         for (Privilege privilege : metadata.getPrivileges()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertPrivilegeQuery,
-                            SQLTools.GetStringForSQL(privilege.getMetadataKey().getUuid()),
-                            SQLTools.GetStringForSQL(privilege.getRoleKey().getUuid()),
-                            SQLTools.GetStringForSQL(privilege.getPrivilege()))
+                            SQLTools.getStringForSQL(privilege.getMetadataKey().getUuid()),
+                            SQLTools.getStringForSQL(privilege.getRoleKey().getUuid()),
+                            SQLTools.getStringForSQL(privilege.getPrivilege()))
             );
         }
     }
@@ -161,30 +161,30 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
         log.trace(MessageFormat.format("updating {0}.", metadata));
         String insertStatement =
                 MessageFormat.format(updateQuery,
-                        SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                        SQLTools.GetStringForSQL(metadata.getTeamKey().getUuid()),
-                        SQLTools.GetStringForSQL(metadata.getName()));
+                        SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
+                        SQLTools.getStringForSQL(metadata.getTeamKey().getUuid()),
+                        SQLTools.getStringForSQL(metadata.getName()));
         getMetadataRepository().executeUpdate(insertStatement);
 
 
-        String deleteUserRolesStatement = MessageFormat.format(deleteUserRolesByRoleIdQuery, SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()));
+        String deleteUserRolesStatement = MessageFormat.format(deleteUserRolesByRoleIdQuery, SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
         getMetadataRepository().executeUpdate(deleteUserRolesStatement);
         for (UserKey userKey : metadata.getUserKeys()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertUserRoleQuery,
-                            SQLTools.GetStringForSQL(userKey.getUuid()),
-                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()))
+                            SQLTools.getStringForSQL(userKey.getUuid()),
+                            SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()))
             );
         }
 
-        String deletePrivilegesStatement = MessageFormat.format(deletePrivilegesByRoleIdQuery, SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()));
+        String deletePrivilegesStatement = MessageFormat.format(deletePrivilegesByRoleIdQuery, SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
         getMetadataRepository().executeUpdate(deletePrivilegesStatement);
         for (Privilege privilege : metadata.getPrivileges()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertPrivilegeQuery,
-                            SQLTools.GetStringForSQL(privilege.getMetadataKey().getUuid()),
-                            SQLTools.GetStringForSQL(privilege.getRoleKey().getUuid()),
-                            SQLTools.GetStringForSQL(privilege.getPrivilege()))
+                            SQLTools.getStringForSQL(privilege.getMetadataKey().getUuid()),
+                            SQLTools.getStringForSQL(privilege.getRoleKey().getUuid()),
+                            SQLTools.getStringForSQL(privilege.getPrivilege()))
             );
         }
     }
@@ -192,7 +192,7 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
     public List<User> getUsers(RoleKey roleKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchUsersByRoleIdQuery, SQLTools.GetStringForSQL(roleKey.getUuid())),
+                    MessageFormat.format(fetchUsersByRoleIdQuery, SQLTools.getStringForSQL(roleKey.getUuid())),
                     "reader");
             return new UserListResultSetExtractor().extractData(cachedRowSet);
         } catch (SQLException e) {
@@ -203,16 +203,16 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
     public void addUser(RoleKey roleKey, UserKey userKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(
                 insertUserRoleQuery,
-                SQLTools.GetStringForSQL(userKey.getUuid()),
-                SQLTools.GetStringForSQL(roleKey.getUuid())
+                SQLTools.getStringForSQL(userKey.getUuid()),
+                SQLTools.getStringForSQL(roleKey.getUuid())
         ));
     }
 
     public void removeUser(RoleKey roleKey, UserKey userKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(
                 deleteUserRolesByUserIdAndRoleIdQuery,
-                SQLTools.GetStringForSQL(userKey.getUuid()),
-                SQLTools.GetStringForSQL(roleKey.getUuid())
+                SQLTools.getStringForSQL(userKey.getUuid()),
+                SQLTools.getStringForSQL(roleKey.getUuid())
         ));
     }
 

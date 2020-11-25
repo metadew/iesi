@@ -240,4 +240,8 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
     public String refactorLimitAndOffset(String query) {
         return query;
     }
+
+    public String generateClobInsertValue(String clobString) {
+        return clobString;
+    }
 }

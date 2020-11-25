@@ -82,7 +82,7 @@ public class ExecutionControl {
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
                         + MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
-                        + " where env_nm = " + SQLTools.GetStringForSQL(this.envName) + " order by env_par_nm asc, env_par_val asc", "reader"));
+                        + " where env_nm = " + SQLTools.getStringForSQL(this.envName) + " order by env_par_nm asc, env_par_val asc", "reader"));
     }
 
     public void terminate() {

@@ -4,7 +4,6 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.DatabaseService;
 import io.metadew.iesi.connection.database.IDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
-import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
 public class MariadbDatabaseService extends DatabaseService<MariadbDatabase> implements IDatabaseService<MariadbDatabase> {

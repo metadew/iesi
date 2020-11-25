@@ -117,7 +117,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     public Optional<Team> get(TeamKey metadataKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSingleQuery, SQLTools.GetStringForSQL(metadataKey.getUuid())),
+                    MessageFormat.format(fetchSingleQuery, SQLTools.getStringForSQL(metadataKey.getUuid())),
                     "reader");
             return new TeamListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();
@@ -129,7 +129,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     public Optional<Team> getByName(String name) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchByNameQuery, SQLTools.GetStringForSQL(name)),
+                    MessageFormat.format(fetchByNameQuery, SQLTools.getStringForSQL(name)),
                     "reader");
             return new TeamListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();
@@ -155,16 +155,16 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     @Override
     public void delete(TeamKey metadataKey) {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey));
-        String deleteStatement = MessageFormat.format(deleteSingleQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
+        String deleteStatement = MessageFormat.format(deleteSingleQuery, SQLTools.getStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteStatement);
-        String deleteSecurityGroupMembershipsStatement = MessageFormat.format(deleteSecurityGroupTeamsByTeamIdQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
+        String deleteSecurityGroupMembershipsStatement = MessageFormat.format(deleteSecurityGroupTeamsByTeamIdQuery, SQLTools.getStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteSecurityGroupMembershipsStatement);
         RoleConfiguration.getInstance().deleteByTeamKey(metadataKey);
     }
 
     public void delete(String teamName) {
         log.trace(MessageFormat.format("Deleting {0}.", teamName));
-        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(MessageFormat.format(fetchIdByNameQuery, SQLTools.GetStringForSQL(teamName)), "reader");
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(MessageFormat.format(fetchIdByNameQuery, SQLTools.getStringForSQL(teamName)), "reader");
         try {
             if (cachedRowSet.next()) {
                 TeamKey teamKey = new TeamKey(UUID.fromString(cachedRowSet.getString("team_id")));
@@ -180,14 +180,14 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
         log.trace(MessageFormat.format("Inserting {0}.", metadata));
         String insertStatement =
                 MessageFormat.format(insertQuery,
-                        SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                        SQLTools.GetStringForSQL(metadata.getTeamName()));
+                        SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
+                        SQLTools.getStringForSQL(metadata.getTeamName()));
         getMetadataRepository().executeUpdate(insertStatement);
         for (SecurityGroupKey securityGroupKey : metadata.getSecurityGroupKeys()) {
             String insertSecurityGroupStatement =
                     MessageFormat.format(insertSecurityGroupTeamsQuery,
-                            SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
-                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()));
+                            SQLTools.getStringForSQL(securityGroupKey.getUuid()),
+                            SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
             getMetadataRepository().executeUpdate(insertSecurityGroupStatement);
         }
 
@@ -200,16 +200,16 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     @Override
     public void update(Team metadata) {
         getMetadataRepository().executeUpdate(MessageFormat.format(updateQuery,
-                SQLTools.GetStringForSQL(metadata.getTeamName()),
-                SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString())));
+                SQLTools.getStringForSQL(metadata.getTeamName()),
+                SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString())));
 
-        String deleteSecurityGroupMembershipStatement = MessageFormat.format(deleteSecurityGroupTeamsByTeamIdQuery, SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()));
+        String deleteSecurityGroupMembershipStatement = MessageFormat.format(deleteSecurityGroupTeamsByTeamIdQuery, SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
         getMetadataRepository().executeUpdate(deleteSecurityGroupMembershipStatement);
         for (SecurityGroupKey securityGroupKey : metadata.getSecurityGroupKeys()) {
             String insertSecurityGroupStatement =
                     MessageFormat.format(insertSecurityGroupTeamsQuery,
-                            SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
-                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()));
+                            SQLTools.getStringForSQL(securityGroupKey.getUuid()),
+                            SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
             getMetadataRepository().executeUpdate(insertSecurityGroupStatement);
         }
 
@@ -231,7 +231,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     public Set<SecurityGroup> getSecurityGroups(TeamKey teamKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSecurityGroupsByTeamIdQuery, SQLTools.GetStringForSQL(teamKey.getUuid())),
+                    MessageFormat.format(fetchSecurityGroupsByTeamIdQuery, SQLTools.getStringForSQL(teamKey.getUuid())),
                     "reader");
             return new HashSet<>(new SecurityGroupListResultSetExtractor().extractData(cachedRowSet));
         } catch (SQLException e) {
@@ -242,7 +242,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     public Set<User> getUsers(TeamKey teamKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchUsersByTeamIdQuery, SQLTools.GetStringForSQL(teamKey.getUuid())),
+                    MessageFormat.format(fetchUsersByTeamIdQuery, SQLTools.getStringForSQL(teamKey.getUuid())),
                     "reader");
             return new HashSet<>(new UserListResultSetExtractor().extractData(cachedRowSet));
         } catch (SQLException e) {
@@ -253,16 +253,16 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
     public void addSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(
                 insertSecurityGroupTeamsQuery,
-                SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
-                SQLTools.GetStringForSQL(teamKey.getUuid())
+                SQLTools.getStringForSQL(securityGroupKey.getUuid()),
+                SQLTools.getStringForSQL(teamKey.getUuid())
         ));
     }
 
     public void removeSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(
                 deleteSecurityGroupTeamsBySecurityGroupIdAndTeamIdQuery,
-                SQLTools.GetStringForSQL(teamKey.getUuid()),
-                SQLTools.GetStringForSQL(securityGroupKey.getUuid())
+                SQLTools.getStringForSQL(teamKey.getUuid()),
+                SQLTools.getStringForSQL(securityGroupKey.getUuid())
         ));
     }
 

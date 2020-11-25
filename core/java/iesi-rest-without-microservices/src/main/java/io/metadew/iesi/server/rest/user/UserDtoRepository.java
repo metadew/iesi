@@ -77,7 +77,7 @@ public class UserDtoRepository implements IUserDtoRepository {
     public Optional<UserDto> get(String username) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSingleByNameQuery, SQLTools.GetStringForSQL(username)),
+                    MessageFormat.format(fetchSingleByNameQuery, SQLTools.getStringForSQL(username)),
                     "reader");
             return new UserDtoListResultSetExtractor()
                     .extractData(cachedRowSet).stream()
@@ -90,7 +90,7 @@ public class UserDtoRepository implements IUserDtoRepository {
     public Optional<UserDto> get(UUID id) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSingleQuery, SQLTools.GetStringForSQL(id)),
+                    MessageFormat.format(fetchSingleQuery, SQLTools.getStringForSQL(id)),
                     "reader");
             return new UserDtoListResultSetExtractor()
                     .extractData(cachedRowSet).stream()

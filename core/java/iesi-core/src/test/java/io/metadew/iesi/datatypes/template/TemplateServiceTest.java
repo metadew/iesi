@@ -2,9 +2,9 @@ package io.metadew.iesi.datatypes.template;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
@@ -173,12 +173,12 @@ class TemplateServiceTest {
         when(executionRuntime.resolveVariables(anyString()))
                 .thenReturn("value2");
 
-        DatasetHandler datasetHandler = DatasetHandler.getInstance();
-        DatasetHandler datasetHandlerSpy = Mockito.spy(datasetHandler);
-        Whitebox.setInternalState(DatasetHandler.class, "INSTANCE", datasetHandlerSpy);
+        InMemoryDatasetImplementationService datasetHandler = InMemoryDatasetImplementationService.getInstance();
+        InMemoryDatasetImplementationService datasetHandlerSpy = Mockito.spy(datasetHandler);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandlerSpy);
 
-        KeyValueDataset dataset1 = mock(KeyValueDataset.class);
-        KeyValueDataset dataset2 = mock(KeyValueDataset.class);
+        InMemoryDatasetImplementation dataset1 = mock(InMemoryDatasetImplementation.class);
+        InMemoryDatasetImplementation dataset2 = mock(InMemoryDatasetImplementation.class);
         Mockito
                 .doReturn(Optional.of(new Text("test")))
                 .when(datasetHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
@@ -197,7 +197,7 @@ class TemplateServiceTest {
         assertThat(TemplateService.getInstance().matches(dataset2, template2, executionRuntime))
                 .isTrue();
 
-        Whitebox.setInternalState(DatasetHandler.class, "INSTANCE", (DatasetHandler) null);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
     }
 
 }

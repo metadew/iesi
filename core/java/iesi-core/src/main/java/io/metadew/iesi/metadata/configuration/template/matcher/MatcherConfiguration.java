@@ -51,7 +51,7 @@ public class MatcherConfiguration extends Configuration<Matcher, MatcherKey> {
     public void deleteByTemplateId(TemplateKey templateKey) {
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteMatchersByTemplateIdQuery,
-                        SQLTools.GetStringForSQL(templateKey.getId())
+                        SQLTools.getStringForSQL(templateKey.getId())
                 ));
         MatcherValueConfiguration.getInstance().deleteByTemplateId(templateKey);
     }
@@ -60,8 +60,8 @@ public class MatcherConfiguration extends Configuration<Matcher, MatcherKey> {
     public void insert(Matcher matcher) {
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(insertMatcherQuery,
-                        SQLTools.GetStringForSQL(matcher.getMetadataKey().getId()),
-                        SQLTools.GetStringForSQL(matcher.getKey()), SQLTools.GetStringForSQL(matcher.getTemplateKey().getId())));
+                        SQLTools.getStringForSQL(matcher.getMetadataKey().getId()),
+                        SQLTools.getStringForSQL(matcher.getKey()), SQLTools.getStringForSQL(matcher.getTemplateKey().getId())));
         MatcherValue matcherValue = matcher.getMatcherValue();
         MatcherValueConfiguration.getInstance().insert(matcherValue);
     }

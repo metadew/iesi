@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
@@ -33,13 +33,13 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
     }
 
     @Override
-    public void writeToDataset(ApplicationJsonHttpResponseEntityStrategy applicationJsonHttpResponseEntityStrategy, KeyValueDataset dataset,
+    public void writeToDataset(ApplicationJsonHttpResponseEntityStrategy applicationJsonHttpResponseEntityStrategy, InMemoryDatasetImplementation dataset,
                                String key, ExecutionRuntime executionRuntime) throws IOException {
         writeToDataset(applicationJsonHttpResponseEntityStrategy.getHttpResponse(), dataset, key, executionRuntime);
     }
 
     @Override
-    public void writeToDataset(HttpResponse httpResponse, KeyValueDataset dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
+    public void writeToDataset(HttpResponse httpResponse, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         if (httpResponse.getEntityContent().isPresent()) {
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
@@ -51,7 +51,7 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
             if (jsonNode == null) {
                 log.warn("response does not contain a valid JSON message: " + jsonContent + ". ");
             } else {
-                DatasetHandler.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
+                InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
             }
         }
     }

@@ -1,7 +1,7 @@
 package io.metadew.iesi.connection.database.mysql;
 
-import io.metadew.iesi.connection.database.connection.IDatabaseConnectionService;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionService;
+import io.metadew.iesi.connection.database.connection.IDatabaseConnectionService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

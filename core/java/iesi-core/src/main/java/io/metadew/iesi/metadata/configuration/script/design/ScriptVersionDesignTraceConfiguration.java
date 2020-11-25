@@ -40,8 +40,8 @@ public class ScriptVersionDesignTraceConfiguration extends Configuration<ScriptV
             String query = "SELECT SCRIPT_VRS_NB, SCRIPT_VRS_DSC FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
                     " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
+                    " RUN_ID = " + SQLTools.getStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.getStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -87,16 +87,16 @@ public class ScriptVersionDesignTraceConfiguration extends Configuration<ScriptV
     private String deleteStatement(ScriptVersionDesignTraceKey scriptVersionDesignTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
     }
 
     public boolean exists(ScriptVersionDesignTraceKey scriptVersionDesignTraceKey) {
         String query = "SELECT SCRIPT_VRS_NB, SCRIPT_VRS_DSC FROM " +
                 getMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptVersionDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptVersionDesignTraceKey.getProcessId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -111,10 +111,10 @@ public class ScriptVersionDesignTraceConfiguration extends Configuration<ScriptV
     private String insertStatement(ScriptVersionDesignTrace scriptVersionDesignTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
                 " (RUN_ID, PRC_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(scriptVersionDesignTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(scriptVersionDesignTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptVersionDesignTrace.getScriptVersionNumber()) + "," +
-                SQLTools.GetStringForSQL(scriptVersionDesignTrace.getScriptVersionDescription()) + ");";
+                SQLTools.getStringForSQL(scriptVersionDesignTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(scriptVersionDesignTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptVersionDesignTrace.getScriptVersionNumber()) + "," +
+                SQLTools.getStringForSQL(scriptVersionDesignTrace.getScriptVersionDescription()) + ");";
     }
 
     @Override
@@ -126,9 +126,9 @@ public class ScriptVersionDesignTraceConfiguration extends Configuration<ScriptV
 
     private String updateStatement(ScriptVersionDesignTrace scriptVersionDesignTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersionDesignTraces") +
-                " SET SCRIPT_VRS_DSC = " + SQLTools.GetStringForSQL(scriptVersionDesignTrace.getScriptVersionDescription()) + ", " +
-                "SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionDesignTrace.getScriptVersionNumber()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionDesignTrace.getMetadataKey().getProcessId()) + ";";
+                " SET SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersionDesignTrace.getScriptVersionDescription()) + ", " +
+                "SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionDesignTrace.getScriptVersionNumber()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptVersionDesignTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(scriptVersionDesignTrace.getMetadataKey().getProcessId()) + ";";
     }
 }

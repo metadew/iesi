@@ -92,7 +92,7 @@ public class TeamDtoRepository implements ITeamDtoRepository {
     public Optional<TeamDto> get(String teamName) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_SINGLE_QUERY_BY_NAME, SQLTools.GetStringForSQL(teamName)),
+                    MessageFormat.format(FETCH_SINGLE_QUERY_BY_NAME, SQLTools.getStringForSQL(teamName)),
                     "reader");
             return new TeamDtoListResultSetExtractor()
                     .extractData(cachedRowSet).stream()
@@ -106,7 +106,7 @@ public class TeamDtoRepository implements ITeamDtoRepository {
     public Optional<TeamDto> get(UUID uuid) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.GetStringForSQL(uuid)),
+                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.getStringForSQL(uuid)),
                     "reader");
             return new TeamDtoListResultSetExtractor()
                     .extractData(cachedRowSet).stream()

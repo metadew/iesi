@@ -21,7 +21,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ActionConfigurationTest {
+class DesignDatasetConfigurationTest {
 
     private DesignMetadataRepository designMetadataRepository;
     private ActionParameter actionParameter11;

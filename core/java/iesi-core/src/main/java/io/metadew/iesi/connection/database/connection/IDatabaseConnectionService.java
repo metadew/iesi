@@ -55,4 +55,6 @@ public interface IDatabaseConnectionService<T extends DatabaseConnection> {
     public Class<T> appliesTo();
 
     public String refactorLimitAndOffset(String query);
+
+    public String generateClobInsertValue(String clobString);
 }

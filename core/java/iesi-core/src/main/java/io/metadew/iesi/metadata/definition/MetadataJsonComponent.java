@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.DatasetJsonComponent;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentJsonComponent;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -50,6 +52,8 @@ public class MetadataJsonComponent {
                 return jsonParser.getCodec().treeToValue(data, Component.class);
             } else if (type.equalsIgnoreCase(EnvironmentJsonComponent.Field.TYPE.value())) {
                 return jsonParser.getCodec().treeToValue(data, Environment.class);
+            } else if (type.equalsIgnoreCase(DatasetJsonComponent.Field.TYPE.value())) {
+                return jsonParser.getCodec().treeToValue(data, Dataset.class);
             } else {
                 throw JsonMappingException.from(jsonParser, MessageFormat.format("Cannot deserialize Metadata object of type {0}", type));
             }

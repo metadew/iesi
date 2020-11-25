@@ -82,7 +82,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(fetchSingleQuery,
-                            SQLTools.GetStringForSQL(metadataKey.getId())
+                            SQLTools.getStringForSQL(metadataKey.getId())
                     ),
                     "reader");
             Template template = null;
@@ -101,7 +101,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     public boolean exists(String name) {
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                 MessageFormat.format(existsByNameQuery,
-                        SQLTools.GetStringForSQL(name)
+                        SQLTools.getStringForSQL(name)
                 ),
                 "reader");
         return cachedRowSet.size() >= 1;
@@ -111,8 +111,8 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(fetchByNameAndVersionQuery,
-                            SQLTools.GetStringForSQL(name),
-                            SQLTools.GetStringForSQL(version)
+                            SQLTools.getStringForSQL(name),
+                            SQLTools.getStringForSQL(version)
                     ),
                     "reader");
             Template template = null;
@@ -156,7 +156,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
         MatcherConfiguration.getInstance().deleteByTemplateId(templateKey);
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteByTemplateIdQuery,
-                        SQLTools.GetStringForSQL(templateKey.getId())
+                        SQLTools.getStringForSQL(templateKey.getId())
                 ));
     }
 
@@ -166,7 +166,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                     MatcherConfiguration.getInstance().deleteByTemplateId(template.getMetadataKey());
                     getMetadataRepository().executeUpdate(
                             MessageFormat.format(deleteByTemplateIdQuery,
-                                    SQLTools.GetStringForSQL(template.getMetadataKey().getId())
+                                    SQLTools.getStringForSQL(template.getMetadataKey().getId())
                             ));
                 }
         );
@@ -177,10 +177,10 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     public void insert(Template template) {
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(insertQuery,
-                        SQLTools.GetStringForSQL(template.getMetadataKey().getId()),
-                        SQLTools.GetStringForSQL(template.getName()),
-                        SQLTools.GetStringForSQL(template.getVersion()),
-                        SQLTools.GetStringForSQL(template.getDescription())));
+                        SQLTools.getStringForSQL(template.getMetadataKey().getId()),
+                        SQLTools.getStringForSQL(template.getName()),
+                        SQLTools.getStringForSQL(template.getVersion()),
+                        SQLTools.getStringForSQL(template.getDescription())));
         for (Matcher matcher : template.getMatchers()) {
             MatcherConfiguration.getInstance().insert(matcher);
         }
@@ -189,10 +189,10 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
     public void update(Template template) {
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(updateQuery,
-                        SQLTools.GetStringForSQL(template.getName()),
-                        SQLTools.GetStringForSQL(template.getVersion()),
-                        SQLTools.GetStringForSQL(template.getDescription()),
-                        SQLTools.GetStringForSQL(template.getMetadataKey().getId())));
+                        SQLTools.getStringForSQL(template.getName()),
+                        SQLTools.getStringForSQL(template.getVersion()),
+                        SQLTools.getStringForSQL(template.getDescription()),
+                        SQLTools.getStringForSQL(template.getMetadataKey().getId())));
         MatcherConfiguration.getInstance().deleteByTemplateId(template.getMetadataKey());
         for (Matcher matcher : template.getMatchers()) {
             MatcherConfiguration.getInstance().insert(matcher);

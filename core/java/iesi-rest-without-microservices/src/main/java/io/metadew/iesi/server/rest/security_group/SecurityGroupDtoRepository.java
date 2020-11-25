@@ -58,7 +58,7 @@ public class SecurityGroupDtoRepository implements ISecurityGroupDtoRepository {
     public Optional<SecurityGroupDto> get(String teamName) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_BY_NAME_QUERY, SQLTools.GetStringForSQL(teamName)),
+                    MessageFormat.format(FETCH_BY_NAME_QUERY, SQLTools.getStringForSQL(teamName)),
                     "reader");
             return new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();
@@ -70,7 +70,7 @@ public class SecurityGroupDtoRepository implements ISecurityGroupDtoRepository {
     public Optional<SecurityGroupDto> get(UUID id){
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.GetStringForSQL(id)),
+                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.getStringForSQL(id)),
                     "reader");
             return new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();

@@ -74,7 +74,7 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
     public Optional<SecurityGroup> get(SecurityGroupKey metadataKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSingleQuery, SQLTools.GetStringForSQL(metadataKey.getUuid())),
+                    MessageFormat.format(fetchSingleQuery, SQLTools.getStringForSQL(metadataKey.getUuid())),
                     "reader");
             return new SecurityGroupListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();
@@ -86,7 +86,7 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
     public Optional<SecurityGroup> getByName(String name) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchByNameQuery, SQLTools.GetStringForSQL(name)),
+                    MessageFormat.format(fetchByNameQuery, SQLTools.getStringForSQL(name)),
                     "reader");
             return new SecurityGroupListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();
@@ -108,9 +108,9 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
     @Override
     public void delete(SecurityGroupKey metadataKey) {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
-        String deleteStatement = MessageFormat.format(deleteSingleQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
+        String deleteStatement = MessageFormat.format(deleteSingleQuery, SQLTools.getStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteStatement);
-        String deleteRolesStatement = MessageFormat.format(deleteTeamMembershipsBySecurityGroupIdQuery, SQLTools.GetStringForSQL(metadataKey.getUuid()));
+        String deleteRolesStatement = MessageFormat.format(deleteTeamMembershipsBySecurityGroupIdQuery, SQLTools.getStringForSQL(metadataKey.getUuid()));
         getMetadataRepository().executeUpdate(deleteRolesStatement);
     }
 
@@ -119,14 +119,14 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
         String insertStatement =
                 MessageFormat.format(insertQuery,
-                        SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                        SQLTools.GetStringForSQL(metadata.getName()));
+                        SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
+                        SQLTools.getStringForSQL(metadata.getName()));
         getMetadataRepository().executeUpdate(insertStatement);
         for (TeamKey teamKey : metadata.getTeamKeys()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertSecurityGroupTeamMembershipQuery,
-                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                            SQLTools.GetStringForSQL(teamKey.getUuid()))
+                            SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
+                            SQLTools.getStringForSQL(teamKey.getUuid()))
             );
         }
 
@@ -135,16 +135,16 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
     @Override
     public void update(SecurityGroup metadata) {
         getMetadataRepository().executeUpdate(MessageFormat.format(updateQuery,
-                SQLTools.GetStringForSQL(metadata.getName()),
-                SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString())));
+                SQLTools.getStringForSQL(metadata.getName()),
+                SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString())));
 
-        String deleteRolesStatement = MessageFormat.format(deleteTeamMembershipsBySecurityGroupIdQuery, SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()));
+        String deleteRolesStatement = MessageFormat.format(deleteTeamMembershipsBySecurityGroupIdQuery, SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
         getMetadataRepository().executeUpdate(deleteRolesStatement);
         for (TeamKey teamKey : metadata.getTeamKeys()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertSecurityGroupTeamMembershipQuery,
-                            SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid()),
-                            SQLTools.GetStringForSQL(teamKey.getUuid()))
+                            SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
+                            SQLTools.getStringForSQL(teamKey.getUuid()))
             );
         }
 
@@ -152,14 +152,14 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
 
     public void addTeam(SecurityGroupKey securityGroupKey, TeamKey teamKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(insertSecurityGroupTeamMembershipQuery,
-                SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
-                SQLTools.GetStringForSQL(teamKey.getUuid())));
+                SQLTools.getStringForSQL(securityGroupKey.getUuid()),
+                SQLTools.getStringForSQL(teamKey.getUuid())));
     }
 
     public void deleteTeam(SecurityGroupKey securityGroupKey, TeamKey teamKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(deleteTeamMembershipsBySecurityGroupIdAndTeamIdQuery,
-                SQLTools.GetStringForSQL(securityGroupKey.getUuid()),
-                SQLTools.GetStringForSQL(teamKey.getUuid())));
+                SQLTools.getStringForSQL(securityGroupKey.getUuid()),
+                SQLTools.getStringForSQL(teamKey.getUuid())));
     }
 
 }

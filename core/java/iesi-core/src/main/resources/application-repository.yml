@@ -6,17 +6,21 @@ iesi:
       # each category should define its own type and definition
       - categories:
           - general
-        instance:
+        instance: '03'
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
+
+#          type: sqlite
+#          file: 
+
           type: h2
           mode: memory
           database: test
           owner:
-            user: "sa"
-            password: ""
+            user: test
+            password: test
 
 
 #          type: h2

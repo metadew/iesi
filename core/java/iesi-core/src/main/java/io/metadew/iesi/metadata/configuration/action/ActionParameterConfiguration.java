@@ -44,10 +44,10 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
         try {
             String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
                     + getMetadataRepository().getTableNameByLabel("ActionParameters")
-                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
-                    " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
-                    + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                    " and ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterKey.getParameterName()) + ";";
+                    + " where SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
+                    " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
+                    + " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
+                    " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository()
                     .executeQuery(queryActionParameter, "reader");
             if (cachedRowSet.size() == 0) {
@@ -98,10 +98,10 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
 
     public String deleteStatement(ActionParameterKey actionParameterKey){
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                " AND ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterKey.getParameterName()) + ";";
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion()) +
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
+                " AND ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) + ";";
     }
 
     @Override
@@ -112,21 +112,21 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
         }
         String insertQuery = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptId()) + "," +
-                SQLTools.GetStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptVersion()) + "," +
-                SQLTools.GetStringForSQL(actionParameter.getMetadataKey().getActionKey().getActionId()) + "," +
-                SQLTools.GetStringForSQL(actionParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.GetStringForSQL(actionParameter.getValue()) + ");";
+                SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptId()) + "," +
+                SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptVersion()) + "," +
+                SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getActionId()) + "," +
+                SQLTools.getStringForSQL(actionParameter.getMetadataKey().getParameterName()) + "," +
+                SQLTools.getStringForSQL(actionParameter.getValue()) + ");";
         getMetadataRepository().executeUpdate(insertQuery);
     }
 
     public boolean exists(ActionParameterKey actionParameterKey) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
                 + getMetadataRepository().getTableNameByLabel("ActionParameters")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
-                + " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                " and ACTION_PAR_NM = " + SQLTools.GetStringForSQL(actionParameterKey.getParameterName()) + ";";
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
+                + " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
+                " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -134,9 +134,9 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     public List<ActionParameter> getByAction(ActionKey actionKey) {
         List<ActionParameter> actionParameters = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId());
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId());
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
@@ -155,17 +155,17 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
 
     public void deleteByAction(ActionKey actionKey) {
         String query = "delete from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) + ";";
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) + ";";
         getMetadataRepository().executeUpdate(query);
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Deleting action parameters for script {0}", scriptKey.toString()));
         String query = "delete from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";";
         getMetadataRepository().executeUpdate(query);
     }
 

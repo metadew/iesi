@@ -71,40 +71,40 @@ public class MatcherValueConfiguration extends Configuration<MatcherValue, Match
     public void insert(MatcherValue matcherValue) {
         if (matcherValue instanceof MatcherAnyValue) {
             getMetadataRepository().executeUpdate(
-                    MessageFormat.format(insertMatcherAnyValueQuery, SQLTools.GetStringForSQL(matcherValue.getMetadataKey().getId())));
+                    MessageFormat.format(insertMatcherAnyValueQuery, SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId())));
         } else if (matcherValue instanceof MatcherFixedValue) {
             getMetadataRepository().executeUpdate(
-                    MessageFormat.format(insertMatcherFixedValueQuery, SQLTools.GetStringForSQL(matcherValue.getMetadataKey().getId()),
-                            SQLTools.GetStringForSQL(((MatcherFixedValue) matcherValue).getValue())));
+                    MessageFormat.format(insertMatcherFixedValueQuery, SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId()),
+                            SQLTools.getStringForSQL(((MatcherFixedValue) matcherValue).getValue())));
         } else if (matcherValue instanceof MatcherTemplate) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertMatcherTemplateValueQuery,
-                            SQLTools.GetStringForSQL(matcherValue.getMetadataKey().getId()),
-                            SQLTools.GetStringForSQL(((MatcherTemplate) matcherValue).getTemplateName()),
-                            SQLTools.GetStringForSQL(((MatcherTemplate) matcherValue).getTemplateVersion())));
+                            SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId()),
+                            SQLTools.getStringForSQL(((MatcherTemplate) matcherValue).getTemplateName()),
+                            SQLTools.getStringForSQL(((MatcherTemplate) matcherValue).getTemplateVersion())));
         } else {
             throw new RuntimeException("Cannot insert MatcherValue of type " + matcherValue.getClass().getSimpleName());
         }
-        getMetadataRepository().executeUpdate(MessageFormat.format(insertMatcherValueQuery, SQLTools.GetStringForSQL(matcherValue.getMetadataKey().getId()),
-                SQLTools.GetStringForSQL(matcherValue.getMatcherKey().getId())));
+        getMetadataRepository().executeUpdate(MessageFormat.format(insertMatcherValueQuery, SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId()),
+                SQLTools.getStringForSQL(matcherValue.getMatcherKey().getId())));
     }
 
     public void deleteByTemplateId(TemplateKey templateKey) {
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteMatcherAnyValuesByTemplateQuery,
-                        SQLTools.GetStringForSQL(templateKey.getId())
+                        SQLTools.getStringForSQL(templateKey.getId())
                 ));
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteMatcherFixedValuesByTemplateQuery,
-                        SQLTools.GetStringForSQL(templateKey.getId())
+                        SQLTools.getStringForSQL(templateKey.getId())
                 ));
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteMatcherTemplateValuesByTemplateQuery,
-                        SQLTools.GetStringForSQL(templateKey.getId())
+                        SQLTools.getStringForSQL(templateKey.getId())
                 ));
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteMatcherValuesByTemplateQuery,
-                        SQLTools.GetStringForSQL(templateKey.getId())
+                        SQLTools.getStringForSQL(templateKey.getId())
                 ));
     }
 }

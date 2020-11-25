@@ -40,9 +40,9 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
         try {String query = "SELECT SCRIPT_VRS_NB, SCRIPT_PAR_VAL FROM " +
                 getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getProcessId()) + " AND " +
-                " SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getScriptParameterName()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptParameterTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptParameterTraceKey.getProcessId()) + " AND " +
+                " SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterTraceKey.getScriptParameterName()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
@@ -87,9 +87,9 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
     private String deleteStatement(ScriptParameterTraceKey scriptParameterTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getProcessId()) + " AND " +
-                " SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterTraceKey.getScriptParameterName()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptParameterTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptParameterTraceKey.getProcessId()) + " AND " +
+                " SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterTraceKey.getScriptParameterName()) + ";";
     }
 
     @Override
@@ -102,10 +102,10 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
     private String insertStatement(ScriptParameterTrace scriptParameterTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
                 " (RUN_ID, PRC_ID, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + "," +
-                SQLTools.GetStringForSQL(scriptParameterTrace.getScriptParameterValue()) + ");";
+                SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + "," +
+                SQLTools.getStringForSQL(scriptParameterTrace.getScriptParameterValue()) + ");";
     }
 
     @Override
@@ -117,9 +117,9 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
 
     private String updateStatement(ScriptParameterTrace scriptParameterTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
-                " SET SCRIPT_PAR_VAL = " + SQLTools.GetStringForSQL(scriptParameterTrace.getScriptParameterValue()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) +
-                " AND SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + ";";
+                " SET SCRIPT_PAR_VAL = " + SQLTools.getStringForSQL(scriptParameterTrace.getScriptParameterValue()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) +
+                " AND SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + ";";
     }
 }

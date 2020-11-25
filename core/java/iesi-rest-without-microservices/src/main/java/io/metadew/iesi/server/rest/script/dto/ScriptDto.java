@@ -12,6 +12,7 @@ import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(value = "script", collectionRelation = "scripts")
-public class ScriptDto extends RepresentationModel<ScriptDto> {
+public class ScriptDto extends RepresentationModel<ScriptDto>  {
 
     private String name;
     private String securityGroupName;

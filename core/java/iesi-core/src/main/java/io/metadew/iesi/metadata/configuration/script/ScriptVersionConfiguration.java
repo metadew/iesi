@@ -3,7 +3,6 @@ package io.metadew.iesi.metadata.configuration.script;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
@@ -42,8 +41,8 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     @Override
     public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) {
         String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
             if (crsScriptVersion.size() == 0) {
@@ -98,7 +97,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     public List<ScriptVersion> getByScriptId(String scriptId) {
         List<ScriptVersion> scriptVersions = new ArrayList<>();
         String queryVersionScript = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptId);
+                + " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptId);
         CachedRowSet crsVersionScript = getMetadataRepository().executeQuery(queryVersionScript, "reader");
         try {
             while (crsVersionScript.next()) {
@@ -117,7 +116,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         LOGGER.trace(MessageFormat.format("Fetching latest version for script {0}.", scriptId));
         String queryScriptVersion = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from "
                 + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
-                " where script_id = " + SQLTools.GetStringForSQL(scriptId) + ";";
+                " where script_id = " + SQLTools.getStringForSQL(scriptId) + ";";
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
             if (crsScriptVersion.size() == 0) {
@@ -150,14 +149,14 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
 
     private String deleteStatement(ScriptVersionKey scriptVersionKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
     }
 
     public boolean exists(ScriptVersionKey scriptVersionKey) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -165,9 +164,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     public String getInsertStatement(ScriptVersion scriptVersion) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) + ", " +
-                SQLTools.GetStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptVersion()) + ", " +
-                SQLTools.GetStringForSQL(scriptVersion.getDescription()) + ");";
+                SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) + ", " +
+                SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptVersion()) + ", " +
+                SQLTools.getStringForSQL(scriptVersion.getDescription()) + ");";
     }
 
 }

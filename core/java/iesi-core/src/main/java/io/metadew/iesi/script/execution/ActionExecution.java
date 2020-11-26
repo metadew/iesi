@@ -14,7 +14,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
@@ -43,7 +45,6 @@ public class ActionExecution {
         this.executed = false;
     }
 
-    @SuppressWarnings("unchecked")
     public void execute(IterationInstance iterationInstance) throws InterruptedException {
         this.executed = true;
 
@@ -72,10 +73,10 @@ public class ActionExecution {
             String className = ActionTypeConfiguration.getInstance().getActionType(action.getType()).getClassName();
             log.debug("action.type=" + action.getType());
 
-            Class classRef = Class.forName(className);
+            Class<?> classRef = Class.forName(className);
 
-            Class[] initParams = {ExecutionControl.class, ScriptExecution.class, ActionExecution.class};
-            Constructor constructor = classRef.getConstructor(initParams);
+            Class<?>[] initParams = {ExecutionControl.class, ScriptExecution.class, ActionExecution.class};
+            Constructor<?> constructor = classRef.getConstructor(initParams);
             Object[] initArgs = {executionControl, scriptExecution, this};
             ActionTypeExecution instance = (ActionTypeExecution) constructor.newInstance(initArgs);
             // Store actionTypeExecution
@@ -85,37 +86,16 @@ public class ActionExecution {
             if (evaluateCondition(action.getCondition())) {
                 instance.prepare();
 
+                // A clone is needed since the iterator through the hashmap will remove the current item to avoid a ConcurrentModificationException
+                Map<String, ActionParameterOperation> actionParameterOperationMap = Collections.unmodifiableMap(instance.getActionParameterOperationMap());
+                actionControl.getActionRuntime().setRuntimeParameters(actionParameterOperationMap);
+                traceDesignMetadata(actionParameterOperationMap);
+
                 LocalDateTime start = LocalDateTime.now();
                 instance.execute();
                 ActionPerformanceLogger.getInstance().log(this, "action", start, LocalDateTime.now());
 
-                HashMap<String, ActionParameterOperation> actionParameterOperationMap = instance.getActionParameterOperationMap();
-
-                // Store runtime parameters for next action usage
-                // A clone is needed since the iterator through the hashmap will remove the current item to avoid a ConcurrentModificationException
-                HashMap<String, ActionParameterOperation> actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
-                actionControl.getActionRuntime().setRuntimeParameters(actionParameterOperationMapClone);
-
-
-                // Trace function
-                actionParameterOperationMapClone = (HashMap<String, ActionParameterOperation>) actionParameterOperationMap.clone();
-
-                this.traceDesignMetadata(actionParameterOperationMapClone);
-
-                // Evaluate error expected
-                if (actionControl.getExecutionMetrics().getErrorCount() > 0) {
-                    if (action.getErrorExpected()) {
-                        actionControl.getExecutionMetrics().resetErrorCount();
-                        actionControl.getExecutionMetrics().increaseSuccessCount(1);
-                        log.info("action.status=ERROR:expected");
-                    }
-                } else {
-                    if (action.getErrorExpected()) {
-                        actionControl.getExecutionMetrics().resetSuccessCount();
-                        actionControl.getExecutionMetrics().increaseErrorCount(1);
-                        log.info("action.status=SUCCESS:unexpected");
-                    }
-                }
+                verifyExecutionMetrics();
 
             } else {
                 // Skip execution
@@ -136,6 +116,22 @@ public class ActionExecution {
         }
         actionControl.getActionRuntime().getRuntimeActionCacheConfiguration().shutdown();
         executionControl.logEnd(this, scriptExecution);
+    }
+
+    private void verifyExecutionMetrics() {
+        if (actionControl.getExecutionMetrics().getErrorCount() > 0) {
+            if (action.getErrorExpected()) {
+                actionControl.getExecutionMetrics().resetErrorCount();
+                actionControl.getExecutionMetrics().increaseSuccessCount(1);
+                log.info("action.status=ERROR:expected");
+            }
+        } else {
+            if (action.getErrorExpected()) {
+                actionControl.getExecutionMetrics().resetSuccessCount();
+                actionControl.getExecutionMetrics().increaseErrorCount(1);
+                log.info("action.status=SUCCESS:unexpected");
+            }
+        }
     }
 
     private boolean evaluateCondition(String condition) {
@@ -164,12 +160,10 @@ public class ActionExecution {
         // Log Skip
         executionControl.logSkip(this);
 
-        // Trace Design Metadata
-        this.traceDesignMetadata(null);
     }
 
-    public void traceDesignMetadata(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        executionControl.getExecutionTrace().setExecution(this, actionParameterOperationMap);
+    public void traceDesignMetadata(Map<String, ActionParameterOperation> actionParameterOperationMap) {
+        ExecutionTrace.getInstance().setExecution(this, actionParameterOperationMap);
     }
 
     public Action getAction() {

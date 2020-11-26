@@ -72,7 +72,7 @@ public class SecurityGroupController {
     }
 
     @DeleteMapping("/{security-group-uuid}/teams/{team-uuid}")
-    @PreAuthorize("hasPrivilege('GROUPS_DELETE')")
+    @PreAuthorize("hasPrivilege('GROUPS_WRITE')")
     public ResponseEntity<SecurityGroupDto> deleteTeam(@PathVariable("security-group-uuid") UUID securityGroupUuid, @PathVariable("team-uuid") UUID teamUuid) {
         if (securityGroupService.exists(new SecurityGroupKey(securityGroupUuid))) {
             securityGroupService.deleteTeam(new SecurityGroupKey(securityGroupUuid), new TeamKey(teamUuid));
@@ -112,7 +112,7 @@ public class SecurityGroupController {
     }
 
     @DeleteMapping("/{uuid}")
-    @PreAuthorize("hasPrivilege('GROUPS_DELETE')")
+    @PreAuthorize("hasPrivilege('GROUPS_WRITE')")
     public ResponseEntity<Object> deleteById(@PathVariable UUID uuid) {
         securityGroupService.delete(new SecurityGroupKey(uuid));
         return ResponseEntity.noContent().build();

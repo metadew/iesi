@@ -210,7 +210,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: CTL_SECURITY_OBJECT
+      - name: CTL_SEC_OBJECT
         label: SecurityObjects
         description: data related to security objects
         category: control
@@ -218,28 +218,28 @@ iesi:
           ID:
             description: UUID of the security object
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             primaryKey: true
           SECURITY_GROUP_ID:
             description: id of the security group
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
             unique: true
           SECURITY_GROUP_NAME:
             description: name of the security group
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
             unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -299,16 +299,9 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-<<<<<<< HEAD
-
       - name: CTL_TEAMS
         label: Teams
         description: Team data
-=======
-      - name: CTL_GROUPS
-        label: Groups
-        description: Group data
->>>>>>> feature/0337acf/integrate-datasets-into-metadata-repository
         category: control
         fields:
           ID:
@@ -332,14 +325,9 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-<<<<<<< HEAD
 
       - name: CTL_PRIVILEGES
         label: Privileges
-=======
-      - name: CTL_AUTHORITIES
-        label: Authorities
->>>>>>> feature/0337acf/integrate-datasets-into-metadata-repository
         description: authority data
         category: control
         fields:
@@ -353,7 +341,7 @@ iesi:
           ROLE_ID:
             description: foreign id of the role
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             unique: true
@@ -371,16 +359,9 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-<<<<<<< HEAD
-
       - name: CTL_USERS_ROLES
         label: UserRoles
         description: roles linked to users
-=======
-      - name: CTL_USER_AUTHORITIES
-        label: UserAuthorities
-        description: authorities linked to users
->>>>>>> feature/0337acf/integrate-datasets-into-metadata-repository
         category: control
         fields:
           USER_ID:
@@ -404,16 +385,9 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-<<<<<<< HEAD
-
-      - name: CTL_SECURITY_GROUPS
+      - name: CTL_SEC_GROUPS
         label: SecurityGroups
         description: security groups data
-=======
-      - name: CTL_GROUP_AUTHORITIES
-        label: GroupAuthorities
-        description: Link authorities to groups
->>>>>>> feature/0337acf/integrate-datasets-into-metadata-repository
         category: control
         fields:
           ID:
@@ -437,16 +411,9 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-<<<<<<< HEAD
-
-      - name: CTL_SECURITY_GROUP_TEAMS
+      - name: CTL_SEC_GROUP_TEAMS
         label: SecurityGroupTeams
         description: Link security groups to teams
-=======
-      - name: CTL_GROUP_MEMBERS
-        label: GroupMembers
-        description: Link users to groups
->>>>>>> feature/0337acf/integrate-datasets-into-metadata-repository
         category: control
         fields:
           SECURITY_GROUP_ID:
@@ -479,28 +446,28 @@ iesi:
           ID:
             description: Id of the role
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             primaryKey: true
           ROLE_NAME:
             description: name of the role
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             unique: true
           TEAM_ID:
             description: foreign key of the team
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
             unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -1813,13 +1780,13 @@ iesi:
           SECURITY_GROUP_ID:
             description: id of the security group
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
           SECURITY_GROUP_NAME:
             description: name of the security group
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
           SCRIPT_TYP_NM:

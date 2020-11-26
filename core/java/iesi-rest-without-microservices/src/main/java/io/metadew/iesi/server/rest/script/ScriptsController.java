@@ -170,14 +170,14 @@ public class ScriptsController {
     }
 
     @DeleteMapping("/{name}")
-    @PreAuthorize("hasPrivilege('SCRIPTS_DELETE')")
+    @PreAuthorize("hasPrivilege('SCRIPTS_WRITE')")
     public ResponseEntity<?> deleteByName(@PathVariable String name) {
         scriptService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}/{version}")
-    @PreAuthorize("hasPrivilege('SCRIPTS_DELETE')")
+    @PreAuthorize("hasPrivilege('SCRIPTS_WRITE')")
     public ResponseEntity<?> delete(@PathVariable String name, @PathVariable long version) throws MetadataDoesNotExistException {
         scriptService.deleteByNameAndVersion(name, version);
         return ResponseEntity.status(HttpStatus.OK).build();

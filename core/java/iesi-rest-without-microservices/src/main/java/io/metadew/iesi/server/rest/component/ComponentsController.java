@@ -106,21 +106,21 @@ public class ComponentsController {
     }
 
     @DeleteMapping("")
-    @PreAuthorize("hasPrivilege('COMPONENTS_DELETE')")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public ResponseEntity<?> deleteAll() {
         componentService.deleteAll();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}")
-    @PreAuthorize("hasPrivilege('COMPONENTS_DELETE')")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public ResponseEntity<?> deleteByName(@PathVariable String name) {
         componentService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}/{version}")
-    @PreAuthorize("hasPrivilege('COMPONENTS_DELETE')")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public ResponseEntity<?> delete(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
         componentService.deleteByNameAndVersion(name, version);
         return ResponseEntity.status(HttpStatus.OK).build();

@@ -101,21 +101,21 @@ public class ConnectionsController {
     }
 
     @DeleteMapping("")
-    @PreAuthorize("hasPrivilege('CONNECTIONS_DELETE')")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public ResponseEntity<?> deleteAll() {
         connectionService.deleteAll();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}")
-    @PreAuthorize("hasPrivilege('CONNECTIONS_DELETE')")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public ResponseEntity<?> deleteByName(@PathVariable String name) throws MetadataDoesNotExistException {
         connectionService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}/{environment}")
-    @PreAuthorize("hasPrivilege('CONNECTIONS_DELETE')")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public ResponseEntity<?> delete(@PathVariable String name, @PathVariable String environment) throws MetadataDoesNotExistException {
         connectionService.deleteByNameAndEnvironment(name, environment);
         return ResponseEntity.status(HttpStatus.OK).build();

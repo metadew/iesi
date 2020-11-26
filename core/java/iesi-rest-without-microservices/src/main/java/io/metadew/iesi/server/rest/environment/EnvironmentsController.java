@@ -109,14 +109,14 @@ public class EnvironmentsController {
     }
 
     @DeleteMapping("")
-    @PreAuthorize("hasPrivilege('ENVIRONMENTS_DELETE')")
+    @PreAuthorize("hasPrivilege('ENVIRONMENTS_WRITE')")
     public ResponseEntity<?> deleteAll() {
         environmentService.deleteAll();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}")
-    @PreAuthorize("hasPrivilege('ENVIRONMENTS_DELETE')")
+    @PreAuthorize("hasPrivilege('ENVIRONMENTS_WRITE')")
     public ResponseEntity<?> delete(@PathVariable String name) throws MetadataDoesNotExistException {
         environmentService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();

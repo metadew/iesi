@@ -120,7 +120,7 @@ public class ExecutionRequestController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasPrivilege('EXECUTION_REQUESTS_DELETE')")
+    @PreAuthorize("hasPrivilege('EXECUTION_REQUESTS_WRITE')")
     public ResponseEntity<Object> deleteByName(@PathVariable String id) throws MetadataDoesNotExistException {
         executionRequestService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).build();

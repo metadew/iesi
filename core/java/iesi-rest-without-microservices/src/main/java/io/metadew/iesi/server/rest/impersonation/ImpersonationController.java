@@ -90,14 +90,14 @@ public class ImpersonationController {
     }
 
     @DeleteMapping("")
-    @PreAuthorize("hasPrivilege('IMPERSONATIONS_DELETE')")
+    @PreAuthorize("hasPrivilege('IMPERSONATIONS_WRITE')")
     public ResponseEntity<?> deleteAll() {
         impersonationService.deleteAll();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}")
-    @PreAuthorize("hasPrivilege('IMPERSONATIONS_DELETE')")
+    @PreAuthorize("hasPrivilege('IMPERSONATIONS_WRITE')")
     public ResponseEntity<?> delete(@PathVariable String name) throws MetadataDoesNotExistException {
         impersonationService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();

@@ -210,7 +210,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: CTL_SECURITY_OBJECT
+      - name: CTL_SEC_OBJECT
         label: SecurityObjects
         description: data related to security objects
         category: control
@@ -385,7 +385,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: CTL_SECURITY_GROUPS
+      - name: CTL_SEC_GROUPS
         label: SecurityGroups
         description: security groups data
         category: control
@@ -411,7 +411,7 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-      - name: CTL_SECURITY_GROUP_TEAMS
+      - name: CTL_SEC_GROUP_TEAMS
         label: SecurityGroupTeams
         description: Link security groups to teams
         category: control

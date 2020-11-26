@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class DatasetController {
 
     @SuppressWarnings("unchecked")
     @GetMapping("")
+    @PreAuthorize("hasPrivilege('ROLES_READ')")
     public PagedModel<DatasetDto> getAll(Pageable pageable) {
         List<Dataset> datasets = datasetService.getAll();
         int minimum = pageable.getPageNumber() * pageable.getPageSize();
@@ -74,6 +76,7 @@ public class DatasetController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public DatasetDto create(@RequestBody DatasetDto datasetDto) {
         Dataset dataset = datasetDto.convertToNewEntity();
         datasetService.create(dataset);
@@ -81,6 +84,7 @@ public class DatasetController {
     }
 
     @GetMapping("/{uuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public DatasetDto get(@PathVariable UUID uuid) {
         return datasetService.get(new DatasetKey(uuid))
                 .map(datasetDtoModelAssembler::toModel)
@@ -88,11 +92,13 @@ public class DatasetController {
     }
 
     @DeleteMapping("/{uuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public void delete(@PathVariable UUID uuid) {
         datasetService.delete(new DatasetKey(uuid));
     }
 
     @PutMapping("/{uuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public ResponseEntity<DatasetDto> update(@PathVariable UUID uuid, @RequestBody DatasetDto datasetDto) {
         if (datasetDto.getUuid().equals(uuid)) {
             return ResponseEntity.badRequest().build();
@@ -105,6 +111,7 @@ public class DatasetController {
 
     @SuppressWarnings("unchecked")
     @PostMapping("/{uuid}/datasetImplementation")
+    @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public ResponseEntity addDatasetImplementation(@PathVariable UUID uuid, @RequestBody DatasetImplementationDto datasetImplementationDto) {
         Optional<Dataset> dataset = datasetService.get(new DatasetKey(uuid));
         if (dataset.isPresent()) {

@@ -44,7 +44,7 @@ public class TeamsController {
     private final SecurityGroupService securityGroupService;
 
     private static final Set<String> SYS_ADMIN_ONLY_PRIVILEGES = Stream.of(
-            IESIPrivilege.SECURITY_GROUP_DELETE.getPrivilege()
+            IESIPrivilege.SECURITY_GROUP_MODIFY.getPrivilege()
     ).collect(Collectors.toSet());
 
     public TeamsController(TeamService teamService, ITeamDtoService teamDtoService, RoleService roleService, UserService userService, SecurityGroupService securityGroupService) {
@@ -171,7 +171,7 @@ public class TeamsController {
     }
 
     @DeleteMapping("/{uuid}")
-    @PreAuthorize("hasPrivilege('TEAMS_DELETE')")
+    @PreAuthorize("hasPrivilege('TEAMS_WRITE')")
     public ResponseEntity<Object> deleteById(@PathVariable UUID uuid) {
         teamService.delete(new TeamKey(uuid));
         return ResponseEntity.noContent().build();
@@ -185,8 +185,8 @@ public class TeamsController {
         if (!team.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        // TODO: check if it is possible to link this ROLES_DELETE privilige to a specific team with Spring Security authority
-        if (user.isPresent() && !checkHasPrivilegeAtTeam(user.get(), team.get(), IESIPrivilege.ROLES_WRITE)) {
+        // TODO: check if it is possible to link this ROLES_WRITE privilige to a specific team with Spring Security authority
+        if (user.isPresent() && !checkHasPrivilegeAtTeam(user.get(), team.get(), IESIPrivilege.ROLES_MODIFY)) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(String.format("User %s cannot create a role for team %s", user.get().getUsername(), team.get().getTeamName()));
@@ -216,15 +216,15 @@ public class TeamsController {
     }
 
     @DeleteMapping("/{team-uuid}/roles/{role-uuid}")
-    @PreAuthorize("hasPrivilege('ROLES_DELETE')")
+    @PreAuthorize("hasPrivilege('ROLES_WRITE')")
     public ResponseEntity<Object> deleteRole(@PathVariable("team-uuid") UUID teamUuid, @PathVariable("role-uuid") UUID roleUuid) {
         Optional<User> user = userService.get(SecurityContextHolder.getContext().getAuthentication().getName());
         Optional<Team> team = teamService.get(new TeamKey(teamUuid));
         if (!team.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        // TODO: check if it is possible to link this ROLES_DELETE privilige to a specific team with Spring Security authority
-        if (user.isPresent() && !checkHasPrivilegeAtTeam(user.get(), team.get(), IESIPrivilege.ROLES_DELETE)) {
+        // TODO: check if it is possible to link this ROLES_WRITE privilige to a specific team with Spring Security authority
+        if (user.isPresent() && !checkHasPrivilegeAtTeam(user.get(), team.get(), IESIPrivilege.ROLES_MODIFY)) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(String.format("User %s cannot remove a role from team %s", user.get().getUsername(), team.get().getTeamName()));
@@ -267,8 +267,8 @@ public class TeamsController {
         if (!team.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        // TODO: check if it is possible to link this ROLES_DELETE privilige to a specific team with Spring Security authority
-        if (user.isPresent() && !checkHasPrivilegeAtTeam(user.get(), team.get(), IESIPrivilege.ROLES_WRITE)) {
+        // TODO: check if it is possible to link this ROLES_WRITE privilige to a specific team with Spring Security authority
+        if (user.isPresent() && !checkHasPrivilegeAtTeam(user.get(), team.get(), IESIPrivilege.ROLES_MODIFY)) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(String.format("User %s cannot add a user to a role of team %s", user.get().getUsername(), team.get().getTeamName()));
@@ -285,7 +285,7 @@ public class TeamsController {
     }
 
     @DeleteMapping("/{team-uuid}/roles/{role-uuid}/users/{user-uuid}")
-    @PreAuthorize("hasPrivilege('ROLES_DELETE')")
+    @PreAuthorize("hasPrivilege('ROLES_WRITE')")
     public ResponseEntity<Object> deleteUserFromRole(@PathVariable("team-uuid") UUID teamUuid,
                                                      @PathVariable("role-uuid") UUID roleUuid,
                                                      @PathVariable("user-uuid") UUID userUuid) {
@@ -294,8 +294,8 @@ public class TeamsController {
         if (!team.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        // TODO: check if it is possible to link this ROLES_DELETE privilige to a specific team with Spring Security authority
-        if (user.isPresent() && !checkHasPrivilegeAtTeam(user.get(), team.get(), IESIPrivilege.ROLES_WRITE)) {
+        // TODO: check if it is possible to link this ROLES_WRITE privilige to a specific team with Spring Security authority
+        if (user.isPresent() && !checkHasPrivilegeAtTeam(user.get(), team.get(), IESIPrivilege.ROLES_MODIFY)) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body(String.format("User %s cannot remove a user from a role for team %s", user.get().getUsername(), team.get().getTeamName()));

@@ -62,7 +62,7 @@ class ExecutionRequestControllerTest {
                 Stream.of(
                         new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_WRITE"),
                         new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_READ"),
-                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_DELETE")
+                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_WRITE")
                 ).collect(Collectors.toSet())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);

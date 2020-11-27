@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 
 @Data
-@Builder
 @RequiredArgsConstructor
 public class ExecutionRequestLabelDto {
 

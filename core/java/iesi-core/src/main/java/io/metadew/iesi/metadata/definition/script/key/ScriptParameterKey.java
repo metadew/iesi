@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 @Data
-@Builder
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ScriptParameterKey extends MetadataKey {

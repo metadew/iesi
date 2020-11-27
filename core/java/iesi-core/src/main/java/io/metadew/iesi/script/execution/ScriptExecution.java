@@ -6,6 +6,8 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.action.fwk.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.logging.log4j.Level;
 
@@ -13,19 +15,21 @@ import java.util.*;
 import java.util.concurrent.*;
 
 @ToString
+@Getter
 public abstract class ScriptExecution {
-	private RootingStrategy rootingStrategy;
-	private Script script;
-	private ExecutionControl executionControl;
-	private ExecutionMetrics executionMetrics;
-	private Long processId;
-	private boolean exitOnCompletion;
-	private ScriptExecution parentScriptExecution;
+	private final RootingStrategy rootingStrategy;
+	private final Script script;
+	private final ExecutionControl executionControl;
+	private final ExecutionMetrics executionMetrics;
+	private final Long processId;
+	private final boolean exitOnCompletion;
+	private final ScriptExecution parentScriptExecution;
+	@Setter
 	private String result;
-	public Map<String, String> parameters;
+	private Map<String, String> parameters;
 	public Map<String, String> impersonations;
-	private ActionSelectOperation actionSelectOperation;
-	private String environment;
+	private final ActionSelectOperation actionSelectOperation;
+	private final String environment;
 
 	public ScriptExecution(Script script, String environment, ExecutionControl executionControl,
 						   ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion,
@@ -136,8 +140,8 @@ public abstract class ScriptExecution {
 
 	protected abstract void endExecution();
 
-	protected abstract void prepareExecution() ;
-	
+	protected abstract void prepareExecution();
+
 
 	public RootingStrategy getRootingStrategy() {
 		return rootingStrategy;
@@ -190,45 +194,15 @@ public abstract class ScriptExecution {
 		}
 	}
 
-	public void traceDesignMetadata() {
+	public void traceMetadata() {
 		ExecutionTrace.getInstance().setExecution(this);
-	}
-
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
-
-	public Long getProcessId() {
-		return processId;
-	}
-
-
-	public ExecutionMetrics getExecutionMetrics() {
-		return executionMetrics;
 	}
 
 	public Optional<ScriptExecution> getParentScriptExecution() {
 		return Optional.ofNullable(parentScriptExecution);
 	}
 
-	public String getResult() {
-		return result;
-	}
-
 	public void setResult(String result) {
 		this.result = result;
 	}
-
-	public boolean isExitOnCompletion() {
-		return exitOnCompletion;
-	}
-
-    public Script getScript() {
-        return script;
-    }
-
-	public String getEnvironment() {
-		return environment;
-	}
-
 }

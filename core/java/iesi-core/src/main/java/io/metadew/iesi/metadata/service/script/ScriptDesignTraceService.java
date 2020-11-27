@@ -21,7 +21,16 @@ import java.io.StringWriter;
 @Log4j2
 public class ScriptDesignTraceService {
 
-    public ScriptDesignTraceService() {
+    private static ScriptDesignTraceService instance;
+
+    public static synchronized ScriptDesignTraceService getInstance() {
+        if (instance == null) {
+            instance = new ScriptDesignTraceService();
+        }
+        return instance;
+    }
+
+    private ScriptDesignTraceService() {
     }
 
     public void trace(ScriptExecution scriptExecution) {

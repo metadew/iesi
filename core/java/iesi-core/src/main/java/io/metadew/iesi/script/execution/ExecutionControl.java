@@ -37,35 +37,30 @@ import java.util.UUID;
 public class ExecutionControl {
 
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
-    private final ActionDesignTraceService actionDesignTraceService;
     private ExecutionRuntime executionRuntime;
     private String runId;
     private String envName;
     private boolean actionErrorStop = false;
     private boolean scriptExit = false;
-    private ScriptDesignTraceService scriptDesignTraceService;
 
     private Long lastProcessId;
 
-    private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
+    private static final Marker SCRIPT_MARKER = MarkerManager.getMarker("SCRIPT");
 
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
-        this.scriptDesignTraceService = new ScriptDesignTraceService();
-        this.actionDesignTraceService = new ActionDesignTraceService();
         initializeRunId();
         initializeExecutionRuntime(runId);
         this.lastProcessId = -1L;
         this.elasticSearchConnection = new DelimitedFileBeatElasticSearchConnection();
     }
 
-    @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (Configuration.getInstance().getProperty("iesi.script.execution.runtime").isPresent()) {
-            Class classRef = Class.forName((String) Configuration.getInstance().getProperty("iesi.script.execution.runtime").get());
-            Class[] initParams = {ExecutionControl.class, String.class};
-            Constructor constructor = classRef.getConstructor(initParams);
+            Class<?> classRef = Class.forName((String) Configuration.getInstance().getProperty("iesi.script.execution.runtime").get());
+            Class<?>[] initParams = {ExecutionControl.class, String.class};
+            Constructor<?> constructor = classRef.getConstructor(initParams);
             this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);
         } else {
             this.executionRuntime = new ExecutionRuntime(this, runId);
@@ -104,11 +99,11 @@ public class ExecutionControl {
 
 
         // Trace the design of the script
-        scriptDesignTraceService.trace(scriptExecution);
+        ScriptDesignTraceService.getInstance().trace(scriptExecution);
     }
 
     public void logStart(ActionExecution actionExecution) {
-        actionDesignTraceService.trace(runId, actionExecution.getProcessId(), actionExecution.getAction());
+        ActionDesignTraceService.getInstance().trace(runId, actionExecution.getProcessId(), actionExecution.getAction());
         ActionResult actionResult = new ActionResult(
                 runId,
                 actionExecution.getProcessId(),
@@ -141,17 +136,6 @@ public class ExecutionControl {
 
     }
 
-//    public void logStart(BackupExecution backupExecution) {
-//        initializeRunId();
-//    }
-
-
-//    public Long getNewProcessId() {
-//        Long processId = FrameworkRuntime.getInstance().getNextProcessId();
-//        logMessage(new IESIMessage("exec.processid=" + processId), Level.TRACE);
-//        return processId;
-//    }
-
     public Long getNextProcessId() {
         lastProcessId = lastProcessId + 1;
         return lastProcessId;
@@ -176,8 +160,7 @@ public class ExecutionControl {
                 // catch error if 'output' is already outputted. To be deleted in future
                 logExecutionOutput(scriptExecution, "output", output);
                 logMessage("script.output=" + output, Level.INFO);
-            } catch (Exception ignore) {
-            }
+            } catch (Exception ignore) {}
         }
 
         elasticSearchConnection.ingest(new ScriptResultElasticSearch(scriptResult));
@@ -259,7 +242,7 @@ public class ExecutionControl {
 
     // Log message
     public void logMessage(String message, Level level) {
-        log.log(level, SCRIPTMARKER, message);
+        log.log(level, SCRIPT_MARKER, message);
     }
 
 

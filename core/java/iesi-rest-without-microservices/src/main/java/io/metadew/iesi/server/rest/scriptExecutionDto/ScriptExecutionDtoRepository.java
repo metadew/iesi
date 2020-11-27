@@ -229,6 +229,10 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
      * @return Return a String containing the SQL statement
      */
     private String getSQLQuery(String runId, Long processId) {
+        // TODO: add scriptParameterTraces,
+        //  refactor query to be one big one
+        //  use JDBCTemplate (do refactor of base query before, will it work with the regex for Oracle)
+        //  extract query info to ResultSetExtractor
         return "SELECT 0 INFO_TYPE, results.RUN_ID RUN_ID, results.PRC_ID SCRIPT_PRC_ID, " +
                 "results.PARENT_PRC_ID SCRIPT_PARENT_PRC_ID, results.SCRIPT_ID SCRIPT_ID, results.SCRIPT_NM SCRIPT_NM, " +
                 "results.SCRIPT_VRS_NB SCRIPT_VRS_NB, results.ENV_NM ENV_NM, results.ST_NM SCRIPT_ST_NM, " +

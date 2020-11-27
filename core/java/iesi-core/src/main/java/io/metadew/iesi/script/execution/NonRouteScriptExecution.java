@@ -20,11 +20,11 @@ public class NonRouteScriptExecution extends ScriptExecution {
                 Level.INFO);
         this.getExecutionControl().logStart(this);
 
-        for (Map.Entry<String, String> parameter : parameters.entrySet()) {
+        for (Map.Entry<String, String> parameter : getParameters().entrySet()) {
             getExecutionControl().getExecutionRuntime().setRuntimeVariable(this, parameter.getKey(), parameter.getValue());
         }
 
-        this.traceDesignMetadata();
+        this.traceMetadata();
     }
 
     @Override

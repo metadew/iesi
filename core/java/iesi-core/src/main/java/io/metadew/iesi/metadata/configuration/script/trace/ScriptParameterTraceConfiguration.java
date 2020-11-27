@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,13 +17,13 @@ import java.util.Optional;
 public class ScriptParameterTraceConfiguration extends Configuration<ScriptParameterTrace, ScriptParameterTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ScriptParameterTraceConfiguration INSTANCE;
+    private static ScriptParameterTraceConfiguration instance;
 
-    public synchronized static ScriptParameterTraceConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptParameterTraceConfiguration();
+    public static synchronized ScriptParameterTraceConfiguration getInstance() {
+        if (instance == null) {
+            instance = new ScriptParameterTraceConfiguration();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private ScriptParameterTraceConfiguration() {
@@ -47,7 +46,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
         if (cachedRowSet.size() == 0) {
             return Optional.empty();
         } else if (cachedRowSet.size() > 1) {
-            LOGGER.warn(MessageFormat.format("Found multiple implementations for ScriptParameterTrace {0}. Returning first implementation", scriptParameterTraceKey.toString()));
+            LOGGER.warn(String.format("Found multiple implementations for ScriptParameterTrace %s. Returning first implementation", scriptParameterTraceKey));
         }
         cachedRowSet.next();
         return Optional.of(new ScriptParameterTrace(scriptParameterTraceKey,
@@ -79,7 +78,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
 
     @Override
     public void delete(ScriptParameterTraceKey scriptParameterTraceKey) {
-        LOGGER.trace(MessageFormat.format("Deleting ScriptParameterTrace {0}.", scriptParameterTraceKey.toString()));
+        LOGGER.trace(String.format("Deleting ScriptParameterTrace %s.", scriptParameterTraceKey));
         String deleteStatement = deleteStatement(scriptParameterTraceKey);
         getMetadataRepository().executeUpdate(deleteStatement);
     }
@@ -94,7 +93,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
 
     @Override
     public void insert(ScriptParameterTrace scriptParameterTrace) {
-        LOGGER.trace(MessageFormat.format("Inserting ScriptParameterTrace {0}.", scriptParameterTrace.getMetadataKey().toString()));
+        LOGGER.trace(String.format("Inserting ScriptParameterTrace %s.", scriptParameterTrace));
         String insertStatement = insertStatement(scriptParameterTrace);
         getMetadataRepository().executeUpdate(insertStatement);
     }
@@ -110,7 +109,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
 
     @Override
     public void update(ScriptParameterTrace scriptParameterTrace) {
-        LOGGER.trace(MessageFormat.format("Updating ScriptParameterTrace {0}.", scriptParameterTrace.toString()));
+        LOGGER.trace(String.format("Updating ScriptParameterTrace %s.", scriptParameterTrace));
         String updateStatement = updateStatement(scriptParameterTrace);
         getMetadataRepository().executeUpdate(updateStatement);
     }

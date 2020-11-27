@@ -715,7 +715,6 @@ class ScriptControllerTest {
 
         mvc.perform(get("/scripts/nameTest/0/download"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("test"))
                 .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
                 .andExpect(jsonPath("$.name", is("nameTest")))
                 .andExpect(jsonPath("$.description").exists())

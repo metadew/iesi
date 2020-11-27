@@ -1,10 +1,14 @@
 package io.metadew.iesi.server.rest.script.dto.action;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.server.rest.script.dto.ScriptEmptyLinksFilter;
 import lombok.*;
+import org.springframework.hateoas.Links;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -45,4 +49,10 @@ public class ActionDto extends RepresentationModel<ActionDto> {
         parameters.add(actionParameterDto);
     }
 
+    @JsonProperty("links")
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = ScriptEmptyLinksFilter.class)
+    @Override
+    public Links getLinks() {
+        return super.getLinks();
+    }
 }

@@ -9,6 +9,7 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.*;
+import org.springframework.hateoas.Links;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -45,4 +46,11 @@ public class ScriptDto extends RepresentationModel<ScriptDto>  {
         labels.add(scriptLabelDto);
     }
 
+
+    @JsonProperty("links")
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = ScriptEmptyLinksFilter.class)
+    @Override
+    public Links getLinks() {
+        return super.getLinks();
+    }
 }

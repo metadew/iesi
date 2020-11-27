@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.server.rest.script.dto.ScriptDtoRepresentationModel;
 import io.metadew.iesi.server.rest.script.dto.ScriptEmptyLinksFilter;
 import lombok.*;
 import org.springframework.hateoas.Links;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(value = "action", collectionRelation = "actions")
-public class ActionDto extends RepresentationModel<ActionDto> {
+public class ActionDto extends ScriptDtoRepresentationModel<ActionDto> {
 
     private long number;
     private String name;
@@ -49,10 +50,4 @@ public class ActionDto extends RepresentationModel<ActionDto> {
         parameters.add(actionParameterDto);
     }
 
-    @JsonProperty("links")
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = ScriptEmptyLinksFilter.class)
-    @Override
-    public Links getLinks() {
-        return super.getLinks();
-    }
 }

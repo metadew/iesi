@@ -3,7 +3,7 @@ package io.metadew.iesi.metadata.definition.security;
 public class SecurityGroupJsonComponent {
 
     public enum Field {
-        SECURITY_GROUP_NAME("security_group");
+        SECURITY_GROUP_NAME("securityGroup");
 
         private final String label;
 

@@ -22,7 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(value = "script", collectionRelation = "scripts")
-public class ScriptDto extends ScriptDtoRepresentationModel<ScriptDto>  {
+public class ScriptDto extends NoEmptyLinksRepresentationModel<ScriptDto> {
 
     private String name;
     private String description;

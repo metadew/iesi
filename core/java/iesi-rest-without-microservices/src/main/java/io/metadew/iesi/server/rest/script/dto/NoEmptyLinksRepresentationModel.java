@@ -6,7 +6,7 @@ import org.springframework.hateoas.Links;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.lang.NonNull;
 
-public class ScriptDtoRepresentationModel<T extends ScriptDtoRepresentationModel <? extends T>> extends RepresentationModel<T> {
+public class NoEmptyLinksRepresentationModel<T extends NoEmptyLinksRepresentationModel<? extends T>> extends RepresentationModel<T> {
 
 
     @JsonProperty("_links")

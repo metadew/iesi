@@ -60,7 +60,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
                     "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
                     "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
-                    "WHERE EXECUTION_REQUEST.REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                    "WHERE EXECUTION_REQUEST.REQUEST_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
@@ -229,7 +229,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
                     "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
                     "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
-                    "WHERE ST_NM = " + SQLTools.GetStringForSQL(ExecutionRequestStatus.NEW.value()) + ";";
+                    "WHERE ST_NM = " + SQLTools.getStringForSQL(ExecutionRequestStatus.NEW.value()) + ";";
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -309,13 +309,13 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         List<String> queries = new ArrayList<>();
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") +
                 " WHERE " +
-                " REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";");
+                " REQUEST_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";");
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") +
                 " WHERE " +
-                " REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";");
+                " REQUEST_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";");
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") +
                 " WHERE " +
-                " REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";");
+                " REQUEST_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";");
         return queries;
     }
 
@@ -339,26 +339,26 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") +
                 " (REQUEST_ID, REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, ST_NM) VALUES (" +
-                SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(executionRequest.getRequestTimestamp()) + "," +
-                SQLTools.GetStringForSQL(executionRequest.getName()) + "," +
-                SQLTools.GetStringForSQL(executionRequest.getDescription()) + "," +
-                SQLTools.GetStringForSQL(executionRequest.getEmail()) + "," +
-                SQLTools.GetStringForSQL(executionRequest.getScope()) + "," +
-                SQLTools.GetStringForSQL(executionRequest.getContext()) + "," +
-                SQLTools.GetStringForSQL(executionRequest.getExecutionRequestStatus().value()) + ");");
+                SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
+                SQLTools.getStringForSQL(executionRequest.getRequestTimestamp()) + "," +
+                SQLTools.getStringForSQL(executionRequest.getName()) + "," +
+                SQLTools.getStringForSQL(executionRequest.getDescription()) + "," +
+                SQLTools.getStringForSQL(executionRequest.getEmail()) + "," +
+                SQLTools.getStringForSQL(executionRequest.getScope()) + "," +
+                SQLTools.getStringForSQL(executionRequest.getContext()) + "," +
+                SQLTools.getStringForSQL(executionRequest.getExecutionRequestStatus().value()) + ");");
         if (executionRequest instanceof AuthenticatedExecutionRequest) {
             queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") +
                     " (REQUEST_ID, SPACE_NM, USER_NM, USER_PASSWORD) VALUES (" +
-                    SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
-                    SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getSpace()) + "," +
-                    SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUser()) + "," +
-                    SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getPassword()) + ");");
+                    SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
+                    SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getSpace()) + "," +
+                    SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUser()) + "," +
+                    SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getPassword()) + ");");
             return queries;
         } else if (executionRequest instanceof NonAuthenticatedExecutionRequest) {
             queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") +
                     " (REQUEST_ID) VALUES (" +
-                    SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + ");");
+                    SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + ");");
             return queries;
         } else {
             LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequest.toString()));
@@ -387,22 +387,22 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     private List<String> updateStatement(ExecutionRequest executionRequest) {
         List<String> queries = new ArrayList<>();
         queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") + " SET " +
-                "REQUEST_TMS=" + SQLTools.GetStringForSQL(executionRequest.getRequestTimestamp()) + "," +
-                "REQUEST_NM=" + SQLTools.GetStringForSQL(executionRequest.getName()) + "," +
-                "REQUEST_DSC=" + SQLTools.GetStringForSQL(executionRequest.getDescription()) + "," +
-                "NOTIF_EMAIL=" + SQLTools.GetStringForSQL(executionRequest.getEmail()) + "," +
-                "SCOPE_NM=" + SQLTools.GetStringForSQL(executionRequest.getScope()) + "," +
-                "CONTEXT_NM=" + SQLTools.GetStringForSQL(executionRequest.getContext()) + "," +
-                "ST_NM=" + SQLTools.GetStringForSQL(executionRequest.getExecutionRequestStatus().value()) +
+                "REQUEST_TMS=" + SQLTools.getStringForSQL(executionRequest.getRequestTimestamp()) + "," +
+                "REQUEST_NM=" + SQLTools.getStringForSQL(executionRequest.getName()) + "," +
+                "REQUEST_DSC=" + SQLTools.getStringForSQL(executionRequest.getDescription()) + "," +
+                "NOTIF_EMAIL=" + SQLTools.getStringForSQL(executionRequest.getEmail()) + "," +
+                "SCOPE_NM=" + SQLTools.getStringForSQL(executionRequest.getScope()) + "," +
+                "CONTEXT_NM=" + SQLTools.getStringForSQL(executionRequest.getContext()) + "," +
+                "ST_NM=" + SQLTools.getStringForSQL(executionRequest.getExecutionRequestStatus().value()) +
                 " WHERE " +
-                "REQUEST_ID =" + SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
+                "REQUEST_ID =" + SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
         if (executionRequest instanceof AuthenticatedExecutionRequest) {
             queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " SET " +
-                    "SPACE_NM=" + SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getSpace()) + "," +
-                    "USER_NM=" + SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUser()) + "," +
-                    "USER_PASSWORD=" + SQLTools.GetStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getPassword())  +
+                    "SPACE_NM=" + SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getSpace()) + "," +
+                    "USER_NM=" + SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUser()) + "," +
+                    "USER_PASSWORD=" + SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getPassword())  +
                     " WHERE " +
-                    "REQUEST_ID =" + SQLTools.GetStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
+                    "REQUEST_ID =" + SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
             return queries;
         } else if (executionRequest instanceof NonAuthenticatedExecutionRequest) {
             return queries;

@@ -3,9 +3,8 @@ package io.metadew.iesi.script.action.sql;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -131,13 +130,13 @@ public class SqlExecuteQuery extends ActionTypeExecution {
 
         SqlScriptResult sqlScriptResult;
 
-        Optional<Dataset> dataset = this.getExecutionControl().getExecutionRuntime()
+        Optional<InMemoryDatasetImplementation> dataset = this.getExecutionControl().getExecutionRuntime()
                 .getDataset(outputDatasetReferenceName);
         CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
         this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
         // TODO resolve for files and resolve inside
         if (dataset.isPresent()) {
-            SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), appendOutput);
+            //SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), appendOutput);
             sqlScriptResult = new SqlScriptResult(0, "data.transfer.complete", "");
         }
 

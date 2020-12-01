@@ -69,10 +69,10 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         log.info("IESI REST endpoint security enabled");
         http
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
                 .cors().and()
                 .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests()
                 .mvcMatchers("/users/login").permitAll()
                 .mvcMatchers("/actuator/health").permitAll()

@@ -9,8 +9,8 @@ import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.connection.http.response.HttpResponseService;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDatasetService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -47,7 +47,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
 
     private HttpRequest httpRequest;
-    private KeyValueDataset outputDataset;
+    private InMemoryDatasetImplementation outputDataset;
     private ProxyConnection proxyConnection;
     private List<String> expectedStatusCodes;
 
@@ -177,28 +177,27 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private void outputResponse(HttpResponse httpResponse) throws IOException {
-        Optional<KeyValueDataset> outputDataset = getOutputDataset();
+        Optional<InMemoryDatasetImplementation> outputDataset = getOutputDataset();
         if (outputDataset.isPresent()) {
-            if (!KeyValueDatasetService.getInstance().isEmpty(outputDataset.get())) {
+            if (!InMemoryDatasetImplementationService.getInstance().isEmpty(outputDataset.get())) {
                 log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
-                KeyValueDatasetService.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
+                InMemoryDatasetImplementationService.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
             }
-            HttpResponseService.getInstance().writeToDataset(httpResponse, outputDataset.get(), getExecutionControl().getExecutionRuntime());
+            HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
         }
         HttpResponseService.getInstance().traceOutput(httpResponse, getActionExecution().getActionControl());
 
     }
 
-    private KeyValueDataset convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
+    private InMemoryDatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
         if (outputDatasetReferenceName == null) {
             return null;
         } else if (outputDatasetReferenceName instanceof Text) {
             return getExecutionControl().getExecutionRuntime()
                     .getDataset(((Text) outputDatasetReferenceName).getString())
-                    .map(dataset -> (KeyValueDataset) dataset)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
-        } else if (outputDatasetReferenceName instanceof KeyValueDataset) {
-            return (KeyValueDataset) outputDatasetReferenceName;
+        } else if (outputDatasetReferenceName instanceof InMemoryDatasetImplementation) {
+            return (InMemoryDatasetImplementation) outputDatasetReferenceName;
         } else {
             log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
                     outputDatasetReferenceName.getClass()));
@@ -274,7 +273,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    private Optional<KeyValueDataset> getOutputDataset() {
+    private Optional<InMemoryDatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 

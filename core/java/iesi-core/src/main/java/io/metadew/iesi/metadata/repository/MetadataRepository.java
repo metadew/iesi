@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 
 public abstract class MetadataRepository {
 
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private final String tablePrefix;
     @Getter
     private final List<MetadataTable> metadataTables;
-
-    private RepositoryCoordinator repositoryCoordinator;
+    @Getter
+    private final RepositoryCoordinator repositoryCoordinator;
 
     public MetadataRepository(String instanceName,
                               RepositoryCoordinator repositoryCoordinator) {
@@ -30,35 +30,6 @@ public abstract class MetadataRepository {
                 .filter(metadataTable -> metadataTable.getCategory().equalsIgnoreCase(getCategory()))
                 .peek(metadataTable -> metadataTable.setName(tablePrefix + metadataTable.getName()))
                 .collect(Collectors.toList());
-//		metadataObjects = new ArrayList<>();
-//		metadataTables = new ArrayList<>();
-//
-//		DataObjectOperation dataObjectOperation = new DataObjectOperation();
-//		dataObjectOperation.setInputFile(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.def")
-//				.map(FrameworkFolder::getAbsolutePath)
-//				.orElseThrow(() -> new RuntimeException("no configuration found metadata.def")) + File.separator + getObjectDefinitionFileName());
-//		dataObjectOperation.parseFile();
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		//
-//		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-//			if (dataObject.getType().equalsIgnoreCase("metadataobject")) {
-//				metadataObjects.add(objectMapper.convertValue(dataObject.getData(), MetadataObject.class));
-//			}
-//		}
-//
-//		dataObjectOperation = new DataObjectOperation();
-//		dataObjectOperation.setInputFile(FrameworkConfiguration.getInstance().getFrameworkFolder("metadata.def")
-//				.map(FrameworkFolder::getAbsolutePath)
-//				.orElseThrow(() -> new RuntimeException("no configuration found metadata.in.new")) + File.separator + getDefinitionFileName());
-//		dataObjectOperation.parseFile();
-//		//
-////		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-////			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {
-////				MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-////				metadataTable.setName(tablePrefix + metadataTable.getName());
-////				metadataTables.add(metadataTable);
-////			}
-////		}
     }
 
     public abstract String getCategory();
@@ -103,10 +74,10 @@ public abstract class MetadataRepository {
 
     public String generateDDL() {
         return metadataTables.stream()
-                .map(metadataTable -> repositoryCoordinator.getDropStatement(metadataTable))
+                .map(repositoryCoordinator::getDropStatement)
                 .collect(Collectors.joining("\n\n")) + "\n\n" +
                 metadataTables.stream()
-                        .map(metadataTable -> repositoryCoordinator.getCreateStatement(metadataTable))
+                        .map(repositoryCoordinator::getCreateStatement)
                         .collect(Collectors.joining("\n\n"));
     }
 

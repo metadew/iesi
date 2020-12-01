@@ -47,9 +47,9 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         String queryAction = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, EXP_ERR_FL, STOP_ERR_FL, RETRIES_VAL from "
                 + getMetadataRepository()
                 .getTableNameByLabel("Actions")
-                + " where ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) +
-                " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptVersion()) + ";";
+                + " where ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +
+                " AND SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) + ";";
         CachedRowSet crsAction = getMetadataRepository().executeQuery(queryAction, "reader");
         try {
             if (crsAction.size() == 0) {
@@ -140,44 +140,44 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         String query = "INSERT INTO " + getMetadataRepository()
                 .getTableNameByLabel("Actions") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
-                SQLTools.GetStringForSQL(action.getMetadataKey().getScriptKey().getScriptId()) + "," +
-                SQLTools.GetStringForSQL(action.getMetadataKey().getScriptKey().getScriptVersion()) + "," +
-                SQLTools.GetStringForSQL(action.getMetadataKey().getActionId()) + "," +
-                SQLTools.GetStringForSQL(action.getNumber()) + "," +
-                SQLTools.GetStringForSQL(action.getType()) + "," +
-                SQLTools.GetStringForSQL(action.getName()) + "," +
-                SQLTools.GetStringForSQL(action.getDescription()) + "," +
-                SQLTools.GetStringForSQL(action.getComponent()) + "," +
-                SQLTools.GetStringForSQL(action.getIteration()) + "," +
-                SQLTools.GetStringForSQL(action.getCondition()) + "," +
-                SQLTools.GetStringForSQL(action.getRetries()) + "," +
-                SQLTools.GetStringForSQL(action.getErrorExpected()) + "," +
-                SQLTools.GetStringForSQL(action.getErrorStop()) + ");";
+                SQLTools.getStringForSQL(action.getMetadataKey().getScriptKey().getScriptId()) + "," +
+                SQLTools.getStringForSQL(action.getMetadataKey().getScriptKey().getScriptVersion()) + "," +
+                SQLTools.getStringForSQL(action.getMetadataKey().getActionId()) + "," +
+                SQLTools.getStringForSQL(action.getNumber()) + "," +
+                SQLTools.getStringForSQL(action.getType()) + "," +
+                SQLTools.getStringForSQL(action.getName()) + "," +
+                SQLTools.getStringForSQL(action.getDescription()) + "," +
+                SQLTools.getStringForSQL(action.getComponent()) + "," +
+                SQLTools.getStringForSQL(action.getIteration()) + "," +
+                SQLTools.getStringForSQL(action.getCondition()) + "," +
+                SQLTools.getStringForSQL(action.getRetries()) + "," +
+                SQLTools.getStringForSQL(action.getErrorExpected()) + "," +
+                SQLTools.getStringForSQL(action.getErrorStop()) + ");";
         getMetadataRepository().executeUpdate(query);
     }
 
     public boolean exists(ActionKey actionKey) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID from "
                 + getMetadataRepository().getTableNameByLabel("Actions")
-                + " WHERE ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) +
-                " AND SCRIPT_ID = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptVersion()) + ";";
+                + " WHERE ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +
+                " AND SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     private String deleteStatement(ActionKey actionKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("Actions") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionKey.getActionId()) + ";";
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) + ";";
     }
 
     public List<Action> getByScript(ScriptKey scriptKey) {
         List<Action> actions = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("Actions") +
-                " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion())
+                " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion())
                 + " order by ACTION_NB ASC" + ";";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
@@ -212,8 +212,8 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         LOGGER.trace(MessageFormat.format("Deleting actions for script {0}", scriptKey.toString()));
         ActionParameterConfiguration.getInstance().deleteByScript(scriptKey);
         getMetadataRepository().executeUpdate("delete from " + getMetadataRepository().getTableNameByLabel("Actions") +
-                " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";");
+                " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";");
     }
 
 }

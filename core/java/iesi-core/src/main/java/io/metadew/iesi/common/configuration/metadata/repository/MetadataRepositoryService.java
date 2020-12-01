@@ -48,8 +48,15 @@ public class MetadataRepositoryService implements IMetadataRepositoryService {
                 metadataRepositories.add(new ExecutionServerMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
                         MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+                metadataRepositories.add(new DataMetadataRepository(
+                        metadataRepositoryDefinition.getInstance(),
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("design")) {
                 metadataRepositories.add(new DesignMetadataRepository(
+                        metadataRepositoryDefinition.getInstance(),
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+            } else if (category.equalsIgnoreCase("data")) {
+                metadataRepositories.add(new DataMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
                         MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("connectivity")) {

@@ -4,6 +4,8 @@ import io.metadew.iesi.connection.database.mssql.MssqlDatabaseConnectionService;
 import io.metadew.iesi.connection.database.presto.PrestoDatabaseConnectionService;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PrestoDatabaseConnectionServiceTest {

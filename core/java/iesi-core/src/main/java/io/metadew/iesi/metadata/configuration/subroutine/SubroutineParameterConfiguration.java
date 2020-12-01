@@ -1,7 +1,7 @@
 package io.metadew.iesi.metadata.configuration.subroutine;
 
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.subroutine.SubroutineParameter;
 
 import javax.sql.rowset.CachedRowSet;
@@ -29,11 +29,11 @@ public class SubroutineParameterConfiguration {
         sql += " (SRT_NM, SRT_PAR_NM, SRT_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
-        sql += SQLTools.GetStringForSQL(subroutineName);
+        sql += SQLTools.getStringForSQL(subroutineName);
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getSubroutineParameter().getName());
+        sql += SQLTools.getStringForSQL(this.getSubroutineParameter().getName());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getSubroutineParameter().getValue());
+        sql += SQLTools.getStringForSQL(this.getSubroutineParameter().getValue());
         sql += ")";
         sql += ";";
 

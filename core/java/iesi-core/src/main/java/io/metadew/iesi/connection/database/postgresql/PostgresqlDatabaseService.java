@@ -7,16 +7,16 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 
 public class PostgresqlDatabaseService extends SchemaDatabaseService<PostgresqlDatabase> implements ISchemaDatabaseService<PostgresqlDatabase> {
 
-    private static PostgresqlDatabaseService INSTANCE;
+    private static PostgresqlDatabaseService instance;
 
-    private static final String keyword= "db.postgresql";
+    private static final String KEYWORD = "db.postgresql";
 
 
     public synchronized static PostgresqlDatabaseService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new PostgresqlDatabaseService();
+        if (instance == null) {
+            instance = new PostgresqlDatabaseService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private PostgresqlDatabaseService() {}
@@ -28,7 +28,7 @@ public class PostgresqlDatabaseService extends SchemaDatabaseService<PostgresqlD
 
     @Override
     public String keyword() {
-        return keyword;
+        return KEYWORD;
     }
 
     @Override
@@ -60,16 +60,19 @@ public class PostgresqlDatabaseService extends SchemaDatabaseService<PostgresqlD
         StringBuilder fieldQuery = new StringBuilder();
         // Data Types
         switch (field.getType()) {
-            case "string":
+            case STRING:
                 fieldQuery.append("VARCHAR (").append(field.getLength()).append(")");
                 break;
-            case "flag":
+            case CLOB:
+                fieldQuery.append("TEXT");
+                break;
+            case FLAG:
                 fieldQuery.append("CHAR (").append(field.getLength()).append(")");
                 break;
-            case "number":
+            case NUMBER:
                 fieldQuery.append("NUMERIC");
                 break;
-            case "timestamp":
+            case TIMESTAMP:
                 fieldQuery.append("TIMESTAMP");
                 break;
         }

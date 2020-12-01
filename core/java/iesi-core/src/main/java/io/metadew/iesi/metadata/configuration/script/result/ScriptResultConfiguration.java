@@ -41,7 +41,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
         try {
             String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
                     "STRT_TMS, END_TMS from " + getMetadataRepository().getTableNameByLabel("ScriptResults")
-                    + " where RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " and PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
+                    + " where RUN_ID = " + SQLTools.getStringForSQL(scriptResultKey.getRunId()) + " and PRC_ID = " + SQLTools.getStringForSQL(scriptResultKey.getProcessId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -100,8 +100,8 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
     private String deleteStatement(ScriptResultKey scriptResultKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptResults") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptResultKey.getProcessId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptResultKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptResultKey.getProcessId()) + ";";
     }
 
     @Override
@@ -115,16 +115,16 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
         return "INSERT INTO "
                 + getMetadataRepository().getTableNameByLabel("ScriptResults")
                 + " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
-                + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getParentProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getScriptId()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getScriptName()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getScriptVersion()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getEnvironment()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getStatus().value()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
-                SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) + ");";
+                + SQLTools.getStringForSQL(scriptResult.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getParentProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getScriptId()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getScriptName()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getScriptVersion()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getEnvironment()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getStatus().value()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getStartTimestamp()) + "," +
+                SQLTools.getStringForSQL(scriptResult.getEndTimestamp()) + ");";
     }
 
     @Override
@@ -138,17 +138,17 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
         return "UPDATE "
                 + getMetadataRepository().getTableNameByLabel("ScriptResults")
                 + " SET " +
-                "PARENT_PRC_ID = " + SQLTools.GetStringForSQL(scriptResult.getParentProcessId()) + "," +
-                "SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptResult.getScriptId()) + "," +
-                "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptResult.getScriptName()) + "," +
-                "SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptResult.getScriptVersion()) + "," +
-                "ENV_NM = " + SQLTools.GetStringForSQL(scriptResult.getEnvironment()) + "," +
-                "ST_NM = " + SQLTools.GetStringForSQL(scriptResult.getStatus().value()) + "," +
-                "STRT_TMS = " + SQLTools.GetStringForSQL(scriptResult.getStartTimestamp()) + "," +
-                "END_TMS = " + SQLTools.GetStringForSQL(scriptResult.getEndTimestamp()) +
+                "PARENT_PRC_ID = " + SQLTools.getStringForSQL(scriptResult.getParentProcessId()) + "," +
+                "SCRIPT_ID = " + SQLTools.getStringForSQL(scriptResult.getScriptId()) + "," +
+                "SCRIPT_NM = " + SQLTools.getStringForSQL(scriptResult.getScriptName()) + "," +
+                "SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptResult.getScriptVersion()) + "," +
+                "ENV_NM = " + SQLTools.getStringForSQL(scriptResult.getEnvironment()) + "," +
+                "ST_NM = " + SQLTools.getStringForSQL(scriptResult.getStatus().value()) + "," +
+                "STRT_TMS = " + SQLTools.getStringForSQL(scriptResult.getStartTimestamp()) + "," +
+                "END_TMS = " + SQLTools.getStringForSQL(scriptResult.getEndTimestamp()) +
                 " WHERE " +
-                "RUN_ID = " + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptResult.getMetadataKey().getProcessId()) + ";";
+                "RUN_ID = " + SQLTools.getStringForSQL(scriptResult.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(scriptResult.getMetadataKey().getProcessId()) + ";";
     }
 
     public Optional<ScriptResult> getMostRecentScriptResult(String environment, String scriptName, Long scriptVersion) {
@@ -158,9 +158,9 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
                     " where (SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, STRT_TMS) in (" +
                     " SELECT SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, MAX(STRT_TMS)" +
                     " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
-                    " where SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + "," +
-                    " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersion) + "," +
-                    " ENV_NM = " + SQLTools.GetStringForSQL(environment) +
+                    " where SCRIPT_NM = " + SQLTools.getStringForSQL(scriptName) + "," +
+                    " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersion) + "," +
+                    " ENV_NM = " + SQLTools.getStringForSQL(environment) +
                     " group by SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM)" + ");";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
@@ -216,9 +216,9 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
             String query = "SELECT COUNT(*) as total_executions from " +
                     MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults") +
                     " WHERE " +
-                    "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptName) + "," +
-                    "SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersion) + "," +
-                    "ENV_NM = " + SQLTools.GetStringForSQL(environment) + ";";
+                    "SCRIPT_NM = " + SQLTools.getStringForSQL(scriptName) + "," +
+                    "SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersion) + "," +
+                    "ENV_NM = " + SQLTools.getStringForSQL(environment) + ";";
             CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
             if (crs.next()) {
                 return Long.parseLong(crs.getString("total_executions"));
@@ -235,7 +235,7 @@ public class ScriptResultConfiguration extends Configuration<ScriptResult, Scrip
             List<ScriptResult> scriptResults = new ArrayList<>();
             String queryScript = "select RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, ST_NM, " +
                     "STRT_TMS, END_TMS from " + getMetadataRepository().getTableNameByLabel("ScriptResults")
-                    + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
+                    + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             while (cachedRowSet.next()) {
                 scriptResults.add(new ScriptResult(new ScriptResultKey(

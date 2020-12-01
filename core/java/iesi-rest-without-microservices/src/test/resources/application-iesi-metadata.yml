@@ -325,7 +325,6 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-
       - name: CTL_PRIVILEGES
         label: Privileges
         description: authority data
@@ -437,7 +436,6 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
-
       - name: CTL_ROLES
         label: Roles
         description: role data

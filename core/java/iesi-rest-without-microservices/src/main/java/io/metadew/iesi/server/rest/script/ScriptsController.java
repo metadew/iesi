@@ -115,6 +115,7 @@ public class ScriptsController {
     }
 
     @GetMapping("/{name}/{version}/download")
+    @PreAuthorize("hasPrivilege('SCRIPTS_READ')")
     public ResponseEntity<Resource> getFile(@PathVariable String name,
                                                 @PathVariable Long version) throws IOException {
 

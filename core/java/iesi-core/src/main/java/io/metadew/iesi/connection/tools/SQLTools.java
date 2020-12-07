@@ -129,7 +129,10 @@ public final class SQLTools {
         }
     }
 
-    public static String getStringForSQL(int input) {
+    public static String getStringForSQL(Integer input) {
+        if (input == null) {
+            return "null";
+        }
         return Integer.toString(input);
     }
 

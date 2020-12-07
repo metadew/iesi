@@ -53,7 +53,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private static final String IS_EMPTY_QUERY = "SELECT " +
             "count(*) as key_value_pairs " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "WHERE dataset_in_mem_impl_kvs={0};";
+            "WHERE dataset_in_mem_impl_kvs.ID={0};";
 
     private static String selectSingleQuery = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +

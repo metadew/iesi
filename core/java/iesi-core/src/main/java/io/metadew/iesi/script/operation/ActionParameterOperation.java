@@ -21,13 +21,13 @@ import java.text.MessageFormat;
 public class ActionParameterOperation {
 
     private final ActionTypeParameterConfiguration actionTypeParameterConfiguration;
-    private ExecutionControl executionControl;
+    private final ExecutionControl executionControl;
     private ActionExecution actionExecution;
-    private String name;
+    private final String name;
     private DataType value;
     private String inputValue = "";
 
-    private ActionTypeParameter actionTypeParameter;
+    private final ActionTypeParameter actionTypeParameter;
 
     // Constructors
     public ActionParameterOperation(ExecutionControl executionControl, ActionExecution actionExecution, String actionTypeName, String name) {

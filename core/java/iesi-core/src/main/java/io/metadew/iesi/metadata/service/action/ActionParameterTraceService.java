@@ -10,8 +10,6 @@ import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTrace
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.script.execution.ActionExecution;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,9 +20,17 @@ import java.util.Map;
 
 @Log4j2
 public class ActionParameterTraceService {
-    private static final Logger LOGGER = LogManager.getLogger();
 
-    public ActionParameterTraceService() {
+    private static ActionParameterTraceService instance;
+
+    public static ActionParameterTraceService getInstance() {
+        if (instance == null) {
+            instance = new ActionParameterTraceService();
+        }
+        return instance;
+    }
+
+    private ActionParameterTraceService() {
     }
 
     public void trace(ActionExecution actionExecution, Map<String, DataType> actionParameterMap) {
@@ -53,7 +59,7 @@ public class ActionParameterTraceService {
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
-            log.warn("unable to trace " + key + ":" + value.toString() + " due to " + stackTrace.toString());
+            log.warn("unable to trace " + key + ":" + value + " due to " + stackTrace.toString());
         }
     }
 
@@ -78,7 +84,7 @@ public class ActionParameterTraceService {
         } else if (value instanceof Template) {
             actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), value.toString()));
         } else {
-            LOGGER.warn(MessageFormat.format("DataType ''{0}'' is unknown to trace", value.getClass()));
+            log.warn(MessageFormat.format("DataType ''{0}'' is unknown to trace", value.getClass()));
         }
         return actionParameterTraces;
     }

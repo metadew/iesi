@@ -39,7 +39,6 @@ public class ExecutionControl {
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
     private final ActionDesignTraceService actionDesignTraceService;
     private ExecutionRuntime executionRuntime;
-    private ExecutionTrace executionTrace;
     private String runId;
     private String envName;
     private boolean actionErrorStop = false;
@@ -54,7 +53,6 @@ public class ExecutionControl {
             InvocationTargetException, InstantiationException, IllegalAccessException {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.actionDesignTraceService = new ActionDesignTraceService();
-        this.executionTrace = new ExecutionTrace();
         initializeRunId();
         initializeExecutionRuntime(runId);
         this.lastProcessId = -1L;
@@ -295,10 +293,6 @@ public class ExecutionControl {
 
     public ExecutionRuntime getExecutionRuntime() {
         return executionRuntime;
-    }
-
-    public ExecutionTrace getExecutionTrace() {
-        return executionTrace;
     }
 
     public Long getLastProcessId() {

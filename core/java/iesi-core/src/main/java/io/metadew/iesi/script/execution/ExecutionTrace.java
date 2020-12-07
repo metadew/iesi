@@ -15,22 +15,25 @@ import java.util.stream.Collectors;
  */
 public class ExecutionTrace {
 
-    private ActionTraceService actionTraceService;
-    private ScriptTraceService scriptTraceService;
+    private static ExecutionTrace instance;
 
-    // Constructors
-    public ExecutionTrace() {
-        this.actionTraceService = new ActionTraceService();
-        this.scriptTraceService = new ScriptTraceService();
+    public static ExecutionTrace getInstance() {
+        if (instance == null) {
+            instance = new ExecutionTrace();
+        }
+        return instance;
+    }
+
+    private ExecutionTrace() {
     }
 
     // Insert
     public void setExecution(ScriptExecution scriptExecution) {
-        scriptTraceService.trace(scriptExecution);
+        ScriptTraceService.getInstance().trace(scriptExecution);
     }
 
-    public void setExecution(ActionExecution actionExecution, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        actionTraceService.trace(actionExecution, actionParameterOperationMap.entrySet().stream()
+    public void setExecution(ActionExecution actionExecution, Map<String, ActionParameterOperation> actionParameterOperationMap) {
+        ActionTraceService.getInstance().trace(actionExecution, actionParameterOperationMap.entrySet().stream()
                 .filter(entry -> entry.getValue().getValue() != null)
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValue())));
     }

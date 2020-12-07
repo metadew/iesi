@@ -1,11 +1,12 @@
 package io.metadew.iesi.server.rest.script.dto.action;
 
+
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
 import lombok.*;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.HashSet;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(value = "action", collectionRelation = "actions")
-public class ActionDto extends RepresentationModel<ActionDto> {
+public class ActionDto extends NoEmptyLinksRepresentationModel<ActionDto> {
 
     private long number;
     private String name;

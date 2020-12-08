@@ -1,32 +1,36 @@
 package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
+import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This action prints a dataset for logging and debugging purposes
  */
+@Log4j2
 public class DataOutputDataset extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation datasetName;
     private ActionParameterOperation datasetLabels;
     private ActionParameterOperation onScreen;
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public DataOutputDataset(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -57,14 +61,53 @@ public class DataOutputDataset extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws InterruptedException, IOException {
-        Dataset dataset = DatasetHandler.getInstance().getByNameAndLabels(getDatasetName().getValue(), getDatasetLabels().getValue(), getExecutionControl().getExecutionRuntime());
+        InMemoryDatasetImplementation dataset = InMemoryDatasetImplementationService.getInstance().getDatasetImplementation(convertDatasetName(getDatasetName().getValue()), convertDatasetLabels(getDatasetLabels().getValue(), getExecutionControl().getExecutionRuntime()))
+                .orElseThrow(() -> new RuntimeException("Could not find dataset with " + convertDatasetName(getDatasetName().getValue()) + " " + convertDatasetLabels(getDatasetLabels().getValue(), getExecutionControl().getExecutionRuntime())));
         boolean onScreen = convertOnScreen(getOnScreen().getValue());
-        // TODO: loop over all dataset item and print them
-        DatasetHandler.getInstance().getDataItems(dataset, getExecutionControl().getExecutionRuntime())
-                .forEach((key, value) -> LOGGER.info(MessageFormat.format("{0}:{1}", key, value)));
+        InMemoryDatasetImplementationService.getInstance().getDataItems(dataset, getExecutionControl().getExecutionRuntime())
+                .forEach((key, value) -> log.info(MessageFormat.format("{0}:{1}", key, value)));
 
         getActionExecution().getActionControl().increaseSuccessCount();
         return true;
+    }
+
+
+    private List<String> convertDatasetLabels(DataType datasetLabels, ExecutionRuntime executionRuntime) {
+        List<String> labels = new ArrayList<>();
+        if (datasetLabels instanceof Text) {
+            Arrays.stream(datasetLabels.toString().split(","))
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeHandler.getInstance().resolve(datasetLabel.trim(), executionRuntime), executionRuntime)));
+            return labels;
+        } else if (datasetLabels instanceof Array) {
+            ((Array) datasetLabels).getList()
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(datasetLabel, executionRuntime)));
+            return labels;
+        } else {
+            log.warn(MessageFormat.format("dataset does not accept {0} as type for datasetDatabase labels",
+                    datasetLabels.getClass()));
+            return labels;
+        }
+    }
+
+
+    private String convertDatasetLabel(DataType datasetLabel, ExecutionRuntime executionRuntime) {
+        if (datasetLabel instanceof Text) {
+            return executionRuntime.resolveVariables(((Text) datasetLabel).getString());
+        } else {
+            log.warn(MessageFormat.format("dataset does not accept {0} as type for a datasetDatabase label",
+                    datasetLabel.getClass()));
+            return executionRuntime.resolveVariables(datasetLabel.toString());
+        }
+    }
+
+    private String convertDatasetName(DataType datasetName) {
+        if (datasetName instanceof Text) {
+            return ((Text) datasetName).getString();
+        } else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for datasetName",
+                    datasetName.getClass()));
+            return datasetName.toString();
+        }
     }
 
 
@@ -74,7 +117,7 @@ public class DataOutputDataset extends ActionTypeExecution {
         } else if (onScreen instanceof Text) {
             return onScreen.toString().equalsIgnoreCase("y");
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for onScreen",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for onScreen",
                     onScreen.getClass()));
             return false;
         }

@@ -3,6 +3,8 @@ package io.metadew.iesi.common.configuration.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
+import io.metadew.iesi.common.configuration.metadata.objects.MetadataObjectsConfiguration;
+import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.metadata.repository.*;
 import lombok.extern.log4j.Log4j2;
 
@@ -54,6 +56,13 @@ public class MetadataRepositoryConfiguration {
                 .orElseThrow(() -> new RuntimeException("DesignMetadataRepository not configured"));
     }
 
+    public DataMetadataRepository getDataMetadataRepository() {
+        return (DataMetadataRepository) metadataRepositories.stream()
+                .filter(metadataRepository -> metadataRepository.getClass().isAssignableFrom(DataMetadataRepository.class))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("DataMetadataRepository not configured"));
+    }
+
     public ControlMetadataRepository getControlMetadataRepository() {
         return (ControlMetadataRepository) metadataRepositories.stream()
                 .filter(metadataRepository -> metadataRepository.getClass().isAssignableFrom(ControlMetadataRepository.class))
@@ -69,6 +78,9 @@ public class MetadataRepositoryConfiguration {
     }
 
     private MetadataRepositoryConfiguration() {
+        // init the MetadataTables and MetadataObjects configuration before creating the metadata repositories
+        MetadataTablesConfiguration.getInstance();
+        MetadataObjectsConfiguration.getInstance();
         metadataRepositories = new ArrayList<>();
         metadataRepositoryDefinitions = new ArrayList<>();
         if (containsConfiguration()) {

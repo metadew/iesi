@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 
 public class DdlGenerateFromFile extends ActionTypeExecution {

@@ -149,6 +149,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         try {
             Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders = new LinkedHashMap<>();
             String query = getFetchAllQuery(pageable, isLatestVersionOnly, scriptFilters, expansions);
+            log.info(query);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, scriptDtoBuilders);

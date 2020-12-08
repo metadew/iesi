@@ -2,8 +2,8 @@ package io.metadew.iesi.connection.http.entity.plain;
 
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -31,19 +31,19 @@ public class TextPlainHttpResponseEntityService implements IHttpResponseEntitySe
     }
 
     @Override
-    public void writeToDataset(TextPlainHttpResponseEntityStrategy textPlainHttpResponseEntityStrategy, KeyValueDataset dataset,
+    public void writeToDataset(TextPlainHttpResponseEntityStrategy textPlainHttpResponseEntityStrategy, InMemoryDatasetImplementation dataset,
                                String key, ExecutionRuntime executionRuntime) throws IOException {
         writeToDataset(textPlainHttpResponseEntityStrategy.getHttpResponse(), dataset, key, executionRuntime);
     }
 
     @Override
-    public void writeToDataset(HttpResponse httpResponse, KeyValueDataset dataset, String key, ExecutionRuntime executionRuntime) {
+    public void writeToDataset(HttpResponse httpResponse, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) {
         httpResponse.getEntityContent().ifPresent(s -> {
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
-            DatasetHandler.getInstance().setDataItem(dataset, key, new Text(new String(s, charset)));
+            InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, new Text(new String(s, charset)));
         });
     }
 

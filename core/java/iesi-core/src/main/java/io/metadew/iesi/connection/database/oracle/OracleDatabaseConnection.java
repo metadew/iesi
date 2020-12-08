@@ -1,18 +1,9 @@
 package io.metadew.iesi.connection.database.oracle;
 
-import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Optional;
 
 
 @Data

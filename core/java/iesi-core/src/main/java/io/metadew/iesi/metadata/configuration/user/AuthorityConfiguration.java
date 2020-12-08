@@ -36,7 +36,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         try {
             String queryScript = "select ID, AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
-                    " WHERE ID=" + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                    " WHERE ID=" + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(mapAuthority(cachedRowSet));
@@ -52,7 +52,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         try {
             String queryScript = "select ID, AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
-                    " WHERE AUTHORITY=" + SQLTools.GetStringForSQL(authority) + ";";
+                    " WHERE AUTHORITY=" + SQLTools.getStringForSQL(authority) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(mapAuthority(cachedRowSet));
@@ -88,13 +88,13 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     public void delete(AuthorityKey metadataKey) {
         log.trace(MessageFormat.format("Deleting {0}.", metadataKey.toString()));
         String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
-                " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     public void delete(String auhtority) {
         String deleteStatement = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
-                " WHERE AUTHORITY = " + SQLTools.GetStringForSQL(auhtority) + ";";
+                " WHERE AUTHORITY = " + SQLTools.getStringForSQL(auhtority) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
@@ -103,8 +103,8 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
         String insertStatement = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
                 " (ID, AUTHORITY) VALUES (" +
-                SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getAuthority()) + ");";
+                SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
+                SQLTools.getStringForSQL(metadata.getAuthority()) + ");";
         getMetadataRepository().executeUpdate(insertStatement);
     }
 
@@ -112,8 +112,8 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
     public void update(Authority metadata) {
         log.trace(MessageFormat.format("Updating {0}.", metadata.toString()));
         String updateStatement = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
-                " SET AUTHORITY = " + SQLTools.GetStringForSQL(metadata.getAuthority()) +
-                " WHERE ID = " + SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ";";
+                " SET AUTHORITY = " + SQLTools.getStringForSQL(metadata.getAuthority()) +
+                " WHERE ID = " + SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(updateStatement);
     }
 
@@ -121,7 +121,7 @@ public class AuthorityConfiguration extends Configuration<Authority, AuthorityKe
         try {
             String queryScript = "select ID, AUTHORITY " +
                     "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Authorities").getName() +
-                    " WHERE AUTHORITY=" + SQLTools.GetStringForSQL(name) + ";";
+                    " WHERE AUTHORITY=" + SQLTools.getStringForSQL(name) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScript, "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(mapAuthority(cachedRowSet));

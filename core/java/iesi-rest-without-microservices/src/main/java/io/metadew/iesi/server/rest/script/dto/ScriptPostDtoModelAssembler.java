@@ -23,9 +23,6 @@ public class ScriptPostDtoModelAssembler extends RepresentationModelAssemblerSup
     @Override
     public ScriptPostDto toModel(Script script) {
         ScriptPostDto scriptPostDto = iScriptPostDtoService.convertToDto(script);
-        Link selfLink = linkTo(methodOn(ScriptController.class).get(script.getName(), script.getVersion().getNumber(), null))
-                .withRel("script:" + scriptPostDto.getName() + "-" + scriptPostDto.getVersion().getNumber());
-        scriptPostDto.add(selfLink);
 //        Link versionLink = linkTo(methodOn(ScriptController.class).executeScript(null, scriptPostDto.getName(), scriptPostDto.getVersion().getNumber()))
 //                .withRel("script");
 //        scriptPostDto.add(versionLink);

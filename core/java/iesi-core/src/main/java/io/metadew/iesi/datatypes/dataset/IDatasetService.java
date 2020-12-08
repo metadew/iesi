@@ -1,27 +1,28 @@
 package io.metadew.iesi.datatypes.dataset;
 
-import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.IDataTypeService;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
-import io.metadew.iesi.script.execution.ExecutionRuntime;
-
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-public interface IDatasetService<T extends Dataset> extends IDataTypeService<T> {
+public interface IDatasetService {
 
-    public void clean(T dataset, ExecutionRuntime executionRuntime);
+    boolean exists(DatasetKey datasetKey);
 
-    public Optional<DataType> getDataItem(T dataset, String dataItem, ExecutionRuntime executionRuntime);
+    boolean exists(String name);
 
-    public Map<String, DataType> getDataItems(T dataset, ExecutionRuntime executionRuntime);
+    boolean getIdByName(String name);
 
-    public void setDataItem(T dataset, String key, DataType value);
+    Optional<Dataset> get(DatasetKey datasetKey);
 
-    public KeyValueDataset getByNameAndLabels(String name, List<String> labels, ExecutionRuntime executionRuntime) throws IOException;
+    List<Dataset> getAll();
 
-    public void shutdown(T dataset);
+    Optional<Dataset> getByName(String name);
+
+    void create(Dataset dataset);
+
+    void delete(Dataset dataset);
+
+    void delete(DatasetKey datasetKey);
+
+    void update(Dataset dataset);
 
 }

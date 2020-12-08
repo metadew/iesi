@@ -1,6 +1,5 @@
 package io.metadew.iesi.connection.database.bigquery;
 
-import io.metadew.iesi.connection.database.bigquery.BigqueryDatabaseConnection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

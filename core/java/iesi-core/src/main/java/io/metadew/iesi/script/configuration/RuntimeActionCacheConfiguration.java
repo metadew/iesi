@@ -43,18 +43,18 @@ public class RuntimeActionCacheConfiguration {
         try {
             CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database,
                     "select run_id, prc_id, cache_typ_nm, cache_nm, cache_val from " + PRC_RUN_CACHE +
-                            " where run_id = " + SQLTools.GetStringForSQL(runId) +
-                            " and prc_id = " + SQLTools.GetStringForSQL(processId) +
-                            " and cache_typ_nm = " + SQLTools.GetStringForSQL(type) +
-                            " and cache_nm = " + SQLTools.GetStringForSQL(name) + ";");
+                            " where run_id = " + SQLTools.getStringForSQL(runId) +
+                            " and prc_id = " + SQLTools.getStringForSQL(processId) +
+                            " and cache_typ_nm = " + SQLTools.getStringForSQL(type) +
+                            " and cache_nm = " + SQLTools.getStringForSQL(name) + ";");
 
             // if so, the previous values will be deleted
             if (crs.size() > 0) {
                 DatabaseHandler.getInstance().executeUpdate(database, "delete from " + PRC_RUN_CACHE +
-                        " where run_id = " + SQLTools.GetStringForSQL(runId) +
-                        " and cache_typ_nm = " + SQLTools.GetStringForSQL(type) +
-                        " and prc_id = " + SQLTools.GetStringForSQL(processId) +
-                        " and cache_nm = " + SQLTools.GetStringForSQL(name) + ";");
+                        " where run_id = " + SQLTools.getStringForSQL(runId) +
+                        " and cache_typ_nm = " + SQLTools.getStringForSQL(type) +
+                        " and prc_id = " + SQLTools.getStringForSQL(processId) +
+                        " and cache_nm = " + SQLTools.getStringForSQL(name) + ";");
             }
             crs.close();
         } catch (SQLException e) {
@@ -63,20 +63,20 @@ public class RuntimeActionCacheConfiguration {
 
         // new values can be stored
         DatabaseHandler.getInstance().executeUpdate(database, "INSERT INTO " + PRC_RUN_CACHE + "(run_id, prc_id, cache_typ_nm, cache_nm, cache_val) VALUES (" +
-                SQLTools.GetStringForSQL(runId) + "," +
-                SQLTools.GetStringForSQL(processId) + "," +
-                SQLTools.GetStringForSQL(type) + "," +
-                SQLTools.GetStringForSQL(name) + "," +
-                SQLTools.GetStringForSQL(value) + ");");
+                SQLTools.getStringForSQL(runId) + "," +
+                SQLTools.getStringForSQL(processId) + "," +
+                SQLTools.getStringForSQL(type) + "," +
+                SQLTools.getStringForSQL(name) + "," +
+                SQLTools.getStringForSQL(value) + ");");
 
     }
 
     public String getRuntimeCacheValue(String runId, Long processId, String type, String name) {
         String query = "select CACHE_VAL from " + PRC_RUN_CACHE
-                + " where run_id = " + SQLTools.GetStringForSQL(runId)
-                + " and prc_id = " + SQLTools.GetStringForSQL(processId)
-                + " and cache_typ_nm = " + SQLTools.GetStringForSQL(type)
-                + " and cache_nm = " + SQLTools.GetStringForSQL(name) + ";";
+                + " where run_id = " + SQLTools.getStringForSQL(runId)
+                + " and prc_id = " + SQLTools.getStringForSQL(processId)
+                + " and cache_typ_nm = " + SQLTools.getStringForSQL(type)
+                + " and cache_nm = " + SQLTools.getStringForSQL(name) + ";";
         CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
         String value = "";
         try {

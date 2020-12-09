@@ -54,7 +54,7 @@ public class DatasetController {
 
     @SuppressWarnings("unchecked")
     @GetMapping("")
-    @PreAuthorize("hasPrivilege('ROLES_READ')")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public PagedModel<DatasetDto> getAll(Pageable pageable) {
         List<Dataset> datasets = datasetService.getAll();
         int minimum = pageable.getPageNumber() * pageable.getPageSize();

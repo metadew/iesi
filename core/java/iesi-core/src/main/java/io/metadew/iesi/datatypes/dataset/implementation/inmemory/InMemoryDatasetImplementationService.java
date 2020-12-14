@@ -68,10 +68,10 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public void clean(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
-        datasetImplementation.setKeyValues(new HashSet<>());
         InMemoryDatasetImplementationService.getInstance().getDataItems(datasetImplementation, executionRuntime)
                 .forEach((s, dataType) -> deleteDataType(dataType, executionRuntime));
-        DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
+	datasetImplementation.setKeyValues(new HashSet<>());
+	DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
     }
 
     @Override

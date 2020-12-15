@@ -61,4 +61,17 @@ class TextSubstringTest {
         assertEquals("ststring", textSubstring.generateOutput("teststring, -8"));
     }
 
+    @Test
+    void substringTextWithNewlines() {
+        TextSubstring textSubstring = new TextSubstring();
+        assertEquals("second line", textSubstring.generateOutput("first line\n" +
+                "second line\n" +
+                "third line\n" +
+                "fourth line\n" +
+                "fifth line\n" +
+                "sixth line\n" +
+                "seventh line\n" +
+                "eighth line\n, 11, 21"));
+
+    }
 }

@@ -13,10 +13,10 @@ public class TextSubstring implements DataInstruction {
     private final static String SECOND_OPERATOR = "start";
     private final static String THIRD_OPERATOR = "end";
     private final static Pattern THREE_ARGUMENTS_PATTERN = Pattern.compile("(?<" + FIRST_OPERATOR + ">.+)," +
-            "\\s*(?<" + SECOND_OPERATOR + ">-?\\d+)\\s*,\\s*(?<" + THIRD_OPERATOR + ">-?\\d+)\\s*");
+            "\\s*(?<" + SECOND_OPERATOR + ">-?\\d+)\\s*,\\s*(?<" + THIRD_OPERATOR + ">-?\\d+)\\s*", Pattern.MULTILINE | Pattern.DOTALL);
 
     private final static Pattern TWO_ARGUMENTS_PATTERN = Pattern.compile("(?<" + FIRST_OPERATOR + ">.+)," +
-            "\\s*(?<" + SECOND_OPERATOR + ">-?\\d+)\\s*");
+            "\\s*(?<" + SECOND_OPERATOR + ">-?\\d+)\\s*", Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override
     public String generateOutput(String parameters) {
@@ -27,7 +27,6 @@ public class TextSubstring implements DataInstruction {
             String text = inputParameterMatcher.group(FIRST_OPERATOR);
             int start = Integer.parseInt(inputParameterMatcher.group(SECOND_OPERATOR))-1;
             int end = Integer.parseInt(inputParameterMatcher.group(THIRD_OPERATOR));
-
             //if the user put a negative value, add length() and +1=> in order to take the 0 into account
             if (start < 0)
                 start += text.length()+1;
@@ -36,7 +35,7 @@ public class TextSubstring implements DataInstruction {
                 end += text.length()+1 ;
 
             verifyArguments(text, start, end);
-            return text.substring(start, end);
+            return text.replaceAll("\n","").substring(start, end);
 
         } else if (inputParameterMatcherTwoArguments.find()){
 
@@ -48,7 +47,7 @@ public class TextSubstring implements DataInstruction {
                 start += text.length()+1;
 
             verifyArguments(text, start);
-            return text.substring(start);
+            return text.replaceAll("\n","").substring(start);
 
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
@@ -72,6 +71,7 @@ public class TextSubstring implements DataInstruction {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". start {0} cannot be smaller or equal than 0", start));
         }
     }
+
 
     @Override
     public String getKeyword() {

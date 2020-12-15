@@ -35,7 +35,7 @@ public class TextSubstring implements DataInstruction {
                 end += text.length()+1 ;
 
             verifyArguments(text, start, end);
-            return text.replaceAll("\n","").substring(start, end);
+            return text.replaceAll("\r\n|\r|\n","").substring(start, end);
 
         } else if (inputParameterMatcherTwoArguments.find()){
 
@@ -47,7 +47,7 @@ public class TextSubstring implements DataInstruction {
                 start += text.length()+1;
 
             verifyArguments(text, start);
-            return text.replaceAll("\n","").substring(start);
+            return text.replaceAll("\r\n|\r|\n","").substring(start);
 
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));

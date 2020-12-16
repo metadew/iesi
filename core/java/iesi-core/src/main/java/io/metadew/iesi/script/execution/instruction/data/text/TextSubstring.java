@@ -3,6 +3,7 @@ package io.metadew.iesi.script.execution.instruction.data.text;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,8 +35,17 @@ public class TextSubstring implements DataInstruction {
             if (end < 0)
                 end += text.length()+1 ;
 
+            //This line must be after checking negative values
+            int countLines = text.substring(0,end).length() - text.substring(0,end).replaceAll("\n","").length();
+
+            if(countLines!=0){
+                start+= countLines;
+                end+= countLines;
+
+            }
+
             verifyArguments(text, start, end);
-            return text.replaceAll("\r\n|\r|\n","").substring(start, end);
+            return text.substring(start, end);
 
         } else if (inputParameterMatcherTwoArguments.find()){
 
@@ -46,8 +56,16 @@ public class TextSubstring implements DataInstruction {
             if (start < 0)
                 start += text.length()+1;
 
+
+            //This line must be after checking negative values
+            int countLines = countNumberOfLines(text,start,inputParameterMatcherTwoArguments.groupCount());
+
+            if(countLines!=0){
+                start+= countLines;
+            }
+
             verifyArguments(text, start);
-            return text.replaceAll("\r\n|\r|\n","").substring(start);
+            return text.substring(start);
 
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
@@ -70,6 +88,13 @@ public class TextSubstring implements DataInstruction {
         if (start < 0) {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ". start {0} cannot be smaller or equal than 0", start));
         }
+    }
+
+    private int countNumberOfLines(String str, int index, int numberOfArguments){
+        if (numberOfArguments==2){
+            return str.substring(index).length() - str.substring(index).replaceAll("\n","").length();
+        }
+        return str.substring(0,index).length() - str.substring(0,index).replaceAll("\n","").length();
     }
 
 

@@ -74,4 +74,46 @@ class TextSubstringTest {
                 "eighth line\n, 11, 21"));
 
     }
+
+    @Test
+    void substringTextWithNewlinesMinValue() {
+        TextSubstring textSubstring = new TextSubstring();
+        assertEquals("first line", textSubstring.generateOutput("first line\n" +
+                "second line\n" +
+                "third line\n" +
+                "fourth line\n" +
+                "fifth line\n" +
+                "sixth line\n" +
+                "seventh line\n" +
+                "eighth line\n, 1, 10"));
+
+    }
+
+    @Test
+    void substringTextWithNewlinesLastValue() {
+        TextSubstring textSubstring = new TextSubstring();
+        assertEquals("eighth line", textSubstring.generateOutput("first line\n" +
+                "second line\n" +
+                "third line\n" +
+                "fourth line\n" +
+                "fifth line\n" +
+                "sixth line\n" +
+                "seventh line\n" +
+                "eighth line\n, 75, 85"));
+
+    }
+
+    @Test
+    void substringTextWithNewlinesTwoArguments() {
+        TextSubstring textSubstring = new TextSubstring();
+        assertEquals("eighth line\n", textSubstring.generateOutput("first line\n" +
+                "second line\n" +
+                "third line\n" +
+                "fourth line\n" +
+                "fifth line\n" +
+                "sixth line\n" +
+                "seventh line\n" +
+                "eighth line\n, 80"));
+
+    }
 }

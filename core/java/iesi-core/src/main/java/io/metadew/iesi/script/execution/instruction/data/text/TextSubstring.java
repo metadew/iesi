@@ -3,7 +3,6 @@ package io.metadew.iesi.script.execution.instruction.data.text;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,11 +35,11 @@ public class TextSubstring implements DataInstruction {
                 end += text.length()+1 ;
 
             //This line must be after checking negative values
-            int countLines = countNumberOfLines(text,end,inputParameterMatcher.groupCount());
+            int countedLines = countNumberOfLines(text,end,inputParameterMatcher.groupCount());
 
-            if(countLines!=0){
-                start+= countLines;
-                end+= countLines;
+            if(countedLines!=0){
+                start+= countedLines;
+                end+= countedLines;
 
             }
 
@@ -58,10 +57,10 @@ public class TextSubstring implements DataInstruction {
 
 
             //This line must be after checking negative values
-            int countLines = countNumberOfLines(text,start,inputParameterMatcherTwoArguments.groupCount());
+            int countedLines = countNumberOfLines(text,start,inputParameterMatcherTwoArguments.groupCount());
 
-            if(countLines!=0){
-                start+= countLines;
+            if(countedLines!=0){
+                start+= countedLines;
             }
 
             verifyArguments(text, start);

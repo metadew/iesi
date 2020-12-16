@@ -36,7 +36,7 @@ public class TextSubstring implements DataInstruction {
                 end += text.length()+1 ;
 
             //This line must be after checking negative values
-            int countLines = text.substring(0,end).length() - text.substring(0,end).replaceAll("\n","").length();
+            int countLines = countNumberOfLines(text,end,inputParameterMatcher.groupCount());
 
             if(countLines!=0){
                 start+= countLines;

@@ -42,7 +42,7 @@ public class TextSubstring implements DataInstruction {
             }
             int counterNewLinesInside = countNumberOfLinesInside(text,start,end);
 
-            verifyArguments(text, start, end);
+            verifyArguments(text, start-counterNewLinesInside, end);
             return text.substring(start-counterNewLinesInside, end);
 
         } else if (inputParameterMatcherTwoArguments.find()){

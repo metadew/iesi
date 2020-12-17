@@ -72,7 +72,6 @@ class TextSubstringTest {
                 "sixth line\n" +
                 "seventh line\n" +
                 "eighth line\n, 11, 21"));
-
     }
 
     @Test
@@ -80,15 +79,14 @@ class TextSubstringTest {
         TextSubstring textSubstring = new TextSubstring();
         assertEquals(
                 "first line\n" +
-                "second line\n" + "third line", textSubstring.generateOutput("first line\n" +
-                "second line\n" +
-                "third line\n" +
-                "fourth line\n" +
-                "fifth line\n" +
-                "sixth line\n" +
-                "seventh line\n" +
-                "eighth line\n, 1, 31"));
-
+                        "second line\n" + "third line", textSubstring.generateOutput("first line\n" +
+                        "second line\n" +
+                        "third line\n" +
+                        "fourth line\n" +
+                        "fifth line\n" +
+                        "sixth line\n" +
+                        "seventh line\n" +
+                        "eighth line\n, 1, 31"));
     }
 
     @Test
@@ -102,7 +100,6 @@ class TextSubstringTest {
                 "sixth line\n" +
                 "seventh line\n" +
                 "eighth line\n, 1, 10"));
-
     }
 
     @Test
@@ -116,7 +113,6 @@ class TextSubstringTest {
                 "sixth line\n" +
                 "seventh line\n" +
                 "eighth line\n, 75, 85"));
-
     }
 
     @Test
@@ -130,6 +126,5 @@ class TextSubstringTest {
                 "sixth line\n" +
                 "seventh line\n" +
                 "eighth line\n, 80"));
-
     }
 }

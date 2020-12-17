@@ -8,8 +8,6 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.stream.Collectors;
-
 @Log4j2
 // https://www.baeldung.com/spring-security-create-new-custom-security-expression
 public class IesiMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {

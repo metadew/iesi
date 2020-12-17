@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
+import lombok.extern.log4j.Log4j2;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
@@ -7,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 
+@Log4j2
 // https://www.baeldung.com/spring-security-create-new-custom-security-expression
 public class IesiMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
     private final boolean securityEnabled;

@@ -60,8 +60,8 @@ public class ComponentsController {
     @GetMapping("/{name}/{version}")
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public ComponentDto get(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
-        Component component = componentService.getByNameAndVersion(name, version).
-                orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
+        Component component = componentService.getByNameAndVersion(name, version)
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
         return componentDtoResourceAssembler.toModel(component);
     }
 

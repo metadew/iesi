@@ -24,11 +24,17 @@ public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSuppor
         return convertToDto(dataset);
     }
 
+    public DatasetDto toModel(DatasetDto dataset) {
+        return dataset;
+    }
+
     private DatasetDto convertToDto(Dataset dataset) {
         return new DatasetDto(
                 dataset.getMetadataKey().getUuid(),
                 dataset.getName(),
-                dataset.getDatasetImplementations().stream().map(datasetImplementationDtoModelAssembler::convertToDto).collect(Collectors.toList()));
+                dataset.getDatasetImplementations().stream()
+                        .map(datasetImplementationDtoModelAssembler::convertToDto)
+                        .collect(Collectors.toSet()));
     }
 
 }

@@ -50,7 +50,6 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
     }
 
     public ScriptDto toModel(ScriptDto scriptDto) {
-
         return scriptDto;
     }
 

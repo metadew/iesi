@@ -8,12 +8,11 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
 import io.metadew.iesi.server.rest.dataset.dto.DatasetDtoModelAssembler;
 import io.metadew.iesi.server.rest.dataset.dto.DatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetImplementationDtoModelAssembler;
+import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
@@ -21,12 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static java.lang.Math.min;
 
 @Log4j2
 @RestController
@@ -37,42 +32,29 @@ public class DatasetController {
 
     private final DatasetDtoModelAssembler datasetDtoModelAssembler;
     private final IDatasetService datasetService;
-    private final DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler;
     private final IDatasetImplementationService datasetImplementationService;
-    private final PagedResourcesAssembler<Dataset> datasetPagedResourcesAssembler;
+    private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
+    private final IDatasetDtoService datasetDtoService;
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler, IDatasetService datasetService,
-                             DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler, IDatasetImplementationService datasetImplementationService,
-                             PagedResourcesAssembler<Dataset> datasetPagedResourcesAssembler) {
+                             IDatasetImplementationService datasetImplementationService,
+                             PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler, IDatasetDtoService datasetDtoService) {
         this.datasetDtoModelAssembler = datasetDtoModelAssembler;
         this.datasetService = datasetService;
-        this.datasetImplementationDtoModelAssembler = datasetImplementationDtoModelAssembler;
         this.datasetImplementationService = datasetImplementationService;
-        this.datasetPagedResourcesAssembler = datasetPagedResourcesAssembler;
+        this.datasetDtoPagedResourcesAssembler = datasetPagedResourcesAssembler;
+        this.datasetDtoService = datasetDtoService;
     }
 
     @SuppressWarnings("unchecked")
     @GetMapping("")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public PagedModel<DatasetDto> getAll(Pageable pageable) {
-        List<Dataset> datasets = datasetService.getAll();
-        int minimum = pageable.getPageNumber() * pageable.getPageSize();
-        int maximum = (pageable.getPageNumber() + 1) * pageable.getPageSize();
-        Page<Dataset> datasetPage;
-        if (minimum > datasets.size()) {
-            datasetPage = new PageImpl<>(new ArrayList<>(),
-                    pageable,
-                    datasets.size());
-        } else {
-            datasetPage = new PageImpl<>(
-                    datasets.subList(minimum, min(maximum, datasets.size())),
-                    pageable,
-                    datasets.size());
-        }
-        if (datasetPage.hasContent())
-            return datasetPagedResourcesAssembler.toModel(datasetPage, datasetDtoModelAssembler);
-        return (PagedModel<DatasetDto>) datasetPagedResourcesAssembler.toEmptyModel(datasetPage, DatasetDto.class);
+        Page<DatasetDto> datasetDtoPage = datasetDtoService.fetchAll(pageable);
+        if (datasetDtoPage.hasContent())
+            return datasetDtoPagedResourcesAssembler.toModel(datasetDtoPage, datasetDtoModelAssembler::toModel);
+        return (PagedModel<DatasetDto>) datasetDtoPagedResourcesAssembler.toEmptyModel(datasetDtoPage, DatasetDto.class);
     }
 
     @PostMapping("")

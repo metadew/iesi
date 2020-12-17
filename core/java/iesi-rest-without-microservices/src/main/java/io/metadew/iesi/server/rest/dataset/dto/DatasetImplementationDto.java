@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -19,7 +19,7 @@ import java.util.UUID;
 public abstract class DatasetImplementationDto extends RepresentationModel<DatasetImplementationDto> {
 
     private UUID uuid;
-    private List<DatasetImplementationLabelDto> labels;
+    private Set<DatasetImplementationLabelDto> labels;
 
     public abstract DatasetImplementation convertToEntity(UUID datasetUuid, String datasetName);
 

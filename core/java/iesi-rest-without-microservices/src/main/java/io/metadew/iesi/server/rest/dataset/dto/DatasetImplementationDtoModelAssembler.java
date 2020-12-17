@@ -28,8 +28,10 @@ public class DatasetImplementationDtoModelAssembler extends RepresentationModelA
         if (datasetImplementation instanceof InMemoryDatasetImplementation) {
             return new InMemoryDatasetImplementationDto(
                     datasetImplementation.getMetadataKey().getUuid(),
-                    datasetImplementation.getDatasetImplementationLabels().stream().map(this::convertToDto).collect(Collectors.toList()),
-                    ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues().stream().map(this::convertToDto).collect(Collectors.toList())
+                    datasetImplementation.getDatasetImplementationLabels().stream()
+                            .map(this::convertToDto).collect(Collectors.toSet()),
+                    ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues().stream()
+                            .map(this::convertToDto).collect(Collectors.toSet())
             );
         } else {
             throw new RuntimeException();

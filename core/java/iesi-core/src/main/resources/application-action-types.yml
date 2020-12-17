@@ -955,13 +955,6 @@ iesi:
         className: io.metadew.iesi.script.action.http.HttpExecuteRequest
         description: Execute a http request
         parameters:
-          type:
-            description: Type of request
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
           request:
             description: Name of the request to use
             type: string

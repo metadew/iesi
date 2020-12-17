@@ -923,8 +923,6 @@ class ExecutionRequestRepositoryDtoTest {
 
                 ).collect(Collectors.toSet()))
                 .build();
-        System.out.println(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "REQUEST_TIMESTAMP")), new ArrayList<>()).getContent());
-        System.out.println(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "REQUEST_TIMESTAMP")), new ArrayList<>()).getContent());
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "REQUEST_TIMESTAMP")), new ArrayList<>())).containsExactly(executionRequestDto2, executionRequestDto);
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "REQUEST_TIMESTAMP")), new ArrayList<>())).containsExactly(executionRequestDto, executionRequestDto2);
     }

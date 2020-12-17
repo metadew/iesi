@@ -76,6 +76,22 @@ class TextSubstringTest {
     }
 
     @Test
+    void substringTextWithNewlinesCross() {
+        TextSubstring textSubstring = new TextSubstring();
+        assertEquals(
+                "first line\n" +
+                "second line\n" + "third line", textSubstring.generateOutput("first line\n" +
+                "second line\n" +
+                "third line\n" +
+                "fourth line\n" +
+                "fifth line\n" +
+                "sixth line\n" +
+                "seventh line\n" +
+                "eighth line\n, 1, 31"));
+
+    }
+
+    @Test
     void substringTextWithNewlinesMinValue() {
         TextSubstring textSubstring = new TextSubstring();
         assertEquals("first line", textSubstring.generateOutput("first line\n" +

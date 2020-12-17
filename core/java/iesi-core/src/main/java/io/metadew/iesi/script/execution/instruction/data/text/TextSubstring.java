@@ -34,17 +34,16 @@ public class TextSubstring implements DataInstruction {
             if (end < 0)
                 end += text.length()+1 ;
 
-            //This line must be after checking negative values
-            int countedLines = countNumberOfLines(text,end,inputParameterMatcher.groupCount());
-
-            if(countedLines!=0){
-                start+= countedLines;
-                end+= countedLines;
-
+            //Those lines must be after checking negative values
+            int counterNewLinesBefore = countNumberOfLines(text,end,inputParameterMatcher.groupCount());
+            if(counterNewLinesBefore!=0){
+                start+= counterNewLinesBefore;
+                end+= counterNewLinesBefore;
             }
+            int counterNewLinesInside = countNumberOfLinesInside(text,start,end);
 
             verifyArguments(text, start, end);
-            return text.substring(start, end);
+            return text.substring(start-counterNewLinesInside, end);
 
         } else if (inputParameterMatcherTwoArguments.find()){
 
@@ -91,9 +90,13 @@ public class TextSubstring implements DataInstruction {
 
     private int countNumberOfLines(String str, int index, int numberOfArguments){
         if (numberOfArguments==2){
-            return str.substring(index).length() - str.substring(index).replaceAll("\n","").length();
+            return str.substring(index).length() - str.substring(index).replace("\n","").length();
         }
-        return str.substring(0,index).length() - str.substring(0,index).replaceAll("\n","").length();
+        return str.substring(0,index).length() - str.substring(0,index).replace("\n","").length();
+    }
+
+    private int countNumberOfLinesInside(String str, int start, int end){
+        return str.substring(start,end).length() - str.substring(start,end).replace("\n","").length();
     }
 
 

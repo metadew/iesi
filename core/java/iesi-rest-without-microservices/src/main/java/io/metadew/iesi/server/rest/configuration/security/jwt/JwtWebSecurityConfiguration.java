@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.configuration.security.jwt;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -29,6 +30,8 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private IesiUserDetailsManager iesiUserDetailsManager;
     private PasswordEncoder passwordEncoder;
     private JWTAuthenticationFilter jwtAuthenticationFilter;
+    @Value("${iesi.security.enabled:false}")
+    private boolean enableSecurity;
 
     @Autowired
     public void setJwtAuthenticationFilter(JWTAuthenticationFilter jwtAuthenticationFilter) {
@@ -65,18 +68,28 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        log.info("IESI REST endpoint security enabled");
-        http
-                .cors().and()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .mvcMatchers("/actuator/health").permitAll()
-                .mvcMatchers("/users/login").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
+        if (enableSecurity) {
+            log.info("IESI REST endpoint security enabled");
+            http
+                    .cors().and()
+                    .csrf().disable()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .authorizeRequests()
+                    .mvcMatchers("/actuator/health").permitAll()
+                    .mvcMatchers("/users/login").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
+                    .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
+        } else {
+            log.info("IESI REST endpoint security disabled");
+            http
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .cors().and()
+                    .csrf().disable()
+                    .authorizeRequests().anyRequest().permitAll();
+        }
     }
 
     @Bean

@@ -314,7 +314,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                                     getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                             .findFirst()
                                             .orElseThrow(RuntimeException::new)
-                                    ))));
+                            ))));
         } else {
             throw new RuntimeException("Cannot insert dataset implementation of type " + metadata.getClass().getSimpleName());
         }
@@ -339,12 +339,13 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private void mapInMemoryDatasetImplementation(CachedRowSet cachedRowSet, InMemoryDatasetImplementationBuilder inMemoryDatasetImplementationBuilder) throws SQLException {
         String inMemoryKeyValueId = cachedRowSet.getString("dataset_in_mem_impl_kv_id");
         if (inMemoryKeyValueId != null && inMemoryDatasetImplementationBuilder.getKeyValues().get(inMemoryKeyValueId) == null) {
+            String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
             inMemoryDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
                     new InMemoryDatasetImplementationKeyValue(
                             new InMemoryDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                             new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
                             cachedRowSet.getString("dataset_in_mem_impl_kvs_key"),
-                            SQLTools.getStringFromSQLClob(cachedRowSet.getClob("dataset_in_mem_impl_kvs_value")))
+                            clobValue)
             );
         }
     }

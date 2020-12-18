@@ -111,6 +111,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
 
         if (authentication != null) {
             securityGroups.addAll(authentication.getAuthorities().stream()
+                    .filter(authority -> authority instanceof IESIGrantedAuthority)
                     .map(authority -> (IESIGrantedAuthority) authority)
                     .map(IESIGrantedAuthority::getSecurityGroupName)
                     .map(authority -> "'" + authority + "'")

@@ -6,14 +6,13 @@ iesi:
       # each category should define its own type and definition
       - categories:
           - general
-        instance: '03'
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
 
-#          type: sqlite
-#          file: 
+          type: sqlite
+          file: /home/robbe/IESISandbox/0.6.0/dataset_pagination/repository.db3
 
 #          type: h2
 #          mode: memory
@@ -23,12 +22,12 @@ iesi:
 #            password: test
 
 
-          type: oracle
-          schema: GETA
-          connection: jdbc://test
-          owner:
-            user: owner
-            password: owner
+#          type: oracle
+#          schema:
+#          connection: jdbc://test
+#          owner:
+#            user: owner
+#            password: owner
 #          reader:
 #            user:
 #            password:

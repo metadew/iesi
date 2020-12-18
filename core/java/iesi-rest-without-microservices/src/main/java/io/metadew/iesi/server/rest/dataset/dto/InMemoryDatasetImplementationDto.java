@@ -3,24 +3,23 @@ package io.metadew.iesi.server.rest.dataset.dto;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class InMemoryDatasetImplementationDto extends DatasetImplementationDto {
 
-    private List<InMemoryDatasetImplementationKeyValueDto> keyValues;
+    private Set<InMemoryDatasetImplementationKeyValueDto> keyValues;
 
-    public InMemoryDatasetImplementationDto(UUID uuid, List<DatasetImplementationLabelDto> labels, List<InMemoryDatasetImplementationKeyValueDto> keyValues) {
+    @Builder
+    public InMemoryDatasetImplementationDto(UUID uuid, Set<DatasetImplementationLabelDto> labels, Set<InMemoryDatasetImplementationKeyValueDto> keyValues) {
         super(uuid, labels);
         this.keyValues = keyValues;
     }

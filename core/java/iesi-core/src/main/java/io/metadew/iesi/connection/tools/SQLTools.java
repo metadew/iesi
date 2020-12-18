@@ -1,8 +1,10 @@
 package io.metadew.iesi.connection.tools;
 
 import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandler;
 
+import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.serial.SerialClob;
 import java.io.*;
 import java.sql.*;
@@ -15,7 +17,8 @@ import java.util.stream.Collectors;
 
 public final class SQLTools {
 
-    private SQLTools() {}
+    private SQLTools() {
+    }
 
     public static final DateTimeFormatter defaultDateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -41,7 +44,7 @@ public final class SQLTools {
             }
             BufferedReader br = new BufferedReader(reader);
             String line;
-            while(null != (line = br.readLine())) {
+            while (null != (line = br.readLine())) {
                 sb.append(line);
             }
             br.close();
@@ -53,12 +56,18 @@ public final class SQLTools {
 
     public static String getStringForSQLClob(String clobString, Database database) {
         try {
-            Connection connection = database.getConnectionPool().getConnection();
-            Clob clob = connection.createClob();
+            Connection connection = DatabaseHandler.getInstance().getConnection(database);
+            String rawClobString;
+            try {
+                Clob clob = connection.createClob();
+                clob.setString(1, clobString);
+                rawClobString = getStringFromSQLClob(clob);
+            } catch (SQLException e) {
+                rawClobString = clobString;
+            }
             connection.close();
-            clob.setString(1, clobString);
             return DatabaseConnectionHandler.getInstance()
-                    .generateClobInsertValue(database.getDatabaseConnection(), getCleanString(getStringFromSQLClob(clob)));
+                    .generateClobInsertValue(database.getDatabaseConnection(), getCleanString(rawClobString));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -141,6 +150,7 @@ public final class SQLTools {
     }
 
     private static String getCleanString(String input) {
+        if (input == null) return null;
         return input.replace("'", "''");
     }
 
@@ -318,5 +328,21 @@ public final class SQLTools {
                 return "";
             }
         }));
+    }
+
+
+    public static String getStringFromSQLClob(CachedRowSet cachedRowSet, String clobColumnName) {
+        try {
+            // try to convert to Clob
+            Clob clob = cachedRowSet.getClob(clobColumnName);
+            return SQLTools.getStringFromSQLClob(clob);
+        } catch (SQLException e1) {
+            // If database does not allow clob: java.sql.SQLException: Data Type Mismatch then retry with string value
+            try {
+                return cachedRowSet.getString(clobColumnName);
+            } catch (SQLException e2) {
+                throw new RuntimeException(e1);
+            }
+        }
     }
 }

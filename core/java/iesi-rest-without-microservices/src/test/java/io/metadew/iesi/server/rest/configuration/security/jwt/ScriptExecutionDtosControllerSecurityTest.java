@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @ActiveProfiles({"http", "test", "security"})
-class ScriptScriptExecutionsControllerSecurityTest {
+class ScriptExecutionDtosControllerSecurityTest {
 
     @Autowired
     private ObjectMapper jacksonObjectMapper;

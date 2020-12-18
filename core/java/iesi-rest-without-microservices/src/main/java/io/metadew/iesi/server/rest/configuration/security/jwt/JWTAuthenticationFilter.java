@@ -21,6 +21,7 @@ import java.io.IOException;
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTAuthenticationConverter jwtAuthenticationConverter;
+
     @Value("${iesi.security.enabled:false}")
     private boolean enableSecurity;
 

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
@@ -49,7 +50,7 @@ public class EnvironmentsController {
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
     public HalMultipleEmbeddedResource<EnvironmentDto> getAll() {
         List<Environment> environments = environmentService.getAll();
-        return new HalMultipleEmbeddedResource<EnvironmentDto>(
+        return new HalMultipleEmbeddedResource<>(
                 environments.stream().filter(distinctByKey(Environment::getName))
                         .map(environment -> environmentDtoResourceAssembler.toModel(environment))
                         .collect(Collectors.toList()));

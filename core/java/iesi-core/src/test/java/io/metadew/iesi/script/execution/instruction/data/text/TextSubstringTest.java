@@ -54,7 +54,6 @@ class TextSubstringTest {
         assertEquals("teststring", textSubstring.generateOutput("teststring, 1"));
     }
 
-
     @Test
     void substringTwoArgumentsNegativeArguments() {
         TextSubstring textSubstring = new TextSubstring();

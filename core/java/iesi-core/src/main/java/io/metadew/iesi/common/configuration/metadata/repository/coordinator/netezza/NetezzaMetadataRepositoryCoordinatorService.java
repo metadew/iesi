@@ -1,11 +1,11 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.netezza;
 
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.netezza.NetezzaDatabase;
 import io.metadew.iesi.connection.database.netezza.NetezzaDatabaseConnection;
-import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.util.HashMap;

@@ -165,7 +165,9 @@ public class Configuration {
             String resource;
 
             while ((resource = br.readLine()) != null) {
+                log.trace("found " + resource + " in classpath");
                 if (isIESIApplicationConfigurationFile(resource)) {
+                    log.debug("parsing " + resource + " for configuration");
                     filenames.add(resource);
                 }
             }

@@ -16,6 +16,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
+@Builder
 public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> {
 
     private String runId;

@@ -24,8 +24,7 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,9 +62,19 @@ class ExecutionRequestRepositoryDtoTest {
     @Autowired
     private ScriptExecutionConfiguration scriptExecutionConfiguration;
 
-    @BeforeEach
-    void setup() {
+    @BeforeAll
+    static void initialize() {
+        //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void cleanup() {
         metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
     }
 
     @Test
@@ -914,8 +923,6 @@ class ExecutionRequestRepositoryDtoTest {
 
                 ).collect(Collectors.toSet()))
                 .build();
-        System.out.println(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "REQUEST_TIMESTAMP")), new ArrayList<>()).getContent());
-        System.out.println(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "REQUEST_TIMESTAMP")), new ArrayList<>()).getContent());
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "REQUEST_TIMESTAMP")), new ArrayList<>())).containsExactly(executionRequestDto2, executionRequestDto);
         assertThat(executionRequestDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "REQUEST_TIMESTAMP")), new ArrayList<>())).containsExactly(executionRequestDto, executionRequestDto2);
     }

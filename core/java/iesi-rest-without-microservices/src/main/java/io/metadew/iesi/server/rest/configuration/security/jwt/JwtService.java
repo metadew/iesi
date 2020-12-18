@@ -4,13 +4,13 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import io.metadew.iesi.server.rest.user.AuthenticationResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -41,8 +41,8 @@ public class JwtService {
 
     public UsernamePasswordAuthenticationToken generateUsernamePasswordAuthenticationToken(String token) {
         DecodedJWT jwt = verify(token);
-        return new UsernamePasswordAuthenticationToken(jwt.getSubject(), null, jwt.getClaim("authorities").asList(String.class).stream()
-                .map(SimpleGrantedAuthority::new)
+        return new UsernamePasswordAuthenticationToken(jwt.getSubject(), null, jwt.getClaim(AUTHORITIES_CLAIM).asList(String.class).stream()
+                .map(IESIGrantedAuthority::new)
                 .collect(Collectors.toList()));
     }
 

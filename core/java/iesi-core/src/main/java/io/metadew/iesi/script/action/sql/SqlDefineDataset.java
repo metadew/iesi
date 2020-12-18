@@ -11,8 +11,6 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 
 public class SqlDefineDataset extends ActionTypeExecution {

@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.definition.action.trace;
 
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
 
 public class ActionParameterTrace extends Metadata<ActionParameterTraceKey> {

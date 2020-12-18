@@ -2,8 +2,8 @@ package io.metadew.iesi.connection.http.entity._default;
 
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -11,13 +11,13 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.http.Consts;
 import org.apache.http.entity.ContentType;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 @Log4j2
 public class DefaultHttpResponseEntityService implements IHttpResponseEntityService<DefaultHttpResponseEntityStrategy> {
@@ -32,20 +32,20 @@ public class DefaultHttpResponseEntityService implements IHttpResponseEntityServ
     }
 
     @Override
-    public void writeToDataset(DefaultHttpResponseEntityStrategy textPlainHttpResponseEntityStrategy, KeyValueDataset dataset,
-                               String key, ExecutionRuntime executionRuntime) throws IOException {
+    public void writeToDataset(DefaultHttpResponseEntityStrategy textPlainHttpResponseEntityStrategy, InMemoryDatasetImplementation dataset,
+                               String key, ExecutionRuntime executionRuntime) {
         writeToDataset(textPlainHttpResponseEntityStrategy.getHttpResponse(), dataset, key, executionRuntime);
     }
 
     @Override
-    public void writeToDataset(HttpResponse httpResponse, KeyValueDataset dataset, String key, ExecutionRuntime executionRuntime) {
+    public void writeToDataset(HttpResponse httpResponse, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) {
         httpResponse.getEntityContent().ifPresent(s -> {
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
             log.info(MessageFormat.format("Writing http response {0} with default interpreter", new Text(new String(s, charset))));
-            DatasetHandler.getInstance().setDataItem(dataset, key, new Text(new String(s, charset)));
+            InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, new Text(new String(s, charset)));
         });
     }
 
@@ -67,7 +67,7 @@ public class DefaultHttpResponseEntityService implements IHttpResponseEntityServ
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
-            log.info(MessageFormat.format("Writing http response {0} with default interpreter", new String(s, charset)));
+            log.warn(MessageFormat.format("outputting http response {0} with default interpreter", new String(s, charset)));
             actionControl.logOutput("response.body", new String(s, charset));
         });
 

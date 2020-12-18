@@ -1,0 +1,13 @@
+This product bundles various third-party components that are not sourced from the maven repository.
+This section summarizes those components and their licenses. More info can be found in the licenses/
+directory for text of these licenses.
+
+Apache License 2.0
+------------------
+com.github.javafaker:javafaker
+nl.flotsam:xeger
+org.jfrog.artifactory.client:artifactory-java-client-api
+org.jfrog.artifactory.client:artifactory-java-client-httpClient
+org.jfrog.artifactory.client:artifactory-java-client-ning-services
+org.jfrog.artifactory.client:artifactory-java-client-services
+org.mybatis:mybatis

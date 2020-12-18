@@ -55,7 +55,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
                     "on TraceHttpComponent.ID=TraceHttpComponentHeader.HTTP_COMP_ID " +
                     "left outer join " + getMetadataRepository().getTableNameByLabel("TraceHttpComponentQuery") + " TraceHttpComponentQuery " +
                     "on TraceHttpComponent.ID=TraceHttpComponentQuery.HTTP_COMP_ID " +
-                    " WHERE TraceComponent.ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                    " WHERE TraceComponent.ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -105,16 +105,16 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
     public void delete(ComponentTraceKey metadataKey) {
         log.trace("deleting " + metadataKey.toString());
         String deleteTraceComponent = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponent").getName() +
-                " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceComponent);
         String deleteTraceHttpComponent = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponent").getName() +
-                " WHERE ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponent);
         String deleteTraceHttpComponentHeader = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
-                " WHERE HTTP_COMP_ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE HTTP_COMP_ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponentHeader);
         String deleteTraceHttpComponentQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
-                " WHERE HTTP_COMP_ID = " + SQLTools.GetStringForSQL(metadataKey.getUuid().toString()) + ";";
+                " WHERE HTTP_COMP_ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponentQuery);
     }
 
@@ -123,14 +123,14 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
         String insertStatementTraceComponent = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponent").getName() +
                 " (ID, RUN_ID,  PRC_ID, ACTION_PAR_NM, COMP_TYP_NM, COMP_NM, COMP_DSC, COMP_VRS_NB ) VALUES (" +
-                SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getRunId()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getProcessId()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getActionParameter()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getComponentTypeParameter()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getComponentName()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getComponentDescription()) + ", " +
-                SQLTools.GetStringForSQL(metadata.getComponentVersion()) +
+                SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
+                SQLTools.getStringForSQL(metadata.getRunId()) + ", " +
+                SQLTools.getStringForSQL(metadata.getProcessId()) + ", " +
+                SQLTools.getStringForSQL(metadata.getActionParameter()) + ", " +
+                SQLTools.getStringForSQL(metadata.getComponentTypeParameter()) + ", " +
+                SQLTools.getStringForSQL(metadata.getComponentName()) + ", " +
+                SQLTools.getStringForSQL(metadata.getComponentDescription()) + ", " +
+                SQLTools.getStringForSQL(metadata.getComponentVersion()) +
                 ");";
         getMetadataRepository().executeUpdate(insertStatementTraceComponent);
 
@@ -138,10 +138,10 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
             String insertStatementHttpTraceComponent = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponent").getName() +
                     " (ID, CONN_NM, TYPE, ENDPOINT ) VALUES ( "
                     +
-                    SQLTools.GetStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
-                    SQLTools.GetStringForSQL(((HttpComponentTrace) metadata).getConnectionName()) + ", " +
-                    SQLTools.GetStringForSQL(((HttpComponentTrace) metadata).getType()) + ", " +
-                    SQLTools.GetStringForSQL(((HttpComponentTrace) metadata).getEndpoint()) + ") ";
+                    SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
+                    SQLTools.getStringForSQL(((HttpComponentTrace) metadata).getConnectionName()) + ", " +
+                    SQLTools.getStringForSQL(((HttpComponentTrace) metadata).getType()) + ", " +
+                    SQLTools.getStringForSQL(((HttpComponentTrace) metadata).getEndpoint()) + ") ";
 
             getMetadataRepository().executeUpdate(insertStatementHttpTraceComponent);
 
@@ -149,19 +149,19 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
                     getMetadataRepository().executeUpdate(
                             "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
                                     " (ID, HTTP_COMP_ID, NAME, VALUE ) VALUES ( " +
-                                    SQLTools.GetStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
-                                    SQLTools.GetStringForSQL(httpComponentHeaderTrace.getHttpComponentHeaderID().getUuid().toString()) + ", " +
-                                    SQLTools.GetStringForSQL(httpComponentHeaderTrace.getName()) + ", " +
-                                    SQLTools.GetStringForSQL(httpComponentHeaderTrace.getValue()) + ") "));
+                                    SQLTools.getStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
+                                    SQLTools.getStringForSQL(httpComponentHeaderTrace.getHttpComponentHeaderID().getUuid().toString()) + ", " +
+                                    SQLTools.getStringForSQL(httpComponentHeaderTrace.getName()) + ", " +
+                                    SQLTools.getStringForSQL(httpComponentHeaderTrace.getValue()) + ") "));
 
             ((HttpComponentTrace) metadata).getHttpComponentQueries().forEach(httpComponentTrace ->
                     getMetadataRepository().executeUpdate(
                             "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
                                     " (ID, HTTP_COMP_ID,  NAME, VALUE ) VALUES  ( " +
-                                    SQLTools.GetStringForSQL(httpComponentTrace.getMetadataKey().getUuid().toString()) + ", " +
-                                    SQLTools.GetStringForSQL(httpComponentTrace.getHttpComponentQueryID().getUuid().toString()) + ", " +
-                                    SQLTools.GetStringForSQL(httpComponentTrace.getName()) + ", " +
-                                    SQLTools.GetStringForSQL(httpComponentTrace.getValue()) + ") "));
+                                    SQLTools.getStringForSQL(httpComponentTrace.getMetadataKey().getUuid().toString()) + ", " +
+                                    SQLTools.getStringForSQL(httpComponentTrace.getHttpComponentQueryID().getUuid().toString()) + ", " +
+                                    SQLTools.getStringForSQL(httpComponentTrace.getName()) + ", " +
+                                    SQLTools.getStringForSQL(httpComponentTrace.getValue()) + ") "));
         }
     }
 

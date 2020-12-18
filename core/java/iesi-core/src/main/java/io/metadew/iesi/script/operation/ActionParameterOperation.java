@@ -1,9 +1,9 @@
 package io.metadew.iesi.script.operation;
 
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -21,13 +21,13 @@ import java.text.MessageFormat;
 public class ActionParameterOperation {
 
     private final ActionTypeParameterConfiguration actionTypeParameterConfiguration;
-    private ExecutionControl executionControl;
+    private final ExecutionControl executionControl;
     private ActionExecution actionExecution;
-    private String name;
+    private final String name;
     private DataType value;
     private String inputValue = "";
 
-    private ActionTypeParameter actionTypeParameter;
+    private final ActionTypeParameter actionTypeParameter;
 
     // Constructors
     public ActionParameterOperation(ExecutionControl executionControl, ActionExecution actionExecution, String actionTypeName, String name) {

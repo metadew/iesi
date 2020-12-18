@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database.connection;
 
 import com.zaxxer.hikari.HikariConfig;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 
 import javax.sql.rowset.CachedRowSet;
@@ -51,4 +52,5 @@ public interface IDatabaseConnectionHandler {
     @Deprecated
     public PreparedStatement createPreparedStatement(DatabaseConnection databaseConnection, Connection connection, String sqlStatement) throws SQLException;
 
+    public String generateClobInsertValue(DatabaseConnection databaseConnection, String clobString);
 }

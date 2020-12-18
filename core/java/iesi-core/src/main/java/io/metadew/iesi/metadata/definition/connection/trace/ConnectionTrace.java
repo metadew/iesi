@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.definition.connection.trace;
 
 import io.metadew.iesi.metadata.definition.Metadata;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

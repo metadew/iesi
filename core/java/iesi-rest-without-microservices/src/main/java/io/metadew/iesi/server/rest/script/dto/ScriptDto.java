@@ -9,7 +9,7 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.*;
-import org.springframework.hateoas.RepresentationModel;
+
 import org.springframework.hateoas.server.core.Relation;
 
 
@@ -22,9 +22,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(value = "script", collectionRelation = "scripts")
-public class ScriptDto extends RepresentationModel<ScriptDto>  {
+public class ScriptDto extends NoEmptyLinksRepresentationModel<ScriptDto> {
 
     private String name;
+    private String securityGroupName;
     private String description;
     private ScriptVersionDto version;
     private Set<ScriptParameterDto> parameters = new HashSet<>();

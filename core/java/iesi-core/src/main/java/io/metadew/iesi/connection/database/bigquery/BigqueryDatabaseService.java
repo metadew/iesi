@@ -131,16 +131,19 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
         StringBuilder fieldQuery = new StringBuilder();
         // Data Types
         switch (field.getType()) {
-            case "string":
+            case STRING:
                 fieldQuery.append("VARCHAR (").append(field.getLength()).append(")");
                 break;
-            case "flag":
+            case CLOB:
+                fieldQuery.append("STRING");
+                break;
+            case FLAG:
                 fieldQuery.append("CHAR (").append(field.getLength()).append(")");
                 break;
-            case "number":
+            case NUMBER:
                 fieldQuery.append("NUMERIC");
                 break;
-            case "timestamp":
+            case TIMESTAMP:
                 fieldQuery.append("TIMESTAMP");
                 break;
         }

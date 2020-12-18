@@ -2,11 +2,13 @@ package io.metadew.iesi.server.rest.configuration;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 
 @Configuration
 @Profile("test")
+@Log4j2
 public class TestConfiguration {
 
     @Bean
@@ -14,7 +16,14 @@ public class TestConfiguration {
     @Order(0)
     @DependsOn("frameworkInstance")
     public MetadataRepositoryConfiguration metadataRepositoryConfiguration() {
-        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
+        for (MetadataRepository metadataRepository : MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()) {
+            try {
+                metadataRepository.dropAllTables();
+            } catch (RuntimeException e) {
+                log.info(e.getMessage());
+            }
+            metadataRepository.createAllTables();
+        }
         return MetadataRepositoryConfiguration.getInstance();
     }
 }

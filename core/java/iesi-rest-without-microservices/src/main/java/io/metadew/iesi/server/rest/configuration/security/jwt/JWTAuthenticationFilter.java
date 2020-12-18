@@ -1,6 +1,8 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,25 +20,32 @@ import java.io.IOException;
 @Profile("security")
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private  JWTAuthenticationConverter jwtAuthenticationConverter;
+    private final JWTAuthenticationConverter jwtAuthenticationConverter;
 
+    @Value("${iesi.security.enabled:false}")
+    private boolean enableSecurity;
+
+    @Autowired
     public JWTAuthenticationFilter(JWTAuthenticationConverter jwtAuthenticationConverter) {
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
     }
 
     @Override
     public void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws IOException, ServletException {
-        try {
-            Authentication authentication = jwtAuthenticationConverter.convert(httpServletRequest);
-            if (authentication == null) {
+        if (enableSecurity) {
+            try {
+                Authentication authentication = jwtAuthenticationConverter.convert(httpServletRequest);
+                if (authentication == null) {
+                    filterChain.doFilter(httpServletRequest, httpServletResponse);
+                    return;
+                }
+                SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(httpServletRequest, httpServletResponse);
-                return;
+            } catch (JWTVerificationException e) {
+                setErrorResponse(HttpStatus.UNAUTHORIZED, httpServletResponse, e);
             }
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
-        } catch (JWTVerificationException e) {
-            setErrorResponse(HttpStatus.UNAUTHORIZED, httpServletResponse, e);
-            e.printStackTrace();
         }
     }
 

@@ -32,14 +32,14 @@ public class RuntimeVariableConfiguration {
     // Methods
     public void cleanRuntimeVariables(String runId) {
         String query = "delete from " + PRC_RUN_VAR
-                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + ";";
+                + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + ";";
         DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void cleanRuntimeVariables(String runId, long processId) {
         String query = "delete from " + PRC_RUN_VAR
-                + " where RUN_ID = " + SQLTools.GetStringForSQL(runId)
-                + " and PRC_ID = " + SQLTools.GetStringForSQL(processId) + ";";
+                + " where RUN_ID = " + SQLTools.getStringForSQL(runId)
+                + " and PRC_ID = " + SQLTools.getStringForSQL(processId) + ";";
         DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
@@ -48,15 +48,15 @@ public class RuntimeVariableConfiguration {
         try {
             // Verify if variable already exists
             String query = "select run_id, prc_id, var_nm, var_val from " + PRC_RUN_VAR
-                    + " where run_id = " + SQLTools.GetStringForSQL(runId)
-                    + " and prc_id = " + SQLTools.GetStringForSQL(processId)
-                    + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
+                    + " where run_id = " + SQLTools.getStringForSQL(runId)
+                    + " and prc_id = " + SQLTools.getStringForSQL(processId)
+                    + " and var_nm = " + SQLTools.getStringForSQL(name) + ";";
             CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
 
             // if so, the previous values will be deleted
             if (crs.size() > 0) {
                 String deleteQuery = "delete from " + PRC_RUN_VAR
-                        + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and prc_id = " + SQLTools.GetStringForSQL(processId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + ";";
+                        + " where run_id = " + SQLTools.getStringForSQL(runId) + " and prc_id = " + SQLTools.getStringForSQL(processId) + " and var_nm = " + SQLTools.getStringForSQL(name) + ";";
                 DatabaseHandler.getInstance().executeUpdate(database, deleteQuery);
             }
             crs.close();
@@ -66,10 +66,10 @@ public class RuntimeVariableConfiguration {
 
         // DtNow, new values can be stored
         String insertQuery = "INSERT INTO " + PRC_RUN_VAR + "(run_id, prc_id, var_nm, var_val) VALUES ("
-                + SQLTools.GetStringForSQL(runId) + ","
-                + SQLTools.GetStringForSQL(processId) + ","
-                + SQLTools.GetStringForSQL(name) + ","
-                + SQLTools.GetStringForSQL(value) + ");";
+                + SQLTools.getStringForSQL(runId) + ","
+                + SQLTools.getStringForSQL(processId) + ","
+                + SQLTools.getStringForSQL(name) + ","
+                + SQLTools.getStringForSQL(value) + ");";
         DatabaseHandler.getInstance().executeUpdate(database, insertQuery);
     }
 
@@ -84,7 +84,7 @@ public class RuntimeVariableConfiguration {
     public Optional<String> getRuntimeVariableValue(String runId, String name) {
         try {
             String query = "select VAR_VAL from " + PRC_RUN_VAR
-                    + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and var_nm = " + SQLTools.GetStringForSQL(name) + " ORDER BY prc_id DESC;";
+                    + " where run_id = " + SQLTools.getStringForSQL(runId) + " and var_nm = " + SQLTools.getStringForSQL(name) + " ORDER BY prc_id DESC;";
             CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
             if (crs.size() == 0) {
                 return Optional.empty();

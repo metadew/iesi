@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -18,10 +17,11 @@ public class User extends Metadata<UserKey> {
     private boolean expired;
     private boolean credentialsExpired;
     private boolean locked;
+    private Set<RoleKey> roleKeys;
 
     @Builder
     public User(UserKey userKey, String username, String password, boolean enabled, boolean expired,
-                boolean credentialsExpired, boolean locked) {
+                boolean credentialsExpired, boolean locked, Set<RoleKey> roleKeys) {
         super(userKey);
         this.username = username;
         this.password = password;
@@ -29,15 +29,7 @@ public class User extends Metadata<UserKey> {
         this.expired = expired;
         this.credentialsExpired = credentialsExpired;
         this.locked = locked;
-    }
-
-    //TODO: Lazy loading of authorities and groups. When moving to Spring add as lazy loading
-    public List<Authority> getAuthorities() {
-        return new ArrayList<>();
-    }
-
-    public List<Group> getGroups() {
-        return new ArrayList<>();
+        this.roleKeys = roleKeys;
     }
 
 }

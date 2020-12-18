@@ -132,4 +132,9 @@ public class TemporaryDatabaseConnectionServiceImpl implements IDatabaseConnecti
     public String refactorLimitAndOffset(String query) {
         return query;
     }
+
+    @Override
+    public String generateClobInsertValue(String clobString) {
+        return clobString;
+    }
 }

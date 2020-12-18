@@ -3,7 +3,6 @@ package io.metadew.iesi.connection.database;
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Optional;

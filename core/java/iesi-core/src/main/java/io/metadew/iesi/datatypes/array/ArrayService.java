@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,11 +68,11 @@ public class ArrayService implements IDataTypeService<Array> {
         return true;
     }
 
-    public Array resolve(KeyValueDataset dataset, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
+    public Array resolve(InMemoryDatasetImplementation inMemoryDatasetImplementation, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) {
         Array array = new Array();
         int elementCounter = 1;
         for (JsonNode element : jsonNode) {
-            array.add(DataTypeHandler.getInstance().resolve(dataset, key + "." + elementCounter, element, executionRuntime));
+            array.add(DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementation, key + "." + elementCounter, element, executionRuntime));
             elementCounter++;
         }
         return array;

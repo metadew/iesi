@@ -169,7 +169,6 @@ class HttpComponentServiceTest {
         Whitebox.setInternalState(HttpQueryParameterService.class, "INSTANCE", (HttpQueryParameterService) null);
     }
 
-    @Test
     @Disabled
     void buildHttpRequestTest() throws HttpRequestBuilderException, URISyntaxException {
         HttpConnection httpConnection = mock(HttpConnection.class);
@@ -198,7 +197,6 @@ class HttpComponentServiceTest {
         Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", (HttpConnectionService) null);
     }
 
-    @Test
     @Disabled
     void buildHttpRequestBodyTest() throws HttpRequestBuilderException, URISyntaxException, UnsupportedEncodingException {
         HttpConnection httpConnection = mock(HttpConnection.class);

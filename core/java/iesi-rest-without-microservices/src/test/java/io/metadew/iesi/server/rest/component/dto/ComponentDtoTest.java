@@ -10,17 +10,17 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
-public class ComponentDtoTest {
+class ComponentDtoTest {
 
     @Test
-    public void convertToEntityTest() {
+    void convertToEntityTest() {
         Component component = new Component(new ComponentKey(IdentifierTools.getComponentIdentifier("name"), 1L),
                 "type",
                 "name",

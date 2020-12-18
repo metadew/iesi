@@ -15,12 +15,26 @@ iesi:
 #          type: sqlite
 #          file: 
 
-          type: h2
-          mode: memory
-          database: test
+#          type: h2
+#          mode: memory
+#          database: test
+#          owner:
+#            user: test
+#            password: test
+
+
+          type: oracle
+          schema: GETA
+          connection: jdbc://test
           owner:
-            user: test
-            password: test
+            user: owner
+            password: owner
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
 
 
 #          type: h2

@@ -2,7 +2,7 @@ package io.metadew.iesi.common.crypto;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @PrepareForTest(JavaKeystore.class)
-public class JavaKeystoreTest {
+class JavaKeystoreTest {
 
     @Test
-    public void testEncryptKey() throws Exception {
+    void testEncryptKey() throws Exception {
         String password = "foobar";
         System.setIn(new ByteArrayInputStream(password.getBytes()));
         Scanner scanner = new Scanner(System.in);
@@ -40,11 +40,11 @@ public class JavaKeystoreTest {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
         PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(
                 ske.getSecretKey(), PBEKeySpec.class);
-        assertThat("c7c1e47391154a6a").isEqualTo(new String(keySpec.getPassword()));
+        assertThat(new String(keySpec.getPassword())).isEqualTo("c7c1e47391154a6a");
     }
 
     @Test
-    public void testEncryptWrongAlias() throws Exception {
+    void testEncryptWrongAlias() throws Exception {
         String password = "foobar";
         System.setIn(new ByteArrayInputStream(password.getBytes()));
         Scanner scanner = new Scanner(System.in);
@@ -66,7 +66,7 @@ public class JavaKeystoreTest {
     }
 
     @Test
-    public void testJavaKeystore() throws Exception {
+    void testJavaKeystore() throws Exception {
         String password = "foobar";
         Configuration configuration = Configuration.getInstance();
         Configuration configurationSpy = Mockito.spy(configuration);
@@ -80,11 +80,11 @@ public class JavaKeystoreTest {
         String userinput = scanner.nextLine();
         String alias = "mypass";
         String keyJKS = new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
-        assertThat("c7c1e47391154a6a").isEqualTo(keyJKS);
+        assertThat(keyJKS).isEqualTo("c7c1e47391154a6a");
     }
 
     @Test
-    public void testJavaKeystoreWrongPassword() {
+    void testJavaKeystoreWrongPassword() {
         String password = "fooar";
         Configuration configuration = Configuration.getInstance();
         Configuration configurationSpy = Mockito.spy(configuration);

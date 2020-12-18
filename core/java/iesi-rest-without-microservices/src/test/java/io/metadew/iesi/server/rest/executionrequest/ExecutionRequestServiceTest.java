@@ -25,11 +25,6 @@ class ExecutionRequestServiceTest {
     @Autowired
     private ExecutionRequestConfiguration executionRequestConfiguration;
 
-    @BeforeEach
-    void setup() {
-        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
-    }
-
     @Test
     void getAll() {
     }

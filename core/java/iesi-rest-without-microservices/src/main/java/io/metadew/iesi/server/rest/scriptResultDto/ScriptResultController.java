@@ -7,6 +7,7 @@ import io.metadew.iesi.server.rest.scriptResultDto.dto.ScriptResultDto;
 import io.metadew.iesi.server.rest.scriptResultDto.dto.ScriptResultDtoModelAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class ScriptResultController {
     }
 
     @GetMapping("/{runId}")
+    @PreAuthorize("hasPrivilege('SCRIPT_RESULTS_READ')")
     public HalMultipleEmbeddedResource<ScriptResultDto> getByRunId(@PathVariable String runId) {
         return new HalMultipleEmbeddedResource<>(scriptResultService.getByRunId(runId).stream()
                 .map(scriptResultDtoModelAssembler::toModel)
@@ -42,6 +44,7 @@ public class ScriptResultController {
     }
 
     @GetMapping("/{runId}/{processId}")
+    @PreAuthorize("hasPrivilege('SCRIPT_RESULTS_READ')")
     public ScriptResultDto getByRunIdAndProcessId(@PathVariable String runId, @PathVariable Long processId) throws MetadataDoesNotExistException {
         return scriptResultService.getByRunIdAndProcessId(runId, processId)
                 .map(scriptResultDtoModelAssembler::toModel)

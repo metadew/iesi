@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationConverter;
@@ -16,6 +17,7 @@ public class JWTAuthenticationConverter implements AuthenticationConverter {
 
     private final JwtService jwtService;
 
+    @Autowired
     public JWTAuthenticationConverter(JwtService jwtService) {
         this.jwtService = jwtService;
     }

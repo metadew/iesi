@@ -1,34 +1,32 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
+import io.metadew.iesi.server.rest.Application;
+import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
-import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
-import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
-import org.junit.Test;
+import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,47 +41,40 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(ExecutionRequestController.class)
-@AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = {ExecutionRequestController.class, ExecutionRequestService.class, ScriptExecutionRequestDto.class, ScriptExecutionRequestImpersonationDto.class, ScriptExecutionRequestParameterDto.class, ScriptExecutionRequestDtoModelAssembler.class, ExecutionRequestDtoModelAssembler.class, ExecutionRequestLabelDto.class, ExecutionRequestDto.class, CustomGlobalExceptionHandler.class})
-@ExtendWith(MockitoExtension.class)
-
-public class ExecutionRequestControllerTest {
+@Log4j2
+@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
+@ContextConfiguration(classes = {TestConfiguration.class, MethodSecurityConfiguration.class})
+@ExtendWith({MockitoExtension.class, SpringExtension.class})
+@AutoConfigureMockMvc
+@ActiveProfiles({"test", "security"})
+class ExecutionRequestControllerTest {
 
     @Autowired
     private MockMvc mvc;
     @MockBean
     private ExecutionRequestService executionRequestService;
-    @MockBean
-    private ScriptExecutionRequestImpersonationDto scriptExecutionRequestImpersonationDto;
-    @MockBean
-    private ScriptExecutionRequestParameterDto scriptExecutionRequestParameterDto;
-    @MockBean
-    private ScriptExecutionRequestDtoModelAssembler scriptExecutionRequestDtoModelAssembler;
-    @MockBean
-    private ExecutionRequestLabelDto executionRequestLabelDto;
-    @MockBean
-    private ExecutionRequestDtoRepository executionRequestDtoRepository;
-
-    @InjectMocks
-    private ExecutionRequestController executionRequestController;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @BeforeEach
-    public void setup() {
-        mvc = MockMvcBuilders.standaloneSetup(executionRequestController)
-                .build();
+    void setup() {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "user",
+                null,
+                Stream.of(
+                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_WRITE"),
+                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_READ"),
+                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_WRITE")
+                ).collect(Collectors.toSet())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
     }
 
     @Test
-    public void getAllNoResult() throws Exception {
+    @WithMockUser(username = "spring")
+    void getAllNoResult() throws Exception {
         Pageable pageable = PageRequest.of(0, 20);
         List<ExecutionRequestDto> executionRequestDtoList = new ArrayList<>();
-        Page<ExecutionRequestDto> page = new PageImpl<>(executionRequestDtoList, pageable, 1);
+        Page<ExecutionRequestDto> page = new PageImpl<>(executionRequestDtoList, pageable, 0);
         given(executionRequestService.getAll(any(), any())).willReturn(page);
 
         mvc.perform(get("/execution-requests").contentType(MediaType.APPLICATION_JSON))
@@ -95,7 +86,8 @@ public class ExecutionRequestControllerTest {
     }
 
     @Test
-    public void getAllResultWithPagination() throws Exception {
+    @WithMockUser(username = "spring")
+    void getAllResultWithPagination() throws Exception {
         ExecutionRequestDto executionRequest1 = ExecutionRequestDto.builder()
                 .executionRequestId("newExecutionRequestId")
                 .name("name")

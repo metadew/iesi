@@ -9,7 +9,7 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.metadew.iesi.server.rest.script.ScriptController;
+import io.metadew.iesi.server.rest.script.ScriptsController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +20,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class ExecutionRequestController {
 
     @SuppressWarnings("unchecked")
     @GetMapping("")
+    @PreAuthorize("hasPrivilege('EXECUTION_REQUESTS_READ')")
     public PagedModel<ExecutionRequestDto> getAll(Pageable pageable,
                                                   @RequestParam(required = false, name = "script") String script,
                                                   @RequestParam(required = false, name = "version") String version,
@@ -78,12 +80,14 @@ public class ExecutionRequestController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasPrivilege('EXECUTION_REQUESTS_READ')")
     public ExecutionRequestDto getById(@PathVariable String id) {
         return executionRequestService.getById(id)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ExecutionRequestKey(id)));
     }
 
     @PostMapping("")
+    @PreAuthorize("hasPrivilege('EXECUTION_REQUESTS_WRITE')")
     public ExecutionRequestDto post(@RequestBody ExecutionRequestDto executionRequestDto) throws MetadataAlreadyExistsException {
         try {
             ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(executionRequestDto);
@@ -94,12 +98,13 @@ public class ExecutionRequestController {
     }
 
     @PutMapping("")
+    @PreAuthorize("hasPrivilege('EXECUTION_REQUESTS_WRITE')")
     public HalMultipleEmbeddedResource<ExecutionRequestDto> putAll(@RequestBody List<ExecutionRequestDto> executionRequestDtos) throws MetadataDoesNotExistException {
         executionRequestService.updateExecutionRequests(executionRequestDtos);
         HalMultipleEmbeddedResource<ExecutionRequestDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         for (ExecutionRequestDto executionRequestDto : executionRequestDtos) {
             halMultipleEmbeddedResource.embedResource(executionRequestDto);
-            halMultipleEmbeddedResource.add(WebMvcLinkBuilder.linkTo(methodOn(ScriptController.class)
+            halMultipleEmbeddedResource.add(WebMvcLinkBuilder.linkTo(methodOn(ScriptsController.class)
                     .getByName(PageRequest.of(0, 20), executionRequestDto.getName(), null, ""))
                     .withRel(executionRequestDto.getName()));
         }
@@ -108,13 +113,15 @@ public class ExecutionRequestController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasPrivilege('EXECUTION_REQUESTS_WRITE')")
     public ExecutionRequestDto put(@PathVariable String id, @RequestBody ExecutionRequestDto executionRequestDto) throws MetadataDoesNotExistException {
         executionRequestService.updateExecutionRequest(executionRequestDto);
         return executionRequestDtoModelAssembler.toModel(executionRequestDto.convertToEntity());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteByName(@PathVariable String id) throws MetadataDoesNotExistException {
+    @PreAuthorize("hasPrivilege('EXECUTION_REQUESTS_WRITE')")
+    public ResponseEntity<Object> deleteById(@PathVariable String id) throws MetadataDoesNotExistException {
         executionRequestService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

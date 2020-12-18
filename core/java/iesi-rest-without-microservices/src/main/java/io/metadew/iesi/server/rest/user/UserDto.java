@@ -5,7 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -13,11 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 public class UserDto {
 
+    private UUID id;
     private String username;
     private boolean enabled;
     private boolean expired;
     private boolean credentialsExpired;
     private boolean locked;
-    private List<AuthorityDto> authorities;
+    private Set<UserRoleDto> roles;
 
 }

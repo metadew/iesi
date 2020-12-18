@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,6 +38,7 @@ public class ConnectionsController {
     }
 
     @GetMapping("")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
     public HalMultipleEmbeddedResource<ConnectionDto> getAll() {
         List<Connection> connections = connectionService.getAll();
         return new HalMultipleEmbeddedResource<>(connections.stream()
@@ -46,6 +48,7 @@ public class ConnectionsController {
     }
 
     @GetMapping("/{name}")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
     public HalMultipleEmbeddedResource<ConnectionDto> getByName(@PathVariable String name) {
         List<Connection> connections = connectionService.getByName(name);
         return new HalMultipleEmbeddedResource<>(connections.stream()
@@ -55,6 +58,7 @@ public class ConnectionsController {
     }
 
     @GetMapping("/{name}/{environment}")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
     public ConnectionDto get(@PathVariable String name, @PathVariable String environment) throws MetadataDoesNotExistException {
         Connection connection = connectionService.getByNameAndEnvironment(name, environment)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ConnectionKey(name, environment)));
@@ -62,6 +66,7 @@ public class ConnectionsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public ResponseEntity<ConnectionDto> post(@Valid @RequestBody ConnectionDto connectionDto) {
         try {
             connectionService.createConnection(connectionDto);
@@ -74,6 +79,7 @@ public class ConnectionsController {
     }
 
     @PutMapping("")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public HalMultipleEmbeddedResource<ConnectionDto> putAll(@Valid @RequestBody List<ConnectionDto> connectionDtos) throws MetadataDoesNotExistException {
         HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         connectionService.updateConnections(connectionDtos);
@@ -85,6 +91,7 @@ public class ConnectionsController {
     }
 
     @PutMapping("/{name}/{environment}")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public ConnectionDto put(@PathVariable String name, @PathVariable String environment, @RequestBody ConnectionDto connectionDto) throws MetadataDoesNotExistException {
         if (!connectionDto.getName().equals(name) || !connectionDto.getEnvironment().equals(environment)) {
             throw new DataBadRequestException(name);
@@ -94,18 +101,21 @@ public class ConnectionsController {
     }
 
     @DeleteMapping("")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public ResponseEntity<?> deleteAll() {
         connectionService.deleteAll();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public ResponseEntity<?> deleteByName(@PathVariable String name) throws MetadataDoesNotExistException {
         connectionService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}/{environment}")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
     public ResponseEntity<?> delete(@PathVariable String name, @PathVariable String environment) throws MetadataDoesNotExistException {
         connectionService.deleteByNameAndEnvironment(name, environment);
         return ResponseEntity.status(HttpStatus.OK).build();

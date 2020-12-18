@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class DatasetImplementationController {
 
     @SuppressWarnings("unchecked")
     @GetMapping("")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public PagedModel<DatasetImplementationDto> getAll(Pageable pageable) {
         List<DatasetImplementation> datasetImplementations = datasetImplementationService.getAll();
         int minimum = pageable.getPageNumber() * pageable.getPageSize();
@@ -66,6 +68,7 @@ public class DatasetImplementationController {
     }
 
     @GetMapping("/{uuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public DatasetImplementationDto get(@PathVariable UUID uuid) {
         Optional<DatasetImplementation> datasetImplementation = datasetImplementationService.get(new DatasetImplementationKey(uuid));
         return datasetImplementation

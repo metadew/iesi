@@ -4,17 +4,17 @@ import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
-public class EnvironmentDtoTest {
+class EnvironmentDtoTest {
 
     @Test
-    public void convertToEntityTest() {
+    void convertToEntityTest() {
         Environment environment = new Environment(new EnvironmentKey("tst"),
                 "description",
                 Stream.of(new EnvironmentParameter(new EnvironmentParameterKey(new EnvironmentKey("tst"), "name1"), "value1"),

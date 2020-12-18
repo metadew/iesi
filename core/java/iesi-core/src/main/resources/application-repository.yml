@@ -23,7 +23,7 @@ iesi:
 
 
 #          type: oracle
-#          schema: GETA
+#          schema:
 #          connection: jdbc://test
 #          owner:
 #            user: owner

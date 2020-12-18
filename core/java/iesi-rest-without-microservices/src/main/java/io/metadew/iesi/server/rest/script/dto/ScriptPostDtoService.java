@@ -61,9 +61,9 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                 script.getSecurityGroupName(),
                 script.getDescription(),
                 scriptVersionDtoService.convertToDto(script.getVersion()),
-                script.getParameters().stream().map(scriptParameterDtoService::convertToDto).collect(Collectors.toList()),
-                script.getActions().stream().map(scriptActionDtoService::convertToDto).collect(Collectors.toList()),
-                script.getLabels().stream().map(scriptLabelDtoService::convertToDto).collect(Collectors.toList()));
+                script.getParameters().stream().map(scriptParameterDtoService::convertToDto).collect(Collectors.toSet()),
+                script.getActions().stream().map(scriptActionDtoService::convertToDto).collect(Collectors.toSet()),
+                script.getLabels().stream().map(scriptLabelDtoService::convertToDto).collect(Collectors.toSet()));
     }
 
 }

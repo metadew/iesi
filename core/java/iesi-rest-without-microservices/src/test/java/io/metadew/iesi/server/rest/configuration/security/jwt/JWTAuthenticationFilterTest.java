@@ -1,9 +1,11 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.jayway.jsonpath.JsonPath;
+import io.metadew.iesi.server.rest.Application;
+import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -13,8 +15,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebMvcTest(JWTAuthenticationFilter.class)
-@ContextConfiguration(classes = {JWTAuthenticationFilter.class, JWTAuthenticationConverter.class, JwtService.class})
+@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
+@ContextConfiguration(classes = {TestConfiguration.class})
 @ActiveProfiles({"test", "security"})
 public class JWTAuthenticationFilterTest {
 

@@ -17,13 +17,7 @@ iesi:
             user: ""
             password: ""
 #          type: sqlite
-#          file: /home/robbe/IESISandbox/0.6.0/dataset_pagination/repository.db3
-#          type: h2
-#          mode: memory
-#          database: test
-#          owner:
-#            user: ""
-#            password: ""
+#          file:
 
 #          type: h2
 #          mode: embedded

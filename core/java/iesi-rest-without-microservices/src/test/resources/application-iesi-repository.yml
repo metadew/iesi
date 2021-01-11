@@ -11,7 +11,7 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
 #          type: sqlite
-#          file: ./test.db3
+#          file: 
           type: h2
           mode: memory
           database: test;ALIAS_COLUMN_NAME=TRUE

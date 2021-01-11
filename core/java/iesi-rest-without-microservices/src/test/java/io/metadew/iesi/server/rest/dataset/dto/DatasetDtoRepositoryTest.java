@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
+import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
@@ -81,7 +81,7 @@ class DatasetDtoRepositoryTest {
     }
 
     @Test
-    void getAllPaginatedNoImplementationsLinkedToDatasetPageOverflow() {
+    void getAllPaginatedNoImplementationsLinkedToDatasetPageOverflow() throws InterruptedException {
         Dataset dataset1 = Dataset.builder()
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
                 .name("dataset1")
@@ -99,6 +99,8 @@ class DatasetDtoRepositoryTest {
                 .build();
         datasetConfiguration.insert(dataset1);
         datasetConfiguration.insert(dataset2);
+        // sleep needed for the ordering of the datasets based on load timestamps
+        sleep(1);
         datasetConfiguration.insert(dataset3);
         DatasetDto datasetDto3 = DatasetDto.builder()
                 .uuid(dataset3.getMetadataKey().getUuid())

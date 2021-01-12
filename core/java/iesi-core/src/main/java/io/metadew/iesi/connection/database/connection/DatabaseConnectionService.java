@@ -3,6 +3,7 @@ package io.metadew.iesi.connection.database.connection;
 import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.operation.database.ScriptRunner;
+import io.metadew.iesi.connection.tools.SQLTools;
 import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
@@ -17,7 +18,8 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
     public Connection getConnection(T databaseConnection) {
         try {
             Class.forName(getDriver(databaseConnection));
-            Connection connection = DriverManager.getConnection(databaseConnection.getConnectionURL(), databaseConnection.getUserName(), databaseConnection.getUserPassword());
+            Connection connection;
+            connection = DriverManager.getConnection(databaseConnection.getConnectionURL(), databaseConnection.getUserName(), databaseConnection.getUserPassword());
             connection.setAutoCommit(false);
             return connection;
         } catch (ClassNotFoundException | SQLException e) {
@@ -238,5 +240,9 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
 
     public String refactorLimitAndOffset(String query) {
         return query;
+    }
+
+    public String generateClobInsertValue(String clobString) {
+        return SQLTools.getStringForSQL(clobString);
     }
 }

@@ -43,9 +43,9 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     public Optional<ScriptParameter> get(ScriptParameterKey scriptParameterKey) {
         try {
             String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
-                    + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) +
-                    " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) +
-                    " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterKey.getParameterName()) + ";";
+                    + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) +
+                    " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) +
+                    " and SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterKey.getParameterName()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -98,9 +98,9 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
 
     private String deleteStatement(ScriptParameterKey scriptParameterKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
-                " WHERE SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) + " AND " +
-                " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) + " AND " +
-                " SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterKey.getParameterName()) + ";";
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) + " AND " +
+                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) + " AND " +
+                " SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterKey.getParameterName()) + ";";
     }
 
     @Override
@@ -111,35 +111,36 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         }
         getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getScriptId()) + "," +
-                SQLTools.GetStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getScriptVersion()) + "," +
-                SQLTools.GetStringForSQL(scriptParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.GetStringForSQL(scriptParameter.getValue()) + ");");
+                SQLTools.getStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getScriptId()) + "," +
+                SQLTools.getStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getScriptVersion()) + "," +
+                SQLTools.getStringForSQL(scriptParameter.getMetadataKey().getParameterName()) + "," +
+                SQLTools.getStringForSQL(scriptParameter.getValue()) + ");");
 
     }
 
     public boolean exists(ScriptParameterKey scriptParameterKey) {
         String queryScriptParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) +
-                " and SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterKey.getParameterName()) + ";";
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) +
+                " and SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterKey.getParameterName()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
+        LOGGER.trace(MessageFormat.format("Deleting script parameters for script {0}", scriptKey.toString()));
         String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
                 " WHERE " +
-                " SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) + " AND " +
-                " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
+                " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) + " AND " +
+                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     public List<ScriptParameter> getByScript(ScriptKey scriptKey) {
         List<ScriptParameter> scriptParameters = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {

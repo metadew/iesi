@@ -1,0 +1,17 @@
+---
+type: Component
+data:
+  name: "iesi.environments.delete.one"
+  type: "http.request"
+  version:
+    number: 1
+    description: "description"
+  description: "http call to IESI delete one environment endpoint"
+  parameters:
+  - name: "connection"
+    value: "iesi"
+  - name: "endpoint"
+    value: "/environments/#environment_id#"
+  - name: "type"
+    value: "delete"
+  attributes: []

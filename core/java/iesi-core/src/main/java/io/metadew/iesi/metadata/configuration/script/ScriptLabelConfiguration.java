@@ -41,7 +41,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
     public Optional<ScriptLabel> get(ScriptLabelKey scriptLabelKey) {
         try {
             String queryScriptLabel = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                    + " where ID = " + SQLTools.GetStringForSQL(scriptLabelKey.getId()) + ";";
+                    + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptLabel, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -91,7 +91,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
 
     private String deleteStatement(ScriptLabelKey scriptLabelKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
-                " WHERE ID = " + SQLTools.GetStringForSQL(scriptLabelKey.getId()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) + ";";
     }
 
     @Override
@@ -102,34 +102,35 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         }
         getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
                 " (ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE) VALUES (" +
-                SQLTools.GetStringForSQL(scriptLabel.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getScriptKey().getScriptId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getScriptKey().getScriptVersion()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getName()) + "," +
-                SQLTools.GetStringForSQL(scriptLabel.getValue()) + ");");
+                SQLTools.getStringForSQL(scriptLabel.getMetadataKey().getId()) + "," +
+                SQLTools.getStringForSQL(scriptLabel.getScriptKey().getScriptId()) + "," +
+                SQLTools.getStringForSQL(scriptLabel.getScriptKey().getScriptVersion()) + "," +
+                SQLTools.getStringForSQL(scriptLabel.getName()) + "," +
+                SQLTools.getStringForSQL(scriptLabel.getValue()) + ");");
 
     }
 
     public boolean exists(ScriptLabelKey scriptLabelKey) {
         String queryScriptParameter = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                + " where ID = " + SQLTools.GetStringForSQL(scriptLabelKey.getId()) + ";";
+                + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     public void deleteByScript(ScriptKey scriptKey) {
+        LOGGER.trace(MessageFormat.format("deleting script labels for script {0}", scriptKey.toString()));
         String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
                 " WHERE " +
-                " SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) + " AND " +
-                " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
+                " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) + " AND " +
+                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     public List<ScriptLabel> getByScript(ScriptKey scriptKey) {
         List<ScriptLabel> scriptLabels = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                + " where SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptKey.getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptKey.getScriptVersion()) + ";";
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (cachedRowSet.next()) {

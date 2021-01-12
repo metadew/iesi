@@ -48,6 +48,7 @@ public class RStopShinyApp extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseSuccessCount();
             return true;
         } else {
+            getActionExecution().getActionControl().logOutput("action.error", "Stopping Shiny app resulted with return code " + rCommandResult.getStatusCode().map(Object::toString).orElse("unknown"));
             getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }

@@ -6,8 +6,7 @@ import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.script.configuration.IterationVariableConfiguration;
@@ -27,7 +26,6 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -48,7 +46,7 @@ public class ExecutionRuntime {
 
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
-    private HashMap<String, Dataset> datasetMap;
+    private HashMap<String, InMemoryDatasetImplementation> datasetMap;
     private HashMap<String, Array> arrayMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
@@ -96,8 +94,8 @@ public class ExecutionRuntime {
     }
 
     public void terminate() {
-        datasetMap.values()
-                .forEach(dataset -> DatasetHandler.getInstance().shutdown(dataset));
+        //datasetMap.values()
+        //        .forEach(dataset -> DatasetHandler.getInstance().shutdown(dataset));
         stageOperationMap.values()
                 .forEach(StageOperation::doCleanup);
         datasetMap = new HashMap<>();
@@ -369,6 +367,7 @@ public class ExecutionRuntime {
             input = input.substring(0, lookupConceptStartIndex) +
                     resolvement +
                     input.substring(lookupConceptStopIndex + lookupConceptStopKey.length());
+            lookupConceptStopIndex = lookupConceptStartIndex + resolvement.length();
         }
         LOGGER.debug(MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input));
 
@@ -418,6 +417,7 @@ public class ExecutionRuntime {
                     resolvedInput = instructionArgumentsResolved;
                     break;
                 case "^":
+                    resolvedInput = "{{^" + instructionKeyword + "(" + instructionArgumentsResolved + ")}}";
                     break;
                 default:
                     LOGGER.warn(MessageFormat.format("concept.lookup.resolve.instruction.notfound=no instruction type found for {0}", instructionType));
@@ -480,6 +480,7 @@ public class ExecutionRuntime {
     }
 
     private String generateLookupInstruction(String context, String input) {
+        LOGGER.debug("concept.lookup.resolve.instruction=executing lookup " + context + " for " + input);
         LookupInstruction lookupInstruction = lookupInstructions.get(context);
         if (lookupInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No lookup instruction named {0} found.", context));
@@ -489,6 +490,7 @@ public class ExecutionRuntime {
     }
 
     private String getVariableInstruction(String context) {
+        LOGGER.debug("concept.lookup.resolve.instruction=fetching variable");
         VariableInstruction variableInstruction = this.getVariableInstructions().get(context);
         if (variableInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No variable instruction named {0} found.", context));
@@ -498,6 +500,7 @@ public class ExecutionRuntime {
     }
 
     private String generateDataInstruction(String context, String input) {
+        LOGGER.debug("concept.lookup.resolve.instruction=executing data creation " + context + " for " + input);
         DataInstruction dataInstruction = dataInstructions.get(context);
         if (dataInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No data instruction named {0} found.", context));
@@ -523,19 +526,19 @@ public class ExecutionRuntime {
         this.getStageOperationMap().put(stageName, stageOperation);
     }
 
-    public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException {
-        datasetMap.put(referenceName, DatasetHandler.getInstance().getByNameAndLabels(datasetName, datasetLabels, this));
+    public void setKeyValueDataset(String referenceName, InMemoryDatasetImplementation datasetImplementation) {
+        datasetMap.put(referenceName, datasetImplementation);
     }
 
-    public Optional<Dataset> getDataset(String referenceName) {
+    public Optional<InMemoryDatasetImplementation> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
     }
 
-    public void setArray(String referenceName, Array array) throws IOException {
+    public void setArray(String referenceName, Array array) {
         arrayMap.put(referenceName, array);
     }
 
-    public Optional<Array> getArray(String referenceName) throws IOException {
+    public Optional<Array> getArray(String referenceName) {
         return Optional.ofNullable(arrayMap.get(referenceName));
     }
 

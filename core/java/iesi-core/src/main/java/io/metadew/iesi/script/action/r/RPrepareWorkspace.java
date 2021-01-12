@@ -10,13 +10,8 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 public class RPrepareWorkspace extends ActionTypeExecution {
 
@@ -63,6 +58,7 @@ public class RPrepareWorkspace extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseSuccessCount();
             return true;
         } else {
+            getActionExecution().getActionControl().logOutput("action.error", "adding preparation script '" + script + "' resulted with return code " + rCommandResult.getStatusCode().map(Object::toString).orElse("unknown"));
             getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }

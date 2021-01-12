@@ -77,8 +77,8 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     private String deleteStatement(ImpersonationParameterKey metadataKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
                 " WHERE " +
-                " IMP_NM = " + SQLTools.GetStringForSQL(metadataKey.getImpersonationKey().getName()) + " AND " +
-                " CONN_NM = " + SQLTools.GetStringForSQL(metadataKey.getParameterName()) + ";";
+                " IMP_NM = " + SQLTools.getStringForSQL(metadataKey.getImpersonationKey().getName()) + " AND " +
+                " CONN_NM = " + SQLTools.getStringForSQL(metadataKey.getParameterName()) + ";";
     }
 
     @Override
@@ -94,10 +94,10 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
     public String getInsertStatement(String impersonationName, ImpersonationParameter impersonationParameter) {
         String query =  "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
                 " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(impersonationName) + "," +
-                SQLTools.GetStringForSQL(impersonationParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.GetStringForSQL(impersonationParameter.getImpersonatedConnection()) +  "," +
-                SQLTools.GetStringForSQL(impersonationParameter.getDescription()) + ");";
+                SQLTools.getStringForSQL(impersonationName) + "," +
+                SQLTools.getStringForSQL(impersonationParameter.getMetadataKey().getParameterName()) + "," +
+                SQLTools.getStringForSQL(impersonationParameter.getImpersonatedConnection()) +  "," +
+                SQLTools.getStringForSQL(impersonationParameter.getDescription()) + ");";
         return query;
     }
 
@@ -109,13 +109,13 @@ public class ImpersonationParameterConfiguration extends Configuration<Impersona
         sql += " (IMP_NM, CONN_NM, CONN_IMP_NM, CONN_IMP_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += SQLTools.GetStringForSQL(impersonationName);
+        sql += SQLTools.getStringForSQL(impersonationName);
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getMetadataKey().getParameterName());
+        sql += SQLTools.getStringForSQL(this.getImpersonationParameter().getMetadataKey().getParameterName());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getImpersonatedConnection());
+        sql += SQLTools.getStringForSQL(this.getImpersonationParameter().getImpersonatedConnection());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getImpersonationParameter().getDescription());
+        sql += SQLTools.getStringForSQL(this.getImpersonationParameter().getDescription());
         sql += ")";
         sql += ";";
 

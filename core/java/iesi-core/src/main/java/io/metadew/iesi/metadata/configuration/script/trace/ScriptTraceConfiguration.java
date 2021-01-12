@@ -40,8 +40,8 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
             String query = "SELECT PARENT_PRC_ID, SCRIPT_NM, SCRIPT_DSC FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptTraces") +
                     " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
+                    " RUN_ID = " + SQLTools.getStringForSQL(scriptTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.getStringForSQL(scriptTraceKey.getProcessId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -92,8 +92,8 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
     private String deleteStatement(ScriptTraceKey scriptTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptTraceKey.getProcessId()) + ";";
     }
 
     @Override
@@ -106,12 +106,12 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
     private String insertStatement(ScriptTrace scriptTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptTraces") +
                 " (RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_NM, SCRIPT_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptTrace.getParentProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptTrace.getScriptId()) + "," +
-                SQLTools.GetStringForSQL(scriptTrace.getScriptName()) + "," +
-                SQLTools.GetStringForSQL(scriptTrace.getScriptDescription()) + ");";
+                SQLTools.getStringForSQL(scriptTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptTrace.getParentProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptTrace.getScriptId()) + "," +
+                SQLTools.getStringForSQL(scriptTrace.getScriptName()) + "," +
+                SQLTools.getStringForSQL(scriptTrace.getScriptDescription()) + ");";
     }
 
     @Override
@@ -123,11 +123,11 @@ public class ScriptTraceConfiguration extends Configuration<ScriptTrace, ScriptT
 
     private String updateStatement(ScriptTrace scriptTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptTraces") +
-                " SET PARENT_PRC_ID = " + SQLTools.GetStringForSQL(scriptTrace.getParentProcessId()) + "," +
-                "SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptTrace.getScriptId()) + "," +
-                "SCRIPT_NM = " + SQLTools.GetStringForSQL(scriptTrace.getScriptName()) + "," +
-                "SCRIPT_DSC = " + SQLTools.GetStringForSQL(scriptTrace.getScriptDescription()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + ";";
+                " SET PARENT_PRC_ID = " + SQLTools.getStringForSQL(scriptTrace.getParentProcessId()) + "," +
+                "SCRIPT_ID = " + SQLTools.getStringForSQL(scriptTrace.getScriptId()) + "," +
+                "SCRIPT_NM = " + SQLTools.getStringForSQL(scriptTrace.getScriptName()) + "," +
+                "SCRIPT_DSC = " + SQLTools.getStringForSQL(scriptTrace.getScriptDescription()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(scriptTrace.getMetadataKey().getProcessId()) + ";";
     }
 }

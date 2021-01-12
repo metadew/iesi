@@ -5,7 +5,6 @@ import io.metadew.iesi.connection.http.response.HttpResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.apache.http.HttpEntity;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

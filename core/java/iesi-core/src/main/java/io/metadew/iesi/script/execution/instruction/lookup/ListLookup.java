@@ -43,7 +43,7 @@ public class ListLookup implements LookupInstruction {
         Array array = getArray(DataTypeHandler.getInstance().resolve(arguments[0], executionRuntime));
         DataType elementSelector = DataTypeHandler.getInstance().resolve(arguments[1], executionRuntime);
         if (elementSelector instanceof Text) {
-            int index = Integer.parseInt(((Text) elementSelector).getString()) - 1;
+            int index = Integer.parseInt(((Text) elementSelector).getString().trim()) - 1;
             return array.getList().get(index).toString();
         } else if (elementSelector instanceof Template) {
             for (DataType dataType : array.getList()) {
@@ -68,6 +68,9 @@ public class ListLookup implements LookupInstruction {
     private Array getArray(DataType array) {
         if (array instanceof Array) {
             return (Array) array;
+        } else if (array instanceof Text) {
+            return executionRuntime.getArray(((Text) array).getString())
+                    .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No array found with reference name {0}", ((Text) array).getString())));
         } else {
             throw new IllegalArgumentException(MessageFormat.format("list cannot be of type {0}", array.getClass()));
         }

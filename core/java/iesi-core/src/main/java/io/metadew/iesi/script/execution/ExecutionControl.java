@@ -44,7 +44,6 @@ public class ExecutionControl {
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
     private final ActionDesignTraceService actionDesignTraceService;
     private ExecutionRuntime executionRuntime;
-    private ExecutionTrace executionTrace;
     private String runId;
     private String envName;
     private boolean actionErrorStop = false;
@@ -59,7 +58,6 @@ public class ExecutionControl {
             InvocationTargetException, InstantiationException, IllegalAccessException {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.actionDesignTraceService = new ActionDesignTraceService();
-        this.executionTrace = new ExecutionTrace();
         initializeRunId();
         initializeExecutionRuntime(runId);
         this.lastProcessId = -1L;
@@ -87,7 +85,7 @@ public class ExecutionControl {
                 .getConnectivityMetadataRepository()
                 .executeQuery("select env_par_nm, env_par_val from "
                         + MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
-                        + " where env_nm = " + SQLTools.GetStringForSQL(this.envName) + " order by env_par_nm asc, env_par_val asc", "reader"));
+                        + " where env_nm = " + SQLTools.getStringForSQL(this.envName) + " order by env_par_nm asc, env_par_val asc", "reader"));
     }
 
     public void terminate() {
@@ -308,10 +306,6 @@ public class ExecutionControl {
 
     public ExecutionRuntime getExecutionRuntime() {
         return executionRuntime;
-    }
-
-    public ExecutionTrace getExecutionTrace() {
-        return executionTrace;
     }
 
     public Long getLastProcessId() {

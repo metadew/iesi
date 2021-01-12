@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataFieldType;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
 public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase> implements ISchemaDatabaseService<OracleDatabase> {
@@ -109,17 +110,20 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
         StringBuilder fieldQuery = new StringBuilder();
         // Data Types
         switch (field.getType()) {
-            case "string":
+            case STRING:
                 fieldQuery.append("VARCHAR2 (").append(field.getLength()).append(" CHAR)");
                 break;
-            case "flag":
+            case FLAG:
                 fieldQuery.append("CHAR (").append(field.getLength()).append(" CHAR)");
                 break;
-            case "number":
+            case NUMBER:
                 fieldQuery.append("NUMBER");
                 break;
-            case "timestamp":
+            case TIMESTAMP:
                 fieldQuery.append("TIMESTAMP (6)");
+                break;
+            case CLOB:
+                fieldQuery.append("CLOB");
                 break;
         }
 

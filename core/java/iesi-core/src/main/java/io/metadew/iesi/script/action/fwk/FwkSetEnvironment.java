@@ -2,7 +2,10 @@ package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.environment.Environment;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -41,6 +44,11 @@ public class FwkSetEnvironment extends ActionTypeExecution {
 
     protected boolean executeAction() throws InterruptedException {
         String environmentName = convertEnvironmentName(getEnvironmentName().getValue());
+
+        //Check if environment exists
+        Environment environment = EnvironmentConfiguration.getInstance()
+                .get(new EnvironmentKey(environmentName))
+                .orElseThrow(() -> new RuntimeException("Could not find environment " + environmentName));
         this.getExecutionControl().setEnvironment(getActionExecution(), environmentName);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;

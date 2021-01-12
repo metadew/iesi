@@ -68,8 +68,10 @@ public class SqlEvaluateResult extends ActionTypeExecution {
 
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
+
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
+
         // Run the action
         CachedRowSet crs;
         crs = DatabaseHandler.getInstance().executeQueryLimitRows(database, query, 10);
@@ -81,6 +83,8 @@ public class SqlEvaluateResult extends ActionTypeExecution {
                 this.getActionExecution().getActionControl().increaseSuccessCount();
                 return true;
             } else {
+                getActionExecution().getActionControl().logOutput("action.error",
+                        "sql query '" + query + "' does not contain any rows");
                 this.getActionExecution().getActionControl().increaseErrorCount();
                 return false;
             }
@@ -89,6 +93,8 @@ public class SqlEvaluateResult extends ActionTypeExecution {
                 this.getActionExecution().getActionControl().increaseSuccessCount();
                 return true;
             } else {
+                getActionExecution().getActionControl().logOutput("action.error",
+                        "sql query '" + query + "' contains " + rowCount + " rows");
                 this.getActionExecution().getActionControl().increaseErrorCount();
                 return false;
             }

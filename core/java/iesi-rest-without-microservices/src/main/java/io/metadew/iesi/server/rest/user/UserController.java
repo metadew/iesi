@@ -1,87 +1,130 @@
 package io.metadew.iesi.server.rest.user;
 
+import io.metadew.iesi.metadata.definition.user.Role;
+import io.metadew.iesi.metadata.definition.user.Team;
+import io.metadew.iesi.metadata.definition.user.User;
+import io.metadew.iesi.metadata.definition.user.UserKey;
+import io.metadew.iesi.metadata.service.user.TeamService;
+import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 
 @RestController
 @Profile("security")
 @Tag(name = "users", description = "Everything about users")
 @RequestMapping("/users")
-@CrossOrigin
 @Log4j2
+// the team controller should be created first as it needs to check if the 'iesi' team is already created.
+@DependsOn("teamsController")
 public class UserController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final CustomUserDetailsManager userDetailsManager;
     private final PasswordEncoder passwordEncoder;
+    private final TeamService teamService;
+    private final UserService userService;
+    private final UserDtoService userDtoService;
 
-    public UserController(AuthenticationManager authenticationManager, JwtService jwtService, CustomUserDetailsManager userDetailsManager, PasswordEncoder passwordEncoder) {
+    public UserController(AuthenticationManager authenticationManager, JwtService jwtService, PasswordEncoder passwordEncoder, TeamService teamService, UserService userService, UserDtoService userDtoService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        this.userDetailsManager = userDetailsManager;
         this.passwordEncoder = passwordEncoder;
+        this.teamService = teamService;
+        this.userService = userService;
+        this.userDtoService = userDtoService;
+    }
+
+    @PostConstruct
+    void checkIesiTeam() {
+        if (!userService.exists("admin")) {
+            log.warn("Creating SYSADMIN user 'admin' with default password. Please change this password");
+            User admin = User.builder()
+                    .username("admin")
+                    .credentialsExpired(false)
+                    .enabled(true)
+                    .expired(false)
+                    .locked(false)
+                    .userKey(new UserKey(UUID.randomUUID()))
+                    .password(passwordEncoder.encode("admin"))
+                    .roleKeys(new HashSet<>())
+                    .build();
+            Optional<Team> iesiTeam = teamService.get("iesi");
+            if (iesiTeam.isPresent()) {
+                Optional<Role> sysAdminRole = iesiTeam.get().getRoles().stream()
+                        .filter(role -> role.getName().equalsIgnoreCase("SYSADMIN"))
+                        .findFirst();
+                if (sysAdminRole.isPresent()) {
+                    log.info("adding 'admin' user as a sysadmin to the iesi team");
+                    admin.getRoleKeys().add(sysAdminRole.get().getMetadataKey());
+                } else {
+                    log.warn("iesi team does not contain a sysadmin role");
+                }
+            } else {
+                log.warn("iesi team does not exist. Unable to add 'admin' to the iesi team");
+            }
+            userService.addUser(admin);
+        }
     }
 
     @PostMapping("/login")
     public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
         log.trace("authenticating " + authenticationRequest.getUsername());
-        try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-            return jwtService.generateAuthenticationResponse(authentication);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            log.info(StackTrace.toString());
-            throw e;
-        }
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+        return jwtService.generateAuthenticationResponse(authentication);
     }
 
     @PostMapping("/create")
-    public ResponseEntity create(@RequestBody UserPostDto userPostDto) {
-        if (userDetailsManager.userExists(userPostDto.getUsername())) {
+    @PreAuthorize("hasPrivilege('USERS_WRITE')")
+    public ResponseEntity<Object> create(@RequestBody UserPostDto userPostDto) {
+        if (userService.exists(userPostDto.getUsername())) {
             return ResponseEntity.badRequest().body("username is already taken");
         }
-        User user = new User(userPostDto.getUsername(),
+        User user = new User(
+                new UserKey(UUID.randomUUID()),
+                userPostDto.getUsername(),
                 passwordEncoder.encode(userPostDto.getPassword()),
-                userPostDto.getAuthorities().stream()
-                        .map(authorityDto -> new SimpleGrantedAuthority(authorityDto.getAuthority()))
-                        .collect(Collectors.toList()));
-        userDetailsManager.createUser(user);
-        return ResponseEntity.noContent().build();
+                true,
+                false,
+                false,
+                false,
+                new HashSet<>());
+        userService.addUser(user);
+        Optional<UserDto> userDto = userDtoService.get(user.getMetadataKey().getUuid());
+        return userDto
+                .<ResponseEntity<Object>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<UserDto> fetch(@PathVariable String username) {
-        if (!userDetailsManager.userExists(username)) {
-            return ResponseEntity.notFound().build();
-        }
-        UserDetails userDetails = userDetailsManager.loadUserByUsername(username);
-        UserDto user = new UserDto(userDetails.getUsername(),
-                userDetails.isEnabled(),
-                !userDetails.isAccountNonExpired(),
-                !userDetails.isCredentialsNonExpired(),
-                !userDetails.isAccountNonLocked(),
-                userDetails.getAuthorities().stream()
-                        .map(authority -> new AuthorityDto(authority.getAuthority()))
-                        .collect(Collectors.toList()));
-        return ResponseEntity.ok(user);
+    @GetMapping("/{uuid}")
+    @PreAuthorize("hasPrivilege('USERS_READ')")
+    public ResponseEntity<UserDto> fetch(@PathVariable UUID uuid) {
+        return ResponseEntity
+                .of(userDtoService.get(uuid));
+    }
+
+    @GetMapping("")
+    @PreAuthorize("hasPrivilege('USERS_READ')")
+    public Set<UserDto> fetchAll() {
+        return userDtoService.getAll();
     }
 
 }

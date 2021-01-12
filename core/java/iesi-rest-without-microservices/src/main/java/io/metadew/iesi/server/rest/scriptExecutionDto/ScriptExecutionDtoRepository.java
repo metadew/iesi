@@ -390,8 +390,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
      */
     private Optional<String> getWhereClause(String runId, Long processId) {
         List<String> conditions = new ArrayList<>();
-        if (runId != null) conditions.add(" results.RUN_ID = " + SQLTools.GetStringForSQL(runId));
-        if (processId != null) conditions.add(" results.prc_id = " + SQLTools.GetStringForSQL(processId));
+        if (runId != null) conditions.add(" results.RUN_ID = " + SQLTools.getStringForSQL(runId));
+        if (processId != null) conditions.add(" results.prc_id = " + SQLTools.getStringForSQL(processId));
         if (conditions.isEmpty()) return Optional.empty();
         return Optional.of(" where " + String.join(" and ", conditions) + " ");
     }

@@ -12,10 +12,12 @@ iesi:
         coordinator:
           type: h2
           mode: memory
-          database: test
+          database: test;ALIAS_COLUMN_NAME=TRUE
           owner:
             user: ""
             password: ""
+#          type: sqlite
+#          file:
 
 #          type: h2
 #          mode: embedded

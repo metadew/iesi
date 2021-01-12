@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.definition.template.matcher.value;
 
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import io.metadew.iesi.metadata.definition.template.matcher.MatcherKey;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

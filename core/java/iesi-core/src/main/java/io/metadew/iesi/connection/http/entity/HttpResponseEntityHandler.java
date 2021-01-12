@@ -5,7 +5,8 @@ import io.metadew.iesi.connection.http.entity._default.DefaultHttpResponseEntity
 import io.metadew.iesi.connection.http.entity.json.ApplicationJsonHttpResponseEntityService;
 import io.metadew.iesi.connection.http.entity.plain.TextPlainHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.HttpHeaders;
@@ -37,12 +38,12 @@ public class HttpResponseEntityHandler implements IHttpResponseEntityHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public void writeToDataset(HttpResponseEntityStrategy httpResponseEntityStrategy, KeyValueDataset dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
+    public void writeToDataset(HttpResponseEntityStrategy httpResponseEntityStrategy, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         getHttpResponseEntityService(httpResponseEntityStrategy).writeToDataset(httpResponseEntityStrategy, dataset, key, executionRuntime);
     }
 
     @Override
-    public void writeToDataset(HttpResponse httpResponse, KeyValueDataset dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
+    public void writeToDataset(HttpResponse httpResponse, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         if (httpResponse.getHeaders().stream()
                 .filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
                 .count() > 1) {
@@ -56,6 +57,24 @@ public class HttpResponseEntityHandler implements IHttpResponseEntityHandler {
             DefaultHttpResponseEntityService.getInstance().writeToDataset(new DefaultHttpResponseEntityStrategy(httpResponse), dataset, key, executionRuntime);
         } else {
             getHttpResponseEntityService(contentType).writeToDataset(httpResponse, dataset, key, executionRuntime);
+        }
+    }
+
+    @Override
+    public void traceOutput(HttpResponse httpResponse, ActionControl actionControl) {
+        if (httpResponse.getHeaders().stream()
+                .filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
+                .count() > 1) {
+            log.warn("content-type: " + MessageFormat.format("Http response contains multiple headers ({0}) defining the content type", httpResponse.getHeaders().stream()
+                    .filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
+                    .count()));
+        }
+        ContentType contentType = ContentType.get(httpResponse.getHttpEntity());
+        if (contentType == null) {
+            log.warn("content-type: Http response contains no header defining the content type.");
+            DefaultHttpResponseEntityService.getInstance().outputResponse(httpResponse, actionControl);
+        } else {
+            getHttpResponseEntityService(contentType).outputResponse(httpResponse, actionControl);
         }
     }
 

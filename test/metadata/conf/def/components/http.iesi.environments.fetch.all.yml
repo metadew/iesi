@@ -1,0 +1,17 @@
+---
+type: Component
+data:
+  name: "iesi.environments.fetch.all"
+  type: "http.request"
+  version:
+    number: 1
+    description: "description"
+  description: "http call to IESI fetch all environments endpoint"
+  parameters:
+  - name: "connection"
+    value: "iesi"
+  - name: "endpoint"
+    value: "/environments"
+  - name: "type"
+    value: "get"
+  attributes: []

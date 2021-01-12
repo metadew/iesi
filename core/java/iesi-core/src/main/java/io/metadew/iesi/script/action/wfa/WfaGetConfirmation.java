@@ -79,6 +79,8 @@ public class WfaGetConfirmation extends ActionTypeExecution {
         if (result) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         } else {
+            getActionExecution().getActionControl().logOutput("action.error",
+                    "Confirmation was negative");
             this.getActionExecution().getActionControl().increaseErrorCount();
         }
 

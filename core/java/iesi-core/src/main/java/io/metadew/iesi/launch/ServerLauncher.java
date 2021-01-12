@@ -1,7 +1,7 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.FrameworkInstance;
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.runtime.ExecutionRequestListener;

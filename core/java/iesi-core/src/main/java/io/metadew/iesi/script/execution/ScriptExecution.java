@@ -80,7 +80,7 @@ public abstract class ScriptExecution {
 					iterationExecution.initialize(executionControl, actionExecution, action.getIteration());
 				}
 
-				while (iterationExecution.hasNext()) {
+				while (iterationExecution.hasNext(actionExecution)) {
 					actionExecution.initialize();
 					actionExecution.execute(iterationExecution.getIterationInstance());
 					int retryCounter = 1;
@@ -175,7 +175,7 @@ public abstract class ScriptExecution {
 
 		Future<ScriptExecution> completedFuture;
 		ScriptExecution completedScriptExecution;
-		while (futureScriptExecutions.size() > 0) {
+		while (!futureScriptExecutions.isEmpty()) {
 			try {
 				completedFuture = completionService.take();
 				futureScriptExecutions.remove(completedFuture);
@@ -186,13 +186,12 @@ public abstract class ScriptExecution {
 			} catch (ExecutionException e) {
 				Throwable cause = e.getCause();
 				this.getExecutionControl().logMessage("route.error=" + cause, Level.INFO);
-				continue;
 			}
 		}
 	}
 
 	public void traceDesignMetadata() {
-		this.getExecutionControl().getExecutionTrace().setExecution(this);
+		ExecutionTrace.getInstance().setExecution(this);
 	}
 
 	public ExecutionControl getExecutionControl() {

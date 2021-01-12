@@ -247,17 +247,17 @@ iesi:
         status: stable
       eval.listContains:
         className: io.metadew.iesi.script.action.eval.EvalListContains
-        description: Evaluate if a list contains a certain value
+        description: Evaluate if two values are equal
         parameters:
           list:
-            description: list to be checked
+            description: Expected value to evaluate
             type: string
             mandatory: true
             encrypted: false
             subroutine:
             impersonate: false
           value:
-            description: element value
+            description: Actual value to evaluate
             type: string
             mandatory: true
             encrypted: false
@@ -955,13 +955,6 @@ iesi:
         className: io.metadew.iesi.script.action.http.HttpExecuteRequest
         description: Execute a http request
         parameters:
-          type:
-            description: Type of request
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
           request:
             description: Name of the request to use
             type: string

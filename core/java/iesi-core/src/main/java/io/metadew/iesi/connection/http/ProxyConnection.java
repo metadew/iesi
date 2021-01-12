@@ -1,9 +1,11 @@
 package io.metadew.iesi.connection.http;
 
 import io.metadew.iesi.metadata.definition.connection.Connection;
+import lombok.Data;
 
 import java.text.MessageFormat;
 
+@Data
 public class ProxyConnection {
 
     private final String hostName;
@@ -12,14 +14,6 @@ public class ProxyConnection {
     public ProxyConnection(String hostName, int port) {
         this.hostName = hostName;
         this.port = port;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getHostName() {
-        return hostName;
     }
 
     public static ProxyConnection from(Connection connection) {

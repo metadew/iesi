@@ -1,7 +1,9 @@
 package io.metadew.iesi.server.rest.script.dto;
 
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.script.ScriptFilter;
 import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
@@ -19,18 +21,24 @@ public class ScriptDtoService implements IScriptDtoService {
 
     private final IScriptVersionDtoService scriptVersionDtoService;
     private final IScriptDtoRepository scriptDtoRepository;
+    private final SecurityGroupConfiguration securityGroupConfiguration;
 
     @Autowired
-    public ScriptDtoService(IScriptVersionDtoService scriptVersionDtoService,
-                            IScriptDtoRepository scriptDtoRepository) {
+    public ScriptDtoService(IScriptVersionDtoService scriptVersionDtoService, IScriptDtoRepository scriptDtoRepository,
+                            SecurityGroupConfiguration securityGroupConfiguration) {
         this.scriptVersionDtoService = scriptVersionDtoService;
         this.scriptDtoRepository = scriptDtoRepository;
+        this.securityGroupConfiguration = securityGroupConfiguration;
     }
 
     public Script convertToEntity(ScriptDto scriptDto) {
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName(scriptDto.getSecurityGroupName())
+                .orElseThrow(() -> new RuntimeException("could not find Security Group with name " + scriptDto.getSecurityGroupName()));
         return new Script(
                 new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()),
                         scriptVersionDtoService.convertToEntity(scriptDto.getVersion(), IdentifierTools.getScriptIdentifier(scriptDto.getName())).getNumber()),
+                securityGroup.getMetadataKey(),
+                scriptDto.getSecurityGroupName(),
                 scriptDto.getName(),
                 scriptDto.getDescription(),
                 scriptVersionDtoService.convertToEntity(scriptDto.getVersion(), IdentifierTools.getScriptIdentifier(scriptDto.getName())),

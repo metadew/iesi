@@ -4,6 +4,7 @@ package io.metadew.iesi.metadata.definition.connection;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -15,6 +16,7 @@ public class ConnectionParameter extends Metadata<ConnectionParameterKey> {
 
     private String value;
 
+    @Builder
     public ConnectionParameter(ConnectionParameterKey connectionParameterKey, String value) {
         super(connectionParameterKey);
         this.value = value;

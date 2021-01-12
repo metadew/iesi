@@ -3,9 +3,8 @@ package io.metadew.iesi.script.action.sql;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -88,12 +87,9 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
-        if (database == null) {
-            throw new RuntimeException("Error establishing DB connection");
-        }
 
         SqlScriptResult sqlScriptResult = null;
         CachedRowSet crs = null;
@@ -102,10 +98,10 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         // TODO Retrieve config from a file
 
         if (!outputDatasetReferenceName.isEmpty()) {
-            Optional<Dataset> dataset = getExecutionControl().getExecutionRuntime().getDataset(outputDatasetReferenceName);
+            Optional<InMemoryDatasetImplementation> dataset = getExecutionControl().getExecutionRuntime().getDataset(outputDatasetReferenceName);
 
             // Perform the action
-            SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), !appendOutput);
+            //SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), !appendOutput);
             sqlScriptResult = new SqlScriptResult(0, "data.transfer.complete", "");
 
         } else {

@@ -1,0 +1,137 @@
+{
+	"name": "CreateEnvironment",
+	"implementations": [
+	{
+			"labels": [{
+					"label": "singlelabel"
+				}, {
+					"label": "p2"
+				}, {
+					"label": "r49fd6378-320a-43a8-bfc8-2a8504ecc254"
+				}
+			],
+			"keyValues": [{
+					"key": "protocol.version.major",
+					"value": "1"
+				}, {
+					"key": "status.code",
+					"value": "200"
+				}, {
+					"key": "protocol",
+					"value": "HTTP"
+				}, {
+					"key": "body",
+					"value": "{\"name\":\"not.existing.environment\",\"description\":\"dummy environment\",\"parameters\":[],\"_links\":{\"self\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment\"},\"connections\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment/connections\"}}}"
+				}, {
+					"key": "headers",
+					"value": "{{^list(Vary:Origin, Vary:Access-Control-Request-Method, Vary:Access-Control-Request-Headers, Content-Type:application/hal+json, Transfer-Encoding:chunked, Date:Wed, 02 Sep 2020 15:55:46 GMT, Keep-Alive:timeout=60, Connection:keep-alive)}}"
+				}, {
+					"key": "protocol.version.minor",
+					"value": "1"
+				}, {
+					"key": "status.reason",
+					"value": ""
+				}
+			]
+		}, 
+		{
+			"labels": [{
+					"label": "singlelabel"
+				}, {
+					"label": "p2"
+				}, {
+					"label": "rdeb01915-91cb-40a8-81fe-b6889c81fb2f"
+				}
+			],
+			"keyValues": [{
+					"key": "status.reason",
+					"value": ""
+				}, {
+					"key": "protocol.version.minor",
+					"value": "1"
+				}, {
+					"key": "headers",
+					"value": "{{^list(Vary:Origin, Vary:Access-Control-Request-Method, Vary:Access-Control-Request-Headers, Content-Type:application/hal+json, Transfer-Encoding:chunked, Date:Mon, 07 Sep 2020 15:27:09 GMT, Keep-Alive:timeout=60, Connection:keep-alive)}}"
+				}, {
+					"key": "body",
+					"value": "{\"name\":\"not.existing.environment\",\"description\":\"dummy environment\",\"parameters\":[],\"_links\":{\"self\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment\"},\"connections\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment/connections\"}}}"
+				}, {
+					"key": "protocol.version.major",
+					"value": "1"
+				}, {
+					"key": "protocol",
+					"value": "HTTP"
+				}, {
+					"key": "status.code",
+					"value": "200"
+				}
+			]
+		}, 
+		{
+			"labels": [{
+					"label": "p{{$process.id}}"
+				}, {
+					"label": "singlelabel"
+				}, {
+					"label": "r{{$run.id}}"
+				}
+			],
+			"keyValues": [{
+					"key": "status.reason",
+					"value": ""
+				}, {
+					"key": "protocol",
+					"value": "HTTP"
+				}, {
+					"key": "protocol.version.minor",
+					"value": "1"
+				}, {
+					"key": "body",
+					"value": "{\"name\":\"not.existing.environment\",\"description\":\"dummy environment\",\"parameters\":[],\"_links\":{\"self\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment\"},\"connections\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment/connections\"}}}"
+				}, {
+					"key": "headers",
+					"value": "{{^list(Vary:Origin, Vary:Access-Control-Request-Method, Vary:Access-Control-Request-Headers, Content-Type:application/hal+json, Transfer-Encoding:chunked, Date:Wed, 02 Sep 2020 15:40:43 GMT, Keep-Alive:timeout=60, Connection:keep-alive)}}"
+				}, {
+					"key": "status.code",
+					"value": "200"
+				}, {
+					"key": "protocol.version.major",
+					"value": "1"
+				}
+			]
+		}, 
+		{
+			"labels": [{
+					"label": "p2"
+				}, {
+					"label": "singlelabel"
+				}, {
+					"label": "r90306c8e-9dc8-4ca3-8037-3dc0550e8965"
+				}
+			],
+			"keyValues": [{
+					"key": "protocol.version.minor",
+					"value": "1"
+				}, {
+					"key": "status.reason",
+					"value": ""
+				}, {
+					"key": "protocol",
+					"value": "HTTP"
+				}, {
+					"key": "protocol.version.major",
+					"value": "1"
+				}, {
+					"key": "status.code",
+					"value": "200"
+				}, {
+					"key": "body",
+					"value": "{\"name\":\"not.existing.environment\",\"description\":\"dummy environment\",\"parameters\":[],\"_links\":{\"self\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment\"},\"connections\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment/connections\"}}}"
+				}, {
+					"key": "headers",
+					"value": "{{^list(Vary:Origin, Vary:Access-Control-Request-Method, Vary:Access-Control-Request-Headers, Content-Type:application/hal+json, Transfer-Encoding:chunked, Date:Wed, 02 Sep 2020 16:08:24 GMT, Keep-Alive:timeout=60, Connection:keep-alive)}}"
+				}
+			]
+		}
+	]
+}

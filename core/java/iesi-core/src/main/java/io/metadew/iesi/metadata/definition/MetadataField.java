@@ -11,7 +11,7 @@ public class MetadataField {
 
     private String description;
     private int order;
-    private String type;
+    private MetadataFieldType type;
     private int length;
     private boolean nullable = true;
     private boolean defaultTimestamp = false;

@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ComponentDesignTraceConfigurationTest {
+class ComponentDesignTraceConfigurationTest {
 
     private HttpComponentDesignTrace httpComponentDesignTrace;
     private HttpComponentDesignTrace httpComponentDesignTrace2;

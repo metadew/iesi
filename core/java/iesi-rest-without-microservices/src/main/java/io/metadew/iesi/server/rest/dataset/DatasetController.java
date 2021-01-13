@@ -3,12 +3,15 @@ package io.metadew.iesi.server.rest.dataset;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
+import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetDtoModelAssembler;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoService;
+import io.metadew.iesi.server.rest.dataset.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Log4j2
 @RestController
@@ -37,9 +41,11 @@ public class DatasetController {
     private final IDatasetDtoService datasetDtoService;
 
     @Autowired
-    public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler, IDatasetService datasetService,
+    public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
+                             IDatasetService datasetService,
                              IDatasetImplementationService datasetImplementationService,
-                             PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler, IDatasetDtoService datasetDtoService) {
+                             PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,
+                             IDatasetDtoService datasetDtoService) {
         this.datasetDtoModelAssembler = datasetDtoModelAssembler;
         this.datasetService = datasetService;
         this.datasetImplementationService = datasetImplementationService;
@@ -59,8 +65,38 @@ public class DatasetController {
 
     @PostMapping("")
     @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
-    public DatasetDto create(@RequestBody DatasetDto datasetDto) {
-        Dataset dataset = datasetDto.convertToNewEntity();
+    public DatasetDto create(@RequestBody DatasetPostDto datasetPostDto) {
+        String datasetName = datasetPostDto.getName();
+        UUID datasetUuid = UUID.randomUUID();
+
+        Dataset dataset = new Dataset(
+                new DatasetKey(UUID.randomUUID()),
+                datasetPostDto.getName(),
+                datasetPostDto.getImplementations().stream()
+                        .map(datasetImplementationDto -> {
+                            UUID datasetImplementationUuid = UUID.randomUUID();
+                            return new InMemoryDatasetImplementation(
+                                    new DatasetImplementationKey(datasetImplementationUuid),
+                                    new DatasetKey(datasetUuid),
+                                    datasetName,
+                                    datasetImplementationDto.getLabels().stream()
+                                            .map(datasetImplementationLabelDto -> new DatasetImplementationLabel(
+                                                    new DatasetImplementationLabelKey(UUID.randomUUID()),
+                                                    new DatasetImplementationKey(datasetImplementationUuid),
+                                                    datasetImplementationLabelDto.getLabel()))
+                                            .collect(Collectors.toSet()),
+                                    ((InMemoryDatasetImplementationPostDto) datasetImplementationDto).getKeyValues().stream()
+                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new InMemoryDatasetImplementationKeyValue(
+                                                    new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                                    new DatasetImplementationKey(datasetImplementationUuid),
+                                                    inMemoryDatasetImplementationKeyValuePostDto.getKey(),
+                                                    inMemoryDatasetImplementationKeyValuePostDto.getValue()
+                                            ))
+                                            .collect(Collectors.toSet())
+                            );
+                        })
+                        .collect(Collectors.toSet())
+        );
         datasetService.create(dataset);
         return datasetDtoModelAssembler.toModel(dataset);
     }

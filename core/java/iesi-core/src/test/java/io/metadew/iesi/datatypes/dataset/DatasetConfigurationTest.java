@@ -1,4 +1,4 @@
-package io.metadew.iesi.metadata.configuration.dataset;
+package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
@@ -22,6 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static io.metadew.iesi.datatypes.dataset.DatasetBuilder.generateDataset;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DatasetConfigurationTest {
@@ -221,54 +222,4 @@ class DatasetConfigurationTest {
                 .isFalse();
     }
 
-    private Map<String, Object> generateDataset(int datasetIndex, int implementationCount, int labelCount, int keyValueCount) {
-        Map<String, Object> info = new HashMap<>();
-
-        UUID datasetUUID = UUID.randomUUID();
-        info.put("datasetUUID", datasetUUID);
-        Dataset dataset = Dataset.builder()
-                .metadataKey(new DatasetKey(datasetUUID))
-                .name(String.format("dataset%d", datasetIndex))
-                .datasetImplementations(
-                        IntStream.range(0, implementationCount).boxed()
-                                .map(implementationIndex -> {
-                                    UUID datasetImplementationUUID = UUID.randomUUID();
-                                    info.put(String.format("datasetImplementation%dUUID", implementationIndex), datasetImplementationUUID);
-                                    return InMemoryDatasetImplementation.builder()
-                                            .metadataKey(new DatasetImplementationKey(datasetImplementationUUID))
-                                            .datasetKey(new DatasetKey(datasetUUID))
-                                            .name(String.format("dataset%d", datasetIndex))
-                                            .datasetImplementationLabels(
-                                                    IntStream.range(0, labelCount).boxed()
-                                                            .map(labelIndex -> {
-                                                                        UUID datasetImplementationLabelUUID = UUID.randomUUID();
-                                                                        info.put(String.format("datasetImplementation%dLabel%dUUID", implementationIndex, labelIndex), datasetImplementationLabelUUID);
-                                                                        return DatasetImplementationLabel.builder()
-                                                                                .metadataKey(new DatasetImplementationLabelKey(datasetImplementationLabelUUID))
-                                                                                .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUUID))
-                                                                                .value(String.format("label%d%d%d", datasetIndex, implementationIndex, labelIndex))
-                                                                                .build();
-                                                                    }
-                                                            ).collect(Collectors.toSet()))
-                                            .keyValues(
-                                                    IntStream.range(0, keyValueCount).boxed()
-                                                            .map(keyValueIndex -> {
-                                                                UUID datasetImplementationKeyValueUUID = UUID.randomUUID();
-                                                                info.put(String.format("datasetImplementation%dKeyValue%dUUID", implementationIndex, keyValueIndex), datasetImplementationKeyValueUUID);
-
-                                                                return InMemoryDatasetImplementationKeyValue.builder()
-                                                                        .metadataKey(new InMemoryDatasetImplementationKeyValueKey(datasetImplementationKeyValueUUID))
-                                                                        .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUUID))
-                                                                        .key(String.format("key%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
-                                                                        .value(String.format("value%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
-                                                                        .build();
-                                                            }).collect(Collectors.toSet())
-                                            )
-                                            .build();
-                                })
-                                .collect(Collectors.toSet()))
-                .build();
-        info.put("dataset", dataset);
-        return info;
-    }
 }

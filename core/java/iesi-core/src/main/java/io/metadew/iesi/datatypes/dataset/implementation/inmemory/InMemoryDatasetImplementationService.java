@@ -70,8 +70,8 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
     public void clean(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
         InMemoryDatasetImplementationService.getInstance().getDataItems(datasetImplementation, executionRuntime)
                 .forEach((s, dataType) -> deleteDataType(dataType, executionRuntime));
-	datasetImplementation.setKeyValues(new HashSet<>());
-	DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
+        datasetImplementation.setKeyValues(new HashSet<>());
+        DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
     }
 
     @Override
@@ -112,18 +112,20 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public void setDataItem(InMemoryDatasetImplementation datasetImplementation, String key, DataType value) {
-        datasetImplementation.getKeyValues().stream()
-                .filter(inMemoryDatasetImplementationKeyValue -> inMemoryDatasetImplementationKeyValue.getKey().equals(key))
-                .findFirst()
-                .map(inMemoryDatasetImplementationKeyValue -> {
-                    inMemoryDatasetImplementationKeyValue.setValue(value.toString());
-                    return datasetImplementation;
-                })
-                .orElseGet(() -> {
-                    datasetImplementation.getKeyValues().add(new InMemoryDatasetImplementationKeyValue(new InMemoryDatasetImplementationKeyValueKey(), datasetImplementation.getMetadataKey(), key, value.toString()));
-                    return datasetImplementation;
-                });
-        DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
+        Optional<InMemoryDatasetImplementationKeyValue> inMemoryDatasetImplementationKeyValue = InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
+                .getByDatasetImplementationIdAndKey(datasetImplementation.getMetadataKey(), key);
+        if (inMemoryDatasetImplementationKeyValue.isPresent()) {
+            inMemoryDatasetImplementationKeyValue.get().setValue(value.toString());
+            InMemoryDatasetImplementationKeyValueConfiguration.getInstance().update(inMemoryDatasetImplementationKeyValue.get());
+        } else {
+            InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
+                    .insert(new InMemoryDatasetImplementationKeyValue(
+                            new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                            datasetImplementation.getMetadataKey(),
+                            key,
+                            value.toString()
+                    ));
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
@@ -159,6 +160,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     public void init(MetadataRepository metadataRepository) {
         setMetadataRepository(metadataRepository);
+        InMemoryDatasetImplementationKeyValueConfiguration.getInstance().init(metadataRepository);
     }
 
     @Override

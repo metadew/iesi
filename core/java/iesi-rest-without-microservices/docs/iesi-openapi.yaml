@@ -30,6 +30,8 @@ tags:
     description: Everything about connection types
   - name: users
     description: Everything about users
+  - name: datasets
+    description: Everything about datasets
 
 paths:
   '/users/login':
@@ -1725,6 +1727,114 @@ paths:
                   type: string
         '404':
           description: default response
+  
+  
+  '/datasets':
+    get:
+      tags:
+        - datasets
+      operationId: getAllDatasets
+      responses:
+        '200':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModeDdatasetDto'
+        '400':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        '404':
+          description: default response
+    post:
+      tags:
+        - datasets
+      operationId: createDataset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatasetPostDto'
+        required: true
+      responses:
+        '200':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DatasetDto'
+        '400':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        '404':
+          description: default response
+
+  '/datasets/{uuid}':
+    get:
+      tags:
+        - datasets
+      operationId: getDatasetByUuid
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DatasetDto'
+        '400':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        '404':
+          description: default response
+    delete:
+      tags:
+        - datasets
+      operationId: deleteDatasetByUuid
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: object
+        '400':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        '404':
+          description: default response
+
 
 components:
   parameters:
@@ -1748,6 +1858,102 @@ components:
       description: The numbers of items to return.
 
   schemas:
+  
+    InMemoryDatasetImplementationKeyValuePostDto:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    
+    InMemoryDatasetImplementationPostDto:
+      type: object
+      properties:
+        keyValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/InMemoryDatasetImplementationKeyValuePostDto'
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetImplementationLabelPostDto'
+    
+    DatasetImplementationLabelPostDto:
+      type: object
+      properties:
+        label:
+          type: string
+          
+    DatasetPostDto:
+      type: object
+      properties:
+        name:
+          type: string
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/InMemoryDatasetImplementationPostDto'
+  
+    InMemoryDatasetImplementationKeyValueDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+    
+    InMemoryDatasetImplementationDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+        keyValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/InMemoryDatasetImplementationKeyValueDto'
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetImplementationLabelDto'
+    
+    DatasetImplementationLabelDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+        label:
+          type: string
+          
+    DatasetDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/InMemoryDatasetImplementationDto'
+            
+    
+    PagedModeDdatasetDto:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            datasets:
+              type: array
+              items:
+                $ref: '#/components/schemas/DatasetDto'
+        _links:
+          $ref: '#/components/schemas/PageLinks'
+        page:
+          $ref: '#/components/schemas/PaginationProperties'
 
     ComponentAttributeDto:
       type: object

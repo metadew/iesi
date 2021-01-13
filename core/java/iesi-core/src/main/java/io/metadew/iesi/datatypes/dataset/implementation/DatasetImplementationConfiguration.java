@@ -322,18 +322,20 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     public void mapRow(CachedRowSet cachedRowSet, Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap) throws SQLException {
         String datasetImplementationId = cachedRowSet.getString("dataset_impl_id");
-        DatasetImplementationBuilder datasetImplementationBuilder = datasetImplementationBuilderMap.get(datasetImplementationId);
-        if (datasetImplementationBuilder == null) {
-            datasetImplementationBuilder = extractDatasetImplementationBuilderMapRow(cachedRowSet);
-            datasetImplementationBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
+        if (datasetImplementationId != null) {
+            DatasetImplementationBuilder datasetImplementationBuilder = datasetImplementationBuilderMap.get(datasetImplementationId);
+            if (datasetImplementationBuilder == null) {
+                datasetImplementationBuilder = extractDatasetImplementationBuilderMapRow(cachedRowSet);
+                datasetImplementationBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
+            }
+            String type = mapType(cachedRowSet);
+            if (type.equalsIgnoreCase("in_memory")) {
+                mapInMemoryDatasetImplementation(cachedRowSet, (InMemoryDatasetImplementationBuilder) datasetImplementationBuilder);
+            } else {
+                log.warn("no type found for dataset implementation");
+            }
+            mapDatasetImplementationLabel(cachedRowSet, datasetImplementationBuilder);
         }
-        String type = mapType(cachedRowSet);
-        if (type.equalsIgnoreCase("in_memory")) {
-            mapInMemoryDatasetImplementation(cachedRowSet, (InMemoryDatasetImplementationBuilder) datasetImplementationBuilder);
-        } else {
-            log.warn("no type found for dataset implementation");
-        }
-        mapDatasetImplementationLabel(cachedRowSet, datasetImplementationBuilder);
     }
 
     private void mapInMemoryDatasetImplementation(CachedRowSet cachedRowSet, InMemoryDatasetImplementationBuilder inMemoryDatasetImplementationBuilder) throws SQLException {

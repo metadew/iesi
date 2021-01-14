@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 
 public class HttpResponseService implements IHttpResponseService {
 
-    private static HttpResponseService INSTANCE;
+    private static HttpResponseService instance;
 
-    public synchronized static HttpResponseService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpResponseService();
+    public static synchronized HttpResponseService getInstance() {
+        if (instance == null) {
+            instance = new HttpResponseService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     public void writeToDataset(HttpResponse httpResponse, InMemoryDatasetImplementation dataset, ExecutionRuntime executionRuntime) throws IOException {

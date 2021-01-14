@@ -1,6 +1,7 @@
 package io.metadew.iesi.datatypes.dataset.implementation;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 
@@ -11,6 +12,12 @@ import java.util.Optional;
 public interface IDatasetImplementationService<T extends DatasetImplementation> {
 
     Optional<T> getDatasetImplementation(String name, List<String> labels);
+
+    Optional<T> getDatasetImplementation(DatasetKey datasetKey, List<String> labels);
+
+    T createNewDatasetImplementation(Dataset dataset, List<String> labels);
+
+    T createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels);
 
     T createNewDatasetImplementation(String name, List<String> labels);
 

@@ -18,17 +18,17 @@ import java.util.stream.Collectors;
 
 public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
 
-    private static String existQuery = "SELECT " +
+    private static final String EXIST_QUERY = "SELECT " +
             "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "WHERE datasets.ID = {0}";
 
-    private static String existByNameQuery = "SELECT " +
-            "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
+    private static final String FETCH_ID_BY_NAME = "SELECT " +
+            "datasets.ID as dataset_id " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "WHERE datasets.NAME = {0}";
 
-    private static String fetchSingleQuery = "SELECT " +
+    private static final String FETCH_SINGLE_QUERY = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
             "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
@@ -45,7 +45,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "where datasets.ID={0};";
 
-    private static String fetchQuery = "SELECT " +
+    private static final String FETCH_QUERY = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
             "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
@@ -61,7 +61,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID;";
 
-    private static String fetchByNameQuery = "SELECT " +
+    private static final String FETCH_BY_NAME_QUERY = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
             "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
@@ -78,14 +78,14 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "WHERE datasets.NAME={0};";
 
-    private static String existsByNameQuery = "SELECT " +
+    private static final String EXISTS_BY_NAME_QUERY = "SELECT " +
             "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
             "WHERE datasets.NAME={0};";
 
-    private static String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
+    private static final String INSERT_QUERY = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
             " (ID, NAME) VALUES ({0}, {1})";
-    private static String deleteQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
+    private static final String DELETE_QUERY = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
             " WHERE ID={0}";
 
 
@@ -111,7 +111,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
         try {
             Map<String, DatasetBuilder> datasetBuilderMap = new LinkedHashMap<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSingleQuery, SQLTools.getStringForSQL(metadataKey.getUuid())),
+                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.getStringForSQL(metadataKey.getUuid())),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetBuilderMap);
@@ -128,7 +128,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public boolean exists(DatasetKey metadataKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(existQuery, SQLTools.getStringForSQL(metadataKey.getUuid())),
+                    MessageFormat.format(EXIST_QUERY, SQLTools.getStringForSQL(metadataKey.getUuid())),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -140,7 +140,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
         try {
             Map<String, DatasetBuilder> datasetBuilderMap = new LinkedHashMap<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchByNameQuery, SQLTools.getStringForSQL(name)),
+                    MessageFormat.format(FETCH_BY_NAME_QUERY, SQLTools.getStringForSQL(name)),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetBuilderMap);
@@ -156,7 +156,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public boolean existsByName(String name) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(existsByNameQuery, SQLTools.getStringForSQL(name)),
+                    MessageFormat.format(EXISTS_BY_NAME_QUERY, SQLTools.getStringForSQL(name)),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -167,7 +167,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public Optional<DatasetKey> getIdByName(String name) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(existsByNameQuery, SQLTools.getStringForSQL(name)),
+                    MessageFormat.format(FETCH_ID_BY_NAME, SQLTools.getStringForSQL(name)),
                     "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(new DatasetKey(UUID.fromString(cachedRowSet.getString("dataset_id"))));
@@ -183,7 +183,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public List<Dataset> getAll() {
         try {
             Map<String, DatasetBuilder> datasetBuilderMap = new LinkedHashMap<>();
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(fetchQuery,
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(FETCH_QUERY,
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetBuilderMap);
@@ -202,13 +202,13 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
                 .getByDatasetId(datasetKey);
         datasetImplementations
                 .forEach(datasetImplementation -> DatasetImplementationConfiguration.getInstance().delete(datasetImplementation.getMetadataKey()));
-        getMetadataRepository().executeUpdate(MessageFormat.format(deleteQuery,
+        getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_QUERY,
                 SQLTools.getStringForSQL(datasetKey.getUuid().toString())));
     }
 
     @Override
     public void insert(Dataset dataset) {
-        getMetadataRepository().executeUpdate(MessageFormat.format(insertQuery,
+        getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_QUERY,
                 SQLTools.getStringForSQL(dataset.getMetadataKey().getUuid()),
                 SQLTools.getStringForSQL(dataset.getName())));
         dataset.getDatasetImplementations()

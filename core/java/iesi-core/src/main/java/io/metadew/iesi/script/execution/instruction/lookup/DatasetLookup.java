@@ -36,15 +36,7 @@ public class DatasetLookup implements LookupInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-//        // TODO: parse with antlr
-//        Matcher inputParameterMatcher = INPUT_PARAMETER_PATTERN.matcher(parameters);
-//        if (!inputParameterMatcher.find()) {
-//            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to dataset lookup: {0}", parameters));
-//        }
-
-//        Dataset dataset = getDataset(dataTypeService.resolve(inputParameterMatcher.group(DATASET_NAME_KEY)));
-//        String datasetItemName = inputParameterMatcher.group(DATASET_ITEM_NAME_KEY);
-
+        // TODO: parse with antlr
 
         String[] arguments = splitInput(parameters);
         InMemoryDatasetImplementation dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));

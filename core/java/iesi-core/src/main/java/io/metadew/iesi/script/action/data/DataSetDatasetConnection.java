@@ -119,9 +119,9 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                 .collect(Collectors.toList());
 
         InMemoryDatasetImplementation inMemoryDatasetImplementation = InMemoryDatasetImplementationService.getInstance()
-                .getDatasetImplementation(datasetName, resolvedDatasetLabels)
+                .getDatasetImplementation(datasetKey, resolvedDatasetLabels)
                 .orElseGet(() -> {
-                    log.warn(MessageFormat.format("DatasetImplementation {0}-{1} does not exists. Creating dataset implementaion now", datasetName, resolvedDatasetLabels));
+                    log.warn(MessageFormat.format("DatasetImplementation {0}-{1} does not exists. Creating dataset implementation now", datasetName, resolvedDatasetLabels));
                     DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
                     InMemoryDatasetImplementation newInMemoryDatasetImplementation = new InMemoryDatasetImplementation(
                             datasetImplementationKey,

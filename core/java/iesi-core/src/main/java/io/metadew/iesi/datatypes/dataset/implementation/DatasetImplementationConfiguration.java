@@ -107,6 +107,23 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "where datasets.NAME={0} and dataset_impls.ID in ({1});";
 
+    private static final String SELECT_BY_DATASET_ID_AND_LABELS_QUERY = "SELECT " +
+            "dataset_impls.ID as dataset_impl_id, " +
+            "datasets.ID as dataset_id, datasets.NAME as dataset_name, " +
+            "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
+            "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
+            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+            "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+            "on dataset_impls.DATASET_ID=datasets.ID " +
+            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
+            "on dataset_impls.ID = dataset_in_mem_impls.ID " +
+            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
+            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+            "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
+            "where datasets.ID={0} and dataset_impls.ID in ({1});";
+
     private static final String GET_BY_LABEL_SET_VALUE_SUB_QUERY = "SELECT " +
             "dataset_impl_labels.DATASET_IMPL_ID " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
@@ -237,6 +254,31 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(SELECT_BY_NAME_AND_LABELS_QUERY,
                             SQLTools.getStringForSQL(name), labelSetQuery),
+                    "reader");
+            while (cachedRowSet.next()) {
+                mapRow(cachedRowSet, datasetImplementationBuilderMap);
+            }
+            return datasetImplementationBuilderMap.values().stream()
+                    .findFirst()
+                    .map(DatasetImplementationBuilder::build);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<DatasetImplementation> getByDatasetIdAndLabels(DatasetKey datasetKey, List<String> labels) {
+        try {
+            Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
+            String labelSetQuery = labels.stream()
+                    .map(s -> MessageFormat.format(GET_BY_LABEL_SET_VALUE_SUB_QUERY, SQLTools.getStringForSQL(s)))
+                    .collect(Collectors.joining(" intersect "));
+            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(GET_BY_LABEL_SET_COUNT_SUB_QUERY, SQLTools.getStringForSQL(labels.size()));
+
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
+                    MessageFormat.format(
+                            SELECT_BY_DATASET_ID_AND_LABELS_QUERY,
+                            SQLTools.getStringForSQL(datasetKey.getUuid()),
+                            labelSetQuery),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetImplementationBuilderMap);

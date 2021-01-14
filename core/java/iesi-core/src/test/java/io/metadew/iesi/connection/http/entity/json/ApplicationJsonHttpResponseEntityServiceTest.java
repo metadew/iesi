@@ -27,7 +27,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         InMemoryDatasetImplementationService datasetHandler = mock(InMemoryDatasetImplementationService.class);
         Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
-        Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", dataTypeHandler);
+        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
         HttpResponse httpResponse = mock(HttpResponse.class);
         HttpEntity httpEntity = mock(HttpEntity.class);
@@ -47,7 +47,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
 
         // Clean up
         Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
-        Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", (DataTypeHandler) null);
+        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
@@ -56,7 +56,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         InMemoryDatasetImplementationService datasetHandler = mock(InMemoryDatasetImplementationService.class);
         Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
-        Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", dataTypeHandler);
+        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
         HttpResponse httpResponse = mock(HttpResponse.class);
         when(httpResponse.getEntityContent())
@@ -73,7 +73,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
 
         // Clean up
         Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
-        Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", (DataTypeHandler) null);
+        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
@@ -82,7 +82,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         InMemoryDatasetImplementationService datasetHandler = mock(InMemoryDatasetImplementationService.class);
         Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
-        Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", dataTypeHandler);
+        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
         HttpResponse httpResponse = mock(HttpResponse.class);
         HttpEntity httpEntity = mock(HttpEntity.class);
@@ -99,7 +99,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         verify(datasetHandler, times(0)).setDataItem(dataset, "key", new Text("test"));
         // Clean up
         Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
-        Whitebox.setInternalState(DataTypeHandler.class, "INSTANCE", (DataTypeHandler) null);
+        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
 }

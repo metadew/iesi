@@ -24,19 +24,19 @@ import java.util.regex.Pattern;
 @Log4j2
 public class DataTypeHandler {
 
-    private static final String DatatypeStartCharacters = "{{";
-    private static final String DatatypeStopCharacters = "}}";
-    private static final Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
+    private static final String DATATYPE_START_CHARACTERS = "{{";
+    private static final String DATATYPE_STOP_CHARACTERS = "}}";
+    private static final Pattern DATATYPE_PATTERN = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
     private Map<ClassStringPair, IDataTypeService> dataTypeServiceMap;
 
-    private static DataTypeHandler INSTANCE;
+    private static DataTypeHandler instance;
 
     public static synchronized DataTypeHandler getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DataTypeHandler();
+        if (instance == null) {
+            instance = new DataTypeHandler();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private DataTypeHandler() {
@@ -56,8 +56,8 @@ public class DataTypeHandler {
             return new Null();
         }
         log.trace(MessageFormat.format("resolving {0} for datatype", input));
-        if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
-            Matcher matcher = DatatypePattern.matcher(input.substring(DatatypeStartCharacters.length(), input.length() - DatatypeStopCharacters.length()));
+        if (input.startsWith(DATATYPE_START_CHARACTERS) && input.endsWith(DATATYPE_STOP_CHARACTERS)) {
+            Matcher matcher = DATATYPE_PATTERN.matcher(input.substring(DATATYPE_START_CHARACTERS.length(), input.length() - DATATYPE_STOP_CHARACTERS.length()));
             if (matcher.find()) {
                 return getDataTypeService(matcher.group("datatype"))
                         .resolve(matcher.group("arguments"), executionRuntime);

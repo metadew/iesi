@@ -1,9 +1,8 @@
 package io.metadew.iesi.connection.elasticsearch.filebeat;
 
 import io.metadew.iesi.connection.elasticsearch.ElasticSearchDocument;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -14,9 +13,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class DelimitedFileBeatElasticSearchConnection extends FileBeatElasitcSearchConnection {
 
-    private final static Logger LOGGER = LogManager.getLogger();
     private final String delimiter;
     private final String quoteCharacter;
 
@@ -36,12 +35,12 @@ public class DelimitedFileBeatElasticSearchConnection extends FileBeatElasitcSea
 
     @Override
     public void ingest(ElasticSearchDocument o) {
-        LOGGER.info(o.getLoggingMarker(), toString(o));
+        log.info(o.getLoggingMarker(), toString(o));
     }
 
     @Override
     public void ingest(String string) {
-        LOGGER.info(string);
+        log.info(string);
     }
 
 

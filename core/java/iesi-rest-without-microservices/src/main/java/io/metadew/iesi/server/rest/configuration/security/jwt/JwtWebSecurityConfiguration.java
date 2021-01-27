@@ -23,7 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
 @Configuration
-@Profile("security")
+// @Profile("security")
 @Log4j2
 public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 

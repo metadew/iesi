@@ -7,6 +7,7 @@ import io.metadew.iesi.connection.http.HttpConnectionService;
 import io.metadew.iesi.connection.http.request.HttpGetRequest;
 import io.metadew.iesi.connection.http.request.HttpPostRequest;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.*;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -29,20 +30,23 @@ class HttpComponentServiceTest {
     static void prepare() {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().cleanAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
+        Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().dropAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
     }
 
     @Test

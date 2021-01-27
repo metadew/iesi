@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script.design;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.design.ScriptLabelDesignTrace;
@@ -30,10 +31,7 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
     }
 
     private ScriptLabelDesignTraceConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override

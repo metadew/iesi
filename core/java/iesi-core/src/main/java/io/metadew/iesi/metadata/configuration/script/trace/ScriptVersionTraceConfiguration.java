@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script.trace;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptVersionTrace;
@@ -28,10 +29,7 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
     }
 
     private ScriptVersionTraceConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override

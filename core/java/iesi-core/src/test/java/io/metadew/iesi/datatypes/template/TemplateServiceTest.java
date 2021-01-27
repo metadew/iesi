@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,8 +45,23 @@ class TemplateServiceTest {
     static void prepare() {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getDesignMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
     }
 
     @BeforeEach
@@ -117,18 +133,6 @@ class TemplateServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getDesignMetadataRepository().cleanAllTables();
-    }
-
-    @AfterAll
-    static void teardown() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getDesignMetadataRepository().dropAllTables();
     }
 
     @Test

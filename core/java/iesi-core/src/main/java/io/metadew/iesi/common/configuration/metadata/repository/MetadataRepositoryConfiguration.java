@@ -119,6 +119,21 @@ public class MetadataRepositoryConfiguration {
                 ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(repositoryTableKey) instanceof List;
     }
 
+    public void createAllTables() {
+        getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    public void clearAllTables() {
+        getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    public void dropAllTables() {
+        getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
+    }
+
     public List<MetadataRepository> getMetadataRepositories() {
         return metadataRepositories;
     }

@@ -6,7 +6,10 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.scriptExecutionDto.dto.ActionExecutionDto;
 import io.metadew.iesi.server.rest.scriptExecutionDto.dto.ExecutionInputParameterDto;
 import io.metadew.iesi.server.rest.scriptExecutionDto.dto.OutputDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
@@ -26,6 +29,7 @@ public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> 
     private String scriptId;
     private String scriptName;
     private Long scriptVersion;
+    private String securityGroupName;
     private String environment;
     private ScriptRunStatus status;
     private LocalDateTime startTimestamp;

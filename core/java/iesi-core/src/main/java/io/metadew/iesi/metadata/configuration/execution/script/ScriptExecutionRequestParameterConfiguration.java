@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.execution.script;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -29,11 +30,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     }
 
     private ScriptExecutionRequestParameterConfiguration() {
-    }
-
-    // Constructors
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
     }
 
     @Override

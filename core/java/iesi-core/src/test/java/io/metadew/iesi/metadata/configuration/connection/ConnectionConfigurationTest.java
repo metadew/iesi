@@ -39,7 +39,6 @@
 //                .build();
 //
 //        connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
-//        connectivityMetadataRepository.createAllTables();
 //    }
 //
 //    @AfterEach

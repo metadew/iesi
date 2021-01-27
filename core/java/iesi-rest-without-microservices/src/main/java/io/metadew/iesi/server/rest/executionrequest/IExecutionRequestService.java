@@ -5,17 +5,18 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderExce
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IExecutionRequestService {
 
-    Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters);
+    Page<ExecutionRequestDto> getAll(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters);
 
-    Optional<ExecutionRequestDto> getById(String id);
+    Optional<ExecutionRequestDto> getById(Authentication authentication, String id);
 
-    ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
+    ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest);
 
     void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
 

@@ -18,12 +18,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@Profile("security")
+// @Profile("security")
 @Tag(name = "security", description = "Everything about securities")
 @RequestMapping("/security-groups")
 @CrossOrigin
 @Log4j2
 public class SecurityGroupController {
+
+    public static final String PUBLIC_GROUP_NAME = "PUBLIC";
 
     private final SecurityGroupService securityGroupService;
     private final ISecurityGroupDtoService securityGroupDtoService;
@@ -35,11 +37,11 @@ public class SecurityGroupController {
 
     @PostConstruct
     void checkPublicSecurityGroup() {
-        if (!securityGroupService.get("PUBLIC").isPresent()) {
-            log.warn("Creating PUBLIC security group.");
+        if (!securityGroupService.get(PUBLIC_GROUP_NAME).isPresent()) {
+            log.warn(String.format("Creating %s security group.", PUBLIC_GROUP_NAME));
             SecurityGroup publicSecurityGroup = SecurityGroup.builder()
                     .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
-                    .name("PUBLIC")
+                    .name(PUBLIC_GROUP_NAME)
                     .teamKeys(new HashSet<>())
                     .securedObjects(new HashSet<>())
                     .build();

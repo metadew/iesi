@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.action.design;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.design.key.ActionParameterDesignTraceKey;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,6 +15,7 @@ public class ActionParameterDesignTrace extends Metadata<ActionParameterDesignTr
 
     private final String value;
 
+    @Builder
     public ActionParameterDesignTrace(ActionParameterDesignTraceKey actionParameterDesignTraceKey, String value) {
         super(actionParameterDesignTraceKey);
         this.value = value;

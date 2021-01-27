@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
+import io.metadew.iesi.server.rest.user.team.TeamsController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.DependsOn;
@@ -20,8 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -29,13 +28,16 @@ import java.util.UUID;
 
 
 @RestController
-@Profile("security")
+// @Profile("security")
 @Tag(name = "users", description = "Everything about users")
 @RequestMapping("/users")
 @Log4j2
 // the team controller should be created first as it needs to check if the 'iesi' team is already created.
 @DependsOn("teamsController")
 public class UserController {
+
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_PASSWORD = "admin";
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -55,33 +57,38 @@ public class UserController {
 
     @PostConstruct
     void checkIesiTeam() {
-        if (!userService.exists("admin")) {
+        if (!userService.exists(ADMIN_USERNAME)) {
             log.warn("Creating SYSADMIN user 'admin' with default password. Please change this password");
             User admin = User.builder()
-                    .username("admin")
+                    .username(ADMIN_USERNAME)
                     .credentialsExpired(false)
                     .enabled(true)
                     .expired(false)
                     .locked(false)
                     .userKey(new UserKey(UUID.randomUUID()))
-                    .password(passwordEncoder.encode("admin"))
+                    .password(passwordEncoder.encode(ADMIN_PASSWORD))
                     .roleKeys(new HashSet<>())
                     .build();
-            Optional<Team> iesiTeam = teamService.get("iesi");
+            Optional<Team> iesiTeam = teamService.get(TeamsController.IESI_GROUP_NAME);
             if (iesiTeam.isPresent()) {
-                Optional<Role> sysAdminRole = iesiTeam.get().getRoles().stream()
-                        .filter(role -> role.getName().equalsIgnoreCase("SYSADMIN"))
-                        .findFirst();
-                if (sysAdminRole.isPresent()) {
-                    log.info("adding 'admin' user as a sysadmin to the iesi team");
-                    admin.getRoleKeys().add(sysAdminRole.get().getMetadataKey());
-                } else {
-                    log.warn("iesi team does not contain a sysadmin role");
-                }
+                addToRole(admin, iesiTeam.get(), "SYSADMIN");
+                addToRole(admin, iesiTeam.get(), "ADMIN");
             } else {
-                log.warn("iesi team does not exist. Unable to add 'admin' to the iesi team");
+                log.warn(String.format("Team %s does not exist. Unable to add 'admin' to the team.", TeamsController.IESI_GROUP_NAME));
             }
             userService.addUser(admin);
+        }
+    }
+
+    private void addToRole(User admin, Team iesiTeam, String roleName) {
+        Optional<Role> sysAdminRole = iesiTeam.getRoles().stream()
+                .filter(role -> role.getName().equalsIgnoreCase(roleName))
+                .findFirst();
+        if (sysAdminRole.isPresent()) {
+            log.info(String.format("adding user '%s' as a sysadmin to the %s team", ADMIN_USERNAME, TeamsController.IESI_GROUP_NAME));
+            admin.getRoleKeys().add(sysAdminRole.get().getMetadataKey());
+        } else {
+            log.warn(String.format("Team %s does not contain a sysadmin role", TeamsController.IESI_GROUP_NAME));
         }
     }
 

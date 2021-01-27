@@ -10,15 +10,9 @@ import java.util.Optional;
 
 public interface IScriptDtoRepository {
 
-    Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters);
-
     Page<ScriptDto> getAll(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters);
 
-    Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestOnly);
-
     Page<ScriptDto> getByName(Authentication authentication, Pageable pageable, String name, List<String> expansions, boolean isLatestOnly);
-
-    Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions);
 
     Optional<ScriptDto> getByNameAndVersion(Authentication authentication, String name, long version, List<String> expansions);
 

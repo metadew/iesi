@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.action.design;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.design.key.ActionDesignTraceKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -23,6 +24,7 @@ public class ActionDesignTrace extends Metadata<ActionDesignTraceKey> {
     private String errorStop;
     private int retries;
 
+    @Builder
     public ActionDesignTrace(ActionDesignTraceKey actionDesignTraceKey, Long number, String type, String name, String description, String component, String condition, String iteration, int retries, String errorExpected, String errorStop) {
         super(actionDesignTraceKey);
         this.number = number;

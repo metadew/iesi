@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration.user;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
 
 import java.util.Optional;
@@ -33,8 +34,23 @@ class UserConfigurationTest {
     static void prepare() {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getControlMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
     }
 
     @BeforeEach
@@ -106,18 +122,6 @@ class UserConfigurationTest {
                 .password("password3")
                 .roleKeys(Stream.of(role1.getMetadataKey()).collect(Collectors.toSet()))
                 .build();
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getControlMetadataRepository().cleanAllTables();
-    }
-
-    @AfterAll
-    static void teardown() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getControlMetadataRepository().dropAllTables();
     }
 
     @Test

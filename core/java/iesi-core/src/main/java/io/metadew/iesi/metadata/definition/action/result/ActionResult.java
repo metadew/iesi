@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.action.result;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,8 @@ public class ActionResult extends Metadata<ActionResultKey> {
 		this.startTimestamp = startTimestamp;
 		this.endTimestamp = endTimestamp;
 	}
+
+	@Builder
 	public ActionResult(ActionResultKey actionResultKey, Long scriptProcessId, String actionName, String environment, ScriptRunStatus status,
 						LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
 		super(actionResultKey);

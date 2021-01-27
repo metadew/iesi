@@ -11,6 +11,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,20 +32,23 @@ class DatasetConfigurationTest {
     static void prepare() {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getDataMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
         MetadataRepositoryConfiguration.getInstance()
-                .getDataMetadataRepository().cleanAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
+        Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getDataMetadataRepository().dropAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
     }
 
     @Test

@@ -5,7 +5,9 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionK
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,19 +28,26 @@ public class ScriptExecutionDtoController {
     @GetMapping
     @PreAuthorize("hasPrivilege('SCRIPT_EXECUTIONS_READ')")
     public HalMultipleEmbeddedResource<ScriptExecutionDto> getAll() {
-        return new HalMultipleEmbeddedResource<>(scriptExecutionService.getAll());
+        return new HalMultipleEmbeddedResource<>(
+                scriptExecutionService.getAll(SecurityContextHolder.getContext().getAuthentication()));
     }
 
     @GetMapping("/{runId}")
     @PreAuthorize("hasPrivilege('SCRIPT_EXECUTIONS_READ')")
     public HalMultipleEmbeddedResource<ScriptExecutionDto> getByRunId(@PathVariable String runId) {
-        return new HalMultipleEmbeddedResource<>(scriptExecutionService.getByRunId(runId));
+        return new HalMultipleEmbeddedResource<>(
+                scriptExecutionService.getByRunId(SecurityContextHolder.getContext().getAuthentication(), runId));
     }
 
     @GetMapping("/{runId}/{processId}")
     @PreAuthorize("hasPrivilege('SCRIPT_EXECUTIONS_READ')")
+    @PostAuthorize("hasPrivilege('SCRIPT_EXECUTIONS_READ', returnObject.securityGroupName)")
     public ScriptExecutionDto getByRunIdAndProcessId(@PathVariable String runId, @PathVariable Long processId) {
-        return scriptExecutionService.getByRunIdAndProcessId(runId, processId)
+        return scriptExecutionService
+                .getByRunIdAndProcessId(
+                        null,
+                        runId,
+                        processId)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptExecutionKey(runId)));
     }
 

@@ -1,5 +1,5 @@
 iesi:
-  home: "/home/robbe/IESISandbox/0.6.0/dataset_pagination"
+  home: "."
   guard:
     authenticate: N
 #  script:

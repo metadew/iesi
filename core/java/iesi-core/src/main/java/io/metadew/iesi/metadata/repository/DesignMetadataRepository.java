@@ -17,6 +17,7 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import lombok.extern.log4j.Log4j2;
 
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +28,6 @@ public class DesignMetadataRepository extends MetadataRepository {
 
     public DesignMetadataRepository(String instance, RepositoryCoordinator repositoryCoordinator) {
         super(instance, repositoryCoordinator);
-        ScriptConfiguration.getInstance().init(this);
-        ComponentConfiguration.getInstance().init(this);
     }
 
     @Override
@@ -84,7 +83,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         log.info(MessageFormat.format("Saving {0} into design repository", template));
         try {
             TemplateConfiguration.getInstance().insert(template);
-        } catch (MetadataAlreadyExistsException e) {
+        } catch (Exception e) {
             log.info(MessageFormat.format("Template {0} already exists in design repository. Updating to new definition", template));
             TemplateConfiguration.getInstance().update(template);
         }

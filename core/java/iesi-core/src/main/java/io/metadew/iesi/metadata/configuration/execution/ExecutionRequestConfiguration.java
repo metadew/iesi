@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.execution;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -23,24 +24,18 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static ExecutionRequestConfiguration INSTANCE;
+    private static ExecutionRequestConfiguration instance;
 
-    public synchronized static ExecutionRequestConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ExecutionRequestConfiguration();
+    public static synchronized ExecutionRequestConfiguration getInstance() {
+        if (instance == null) {
+            instance = new ExecutionRequestConfiguration();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private ExecutionRequestConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
     }
-
-    // Constructors
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ExecutionRequestLabelConfiguration.getInstance().init(metadataRepository);
-    }
-
 
     @Override
     public Optional<ExecutionRequest> get(ExecutionRequestKey executionRequestKey) {
@@ -70,7 +65,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             }
             cachedRowSet.next();
             if (cachedRowSet.getString("AUTH") != null) {
-                return Optional.of(new AuthenticatedExecutionRequest(executionRequestKey,
+                return Optional.of(new AuthenticatedExecutionRequest(
+                        executionRequestKey,
+                        // new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("SECURITY_GROUP_ID"))),
+                        // cachedRowSet.getString("SECURITY_GROUP_NAME"),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
                         cachedRowSet.getString("REQUEST_NM"),
                         cachedRowSet.getString("REQUEST_DSC"),
@@ -83,7 +81,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         cachedRowSet.getString("SPACE_NM"),
                         cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
             } else if (cachedRowSet.getString("NON_AUTH") != null) {
-                return Optional.of(new NonAuthenticatedExecutionRequest(executionRequestKey,
+                return Optional.of(new NonAuthenticatedExecutionRequest(
+                        executionRequestKey,
+                        // new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("SECURITY_GROUP_ID"))),
+                        // cachedRowSet.getString("SECURITY_GROUP_NAME"),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
                         cachedRowSet.getString("REQUEST_NM"),
                         cachedRowSet.getString("REQUEST_DSC"),
@@ -153,7 +154,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             while (cachedRowSet.next()) {
 
                 if (cachedRowSet.getString("AUTH") != null) {
-                    executionRequests.add(new AuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                    executionRequests.add(new AuthenticatedExecutionRequest(
+                            new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                            // new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("SECURITY_GROUP_ID"))),
+                            // cachedRowSet.getString("SECURITY_GROUP_NAME"),
                             SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
                             cachedRowSet.getString("REQUEST_NM"),
                             cachedRowSet.getString("REQUEST_DSC"),
@@ -166,7 +170,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("SPACE_NM"),
                             cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
                 } else if (cachedRowSet.getString("NON_AUTH") != null) {
-                    executionRequests.add(new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                    executionRequests.add(new NonAuthenticatedExecutionRequest(
+                            new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                            // new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("SECURITY_GROUP_ID"))),
+                            // cachedRowSet.getString("SECURITY_GROUP_NAME"),
                             SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
                             cachedRowSet.getString("REQUEST_NM"),
                             cachedRowSet.getString("REQUEST_DSC"),
@@ -235,7 +242,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             while (cachedRowSet.next()) {
 
                 if (cachedRowSet.getString("AUTH") != null) {
-                    executionRequests.add(new AuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                    executionRequests.add(new AuthenticatedExecutionRequest(
+                            new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                            // new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("SECURITY_GROUP_ID"))),
+                            // cachedRowSet.getString("SECURITY_GROUP_NAME"),
                             SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
                             cachedRowSet.getString("REQUEST_NM"),
                             cachedRowSet.getString("REQUEST_DSC"),
@@ -248,7 +258,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("SPACE_NM"),
                             cachedRowSet.getString("USER_NM"), cachedRowSet.getString("USER_PASSWORD")));
                 } else if (cachedRowSet.getString("NON_AUTH") != null) {
-                    executionRequests.add(new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                    executionRequests.add(new NonAuthenticatedExecutionRequest(
+                            new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                            // new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("SECURITY_GROUP_ID"))),
+                            // cachedRowSet.getString("SECURITY_GROUP_NAME"),
                             SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
                             cachedRowSet.getString("REQUEST_NM"),
                             cachedRowSet.getString("REQUEST_DSC"),
@@ -338,8 +351,12 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
     private List<String> insertStatement(ExecutionRequest executionRequest) {
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") +
-                " (REQUEST_ID, REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, ST_NM) VALUES (" +
+                " (REQUEST_ID, " +
+                //"SECURITY_GROUP_ID, SECURITY_GROUP_NAME, " +
+                "REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, ST_NM) VALUES (" +
                 SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
+                // SQLTools.getStringForSQL(executionRequest.getSecurityGroupKey().getUuid()) + ", " +
+                // SQLTools.getStringForSQL(executionRequest.getSecurityGroupName()) + ", " +
                 SQLTools.getStringForSQL(executionRequest.getRequestTimestamp()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getName()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getDescription()) + "," +

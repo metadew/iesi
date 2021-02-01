@@ -9,7 +9,7 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '/home/robbe/IESISandbox/0.6.0/dataset_performance/'
+  home: '/home/robbe/IESISandbox/0.6.0/security/'
   security:
     enabled: true
     jwt:

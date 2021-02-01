@@ -16,7 +16,7 @@ iesi:
     enabled: true
     jwt:
       secret: secret
-      expiry-date: 10
+      expiry-date: 3600
 
 management:
   endpoints:

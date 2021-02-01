@@ -1,12 +1,10 @@
-package io.metadew.iesi.server.rest.dataset;
+package io.metadew.iesi.server.rest.dataset.implementation;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetImplementationDtoModelAssembler;
+import io.metadew.iesi.server.rest.dataset.DatasetDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;

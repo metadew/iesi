@@ -1,12 +1,11 @@
 package io.metadew.iesi.server.rest.script;
 
-import lombok.Data;
+import io.metadew.iesi.server.rest.dataset.Filter;
 
-@Data
-public class ScriptFilter {
+public class ScriptFilter extends Filter {
 
-    private final ScriptFilterOption scriptFilterOption;
-    private final String value;
-    private final boolean exactMatch;
+    public ScriptFilter(ScriptFilterOption scriptFilterOption, String value, boolean exactMatch) {
+        super(scriptFilterOption, value, exactMatch);
+    }
 
 }

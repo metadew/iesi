@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationJsonComponent;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.*;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelJsonComponent;
@@ -57,7 +58,7 @@ public class DatasetJsonComponent {
                 }
 
                 String type = implementationNode.get(DatasetImplementationJsonComponent.Field.TYPE_KEY.value()).asText();
-                if (type.equalsIgnoreCase(InMemoryDatasetImplementationJsonComponent.Field.TYPE.value())) {
+                if (type.equalsIgnoreCase(DatasetImplementationType.IN_MEMORY.value())) {
                     Set<InMemoryDatasetImplementationKeyValue> keyValues = new HashSet<>();
                     for (JsonNode keyValueNode : implementationNode.get(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
                         keyValues.add(InMemoryDatasetImplementationKeyValue.builder()
@@ -110,7 +111,7 @@ public class DatasetJsonComponent {
                 jsonGenerator.writeEndArray();
 
                 if (datasetImplementation instanceof InMemoryDatasetImplementation) {
-                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), InMemoryDatasetImplementationJsonComponent.Field.TYPE.value());
+                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.IN_MEMORY.value());
                     jsonGenerator.writeArrayFieldStart(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
                     for (InMemoryDatasetImplementationKeyValue inMemoryDatasetImplementationKeyValue : ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues()) {
                         jsonGenerator.writeStartObject();

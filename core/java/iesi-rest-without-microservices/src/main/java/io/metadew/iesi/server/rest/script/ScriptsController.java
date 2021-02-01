@@ -40,21 +40,20 @@ public class ScriptsController {
     private final ScriptDtoModelAssembler scriptDtoModelAssembler;
     private final IScriptPostDtoService scriptPostDtoService;
     private final PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
-
-    @Autowired
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Autowired
     ScriptsController(IScriptService scriptService,
-                     ScriptDtoModelAssembler scriptDtoModelAssembler,
-                     IScriptPostDtoService scriptPostDtoService,
-                     IScriptDtoService scriptDtoService,
-                             PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler) {
+                      ScriptDtoModelAssembler scriptDtoModelAssembler,
+                      IScriptPostDtoService scriptPostDtoService,
+                      IScriptDtoService scriptDtoService,
+                      PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler, ObjectMapper objectMapper) {
         this.scriptService = scriptService;
         this.scriptDtoService = scriptDtoService;
         this.scriptDtoModelAssembler = scriptDtoModelAssembler;
         this.scriptPostDtoService = scriptPostDtoService;
         this.scriptDtoPagedResourcesAssembler = scriptDtoPagedResourcesAssembler;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("")

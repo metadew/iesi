@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.dataset.Dataset;
@@ -13,6 +13,10 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.dataset.*;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +32,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.STREAM;
 
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ContextConfiguration(classes = TestConfiguration.class)
@@ -66,7 +72,7 @@ class DatasetDtoRepositoryTest {
         datasetConfiguration.insert(dataset);
         Pageable pageable = PageRequest.of(0, 2);
         assertThat(
-                datasetDtoRepository.fetchAll(pageable))
+                datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
                 .containsOnly(datasetDto);
     }
 
@@ -76,7 +82,7 @@ class DatasetDtoRepositoryTest {
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
         Pageable pageable = PageRequest.of(0, 2);
-        assertThat(datasetDtoRepository.fetchAll(pageable))
+        assertThat(datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
                 .containsOnly((DatasetDto) dataset1Info.get("datasetDto"));
     }
 
@@ -109,8 +115,73 @@ class DatasetDtoRepositoryTest {
                 .build();
         Pageable pageable = PageRequest.of(1, 2);
         assertThat(
-                datasetDtoRepository.fetchAll(pageable))
+                datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
                 .containsOnly(datasetDto3);
+    }
+
+    @Test
+    void getAllFilterByName() throws InterruptedException {
+        Dataset dataset1 = Dataset.builder()
+                .metadataKey(new DatasetKey(UUID.randomUUID()))
+                .name("dataset1")
+                .datasetImplementations(new HashSet<>())
+                .build();
+        Dataset dataset2 = Dataset.builder()
+                .metadataKey(new DatasetKey(UUID.randomUUID()))
+                .name("dataset11")
+                .datasetImplementations(new HashSet<>())
+                .build();
+        Dataset dataset3 = Dataset.builder()
+                .metadataKey(new DatasetKey(UUID.randomUUID()))
+                .name("dataset3")
+                .datasetImplementations(new HashSet<>())
+                .build();
+        datasetConfiguration.insert(dataset1);
+        datasetConfiguration.insert(dataset2);
+        datasetConfiguration.insert(dataset3);
+        DatasetDto datasetDto1 = DatasetDto.builder()
+                .uuid(dataset1.getMetadataKey().getUuid())
+                .name("dataset1")
+                .implementations(new HashSet<>())
+                .build();
+        DatasetDto datasetDto2 = DatasetDto.builder()
+                .uuid(dataset2.getMetadataKey().getUuid())
+                .name("dataset11")
+                .implementations(new HashSet<>())
+                .build();
+        DatasetDto datasetDto3 = DatasetDto.builder()
+                .uuid(dataset3.getMetadataKey().getUuid())
+                .name("dataset3")
+                .implementations(new HashSet<>())
+                .build();
+        assertThat(
+                datasetDtoRepository.fetchAll(
+                        Pageable.unpaged(),
+                        Stream.of(
+                                new DatasetFilter(DatasetFilterOption.NAME, "dataset", false)
+                        ).collect(Collectors.toSet())))
+                .containsOnly(datasetDto1, datasetDto2, datasetDto3);
+        assertThat(
+                datasetDtoRepository.fetchAll(
+                        Pageable.unpaged(),
+                        Stream.of(
+                                new DatasetFilter(DatasetFilterOption.NAME, "dataset1", false)
+                        ).collect(Collectors.toSet())))
+                .containsOnly(datasetDto1, datasetDto2);
+        assertThat(
+                datasetDtoRepository.fetchAll(
+                        Pageable.unpaged(),
+                        Stream.of(
+                                new DatasetFilter(DatasetFilterOption.NAME, "dataset3", false)
+                        ).collect(Collectors.toSet())))
+                .containsOnly(datasetDto3);
+        assertThat(
+                datasetDtoRepository.fetchAll(
+                        Pageable.unpaged(),
+                        Stream.of(
+                                new DatasetFilter(DatasetFilterOption.NAME, "dataset4", false)
+                        ).collect(Collectors.toSet())))
+                .isEmpty();
     }
 
     private Map<String, Object> generateDataset(int datasetIndex, int implementationCount, int labelCount, int keyValueCount) {

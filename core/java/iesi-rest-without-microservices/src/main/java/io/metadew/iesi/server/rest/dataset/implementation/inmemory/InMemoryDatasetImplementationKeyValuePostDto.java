@@ -1,23 +1,21 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DatasetPostDto {
+public class InMemoryDatasetImplementationKeyValuePostDto {
 
     @NotBlank
-    private String name;
+    private String key;
 
     @NotNull
-    private Set<DatasetImplementationPostDto> implementations;
-
+    private String value;
 
 }

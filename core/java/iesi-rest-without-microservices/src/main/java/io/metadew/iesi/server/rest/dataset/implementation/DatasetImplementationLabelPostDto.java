@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset.implementation;
 
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;

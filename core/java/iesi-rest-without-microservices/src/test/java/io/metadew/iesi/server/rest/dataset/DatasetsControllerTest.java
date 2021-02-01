@@ -40,6 +40,7 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -58,7 +59,8 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ActiveProfiles({"http", "test", "security"})
+@ActiveProfiles({"http", "test"})
+@DirtiesContext
 class DatasetsControllerTest {
 
     @Autowired

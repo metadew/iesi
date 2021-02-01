@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.*;
 
@@ -35,11 +36,23 @@ class ScriptConfigurationTest {
     static void prepare() {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getDesignMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
         MetadataRepositoryConfiguration.getInstance()
-                .getControlMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
     }
 
     @BeforeEach
@@ -75,22 +88,6 @@ class ScriptConfigurationTest {
                 .numberOfActions(3)
                 .numberOfParameters(3)
                 .build();
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getDesignMetadataRepository().cleanAllTables();
-        MetadataRepositoryConfiguration.getInstance()
-                .getControlMetadataRepository().cleanAllTables();
-    }
-
-    @AfterAll
-    static void teardown() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getDesignMetadataRepository().dropAllTables();
-        MetadataRepositoryConfiguration.getInstance()
-                .getControlMetadataRepository().dropAllTables();
     }
 
     @Test

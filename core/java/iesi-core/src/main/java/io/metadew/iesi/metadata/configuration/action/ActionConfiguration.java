@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -34,11 +35,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     }
 
     private ActionConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ActionParameterConfiguration.getInstance().init(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
     }
 
     @Override

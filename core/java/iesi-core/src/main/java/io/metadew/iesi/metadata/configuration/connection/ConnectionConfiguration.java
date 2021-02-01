@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.connection;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -33,12 +34,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     }
 
     private ConnectionConfiguration() {
-    }
-
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ConnectionParameterConfiguration.getInstance().init(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
     }
 
     @Override

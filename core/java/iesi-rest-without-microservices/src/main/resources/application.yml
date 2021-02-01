@@ -11,6 +11,13 @@ spring:
       pageable:
         one-indexed-parameters: true #Allow the UI to query page 1 instead of 0
 
+iesi:
+  security:
+    enabled: true
+    jwt:
+      secret: secret
+      expiry-date: 3600
+
 management:
   endpoints:
     web:

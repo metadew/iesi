@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.component;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -33,10 +34,7 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
     }
 
     private ComponentAttributeConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
     }
 
     @Override

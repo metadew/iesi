@@ -23,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
@@ -102,25 +101,25 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
-        // TODO: currently only look at the PUBLIC security group
-        Set<String> securityGroups = new HashSet<>();
-        securityGroups.add("'PUBLIC'");
 
         if (authentication != null) {
-            securityGroups.addAll(authentication.getAuthorities().stream()
+            Set<String> securityGroups = authentication.getAuthorities().stream()
                     .filter(authority -> authority instanceof IESIGrantedAuthority)
                     .map(authority -> (IESIGrantedAuthority) authority)
                     .map(IESIGrantedAuthority::getSecurityGroupName)
-                    .map(authority -> "'" + authority + "'")
-                    .collect(Collectors.toSet()));
+                    .map(SQLTools::getStringForSQL).collect(Collectors.toSet());
+            filterStatements = filterStatements +
+                    (filterStatements.isEmpty() ? "" : " and ") +
+                    " script_designs.SECURITY_GROUP_NAME IN (" + String.join(", ", securityGroups) + ") ";
         }
-        filterStatements = filterStatements + (filterStatements.isEmpty() ? "" : " and ") +
-                " script_designs.SECURITY_GROUP_NAME IN (" + String.join(", ", securityGroups) + ") ";
-        String onlyLatestVersionStatement = (onlyLatestVersions ? " and (versions.SCRIPT_ID, versions.SCRIPT_VRS_NB) in (select scripts.SCRIPT_ID, max(script_versions.SCRIPT_VRS_NB) SCRIPT_VRS_NB " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
-                "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_versions " +
-                "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) " : "");
-        return " WHERE " + filterStatements + onlyLatestVersionStatement;
+        if (onlyLatestVersions) {
+            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") +
+                    " (versions.SCRIPT_ID, versions.SCRIPT_VRS_NB) in (select scripts.SCRIPT_ID, max(script_versions.SCRIPT_VRS_NB) SCRIPT_VRS_NB " +
+                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
+                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_versions " +
+                    "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) ";
+        }
+        return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
     /**
@@ -155,15 +154,6 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
 
     private String getExpansionsJoinClause() {
         return "";
-    }
-
-    public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return getAll(authentication,
-                pageable,
-                expansions,
-                isLatestVersionOnly,
-                scriptFilters);
     }
 
     @Override
@@ -247,10 +237,8 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
 
     private void mapScriptLabel(CachedRowSet cachedRowSet, ScriptDtoBuilder scriptBuilderDto) throws SQLException {
         String labelId = cachedRowSet.getString("LABEL_ID");
-        if (labelId != null) {
-            if (scriptBuilderDto.getLabels().get(labelId) == null) {
-                scriptBuilderDto.getLabels().put(labelId, new ScriptLabelDto(cachedRowSet.getString("LABEL_NAME"), cachedRowSet.getString("LABEL_VALUE")));
-            }
+        if (labelId != null && scriptBuilderDto.getLabels().get(labelId) == null) {
+            scriptBuilderDto.getLabels().put(labelId, new ScriptLabelDto(cachedRowSet.getString("LABEL_NAME"), cachedRowSet.getString("LABEL_VALUE")));
         }
     }
 
@@ -258,12 +246,12 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     @AllArgsConstructor
     @Getter
     private class ScriptDtoBuilder {
-        private String name;
-        private String securityGroupName;
-        private String description;
-        private ScriptVersionDto version;
-        private Map<Long, ActionDtoBuilder> actions;
-        private Map<String, ScriptLabelDto> labels;
+        private final String name;
+        private final String securityGroupName;
+        private final String description;
+        private final ScriptVersionDto version;
+        private final Map<Long, ActionDtoBuilder> actions;
+        private final Map<String, ScriptLabelDto> labels;
 
         public ScriptDto build() {
             return new ScriptDto(name,
@@ -281,17 +269,17 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     @AllArgsConstructor
     @Getter
     private class ActionDtoBuilder {
-        private long number;
-        private String name;
-        private String type;
-        private String description;
-        private String component;
-        private String condition;
-        private String iteration;
-        private boolean errorExpected;
-        private boolean errorStop;
-        private int retries;
-        private Map<String, ActionParameterDto> parameters;
+        private final long number;
+        private final String name;
+        private final String type;
+        private final String description;
+        private final String component;
+        private final String condition;
+        private final String iteration;
+        private final boolean errorExpected;
+        private final boolean errorStop;
+        private final int retries;
+        private final Map<String, ActionParameterDto> parameters;
 
         public ActionDto build() {
             return new ActionDto(number, name, type, description,
@@ -309,16 +297,6 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                         cachedRowSet.getString("SCRIPT_VRS_DSC")),
                 new HashMap<>(),
                 new HashMap<>());
-    }
-
-    public Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestVersionOnly) {
-        return getByName(
-                SecurityContextHolder.getContext().getAuthentication(),
-                //new UsernamePasswordAuthenticationToken("<anonymous>", Stream.of(new IESIGrantedAuthority("PUBLIC", "SCRIPTS_READ"))),
-                pageable,
-                name,
-                expansions,
-                isLatestVersionOnly);
     }
 
     @Override
@@ -340,16 +318,6 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions) {
-        return getByNameAndVersion(
-                SecurityContextHolder.getContext().getAuthentication(),
-                // new UsernamePasswordAuthenticationToken("<anonymous>", Stream.of(new IESIGrantedAuthority("PUBLIC", "SCRIPTS_READ"))),
-                name,
-                version,
-                expansions);
     }
 
     @Override

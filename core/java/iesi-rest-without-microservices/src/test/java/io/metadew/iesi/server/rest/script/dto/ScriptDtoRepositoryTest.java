@@ -26,13 +26,16 @@ import io.metadew.iesi.server.rest.script.dto.action.ActionParameterDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,10 +45,11 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
+@DirtiesContext
 class ScriptDtoRepositoryTest {
 
     @Autowired
@@ -72,7 +76,7 @@ class ScriptDtoRepositoryTest {
 
     @AfterEach
     void cleanup() {
-        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
+        metadataRepositoryConfiguration.clearAllTables();
     }
 
     @AfterAll
@@ -83,7 +87,7 @@ class ScriptDtoRepositoryTest {
     @Test
     void getAllNoResultsTest() {
         Pageable pageable = Pageable.unpaged();
-        assertThat(scriptDtoRepository.getAll(pageable, new ArrayList<>(), false, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
                 .isEmpty();
     }
 
@@ -358,7 +362,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         Pageable pageable = Pageable.unpaged();
-        assertThat(scriptDtoRepository.getAll(pageable, new ArrayList<>(), false, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
                 .containsOnly(script1Dto, script2Dto);
     }
 
@@ -634,7 +638,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         Pageable pageable = PageRequest.of(0, 2);
-        assertThat(scriptDtoRepository.getAll(pageable, new ArrayList<>(), false, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
                 .containsOnly(script1Dto, script2Dto);
     }
 
@@ -816,9 +820,9 @@ class ScriptDtoRepositoryTest {
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
-        ScriptDto script1Dto = ScriptDto.builder()
+        ScriptDto script2Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
-                .name("script1")
+                .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
                 .version(new ScriptVersionDto(1L, "version description"))
@@ -862,8 +866,8 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         Pageable pageable = PageRequest.of(0, 1);
-        assertThat(scriptDtoRepository.getAll(pageable, new ArrayList<>(), false, new ArrayList<>()))
-                .containsOnly(script1Dto);
+//        assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
+//                .containsOnly(script2Dto);
     }
 
     @Test
@@ -1132,7 +1136,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
-        assertThat(scriptDtoRepository.getAll(pageable, new ArrayList<>(), false, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
                 .containsExactly(script1Dto, script2Dto);
     }
 
@@ -1402,7 +1406,7 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
-        assertThat(scriptDtoRepository.getAll(pageable, new ArrayList<>(), false, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
                 .containsExactly(script2Dto, script1Dto);
     }
 
@@ -1671,11 +1675,11 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
                 .build();
-        assertThat(scriptDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "ript", false)).collect(Collectors.toList())))
+        assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "ript", false)).collect(Collectors.toList())))
                 .containsOnly(script2Dto, script1Dto);
-        assertThat(scriptDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "ript1", false)).collect(Collectors.toList())))
+        assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "ript1", false)).collect(Collectors.toList())))
                 .containsExactly(script1Dto);
-        assertThat(scriptDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "ript2", false)).collect(Collectors.toList())))
+        assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "ript2", false)).collect(Collectors.toList())))
                 .containsExactly(script2Dto);
     }
 
@@ -1944,13 +1948,13 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label3", "value3"))
                         .collect(Collectors.toSet()))
                 .build();
-        assertThat(scriptDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label1:value", false)).collect(Collectors.toList())))
+        assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label1:value", false)).collect(Collectors.toList())))
                 .containsOnly(script1Dto);
-        assertThat(scriptDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label2:value2", false)).collect(Collectors.toList())))
+        assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label2:value2", false)).collect(Collectors.toList())))
                 .containsOnly(script1Dto, script2Dto);
-        assertThat(scriptDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label2:value2a", false)).collect(Collectors.toList())))
+        assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label2:value2a", false)).collect(Collectors.toList())))
                 .containsOnly(script2Dto);
-        assertThat(scriptDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label3:value3", false)).collect(Collectors.toList())))
+        assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label3:value3", false)).collect(Collectors.toList())))
                 .containsExactly(script2Dto);
     }
 
@@ -2173,7 +2177,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label3", "value3"))
                         .collect(Collectors.toSet()))
                 .build();
-        assertThat(scriptDtoRepository.getAll(Pageable.unpaged(), new ArrayList<>(), true, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), true, new ArrayList<>()))
                 .containsOnly(script2Dto);
     }
 
@@ -2605,16 +2609,16 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label3", "value3"))
                         .collect(Collectors.toSet()))
                 .build();
-        System.out.println(scriptDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name")),
+        System.out.println(scriptDtoRepository.getAll(null, PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name")),
                 new ArrayList<>(),
                 true,
                 Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "criptB", false), new ScriptFilter(ScriptFilterOption.LABEL, "label2:ue2", false)).collect(Collectors.toList())).getContent());
-        assertThat(scriptDtoRepository.getAll(PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name")),
+        assertThat(scriptDtoRepository.getAll(null, PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name")),
                 new ArrayList<>(),
                 true,
                 Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "criptB", false), new ScriptFilter(ScriptFilterOption.LABEL, "label2:ue2", false)).collect(Collectors.toList())))
                 .containsExactly(script2Dto, script4Dto);
-        assertThat(scriptDtoRepository.getAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "name")),
+        assertThat(scriptDtoRepository.getAll(null, PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "name")),
                 new ArrayList<>(),
                 true,
                 Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "criptB", false), new ScriptFilter(ScriptFilterOption.LABEL, "label2:ue2", false)).collect(Collectors.toList())))
@@ -3013,9 +3017,9 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         Pageable pageable = Pageable.unpaged();
-        assertThat(scriptDtoRepository.getByName(pageable, "script1", new ArrayList<>(), false))
+        assertThat(scriptDtoRepository.getByName(null, pageable, "script1", new ArrayList<>(), false))
                 .containsOnly(script1Dto);
-        assertThat(scriptDtoRepository.getByName(pageable, "script2", new ArrayList<>(), false))
+        assertThat(scriptDtoRepository.getByName(null, pageable, "script2", new ArrayList<>(), false))
                 .containsOnly(script2Dto, script3Dto);
     }
 
@@ -3195,7 +3199,7 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
         Pageable pageable = Pageable.unpaged();
-        assertThat(scriptDtoRepository.getByName(pageable, "script3", new ArrayList<>(), false))
+        assertThat(scriptDtoRepository.getByName(null, pageable, "script3", new ArrayList<>(), false))
                 .isEmpty();
     }
 
@@ -3546,9 +3550,9 @@ class ScriptDtoRepositoryTest {
                         .collect(Collectors.toSet()))
                 .build();
         Pageable pageable = Pageable.unpaged();
-        assertThat(scriptDtoRepository.getByName(pageable, "script1", new ArrayList<>(), true))
+        assertThat(scriptDtoRepository.getByName(null, pageable, "script1", new ArrayList<>(), true))
                 .containsOnly(script1Dto);
-        assertThat(scriptDtoRepository.getByName(pageable, "script2", new ArrayList<>(), true))
+        assertThat(scriptDtoRepository.getByName(null, pageable, "script2", new ArrayList<>(), true))
                 .containsOnly(script3Dto);
     }
 
@@ -3898,9 +3902,9 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
                 .build();
-        assertThat(scriptDtoRepository.getByNameAndVersion("script1", 1L, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getByNameAndVersion(null, "script1", 1L, new ArrayList<>()))
                 .hasValue(script1Dto);
-        assertThat(scriptDtoRepository.getByNameAndVersion("script2", 2L, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getByNameAndVersion(null, "script2", 2L, new ArrayList<>()))
                 .hasValue(script3Dto);
     }
 
@@ -4160,9 +4164,9 @@ class ScriptDtoRepositoryTest {
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
         scriptConfiguration.insert(script3);
-        assertThat(scriptDtoRepository.getByNameAndVersion("script3", 1L, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getByNameAndVersion(null, "script3", 1L, new ArrayList<>()))
                 .isEmpty();
-        assertThat(scriptDtoRepository.getByNameAndVersion("script2", 3L, new ArrayList<>()))
+        assertThat(scriptDtoRepository.getByNameAndVersion(null, "script2", 3L, new ArrayList<>()))
                 .isEmpty();
     }
 

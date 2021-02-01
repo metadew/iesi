@@ -10,21 +10,22 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import io.metadew.iesi.server.rest.dataset.*;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,11 +37,12 @@ import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.STREAM;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
+@DirtiesContext
 class DatasetDtoRepositoryTest {
 
     @Autowired
@@ -54,7 +56,7 @@ class DatasetDtoRepositoryTest {
 
     @AfterEach
     void cleanup() {
-        metadataRepositoryConfiguration.getMetadataRepositories().forEach(MetadataRepository::cleanAllTables);
+        metadataRepositoryConfiguration.clearAllTables();
     }
 
     @Test

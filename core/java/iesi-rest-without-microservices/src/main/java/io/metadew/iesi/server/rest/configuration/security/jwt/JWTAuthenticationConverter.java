@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
-@Profile("security")
+// @Profile("security")
 public class JWTAuthenticationConverter implements AuthenticationConverter {
 
     private final JwtService jwtService;

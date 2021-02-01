@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,17 +55,17 @@ public class ScriptDtoService implements IScriptDtoService {
     }
 
     @Override
-    public Page<ScriptDto> getAll(Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
-        return scriptDtoRepository.getAll(pageable, expansions, isLatestVersionOnly, scriptFilters);
+    public Page<ScriptDto> getAll(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
+        return scriptDtoRepository.getAll(authentication, pageable, expansions, isLatestVersionOnly, scriptFilters);
     }
 
     @Override
-    public Page<ScriptDto> getByName(Pageable pageable, String name, List<String> expansions, boolean isLatestOnly) {
-        return scriptDtoRepository.getByName(pageable, name, expansions, isLatestOnly);
+    public Page<ScriptDto> getByName(Authentication authentication, Pageable pageable, String name, List<String> expansions, boolean isLatestOnly) {
+        return scriptDtoRepository.getByName(authentication, pageable, name, expansions, isLatestOnly);
     }
 
     @Override
-    public Optional<ScriptDto> getByNameAndVersion(String name, long version, List<String> expansions) {
-        return scriptDtoRepository.getByNameAndVersion(name, version, expansions);
+    public Optional<ScriptDto> getByNameAndVersion(Authentication authentication, String name, long version, List<String> expansions) {
+        return scriptDtoRepository.getByNameAndVersion(authentication, name, version, expansions);
     }
 }

@@ -23,7 +23,7 @@ import java.util.Set;
 
 
 @Component
-@Profile("security")
+// @Profile("security")
 @DependsOn("metadataRepositoryConfiguration")
 public class IesiUserDetailsManager implements UserDetailsManager {
 

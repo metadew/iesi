@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.component;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -37,15 +38,9 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
 
     // Constructors
     private ComponentConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
     }
 
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ComponentVersionConfiguration.getInstance().init(metadataRepository);
-        ComponentParameterConfiguration.getInstance().init(metadataRepository);
-        ComponentAttributeConfiguration.getInstance().init(metadataRepository);
-    }
 
     public Optional<Component> getByNameAndVersion(String name, Long version) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "

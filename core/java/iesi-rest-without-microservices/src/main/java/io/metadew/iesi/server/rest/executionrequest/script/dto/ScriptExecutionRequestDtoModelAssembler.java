@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public  class ScriptExecutionRequestDtoModelAssembler extends RepresentationModelAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
+public class ScriptExecutionRequestDtoModelAssembler extends RepresentationModelAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
 
 
     @Autowired
@@ -27,7 +27,8 @@ public  class ScriptExecutionRequestDtoModelAssembler extends RepresentationMode
 
     private ScriptExecutionRequestDto convertToDto(ScriptExecutionRequest scriptExecutionRequest) {
         if (scriptExecutionRequest instanceof ScriptNameExecutionRequest) {
-            return new ScriptExecutionRequestDto(scriptExecutionRequest.getMetadataKey().getId(),
+            return new ScriptExecutionRequestDto(
+                    scriptExecutionRequest.getMetadataKey().getId(),
                     scriptExecutionRequest.getExecutionRequestKey().getId(),
                     scriptExecutionRequest.getEnvironment(),
                     scriptExecutionRequest.isExit(),
@@ -38,6 +39,7 @@ public  class ScriptExecutionRequestDtoModelAssembler extends RepresentationMode
                     scriptExecutionRequest.getScriptExecutionRequestStatus(),
                     ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName(),
                     ((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(-1L),
+                    null,
                     null,
                     null);
         } else {

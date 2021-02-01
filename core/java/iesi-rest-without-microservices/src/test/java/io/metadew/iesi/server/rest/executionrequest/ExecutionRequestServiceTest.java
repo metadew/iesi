@@ -7,14 +7,19 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
+@DirtiesContext
 class ExecutionRequestServiceTest {
 
     @Autowired

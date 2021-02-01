@@ -5,6 +5,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.component.trace.design.*;
 import io.metadew.iesi.metadata.definition.component.trace.design.http.*;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -24,22 +25,24 @@ class ComponentDesignTraceConfigurationTest {
     static void prepare() {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().cleanAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
+        Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().dropAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
     }
-
     @BeforeEach
     void initializeTemplates() {
         componentUuid = UUID.randomUUID();

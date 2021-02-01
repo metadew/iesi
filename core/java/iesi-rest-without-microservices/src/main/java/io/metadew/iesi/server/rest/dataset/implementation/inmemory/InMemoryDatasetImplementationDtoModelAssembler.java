@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationController;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDtoModelAssembler;
@@ -27,6 +28,7 @@ public class InMemoryDatasetImplementationDtoModelAssembler extends Representati
         InMemoryDatasetImplementationDto inMemoryDatasetImplementationDto = instantiateModel(inMemoryDatasetImplementation);
 
         inMemoryDatasetImplementationDto.setUuid(inMemoryDatasetImplementation.getMetadataKey().getUuid());
+        inMemoryDatasetImplementationDto.setType(DatasetImplementationType.IN_MEMORY.value());
         inMemoryDatasetImplementationDto.setKeyValues(inMemoryDatasetImplementation.getKeyValues().stream()
                 .map(inMemoryDatasetImplementationKeyValueDtoModelAssembler::toModel)
                 .collect(Collectors.toSet()));

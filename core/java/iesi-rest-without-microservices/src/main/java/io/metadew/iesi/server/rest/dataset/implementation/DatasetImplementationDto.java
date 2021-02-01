@@ -18,6 +18,7 @@ import java.util.UUID;
 public abstract class DatasetImplementationDto extends RepresentationModel<DatasetImplementationDto> {
 
     private UUID uuid;
+    private String type;
     private Set<DatasetImplementationLabelDto> labels;
 
 }

@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import lombok.*;
@@ -18,7 +19,7 @@ public class InMemoryDatasetImplementationDto extends DatasetImplementationDto {
 
     @Builder
     public InMemoryDatasetImplementationDto(UUID uuid, Set<DatasetImplementationLabelDto> labels, Set<InMemoryDatasetImplementationKeyValueDto> keyValues) {
-        super(uuid, labels);
+        super(uuid, DatasetImplementationType.IN_MEMORY.value(), labels);
         this.keyValues = keyValues;
     }
 

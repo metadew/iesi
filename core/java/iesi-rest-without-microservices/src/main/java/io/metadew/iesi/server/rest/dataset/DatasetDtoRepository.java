@@ -35,7 +35,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                     "reader");
             return new PageImpl<>(new DatasetDtoListResultSetExtractor().extractData(cachedRowSet),
                     pageable,
-                    getRowSize());
+                    getRowSize(datasetFilters));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -97,9 +97,10 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-    private long getRowSize() throws SQLException {
+    private long getRowSize(Set<DatasetFilter> datasetFilters) throws SQLException {
         String query = "select count(*) as row_count from " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + ";";
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                getWhereClause(datasetFilters) + ";";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

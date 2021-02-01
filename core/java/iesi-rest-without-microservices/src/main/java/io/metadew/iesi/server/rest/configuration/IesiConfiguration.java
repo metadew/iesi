@@ -8,6 +8,11 @@ import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.metadata.configuration.action.design.ActionDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
+import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
+import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
@@ -16,7 +21,9 @@ import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionCo
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.design.ScriptLabelDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
@@ -167,6 +174,48 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ExecutionRequestConfiguration executionRequestConfiguration() {
         return ExecutionRequestConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ScriptResultOutputConfiguration scriptResultOutputConfiguration() {
+        return ScriptResultOutputConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ActionResultConfiguration actionResultConfiguration() {
+        return ActionResultConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ActionResultOutputConfiguration actionResultOutputConfiguration() {
+        return ActionResultOutputConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ActionDesignTraceConfiguration actionDesignTraceConfiguration() {
+        return ActionDesignTraceConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration() {
+        return ActionParameterDesignTraceConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ActionParameterTraceConfiguration actionParameterTraceConfiguration() {
+        return ActionParameterTraceConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public  ScriptLabelDesignTraceConfiguration scriptLabelDesignTraceConfiguration() {
+        return ScriptLabelDesignTraceConfiguration.getInstance();
     }
 
 }

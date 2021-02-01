@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script.trace;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptParameterTrace;
@@ -28,12 +29,8 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
     }
 
     private ScriptParameterTraceConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-    }
-
 
     @Override
     public Optional<ScriptParameterTrace> get(ScriptParameterTraceKey scriptParameterTraceKey) {

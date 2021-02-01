@@ -5,7 +5,10 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class ScriptExecutionRequestBuilder {
 
@@ -142,7 +145,8 @@ public class ScriptExecutionRequestBuilder {
                 environment,
                 exit,
                 impersonations,
-                parameters, ScriptExecutionRequestStatus.NEW);
+                parameters,
+                ScriptExecutionRequestStatus.NEW);
     }
 
     private Optional<ScriptExecutionRequestKey> getScriptExecutionRequestKey() {

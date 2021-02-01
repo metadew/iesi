@@ -5,6 +5,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTrace;
 import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTraceKey;
 import io.metadew.iesi.metadata.definition.connection.trace.http.HttpConnectionTrace;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
 
 import java.sql.SQLException;
@@ -24,8 +25,23 @@ class ConnectionTraceConfigurationTest {
     static void prepare() {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
     }
 
     @BeforeEach
@@ -60,17 +76,6 @@ class ConnectionTraceConfigurationTest {
                 .build();
     }
 
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().cleanAllTables();
-    }
-
-    @AfterAll
-    static void teardown() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().dropAllTables();
-    }
 
     @Test
     void testGetAllEmpty() throws SQLException {

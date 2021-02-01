@@ -11,7 +11,6 @@ import io.metadew.iesi.metadata.definition.script.trace.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptTrace;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptVersionTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptLabelTraceKey;
-import io.metadew.iesi.script.execution.ExecutionTrace;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import lombok.extern.log4j.Log4j2;
 

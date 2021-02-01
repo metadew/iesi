@@ -11,19 +11,19 @@ import org.springframework.core.annotation.Order;
 @Log4j2
 public class TestConfiguration {
 
-    @Bean
+    @Bean(destroyMethod = "dropAllTables", initMethod = "createAllTables")
     @Primary
     @Order(0)
     @DependsOn("frameworkInstance")
     public MetadataRepositoryConfiguration metadataRepositoryConfiguration() {
-        for (MetadataRepository metadataRepository : MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()) {
-            try {
-                metadataRepository.dropAllTables();
-            } catch (RuntimeException e) {
-                log.info(e.getMessage());
-            }
-            metadataRepository.createAllTables();
-        }
+//        for (MetadataRepository metadataRepository : MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()) {
+//            try {
+//                metadataRepository.dropAllTables();
+//            } catch (RuntimeException e) {
+//                log.info(e.getMessage());
+//            }
+//            metadataRepository.createAllTables();
+//        }
         return MetadataRepositoryConfiguration.getInstance();
     }
 }

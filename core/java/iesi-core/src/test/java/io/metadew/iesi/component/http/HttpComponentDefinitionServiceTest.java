@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -31,20 +32,23 @@ class HttpComponentDefinitionServiceTest {
     static void prepare() {
         Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository()
-                .createAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().cleanAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
+        Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
-                .getTraceMetadataRepository().dropAllTables();
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
     }
 
     @Test

@@ -21,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -33,7 +35,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ActiveProfiles({"http", "test", "security"})
+@ActiveProfiles("test")
+@DirtiesContext
 class ScriptsControllerSecurityTest {
 
     @Autowired
@@ -58,7 +61,7 @@ class ScriptsControllerSecurityTest {
     private PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
 
     @Test
-    void testGetAllNoUser() throws Exception {
+    void testGetAllNoUser() {
         Pageable pageable = Pageable.unpaged();
         List<String> expansions = new ArrayList<>();
         assertThatThrownBy(() -> scriptsController.getAll(pageable, expansions, null, null, null))
@@ -92,7 +95,7 @@ class ScriptsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testGetAllNoScriptReadPrivilege() throws Exception {
+    void testGetAllNoScriptReadPrivilege() {
         Pageable pageable = Pageable.unpaged();
         List<String> expansions = new ArrayList<>();
         assertThatThrownBy(() -> scriptsController.getAll(pageable, expansions, null, null, null))
@@ -102,9 +105,9 @@ class ScriptsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_READ@PUBLIC"})
-    void testGetScriptReadPrivilege() throws Exception {
+    void testGetScriptReadPrivilege() {
         when(scriptDtoService
-                .getAll(Pageable.unpaged(), new ArrayList<>(), false, new ArrayList<>()))
+                .getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>(), false, new ArrayList<>()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         scriptsController.getAll(Pageable.unpaged(), new ArrayList<>(), null, null, null);
     }
@@ -136,7 +139,7 @@ class ScriptsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testGetByNameNoScriptRead() throws Exception {
+    void testGetByNameNoScriptRead() {
         Pageable pageable = Pageable.unpaged();
         List<String> expansions = new ArrayList<>();
         assertThatThrownBy(() -> scriptsController.getByName(pageable, "test", expansions, null))
@@ -146,9 +149,9 @@ class ScriptsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_READ@PUBLIC"})
-    void testGetByNameScriptRead() throws Exception {
+    void testGetByNameScriptRead() {
         when(scriptDtoService
-                .getByName(Pageable.unpaged(), "test", new ArrayList<>(), false))
+                .getByName(null, Pageable.unpaged(), "test", new ArrayList<>(), false))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         scriptsController.getByName(Pageable.unpaged(), "test", new ArrayList<>(), null);
     }
@@ -180,7 +183,7 @@ class ScriptsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testGetByNameAndVersionNoScriptsReadPrivilege() throws Exception {
+    void testGetByNameAndVersionNoScriptsReadPrivilege() {
         assertThatThrownBy(() -> scriptsController.get("test", 1L, new ArrayList<>()))
                 .isInstanceOf(AccessDeniedException.class);
     }
@@ -188,10 +191,10 @@ class ScriptsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_READ@PUBLIC"})
-    void testGetByNameAndVersionAdminScriptsReadPrivilege() throws Exception {
+    void testGetByNameAndVersionAdminScriptsReadPrivilege() {
         ScriptDto scriptDto = ScriptDto.builder()
                 .name("scriptDto")
-                .securityGroupName("securityGroup")
+                .securityGroupName("PUBLIC")
                 .description("description")
                 .version(new ScriptVersionDto(1L, "description"))
                 .parameters(new HashSet<>())
@@ -200,9 +203,30 @@ class ScriptsControllerSecurityTest {
                 .scriptExecutionInformation(null)
                 .scriptSchedulingInformation(null)
                 .build();
-        when(scriptDtoService.getByNameAndVersion("test", 1L, new ArrayList<>()))
+        when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
                 .thenReturn(Optional.of(scriptDto));
         scriptsController.get("test", 1L, new ArrayList<>());
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPTS_READ@PUBLIC"})
+    void testGetByNameAndVersionWrongSecurityGroup() {
+        ScriptDto scriptDto = ScriptDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PRIVATE")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .scriptExecutionInformation(null)
+                .scriptSchedulingInformation(null)
+                .build();
+        when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
+                .thenReturn(Optional.of(scriptDto));
+        assertThatThrownBy(() -> scriptsController.get("test", 1L, new ArrayList<>()))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
     // create components
@@ -234,10 +258,10 @@ class ScriptsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testCreateNoScriptsWrite() throws Exception {
+    void testCreateNoScriptsWrite() {
         ScriptPostDto scriptDto = ScriptPostDto.builder()
                 .name("scriptDto")
-                .securityGroupName("securityGroup")
+                .securityGroupName("PUBLIC")
                 .description("description")
                 .version(new ScriptVersionDto(1L, "description"))
                 .parameters(new HashSet<>())
@@ -251,10 +275,10 @@ class ScriptsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC"})
-    void testCreateScriptsWrite() throws Exception {
+    void testCreateScriptsWrite() {
         ScriptPostDto scriptDto = ScriptPostDto.builder()
                 .name("scriptDto")
-                .securityGroupName("securityGroup")
+                .securityGroupName("PUBLIC")
                 .description("description")
                 .version(new ScriptVersionDto(1L, "description"))
                 .parameters(new HashSet<>())
@@ -293,11 +317,11 @@ class ScriptsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testUpdateBulkNoScriptWritePrivilege() throws Exception {
+    void testUpdateBulkNoScriptWritePrivilege() {
         List<ScriptPostDto> scriptPostDtos = Collections.singletonList(
                 ScriptPostDto.builder()
                         .name("scriptDto")
-                        .securityGroupName("securityGroup")
+                        .securityGroupName("PUBLIC")
                         .description("description")
                         .version(new ScriptVersionDto(1L, "description"))
                         .parameters(new HashSet<>())
@@ -311,11 +335,11 @@ class ScriptsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC"})
-    void testUpdateBulkScriptWritePrivilege() throws Exception {
+    void testUpdateBulkScriptWritePrivilege() {
         List<ScriptPostDto> scriptPostDtos = Collections.singletonList(
                 ScriptPostDto.builder()
                         .name("scriptDto")
-                        .securityGroupName("securityGroup")
+                        .securityGroupName("PUBLIC")
                         .description("description")
                         .version(new ScriptVersionDto(1L, "description"))
                         .parameters(new HashSet<>())
@@ -354,7 +378,7 @@ class ScriptsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testUpdateSingleNoScriptWritePrivilege() throws Exception {
+    void testUpdateSingleNoScriptWritePrivilege() {
         ScriptPostDto scriptPostDto = ScriptPostDto.builder()
                 .name("scriptDto")
                 .securityGroupName("securityGroup")
@@ -371,10 +395,10 @@ class ScriptsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC"})
-    void testUpdateSingleScriptWritePrivilege() throws Exception {
+    void testUpdateSingleScriptWritePrivilege() {
         ScriptPostDto scriptDto = ScriptPostDto.builder()
                 .name("scriptDto")
-                .securityGroupName("securityGroup")
+                .securityGroupName("PUBLIC")
                 .description("description")
                 .version(new ScriptVersionDto(1L, "description"))
                 .parameters(new HashSet<>())
@@ -382,47 +406,6 @@ class ScriptsControllerSecurityTest {
                 .labels(new HashSet<>())
                 .build();
         scriptsController.put("scriptDto", 1L, scriptDto);
-    }
-
-    //delete by name
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {
-                    // "SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    "COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    "CONNECTIONS_WRITE@PUBLIC",
-                    "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testDeleteByNameNoScriptWritePrivilege() throws Exception {
-        assertThatThrownBy(() -> scriptsController.deleteByName("test"))
-                .isInstanceOf(AccessDeniedException.class);
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC"})
-    void testDeleteByNameScriptWritePrivilege() throws Exception {
-        scriptsController.deleteByName("test");
     }
 
     //delete by name and version
@@ -454,7 +437,7 @@ class ScriptsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testDeleteByNameAndVersionNoScriptWritePrivilege() throws Exception {
+    void testDeleteByNameAndVersionNoScriptWritePrivilege() {
         assertThatThrownBy(() -> scriptsController.delete("test", 1L))
                 .isInstanceOf(AccessDeniedException.class);
     }
@@ -463,8 +446,39 @@ class ScriptsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC"})
-    void testDeleteByNameAndVersionScriptWritePrivilege() throws Exception {
+    void testDeleteByNameAndVersionScriptWritePrivilege() {
+        ScriptDto scriptDto = ScriptDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PUBLIC")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .scriptExecutionInformation(null)
+                .scriptSchedulingInformation(null)
+                .build();
+        when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
+                .thenReturn(Optional.of(scriptDto));
         scriptsController.delete("test", 1L);
+    }
+
+    void testDeleteByNameAndVersionWrongSecurityGroup() {
+        ScriptDto scriptDto = ScriptDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PRIVATE")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .scriptExecutionInformation(null)
+                .scriptSchedulingInformation(null)
+                .build();
+        when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
+                .thenReturn(Optional.of(scriptDto));
+        assertThatThrownBy(() -> scriptsController.delete("test", 1L))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
 }

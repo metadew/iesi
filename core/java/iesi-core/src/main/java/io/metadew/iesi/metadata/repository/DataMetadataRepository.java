@@ -15,7 +15,6 @@ public class DataMetadataRepository extends MetadataRepository {
 
     public DataMetadataRepository(String instance, RepositoryCoordinator repositoryCoordinator) {
         super(instance, repositoryCoordinator);
-        DatasetConfiguration.getInstance().init(this);
     }
 
     @Override

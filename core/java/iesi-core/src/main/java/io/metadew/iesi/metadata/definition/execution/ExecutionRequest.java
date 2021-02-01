@@ -24,10 +24,22 @@ public abstract class ExecutionRequest extends Metadata<ExecutionRequestKey> {
     private List<ScriptExecutionRequest> scriptExecutionRequests;
     private Set<ExecutionRequestLabel> executionRequestLabels;
 
-    public ExecutionRequest(ExecutionRequestKey executionRequestKey, LocalDateTime requestTimestamp, String name, String description, String email,
-                            String scope, String context, ExecutionRequestStatus executionRequestStatus, List<ScriptExecutionRequest> scriptExecutionRequests,
+    public ExecutionRequest(ExecutionRequestKey executionRequestKey,
+                            // SecurityGroupKey securityGroupKey,
+                            // String securityGroupName,
+                            LocalDateTime requestTimestamp,
+                            String name,
+                            String description,
+                            String email,
+                            String scope,
+                            String context,
+                            ExecutionRequestStatus executionRequestStatus,
+                            List<ScriptExecutionRequest> scriptExecutionRequests,
                             Set<ExecutionRequestLabel> executionRequestLabels) {
-        super(executionRequestKey);
+        super(executionRequestKey
+        //        ,securityGroupKey,
+        //        securityGroupName
+        );
         this.requestTimestamp = requestTimestamp;
         this.name = name;
         this.description = description;

@@ -18,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -34,7 +36,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ActiveProfiles({"http", "test", "security"})
+@ActiveProfiles({"http", "test"})
+@DirtiesContext
 class ScriptExecutionDtosControllerSecurityTest {
 
     @Autowired
@@ -89,7 +92,7 @@ class ScriptExecutionDtosControllerSecurityTest {
             authorities = {"SCRIPT_EXECUTIONS_READ@PUBLIC"})
     void testGetScriptExecutionReadPrivilege() throws Exception {
         when(scriptExecutionService
-                .getAll())
+                .getAll(SecurityContextHolder.getContext().getAuthentication()))
                 .thenReturn(new ArrayList<>());
         scriptExecutionDtoController.getAll();
     }
@@ -148,7 +151,7 @@ class ScriptExecutionDtosControllerSecurityTest {
                 .status(ScriptRunStatus.RUNNING)
                 .build());
         when(scriptExecutionService
-                .getByRunId("runId"))
+                .getByRunId(SecurityContextHolder.getContext().getAuthentication(), "runId"))
                 .thenReturn(executionRequestDto);
         scriptExecutionDtoController.getByRunId("id");
     }
@@ -194,6 +197,7 @@ class ScriptExecutionDtosControllerSecurityTest {
                 .runId("runId")
                 .scriptName("name")
                 .scriptVersion(1L)
+                .securityGroupName("PUBLIC")
                 .actions(new ArrayList<>())
                 .designLabels(new ArrayList<>())
                 .endTimestamp(LocalDateTime.now())
@@ -207,9 +211,38 @@ class ScriptExecutionDtosControllerSecurityTest {
                 .status(ScriptRunStatus.RUNNING)
                 .build();
         when(scriptExecutionService
-                .getByRunIdAndProcessId("runId", 1L))
+                .getByRunIdAndProcessId(null, "runId", 1L))
                 .thenReturn(Optional.of(scriptExecutionDtos));
         scriptExecutionDtoController.getByRunIdAndProcessId("runId", 1L);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPT_EXECUTIONS_READ@PUBLIC"})
+    void testGetByRunIdAndProcessIdScriptExecutionWrongSecurityGroup() throws Exception {
+        ScriptExecutionDto scriptExecutionDtos = ScriptExecutionDto.builder()
+                .environment("environment")
+                .runId("runId")
+                .processId(1L)
+                .scriptName("name")
+                .scriptVersion(1L)
+                .securityGroupName("PRIVATE")
+                .actions(new ArrayList<>())
+                .designLabels(new ArrayList<>())
+                .endTimestamp(LocalDateTime.now())
+                .startTimestamp(LocalDateTime.now())
+                .executionLabels(new ArrayList<>())
+                .inputParameters(new ArrayList<>())
+                .output(new ArrayList<>())
+                .parentProcessId(1L)
+                .scriptId("scriptId")
+                .status(ScriptRunStatus.RUNNING)
+                .build();
+        when(scriptExecutionService
+                .getByRunIdAndProcessId(null, "runId", 1L))
+                .thenReturn(Optional.of(scriptExecutionDtos));
+        assertThatThrownBy(() -> scriptExecutionDtoController.getByRunIdAndProcessId("runId", 1L))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
 }

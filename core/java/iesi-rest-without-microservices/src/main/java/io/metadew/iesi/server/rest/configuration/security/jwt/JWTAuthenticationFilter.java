@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-@Profile("security")
+// @Profile("security")
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTAuthenticationConverter jwtAuthenticationConverter;

@@ -95,6 +95,7 @@ public class ExecutionControl {
                 scriptExecution.getScript().getMetadataKey().getScriptId(),
                 scriptExecution.getScript().getName(),
                 scriptExecution.getScript().getVersion().getNumber(),
+                scriptExecution.getScript().getSecurityGroupName(),
                 envName,
                 ScriptRunStatus.RUNNING,
                 LocalDateTime.now(),

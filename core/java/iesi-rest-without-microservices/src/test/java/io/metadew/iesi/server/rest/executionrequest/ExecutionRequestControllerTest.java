@@ -23,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -46,7 +47,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {TestConfiguration.class, MethodSecurityConfiguration.class})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @AutoConfigureMockMvc
-@ActiveProfiles({"test", "security"})
+@ActiveProfiles({"test"})
+@DirtiesContext
 class ExecutionRequestControllerTest {
 
     @Autowired
@@ -75,7 +77,7 @@ class ExecutionRequestControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<ExecutionRequestDto> executionRequestDtoList = new ArrayList<>();
         Page<ExecutionRequestDto> page = new PageImpl<>(executionRequestDtoList, pageable, 0);
-        given(executionRequestService.getAll(any(), any())).willReturn(page);
+        given(executionRequestService.getAll(any(), any(), any())).willReturn(page);
 
         mvc.perform(get("/execution-requests").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -124,7 +126,7 @@ class ExecutionRequestControllerTest {
         Page<ExecutionRequestDto> page2 = new PageImpl<>(executionRequestDtoList2, pageable2, 3);
         Page<ExecutionRequestDto> page3 = new PageImpl<>(executionRequestDtoList3, pageable3, 3);
 
-        given(executionRequestService.getAll(any(), any())).willReturn(page1);
+        given(executionRequestService.getAll(any(), any(), any())).willReturn(page1);
         mvc.perform(get("/execution-requests?page=0&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
@@ -145,7 +147,7 @@ class ExecutionRequestControllerTest {
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
         ;
 
-        given(executionRequestService.getAll(any(), any())).willReturn(page2);
+        given(executionRequestService.getAll(any(), any(), any())).willReturn(page2);
         mvc.perform(get("/execution-requests?page=1&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
@@ -157,7 +159,7 @@ class ExecutionRequestControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(executionRequestService.getAll(any(), any())).willReturn(page3);
+        given(executionRequestService.getAll(any(), any(), any())).willReturn(page3);
         mvc.perform(get("/execution-requests?page=2&size=1")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())

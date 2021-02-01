@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto> {
 
     private String executionRequestId;
+    // private String securityGroupName;
+    // private String securityGroupUuid;
     private LocalDateTime requestTimestamp;
     private String name;
     private String description;
@@ -36,6 +39,8 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
     public ExecutionRequest convertToEntity() {
         return new NonAuthenticatedExecutionRequest(
                 new ExecutionRequestKey(executionRequestId),
+                // new SecurityGroupKey(UUID.fromString(securityGroupUuid)),
+                // securityGroupName,
                 requestTimestamp,
                 name,
                 context,

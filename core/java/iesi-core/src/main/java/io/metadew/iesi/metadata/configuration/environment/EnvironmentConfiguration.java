@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.environment;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -32,12 +33,8 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         return INSTANCE;
     }
 
-    private EnvironmentConfiguration() {}
-
-    public void init(MetadataRepository metadataRepository){
-        setMetadataRepository(metadataRepository);
-        EnvironmentParameterConfiguration.getInstance().init(metadataRepository);
-    }
+    private EnvironmentConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());}
 
     @Override
     public Optional<Environment> get(EnvironmentKey environmentKey) {

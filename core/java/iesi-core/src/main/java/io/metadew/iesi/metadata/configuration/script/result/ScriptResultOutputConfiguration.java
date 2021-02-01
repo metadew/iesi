@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script.result;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
@@ -29,10 +30,7 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
     }
 
     private ScriptResultOutputConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
     }
 
     @Override

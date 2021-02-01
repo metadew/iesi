@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.impersonation;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -37,11 +38,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
 
     // Constructors
     private ImpersonationConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ImpersonationParameterConfiguration.getInstance().init(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
     }
 
     @Override

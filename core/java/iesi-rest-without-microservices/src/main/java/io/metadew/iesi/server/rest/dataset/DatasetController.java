@@ -35,32 +35,47 @@ import java.util.stream.Collectors;
 public class DatasetController {
 
     private final DatasetDtoModelAssembler datasetDtoModelAssembler;
+    private final DatasetNoImplDtoModelAssembler datasetNoImplDtoModelAssembler;
     private final IDatasetService datasetService;
     private final IDatasetImplementationService datasetImplementationService;
     private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
+    private final PagedResourcesAssembler<DatasetNoImplDto> datasetNoImplDtoPagedResourcesAssembler;
     private final IDatasetDtoService datasetDtoService;
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
-                             IDatasetService datasetService,
+                             DatasetNoImplDtoModelAssembler datasetNoImplDtoModelAssembler, IDatasetService datasetService,
                              IDatasetImplementationService datasetImplementationService,
                              PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,
+                             PagedResourcesAssembler<DatasetNoImplDto> datasetNoImpDtoPagedResourcesAssembler,
                              IDatasetDtoService datasetDtoService) {
         this.datasetDtoModelAssembler = datasetDtoModelAssembler;
+        this.datasetNoImplDtoModelAssembler = datasetNoImplDtoModelAssembler;
         this.datasetService = datasetService;
         this.datasetImplementationService = datasetImplementationService;
         this.datasetDtoPagedResourcesAssembler = datasetPagedResourcesAssembler;
+        this.datasetNoImplDtoPagedResourcesAssembler = datasetNoImpDtoPagedResourcesAssembler;
         this.datasetDtoService = datasetDtoService;
     }
 
     @SuppressWarnings("unchecked")
-    @GetMapping("")
+    @GetMapping("/implementations")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public PagedModel<DatasetDto> getAll(Pageable pageable) {
         Page<DatasetDto> datasetDtoPage = datasetDtoService.fetchAll(pageable);
         if (datasetDtoPage.hasContent())
             return datasetDtoPagedResourcesAssembler.toModel(datasetDtoPage, datasetDtoModelAssembler::toModel);
         return (PagedModel<DatasetDto>) datasetDtoPagedResourcesAssembler.toEmptyModel(datasetDtoPage, DatasetDto.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @GetMapping("")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
+    public PagedModel<DatasetNoImplDto> getAllOnlyUuid(Pageable pageable) {
+        Page<DatasetNoImplDto> datasetDtoPage = datasetDtoService.fetchAllOnlyUuid(pageable);
+        if (datasetDtoPage.hasContent())
+            return datasetNoImplDtoPagedResourcesAssembler.toModel(datasetDtoPage, datasetNoImplDtoModelAssembler::toModel);
+        return (PagedModel<DatasetNoImplDto>) datasetNoImplDtoPagedResourcesAssembler.toEmptyModel(datasetDtoPage, DatasetNoImplDto.class);
     }
 
     @PostMapping("")
@@ -101,7 +116,7 @@ public class DatasetController {
         return datasetDtoModelAssembler.toModel(dataset);
     }
 
-    @GetMapping("/{uuid}")
+    @GetMapping("/{uuid}/implementations")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public DatasetDto get(@PathVariable UUID uuid) {
         return datasetService.get(new DatasetKey(uuid))

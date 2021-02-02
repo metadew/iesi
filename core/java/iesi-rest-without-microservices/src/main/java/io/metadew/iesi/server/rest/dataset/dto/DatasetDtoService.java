@@ -19,4 +19,8 @@ public class DatasetDtoService implements IDatasetDtoService {
         return datasetDtoRepository.fetchAll(pageable);
     }
 
+    public Page<DatasetNoImplDto> fetchAllOnlyUuid(Pageable pageable) {
+        return datasetDtoRepository.fetchAllOnlyUuid(pageable);
+    }
+
 }

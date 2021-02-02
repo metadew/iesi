@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.script;
 
 import io.metadew.iesi.server.rest.builder.script.ScriptDtoBuilder;
 import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
+import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoModelAssembler;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -34,9 +36,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ScriptsController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = {ScriptsController.class, CustomGlobalExceptionHandler.class, ScriptDtoModelAssembler.class,
-        ScriptPostDtoService.class, ScriptParameterDtoService.class, ScriptLabelDtoService.class, ScriptActionDtoService.class,
-        ScriptVersionDtoService.class, ScriptService.class, IesiConfiguration.class})
+@ContextConfiguration(classes = {ScriptsController.class,
+        CustomGlobalExceptionHandler.class, ScriptDtoModelAssembler.class,
+        ScriptPostDtoService.class, ScriptParameterDtoService.class,
+        ScriptLabelDtoService.class, ScriptActionDtoService.class,
+        ScriptVersionDtoService.class, ScriptService.class, TestConfiguration.class, IesiConfiguration.class})
+@ActiveProfiles("test")
 class ScriptsControllerTest {
 
     @Autowired

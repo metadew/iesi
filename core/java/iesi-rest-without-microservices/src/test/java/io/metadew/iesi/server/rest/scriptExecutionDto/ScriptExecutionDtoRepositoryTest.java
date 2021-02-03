@@ -90,19 +90,9 @@ class ScriptExecutionDtoRepositoryTest {
     @Autowired
     private ScriptLabelDesignTraceConfiguration scriptLabelDesignTraceConfiguration;
 
-    @BeforeAll
-    static void initialize() {
-        //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
-    }
-
     @AfterEach
     void cleanup() {
         metadataRepositoryConfiguration.clearAllTables();
-    }
-
-    @AfterAll
-    static void teardown() {
-        //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
     }
 
     @Test

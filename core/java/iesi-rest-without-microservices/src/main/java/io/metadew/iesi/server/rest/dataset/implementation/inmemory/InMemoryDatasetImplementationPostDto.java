@@ -1,5 +1,8 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelPostDto;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -18,7 +21,7 @@ public class InMemoryDatasetImplementationPostDto extends DatasetImplementationP
     @Builder
     public InMemoryDatasetImplementationPostDto(Set<DatasetImplementationLabelPostDto> labels,
                                                 Set<InMemoryDatasetImplementationKeyValuePostDto> keyValues) {
-        super(labels);
+        super(DatasetImplementationType.IN_MEMORY.value(), labels);
         this.keyValues = keyValues;
     }
 

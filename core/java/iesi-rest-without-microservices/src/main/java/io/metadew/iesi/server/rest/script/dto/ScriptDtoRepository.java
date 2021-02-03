@@ -6,6 +6,7 @@ import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfig
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
+import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import io.metadew.iesi.server.rest.script.ScriptFilter;
 import io.metadew.iesi.server.rest.script.ScriptFilterOption;
@@ -34,16 +35,13 @@ import java.util.stream.Stream;
 @Repository
 public class ScriptDtoRepository extends PaginatedRepository implements IScriptDtoRepository {
 
-    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final FilterService filterService;
 
     @Autowired
-    public ScriptDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+    public ScriptDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
-    }
-
-    @Autowired
-    public void setMetadataRepositoryConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
-        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.filterService = filterService;
     }
 
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters, List<String> expansions) {
@@ -89,19 +87,18 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     }
 
     private String getWhereClause(Authentication authentication, List<ScriptFilter> scriptFilters, boolean onlyLatestVersions) {
-        String filterStatements = scriptFilters.stream().map(scriptFilter -> {
-                    if (scriptFilter.getScriptFilterOption().equals(ScriptFilterOption.NAME)) {
-                        return " script_designs.SCRIPT_NM " + (scriptFilter.isExactMatch() ? "=" : "LIKE") + " '" + (scriptFilter.isExactMatch() ? "" : "%") + scriptFilter.getValue() + (scriptFilter.isExactMatch() ? "" : "%") + "' ";
-                    } else if (scriptFilter.getScriptFilterOption().equals(ScriptFilterOption.VERSION)) {
-                        return " versions.SCRIPT_VRS_NB = " + Long.parseLong(scriptFilter.getValue()) + " ";
-                    } else if (scriptFilter.getScriptFilterOption().equals(ScriptFilterOption.LABEL)) {
-                        return "script_labels.NAME = '" + scriptFilter.getValue().split(":")[0] +
-                                "' and script_labels.VALUE " + (scriptFilter.isExactMatch() ? "=" : "LIKE") + " '" + (scriptFilter.isExactMatch() ? "" : "%") + scriptFilter.getValue().split(":")[1] + (scriptFilter.isExactMatch() ? "" : "%") + "'";
+        String filterStatements = scriptFilters.stream()
+                .map(scriptFilter -> {
+                    if (scriptFilter.getFilterOption().equals(ScriptFilterOption.NAME)) {
+                        return filterService.getStringCondition("script_designs.SCRIPT_NM", scriptFilter);
+                    } else if (scriptFilter.getFilterOption().equals(ScriptFilterOption.VERSION)) {
+                        return filterService.getLongCondition("versions.SCRIPT_VRS_NB", scriptFilter);
+                    } else if (scriptFilter.getFilterOption().equals(ScriptFilterOption.LABEL)) {
+                        return filterService.getKeyValueCondition("script_labels.NAME", "script_labels.VALUE", scriptFilter);
                     } else {
                         return null;
                     }
-                }
-        )
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
 

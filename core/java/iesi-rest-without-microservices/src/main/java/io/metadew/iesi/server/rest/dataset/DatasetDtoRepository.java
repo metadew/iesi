@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
@@ -11,40 +11,45 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class DatasetDtoRepository extends PaginatedRepository implements IDatasetDtoRepository {
 
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final FilterService filterService;
 
     @Autowired
-    public DatasetDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+    public DatasetDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.filterService = filterService;
     }
 
-    public Page<DatasetDto> fetchAll(Pageable pageable) {
+    public Page<DatasetDto> fetchAll(Pageable pageable, Set<DatasetFilter> datasetFilters) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
-                    getFetchAllQuery(pageable),
+                    getFetchAllQuery(pageable, datasetFilters),
                     "reader");
             return new PageImpl<>(new DatasetDtoListResultSetExtractor().extractData(cachedRowSet),
                     pageable,
-                    getRowSize());
+                    getRowSize(datasetFilters));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String getFetchAllQuery(Pageable pageable) {
+    private String getFetchAllQuery(Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "SELECT " +
                 "dataset_impls.ID as dataset_impl_id, " +
                 "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
                 "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
                 "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
                 "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-                "from (" + getBaseQuery(pageable) + ") base_datasets " + //base table
+                "from (" + getBaseQuery(pageable, datasetFilters) + ") base_datasets " + //base table
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
                 "on base_datasets.ID=datasets.ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
@@ -57,16 +62,31 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID;";
     }
 
-    private String getBaseQuery(Pageable pageable) {
+    private String getBaseQuery(Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "select datasets.ID " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                getWhereClause(datasetFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
     }
 
+    private String getWhereClause(Set<DatasetFilter> datasetFilters) {
+        String filterStatements = datasetFilters.stream()
+                .map(datasetFilter -> {
+                    if (datasetFilter.getFilterOption().equals(DatasetFilterOption.NAME)) {
+                        return filterService.getStringCondition("datasets.NAME", datasetFilter);
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" and "));
+        return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
+    }
+
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.isUnpaged()){
+        if (pageable.isUnpaged()) {
             return " ";
         }
         if (pageable.getSort().isUnsorted()) {
@@ -77,14 +97,14 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-    private long getRowSize() throws SQLException {
+    private long getRowSize(Set<DatasetFilter> datasetFilters) throws SQLException {
         String query = "select count(*) as row_count from " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + ";";
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                getWhereClause(datasetFilters) + ";";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
     }
-
 
 
 }

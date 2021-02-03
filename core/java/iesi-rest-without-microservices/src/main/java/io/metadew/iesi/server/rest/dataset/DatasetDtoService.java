@@ -1,9 +1,11 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class DatasetDtoService implements IDatasetDtoService {
@@ -15,8 +17,8 @@ public class DatasetDtoService implements IDatasetDtoService {
         this.datasetDtoRepository = datasetDtoRepository;
     }
 
-    public Page<DatasetDto> fetchAll(Pageable pageable) {
-        return datasetDtoRepository.fetchAll(pageable);
+    public Page<DatasetDto> fetchAll(Pageable pageable, Set<DatasetFilter> datasetFilters) {
+        return datasetDtoRepository.fetchAll(pageable, datasetFilters);
     }
 
 }

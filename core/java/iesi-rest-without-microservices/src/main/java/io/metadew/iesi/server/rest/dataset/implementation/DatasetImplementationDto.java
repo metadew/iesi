@@ -1,6 +1,5 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset.implementation;
 
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,10 +18,7 @@ import java.util.UUID;
 public abstract class DatasetImplementationDto extends RepresentationModel<DatasetImplementationDto> {
 
     private UUID uuid;
+    private String type;
     private Set<DatasetImplementationLabelDto> labels;
-
-    public abstract DatasetImplementation convertToEntity(UUID datasetUuid, String datasetName);
-
-    public abstract DatasetImplementation convertToNewEntity(UUID datasetUuid, String datasetName);
 
 }

@@ -42,7 +42,6 @@ class ScriptResultControllerTest {
     @MockBean
     private ScriptResultService scriptResultService;
 
-
     @Test
     void getAllNoResultTest() throws Exception {
         // Mock Service

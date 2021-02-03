@@ -2,9 +2,6 @@ package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
-import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
@@ -17,11 +14,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static io.metadew.iesi.datatypes.dataset.DatasetBuilder.generateDataset;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -224,6 +220,43 @@ class DatasetConfigurationTest {
         assertThat(DatasetConfiguration.getInstance()
                 .exists(new DatasetKey((UUID) datasetMap1.get("datasetUUID"))))
                 .isFalse();
+    }
+
+    @Test
+    void updateDataset() {
+        Map<String, Object> datasetMap1 = generateDataset(1, 2, 1, 1);
+        Dataset dataset = (Dataset) datasetMap1.get("dataset");
+        DatasetConfiguration.getInstance().insert(dataset);
+        dataset.getDatasetImplementations().clear();
+        UUID datasetImplementationUuid = UUID.randomUUID();
+        dataset.getDatasetImplementations().add(
+                new InMemoryDatasetImplementation(
+                        new DatasetImplementationKey(datasetImplementationUuid),
+                        dataset.getMetadataKey(),
+                        dataset.getName(),
+                        Stream.of(
+                                DatasetImplementationLabel.builder()
+                                        .metadataKey(new DatasetImplementationLabelKey(UUID.randomUUID()))
+                                        .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUuid))
+                                        .value("label1")
+                                        .build()
+                        ).collect(Collectors.toSet()),
+                        Stream.of(
+                                InMemoryDatasetImplementationKeyValue.builder()
+                                        .metadataKey(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                        .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUuid))
+                                        .key("key1")
+                                        .value("Value1")
+                                        .build()
+                        ).collect(Collectors.toSet())
+
+                )
+        );
+        DatasetConfiguration.getInstance().update(dataset);
+
+        assertThat(DatasetConfiguration.getInstance().get(dataset.getMetadataKey()))
+                .hasValue(dataset);
+
     }
 
 }

@@ -4,12 +4,9 @@ import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import io.metadew.iesi.server.rest.dataset.DatasetController;
+import io.metadew.iesi.server.rest.dataset.*;
 
 
-import io.metadew.iesi.server.rest.dataset.DatasetDto;
-import io.metadew.iesi.server.rest.dataset.DatasetDtoModelAssembler;
-import io.metadew.iesi.server.rest.dataset.DatasetDtoService;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDtoModelAssembler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +48,7 @@ public class DatasetsControllerTest {
     @MockBean
     private DatasetDtoService datasetDtoService;
 
-/*
+
     @Test
     void getAll() throws Exception {
 
@@ -59,7 +56,8 @@ public class DatasetsControllerTest {
 
         List<DatasetDto> datasetDtoList = new ArrayList<>();
         Page<DatasetDto> page = new PageImpl<>(datasetDtoList, pageable, 1);
-        given(datasetDtoService.fetchAll(pageable))
+        given(datasetDtoService.fetchAll(pageable,new DatasetFiltersBuilder()
+                .build()))
                 .willReturn(page);
 
         mvc.perform(get("/datasets/implementations").contentType(MediaType.APPLICATION_JSON))
@@ -74,13 +72,13 @@ public class DatasetsControllerTest {
 
         List<DatasetNoImplDto> datasetDtoList = new ArrayList<>();
         Page<DatasetNoImplDto> page = new PageImpl<>(datasetDtoList, pageable, 1);
-        given(datasetDtoService.fetchAllOnlyUuid(pageable))
+        given(datasetDtoService.fetchAllOnlyUuid(pageable,new DatasetFiltersBuilder()
+                .build()))
                 .willReturn(page);
 
         mvc.perform(get("/datasets").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
     }
-    */
 
 }

@@ -228,14 +228,12 @@ iesi:
             type: STRING
             length: 255
             nullable: false
-            unique: true
           SECURITY_GROUP_NAME:
             description: name of the security group
             order: 2
             type: STRING
             length: 255
             nullable: false
-            unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
@@ -2261,6 +2259,12 @@ iesi:
             length: 2000
             nullable: true
             defaultTimestamp:
+          SECURITY_GROUP_NAME:
+            description: Unique short name for the script
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 8
@@ -2409,6 +2413,12 @@ iesi:
             length: 2000
             nullable: true
             defaultTimestamp:
+          SECURITY_GROUP_NAME:
+            description: Unique short name for the script
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 9
@@ -2734,6 +2744,12 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp:
+          SECURITY_GROUP_NAME:
+            description: name of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
           ENV_NM:
             description: Environment name on which the script was executed
             order: 6

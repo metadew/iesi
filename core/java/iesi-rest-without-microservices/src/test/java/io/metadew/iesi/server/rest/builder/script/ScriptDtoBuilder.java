@@ -19,6 +19,7 @@ public class ScriptDtoBuilder {
         return ScriptDto.builder()
                 .name(name)
                 .description(name + " desc")
+                .securityGroupName("PUBLIC")
                 .version(new ScriptVersionDto(n, name + " " + Long.toString(n)))
                 .parameters(
                         Stream.of(

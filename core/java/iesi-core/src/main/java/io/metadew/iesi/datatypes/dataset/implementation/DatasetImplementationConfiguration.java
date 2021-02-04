@@ -1,5 +1,6 @@
 package io.metadew.iesi.datatypes.dataset.implementation;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
@@ -154,7 +155,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private static final String DELETE_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() +
             " WHERE ID={0};";
 
-    private static final String DELETE_DATASET_IMPLMENTATION_LABEL_BY_DATASET_IMPLEMENTATION_ID_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() +
+    private static final String DELETE_DATASET_IMPLEMENTATION_LABEL_BY_DATASET_IMPLEMENTATION_ID_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() +
             " WHERE DATASET_IMPL_ID={0};";
 
     private static final String DELETE_IN_MEMORY_DATASET_IMPLEMENTATION_BY_DATASET_IMPLEMENTATION_ID_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() +
@@ -173,11 +174,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     }
 
     private DatasetImplementationConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        InMemoryDatasetImplementationKeyValueConfiguration.getInstance().init(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
     }
 
     @Override
@@ -329,12 +326,17 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     public void delete(DatasetImplementationKey metadataKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_QUERY,
                 SQLTools.getStringForSQL(metadataKey.getUuid())));
-        getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_DATASET_IMPLMENTATION_LABEL_BY_DATASET_IMPLEMENTATION_ID_QUERY,
+        getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_DATASET_IMPLEMENTATION_LABEL_BY_DATASET_IMPLEMENTATION_ID_QUERY,
                 SQLTools.getStringForSQL(metadataKey.getUuid())));
         getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_IN_MEMORY_DATASET_IMPLEMENTATION_BY_DATASET_IMPLEMENTATION_ID_QUERY,
                 SQLTools.getStringForSQL(metadataKey.getUuid())));
         getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_IN_MEMORY_DATASET_IMPLEMENTATION_KEY_VALUES_BY_DATASET_IMPLEMENTATION_ID_QUERY,
                 SQLTools.getStringForSQL(metadataKey.getUuid())));
+    }
+
+    public void deleteByDatasetId(DatasetKey datasetKey) {
+        getByDatasetId(datasetKey)
+                .forEach(datasetImplementation -> delete(datasetImplementation.getMetadataKey()));
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.executionrequest.dto;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSuppor
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -52,7 +54,11 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
 
     private ExecutionRequestDto convertToDto(ExecutionRequest executionRequest) {
         if (executionRequest instanceof NonAuthenticatedExecutionRequest) {
-            return new ExecutionRequestDto(executionRequest.getMetadataKey().getId(), executionRequest.getRequestTimestamp(),
+            return new ExecutionRequestDto(
+                    executionRequest.getMetadataKey().getId(),
+                    // executionRequest.getSecurityGroupKey().getUuid().toString(),
+                    // executionRequest.getSecurityGroupName(),
+                    executionRequest.getRequestTimestamp(),
                     executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
                     executionRequest.getContext(), executionRequest.getEmail(), executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()

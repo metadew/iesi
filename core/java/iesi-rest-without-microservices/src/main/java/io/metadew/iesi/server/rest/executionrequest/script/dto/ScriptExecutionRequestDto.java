@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,6 +27,7 @@ public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecuti
     private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
     private String scriptName;
     private Long scriptVersion;
+    private String securityGroupName;
     private String runId;
     private ScriptRunStatus runStatus;
 

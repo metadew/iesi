@@ -69,6 +69,7 @@ class ScriptExecutionRequestDtoTest {
                 "script",
                 1L,
                 null,
+                null,
                 null);
 
         assertThat(scriptExecutionRequestDto.convertToEntity())

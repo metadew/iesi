@@ -1,5 +1,6 @@
 package io.metadew.iesi.datatypes.dataset;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
@@ -85,6 +86,11 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
 
     private static final String INSERT_QUERY = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
             " (ID, NAME) VALUES ({0}, {1})";
+
+    private static final String UPDATE_QUERY = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
+            " SET NAME={0} " +
+            "WHERE ID={1}";
+
     private static final String DELETE_QUERY = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
             " WHERE ID={0}";
 
@@ -99,11 +105,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     }
 
     private DatasetConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        DatasetImplementationConfiguration.getInstance().init(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
     }
 
     @Override
@@ -215,6 +217,16 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
                 .forEach(datasetImplementation -> DatasetImplementationConfiguration.getInstance().insert(datasetImplementation));
     }
 
+    @Override
+    public void update(Dataset dataset) {
+        getMetadataRepository().executeUpdate(MessageFormat.format(UPDATE_QUERY,
+                SQLTools.getStringForSQL(dataset.getName()),
+                SQLTools.getStringForSQL(dataset.getMetadataKey().getUuid())));
+        DatasetImplementationConfiguration.getInstance().deleteByDatasetId(dataset.getMetadataKey());
+        dataset.getDatasetImplementations()
+                .forEach(datasetImplementation -> DatasetImplementationConfiguration.getInstance().insert(datasetImplementation));
+    }
+
     private void mapRow(CachedRowSet cachedRowSet, Map<String, DatasetBuilder> datasetBuilderMap) throws SQLException {
         String datasetId = cachedRowSet.getString("dataset_id");
         DatasetBuilder datasetBuilder = datasetBuilderMap.get(datasetId);
@@ -237,9 +249,9 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     @Getter
     @ToString
     private class DatasetBuilder {
-        private DatasetKey datasetKey;
-        private String name;
-        public Map<String, DatasetImplementationConfiguration.DatasetImplementationBuilder> datasetImplementationBuilders;
+        private final DatasetKey datasetKey;
+        private final String name;
+        public final Map<String, DatasetImplementationConfiguration.DatasetImplementationBuilder> datasetImplementationBuilders;
 
         public Dataset build() {
             return new Dataset(datasetKey, name, datasetImplementationBuilders.values().stream()

@@ -8,6 +8,10 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Log4j2
 // https://www.baeldung.com/spring-security-create-new-custom-security-expression
 public class IesiMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
@@ -30,6 +34,34 @@ public class IesiMethodSecurityExpressionRoot extends SecurityExpressionRoot imp
                 .anyMatch(s -> s.equals(privilege));
     }
 
+
+    public boolean hasPrivileges(List<String> privileges) {
+        Set<String> iesiGrantedPrivileges = getAuthentication().getAuthorities().stream()
+                .filter(authority -> authority instanceof IESIGrantedAuthority)
+                .map(authority -> (IESIGrantedAuthority) authority)
+                .map(IESIGrantedAuthority::getPrivilegeName)
+                .collect(Collectors.toSet());
+        return !securityEnabled || iesiGrantedPrivileges.containsAll(privileges);
+    }
+
+    public boolean hasPrivilege(String privilege, String securityGroup) {
+        return !securityEnabled || getAuthentication().getAuthorities().stream()
+                .filter(authority -> authority instanceof IESIGrantedAuthority)
+                .map(authority -> (IESIGrantedAuthority) authority)
+                .anyMatch(authority -> authority.getAuthority().equals(privilege + "@" + securityGroup));
+    }
+
+    public boolean hasPrivilege(String privilege, List<String> securityGroups) {
+        Set<String> iesiGrantedAuthorities = getAuthentication().getAuthorities().stream()
+                .filter(authority -> authority instanceof IESIGrantedAuthority)
+                .map(authority -> (IESIGrantedAuthority) authority)
+                .map(IESIGrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+        return !securityEnabled || securityGroups.stream()
+                .map(securityGroup -> privilege + "@" + securityGroup)
+                .allMatch(iesiGrantedAuthorities::contains);
+    }
+
     public boolean isMember(String securityGroup) {
         return !securityEnabled || getAuthentication().getAuthorities().stream()
                 .filter(authority -> authority instanceof IESIGrantedAuthority)
@@ -38,12 +70,12 @@ public class IesiMethodSecurityExpressionRoot extends SecurityExpressionRoot imp
                 .anyMatch(s -> s.equals(securityGroup));
     }
 
-    public boolean hasPrivilege(Authentication authentication, Object securedObject, String permission) {
+    public boolean hasPrivilege(Authentication authentication, Object securedObject, String privilege) {
         if (securityEnabled) {
             if (securedObject instanceof SecuredObject) {
                 return authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
-                        .anyMatch(authority -> authority.equals(permission + "@" + ((SecuredObject<? extends MetadataKey>) securedObject).getSecurityGroupName()));
+                        .anyMatch(authority -> authority.equals(privilege + "@" + ((SecuredObject<? extends MetadataKey>) securedObject).getSecurityGroupName()));
             } else {
                 return true;
             }

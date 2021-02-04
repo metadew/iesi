@@ -2,17 +2,17 @@ package io.metadew.iesi.server.rest.dataset.dto;
 
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.server.rest.dataset.DatasetController;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+
 import java.util.HashSet;
-import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 @Component
-public class DatasetNoImplDtoModelAssembler extends RepresentationModelAssemblerSupport<Dataset, DatasetNoImplDto> {
+public class DatasetNoImplDtoModelAssembler extends RepresentationModelAssemblerSupport<Dataset, io.metadew.iesi.server.rest.dataset.dto.DatasetNoImplDto> {
 
     private final DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler;
 

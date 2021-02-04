@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Service
 public class ExecutionRequestService implements IExecutionRequestService {
 
-    private ExecutionRequestConfiguration executionRequestConfiguration;
+    private final ExecutionRequestConfiguration executionRequestConfiguration;
 
     private final ExecutionRequestDtoRepository executionRequestDtoRepository;
 
@@ -25,16 +26,15 @@ public class ExecutionRequestService implements IExecutionRequestService {
         this.executionRequestDtoRepository = executionRequestDtoRepository;
     }
 
-    public Page<ExecutionRequestDto> getAll(Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
-        return executionRequestDtoRepository.getAll(pageable, executionRequestFilters);
+    public Page<ExecutionRequestDto> getAll(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
+        return executionRequestDtoRepository.getAll(authentication, pageable, executionRequestFilters);
     }
 
-    public Optional<ExecutionRequestDto> getById(String id) {
-        return executionRequestDtoRepository.getById(UUID.fromString(id));
+    public Optional<ExecutionRequestDto> getById(Authentication authentication, String id) {
+        return executionRequestDtoRepository.getById(authentication, UUID.fromString(id));
     }
 
-    public ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException {
-        ExecutionRequest executionRequest = executionRequestDto.convertToNewEntity();
+    public ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest) {
         executionRequestConfiguration.insert(executionRequest);
         return executionRequest;
     }

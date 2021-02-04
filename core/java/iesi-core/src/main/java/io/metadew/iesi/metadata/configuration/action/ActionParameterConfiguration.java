@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -26,17 +27,15 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     private final static Logger LOGGER = LogManager.getLogger();
     private static ActionParameterConfiguration INSTANCE;
 
-    public synchronized static ActionParameterConfiguration getInstance(){
-        if (INSTANCE == null){
+    public synchronized static ActionParameterConfiguration getInstance() {
+        if (INSTANCE == null) {
             INSTANCE = new ActionParameterConfiguration();
         }
         return INSTANCE;
     }
 
-    private ActionParameterConfiguration() {    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+    private ActionParameterConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
     }
 
     @Override
@@ -96,7 +95,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    public String deleteStatement(ActionParameterKey actionParameterKey){
+    public String deleteStatement(ActionParameterKey actionParameterKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion()) +

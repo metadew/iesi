@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.execution.script;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
@@ -34,13 +35,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
     }
 
     private ScriptExecutionRequestConfiguration() {
-    }
-
-    // Constructors
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ScriptExecutionRequestParameterConfiguration.getInstance().init(metadataRepository);
-        ScriptExecutionRequestImpersonationConfiguration.getInstance().init(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
     }
 
     @Override

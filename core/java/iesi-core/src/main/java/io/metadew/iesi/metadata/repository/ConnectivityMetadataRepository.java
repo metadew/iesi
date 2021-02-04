@@ -21,9 +21,6 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
 
     public ConnectivityMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(instanceName, repositoryCoordinator);
-        ConnectionConfiguration.getInstance().init(this);
-        EnvironmentConfiguration.getInstance().init(this);
-        ImpersonationConfiguration.getInstance().init(this);
     }
 
     @Override

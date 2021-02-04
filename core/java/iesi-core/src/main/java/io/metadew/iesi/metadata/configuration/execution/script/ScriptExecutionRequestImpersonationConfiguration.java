@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.execution.script;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -28,11 +29,8 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
         return INSTANCE;
     }
 
-    private ScriptExecutionRequestImpersonationConfiguration() {}
-
-    // Constructors
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+    private ScriptExecutionRequestImpersonationConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
     }
 
     @Override
@@ -111,7 +109,7 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
     }
 
     public String insertStatement(ScriptExecutionRequestImpersonation scriptExecutionRequest) {
-        return  "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
                 " (ID, SCRIPT_EXEC_REQ_ID, IMP_ID) VALUES (" +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +

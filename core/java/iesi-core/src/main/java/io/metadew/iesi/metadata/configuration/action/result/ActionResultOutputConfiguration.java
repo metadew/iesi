@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action.result;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
@@ -29,6 +30,7 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     }
 
     private ActionResultOutputConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
     }
 
     public void init(MetadataRepository metadataRepository) {

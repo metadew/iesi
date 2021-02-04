@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action.performance;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.performance.ActionPerformance;
@@ -28,12 +29,8 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
     }
 
     private ActionPerformanceConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
     }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-    }
-
 
     @Override
     public Optional<ActionPerformance> get(ActionPerformanceKey key) {

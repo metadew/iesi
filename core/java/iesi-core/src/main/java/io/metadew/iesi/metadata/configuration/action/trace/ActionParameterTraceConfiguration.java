@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action.trace;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
@@ -30,10 +31,7 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
     }
 
     private ActionParameterTraceConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override

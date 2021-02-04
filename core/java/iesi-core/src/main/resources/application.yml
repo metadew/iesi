@@ -1,5 +1,9 @@
 iesi:
+
   home: "C:/Users/tawbane.ouamar/Desktop/iesi-sandbox/0.6.0/IesiSecurityTest"
+
+#  home: "/home/robbe/IESISandbox/0.6.0/security/"
+
   guard:
     authenticate: N
 #  script:

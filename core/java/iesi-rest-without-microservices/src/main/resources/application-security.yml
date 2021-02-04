@@ -1,6 +1,0 @@
-iesi:
-  security:
-    enabled: true
-    jwt:
-      secret: secret
-      expiry-date: 60000

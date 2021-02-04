@@ -18,7 +18,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-// @Profile("security")
 @Tag(name = "security", description = "Everything about securities")
 @RequestMapping("/security-groups")
 @CrossOrigin

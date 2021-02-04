@@ -30,7 +30,6 @@ import java.util.UUID;
 
 
 @RestController
-// @Profile("security")
 @Tag(name = "users", description = "Everything about users")
 @RequestMapping("/users")
 @Log4j2

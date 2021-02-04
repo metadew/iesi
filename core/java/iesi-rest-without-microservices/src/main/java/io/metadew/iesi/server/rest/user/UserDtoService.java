@@ -1,6 +1,8 @@
 package io.metadew.iesi.server.rest.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -26,8 +28,8 @@ public class UserDtoService implements IUserDtoService {
         return userDtoRepository.get(uuid);
     }
 
-    public Set<UserDto> getAll() {
-        return userDtoRepository.getAll();
+    public Page<UserDto> getAll(Pageable pageable, Set<UserFilter> userFilters) {
+        return userDtoRepository.getAll(pageable, userFilters);
     }
 
 }

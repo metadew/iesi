@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
-// @Profile("security")
 @Tag(name = "teams", description = "Everything about teams")
 @RequestMapping("/teams")
 @CrossOrigin

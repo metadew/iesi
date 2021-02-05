@@ -1,5 +1,5 @@
 iesi:
-  home: "."
+  home: ".."
   guard:
     authenticate: N
 #  script:

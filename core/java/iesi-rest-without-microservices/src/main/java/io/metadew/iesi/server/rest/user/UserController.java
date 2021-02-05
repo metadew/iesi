@@ -11,7 +11,10 @@ import io.metadew.iesi.server.rest.user.team.TeamsController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,12 +26,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 
 @RestController
-// @Profile("security")
 @Tag(name = "users", description = "Everything about users")
 @RequestMapping("/users")
 @Log4j2
@@ -45,14 +46,18 @@ public class UserController {
     private final TeamService teamService;
     private final UserService userService;
     private final UserDtoService userDtoService;
+    private final UserDtoModelAssembler userDtoModelAssembler;
+    private final PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
 
-    public UserController(AuthenticationManager authenticationManager, JwtService jwtService, PasswordEncoder passwordEncoder, TeamService teamService, UserService userService, UserDtoService userDtoService) {
+    public UserController(AuthenticationManager authenticationManager, JwtService jwtService, PasswordEncoder passwordEncoder, TeamService teamService, UserService userService, UserDtoService userDtoService, UserDtoModelAssembler userDtoModelAssembler, PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.teamService = teamService;
         this.userService = userService;
         this.userDtoService = userDtoService;
+        this.userDtoModelAssembler = userDtoModelAssembler;
+        this.userDtoPagedResourcesAssembler = userDtoPagedResourcesAssembler;
     }
 
     @PostConstruct
@@ -130,8 +135,18 @@ public class UserController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('USERS_READ')")
-    public Set<UserDto> fetchAll() {
-        return userDtoService.getAll();
+    public PagedModel<UserDto> fetchAll(Pageable pageable,
+                                 @RequestParam(required = false, name = "username") String username) {
+        Page<UserDto> userDtoPage = userDtoService.getAll(pageable,
+                new UserFiltersBuilder()
+                        .username(username)
+                        .build());
+        if (userDtoPage.hasContent())
+            return userDtoPagedResourcesAssembler.toModel(userDtoPage, userDtoModelAssembler::toModel);
+        return (PagedModel<UserDto>) userDtoPagedResourcesAssembler.toEmptyModel(userDtoPage, UserDto.class);
+
     }
+
+
 
 }

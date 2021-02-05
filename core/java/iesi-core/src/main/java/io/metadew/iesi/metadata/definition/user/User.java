@@ -4,11 +4,13 @@ import io.metadew.iesi.metadata.definition.Metadata;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class User extends Metadata<UserKey> {
 
     private String username;

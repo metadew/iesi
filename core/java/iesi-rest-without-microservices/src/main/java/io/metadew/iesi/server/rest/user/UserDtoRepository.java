@@ -3,21 +3,26 @@ package io.metadew.iesi.server.rest.user;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.server.rest.dataset.DatasetDtoListResultSetExtractor;
+import io.metadew.iesi.server.rest.dataset.DatasetFilter;
+import io.metadew.iesi.server.rest.dataset.FilterService;
+import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
-public class UserDtoRepository implements IUserDtoRepository {
+public class UserDtoRepository extends PaginatedRepository implements IUserDtoRepository {
 
-    private static final String fetchSingleQuery = "select " +
+    private static final String FETCH_SINGLE_QUERY = "select " +
             "users.ID as user_id, users.USERNAME as user_username, " +
             "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
             "roles.ID as role_id, roles.role_name as role_role_name, " +
@@ -34,23 +39,8 @@ public class UserDtoRepository implements IUserDtoRepository {
             " ON teams.ID = roles.TEAM_ID " +
             " WHERE users.ID={0};";
 
-    private static final String fetchAllQuery = "select " +
-            "users.ID as user_id, users.USERNAME as user_username, " +
-            "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
-            "roles.ID as role_id, roles.role_name as role_role_name, " +
-            "privileges.ID as privilege_id, privileges.privilege as privilege_privilege, " +
-            "teams.ID as team_id, teams.TEAM_NAME as team_name " +
-            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users" +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
-            " ON users.ID = user_roles.USER_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
-            " ON user_roles.ROLE_ID = roles.ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
-            " ON privileges.ROLE_ID = roles.ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
-            " ON teams.ID = roles.TEAM_ID;";
 
-    private static final String fetchSingleByNameQuery = "select " +
+    private static final String FETCH_SINGLE_BY_NAME_QUERY = "select " +
             "users.ID as user_id, users.USERNAME as user_username, " +
             "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
             "roles.ID as role_id, roles.role_name as role_role_name, " +
@@ -68,16 +58,72 @@ public class UserDtoRepository implements IUserDtoRepository {
             " WHERE users.NAME={0};";
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final FilterService filterService;
 
     @Autowired
-    public UserDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+    public UserDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.filterService = filterService;
+    }
+
+    private String getFetchAllQuery(Pageable pageable, Set<UserFilter> userFilters) {
+        return "select " +
+                "users.ID as user_id, users.USERNAME as user_username, " +
+                "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
+                "roles.ID as role_id, roles.role_name as role_role_name, " +
+                "privileges.ID as privilege_id, privileges.privilege as privilege_privilege, " +
+                "teams.ID as team_id, teams.TEAM_NAME as team_name " +
+                " FROM (" + getBaseQuery(pageable, userFilters) + ") base_users " + //base table
+                " inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
+                " on base_users.ID=users.ID " +
+                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
+                " ON users.ID = user_roles.USER_ID " +
+                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+                " ON user_roles.ROLE_ID = roles.ID " +
+                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
+                " ON privileges.ROLE_ID = roles.ID " +
+                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
+                " ON teams.ID = roles.TEAM_ID;";
+    }
+
+    private String getBaseQuery(Pageable pageable, Set<UserFilter> userFilters) {
+        return "select users.ID " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
+                getWhereClause(userFilters) +
+                getOrderByClause(pageable) +
+                getLimitAndOffsetClause(pageable);
+    }
+
+    private String getOrderByClause(Pageable pageable) {
+        if (pageable.isUnpaged()) {
+            return " ";
+        }
+        if (pageable.getSort().isUnsorted()) {
+            // set default ordering for pagination to last loaded
+            return " ORDER BY users.LOAD_TMS ASC ";
+        } else {
+            return " ";
+        }
+    }
+
+    private String getWhereClause(Set<UserFilter> datasetFilters) {
+        String filterStatements = datasetFilters.stream()
+                .map(datasetFilter -> {
+                    if (datasetFilter.getFilterOption().equals(UserFilterOption.USERNAME)) {
+                        return filterService.getStringCondition("users.USERNAME", datasetFilter);
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" and "));
+        return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
     public Optional<UserDto> get(String username) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSingleByNameQuery, SQLTools.getStringForSQL(username)),
+                    MessageFormat.format(FETCH_SINGLE_BY_NAME_QUERY, SQLTools.getStringForSQL(username)),
                     "reader");
             return new UserDtoListResultSetExtractor()
                     .extractData(cachedRowSet).stream()
@@ -90,7 +136,7 @@ public class UserDtoRepository implements IUserDtoRepository {
     public Optional<UserDto> get(UUID id) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    MessageFormat.format(fetchSingleQuery, SQLTools.getStringForSQL(id)),
+                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.getStringForSQL(id)),
                     "reader");
             return new UserDtoListResultSetExtractor()
                     .extractData(cachedRowSet).stream()
@@ -100,18 +146,26 @@ public class UserDtoRepository implements IUserDtoRepository {
         }
     }
 
-    public Set<UserDto> getAll() {
+    public Page<UserDto> getAll(Pageable pageable, Set<UserFilter> userFilters) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    fetchAllQuery,
+                    getFetchAllQuery(pageable, userFilters),
                     "reader");
-            return new HashSet<>(
-                    new UserDtoListResultSetExtractor()
-                            .extractData(cachedRowSet)
-            );
+            return new PageImpl<>(new UserDtoListResultSetExtractor().extractData(cachedRowSet),
+                    pageable,
+                    getRowSize(userFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private long getRowSize(Set<UserFilter> userFilters) throws SQLException {
+        String query = "select count(*) as row_count from " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
+                getWhereClause(userFilters) + ";";
+        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+        cachedRowSet.next();
+        return cachedRowSet.getLong("row_count");
     }
 
 }

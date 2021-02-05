@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
 public class DatasetController {
 
     private final DatasetDtoModelAssembler datasetDtoModelAssembler;
+    private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetService datasetService;
     private final IDatasetImplementationService datasetImplementationService;
-    private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetDtoService datasetDtoService;
 
     @Autowired

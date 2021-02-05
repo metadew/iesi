@@ -76,7 +76,6 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID;";
     }
 
-
     private String getFetchAllOnlyUuidQuery(Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "SELECT " +
                 "dataset_impls.ID as dataset_impl_id, " +
@@ -87,8 +86,6 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
                 "on dataset_impls.DATASET_ID=datasets.ID ;";
     }
-
-
 
     private String getBaseQuery(Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "select datasets.ID " +

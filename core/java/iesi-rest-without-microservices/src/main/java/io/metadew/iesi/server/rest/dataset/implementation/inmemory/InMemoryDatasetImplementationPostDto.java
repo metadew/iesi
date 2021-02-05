@@ -1,9 +1,12 @@
 package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
 
+
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
-import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationType;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
+
+
 import lombok.*;
 
 import javax.validation.constraints.NotNull;

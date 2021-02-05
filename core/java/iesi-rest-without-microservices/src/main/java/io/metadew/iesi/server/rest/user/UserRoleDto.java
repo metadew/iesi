@@ -2,10 +2,7 @@ package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.server.rest.user.role.PrivilegeDto;
 import io.metadew.iesi.server.rest.user.role.RoleTeamDto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 import java.util.UUID;
@@ -14,6 +11,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserRoleDto {
 
     private UUID id;

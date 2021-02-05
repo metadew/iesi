@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DelimitedFileBeatElasticSearchConnectionTest {
-/*
+
     @Test
     void toStringString() {
         DelimitedFileBeatElasticSearchConnection delimitedFileBeatElasticSearchConnection = new DelimitedFileBeatElasticSearchConnection();
@@ -41,5 +41,5 @@ class DelimitedFileBeatElasticSearchConnectionTest {
         NestedTestObject nestedTestObject = new NestedTestObject(new TestObject("a", "b", "c", "d"), "a", "b", "c");
         assertThat(delimitedFileBeatElasticSearchConnection.toString(nestedTestObject)).isEqualTo("'a' 'b' 'c' 'd' 'a' 'b' 'c'");
     }
-*/
+
 }

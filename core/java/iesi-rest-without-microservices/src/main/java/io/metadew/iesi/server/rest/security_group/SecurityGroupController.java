@@ -6,7 +6,6 @@ import io.metadew.iesi.metadata.definition.user.TeamKey;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

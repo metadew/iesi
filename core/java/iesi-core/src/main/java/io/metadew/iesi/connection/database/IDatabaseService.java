@@ -68,6 +68,8 @@ public interface IDatabaseService<T extends Database> {
 
     Optional<String> getPrimaryKeyConstraints(T database, MetadataTable metadataTable);
 
+    Optional<String> getUniqueConstraints(T database, MetadataTable metadataTable);
+
     public void dropTable(T database, MetadataTable table);
 
     public void cleanTable(T database, MetadataTable table);

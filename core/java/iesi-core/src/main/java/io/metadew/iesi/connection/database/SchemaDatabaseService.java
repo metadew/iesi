@@ -46,7 +46,7 @@ public abstract class SchemaDatabaseService<T extends SchemaDatabase> extends Da
 
         getPrimaryKeyConstraints(schemaDatabase, table)
                 .ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
-        getUniqueConstraints(table)
+        getUniqueConstraints(schemaDatabase, table)
                 .ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
         createQuery.append("\n)").append(createQueryExtras(schemaDatabase)).append(";");
         //createQuery.append(fieldComments).append("\n\n");

@@ -3,8 +3,8 @@
     <Appenders>
 		<RollingFile
 			name="default"
-			fileName="../logs/iesi.log"
-			filePattern="../logs/iesi.%i.log.gz"
+			fileName="./logs/iesi.log"
+			filePattern="./logs/iesi.%i.log.gz"
 			ignoreExceptions="false">
 			<PatternLayout>
 				 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
@@ -16,8 +16,8 @@
 		</RollingFile>
 		<RollingFile
 			name="rest"
-			fileName="../logs/rest.log"
-			filePattern="../logs/rest.%i.log.gz"
+			fileName="./logs/rest.log"
+			filePattern="./logs/rest.%i.log.gz"
 			ignoreExceptions="false">
 			<PatternLayout>
 				 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
@@ -30,14 +30,14 @@
         <Routing name="elasticSearchFileBeat">
             <Routes pattern="$${marker:}">
                 <Route key="${marker:}">
-                    <File fileName="../logs/filebeat.log" name="script" append="true">
+                    <File fileName="./logs/filebeat.log" name="script" append="true">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
                     </File>
                 </Route>
                 <Route>
-                    <File fileName="../logs/filebeat/${marker:}.log" name="filebeat-${marker:}" append="false">
+                    <File fileName="./logs/filebeat/${marker:}.log" name="filebeat-${marker:}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
@@ -50,8 +50,8 @@
                 <Route key="${ctx:runId}">
 					<RollingFile
 						name="script"
-						fileName="../logs/iesi-script.log"
-						filePattern="../logs/iesi-script.%i.log.gz"
+						fileName="./logs/iesi-script.log"
+						filePattern="./logs/iesi-script.%i.log.gz"
 						ignoreExceptions="false">
 						<PatternLayout>
 							 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
@@ -63,7 +63,7 @@
 					</RollingFile>
                 </Route>
                 <Route>
-					<File fileName="../logs/${ctx:runId}/script.log" name="script-${ctx:runId}" append="false">
+					<File fileName="./logs/${ctx:runId}/script.log" name="script-${ctx:runId}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
@@ -76,8 +76,8 @@
                 <Route key="${ctx:runId}">
 					<RollingFile
 						name="repository"
-						fileName="../logs/iesi-repository.log"
-						filePattern="../logs/iesi-repository.%i.log.gz"
+						fileName="./logs/iesi-repository.log"
+						filePattern="./logs/iesi-repository.%i.log.gz"
 						ignoreExceptions="false">
 						<PatternLayout>
 							 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
@@ -89,7 +89,7 @@
 					</RollingFile>
                 </Route>
                 <Route>
-                    <File fileName="../logs/${ctx:runId}/repository.log" name="repository-${ctx:runId}" append="false">
+                    <File fileName="./logs/${ctx:runId}/repository.log" name="repository-${ctx:runId}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
@@ -102,8 +102,8 @@
                 <Route key="${ctx:runId}">
 					<RollingFile
 						name="queries"
-						fileName="../logs/iesi-SQL.log"
-						filePattern="../logs/iesi-SQL.%i.log.gz"
+						fileName="./logs/iesi-SQL.log"
+						filePattern="./logs/iesi-SQL.%i.log.gz"
 						ignoreExceptions="false">
 						<PatternLayout>
 							 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
@@ -115,7 +115,7 @@
 					</RollingFile>
                 </Route>
                 <Route>
-                    <File fileName="../logs/${ctx:runId}/SQL.log" name="queries-${ctx:runId}" append="false">
+                    <File fileName="./logs/${ctx:runId}/SQL.log" name="queries-${ctx:runId}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>

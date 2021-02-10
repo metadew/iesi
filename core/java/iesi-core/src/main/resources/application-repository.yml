@@ -11,8 +11,23 @@ iesi:
         coordinator:
           # init_sql: alter  current....
 
-          type: sqlite
-          file: /home/robbe/IESISandbox/0.6.0/security/repository.db3
+          type: mysql
+          host: localhost
+          name: IESI
+          port: 3306
+          schema: IESI?useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
+          owner:
+            user: root
+            password: iesi_root
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: sqlite
+#          file: /home/robbe/IESISandbox/0.6.0/security/repository.db3
 
 #          type: h2
 #          mode: memory
@@ -87,21 +102,6 @@ iesi:
 #          host: 
 #          name: 
 #          port: 
-#          schema:
-#          owner:
-#            user:
-#            password:
-#          reader:
-#            user:
-#            password:
-#          writer:
-#            user:
-#            password:
-
-#          type: mysql
-#          host:
-#          name:
-#          port:
 #          schema:
 #          owner:
 #            user:

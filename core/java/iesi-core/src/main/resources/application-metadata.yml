@@ -2671,7 +2671,7 @@ iesi:
             order: 5
             type: STRING
             length: 200
-            nullable: true
+            nullable: false
             defaultTimestamp:
             primaryKey: true
           STRT_TMS:

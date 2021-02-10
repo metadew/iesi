@@ -1,5 +1,5 @@
 iesi:
-  home: "/home/robbe/IESISandbox/0.6.0/security/"
+  home: "."
   guard:
     authenticate: N
 #  script:

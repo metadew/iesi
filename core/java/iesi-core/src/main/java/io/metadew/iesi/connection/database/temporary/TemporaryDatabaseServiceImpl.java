@@ -158,6 +158,11 @@ public class TemporaryDatabaseServiceImpl implements IDatabaseService<TemporaryD
     }
 
     @Override
+    public Optional<String> getUniqueConstraints(TemporaryDatabase database, MetadataTable metadataTable) {
+        throw new RuntimeException("Cannot execute queries for a temporary database");
+    }
+
+    @Override
     public void dropTable(TemporaryDatabase database, MetadataTable table) {
         throw new RuntimeException("Cannot execute queries for a temporary database");
     }

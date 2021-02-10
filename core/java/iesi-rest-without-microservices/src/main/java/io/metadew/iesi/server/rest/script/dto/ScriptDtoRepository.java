@@ -182,7 +182,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
                 "on script_designs.SCRIPT_ID = script_labels.SCRIPT_ID and versions.SCRIPT_VRS_NB = script_labels.SCRIPT_VRS_NB " +
                 getWhereClause(authentication, scriptFilters, onlyLatestVersions) +
-                ");";
+                ") filtered_scripts;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

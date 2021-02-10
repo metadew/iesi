@@ -30,7 +30,7 @@ public class MysqlMetadataRepositoryCoordinatorService implements IMetadataRepos
         Map<String, Database> databases = new HashMap<>();
         if (mysqlRepositoryCoordinatorDefinition.getOwner() != null) {
             MysqlDatabaseConnection databaseConnection = getDatabaseConnection(mysqlRepositoryCoordinatorDefinition,
-                    mysqlRepositoryCoordinatorDefinition.getReader());
+                    mysqlRepositoryCoordinatorDefinition.getOwner());
             MysqlDatabase postgresqlDatabase = new MysqlDatabase(databaseConnection);
             mysqlRepositoryCoordinatorDefinition.getSchema().ifPresent(postgresqlDatabase::setSchema);
             databases.put("owner", postgresqlDatabase);
@@ -47,7 +47,7 @@ public class MysqlMetadataRepositoryCoordinatorService implements IMetadataRepos
         }
         if (mysqlRepositoryCoordinatorDefinition.getReader() != null) {
             MysqlDatabaseConnection mssqlDatabaseConnection = getDatabaseConnection(mysqlRepositoryCoordinatorDefinition,
-                    mysqlRepositoryCoordinatorDefinition.getWriter());
+                    mysqlRepositoryCoordinatorDefinition.getReader());
             MysqlDatabase mssqlDatabase = new MysqlDatabase(mssqlDatabaseConnection);
             mysqlRepositoryCoordinatorDefinition.getSchema().ifPresent(mssqlDatabase::setSchema);
             databases.put("reader", mssqlDatabase);

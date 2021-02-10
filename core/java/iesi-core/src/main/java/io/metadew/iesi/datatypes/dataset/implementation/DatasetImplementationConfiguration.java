@@ -6,12 +6,10 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -125,16 +123,13 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "where datasets.ID={0} and dataset_impls.ID in ({1});";
 
-    private static final String GET_BY_LABEL_SET_VALUE_SUB_QUERY = "SELECT " +
-            "dataset_impl_labels.DATASET_IMPL_ID " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
-            "WHERE dataset_impl_labels.VALUE = {0}";
+    private static final String GET_BY_LABELS_SUB_QUERY = "SELECT dataset_impl_labels.DATASET_IMPL_ID FROM " +
+            MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+            " GROUP BY dataset_impl_labels.DATASET_IMPL_ID" +
+            " HAVING COUNT(*) = %s AND COUNT(" +
+            " CASE dataset_impl_labels.VALUE %s ELSE 1 END) = 0";
 
-    private static final String GET_BY_LABEL_SET_COUNT_SUB_QUERY = "SELECT " +
-            "dataset_impl_labels.DATASET_IMPL_ID " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
-            "GROUP BY dataset_impl_labels.DATASET_IMPL_ID " +
-            "HAVING COUNT(DISTINCT dataset_impl_labels.VALUE) = {0}";
+    private static final String GET_BY_LABELS_CASE_SUB_QUERY = "WHEN %s THEN NULL";
 
     private static final String INSERT_QUERY = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() +
             " (ID, DATASET_ID) " +
@@ -149,7 +144,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "VALUES ({0});";
 
     private static final String INSERT_IN_MEMORY_DATASET_IMPLEMENTATION_KEY_VALUE_QUERY = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " (ID, IMPL_MEM_ID, KEY, VALUE) " +
+            " (ID, IMPL_MEM_ID, \"KEY\", VALUE) " +
             "VALUES ({0}, {1}, {2}, {3});";
 
     private static final String DELETE_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() +
@@ -191,10 +186,11 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     public boolean exists(String name, List<String> labels) {
         try {
-            String labelSetQuery = labels.stream()
-                    .map(s -> MessageFormat.format(GET_BY_LABEL_SET_VALUE_SUB_QUERY, SQLTools.getStringForSQL(s)))
-                    .collect(Collectors.joining(" intersect "));
-            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(GET_BY_LABEL_SET_COUNT_SUB_QUERY, SQLTools.getStringForSQL(labels.size()));
+            String labelCaseQuery = labels.stream().map(label -> String.format(GET_BY_LABELS_CASE_SUB_QUERY, SQLTools.getStringForSQL(label)))
+                    .collect(Collectors.joining(" "));
+            String labelSetQuery = String.format(GET_BY_LABELS_SUB_QUERY,
+                    SQLTools.getStringForSQL(labels.size()),
+                    labelCaseQuery);
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(EXISTS_BY_NAME_AND_LABELS_QUERY,
@@ -243,10 +239,12 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     public Optional<DatasetImplementation> getByNameAndLabels(String name, List<String> labels) {
         try {
             Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
-            String labelSetQuery = labels.stream()
-                    .map(s -> MessageFormat.format(GET_BY_LABEL_SET_VALUE_SUB_QUERY, SQLTools.getStringForSQL(s)))
-                    .collect(Collectors.joining(" intersect "));
-            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(GET_BY_LABEL_SET_COUNT_SUB_QUERY, SQLTools.getStringForSQL(labels.size()));
+
+            String labelCaseQuery = labels.stream().map(label -> String.format(GET_BY_LABELS_CASE_SUB_QUERY, SQLTools.getStringForSQL(label)))
+                    .collect(Collectors.joining(" "));
+            String labelSetQuery = String.format(GET_BY_LABELS_SUB_QUERY,
+                    SQLTools.getStringForSQL(labels.size()),
+                    labelCaseQuery);
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(SELECT_BY_NAME_AND_LABELS_QUERY,
@@ -266,10 +264,12 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     public Optional<DatasetImplementation> getByDatasetIdAndLabels(DatasetKey datasetKey, List<String> labels) {
         try {
             Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
-            String labelSetQuery = labels.stream()
-                    .map(s -> MessageFormat.format(GET_BY_LABEL_SET_VALUE_SUB_QUERY, SQLTools.getStringForSQL(s)))
-                    .collect(Collectors.joining(" intersect "));
-            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(GET_BY_LABEL_SET_COUNT_SUB_QUERY, SQLTools.getStringForSQL(labels.size()));
+
+            String labelCaseQuery = labels.stream().map(label -> String.format(GET_BY_LABELS_CASE_SUB_QUERY, SQLTools.getStringForSQL(label)))
+                    .collect(Collectors.joining(" "));
+            String labelSetQuery = String.format(GET_BY_LABELS_SUB_QUERY,
+                    SQLTools.getStringForSQL(labels.size()),
+                    labelCaseQuery);
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(

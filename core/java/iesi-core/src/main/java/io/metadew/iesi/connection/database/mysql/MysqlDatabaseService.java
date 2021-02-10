@@ -63,7 +63,7 @@ public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> i
                 fieldQuery.append("VARCHAR (").append(field.getLength()).append(")");
                 break;
             case CLOB:
-                fieldQuery.append("CLOB (").append(field.getLength()).append(")");
+                fieldQuery.append("TEXT");
                 break;
             case FLAG:
                 fieldQuery.append("CHAR (").append(field.getLength()).append(")");
@@ -76,15 +76,18 @@ public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> i
                 break;
         }
 
+        // Nullable
+        if (!field.isNullable()) {
+            fieldQuery.append(" NOT NULL ");
+        } else {
+            fieldQuery.append(" NULL ");
+        }
+
         // Default DtTimestamp
         if (field.isDefaultTimestamp()) {
             fieldQuery.append(" DEFAULT CURRENT_TIMESTAMP");
         }
 
-        // Nullable
-        if (!field.isNullable()) {
-            fieldQuery.append(" NOT NULL");
-        }
         return fieldQuery.toString();
     }
 

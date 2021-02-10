@@ -175,7 +175,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
-                ");";
+                ") filtered_execution_requests;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

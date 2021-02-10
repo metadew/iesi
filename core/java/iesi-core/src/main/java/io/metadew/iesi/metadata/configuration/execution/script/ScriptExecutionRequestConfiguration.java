@@ -198,7 +198,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
     public List<String> insertStatement(ScriptExecutionRequest scriptExecutionRequest) {
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") +
-                " (SCRPT_REQUEST_ID, ID, EXIT, ENVIRONMENT, ST_NM) VALUES (" +
+                " (SCRPT_REQUEST_ID, ID, \"EXIT\", ENVIRONMENT, ST_NM) VALUES (" +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
                 SQLTools.getStringForSQL(scriptExecutionRequest.isExit()) + "," +
@@ -319,7 +319,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
         List<String> queries = new ArrayList<>();
         queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SET " +
                 "ID=" + SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
-                "EXIT=" + SQLTools.getStringForSQL(scriptExecutionRequest.isExit()) + "," +
+                "\"EXIT\"=" + SQLTools.getStringForSQL(scriptExecutionRequest.isExit()) + "," +
                 "ENVIRONMENT=" + SQLTools.getStringForSQL(scriptExecutionRequest.getEnvironment()) + "," +
                 "ST_NM=" + SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestStatus().value()) + " WHERE " +
                 "SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");

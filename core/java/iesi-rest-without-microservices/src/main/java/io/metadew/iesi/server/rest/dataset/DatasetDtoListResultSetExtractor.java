@@ -1,11 +1,9 @@
 package io.metadew.iesi.server.rest.dataset;
 
-import io.metadew.iesi.connection.tools.SQLTools;
 
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -18,9 +16,6 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class DatasetDtoListResultSetExtractor {
-
-    private static final String IN_MEMORY_DATASET_IMPLEMENTATION_TYPE = "in_memory";
-
 
     public List<DatasetDto> extractData(CachedRowSet rs) throws SQLException {
         Map<UUID,DatasetDtoBuilder> datasetBuilderMap = new LinkedHashMap<>();
@@ -80,26 +75,6 @@ public class DatasetDtoListResultSetExtractor {
 
         public abstract DatasetImplementationDto build();
 
-    }
-
-    @Getter
-    @ToString(callSuper = true)
-    private static class InMemoryDatasetImplementationDtoBuilder extends DatasetImplementationDtoBuilder {
-
-        private final Map<UUID, InMemoryDatasetImplementationKeyValueDto> keyValues;
-
-        public InMemoryDatasetImplementationDtoBuilder(UUID uuid, Map<UUID, DatasetImplementationLabelDto> datasetImplementationLabels, Map<UUID, InMemoryDatasetImplementationKeyValueDto> keyValues) {
-            super(uuid, datasetImplementationLabels);
-            this.keyValues = keyValues;
-        }
-
-        @Override
-        public DatasetImplementationDto build() {
-            return new InMemoryDatasetImplementationDto(
-                    getUuid(),
-                    new HashSet<>(getDatasetImplementationLabels().values()),
-                    new HashSet<>(getKeyValues().values()));
-        }
     }
 
 }

@@ -2,8 +2,6 @@ package io.metadew.iesi.server.rest.dataset;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 
-import io.metadew.iesi.server.rest.dataset.dto.DatasetNoImplDto;
-
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
@@ -23,40 +21,25 @@ public class DatasetDtoListResultSetExtractor {
 
     private static final String IN_MEMORY_DATASET_IMPLEMENTATION_TYPE = "in_memory";
 
+
     public List<DatasetDto> extractData(CachedRowSet rs) throws SQLException {
-        Map<UUID, DatasetDtoBuilder> datasetBuilderMap = new LinkedHashMap<>();
+        Map<UUID,DatasetDtoBuilder> datasetBuilderSet = new LinkedHashMap<>();
         DatasetDtoBuilder datasetDtoBuilder;
-        while (rs.next()) {
-            UUID uuid = UUID.fromString(rs.getString("dataset_id"));
-            datasetDtoBuilder = datasetBuilderMap.get(uuid);
-            if (datasetDtoBuilder == null) {
-                datasetDtoBuilder = mapDatasetDtoBuilder(rs);
-                datasetBuilderMap.put(uuid, datasetDtoBuilder);
-            }
-
-            addImplementation(datasetDtoBuilder, rs);
-        }
-        return datasetBuilderMap.values().stream().map(DatasetDtoBuilder::build).collect(Collectors.toList());
-    }
-
-    public List<DatasetNoImplDto> extractDataOnlyUuid(CachedRowSet rs) throws SQLException {
-        Map<UUID,DatasetOnlyUuidDtoBuilder> datasetBuilderSet = new LinkedHashMap<>();
-        DatasetOnlyUuidDtoBuilder datasetDtoBuilder;
         while (rs.next()) {
             datasetDtoBuilder = datasetBuilderSet.get(UUID.fromString(rs.getString("dataset_id")));
 
             if (datasetDtoBuilder == null) {
-                datasetDtoBuilder = mapDatasetOnlyUuidDtoBuilder(rs);
+                datasetDtoBuilder = mapDatasetDtoBuilder(rs);
                 datasetBuilderSet.put(UUID.fromString(rs.getString("dataset_id")),datasetDtoBuilder);
             }
 
-            addImplementationOnlyUuid(datasetDtoBuilder,rs);
+            addImplementation(datasetDtoBuilder,rs);
 
         }
-        return datasetBuilderSet.values().stream().map(DatasetOnlyUuidDtoBuilder::build).collect(Collectors.toList());
+        return datasetBuilderSet.values().stream().map(DatasetDtoBuilder::build).collect(Collectors.toList());
     }
 
-    private void addImplementationOnlyUuid(DatasetOnlyUuidDtoBuilder datasetDtoBuilder, CachedRowSet rs) throws SQLException {
+    private void addImplementation(DatasetDtoBuilder datasetDtoBuilder, CachedRowSet rs) throws SQLException {
         if (rs.getString("dataset_impl_id") == null) {
             return;
         }
@@ -65,96 +48,14 @@ public class DatasetDtoListResultSetExtractor {
 
     }
 
-    private void addImplementation(DatasetDtoBuilder datasetDtoBuilder, CachedRowSet rs) throws SQLException {
-        if (rs.getString("dataset_impl_id") == null) {
-            return;
-        }
-        UUID datasetImplementationId = UUID.fromString(rs.getString("dataset_impl_id"));
-        DatasetImplementationDtoBuilder datasetImplementationBuilder = datasetDtoBuilder.getDatasetImplementationBuilders().get(datasetImplementationId);
-            if (datasetImplementationBuilder == null) {
-                datasetImplementationBuilder = extractDatasetImplementationBuilderMapRow(rs);
-                datasetDtoBuilder.getDatasetImplementationBuilders().put(datasetImplementationId, datasetImplementationBuilder);
-            }
-
-            String type = mapType(rs);
-
-            if (type.equalsIgnoreCase(IN_MEMORY_DATASET_IMPLEMENTATION_TYPE)) {
-                mapInMemoryDatasetImplementationDto(rs, (InMemoryDatasetImplementationDtoBuilder) datasetImplementationBuilder);
-            } else {
-                log.warn("no type found for dataset implementation");
-            }
-
-            mapDatasetImplementationLabel(rs, datasetImplementationBuilder);
-
-    }
-
-    private void mapDatasetImplementationLabel(CachedRowSet rs, DatasetImplementationDtoBuilder datasetImplementationBuilder) throws SQLException {
-        String datasetImplementationLabelId = rs.getString("dataset_impl_label_id");
-        if (datasetImplementationLabelId != null && datasetImplementationBuilder.getDatasetImplementationLabels().get(UUID.fromString(datasetImplementationLabelId)) == null) {
-            datasetImplementationBuilder.getDatasetImplementationLabels().put(
-                    UUID.fromString(datasetImplementationLabelId),
-                    new DatasetImplementationLabelDto(
-                            UUID.fromString(datasetImplementationLabelId),
-                            rs.getString("dataset_impl_label_value"))
-            );
-        }
-    }
-
-    private void mapInMemoryDatasetImplementationDto(CachedRowSet rs, InMemoryDatasetImplementationDtoBuilder datasetImplementationBuilder) throws SQLException {
-        String inMemoryKeyValueId = rs.getString("dataset_in_mem_impl_kv_id");
-        if (inMemoryKeyValueId != null && datasetImplementationBuilder.getKeyValues().get(UUID.fromString(inMemoryKeyValueId)) == null) {
-            String clobValue = SQLTools.getStringFromSQLClob(rs, "dataset_in_mem_impl_kvs_value");
-            datasetImplementationBuilder.getKeyValues().put(UUID.fromString(inMemoryKeyValueId),
-                    new InMemoryDatasetImplementationKeyValueDto(
-                            UUID.fromString(inMemoryKeyValueId),
-                            rs.getString("dataset_in_mem_impl_kvs_key"),
-                            clobValue)
-            );
-        }
-    }
-
-    private DatasetImplementationDtoBuilder extractDatasetImplementationBuilderMapRow(CachedRowSet rs) throws SQLException {
-        String type = mapType(rs);
-        if (type.equalsIgnoreCase(IN_MEMORY_DATASET_IMPLEMENTATION_TYPE)) {
-            return extractInMemoryDatasetImplementation(rs);
-        } else {
-            throw new RuntimeException("cannot create dataset implementation for type " + type);
-        }
-    }
-
-    private DatasetImplementationDtoBuilder extractInMemoryDatasetImplementation(CachedRowSet rs) throws SQLException {
-        return new InMemoryDatasetImplementationDtoBuilder(
-                UUID.fromString(rs.getString("dataset_impl_id")),
-                new HashMap<>(),
-                new HashMap<>()
-        );
-    }
-
-    private String mapType(CachedRowSet rs) throws SQLException {
-        // "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
-        if (rs.getString("dataset_in_mem_impl_id") != null) {
-            return IN_MEMORY_DATASET_IMPLEMENTATION_TYPE;
-        } else {
-            throw new RuntimeException("cannot determine the type of dataset_implementation");
-        }
-    }
-
     private DatasetDtoBuilder mapDatasetDtoBuilder(CachedRowSet rs) throws SQLException {
         return new DatasetDtoBuilder(
                 UUID.fromString(rs.getString("dataset_id")),
                 rs.getString("dataset_name"),
-                new HashMap<>()
-        );
-    }
-
-    private DatasetOnlyUuidDtoBuilder mapDatasetOnlyUuidDtoBuilder(CachedRowSet rs) throws SQLException {
-        return new DatasetOnlyUuidDtoBuilder(
-                UUID.fromString(rs.getString("dataset_id")),
-                rs.getString("dataset_name"),
                 new HashSet<>()
-
         );
     }
+
 
     @AllArgsConstructor
     @Getter
@@ -162,26 +63,10 @@ public class DatasetDtoListResultSetExtractor {
     private static class DatasetDtoBuilder {
         private final UUID uuid;
         private final String name;
-        private final Map<UUID, DatasetImplementationDtoBuilder> datasetImplementationBuilders;
-
-        public DatasetDto build() {
-            return new DatasetDto(uuid, name, datasetImplementationBuilders.values().stream()
-                    .map(DatasetImplementationDtoBuilder::build)
-                    .collect(Collectors.toSet())
-            );
-        }
-    }
-
-    @AllArgsConstructor
-    @Getter
-    @ToString
-    private static class DatasetOnlyUuidDtoBuilder {
-        private final UUID uuid;
-        private final String name;
         private final Set<UUID> datasetImplementationBuilders;
 
-        public DatasetNoImplDto build() {
-            return new DatasetNoImplDto(uuid, name,datasetImplementationBuilders);
+        public DatasetDto build() {
+            return new DatasetDto(uuid, name,datasetImplementationBuilders);
         }
     }
 

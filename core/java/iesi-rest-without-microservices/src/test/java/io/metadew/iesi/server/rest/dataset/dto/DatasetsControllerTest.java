@@ -65,20 +65,5 @@ public class DatasetsControllerTest {
 
     }
 
-    @Test
-    void getAllOnlyUuid() throws Exception {
-
-        Pageable pageable = PageRequest.of(0, 20);
-
-        List<DatasetNoImplDto> datasetDtoList = new ArrayList<>();
-        Page<DatasetNoImplDto> page = new PageImpl<>(datasetDtoList, pageable, 1);
-        given(datasetDtoService.fetchAllOnlyUuid(pageable,new DatasetFiltersBuilder()
-                .build()))
-                .willReturn(page);
-
-        mvc.perform(get("/datasets").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-    }
 
 }

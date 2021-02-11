@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.dataset;
 
-import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
+
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -18,6 +18,6 @@ public class DatasetDto extends RepresentationModel<DatasetDto> {
 
     private UUID uuid;
     private String name;
-    private Set<DatasetImplementationDto> implementations;
+    private Set<UUID> implementations;
 
 }

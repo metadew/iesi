@@ -266,6 +266,7 @@ class DatasetDtoRepositoryTest {
                                             )
                                             .build();
                                 })
+                                .map(e ->e.getUuid())
                                 .collect(Collectors.toSet()))
                 .build();
         info.put("datasetDto", datasetDto);

@@ -1,6 +1,5 @@
 package io.metadew.iesi.server.rest.dataset;
 
-import io.metadew.iesi.server.rest.dataset.dto.DatasetNoImplDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +21,6 @@ public class DatasetDtoService implements IDatasetDtoService {
         return datasetDtoRepository.fetchAll(pageable, datasetFilters);
     }
 
-    public Page<DatasetNoImplDto> fetchAllOnlyUuid(Pageable pageable, Set<DatasetFilter> datasetFilters) {
-        return datasetDtoRepository.fetchAllOnlyUuid(pageable, datasetFilters);
-
-    }
 
 }
+

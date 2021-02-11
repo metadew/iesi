@@ -13,9 +13,6 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 
-import io.metadew.iesi.server.rest.dataset.dto.DatasetNoImplDto;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetNoImplDtoModelAssembler;
-
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,33 +39,28 @@ import java.util.stream.Collectors;
 public class DatasetController {
 
     private final DatasetDtoModelAssembler datasetDtoModelAssembler;
-    private final DatasetNoImplDtoModelAssembler datasetNoImplDtoModelAssembler;
     private final IDatasetService datasetService;
     private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
-    private final PagedResourcesAssembler<DatasetNoImplDto> datasetNoImplDtoPagedResourcesAssembler;
     private final IDatasetDtoService datasetDtoService;
     private final IDatasetImplementationService datasetImplementationService;
 
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
-                             DatasetNoImplDtoModelAssembler datasetNoImplDtoModelAssembler,
+
                              IDatasetService datasetService,
                              IDatasetImplementationService datasetImplementationService,
                              PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,
-                             PagedResourcesAssembler<DatasetNoImplDto> datasetNoImpDtoPagedResourcesAssembler,
                              IDatasetDtoService datasetDtoService) {
         this.datasetDtoModelAssembler = datasetDtoModelAssembler;
-        this.datasetNoImplDtoModelAssembler = datasetNoImplDtoModelAssembler;
         this.datasetService = datasetService;
         this.datasetImplementationService = datasetImplementationService;
         this.datasetDtoPagedResourcesAssembler = datasetPagedResourcesAssembler;
-        this.datasetNoImplDtoPagedResourcesAssembler = datasetNoImpDtoPagedResourcesAssembler;
         this.datasetDtoService = datasetDtoService;
     }
 
     @SuppressWarnings("unchecked")
-    @GetMapping("/implementations")
+    @GetMapping("")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public PagedModel<DatasetDto> getAll(Pageable pageable,
                                          @RequestParam(required = false, name = "name") String name) {
@@ -80,21 +72,6 @@ public class DatasetController {
         if (datasetDtoPage.hasContent())
             return datasetDtoPagedResourcesAssembler.toModel(datasetDtoPage, datasetDtoModelAssembler::toModel);
         return (PagedModel<DatasetDto>) datasetDtoPagedResourcesAssembler.toEmptyModel(datasetDtoPage, DatasetDto.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    @GetMapping("")
-    @PreAuthorize("hasPrivilege('DATASETS_READ')")
-    public PagedModel<DatasetNoImplDto> getAllOnlyUuid(Pageable pageable,
-                                                       @RequestParam(required = false, name = "name") String name) {
-        Page<DatasetNoImplDto> datasetDtoPage = datasetDtoService.fetchAllOnlyUuid(
-                pageable,
-                new DatasetFiltersBuilder()
-                        .name(name)
-                        .build());
-        if (datasetDtoPage.hasContent())
-            return datasetNoImplDtoPagedResourcesAssembler.toModel(datasetDtoPage, datasetNoImplDtoModelAssembler::toModel);
-        return (PagedModel<DatasetNoImplDto>) datasetNoImplDtoPagedResourcesAssembler.toEmptyModel(datasetDtoPage, DatasetNoImplDto.class);
     }
 
     @PostMapping("")

@@ -7,6 +7,5 @@ import org.springframework.data.domain.Pageable;
 public interface IDatasetDtoRepository {
 
     Page<DatasetDto> fetchAll(Pageable pageable);
-    Page<DatasetNoImplDto> fetchAllOnlyUuid(Pageable pageable);
 
 }

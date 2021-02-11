@@ -47,7 +47,6 @@ public class DatasetController {
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
-
                              IDatasetService datasetService,
                              IDatasetImplementationService datasetImplementationService,
                              PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,

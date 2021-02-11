@@ -36,7 +36,6 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
             return new PageImpl(new DatasetDtoListResultSetExtractor().extractData(cachedRowSet),
                     pageable,
                     getRowSize(datasetFilters));
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

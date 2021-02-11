@@ -51,7 +51,6 @@ public class DatasetDtoListResultSetExtractor {
         );
     }
 
-
     @AllArgsConstructor
     @Getter
     @ToString
@@ -64,7 +63,6 @@ public class DatasetDtoListResultSetExtractor {
             return new DatasetDto(uuid, name,datasetImplementationBuilders);
         }
     }
-
 
     @AllArgsConstructor
     @Getter

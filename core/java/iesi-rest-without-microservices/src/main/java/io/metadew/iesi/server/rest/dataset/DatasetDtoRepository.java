@@ -41,7 +41,6 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-
     private String getFetchAllQuery(Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "SELECT " +
                 "dataset_impls.ID as dataset_impl_id, " +
@@ -75,7 +74,6 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
-
     private String getOrderByClause(Pageable pageable) {
         if (pageable.isUnpaged()) {
             return " ";
@@ -96,6 +94,4 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
     }
-
-
 }

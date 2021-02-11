@@ -23,20 +23,20 @@ public class DatasetDtoListResultSetExtractor {
 
 
     public List<DatasetDto> extractData(CachedRowSet rs) throws SQLException {
-        Map<UUID,DatasetDtoBuilder> datasetBuilderSet = new LinkedHashMap<>();
+        Map<UUID,DatasetDtoBuilder> datasetBuilderMap = new LinkedHashMap<>();
         DatasetDtoBuilder datasetDtoBuilder;
         while (rs.next()) {
-            datasetDtoBuilder = datasetBuilderSet.get(UUID.fromString(rs.getString("dataset_id")));
+            datasetDtoBuilder = datasetBuilderMap.get(UUID.fromString(rs.getString("dataset_id")));
 
             if (datasetDtoBuilder == null) {
                 datasetDtoBuilder = mapDatasetDtoBuilder(rs);
-                datasetBuilderSet.put(UUID.fromString(rs.getString("dataset_id")),datasetDtoBuilder);
+                datasetBuilderMap.put(UUID.fromString(rs.getString("dataset_id")),datasetDtoBuilder);
             }
 
             addImplementation(datasetDtoBuilder,rs);
 
         }
-        return datasetBuilderSet.values().stream().map(DatasetDtoBuilder::build).collect(Collectors.toList());
+        return datasetBuilderMap.values().stream().map(DatasetDtoBuilder::build).collect(Collectors.toList());
     }
 
     private void addImplementation(DatasetDtoBuilder datasetDtoBuilder, CachedRowSet rs) throws SQLException {
@@ -81,18 +81,6 @@ public class DatasetDtoListResultSetExtractor {
         public abstract DatasetImplementationDto build();
 
     }
-
-    @AllArgsConstructor
-    @Getter
-    @ToString
-    public abstract static class DatasetImplementationOnlyUuidDtoBuilder {
-        private final UUID uuid;
-        private final List<UUID> datasetImplementationUuid;
-
-        public abstract DatasetImplementationDto build();
-
-    }
-
 
     @Getter
     @ToString(callSuper = true)

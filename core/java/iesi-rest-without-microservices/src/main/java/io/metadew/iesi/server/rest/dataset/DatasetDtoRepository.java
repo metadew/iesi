@@ -33,7 +33,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
                     getFetchAllQuery(pageable, datasetFilters),
                     "reader");
-            return new PageImpl(new DatasetDtoListResultSetExtractor().extractData(cachedRowSet),
+            return new PageImpl<>(new DatasetDtoListResultSetExtractor().extractData(cachedRowSet),
                     pageable,
                     getRowSize(datasetFilters));
         } catch (SQLException e) {

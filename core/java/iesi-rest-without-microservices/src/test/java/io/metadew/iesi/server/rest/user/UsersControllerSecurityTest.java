@@ -154,7 +154,7 @@ class UsersControllerSecurityTest {
 
     @Test
     @WithIesiUser(username = "spring",
-            authorities = {"DATASETS_READ@PUBLIC"})
+            authorities = {"USERS_READ@PUBLIC"})
     void testGetByIdUserRead() {
         UUID uuid = UUID.randomUUID();
         when(userDtoService.get(uuid))

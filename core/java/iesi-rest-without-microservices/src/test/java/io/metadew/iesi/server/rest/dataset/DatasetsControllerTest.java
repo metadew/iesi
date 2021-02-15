@@ -254,7 +254,9 @@ class DatasetsControllerTest {
                                                 .build()
                                 ).collect(Collectors.toSet()))
                                 .build()
-                ).collect(Collectors.toSet()))
+                )
+                        .map(e -> e.getUuid())
+                        .collect(Collectors.toSet()))
                 .build();
         when(datasetDtoModelAssembler.toModel((Dataset) any()))
                 .thenReturn(datasetDto);
@@ -341,19 +343,6 @@ class DatasetsControllerTest {
         }
     }
 
-    public boolean equalsWithoutUuid(DatasetDto dataset1, DatasetDto dataset2) {
-        if (!dataset1.getName().equals(dataset2.getName())) {
-            return false;
-        } else if (dataset1.getImplementations().size() != dataset2.getImplementations().size()) {
-            return false;
-        } else if (dataset1.getImplementations().stream()
-                .noneMatch(datasetImplementation1 -> dataset2.getImplementations().stream()
-                        .anyMatch(datasetImplementation2 -> equalsWithoutUuid(datasetImplementation1, datasetImplementation2)))) {
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     public boolean equalsWithoutUuid(DatasetImplementationDto datasetImplementation1, DatasetImplementationDto datasetImplementation2) {
         if (!(datasetImplementation1 instanceof InMemoryDatasetImplementationDto
@@ -374,7 +363,21 @@ class DatasetsControllerTest {
             return true;
         }
     }
-
+/*
+    public boolean equalsWithoutUuid(DatasetDto dataset1, DatasetDto dataset2) {
+        if (!dataset1.getName().equals(dataset2.getName())) {
+            return false;
+        } else if (dataset1.getImplementations().size() != dataset2.getImplementations().size()) {
+            return false;
+        } else if (dataset1.getImplementations().stream()
+                .noneMatch(datasetImplementation1 -> dataset2.getImplementations().stream()
+                        .anyMatch(datasetImplementation2 -> equalsWithoutUuid(datasetImplementation1, datasetImplementation2)))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+*/
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"DATASETS_WRITE@PUBLIC"})
@@ -445,7 +448,9 @@ class DatasetsControllerTest {
                                                 .build()
                                 ).collect(Collectors.toSet()))
                                 .build()
-                ).collect(Collectors.toSet()))
+                )
+                        .map(e->e.getUuid())
+                        .collect(Collectors.toSet()))
                 .build();
         when(datasetDtoModelAssembler.toModel((Dataset) any()))
                 .thenReturn(datasetDto);

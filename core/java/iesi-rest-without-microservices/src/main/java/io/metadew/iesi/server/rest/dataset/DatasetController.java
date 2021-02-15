@@ -38,10 +38,11 @@ import java.util.stream.Collectors;
 public class DatasetController {
 
     private final DatasetDtoModelAssembler datasetDtoModelAssembler;
-    private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetService datasetService;
-    private final IDatasetImplementationService datasetImplementationService;
+    private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetDtoService datasetDtoService;
+    private final IDatasetImplementationService datasetImplementationService;
+
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
@@ -113,7 +114,7 @@ public class DatasetController {
         return ResponseEntity.ok(datasetDtoModelAssembler.toModel(dataset));
     }
 
-    @GetMapping("/{uuid}")
+    @GetMapping("/{uuid}/implementations")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public DatasetDto get(@PathVariable UUID uuid) {
         return datasetService.get(new DatasetKey(uuid))

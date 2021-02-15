@@ -128,7 +128,9 @@ class DatasetModelAssemblerTest {
                                                 .build()
                                 ).collect(Collectors.toSet()))
                                 .build()
-                ).collect(Collectors.toSet()))
+                )
+                        .map(e -> e.getUuid())
+                        .collect(Collectors.toSet()))
                 .build());
     }
 

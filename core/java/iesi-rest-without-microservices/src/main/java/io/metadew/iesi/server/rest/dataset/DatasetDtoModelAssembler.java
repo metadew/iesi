@@ -11,12 +11,10 @@ import java.util.stream.Collectors;
 @Component
 public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSupport<Dataset, DatasetDto> {
 
-    private final DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler;
 
     @Autowired
     public DatasetDtoModelAssembler(DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler) {
         super(DatasetController.class, DatasetDto.class);
-        this.datasetImplementationDtoModelAssembler = datasetImplementationDtoModelAssembler;
     }
 
     @Override
@@ -26,7 +24,7 @@ public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSuppor
         datasetDto.setUuid(dataset.getMetadataKey().getUuid());
         datasetDto.setName(dataset.getName());
         datasetDto.setImplementations(dataset.getDatasetImplementations().stream()
-                .map(datasetImplementationDtoModelAssembler::toModel)
+                .map(e -> e.getDatasetKey().getUuid())
                 .collect(Collectors.toSet()));
 
         return datasetDto;

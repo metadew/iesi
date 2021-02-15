@@ -27,11 +27,11 @@ jobs:
       - run: 
           name: install local dependencies
           command: |
-            mvn install:install-file -Dfile=xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
-            mvn install:install-file -Dfile=artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
-            mvn install:install-file -Dfile=artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
-            mvn install:install-file -Dfile=artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar
-            mvn install:install-file -Dfile=artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
+            mvn install:install-file -Dfile=build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
+            mvn install:install-file -Dfile=build/ext/artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
+            mvn install:install-file -Dfile=build/ext/artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
+            mvn install:install-file -Dfile=build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar
+            mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
           when: always
 
       - run:
@@ -48,9 +48,25 @@ jobs:
             - v1-dependencies-
 
       - run: |
-          cd ~/core/java/iesi-core
+          cd ~/repo/core/java/iesi-core
           mvn dependency:go-offline
-          cd ~/core/java/iesi-rest-without-microservices
+
+      - run: |
+          cd ~/repo/core/java/iesi-core
+          mvn clean install
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find core/java/iesi-core/target/surefire-reports/ -type f | grep -i xml$ | xargs -i cp {} ~/test-results/junit/
+          when: always
+
+      - store_artifacts:
+          path: core/java/iesi-core/target/iesi-core-0.6.0.jar
+      
+      - run: |
+          cd ~/repo/core/java/iesi-rest-without-microservices
           mvn dependency:go-offline
           
       - save_cache:
@@ -59,23 +75,17 @@ jobs:
           key: v1-dependencies-{{ checksum "~/pom-checksum" }}
 
       # run tests! - This is where we need to some magic
+
       - run: |
-          cd ~/core/java/iesi-core
+          cd ~/repo/core/java/iesi-rest-without-microservices
           mvn clean install
 
       - run:
           name: Save test results
           command: |
             mkdir -p ~/test-results/junit/
-            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find core/java/iesi-rest-without-microservices/target/surefire-reports/ -type f | grep -i xml$ | xargs -i cp {} ~/test-results/junit/
           when: always
-
-      - store_artifacts:
-          path: core/java/iesi-core/target/iesi-core-0.6.0.jar
-
-      - run: |
-          cd ~/core/java/iesi-rest-without-microservices
-          mvn clean install
 
       - store_test_results:
           path: ~/test-results

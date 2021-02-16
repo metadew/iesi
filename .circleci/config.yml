@@ -48,12 +48,16 @@ jobs:
             - v1-dependencies-
 
       - run: |
-          cd ~/repo/core/java/iesi-core
-          mvn dependency:go-offline
+          name: Fetch dependencies for Core
+          command: |
+             cd ~/repo/core/java/iesi-core
+             mvn dependency:go-offline
 
       - run: |
-          cd ~/repo/core/java/iesi-core
-          mvn clean install
+          name: Build, package and install the Core
+          command: |
+             cd ~/repo/core/java/iesi-core
+             mvn clean install
 
       - run:
           name: Save test results
@@ -66,8 +70,10 @@ jobs:
           path: core/java/iesi-core/target/iesi-core-0.6.0.jar
       
       - run: |
-          cd ~/repo/core/java/iesi-rest-without-microservices
-          mvn dependency:go-offline
+          name: Fetch dependencies for REST Server
+          command: |
+              cd ~/repo/core/java/iesi-rest-without-microservices
+              mvn dependency:go-offline
           
       - save_cache:
           paths:
@@ -77,8 +83,10 @@ jobs:
       # run tests! - This is where we need to some magic
 
       - run: |
-          cd ~/repo/core/java/iesi-rest-without-microservices
-          mvn clean install
+          name: Build, package and install the REST Server
+          command: |
+              cd ~/repo/core/java/iesi-rest-without-microservices
+              mvn clean install
 
       - run:
           name: Save test results

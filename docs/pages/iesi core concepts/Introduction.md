@@ -9,9 +9,7 @@ The automation framework is designed around the principle to configure scripts o
 
 We summarize the process of automating in four key steps:
 
-![IESI Core Concepts](/{{site.repository}}/images/concepts_with_steps.png)
-
-<img src="images/concepts_with_steps.png" width="800"/> ![](images/k8s-dashboard.png)
+![IESI Core Concepts](/{{site.repository}}/docs/images/concepts_with_steps.png)
 
 
 **1. Define the system landscape** \

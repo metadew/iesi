@@ -2,10 +2,10 @@
 
 # Use Cases
 
-IESI can be used for multiple purposes within your project. The ETL Flow use case was one example we already discussed, many more have been realized, demonstrating the value of the framework, enabling automation across solutions.
+IESI can be used for multiple purposes within your project. The ETL Flow use case was one example we already touched upon, many more have been realized, demonstrating the value of the framework, enabling automation across solutions.
 
 Our realized use cases supported in the:
-* Enabling digital transformations - maintain quality across digital and legacy solutions
+* Enabling of digital transformations - maintain quality across digital and legacy solutions
 * Accelerating software delivery time-to-market
 * Complementation with existing automation tooling - adding integration across automation tools
 
@@ -26,6 +26,8 @@ API and Ecosystem | <ul><li>Verify PSD2 calls between banks</li><li>Verify conne
 
 ### IESI within the testing field
 -- include overview on testing types
-              
+
+## Business case for automation
+-- include effort overview
 
 

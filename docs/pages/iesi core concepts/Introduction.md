@@ -11,14 +11,14 @@ We summarize the process of automating in four key steps:
 
 ![IESI Core Concepts](/{{site.repository}}/images/concepts_with_steps.png)
 
-1. **Define the system landscape**
+**1. Define the system landscape** \
 Before we can design our script, we need to think about the following questions: On which systems will the actions be performed? How can our framework connect to these systems? How can I call these connectivity end points? … We thus need to configure the necessary definitions in order to get started on our script design. For this, we will get acquainted with the following:
 
   * Environment configuration
   * Connection configuration
   * Component configuration
   
- 2. **Configure the script**
+**2. Configure the script**\
 Design your script by defining a set of actions that need to be executed in a specific sequence. Depending on the type of action you would like to perform, IESI has embedded the notion of action types which will help the user by limiting the required effort. We will get acquainted with the following concepts of script building:
  
   * Using action types
@@ -27,14 +27,14 @@ Design your script by defining a set of actions that need to be executed in a sp
   * Using functions/instructions
   * Using expected/stop on error
   
-3. **Execute the script**
+**3. Execute the script**\
 Once the design has been finalized and the system landscape has been configured, it is time to execute your script by loading it into the repository and executing it through the interface. We will get acquainted with the following concepts of script execution:
 
   * How to load configurations
   * How to launch your script
   * How to interpret your script result
   
-4. **Verify the result**
+**4. Verify the result**\
 Validate your result through the IESI interface, by complementing IESI with reporting tooling or by simply having a look in your central repository.
 
 

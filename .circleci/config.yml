@@ -50,14 +50,14 @@ jobs:
       - run: |
           name: Fetch dependencies for Core
           command: |
-             cd ~/repo/core/java/iesi-core
-             mvn dependency:go-offline
+            cd ~/repo/core/java/iesi-core
+            mvn dependency:go-offline
 
       - run: |
           name: Build, package and install the Core
           command: |
-             cd ~/repo/core/java/iesi-core
-             mvn clean install
+            cd ~/repo/core/java/iesi-core
+            mvn clean install
 
       - run:
           name: Save test results
@@ -72,8 +72,8 @@ jobs:
       - run: |
           name: Fetch dependencies for REST Server
           command: |
-              cd ~/repo/core/java/iesi-rest-without-microservices
-              mvn dependency:go-offline
+            cd ~/repo/core/java/iesi-rest-without-microservices
+            mvn dependency:go-offline
           
       - save_cache:
           paths:
@@ -85,8 +85,8 @@ jobs:
       - run: |
           name: Build, package and install the REST Server
           command: |
-              cd ~/repo/core/java/iesi-rest-without-microservices
-              mvn clean install
+            cd ~/repo/core/java/iesi-rest-without-microservices
+            mvn clean install
 
       - run:
           name: Save test results

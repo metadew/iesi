@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.dataset.implementation;
 
+import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(value = "datasetImplementation", collectionRelation = "datasetImplementations")
-public abstract class DatasetImplementationDto extends RepresentationModel<DatasetImplementationDto> {
+public abstract class DatasetImplementationDto extends NoEmptyLinksRepresentationModel<DatasetImplementationDto> {
 
     private UUID uuid;
     private String type;

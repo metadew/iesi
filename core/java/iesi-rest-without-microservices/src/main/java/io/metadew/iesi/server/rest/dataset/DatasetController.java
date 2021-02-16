@@ -27,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -116,9 +117,9 @@ public class DatasetController {
 
     @GetMapping("/{uuid}/implementations")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
-    public DatasetDto get(@PathVariable UUID uuid) {
+    public Set get(@PathVariable UUID uuid) {
         return datasetService.get(new DatasetKey(uuid))
-                .map(datasetDtoModelAssembler::toModel)
+                .map(datasetDtoModelAssembler::toList)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new DatasetKey(uuid)));
     }
 

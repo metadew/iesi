@@ -1,0 +1,8 @@
+version: 2.1
+jobs:
+  build:
+    docker: 
+      - image: cimg/node:14.10.1 #excludes docker auth
+    steps:
+      - checkout # check out the code in the project directory
+      - run: echo "hello world"

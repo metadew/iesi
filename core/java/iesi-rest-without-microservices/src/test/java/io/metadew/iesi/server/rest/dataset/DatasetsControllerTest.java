@@ -448,6 +448,7 @@ class DatasetsControllerTest {
                                 ).collect(Collectors.toSet()))
                                 .build()
                 )
+
                         .map(e -> e.getUuid())
                         .collect(Collectors.toSet()))
                 .build();

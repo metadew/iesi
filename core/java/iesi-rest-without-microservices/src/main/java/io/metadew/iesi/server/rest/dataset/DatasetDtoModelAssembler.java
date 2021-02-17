@@ -13,12 +13,10 @@ import java.util.stream.Collectors;
 @Component
 public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSupport<Dataset, DatasetDto> {
 
-    private final DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler;
 
     @Autowired
     public DatasetDtoModelAssembler(DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler) {
         super(DatasetController.class, DatasetDto.class);
-        this.datasetImplementationDtoModelAssembler = datasetImplementationDtoModelAssembler;
     }
 
     @Override

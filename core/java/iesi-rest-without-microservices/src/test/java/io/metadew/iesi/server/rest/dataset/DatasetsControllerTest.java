@@ -36,7 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -255,7 +254,7 @@ class DatasetsControllerTest {
                                 ).collect(Collectors.toSet()))
                                 .build()
                 )
-                        .map(e -> e.getUuid())
+                        .map(e-> e.getUuid())
                         .collect(Collectors.toSet()))
                 .build();
         when(datasetDtoModelAssembler.toModel((Dataset) any()))
@@ -449,7 +448,7 @@ class DatasetsControllerTest {
                                 ).collect(Collectors.toSet()))
                                 .build()
                 )
-                        .map(e->e.getUuid())
+                        .map(e -> e.getUuid())
                         .collect(Collectors.toSet()))
                 .build();
         when(datasetDtoModelAssembler.toModel((Dataset) any()))

@@ -63,7 +63,7 @@
         </Logger>
         <Root level="all" additivity="false">
             <AppenderRef ref="STDOUT" level="INFO"/>
-            <AppenderRef ref="rest" level="WARN" />
+            <AppenderRef ref="rest" level="INFO" />
         </Root>
     </Loggers>
 </Configuration>

@@ -42,7 +42,7 @@ Additional details on the parameters per connection type are provided below.
 |      |host.unix|Unix-Based Operating System Connection|
 |      |host.windows|Windows-Based Operating System Connection|
 |**http**|
-|      |http.host|Http Host Connection|
+|      |http|Http Host Connection|
 |**repo**|
 |      |repo.artifactory|Artifactory Repository Connection|
 |**socket**|

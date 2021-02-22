@@ -48,6 +48,7 @@ fwk|Framework capabilities
 host|Operating system connectivity
 http|Http-based connectivity
 repo|Repository connectivity
+socket|Socket connectivity
 
 These categories contain pre-defined connection types. Consult the detailed overview of the connection types here.
 

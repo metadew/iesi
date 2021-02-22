@@ -9,66 +9,41 @@ The connection types are prefix based on a connectivity category:
 |Prefix|Category|
 |---|---|
 |db|Database connectivity|
-|fwk|Framework capabilities|
+|fwk|Framework connectivity|
 |host|Operating system connectivity|
 |http|Http-based connectivity|
 |repo|Repository connectivity|
+|socket| Socket connectivity|
 
 The table provides an overview of all connection types. 
 Additional details on the parameters per connection type are provided below.
 
-<table>
-<colgroup>
-<col width="30%" />
-<col width="70%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Connection Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-{% for type in site.data.ConnectionTypes %}
-<tr>
-<td markdown="span">[{{ type.data.name }}](/{{site.repository}}/pages/define/connectiontypes/{{ type.data.name }}.html)</td>
-<td markdown="span">{{ type.data.description }}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
 
-{% for detail in site.data.ConnectionTypes %}
-## {{ detail.data.name }}
-
-Description: {{ detail.data.description }}
-
-<table>
-<colgroup>
-<col width="20%" />
-<col width="40%" />
-<col width="20%" align="center"/>
-<col width="20%" align="center"/>
-</colgroup>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Description</th>
-<th>Type</th>
-<th>Mandatory</th>
-</tr>
-</thead>
-<tbody>
-{% assign params = detail.data.parameters %}
-{% for param in params %}
-<tr>
-<td markdown="span">{{ param.name }}</td>
-<td markdown="span">{{ param.description }}</td>
-<td markdown="span">{{ param.type }}</td>
-<td markdown="span">{{ param.mandatory }}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-
-{% endfor %}
+|Category|Type|Description            |
+|--------|----|-----------------------|
+|**db**|
+|      |db.db2|IBM Database Connection|
+|      |db.dremio|Dremio Database Connection|
+|      |db.drill|Apache Drill Database Connection|
+|      |db.h2|H2 Database Connection|
+|      |db.mariadb|MariaDB Database Connection|
+|      |db.mssql|Microsoft SQL Database Connection|
+|      |db.mysql|MySql Database Connection|
+|      |db.netezza|Netezza Database Connection|
+|      |db.oracle|Oracle Database Connection|
+|      |db.postgresql|Postgresql Database Connection|
+|      |db.presto|Presto Database Connection|
+|      |db.sqlite|SQLite Database Connection|
+|      |db.teradata|Teradata Database Connection|
+|**fwk**|
+|      |fwk.alias|Connection alias only to be used for impersonation|
+|**host**|
+|      |host.linux|Linux-Based Operating System Connection|
+|      |host.unix|Unix-Based Operating System Connection|
+|      |host.windows|Windows-Based Operating System Connection|
+|**http**|
+|      |http.host|Http Host Connection|
+|**repo**|
+|      |repo.artifactory|Artifactory Repository Connection|
+|**socket**|
+|      |socket|Socket Connection|

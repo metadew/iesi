@@ -37,7 +37,7 @@ data:
   - name: "type"
     value: "POST"
   - name: "connection"
-    value: "oets"
+    value: "pets"
   - name: "headers"
     value: ""
   - name: "queryParameters"

@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.dataset;
 
 
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +13,7 @@ public interface IDatasetDtoRepository {
 
     Page<DatasetDto> fetchAll(Pageable pageable, Set<DatasetFilter> datasetFilters);
 
-    List<DatasetWImplementationDto> getDataImplementations(UUID uuid);
+    List<DatasetImplementationDto> fetchImplementationsByUuid(UUID uuid);
 
 
 }

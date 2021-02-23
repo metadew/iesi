@@ -12,6 +12,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
@@ -83,6 +84,7 @@ class DatasetDtoRepositoryTest {
         Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
+
         Pageable pageable = PageRequest.of(0, 2);
         assertThat(datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
                 .containsOnly((DatasetDto) dataset1Info.get("datasetDto"));
@@ -266,7 +268,7 @@ class DatasetDtoRepositoryTest {
                                             )
                                             .build();
                                 })
-                                .map(e -> e.getUuid())
+                                .map(DatasetImplementationDto::getUuid)
                                 .collect(Collectors.toSet()))
                 .build();
         info.put("datasetDto", datasetDto);

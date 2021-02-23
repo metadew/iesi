@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.dataset;
 
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +24,8 @@ public class DatasetDtoService implements IDatasetDtoService {
         return datasetDtoRepository.fetchAll(pageable, datasetFilters);
     }
 
-    public List<DatasetWImplementationDto> getDataImplementations(UUID uuid){
-        return datasetDtoRepository.getDataImplementations(uuid);
+    public List<DatasetImplementationDto> fetchImplementationsByUuid(UUID uuid){
+        return datasetDtoRepository.fetchImplementationsByUuid(uuid);
     }
 
 }

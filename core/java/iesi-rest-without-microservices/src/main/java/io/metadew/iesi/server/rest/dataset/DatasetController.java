@@ -11,6 +11,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
@@ -26,11 +27,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Log4j2
 @RestController
@@ -118,10 +118,16 @@ public class DatasetController {
 
     @GetMapping("/{uuid}/implementations")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
-    public Stream<Collection<DatasetImplementationDto>> get(@PathVariable UUID uuid) {
+    public List<DatasetImplementationDto> getImplementationsByUuid(@PathVariable UUID uuid) {
+        return datasetDtoService.fetchImplementationsByUuid(uuid);
+    }
 
-        return datasetDtoService.getDataImplementations(uuid)
-                .stream().map(e -> e.getImplementations().values());
+    @GetMapping("/{uuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
+    public DatasetDto get(@PathVariable UUID uuid) {
+        return datasetService.get(new DatasetKey(uuid))
+                .map(datasetDtoModelAssembler::toModel)
+                .orElseThrow(() -> new MetadataDoesNotExistException(new DatasetKey(uuid)));
     }
 
     @DeleteMapping("/{uuid}")

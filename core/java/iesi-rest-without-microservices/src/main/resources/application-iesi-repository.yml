@@ -10,7 +10,6 @@ iesi:
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
-<<<<<<< HEAD
 
 
 #         type: sqlite
@@ -38,8 +37,6 @@ iesi:
 #          type: sqlite
 #          file:
 
-=======
->>>>>>> cdb35cfd1edb468090c63c3c056b58046b65ac13
 #          type: h2
 #          mode: embedded
 #          file:

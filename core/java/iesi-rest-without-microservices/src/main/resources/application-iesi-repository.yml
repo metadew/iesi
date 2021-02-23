@@ -15,13 +15,6 @@ iesi:
 #         type: sqlite
 #         file: /home/robbe/IESISandbox/0.6.0/security/repository.db3
 
-
-
-#         type: sqlite
-#         file: /home/robbe/IESISandbox/0.6.0/develop/repository.db3
-
-
-
 #          type: h2
 #          mode: memory
 #          database: test;ALIAS_COLUMN_NAME=TRUE

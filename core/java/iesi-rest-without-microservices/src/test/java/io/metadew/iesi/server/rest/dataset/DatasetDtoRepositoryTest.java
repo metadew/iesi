@@ -28,10 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -88,6 +85,16 @@ class DatasetDtoRepositoryTest {
         Pageable pageable = PageRequest.of(0, 2);
         assertThat(datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
                 .containsOnly((DatasetDto) dataset1Info.get("datasetDto"));
+    }
+
+    @Test
+    void getDatasetImplementationsByUuid() {
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
+        Dataset dataset = (Dataset) dataset1Info.get("dataset");
+        datasetConfiguration.insert(dataset);
+
+        assertThat(datasetDtoRepository.fetchImplementationsByUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
+                .containsOnly((DatasetImplementationDto) ((Dataset) dataset1Info.get("dataset")).getDatasetImplementations());
     }
 
     @Test
@@ -274,6 +281,5 @@ class DatasetDtoRepositoryTest {
         info.put("datasetDto", datasetDto);
         return info;
     }
-
 
 }

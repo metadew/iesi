@@ -1,8 +1,6 @@
 server:
   servlet:
     context-path: /api
-springdoc:
-  version: '0.3.0'
 spring:
   profiles:
     active: http

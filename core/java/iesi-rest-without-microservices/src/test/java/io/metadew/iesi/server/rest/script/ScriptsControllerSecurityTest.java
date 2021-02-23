@@ -1,19 +1,14 @@
-package io.metadew.iesi.server.rest.configuration.security.jwt;
+package io.metadew.iesi.server.rest.script;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
-import io.metadew.iesi.server.rest.connection.ConnectionService;
-import io.metadew.iesi.server.rest.connection.ConnectionsController;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionParameterDto;
+import io.metadew.iesi.server.rest.script.ScriptService;
+import io.metadew.iesi.server.rest.script.ScriptsController;
+import io.metadew.iesi.server.rest.script.dto.*;
+import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,17 +16,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -40,163 +35,46 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ActiveProfiles({"http", "test"})
+@ActiveProfiles("test")
 @DirtiesContext
-class ConnectionsControllerSecurityTest {
+class ScriptsControllerSecurityTest {
 
     @Autowired
     private ObjectMapper jacksonObjectMapper;
 
     @Autowired
-    private ConnectionsController connectionsController;
+    private ScriptsController scriptsController;
 
     @MockBean
-    private ConnectionService connectionService;
+    private ScriptService scriptService;
 
     @MockBean
-    private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
+    private ScriptDtoService scriptDtoService;
+
+    @MockBean
+    private ScriptDtoModelAssembler scriptDtoModelAssembler;
+
+    @MockBean
+    private ScriptPostDtoService scriptPostDtoService;
+
+    @MockBean
+    private PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
 
     @Test
-    void testGetAllNoUser() throws Exception {
-        assertThatThrownBy(() -> connectionsController.getAll())
+    void testGetAllNoUser() {
+        Pageable pageable = Pageable.unpaged();
+        List<String> expansions = new ArrayList<>();
+        assertThatThrownBy(() -> scriptsController.getAll(pageable, expansions, null, null, null))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
+                    // "SCRIPTS_READ@PUBLIC",
                     "COMPONENTS_WRITE@PUBLIC",
                     "COMPONENTS_READ@PUBLIC",
                     "CONNECTIONS_WRITE@PUBLIC",
-                    // "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testGetAllNoConnectionReadPrivilege() throws Exception {
-        assertThatThrownBy(() -> connectionsController.getAll())
-                .isInstanceOf(AccessDeniedException.class);
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_READ@PUBLIC"})
-    void testGetConnectionReadPrivilege() throws Exception {
-        connectionsController.getAll();
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    "COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    "CONNECTIONS_WRITE@PUBLIC",
-                    // "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testGetByNameNoConnectionRead() throws Exception {
-        assertThatThrownBy(() -> connectionsController.getByName("test"))
-                .isInstanceOf(AccessDeniedException.class);
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_READ@PUBLIC"})
-    void testGetByNameConnectionRead() throws Exception {
-        connectionsController.getByName("test");
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    "COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    "CONNECTIONS_WRITE@PUBLIC",
-                    // "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testGetByNameAndVersionNoConnectionsReadPrivilege() throws Exception {
-        assertThatThrownBy(() -> connectionsController.get("test", "env"))
-                .isInstanceOf(AccessDeniedException.class);
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_READ@PUBLIC"})
-    void testGetByNameAndVersionAdminConnectionsReadPrivilege() throws Exception {
-        Connection connection = Connection.builder()
-                .connectionKey(new ConnectionKey("test", "env"))
-                .type("type")
-                .description("description")
-                .parameters(Stream.of(
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "env"), "param1"), "value1")
-                ).collect(Collectors.toList()))
-                .build();
-        when(connectionService.getByNameAndEnvironment("test", "env"))
-                .thenReturn(Optional.of(connection));
-        connectionsController.get("test", "env");
-    }
-
-    // create connections
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    "COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    // "CONNECTIONS_WRITE@PUBLIC",
                     "CONNECTIONS_READ@PUBLIC",
                     "ENVIRONMENTS_WRITE@PUBLIC",
                     "ENVIRONMENTS_READ@PUBLIC",
@@ -217,44 +95,30 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testCreateNoConnectionsWrite() throws Exception {
-        ConnectionDto connectionDto = ConnectionDto.builder()
-                .name("test")
-                .environment("env")
-                .type("type")
-                .description("description")
-                .parameters(Stream.of(
-                        new ConnectionParameterDto("param1", "value1")
-                ).collect(Collectors.toList()))
-                .build();
-        assertThatThrownBy(() -> connectionsController.post(connectionDto))
+    void testGetAllNoScriptReadPrivilege() {
+        Pageable pageable = Pageable.unpaged();
+        List<String> expansions = new ArrayList<>();
+        assertThatThrownBy(() -> scriptsController.getAll(pageable, expansions, null, null, null))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
     @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testCreateConnectionsWrite() throws Exception {
-        ConnectionDto connectionDto = ConnectionDto.builder()
-                .name("test")
-                .environment("env")
-                .type("type")
-                .description("description")
-                .parameters(Stream.of(
-                        new ConnectionParameterDto("param1", "value1")
-                ).collect(Collectors.toList()))
-                .build();
-        connectionsController.post(connectionDto);
+            authorities = {"SCRIPTS_READ@PUBLIC"})
+    void testGetScriptReadPrivilege() {
+        when(scriptDtoService
+                .getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>(), false, new ArrayList<>()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
+        scriptsController.getAll(Pageable.unpaged(), new ArrayList<>(), null, null, null);
     }
 
-    // update bulk connections
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
+                    // "SCRIPTS_READ@PUBLIC",
                     "COMPONENTS_WRITE@PUBLIC",
                     "COMPONENTS_READ@PUBLIC",
-                    // "CONNECTIONS_WRITE@PUBLIC",
+                    "CONNECTIONS_WRITE@PUBLIC",
                     "CONNECTIONS_READ@PUBLIC",
                     "ENVIRONMENTS_WRITE@PUBLIC",
                     "ENVIRONMENTS_READ@PUBLIC",
@@ -275,44 +139,225 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testUpdateBulkNoConnectionWritePrivilege() throws Exception {
-        List<ConnectionDto> connectionDtos = Collections.singletonList(ConnectionDto.builder()
-                        .name("test")
-                        .environment("env")
-                        .type("type")
+    void testGetByNameNoScriptRead() {
+        Pageable pageable = Pageable.unpaged();
+        List<String> expansions = new ArrayList<>();
+        assertThatThrownBy(() -> scriptsController.getByName(pageable, "test", expansions, null))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPTS_READ@PUBLIC"})
+    void testGetByNameScriptRead() {
+        when(scriptDtoService
+                .getByName(null, Pageable.unpaged(), "test", new ArrayList<>(), false))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
+        scriptsController.getByName(Pageable.unpaged(), "test", new ArrayList<>(), null);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPTS_WRITE@PUBLIC",
+                    // "SCRIPTS_READ@PUBLIC",
+                    "COMPONENTS_WRITE@PUBLIC",
+                    "COMPONENTS_READ@PUBLIC",
+                    "CONNECTIONS_WRITE@PUBLIC",
+                    "CONNECTIONS_READ@PUBLIC",
+                    "ENVIRONMENTS_WRITE@PUBLIC",
+                    "ENVIRONMENTS_READ@PUBLIC",
+                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
+                    "EXECUTION_REQUESTS_READ@PUBLIC",
+                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
+                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_WRITE@PUBLIC",
+                    "SCRIPT_RESULTS_READ@PUBLIC",
+                    "USERS_WRITE@PUBLIC",
+                    "USERS_READ@PUBLIC",
+                    "USERS_DELETE@PUBLIC",
+                    "TEAMS_WRITE@PUBLIC",
+                    "TEAMS_READ@PUBLIC",
+                    "ROLES_WRITE@PUBLIC",
+                    "GROUPS_WRITE@PUBLIC",
+                    "GROUPS_READ@PUBLIC",
+                    "DATASETS_READ@PUBLIC",
+                    "DATASETS_WRITE@PUBLIC"})
+    void testGetByNameAndVersionNoScriptsReadPrivilege() {
+        assertThatThrownBy(() -> scriptsController.get("test", 1L, new ArrayList<>()))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPTS_READ@PUBLIC"})
+    void testGetByNameAndVersionAdminScriptsReadPrivilege() {
+        ScriptDto scriptDto = ScriptDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PUBLIC")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .scriptExecutionInformation(null)
+                .scriptSchedulingInformation(null)
+                .build();
+        when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
+                .thenReturn(Optional.of(scriptDto));
+        scriptsController.get("test", 1L, new ArrayList<>());
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPTS_READ@PUBLIC"})
+    void testGetByNameAndVersionWrongSecurityGroup() {
+        ScriptDto scriptDto = ScriptDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PRIVATE")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .scriptExecutionInformation(null)
+                .scriptSchedulingInformation(null)
+                .build();
+        when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
+                .thenReturn(Optional.of(scriptDto));
+        assertThatThrownBy(() -> scriptsController.get("test", 1L, new ArrayList<>()))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    // create components
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {
+                    // "SCRIPTS_WRITE@PUBLIC",
+                    "SCRIPTS_READ@PUBLIC",
+                    "COMPONENTS_WRITE@PUBLIC",
+                    "COMPONENTS_READ@PUBLIC",
+                    "CONNECTIONS_WRITE@PUBLIC",
+                    "CONNECTIONS_READ@PUBLIC",
+                    "ENVIRONMENTS_WRITE@PUBLIC",
+                    "ENVIRONMENTS_READ@PUBLIC",
+                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
+                    "EXECUTION_REQUESTS_READ@PUBLIC",
+                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
+                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_WRITE@PUBLIC",
+                    "SCRIPT_RESULTS_READ@PUBLIC",
+                    "USERS_WRITE@PUBLIC",
+                    "USERS_READ@PUBLIC",
+                    "USERS_DELETE@PUBLIC",
+                    "TEAMS_WRITE@PUBLIC",
+                    "TEAMS_READ@PUBLIC",
+                    "ROLES_WRITE@PUBLIC",
+                    "GROUPS_WRITE@PUBLIC",
+                    "GROUPS_READ@PUBLIC",
+                    "DATASETS_READ@PUBLIC",
+                    "DATASETS_WRITE@PUBLIC"})
+    void testCreateNoScriptsWrite() {
+        ScriptPostDto scriptDto = ScriptPostDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PUBLIC")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .build();
+        assertThatThrownBy(() -> scriptsController.post(scriptDto))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPTS_WRITE@PUBLIC"})
+    void testCreateScriptsWrite() {
+        ScriptPostDto scriptDto = ScriptPostDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PUBLIC")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .build();
+        scriptsController.post(scriptDto);
+    }
+
+    // update bulk components
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {
+                    // "SCRIPTS_WRITE@PUBLIC",
+                    "SCRIPTS_READ@PUBLIC",
+                    "COMPONENTS_WRITE@PUBLIC",
+                    "COMPONENTS_READ@PUBLIC",
+                    "CONNECTIONS_WRITE@PUBLIC",
+                    "CONNECTIONS_READ@PUBLIC",
+                    "ENVIRONMENTS_WRITE@PUBLIC",
+                    "ENVIRONMENTS_READ@PUBLIC",
+                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
+                    "EXECUTION_REQUESTS_READ@PUBLIC",
+                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
+                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_WRITE@PUBLIC",
+                    "SCRIPT_RESULTS_READ@PUBLIC",
+                    "USERS_WRITE@PUBLIC",
+                    "USERS_READ@PUBLIC",
+                    "USERS_DELETE@PUBLIC",
+                    "TEAMS_WRITE@PUBLIC",
+                    "TEAMS_READ@PUBLIC",
+                    "ROLES_WRITE@PUBLIC",
+                    "GROUPS_WRITE@PUBLIC",
+                    "GROUPS_READ@PUBLIC",
+                    "DATASETS_READ@PUBLIC",
+                    "DATASETS_WRITE@PUBLIC"})
+    void testUpdateBulkNoScriptWritePrivilege() {
+        List<ScriptPostDto> scriptPostDtos = Collections.singletonList(
+                ScriptPostDto.builder()
+                        .name("scriptDto")
+                        .securityGroupName("PUBLIC")
                         .description("description")
-                        .parameters(Stream.of(
-                                new ConnectionParameterDto("param1", "value1")
-                        ).collect(Collectors.toList()))
+                        .version(new ScriptVersionDto(1L, "description"))
+                        .parameters(new HashSet<>())
+                        .actions(new HashSet<>())
+                        .labels(new HashSet<>())
                         .build());
-        assertThatThrownBy(() -> connectionsController.putAll(connectionDtos))
+        assertThatThrownBy(() -> scriptsController.putAll(scriptPostDtos))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
     @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testUpdateBulkConnectionWritePrivilege() throws Exception {
-        List<ConnectionDto> connectionDtos = Collections.singletonList(ConnectionDto.builder()
-                .name("test")
-                .environment("env")
-                .type("type")
-                .description("description")
-                .parameters(Stream.of(
-                        new ConnectionParameterDto("param1", "value1")
-                ).collect(Collectors.toList()))
-                .build());
-        connectionsController.putAll(connectionDtos);
+            authorities = {"SCRIPTS_WRITE@PUBLIC"})
+    void testUpdateBulkScriptWritePrivilege() {
+        List<ScriptPostDto> scriptPostDtos = Collections.singletonList(
+                ScriptPostDto.builder()
+                        .name("scriptDto")
+                        .securityGroupName("PUBLIC")
+                        .description("description")
+                        .version(new ScriptVersionDto(1L, "description"))
+                        .parameters(new HashSet<>())
+                        .actions(new HashSet<>())
+                        .labels(new HashSet<>())
+                        .build());
+        scriptsController.putAll(scriptPostDtos);
     }
 
-    // update single connection
+    // update single component
     @Test
     @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
+            authorities = {
+                    // "SCRIPTS_WRITE@PUBLIC",
                     "SCRIPTS_READ@PUBLIC",
                     "COMPONENTS_WRITE@PUBLIC",
                     "COMPONENTS_READ@PUBLIC",
-                    // "CONNECTIONS_WRITE@PUBLIC",
+                    "CONNECTIONS_WRITE@PUBLIC",
                     "CONNECTIONS_READ@PUBLIC",
                     "ENVIRONMENTS_WRITE@PUBLIC",
                     "ENVIRONMENTS_READ@PUBLIC",
@@ -333,124 +378,45 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testUpdateSingleNoConnectionWritePrivilege() throws Exception {
-        ConnectionDto connectionDto = ConnectionDto.builder()
-                .name("test")
-                .environment("env")
-                .type("type")
+    void testUpdateSingleNoScriptWritePrivilege() {
+        ScriptPostDto scriptPostDto = ScriptPostDto.builder()
+                .name("scriptDto")
+                .securityGroupName("securityGroup")
                 .description("description")
-                .parameters(Stream.of(
-                        new ConnectionParameterDto("param1", "value1")
-                ).collect(Collectors.toList()))
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
                 .build();
-        assertThatThrownBy(() -> connectionsController.put("test", "env", connectionDto))
+        assertThatThrownBy(() -> scriptsController.put("component", 1L, scriptPostDto))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
     @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testUpdateSingleConnectionWritePrivilege() throws Exception {
-        ConnectionDto connectionDto = ConnectionDto.builder()
-                .name("test")
-                .environment("env")
-                .type("type")
+            authorities = {"SCRIPTS_WRITE@PUBLIC"})
+    void testUpdateSingleScriptWritePrivilege() {
+        ScriptPostDto scriptDto = ScriptPostDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PUBLIC")
                 .description("description")
-                .parameters(Stream.of(
-                        new ConnectionParameterDto("param1", "value1")
-                ).collect(Collectors.toList()))
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
                 .build();
-        connectionsController.put("test", "env", connectionDto);
-    }
-
-    //delete all
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    "COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    // "CONNECTIONS_WRITE@PUBLIC",
-                    "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testDeleteAllNoConnectionWritePrivilege() throws Exception {
-        assertThatThrownBy(() -> connectionsController.deleteAll())
-                .isInstanceOf(AccessDeniedException.class);
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testDeleteAllConnectionWritePrivilege() throws Exception {
-        connectionsController.deleteAll();
-    }
-
-    //delete by name
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    "COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    // "CONNECTIONS_WRITE@PUBLIC",
-                    "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testDeleteByNameNoConnectionWritePrivilege() throws Exception {
-        assertThatThrownBy(() -> connectionsController.deleteByName("test"))
-                .isInstanceOf(AccessDeniedException.class);
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testDeleteByNameConnectionWritePrivilege() throws Exception {
-        connectionsController.deleteByName("test");
+        scriptsController.put("scriptDto", 1L, scriptDto);
     }
 
     //delete by name and version
     @Test
     @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
+            authorities = {
+                    // "SCRIPTS_WRITE@PUBLIC",
                     "SCRIPTS_READ@PUBLIC",
                     "COMPONENTS_WRITE@PUBLIC",
                     "COMPONENTS_READ@PUBLIC",
-                    // "CONNECTIONS_WRITE@PUBLIC",
+                    "CONNECTIONS_WRITE@PUBLIC",
                     "CONNECTIONS_READ@PUBLIC",
                     "ENVIRONMENTS_WRITE@PUBLIC",
                     "ENVIRONMENTS_READ@PUBLIC",
@@ -471,17 +437,48 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testDeleteByNameAndVersionNoConnectionWritePrivilege() throws Exception {
-        assertThatThrownBy(() -> connectionsController.delete("test", "env"))
+    void testDeleteByNameAndVersionNoScriptWritePrivilege() {
+        assertThatThrownBy(() -> scriptsController.delete("test", 1L))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
 
     @Test
     @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testDeleteByNameAndVersionConnectionWritePrivilege() throws Exception {
-        connectionsController.delete("test", "env");
+            authorities = {"SCRIPTS_WRITE@PUBLIC"})
+    void testDeleteByNameAndVersionScriptWritePrivilege() {
+        ScriptDto scriptDto = ScriptDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PUBLIC")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .scriptExecutionInformation(null)
+                .scriptSchedulingInformation(null)
+                .build();
+        when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
+                .thenReturn(Optional.of(scriptDto));
+        scriptsController.delete("test", 1L);
+    }
+
+    void testDeleteByNameAndVersionWrongSecurityGroup() {
+        ScriptDto scriptDto = ScriptDto.builder()
+                .name("scriptDto")
+                .securityGroupName("PRIVATE")
+                .description("description")
+                .version(new ScriptVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(new HashSet<>())
+                .scriptExecutionInformation(null)
+                .scriptSchedulingInformation(null)
+                .build();
+        when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
+                .thenReturn(Optional.of(scriptDto));
+        assertThatThrownBy(() -> scriptsController.delete("test", 1L))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
 }

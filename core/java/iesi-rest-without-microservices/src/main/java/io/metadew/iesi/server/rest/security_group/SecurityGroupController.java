@@ -3,10 +3,8 @@ package io.metadew.iesi.server.rest.security_group;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
-import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +24,10 @@ public class SecurityGroupController {
 
     public static final String PUBLIC_GROUP_NAME = "PUBLIC";
 
-    private final SecurityGroupService securityGroupService;
-    private final ISecurityGroupDtoService securityGroupDtoService;
+    private final ISecurityGroupService securityGroupService;
 
-    public SecurityGroupController(SecurityGroupService securityGroupService, ISecurityGroupDtoService securityGroupDtoService) {
+    public SecurityGroupController(ISecurityGroupService securityGroupService) {
         this.securityGroupService = securityGroupService;
-        this.securityGroupDtoService = securityGroupDtoService;
     }
 
     @PostConstruct
@@ -58,7 +54,7 @@ public class SecurityGroupController {
                 .securedObjects(new HashSet<>())
                 .build();
         securityGroupService.addSecurityGroup(securityGroup);
-        return ResponseEntity.of(securityGroupDtoService.get(securityGroup.getMetadataKey().getUuid()));
+        return ResponseEntity.of(securityGroupService.get(securityGroup.getMetadataKey().getUuid()));
     }
 
     @PostMapping("/{uuid}/teams")
@@ -66,7 +62,7 @@ public class SecurityGroupController {
     public ResponseEntity<SecurityGroupDto> addTeam(@PathVariable UUID uuid, @RequestBody SecurityGroupTeamPutDto securityGroupTeamPutDto) {
         if (securityGroupService.exists(new SecurityGroupKey(uuid))) {
             securityGroupService.addTeam(new SecurityGroupKey(uuid), new TeamKey(securityGroupTeamPutDto.getId()));
-            return ResponseEntity.of(securityGroupDtoService.get(uuid));
+            return ResponseEntity.of(securityGroupService.get(uuid));
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -87,7 +83,7 @@ public class SecurityGroupController {
     @PreAuthorize("hasPrivilege('GROUPS_READ')")
     public ResponseEntity<SecurityGroupDto> fetch(@PathVariable UUID uuid) {
         return ResponseEntity
-                .of(securityGroupDtoService.get(uuid));
+                .of(securityGroupService.get(uuid));
     }
 
     @PutMapping("/{uuid}")
@@ -103,13 +99,13 @@ public class SecurityGroupController {
                 .build();
         securityGroupService.update(securityGroup);
         return ResponseEntity
-                .of(securityGroupDtoService.get(uuid));
+                .of(securityGroupService.get(uuid));
     }
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('GROUPS_READ')")
     public Set<SecurityGroupDto> fetchAll() {
-        return securityGroupDtoService.getAll();
+        return securityGroupService.getAll();
     }
 
     @DeleteMapping("/{uuid}")

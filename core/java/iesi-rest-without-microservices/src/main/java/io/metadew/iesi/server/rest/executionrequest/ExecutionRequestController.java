@@ -4,6 +4,8 @@ package io.metadew.iesi.server.rest.executionrequest;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
@@ -26,8 +28,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -41,16 +46,21 @@ public class ExecutionRequestController {
     private final PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage;
     private final IesiSecurityChecker iesiSecurityChecker;
     private final ScriptConfiguration scriptConfiguration;
+    private final Clock clock;
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
                                ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler,
-                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage, IesiSecurityChecker iesiSecurityChecker, ScriptConfiguration scriptConfiguration) {
+                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage,
+                               IesiSecurityChecker iesiSecurityChecker,
+                               ScriptConfiguration scriptConfiguration,
+                               Clock clock) {
         this.executionRequestService = executionRequestService;
         this.executionRequestDtoModelAssembler = executionRequestDtoModelAssembler;
         this.executionRequestDtoResourceAssemblerPage = executionRequestDtoResourceAssemblerPage;
         this.iesiSecurityChecker = iesiSecurityChecker;
         this.scriptConfiguration = scriptConfiguration;
+        this.clock = clock;
     }
 
     @SuppressWarnings("unchecked")
@@ -109,7 +119,26 @@ public class ExecutionRequestController {
                         .collect(Collectors.toList()))) {
             throw new AccessDeniedException("User is not allowed to delete this execution request");
         }
-        ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(executionRequestPostDto.convertToEntity());
+
+        String newExecutionRequestId = UUID.randomUUID().toString();
+        ExecutionRequest executionRequest = NonAuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
+                .name(executionRequestPostDto.getName())
+                .context(executionRequestPostDto.getContext())
+                .description(executionRequestPostDto.getDescription())
+                .scope(executionRequestPostDto.getScope())
+                .executionRequestLabels(executionRequestPostDto.getExecutionRequestLabels().stream()
+                        .map(executionRequestLabelDto -> executionRequestLabelDto.convertToEntity(new ExecutionRequestKey(newExecutionRequestId)))
+                        .collect(Collectors.toSet()))
+                .email(executionRequestPostDto.getEmail())
+                .scriptExecutionRequests(executionRequestPostDto.getScriptExecutionRequests().stream()
+                        .map(scriptExecutionRequestPostDto -> scriptExecutionRequestPostDto.convertToEntity(newExecutionRequestId))
+                        .collect(Collectors.toList()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .requestTimestamp(LocalDateTime.now(clock))
+                .build();
+
+        executionRequest = executionRequestService.createExecutionRequest(executionRequest);
         return executionRequestDtoModelAssembler.toModel(executionRequest);
     }
 

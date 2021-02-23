@@ -3,9 +3,6 @@ package io.metadew.iesi.server.rest.dataset;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
-import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,17 +42,15 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-    public Optional<Dataset> get(DatasetKey metadataKey) {
+    public List<DatasetWImplementationDto> getDataImplementations(UUID datasetUuid) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
                     MessageFormat.format(getFetchByIdQuery(),
-                            SQLTools.getStringForSQL(metadataKey.getUuid())), "reader");
+                            SQLTools.getStringForSQL(datasetUuid)),
+                            "reader");
 
-            while(cachedRowSet.next()) {
-                this.mapRow(cachedRowSet, datasetBuilderMap);
-            }
+            return new DatasetDtoListResultSetExtractor().extractDataImplementation(cachedRowSet);
 
-            return datasetBuilderMap.values().stream().findFirst().map(DatasetConfiguration.DatasetBuilder::build);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

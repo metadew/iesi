@@ -98,8 +98,7 @@ public class FhoDeleteFile extends ActionTypeExecution {
             Connection connection = ConnectionConfiguration.getInstance()
                     .get(connectionKey)
                     .get();
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
 
             if (path.isEmpty()) {
                 this.setScope(fileName);

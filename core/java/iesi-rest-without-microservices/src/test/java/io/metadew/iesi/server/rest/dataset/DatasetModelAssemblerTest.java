@@ -10,6 +10,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
@@ -129,7 +130,7 @@ class DatasetModelAssemblerTest {
                                 ).collect(Collectors.toSet()))
                                 .build()
                 )
-                        .map(e -> e.getUuid())
+                        .map(DatasetImplementationDto::getUuid)
                         .collect(Collectors.toSet()))
                 .build());
     }

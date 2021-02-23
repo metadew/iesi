@@ -28,7 +28,7 @@ public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSuppor
         datasetDto.setUuid(dataset.getMetadataKey().getUuid());
         datasetDto.setName(dataset.getName());
         datasetDto.setImplementations(dataset.getDatasetImplementations().stream()
-                .map(e -> e.getDatasetKey().getUuid())
+                .map(e -> e.getMetadataKey().getUuid())
                 .collect(Collectors.toSet()));
 
         return datasetDto;

@@ -98,6 +98,7 @@
     </profiles>
 
     <dependencies>
+
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ucp</artifactId>

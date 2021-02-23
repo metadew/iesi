@@ -94,7 +94,7 @@ class DatasetDtoRepositoryTest {
         datasetConfiguration.insert(dataset);
 
         assertThat(datasetDtoRepository.fetchImplementationsByUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
-                .containsOnly((DatasetImplementationDto) ((Dataset) dataset1Info.get("dataset")).getDatasetImplementations());
+                .contains((DatasetImplementationDto) dataset1Info.get("datasetImplementation"));
     }
 
     @Test
@@ -278,6 +278,7 @@ class DatasetDtoRepositoryTest {
                                 .map(DatasetImplementationDto::getUuid)
                                 .collect(Collectors.toSet()))
                 .build();
+        info.put("datasetImplementation",datasetDto.getImplementations());
         info.put("datasetDto", datasetDto);
         return info;
     }

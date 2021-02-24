@@ -2,6 +2,7 @@ package io.metadew.iesi.connection.http.entity.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -48,7 +49,7 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
             String jsonContent = new String(httpResponse.getEntityContent().get(), charset);
             log.debug("raw JSON content: " + jsonContent);
             JsonNode jsonNode = new ObjectMapper().readTree(jsonContent);
-            if (jsonNode == null) {
+            if (jsonNode == null || jsonNode.getNodeType().equals(JsonNodeType.MISSING)) {
                 log.warn("response does not contain a valid JSON message: " + jsonContent + ". ");
             } else {
                 InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));

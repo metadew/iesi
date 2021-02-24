@@ -49,8 +49,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
     private static String insertUserRoleQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() +
             " (USER_ID, ROLE_ID) VALUES ({0}, {1});";
     private static String updateQuery = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() +
-            " SET USERNAME = {0}, PASSWORD ={1}, ENABLED = {2}, EXPIRED = {3}, CREDENTIALS_EXPIRED = {4}, LOCKED = {5}" +
-            " WHERE ID = {6};";
+            " SET PASSWORD ={0}, ENABLED = {1}, EXPIRED = {2}, CREDENTIALS_EXPIRED = {3}, LOCKED = {4}" +
+            " WHERE ID = {5};";
     private static String fetchRolesByUserIdQuery = "select roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +
             "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privileges.privilege as privilege_privilege, " +
             "user_roles.user_id as user_role_user_id " +
@@ -177,7 +177,6 @@ public class UserConfiguration extends Configuration<User, UserKey> {
     @Override
     public void update(User metadata) {
         getMetadataRepository().executeUpdate(MessageFormat.format(updateQuery,
-                SQLTools.getStringForSQL(metadata.getUsername()),
                 SQLTools.getStringForSQL(metadata.getPassword()),
                 SQLTools.getStringForSQL(metadata.isEnabled()),
                 SQLTools.getStringForSQL(metadata.isExpired()),

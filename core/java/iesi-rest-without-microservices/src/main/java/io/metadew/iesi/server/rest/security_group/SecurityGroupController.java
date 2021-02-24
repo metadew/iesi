@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.security_group;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +15,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@Tag(name = "security", description = "Everything about securities")
 @RequestMapping("/security-groups")
 @CrossOrigin
 @Log4j2

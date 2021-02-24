@@ -66,16 +66,18 @@ public class UserService implements IUserService {
         return rawUserService.get(username);
     }
 
+    // If the name of a user is modified, the wrong record is evicted and the old, stale record
+    // stays in the cache
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "users", key = "#user.userKey.uuid"),
+            @CacheEvict(value = "users", key = "#user.metadataKey.uuid"),
             @CacheEvict(value = "users", key = "#user.username")})
     public void update(User user) {
         rawUserService.update(user);
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#user.userKey.uuid")
+    @CacheEvict(value = "users", key = "#user.metadataKey.uuid")
     public void delete(UserKey userKey) {
         rawUserService.delete(userKey);
     }
@@ -102,13 +104,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#user.userKey.uuid")
+    @CacheEvict(value = "users", key = "#user.metadataKey.uuid")
     public void addRole(UserKey user, Role role) {
         rawUserService.addRole(user, role);
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#user.userKey.uuid")
+    @CacheEvict(value = "users", key = "#user.metadataKey.uuid")
     public void removeRole(User user, Role role) {
         rawUserService.removeRole(user, role);
     }

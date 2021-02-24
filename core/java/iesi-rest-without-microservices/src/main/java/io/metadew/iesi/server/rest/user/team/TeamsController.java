@@ -13,7 +13,6 @@ import io.metadew.iesi.server.rest.security_group.SecurityGroupController;
 import io.metadew.iesi.server.rest.user.role.RolePostDto;
 import io.metadew.iesi.server.rest.user.role.RolePutDto;
 import io.metadew.iesi.server.rest.user.role.RoleUserPutDto;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpEntity;
@@ -32,11 +31,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
-@Tag(name = "teams", description = "Everything about teams")
 @RequestMapping("/teams")
 @CrossOrigin
 @Log4j2
-// SecurityController first needs to initialize the PUBLIC security group
 @DependsOn("securityGroupController")
 public class TeamsController {
 

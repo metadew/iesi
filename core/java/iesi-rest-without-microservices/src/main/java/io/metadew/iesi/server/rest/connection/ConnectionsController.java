@@ -8,7 +8,6 @@ import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 
 @RestController
-@Tag(name = "connections", description = "Everything about connections")
 @RequestMapping("/connections")
 public class ConnectionsController {
 

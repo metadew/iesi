@@ -43,10 +43,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -181,6 +178,35 @@ class DatasetsControllerTest {
         UUID uuid = UUID.randomUUID();
         when(datasetService.get(new DatasetKey(uuid)))
                 .thenReturn(Optional.empty());
+        assertThatThrownBy(() -> datasetController.get(uuid))
+                .isInstanceOf(MetadataDoesNotExistException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_READ@PUBLIC"})
+    void testGetByUuidImplementations() {
+        UUID uuid = UUID.randomUUID();
+
+        List<DatasetImplementationDto> datasetImplementationDtoList = new ArrayList<>();
+        datasetImplementationDtoList.add(new InMemoryDatasetImplementationDto());
+
+        when(datasetDtoService.fetchImplementationsByUuid(uuid))
+                .thenReturn(datasetImplementationDtoList);
+
+        assertThat(datasetController.getImplementationsByUuid(uuid))
+                .containsAll(datasetImplementationDtoList);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_READ@PUBLIC"})
+    void testGetByUuidImplementationsNotFound() {
+        UUID uuid = UUID.randomUUID();
+
+        when(datasetDtoService.fetchImplementationsByUuid(uuid))
+                .thenReturn(null);
+
         assertThatThrownBy(() -> datasetController.get(uuid))
                 .isInstanceOf(MetadataDoesNotExistException.class);
     }

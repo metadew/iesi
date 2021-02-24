@@ -94,7 +94,29 @@ class DatasetDtoRepositoryTest {
         datasetConfiguration.insert(dataset);
 
         assertThat(datasetDtoRepository.fetchImplementationsByUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
-                .contains((DatasetImplementationDto) dataset1Info.get("datasetImplementation"));
+                .containsOnly((DatasetImplementationDto) dataset1Info.get("datasetImplementationDto1"),
+                        (DatasetImplementationDto) dataset1Info.get("datasetImplementationDto0"));
+    }
+
+    @Test
+    void getDatasetImplementationsByUuidNotExisting() {
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
+        Dataset dataset = (Dataset) dataset1Info.get("dataset");
+        datasetConfiguration.insert(dataset);
+
+        assertThat(datasetDtoRepository.fetchImplementationsByUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
+                .doesNotContain((DatasetImplementationDto) dataset1Info.get("datasetImplementationDto3"),
+                        (DatasetImplementationDto) dataset1Info.get("datasetImplementationDto4"));
+    }
+
+    @Test
+    void getDatasetImplementationsByUuidEmpty() {
+        Map<String, Object> dataset1Info = generateDataset(0, 0, 2, 2);
+        Dataset dataset = (Dataset) dataset1Info.get("dataset");
+        datasetConfiguration.insert(dataset);
+
+        assertThat(datasetDtoRepository.fetchImplementationsByUuid(UUID.randomUUID())
+                .isEmpty());
     }
 
     @Test
@@ -250,7 +272,7 @@ class DatasetDtoRepositoryTest {
                         IntStream.range(0, implementationCount).boxed()
                                 .map(implementationIndex -> {
                                     UUID datasetImplementationUUID = (UUID) info.get(String.format("datasetImplementation%dUUID", implementationIndex));
-                                    return InMemoryDatasetImplementationDto.builder()
+                                    InMemoryDatasetImplementationDto inMemoryDatasetImplementationDto = InMemoryDatasetImplementationDto.builder()
                                             .uuid(datasetImplementationUUID)
                                             .labels(
                                                     IntStream.range(0, labelCount).boxed()
@@ -274,11 +296,12 @@ class DatasetDtoRepositoryTest {
                                                             }).collect(Collectors.toSet())
                                             )
                                             .build();
+                                    info.put(String.format("datasetImplementationDto%d", implementationIndex), inMemoryDatasetImplementationDto);
+                                    return inMemoryDatasetImplementationDto;
                                 })
                                 .map(DatasetImplementationDto::getUuid)
                                 .collect(Collectors.toSet()))
                 .build();
-        info.put("datasetImplementation",datasetDto.getImplementations());
         info.put("datasetDto", datasetDto);
         return info;
     }

@@ -7,11 +7,10 @@ iesi:
       - categories:
           - general
         instance:
-
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
-#         type: sqlite
-#         file: /home/robbe/IESISandbox/0.6.0/security/repository.db3
+         type: sqlite
+         file: /home/robbe/IESISandbox/0.6.0/security/repository.db3
 
 #          type: h2
 #          mode: memory
@@ -19,12 +18,8 @@ iesi:
 #          owner:
 #            user: ""
 #            password: ""
-
-
-
-          type: sqlite
-          file: 'C:/Users/tawbane.ouamar/Desktop/iesi-sandbox/0.6.0/IesiSecurityTest/repository.db3'
-
+#          type: sqlite
+#          file: 'C:/Users/tawbane.ouamar/Desktop/iesi-sandbox/0.6.0/IesiSecurityTest/repository.db3'
 #          type: sqlite
 #          file:
 

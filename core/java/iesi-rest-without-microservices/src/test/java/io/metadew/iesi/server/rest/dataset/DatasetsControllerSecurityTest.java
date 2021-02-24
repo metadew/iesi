@@ -10,6 +10,8 @@ import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.dataset.*;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,10 +28,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -170,6 +169,50 @@ class DatasetsControllerSecurityTest {
                         .implementations(new HashSet<>())
                         .build());
         datasetController.get(uuid);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPTS_WRITE@PUBLIC",
+                    "SCRIPTS_READ@PUBLIC",
+                    "COMPONENTS_WRITE@PUBLIC",
+                    "COMPONENTS_READ@PUBLIC",
+                    "CONNECTIONS_WRITE@PUBLIC",
+                    "CONNECTIONS_READ@PUBLIC",
+                    "ENVIRONMENTS_WRITE@PUBLIC",
+                    "ENVIRONMENTS_READ@PUBLIC",
+                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
+                    "EXECUTION_REQUESTS_READ@PUBLIC",
+                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
+                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_WRITE@PUBLIC",
+                    "SCRIPT_RESULTS_READ@PUBLIC",
+                    "USERS_WRITE@PUBLIC",
+                    "USERS_READ@PUBLIC",
+                    "USERS_DELETE@PUBLIC",
+                    "TEAMS_WRITE@PUBLIC",
+                    "TEAMS_READ@PUBLIC",
+                    "ROLES_WRITE@PUBLIC",
+                    "GROUPS_WRITE@PUBLIC",
+                    "GROUPS_READ@PUBLIC",
+                    // "DATASETS_READ@PUBLIC",
+                    "DATASETS_WRITE@PUBLIC"})
+    void testGetImplementationByUuidNoDatasetRead() {
+        UUID uuid = UUID.randomUUID();
+        assertThatThrownBy(() -> datasetController.getImplementationsByUuid(uuid))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_READ@PUBLIC"})
+    void testGetImplementationByUuidDatasetRead() {
+        UUID uuid = UUID.randomUUID();
+        when(datasetDtoService.fetchImplementationsByUuid(uuid))
+                .thenReturn(new ArrayList<>()
+                );
+        datasetController.getImplementationsByUuid(uuid);
     }
 
     // create components

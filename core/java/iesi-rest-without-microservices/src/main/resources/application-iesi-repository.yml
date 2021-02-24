@@ -10,8 +10,6 @@ iesi:
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
-
-
 #         type: sqlite
 #         file: /home/robbe/IESISandbox/0.6.0/security/repository.db3
 

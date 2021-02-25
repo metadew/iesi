@@ -44,20 +44,18 @@ public class ComponentParser {
 
     public List<Component> parse(OpenAPI openAPI) {
         List<Component> components = new ArrayList<>();
+
         securitySchemeMap = openAPI.getComponents().getSecuritySchemes();
         versionNumber = Long.parseLong(openAPI.getInfo().getVersion());
         connectionName = openAPI.getInfo().getTitle();
 
-
-
         Paths paths = openAPI.getPaths();
-
         for (String pathName : paths.keySet()) {
             PathItem path = paths.get(pathName);
             Map<PathItem.HttpMethod, Operation> operations = path.readOperationsMap();
 
-            for (PathItem.HttpMethod httpMethod : operations.keySet()) {
-                components.addAll(initComponents(operations.get(httpMethod), httpMethod, pathName));
+            for (Map.Entry<PathItem.HttpMethod, Operation> entry : operations.entrySet()) {
+                components.addAll(initComponents(entry.getValue(), entry.getKey(), pathName));
             }
 
         }

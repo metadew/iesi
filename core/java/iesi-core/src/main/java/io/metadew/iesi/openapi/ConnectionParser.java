@@ -4,15 +4,17 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ConnectionParser {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static ConnectionParser INSTANCE;
     public static String[] fakeEnvs = new String[] {"TST", "PRD", "ENVV"};
 
@@ -32,13 +34,20 @@ public class ConnectionParser {
         List<URL> adresses = getAdresses(openAPI.getServers());
         return adresses.stream().map(address -> {
             String env = fakeEnvs[adresses.indexOf(address)];
-
-            ConnectionParameter host = new ConnectionParameter(name, env, "host", getHost(address));
+            List<ConnectionParameter> connectionParameters;
             ConnectionParameter port = new ConnectionParameter(name, env, "port", getPort(address));
+            ConnectionParameter host = new ConnectionParameter(name, env, "host", getHost(address));
             ConnectionParameter tls = new ConnectionParameter(name, env, "tls", getProtocol(address));
             ConnectionParameter baseUrl = new ConnectionParameter(name, env, "baseUrl", getBaseUrl(address));
-            List<ConnectionParameter> connectionParameters = new ArrayList<>(Arrays.asList(host, port, tls, baseUrl));
+
+            if (port == null) {
+                connectionParameters = Arrays.asList(host, tls, baseUrl);
+            } else {
+                connectionParameters = Arrays.asList(host, port, tls, baseUrl);
+            }
+
             return new Connection(name, "http", description, env,connectionParameters);
+
         }).collect(Collectors.toList());
     }
 
@@ -70,6 +79,7 @@ public class ConnectionParser {
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
+            LOGGER.fatal(String.format("The url %s is malformed please follow the standard annotation", url));
             e.printStackTrace();
             return null;
         }

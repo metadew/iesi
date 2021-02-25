@@ -167,29 +167,27 @@ public class ComponentParser {
         List<ComponentParameter> queryParams = getQueryParams(componentName, operation.getParameters());
         List<ComponentParameter> headers = getHeaders(componentName, partNames);
         List<ComponentParameter> params = Stream.of(infos, queryParams, headers).flatMap(Collection::stream).collect(Collectors.toList());
-        Component component = new Component(new ComponentKey(componentName, versionNumber), componentType, componentName, componentDescription, componentVersion, params, new ArrayList<>());
-        return component;
+        return new Component(new ComponentKey(componentName, versionNumber), componentType, componentName, componentDescription, componentVersion, params, new ArrayList<>());
+
     }
 
     private  List<ComponentParameter> getInfos(String componentName, String pathName, PathItem.HttpMethod operationName) {
-        return new ArrayList(){{
-            add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "endpoint"), pathName));
-            add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "type"), operationName.name()));
-            add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "connection"), connectionName));
-        }};
+        List<ComponentParameter> componentParameters = new ArrayList<>();
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "endpoint"), pathName));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "type"), operationName.name()));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "connection"), connectionName));
+        return componentParameters;
     }
 
     private  List<ComponentParameter> getQueryParams(String componentName, List<Parameter> parameters) {
-        Integer counter = 1;
-        List<ComponentParameter> queryParams = new ArrayList();
-
+        int counter = 1;
+        List<ComponentParameter> queryParams = new ArrayList<>();
 
         if (parameters != null) {
-            for (int i = 0; i < parameters.size(); i++ ) {
-                Parameter parameter = parameters.get(i);
+            for (Parameter parameter : parameters) {
                 if (parameter.getIn() != null && parameter.getIn().equals("query")) {
                     String parameterName = parameter.getName();
-                    queryParams.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber,String.format("queryParam.%s", counter) ), String.format("%s, #%s#", parameterName, parameterName)));
+                    queryParams.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("queryParam.%s", counter)), String.format("%s, #%s#", parameterName, parameterName)));
                     counter += 1;
                 }
             }
@@ -200,27 +198,26 @@ public class ComponentParser {
 
     private  List<ComponentParameter> getHeaders(String componentName, HashMap<String, String> partNames) {
         int position = 0;
-        List<ComponentParameter> parameters = new ArrayList();
-        List<String> headerTypes = new ArrayList(partNames.keySet());
+        List<ComponentParameter> parameters = new ArrayList<>();
+        List<String> headerTypes = new ArrayList<>(partNames.keySet());
 
-        for (int i = 0; i < headerTypes.size(); i++) {
-            String key = headerTypes.get(i);
+        for (String key : headerTypes) {
             String value = partNames.get(key);
             if (value != null) {
                 switch (key) {
                     case "security":
                         SecurityScheme.Type securityType = securitySchemeMap.get(value).getType();
                         if (securityType == SecurityScheme.Type.OAUTH2) {
-                            parameters.add(new ComponentParameter(new ComponentParameterKey(componentName,versionNumber, String.format("header.%s", ++position)), String.format("Authorization, Bearer #%s#",value)));
+                            parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("Authorization, Bearer #%s#", value)));
                         } else if (securityType == SecurityScheme.Type.APIKEY) {
-                            parameters.add(new ComponentParameter(new ComponentParameterKey(componentName,versionNumber, String.format("header.%s",++position)), String.format("X-API-KEY, #%s#", value)));
+                            parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("X-API-KEY, #%s#", value)));
                         }
                         break;
                     case "request":
-                        parameters.add(new ComponentParameter(new ComponentParameterKey(componentName,versionNumber, String.format("header.%s", ++position)), String.format("Content-Type, %s", value)));
+                        parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("Content-Type, %s", value)));
                         break;
                     case "response":
-                        parameters.add(new ComponentParameter(new ComponentParameterKey(componentName,versionNumber, String.format("header.%s", ++position)), String.format("Accept, %s", value)));
+                        parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("Accept, %s", value)));
                         break;
                 }
             }
@@ -229,60 +226,7 @@ public class ComponentParser {
         return parameters;
     }
 
-    private  List<HashMap<String, String>>  generateName(Set<String> securities, Set<String> requestContents, Set<String> responseContents) {
-        List<HashMap<String, String>> names = new ArrayList<>();
-
-
-        if (!securities.isEmpty()) {
-            for (String security : securities) {
-                if (!requestContents.isEmpty()) {
-                    for (String requestContent : requestContents) {
-                        if (!responseContents.isEmpty()) {
-                            for (String responseContent : responseContents) {
-                                names.add(addPartName(security, requestContent, responseContent));
-                            }
-                        } else {
-                            names.add(addPartName(security, requestContent, null));
-                        }
-
-                    }
-                } else if (!responseContents.isEmpty()) {
-                    for (String responseContent : responseContents) {
-                        names.add(addPartName(security, null, responseContent));
-                    }
-                } else {
-                    names.add(addPartName(security, null, null));
-                }
-            }
-        } else if (!requestContents.isEmpty()) {
-            for (String requestContent : requestContents) {
-                if (!responseContents.isEmpty()) {
-                    for (String responseContent : responseContents) {
-                        names.add(addPartName(null, requestContent, responseContent));
-                    }
-                } else {
-                    names.add(addPartName(null, requestContent, null));
-                }
-
-            }
-        } else if (!responseContents.isEmpty()) {
-            for (String responseContent : responseContents) {
-                names.add(addPartName(null, null, responseContent));
-            }
-        }
-
-        return names;
-    }
-
-    private  LinkedHashMap<String, String> addPartName(String security, String requestContent, String responseContent) {
-        return new LinkedHashMap<String, String>() {{
-            put("security", security);
-            put("request", requestContent);
-            put("response", responseContent);
-        }};
-    }
-
-    private  Boolean isGreenStatus(String statusCode) {
+    private boolean isGreenStatus(String statusCode) {
         Pattern pattern = Pattern.compile("2[0-9][0-9]");
         return pattern.matcher(statusCode).matches();
     }
@@ -293,25 +237,16 @@ public class ComponentParser {
                 return "_";
             }
             if (key.equals("request") || key.equals("response")) {
-                try {
-                    return serializeContentName(partNames.get(key));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                return serializeContentName(partNames.get(key));
             }
             return partNames.get(key);
         }).collect(Collectors.toList());
 
 
-        return operationId.concat("." + listToString(formatedPartNames, "."));
+        return operationId.concat("." + String.join(".", formatedPartNames));
     }
 
-
-    private  String listToString(List<String> list, String delimiter) {
-        return String.join(delimiter, list);
-    }
-
-    private  String serializeContentName(String contentName) throws Exception {
+    private  String serializeContentName(String contentName) {
         switch (contentName) {
             case "application/json":
                 return "JSON";
@@ -322,7 +257,7 @@ public class ComponentParser {
             case "application/octet-stream":
                 return "OCTETSTRM";
             default:
-                throw new Exception("The content name doesn't exist");
+                return "??";
         }
     }
 }

@@ -1,6 +1,6 @@
 package io.metadew.iesi.openapi;
 
-import io.metadew.iesi.connection.database.oracle.OracleDatabaseService;
+
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
@@ -11,8 +11,10 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
@@ -25,9 +27,9 @@ import java.util.stream.Stream;
 public class ComponentParser {
     private static ComponentParser INSTANCE;
 
-    private static Map<String, SecurityScheme> securitySchemeMap;
-    private static Long versionNumber;
-    private static String connectionName;
+    private Map<String, SecurityScheme> securitySchemeMap;
+    private Long versionNumber;
+    private String connectionName;
 
 
     private ComponentParser() {}

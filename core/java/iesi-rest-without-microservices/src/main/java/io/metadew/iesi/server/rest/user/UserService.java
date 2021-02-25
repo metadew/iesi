@@ -27,6 +27,10 @@ public class UserService implements IUserService {
         this.rawUserService = rawUserService;
     }
 
+    public Optional<UUID> getUuidByName(String username) {
+        return rawUserService.getUuidByName(username);
+    }
+
     @Cacheable("users")
     public Optional<UserDto> get(String username) {
         return userDtoRepository.get(username);
@@ -77,13 +81,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#user.metadataKey.uuid")
+    @CacheEvict(value = "users", allEntries = true)
     public void delete(UserKey userKey) {
         rawUserService.delete(userKey);
     }
 
     @Override
-    @CacheEvict(value = "users")
+    @CacheEvict(value = "users", allEntries = true)
     public void delete(String username) {
         rawUserService.delete(username);
     }
@@ -104,13 +108,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#user.metadataKey.uuid")
+    @CacheEvict(value = "users", allEntries = true)
     public void addRole(UserKey user, Role role) {
         rawUserService.addRole(user, role);
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#user.metadataKey.uuid")
+    @Caching(evict = {
+            @CacheEvict(value = "users", key = "#user.metadataKey.uuid"),
+            @CacheEvict(value = "users", key = "#user.username")})
     public void removeRole(User user, Role role) {
         rawUserService.removeRole(user, role);
     }

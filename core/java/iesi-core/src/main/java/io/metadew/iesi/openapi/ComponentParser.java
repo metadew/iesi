@@ -65,38 +65,41 @@ public class ComponentParser {
 
     private  List<Component> initComponents(Operation operation, PathItem.HttpMethod operationName, String pathName) {
         List<Component> components = new ArrayList<>();
-        if (operation != null) {
+        List<String> securities = new ArrayList<>(getSecurities(operation));
+        List<String> requestContents = new ArrayList<>(getRequestContents(operation.getRequestBody()));
+        List<String> responseContents = new ArrayList<>(getResponseContents(operation.getResponses()));
+        List<List<String>> nameCombinations = new ArrayList<>(Arrays.asList(securities, requestContents, responseContents));
 
-            Set<String> securities = getSecurities(operation.getParameters(), operation.getSecurity());
-            Set<String> requestContents = getRequestContents(operation.getRequestBody());
-            Set<String> responseContents = getResponseContents(operation.getResponses());
+        List<HashMap<String, String>> names = new ArrayList<>();
+        generateNames(nameCombinations, names, 0, new LinkedHashMap<>());
 
-            List<HashMap<String, String>>  names = generateName(securities, requestContents, responseContents);
-
-            if (!names.isEmpty()) {
-                for (HashMap<String, String> partNames : names) {
-                    components.add(createComponent(partNames, operation, operationName, pathName));
-                }
-            } else {
-                components.add(createComponent(new HashMap(), operation, operationName, pathName));
+        if (!names.isEmpty()) {
+            for (HashMap<String, String> partNames : names) {
+                components.add(createComponent(partNames, operation, operationName, pathName));
             }
+        } else {
+            components.add(createComponent(new HashMap<>(), operation, operationName, pathName));
         }
         return components;
     }
 
 
-    private  Set<String> getSecurities(List<io.swagger.v3.oas.models.parameters.Parameter> parameters, List<SecurityRequirement> securitiesList) {
+    private  Set<String> getSecurities(Operation operation) {
         Set<String> securities = new HashSet<>();
+        List<Parameter> parameters = operation.getParameters();
+        List<SecurityRequirement> securityRequirements = operation.getSecurity();
+
         if (parameters != null) {
             securities = parameters.stream().map(parameter -> {
-                if (parameter.getIn() != null && securitySchemeMap.containsKey(parameter.getName())) {
+                if (securitySchemeMap.containsKey(parameter.getName())) {
                     return parameter.getName();
                 }
                 return null;
             }).filter(Objects::nonNull).collect(Collectors.toSet());
         }
-        if (securitiesList != null) {
-            securities.addAll(securitiesList.stream().map(securityRequirement -> (String) securityRequirement.keySet().toArray()[0]).collect(Collectors.toSet()));
+
+        if (securityRequirements != null) {
+            securities.addAll(securityRequirements.stream().map(securityRequirement -> (String) securityRequirement.keySet().toArray()[0]).collect(Collectors.toSet()));
         }
         return securities;
     }
@@ -110,14 +113,49 @@ public class ComponentParser {
 
     private  Set<String> getResponseContents(ApiResponses apiResponses) {
         if (apiResponses!= null) {
-            for (String key : apiResponses.keySet()) {
-                if (apiResponses.get(key).getContent() != null && (isGreenStatus(key) || key.equals("default"))) {
-                    return apiResponses.get(key).getContent().keySet();
+            for (Map.Entry<String, ApiResponse> entry : apiResponses.entrySet()) {
+                String statusCode = entry.getKey();
+                Content content = entry.getValue().getContent();
+
+                if (content != null && (isGreenStatus(statusCode) || statusCode.equals("default"))) {
+                    return content.keySet();
                 }
             }
         }
         return new HashSet<>();
     }
+
+    void generateNames(List<List<String>> lists, List<HashMap<String, String>> result, int depth, LinkedHashMap<String, String> current) {
+        if (depth == lists.size()) {
+            result.add((HashMap<String, String>) current.clone());
+            return;
+        }
+        if (lists.get(depth).isEmpty()) {
+            generateNames(lists, result, depth + 1,  createName(null, current, depth));
+            return;
+
+        }
+        for (int i = 0; i < lists.get(depth).size(); i++) {
+            String value = lists.get(depth).get(i);
+            generateNames(lists, result, depth + 1,  createName(value, current, depth));
+        }
+    }
+
+    private LinkedHashMap<String, String> createName(String value,  LinkedHashMap<String, String> current, int depth) {
+        switch (depth) {
+            case 0:
+                current.put("security", value);
+                break;
+            case 1:
+                current.put("request", value);
+                break;
+            case 2:
+                current.put("response", value);
+                break;
+        }
+        return current;
+    }
+
 
     private  Component createComponent(HashMap<String, String> partNames, Operation operation,PathItem.HttpMethod operationName, String pathName) {
         String componentName = buildName(operation.getOperationId(), partNames);

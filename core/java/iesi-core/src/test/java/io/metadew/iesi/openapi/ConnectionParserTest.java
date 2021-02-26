@@ -2,8 +2,6 @@ package io.metadew.iesi.openapi;
 
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
@@ -25,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class ConnectionParserTest {
 
 
-    private ConnectionParser connectionParser = ConnectionParser.getInstance();
+    private final ConnectionParser connectionParser = ConnectionParser.getInstance();
 
     @Test
     public void parse() throws MalformedURLException {

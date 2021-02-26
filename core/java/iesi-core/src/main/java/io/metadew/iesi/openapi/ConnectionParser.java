@@ -40,7 +40,7 @@ public class ConnectionParser {
             ConnectionParameter tls = new ConnectionParameter(name, env, "tls", getProtocol(address));
             ConnectionParameter baseUrl = new ConnectionParameter(name, env, "baseUrl", getBaseUrl(address));
 
-            if (port == null) {
+            if (getPort(address) == null) {
                 connectionParameters = Arrays.asList(host, tls, baseUrl);
             } else {
                 connectionParameters = Arrays.asList(host, port, tls, baseUrl);
@@ -80,7 +80,6 @@ public class ConnectionParser {
             return new URL(url);
         } catch (MalformedURLException e) {
             LOGGER.fatal(String.format("The url %s is malformed please follow the standard annotation", url));
-            e.printStackTrace();
             return null;
         }
     }

@@ -330,7 +330,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterTeamUpdate() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -371,7 +370,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterTeamDeleteByKey() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -407,7 +405,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterTeamDeleteByName() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -443,7 +440,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterTeamAddRole() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -486,7 +482,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterTeamDeleteRole() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -522,7 +517,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterTeamAddSecurityGroup() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -558,7 +552,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterTeamRemoveSecurityGroup() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -634,7 +627,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterDeleteSecurityGroup() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -670,7 +662,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterAddTeam() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");
@@ -706,7 +697,6 @@ class UserServiceCachingTest {
     @Test
     void getEvictAfterDeleteTeam() {
         Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
-        User user1 = (User) user1Info.get(("user"));
         UUID userUuid1 = (UUID) user1Info.get("userUUID");
         Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
         UUID userUuid2 = (UUID) user2Info.get("userUUID");

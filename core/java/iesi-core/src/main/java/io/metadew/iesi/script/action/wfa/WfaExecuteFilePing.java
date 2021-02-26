@@ -434,14 +434,6 @@ public class WfaExecuteFilePing extends ActionTypeExecution {
 
     }
 
-    @SuppressWarnings("unused")
-    private void setRuntimeVariable(CachedRowSet crs, boolean setRuntimeVariables) {
-        if (setRuntimeVariables) {
-            this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(getActionExecution(), crs);
-        }
-    }
-
-
     public ActionParameterOperation getWaitInterval() {
         return waitInterval;
     }

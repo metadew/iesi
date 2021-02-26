@@ -17,6 +17,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 
 
@@ -50,13 +52,13 @@ public class SqlSetRuntimeVariables extends ActionTypeExecution {
         getActionParameterOperationMap().put("connection", connectionName);
     }
 
-    protected boolean executeAction() throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException, SQLException {
 
         String query = convertQuery(sqlQuery.getValue());
         String connectionName = convertConnectionName(this.connectionName.getValue());
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName));
+                .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName + " for env " + getExecutionControl().getEnvName()));
 
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
         // Run the action

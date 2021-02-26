@@ -1,10 +1,14 @@
 package io.metadew.iesi.server.rest.user;
 
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.ClockConfiguration;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
+import io.metadew.iesi.server.rest.security_group.ISecurityGroupDtoRepository;
+import io.metadew.iesi.server.rest.security_group.SecurityGroupService;
 import io.metadew.iesi.server.rest.user.team.ITeamDtoRepository;
 import io.metadew.iesi.server.rest.user.team.ITeamService;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +37,7 @@ import static org.mockito.Mockito.*;
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @ActiveProfiles({"test"})
+@DirtiesContext
 class UserServiceCachingTest {
 
     @SpyBean
@@ -52,6 +57,15 @@ class UserServiceCachingTest {
 
     @MockBean
     private ITeamDtoRepository teamDtoRepository;
+
+    @MockBean
+    private ISecurityGroupDtoRepository securityGroupDtoRepository;
+
+    @MockBean
+    private io.metadew.iesi.metadata.service.security.SecurityGroupService rawSecurityGroupService;
+
+    @Autowired
+    private SecurityGroupService securityGroupService;
 
     @Autowired
     private CacheManager cacheManager;
@@ -425,52 +439,303 @@ class UserServiceCachingTest {
         verify(userService, times(2)).get(userUuid2);
     }
 
-//    @Override
-//    @CacheEvict(value = "users", allEntries = true)
-//    public void addRole(TeamKey teamKey, Role role) {
-//        rawTeamService.addRole(teamKey, role);
-//    }
-//
-//    @Override
-//    @CacheEvict(value = "users", allEntries = true)
-//    public void deleteRole(TeamKey teamKey, RoleKey roleKey) {
-//        rawTeamService.deleteRole(teamKey, roleKey);
-//    }
-//
-//    @Override
-//    @CacheEvict(value = "users", allEntries = true)
-//    public void addSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {
-//        rawTeamService.addSecurityGroup(teamKey, securityGroupKey);
-//    }
-//
-//    @Override
-//    @CacheEvict(value = "users", allEntries = true)
-//    public void removeSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {
-//        rawTeamService.removeSecurityGroup(teamKey, securityGroupKey);
-//    }
-//
-//    @Override
-//    @CacheEvict(value = "users", allEntries = true)
-//    public void update(SecurityGroup securityGroup) {
-//        rawSecurityGroupService.update(securityGroup);
-//    }
-//
-//    @Override
-//    @CacheEvict(value = "users", allEntries = true)
-//    public void delete(SecurityGroupKey securityGroupKey) {
-//        rawSecurityGroupService.delete(securityGroupKey);
-//    }
-//
-//    @Override
-//    @CacheEvict(value = "users", allEntries = true)
-//    public void addTeam(SecurityGroupKey securityGroupKey, TeamKey teamKey) {
-//        rawSecurityGroupService.addTeam(securityGroupKey, teamKey);
-//    }
-//
-//    @Override
-//    @CacheEvict(value = "users", allEntries = true)
-//    public void deleteTeam(SecurityGroupKey securityGroupKey, TeamKey teamKey) {
-//        rawSecurityGroupService.deleteTeam(securityGroupKey, teamKey);
-//    }
+
+    @Test
+    void getEvictAfterTeamAddRole() {
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
+        User user1 = (User) user1Info.get(("user"));
+        UUID userUuid1 = (UUID) user1Info.get("userUUID");
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid2 = (UUID) user2Info.get("userUUID");
+        when(userDtoRepository.get(userUuid1))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get(userUuid2))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+        when(userDtoRepository.get("user1"))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get("user2"))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        userService.get("user2");
+        userService.get(userUuid2);
+        UUID teamUuid = UUID.randomUUID();
+        teamService.addRole(new TeamKey(teamUuid), Role.builder()
+                .metadataKey(new RoleKey(UUID.randomUUID()))
+                .teamKey(new TeamKey(teamUuid))
+                .name("role")
+                .privileges(new HashSet<>())
+                .userKeys(new HashSet<>())
+                .build());
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        verify(userService, times(2)).get("user1");
+        verify(userService, times(2)).get(userUuid1);
+        verify(userService, times(2)).get("user2");
+        verify(userService, times(2)).get(userUuid2);
+    }
+
+
+    @Test
+    void getEvictAfterTeamDeleteRole() {
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
+        User user1 = (User) user1Info.get(("user"));
+        UUID userUuid1 = (UUID) user1Info.get("userUUID");
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid2 = (UUID) user2Info.get("userUUID");
+        when(userDtoRepository.get(userUuid1))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get(userUuid2))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+        when(userDtoRepository.get("user1"))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get("user2"))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        userService.get("user2");
+        userService.get(userUuid2);
+        teamService.deleteRole(new TeamKey(UUID.randomUUID()), new RoleKey(UUID.randomUUID()));
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        verify(userService, times(2)).get("user1");
+        verify(userService, times(2)).get(userUuid1);
+        verify(userService, times(2)).get("user2");
+        verify(userService, times(2)).get(userUuid2);
+    }
+
+
+    @Test
+    void getEvictAfterTeamAddSecurityGroup() {
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
+        User user1 = (User) user1Info.get(("user"));
+        UUID userUuid1 = (UUID) user1Info.get("userUUID");
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid2 = (UUID) user2Info.get("userUUID");
+        when(userDtoRepository.get(userUuid1))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get(userUuid2))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+        when(userDtoRepository.get("user1"))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get("user2"))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        userService.get("user2");
+        userService.get(userUuid2);
+        teamService.addSecurityGroup(new TeamKey(UUID.randomUUID()), new SecurityGroupKey(UUID.randomUUID()));
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        verify(userService, times(2)).get("user1");
+        verify(userService, times(2)).get(userUuid1);
+        verify(userService, times(2)).get("user2");
+        verify(userService, times(2)).get(userUuid2);
+    }
+
+
+    @Test
+    void getEvictAfterTeamRemoveSecurityGroup() {
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
+        User user1 = (User) user1Info.get(("user"));
+        UUID userUuid1 = (UUID) user1Info.get("userUUID");
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid2 = (UUID) user2Info.get("userUUID");
+        when(userDtoRepository.get(userUuid1))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get(userUuid2))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+        when(userDtoRepository.get("user1"))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get("user2"))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        userService.get("user2");
+        userService.get(userUuid2);
+        teamService.removeSecurityGroup(new TeamKey(UUID.randomUUID()), new SecurityGroupKey(UUID.randomUUID()));
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        verify(userService, times(2)).get("user1");
+        verify(userService, times(2)).get(userUuid1);
+        verify(userService, times(2)).get("user2");
+        verify(userService, times(2)).get(userUuid2);
+    }
+
+
+    @Test
+    void getEvictAfterUpdateSecurityGroup() {
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid1 = (UUID) user1Info.get("userUUID");
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid2 = (UUID) user2Info.get("userUUID");
+        when(userDtoRepository.get(userUuid1))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get(userUuid2))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+        when(userDtoRepository.get("user1"))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get("user2"))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        userService.get("user2");
+        userService.get(userUuid2);
+        securityGroupService.update(SecurityGroup.builder()
+                .name("security_group")
+                .securedObjects(new HashSet<>())
+                .teamKeys(new HashSet<>())
+                .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
+                .build());
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        verify(userService, times(2)).get("user1");
+        verify(userService, times(2)).get(userUuid1);
+        verify(userService, times(2)).get("user2");
+        verify(userService, times(2)).get(userUuid2);
+    }
+
+
+    @Test
+    void getEvictAfterDeleteSecurityGroup() {
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
+        User user1 = (User) user1Info.get(("user"));
+        UUID userUuid1 = (UUID) user1Info.get("userUUID");
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid2 = (UUID) user2Info.get("userUUID");
+        when(userDtoRepository.get(userUuid1))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get(userUuid2))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+        when(userDtoRepository.get("user1"))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get("user2"))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        userService.get("user2");
+        userService.get(userUuid2);
+        securityGroupService.delete(new SecurityGroupKey(UUID.randomUUID()));
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        verify(userService, times(2)).get("user1");
+        verify(userService, times(2)).get(userUuid1);
+        verify(userService, times(2)).get("user2");
+        verify(userService, times(2)).get(userUuid2);
+    }
+
+
+    @Test
+    void getEvictAfterAddTeam() {
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
+        User user1 = (User) user1Info.get(("user"));
+        UUID userUuid1 = (UUID) user1Info.get("userUUID");
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid2 = (UUID) user2Info.get("userUUID");
+        when(userDtoRepository.get(userUuid1))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get(userUuid2))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+        when(userDtoRepository.get("user1"))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get("user2"))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        userService.get("user2");
+        userService.get(userUuid2);
+        securityGroupService.addTeam(new SecurityGroupKey(UUID.randomUUID()), new TeamKey(UUID.randomUUID()));
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        verify(userService, times(2)).get("user1");
+        verify(userService, times(2)).get(userUuid1);
+        verify(userService, times(2)).get("user2");
+        verify(userService, times(2)).get(userUuid2);
+    }
+
+
+    @Test
+    void getEvictAfterDeleteTeam() {
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", new HashSet<>(), "team", new HashSet<>());
+        User user1 = (User) user1Info.get(("user"));
+        UUID userUuid1 = (UUID) user1Info.get("userUUID");
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", new HashSet<>(), "team", new HashSet<>());
+        UUID userUuid2 = (UUID) user2Info.get("userUUID");
+        when(userDtoRepository.get(userUuid1))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get(userUuid2))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+        when(userDtoRepository.get("user1"))
+                .thenReturn(Optional.of((UserDto) user1Info.get(("userDto"))));
+        when(userDtoRepository.get("user2"))
+                .thenReturn(Optional.of((UserDto) user2Info.get(("userDto"))));
+
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        userService.get("user2");
+        userService.get(userUuid2);
+        securityGroupService.deleteTeam(new SecurityGroupKey(UUID.randomUUID()), new TeamKey(UUID.randomUUID()));
+        userService.get("user1");
+        userService.get(userUuid1);
+        userService.get("user2");
+        userService.get(userUuid2);
+        verify(userService, times(2)).get("user1");
+        verify(userService, times(2)).get(userUuid1);
+        verify(userService, times(2)).get("user2");
+        verify(userService, times(2)).get(userUuid2);
+    }
 
 }

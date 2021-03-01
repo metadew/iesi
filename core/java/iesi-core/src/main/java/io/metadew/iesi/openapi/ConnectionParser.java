@@ -33,12 +33,13 @@ public class ConnectionParser {
         String description = openAPI.getInfo().getDescription();
         List<URL> adresses = getAdresses(openAPI.getServers());
         return adresses.stream().map(address -> {
-            String env = fakeEnvs[adresses.indexOf(address)];
+            int index = adresses.indexOf(address);
+            String environment = String.format("env%s", index);
             List<ConnectionParameter> connectionParameters;
-            ConnectionParameter port = new ConnectionParameter(name, env, "port", getPort(address));
-            ConnectionParameter host = new ConnectionParameter(name, env, "host", getHost(address));
-            ConnectionParameter tls = new ConnectionParameter(name, env, "tls", getProtocol(address));
-            ConnectionParameter baseUrl = new ConnectionParameter(name, env, "baseUrl", getBaseUrl(address));
+            ConnectionParameter port = new ConnectionParameter(name, environment, "port", getPort(address));
+            ConnectionParameter host = new ConnectionParameter(name, environment, "host", getHost(address));
+            ConnectionParameter tls = new ConnectionParameter(name, environment, "tls", getProtocol(address));
+            ConnectionParameter baseUrl = new ConnectionParameter(name, environment, "baseUrl", getBaseUrl(address));
 
             if (getPort(address) == null) {
                 connectionParameters = Arrays.asList(host, tls, baseUrl);
@@ -46,7 +47,7 @@ public class ConnectionParser {
                 connectionParameters = Arrays.asList(host, port, tls, baseUrl);
             }
 
-            return new Connection(name, "http", description, env,connectionParameters);
+            return new Connection(name, "http", description, environment,connectionParameters);
 
         }).collect(Collectors.toList());
     }

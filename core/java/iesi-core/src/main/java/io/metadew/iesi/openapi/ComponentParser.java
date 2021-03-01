@@ -18,6 +18,7 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,9 +27,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Log4j2
 @Data
 public class ComponentParser {
     private static ComponentParser INSTANCE;
+
+
     private static final Logger LOGGER = LogManager.getLogger();
     private Map<String, SecurityScheme> securitySchemeMap;
     private Long versionNumber;
@@ -107,7 +111,6 @@ public class ComponentParser {
 
         if (securityRequirements != null) {
             securities.addAll(securityRequirements.stream().map(securityRequirement -> {
-                System.out.println(securityRequirement.keySet());
                 return (String) securityRequirement.keySet().toArray()[0];
             }).collect(Collectors.toList()));
         }
@@ -176,7 +179,7 @@ public class ComponentParser {
 
         List<ComponentParameter> infos = getInfos(componentName,pathName, operationName);
         List<ComponentParameter> queryParams = getQueryParams(componentName, operation.getParameters());
-        List<ComponentParameter> headers = getHeaders(componentName, partNames);
+        List<ComponentParameter> headers = getHeaders(componentName, partNames, operation);
         List<ComponentParameter> params = Stream.of(infos, queryParams, headers).flatMap(Collection::stream).collect(Collectors.toList());
         return new Component(new ComponentKey(componentName, versionNumber), componentType, componentName, componentDescription, componentVersion, params, new ArrayList<>());
 
@@ -207,13 +210,13 @@ public class ComponentParser {
     }
 
 
-    public  List<ComponentParameter> getHeaders(String componentName, HashMap<String, String> partNames) {
+    public  List<ComponentParameter> getHeaders(String componentName, HashMap<String, String> partNames, Operation operation) {
         int position = 0;
         List<ComponentParameter> parameters = new ArrayList<>();
-        List<String> headerTypes = new ArrayList<>(partNames.keySet());
 
-        for (String key : headerTypes) {
-            String value = partNames.get(key);
+        for (Map.Entry entry : partNames.entrySet()) {
+            String value = (String) entry.getValue();
+            String key = (String) entry.getKey();
             if (value != null) {
                 switch (key) {
                     case "security":
@@ -236,8 +239,16 @@ public class ComponentParser {
                         break;
                 }
             }
-
         }
+
+        for (Parameter parameter : operation.getParameters()) {
+            String parameterName = parameter.getName();
+            if (parameter.getIn().equals("header") && !partNames.containsValue(parameterName)) {
+                parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("%s, #%s#",parameterName,parameterName)));
+            }
+        }
+
+
         return parameters;
     }
 

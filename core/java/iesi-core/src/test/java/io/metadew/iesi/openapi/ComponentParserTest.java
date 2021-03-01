@@ -68,11 +68,13 @@ public class ComponentParserTest {
     @Test
     public void getSecuritiesNotDefinedInParameters() {
         Operation operation = mock(Operation.class);
-        SecurityRequirement securityRequirement = mock(SecurityRequirement.class);
+        SecurityRequirement petstoreSecurity = mock(SecurityRequirement.class);
+        SecurityRequirement userSecurity = mock(SecurityRequirement.class);
 
         //MOCKS
-        when(securityRequirement.keySet()).thenReturn(new HashSet<>(Arrays.asList("petstore_auth", "user_auth")));
-        when(operation.getSecurity()).thenReturn(Collections.singletonList(securityRequirement));
+        when(petstoreSecurity.keySet()).thenReturn(new HashSet<>(Arrays.asList("petstore_auth")));
+        when(userSecurity.keySet()).thenReturn(new HashSet<>(Arrays.asList("user_auth")));
+        when(operation.getSecurity()).thenReturn(Arrays.asList(petstoreSecurity, userSecurity));
 
         //TESTS
         assertThat(componentParser.getSecurities(operation)).isEqualTo(new ArrayList<>(Arrays.asList("petstore_auth", "user_auth")));
@@ -318,6 +320,8 @@ public class ComponentParserTest {
         String componentName = "AUTH.JSON.JSON";
         HashMap<String, String> partNames = new LinkedHashMap<>();
         List<ComponentParameter> parameters = new ArrayList<>();
+        Operation operation = mock(Operation.class);
+        Parameter allowHeader = mock(Parameter.class);
 
         partNames.put("security", "petstore_auth");
         partNames.put("request", "application/x-www-form-urlencoded");
@@ -342,8 +346,20 @@ public class ComponentParserTest {
                 )
         );
 
+        parameters.add(
+                new ComponentParameter(
+                        new ComponentParameterKey(componentName, componentParser.getVersionNumber(), "header.4"),
+                        "Allow, #Allow#"
+                )
+        );
+
+        //MOCKS
+        when(allowHeader.getName()).thenReturn("Allow");
+        when(allowHeader.getIn()).thenReturn("header");
+        when(operation.getParameters()).thenReturn(Collections.singletonList(allowHeader));
+
         //TESTS
-        assertThat(componentParser.getHeaders(componentName, partNames)).isEqualTo(parameters);
+        assertThat(componentParser.getHeaders(componentName, partNames, operation)).isEqualTo(parameters);
 
     }
 
@@ -352,6 +368,7 @@ public class ComponentParserTest {
         String componentName = "AUTH.JSON.JSON";
         HashMap<String, String> partNames = new LinkedHashMap<>();
         List<ComponentParameter> parameters = new ArrayList<>();
+        Operation operation = mock(Operation.class);
 
         partNames.put("security", null);
         partNames.put("request", "application/x-www-form-urlencoded");
@@ -365,8 +382,9 @@ public class ComponentParserTest {
         );
 
 
+
         //TESTS
-        assertThat(componentParser.getHeaders(componentName, partNames)).isEqualTo(parameters);
+        assertThat(componentParser.getHeaders(componentName, partNames, operation)).isEqualTo(parameters);
 
     }
     @Test

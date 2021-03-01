@@ -110,11 +110,10 @@ public class WfaExecuteFilePing extends ActionTypeExecution {
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(InterruptedException::new);
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection dcConnection = connectionOperation.getHostConnection(connection);
+        HostConnection dcConnection = ConnectionOperation.getInstance().getHostConnection(connection);
 
         // Check if connection is localhost
-        boolean connectionIsLocalHost = connectionOperation.isOnLocalConnection(dcConnection);
+        boolean connectionIsLocalHost = ConnectionOperation.getInstance().isOnLocalConnection(dcConnection);
 
         // Run the action
         int i = 1;
@@ -328,8 +327,7 @@ public class WfaExecuteFilePing extends ActionTypeExecution {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private List<FileConnection> checkRemoteFolder(Connection connection, String filePath, String fileName) {
         List<FileConnection> connectionsFound = new ArrayList();
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+        HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
         this.getActionExecution().getActionControl().logOutput("conn.name", connection.getMetadataKey().getName());
 
         try {

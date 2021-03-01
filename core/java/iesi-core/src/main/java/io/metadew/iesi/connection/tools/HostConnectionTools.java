@@ -10,27 +10,18 @@ import org.apache.commons.lang3.SystemUtils;
 public final class HostConnectionTools {
 
     public static boolean isOnLocalhost(String connectionName, String environmentName) {
-        boolean isOnLocalhost = true;
-
         if (connectionName.isEmpty()) {
-            isOnLocalhost = true;
+            return true;
         } else if (connectionName.equalsIgnoreCase("localhost")) {
-            isOnLocalhost = true;
+            return true;
         } else {
             Connection connection = ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(connectionName, environmentName))
-                    .get();
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+                    .orElseThrow(() -> new RuntimeException(String.format("Unable to find connection %s", new ConnectionKey(connectionName, environmentName))));
+            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
 
-            if (hostConnection.isOnLocalhost()) {
-                isOnLocalhost = true;
-            } else {
-                isOnLocalhost = false;
-            }
+            return hostConnection.isOnLocalhost();
         }
-
-        return isOnLocalhost;
     }
 
     public static String getLocalhostType() {

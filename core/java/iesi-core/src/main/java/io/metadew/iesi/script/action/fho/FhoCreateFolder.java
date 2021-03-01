@@ -92,8 +92,7 @@ public class FhoCreateFolder extends ActionTypeExecution {
             Connection connection = ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
 
             String subjectFolderPath = "";
             if (path.isEmpty()) {

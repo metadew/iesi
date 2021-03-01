@@ -62,7 +62,7 @@ public class ComponentParserTest {
         Operation operation = mock(Operation.class);
 
         //TESTS
-        assertThat(componentParser.getSecurities(operation)).isEqualTo(new HashSet<>());
+        assertThat(componentParser.getSecurities(operation)).isEqualTo(new ArrayList<>());
     }
 
     @Test
@@ -71,11 +71,11 @@ public class ComponentParserTest {
         SecurityRequirement securityRequirement = mock(SecurityRequirement.class);
 
         //MOCKS
-        when(securityRequirement.keySet()).thenReturn(new HashSet<>(Collections.singletonList("petstore_auth")));
+        when(securityRequirement.keySet()).thenReturn(new HashSet<>(Arrays.asList("petstore_auth", "user_auth")));
         when(operation.getSecurity()).thenReturn(Collections.singletonList(securityRequirement));
 
         //TESTS
-        assertThat(componentParser.getSecurities(operation)).isEqualTo(new HashSet<>(Collections.singletonList("petstore_auth")));
+        assertThat(componentParser.getSecurities(operation)).isEqualTo(new ArrayList<>(Arrays.asList("petstore_auth", "user_auth")));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ComponentParserTest {
         when(operation.getSecurity()).thenReturn(Collections.singletonList(securityRequirement));
 
         //TEST
-        assertThat(componentParser.getSecurities(operation)).isEqualTo(new HashSet<>(Arrays.asList("petstore_auth", "api_key")));
+        assertThat(componentParser.getSecurities(operation)).isEqualTo(new ArrayList<>(Arrays.asList("api_key", "petstore_auth")));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ComponentParserTest {
         when(requestBody.getContent()).thenReturn(content);
 
         //TESTS
-        assertThat(componentParser.getRequestContents(requestBody)).isEqualTo(content.keySet());
+        assertThat(componentParser.getRequestContents(requestBody)).isEqualTo(new ArrayList<>(content.keySet()));
     }
     @Test
     public void getEmptyRequestContent() {
@@ -113,7 +113,7 @@ public class ComponentParserTest {
         when(requestBody.getContent()).thenReturn(content);
 
         //TESTS
-        assertThat(componentParser.getRequestContents(requestBody)).isEqualTo(content.keySet());
+        assertThat(componentParser.getRequestContents(requestBody)).isEqualTo(new ArrayList<>());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class ComponentParserTest {
        when(response200.getContent()).thenReturn(content);
 
        //TEST
-        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new HashSet<>(Arrays.asList("application/json")));
+        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new ArrayList<>(Arrays.asList("application/json")));
 
     }
 
@@ -148,7 +148,7 @@ public class ComponentParserTest {
 
 
         //TEST
-        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new HashSet<>());
+        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new ArrayList<>());
     }
 
     @Test
@@ -165,7 +165,7 @@ public class ComponentParserTest {
         when(response404.getContent()).thenReturn(content);
 
         //TEST
-        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new HashSet<>());
+        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new ArrayList<>());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class ComponentParserTest {
         when(defaultResponse.getContent()).thenReturn(content);
 
         //TEST
-        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new HashSet<>(Arrays.asList("application/json", "application/xml")));
+        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new ArrayList<>(content.keySet()));
     }
     @Test
     public void getDefaultResponseWithoutContent() {
@@ -190,7 +190,7 @@ public class ComponentParserTest {
         apiResponses.put("default", defaultResponse);
 
         //TESTS
-        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new HashSet<>());
+        assertThat(componentParser.getResponseContents(apiResponses)).isEqualTo(new ArrayList<>());
     }
 
     @Test

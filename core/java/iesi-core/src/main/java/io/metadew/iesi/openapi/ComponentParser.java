@@ -18,6 +18,8 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.Data;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -27,7 +29,7 @@ import java.util.stream.Stream;
 @Data
 public class ComponentParser {
     private static ComponentParser INSTANCE;
-
+    private static final Logger LOGGER = LogManager.getLogger();
     private Map<String, SecurityScheme> securitySchemeMap;
     private Long versionNumber;
     private String connectionName;
@@ -66,9 +68,9 @@ public class ComponentParser {
 
     public List<Component> initComponents(Operation operation, PathItem.HttpMethod operationName, String pathName) {
         List<Component> components = new ArrayList<>();
-        List<String> securities = new ArrayList<>(getSecurities(operation));
-        List<String> requestContents = new ArrayList<>(getRequestContents(operation.getRequestBody()));
-        List<String> responseContents = new ArrayList<>(getResponseContents(operation.getResponses()));
+        List<String> securities = getSecurities(operation);
+        List<String> requestContents = getRequestContents(operation.getRequestBody());
+        List<String> responseContents = getResponseContents(operation.getResponses());
         List<List<String>> nameCombinations = new ArrayList<>(Arrays.asList(securities, requestContents, responseContents));
         List<HashMap<String, String>> names = new ArrayList<>();
 
@@ -89,8 +91,8 @@ public class ComponentParser {
     }
 
 
-    public Set<String> getSecurities(Operation operation) {
-        Set<String> securities = new HashSet<>();
+    public List<String> getSecurities(Operation operation) {
+        List<String> securities = new ArrayList<>();
         List<Parameter> parameters = operation.getParameters();
         List<SecurityRequirement> securityRequirements = operation.getSecurity();
 
@@ -100,23 +102,26 @@ public class ComponentParser {
                     return parameter.getName();
                 }
                 return null;
-            }).filter(Objects::nonNull).collect(Collectors.toSet());
+            }).filter(Objects::nonNull).collect(Collectors.toList());
         }
 
         if (securityRequirements != null) {
-            securities.addAll(securityRequirements.stream().map(securityRequirement -> (String) securityRequirement.keySet().toArray()[0]).collect(Collectors.toSet()));
+            securities.addAll(securityRequirements.stream().map(securityRequirement -> {
+                System.out.println(securityRequirement.keySet());
+                return (String) securityRequirement.keySet().toArray()[0];
+            }).collect(Collectors.toList()));
         }
         return securities;
     }
 
-    public  Set<String> getRequestContents(RequestBody requestBody) {
+    public  List<String> getRequestContents(RequestBody requestBody) {
         if (requestBody != null && requestBody.getContent() != null) {
-            return requestBody.getContent().keySet();
+            return new ArrayList<>(requestBody.getContent().keySet());
         }
-        return new HashSet<>();
+        return new ArrayList<>();
     }
 
-    public  Set<String> getResponseContents(ApiResponses apiResponses) {
+    public List<String> getResponseContents(ApiResponses apiResponses) {
 
         if (apiResponses!= null) {
             for (Map.Entry<String, ApiResponse> entry : apiResponses.entrySet()) {
@@ -124,11 +129,11 @@ public class ComponentParser {
                 Content content = entry.getValue().getContent();
 
                 if (content != null && (isGreenStatus(statusCode) || statusCode.equals("default"))) {
-                    return content.keySet();
+                    return new ArrayList<>(content.keySet());
                 }
             }
         }
-        return new HashSet<>();
+        return new ArrayList<>();
     }
 
     public List<HashMap<String, String>> generateNames(List<List<String>> lists, List<HashMap<String, String>> result, int depth, LinkedHashMap<String, String> current) {
@@ -212,10 +217,14 @@ public class ComponentParser {
             if (value != null) {
                 switch (key) {
                     case "security":
-                        SecurityScheme.Type securityType = securitySchemeMap.get(value).getType();
-                        if (securityType == SecurityScheme.Type.OAUTH2) {
+                        SecurityScheme securityType = securitySchemeMap.get(value);
+                        if (securityType == null) {
+                            LOGGER.warn("The securityScheme provided doesn't exists");
+                            break;
+                        }
+                        if (securityType.getType() == SecurityScheme.Type.OAUTH2) {
                             parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("Authorization, Bearer #%s#", value)));
-                        } else if (securityType == SecurityScheme.Type.APIKEY) {
+                        } else if (securityType.getType() == SecurityScheme.Type.APIKEY) {
                             parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("X-API-KEY, #%s#", value)));
                         }
                         break;

@@ -31,39 +31,36 @@ import java.util.stream.Stream;
 @Log4j2
 @Data
 public class ComponentParser {
-    private static ComponentParser INSTANCE;
-
-
+    private static  ComponentParser instance;
     private static final Logger LOGGER = LogManager.getLogger();
-    private Map<String, SecurityScheme> securitySchemeMap;
-    private Long versionNumber;
-    private String connectionName;
+    private static final String REQUEST = "request";
+    private static final String RESPONSE = "response";
+    private static final String HEADER = "header.%s";
+
+
 
 
     private ComponentParser() {}
 
 
-    public synchronized static ComponentParser getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ComponentParser();
+    public static synchronized ComponentParser getInstance() {
+        if (instance == null) {
+            instance = new ComponentParser();
         }
-        return INSTANCE;
+        return instance;
     }
 
     public List<Component> parse(OpenAPI openAPI) {
         List<Component> components = new ArrayList<>();
 
-        securitySchemeMap = openAPI.getComponents().getSecuritySchemes();
-        versionNumber = Long.parseLong(openAPI.getInfo().getVersion());
-        connectionName = openAPI.getInfo().getTitle();
 
         Paths paths = openAPI.getPaths();
-        for (String pathName : paths.keySet()) {
-            PathItem path = paths.get(pathName);
-            Map<PathItem.HttpMethod, Operation> operations = path.readOperationsMap();
+        for (Entry<String, PathItem> path : paths.entrySet()) {
+            PathItem pathItem = path.getValue();
+            Map<PathItem.HttpMethod, Operation> operations = pathItem.readOperationsMap();
 
-            for (Entry<PathItem.HttpMethod, Operation> entry : operations.entrySet()) {
-                components.addAll(initComponents(entry.getValue(), entry.getKey(), pathName));
+            for (Entry<PathItem.HttpMethod, Operation> operation : operations.entrySet()) {
+                components.addAll(initComponents(operation.getValue(), operation.getKey(), path.getKey(), openAPI));
             }
 
         }
@@ -71,33 +68,34 @@ public class ComponentParser {
        return components;
     }
 
-    public List<Component> initComponents(Operation operation, PathItem.HttpMethod operationName, String pathName) {
+    public List<Component> initComponents(Operation operation, PathItem.HttpMethod operationName, String pathName, OpenAPI openAPI) {
         List<Component> components = new ArrayList<>();
-        List<String> securities = getSecurities(operation);
+        List<String> securities = getSecurities(operation, openAPI);
         List<String> requestContents = getRequestContents(operation.getRequestBody());
         List<String> responseContents = getResponseContents(operation.getResponses());
         List<List<String>> nameCombinations = new ArrayList<>(Arrays.asList(securities, requestContents, responseContents));
-        List<HashMap<String, String>> names = new ArrayList<>();
+        List<Map<String, String>> names = new ArrayList<>();
 
         if (!(securities.isEmpty() && requestContents.isEmpty() && responseContents.isEmpty())) {
             names = generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>());
         }
 
         if (!names.isEmpty()) {
-            for (HashMap<String, String> partNames : names) {
-                components.add(createComponent(partNames, operation, operationName, pathName));
+            for (Map<String, String> partNames : names) {
+                components.add(createComponent(partNames, operation, operationName, pathName, openAPI));
             }
         } else {
-            components.add(createComponent(new HashMap<>(), operation, operationName, pathName));
+            components.add(createComponent(new HashMap<>(), operation, operationName, pathName, openAPI));
         }
         return components;
     }
 
 
-    public List<String> getSecurities(Operation operation) {
+    public List<String> getSecurities(Operation operation, OpenAPI openAPI) {
         List<String> securities = new ArrayList<>();
         List<Parameter> parameters = operation.getParameters();
         List<SecurityRequirement> securityRequirements = operation.getSecurity();
+        Map<String, SecurityScheme> securitySchemeMap = openAPI.getComponents().getSecuritySchemes();
 
         if (parameters != null) {
             securities = parameters.stream().map(parameter -> {
@@ -137,9 +135,9 @@ public class ComponentParser {
         return new ArrayList<>();
     }
 
-    public List<HashMap<String, String>> generateNames(List<List<String>> lists, List<HashMap<String, String>> result, int depth, LinkedHashMap<String, String> current) {
+    public List<Map<String, String>> generateNames(List<List<String>> lists, List<Map<String, String>> result, int depth, Map<String, String> current) {
         if (depth == lists.size()) {
-            result.add((HashMap<String, String>) current.clone());
+            result.add(new HashMap<>(current));
             return result;
         }
         if (lists.get(depth).isEmpty()) {
@@ -153,45 +151,49 @@ public class ComponentParser {
         return result;
     }
 
-    public LinkedHashMap<String, String> createName(String value,  LinkedHashMap<String, String> current, int depth) {
+    public Map<String, String> createName(String value,  Map<String, String> current, int depth) {
         switch (depth) {
             case 0:
                 current.put("security", value);
                 break;
             case 1:
-                current.put("request", value);
+                current.put(REQUEST, value);
                 break;
             case 2:
-                current.put("response", value);
+                current.put(RESPONSE, value);
+                break;
+            default:
                 break;
         }
         return current;
     }
 
 
-    public  Component createComponent(HashMap<String, String> partNames, Operation operation,PathItem.HttpMethod operationName, String pathName) {
+    public  Component createComponent(Map<String, String> partNames, Operation operation,PathItem.HttpMethod operationName, String pathName, OpenAPI openAPI) {
+        long version = Long.parseLong(openAPI.getInfo().getVersion());
+        String connectionName = openAPI.getInfo().getTitle();
         String componentName = buildName(operation.getOperationId(), partNames);
         String componentType = "http.request";
         String componentDescription = operation.getDescription();
-        ComponentVersion componentVersion = new ComponentVersion(new ComponentVersionKey(componentName, versionNumber),componentDescription);
+        ComponentVersion componentVersion = new ComponentVersion(new ComponentVersionKey(componentName, version),componentDescription);
 
-        List<ComponentParameter> infos = getInfos(componentName,pathName, operationName);
-        List<ComponentParameter> queryParams = getQueryParams(componentName, operation.getParameters());
-        List<ComponentParameter> headers = getHeaders(componentName, partNames, operation);
-        List<ComponentParameter> params = Stream.of(infos, queryParams, headers).flatMap(Collection::stream).collect(Collectors.toList());
-        return new Component(new ComponentKey(componentName, versionNumber), componentType, componentName, componentDescription, componentVersion, params, new ArrayList<>());
+        List<ComponentParameter> info = getInfos(componentName,pathName, operationName, version, connectionName);
+        List<ComponentParameter> queryParams = getQueryParams(componentName, operation.getParameters(), version);
+        List<ComponentParameter> headers = getHeaders(componentName, partNames, operation, openAPI);
+        List<ComponentParameter> params = Stream.of(info, queryParams, headers).flatMap(Collection::stream).collect(Collectors.toList());
+        return new Component(new ComponentKey(componentName, version), componentType, componentName, componentDescription, componentVersion, params, new ArrayList<>());
 
     }
 
-    public  List<ComponentParameter> getInfos(String componentName, String pathName, PathItem.HttpMethod operationName) {
+    public  List<ComponentParameter> getInfo(String componentName, String pathName, PathItem.HttpMethod operationName, Long version, String connectionName) {
         List<ComponentParameter> componentParameters = new ArrayList<>();
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "endpoint"), pathName));
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "type"), operationName.name()));
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "connection"), connectionName));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, version, "endpoint"), pathName));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, version, "type"), operationName.name()));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, version, "connection"), connectionName));
         return componentParameters;
     }
 
-    public  List<ComponentParameter> getQueryParams(String componentName, List<Parameter> parameters) {
+    public  List<ComponentParameter> getQueryParams(String componentName, List<Parameter> parameters, Long versionNumber) {
         int counter = 1;
         List<ComponentParameter> queryParams = new ArrayList<>();
 
@@ -208,9 +210,11 @@ public class ComponentParser {
     }
 
 
-    public  List<ComponentParameter> getHeaders(String componentName, HashMap<String, String> partNames, Operation operation) {
+    public  List<ComponentParameter> getHeaders(String componentName, Map<String, String> partNames, Operation operation, OpenAPI openAPI) {
         int position = 0;
+        long versionNumber = Long.parseLong(openAPI.getInfo().getVersion());
         List<ComponentParameter> parameters = new ArrayList<>();
+        Map<String, SecurityScheme> securitySchemeMap = openAPI.getComponents().getSecuritySchemes();
 
         for (Entry<String, String> entry : partNames.entrySet()) {
             String value = entry.getValue();
@@ -218,22 +222,15 @@ public class ComponentParser {
             if (value != null) {
                 switch (key) {
                     case "security":
-                        SecurityScheme securityType = securitySchemeMap.get(value);
-                        if (securityType == null) {
-                            LOGGER.warn("The securityScheme provided doesn't exists");
-                            break;
-                        }
-                        if (securityType.getType() == SecurityScheme.Type.OAUTH2) {
-                            parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("Authorization, Bearer #%s#", value)));
-                        } else if (securityType.getType() == SecurityScheme.Type.APIKEY) {
-                            parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("X-API-KEY, #%s#", value)));
-                        }
+                        addSecurityHeader(securitySchemeMap.get(value), parameters, componentName, openAPI, ++position, value);
                         break;
-                    case "request":
-                        parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("Content-Type, %s", value)));
+                    case REQUEST:
+                        parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format(HEADER, ++position)), String.format("Content-Type, %s", value)));
                         break;
-                    case "response":
-                        parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("Accept, %s", value)));
+                    case RESPONSE:
+                        parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format(HEADER, ++position)), String.format("Accept, %s", value)));
+                        break;
+                    default:
                         break;
                 }
             }
@@ -242,11 +239,35 @@ public class ComponentParser {
         for (Parameter parameter : operation.getParameters()) {
             String parameterName = parameter.getName();
             if (parameter.getIn().equals("header") && !partNames.containsValue(parameterName)) {
-                parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format("header.%s", ++position)), String.format("%s, #%s#",parameterName,parameterName)));
+                parameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format(HEADER, ++position)), String.format("%s, #%s#",parameterName,parameterName)));
             }
         }
 
         return parameters;
+    }
+
+    public void addSecurityHeader(SecurityScheme securityScheme, List<ComponentParameter> componentParameters,String componentName, OpenAPI openAPI, int position, String value) {
+        long versionNumber = Long.parseLong(openAPI.getInfo().getVersion());
+        String scheme = securityScheme.getScheme();
+        SecurityScheme.Type securityType = securityScheme.getType();
+        
+
+        if (securityType == null) {
+            LOGGER.warn("The securityScheme provided doesn't exists");
+            return;
+        }
+        if (securityType.equals(SecurityScheme.Type.OAUTH2) || (securityType.equals(SecurityScheme.Type.HTTP) && scheme.equals("bearer"))) {
+            componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format(HEADER, position)), String.format("Authorization, Bearer #%s#", value)));
+        }
+        else if (securityScheme.getType().equals(SecurityScheme.Type.HTTP) && scheme.equals("basic" )) {
+            componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format(HEADER, position)), String.format("Authorization, Basic #%s#", value)));
+        }
+        else if (securityScheme.getType().equals(SecurityScheme.Type.APIKEY)) {
+            componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format(HEADER, position)), String.format("X-API-KEY, #%s#", value)));
+        } else if (securityScheme.getType().equals(SecurityScheme.Type.OPENIDCONNECT)) {
+            componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format(HEADER, position)), String.format("X-API-KEY, #%s#", value)));
+        }
+
     }
 
     public boolean isGreenStatus(String statusCode) {
@@ -254,12 +275,12 @@ public class ComponentParser {
         return pattern.matcher(statusCode).matches();
     }
 
-    public  String buildName(String operationId, HashMap<String, String> partNames) {
+    public  String buildName(String operationId, Map<String, String> partNames) {
         List<String> formattedPartNames = partNames.keySet().stream().map(key -> {
             if (partNames.get(key) == null) {
                 return "_";
             }
-            if (key.equals("request") || key.equals("response")) {
+            if (key.equals(REQUEST) || key.equals(RESPONSE)) {
                 return serializeContentName(partNames.get(key));
             }
             return partNames.get(key);

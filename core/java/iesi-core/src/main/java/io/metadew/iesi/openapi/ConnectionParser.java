@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 public class ConnectionParser {
     private static final Logger LOGGER = LogManager.getLogger();
     private static ConnectionParser INSTANCE;
-    public static String[] fakeEnvs = new String[] {"TST", "PRD", "ENVV"};
 
 
     private ConnectionParser() {}

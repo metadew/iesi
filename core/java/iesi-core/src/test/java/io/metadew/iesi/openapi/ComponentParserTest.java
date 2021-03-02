@@ -123,7 +123,7 @@ class ComponentParserTest {
 
 
         //TEST
-        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses)).isEqualTo(new ArrayList<>(Arrays.asList("application/json")));
+        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses)).isEqualTo(new ArrayList<>(Collections.singletonList("application/json")));
 
     }
 

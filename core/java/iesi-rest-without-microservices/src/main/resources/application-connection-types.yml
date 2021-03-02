@@ -381,7 +381,7 @@ iesi:
             type: string
             mandatory: true
             encrypted: false
-          filefalseame:
+          fileName:
             description: The file name of the the database
             type: string
             mandatory: true

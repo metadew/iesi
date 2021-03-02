@@ -177,7 +177,7 @@ public class ComponentParser {
         String componentDescription = operation.getDescription();
         ComponentVersion componentVersion = new ComponentVersion(new ComponentVersionKey(componentName, version),componentDescription);
 
-        List<ComponentParameter> info = getInfos(componentName,pathName, operationName, version, connectionName);
+        List<ComponentParameter> info = getInfo(componentName,pathName, operationName, version, connectionName);
         List<ComponentParameter> queryParams = getQueryParams(componentName, operation.getParameters(), version);
         List<ComponentParameter> headers = getHeaders(componentName, partNames, operation, openAPI);
         List<ComponentParameter> params = Stream.of(info, queryParams, headers).flatMap(Collection::stream).collect(Collectors.toList());

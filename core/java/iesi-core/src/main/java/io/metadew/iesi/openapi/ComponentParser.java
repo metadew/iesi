@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,7 +62,7 @@ public class ComponentParser {
             PathItem path = paths.get(pathName);
             Map<PathItem.HttpMethod, Operation> operations = path.readOperationsMap();
 
-            for (Map.Entry<PathItem.HttpMethod, Operation> entry : operations.entrySet()) {
+            for (Entry<PathItem.HttpMethod, Operation> entry : operations.entrySet()) {
                 components.addAll(initComponents(entry.getValue(), entry.getKey(), pathName));
             }
 
@@ -81,8 +82,6 @@ public class ComponentParser {
         if (!(securities.isEmpty() && requestContents.isEmpty() && responseContents.isEmpty())) {
             names = generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>());
         }
-
-
 
         if (!names.isEmpty()) {
             for (HashMap<String, String> partNames : names) {
@@ -110,9 +109,8 @@ public class ComponentParser {
         }
 
         if (securityRequirements != null) {
-            securities.addAll(securityRequirements.stream().map(securityRequirement -> {
-                return (String) securityRequirement.keySet().toArray()[0];
-            }).collect(Collectors.toList()));
+            securities.addAll(securityRequirements.stream()
+                    .map(securityRequirement -> (String) securityRequirement.keySet().toArray()[0]).collect(Collectors.toList()));
         }
         return securities;
     }
@@ -127,7 +125,7 @@ public class ComponentParser {
     public List<String> getResponseContents(ApiResponses apiResponses) {
 
         if (apiResponses!= null) {
-            for (Map.Entry<String, ApiResponse> entry : apiResponses.entrySet()) {
+            for (Entry<String, ApiResponse> entry : apiResponses.entrySet()) {
                 String statusCode = entry.getKey();
                 Content content = entry.getValue().getContent();
 
@@ -152,7 +150,7 @@ public class ComponentParser {
             generateNames(lists, result, depth + 1,  createName(value, current, depth));
         }
 
-    return result;
+        return result;
     }
 
     public LinkedHashMap<String, String> createName(String value,  LinkedHashMap<String, String> current, int depth) {
@@ -214,9 +212,9 @@ public class ComponentParser {
         int position = 0;
         List<ComponentParameter> parameters = new ArrayList<>();
 
-        for (Map.Entry entry : partNames.entrySet()) {
-            String value = (String) entry.getValue();
-            String key = (String) entry.getKey();
+        for (Entry<String, String> entry : partNames.entrySet()) {
+            String value = entry.getValue();
+            String key = entry.getKey();
             if (value != null) {
                 switch (key) {
                     case "security":
@@ -248,7 +246,6 @@ public class ComponentParser {
             }
         }
 
-
         return parameters;
     }
 
@@ -258,7 +255,7 @@ public class ComponentParser {
     }
 
     public  String buildName(String operationId, HashMap<String, String> partNames) {
-        List<String> formatedPartNames = partNames.keySet().stream().map(key -> {
+        List<String> formattedPartNames = partNames.keySet().stream().map(key -> {
             if (partNames.get(key) == null) {
                 return "_";
             }
@@ -269,7 +266,7 @@ public class ComponentParser {
         }).collect(Collectors.toList());
 
 
-        return operationId.concat("." + String.join(".", formatedPartNames));
+        return operationId.concat("." + String.join(".", formattedPartNames));
     }
 
     public  String serializeContentName(String contentName) {

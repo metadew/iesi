@@ -69,15 +69,16 @@ public class ConnectionParserTest {
     }
 
     @Test
-    public void toUrlModel() {
+    public void toUrlModel() throws MalformedURLException {
         assertThat(ConnectionParser.getInstance().toUrlModel("https://petstore3.swagger.io/api/v3/"))
-                .isInstanceOf(URL.class);
+                .isInstanceOf(URL.class)
+                .isEqualTo(new URL("https://petstore3.swagger.io/api/v3/"));
     }
 
     @Test
     public void toUrlModelWrong() {
         assertThat(ConnectionParser.getInstance().toUrlModel("https//petstore3.swagger/api/v3/"))
-                .isEqualTo(null);
+                .isNull();
     }
 
     @Test
@@ -116,7 +117,7 @@ public class ConnectionParserTest {
     @Test
     public void getPortWithPotUndefined() throws MalformedURLException {
         assertThat(ConnectionParser.getInstance().getPort(new URL("https://petstore3.swagger.io/api/v3/")))
-                .isEqualTo(null);
+                .isNull();
     }
 
     @Test

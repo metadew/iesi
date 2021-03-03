@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 @Data
 public class ComponentParser {
     private static  ComponentParser instance;
-    private static final Logger LOGGER = LogManager.getLogger();
     private static final String REQUEST = "request";
     private static final String RESPONSE = "response";
     private static final String HEADER = "header.%s";
@@ -187,7 +186,7 @@ public class ComponentParser {
 
     public  List<ComponentParameter> getInfo(String componentName, String pathName, PathItem.HttpMethod operationName, Long version, String connectionName) {
         List<ComponentParameter> componentParameters = new ArrayList<>();
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, version, "endpoint"), pathName));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, version, "endpoint"), translatePathName(pathName)));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, version, "type"), operationName.name()));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, version, "connection"), connectionName));
         return componentParameters;
@@ -253,7 +252,7 @@ public class ComponentParser {
         
 
         if (securityType == null) {
-            LOGGER.warn("The securityScheme provided doesn't exists");
+            log.warn("The securityScheme provided doesn't exists");
             return;
         }
         if (securityType.equals(SecurityScheme.Type.OAUTH2) || (securityType.equals(SecurityScheme.Type.HTTP) && scheme.equals("bearer"))) {
@@ -268,6 +267,10 @@ public class ComponentParser {
             componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, String.format(HEADER, position)), String.format("X-API-KEY, #%s#", value)));
         }
 
+    }
+
+    public String translatePathName(String pathName) {
+        return pathName.replaceAll("[{}]", "#");
     }
 
     public boolean isGreenStatus(String statusCode) {

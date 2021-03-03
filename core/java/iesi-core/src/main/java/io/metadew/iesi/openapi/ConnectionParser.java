@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,8 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class ConnectionParser {
-    private static final Logger LOGGER = LogManager.getLogger();
     private static ConnectionParser INSTANCE;
 
 
@@ -79,7 +80,7 @@ public class ConnectionParser {
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
-            LOGGER.fatal(String.format("The url %s is malformed please follow the standard annotation", url));
+            log.warn(String.format("The url %s is malformed, it will be ignored", url));
             return null;
         }
     }

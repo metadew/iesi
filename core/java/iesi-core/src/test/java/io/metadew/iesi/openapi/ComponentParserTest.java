@@ -280,6 +280,22 @@ class ComponentParserTest {
     }
 
     @Test
+    void getInfoWithPathParam() {
+        String componentName = "AUTH.JSON.JSON";
+        String pathName = "/pet/{id}";
+        List<ComponentParameter> componentParameters = new ArrayList<>();
+        PathItem.HttpMethod get = PathItem.HttpMethod.GET;
+
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "endpoint"), "/pet/#id#"));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "type"), get.name()));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "connection"), openAPI.getInfo().getTitle()));
+
+        //TESTS
+        assertThat(ComponentParser.getInstance().getInfo(componentName, pathName, get, versionNumber, openAPI.getInfo().getTitle())).isEqualTo(componentParameters);
+    }
+
+
+    @Test
     void getQueryParams() {
         List<ComponentParameter> queryParams = new ArrayList<>();
         Parameter parameter = new Parameter().in("query").name("findByStatus");

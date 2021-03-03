@@ -123,7 +123,8 @@ class ComponentParserTest {
 
 
         //TEST
-        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses)).isEqualTo(new ArrayList<>(Collections.singletonList("application/json")));
+        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses))
+                .isEqualTo(new ArrayList<>(Collections.singletonList("application/json")));
 
     }
 
@@ -136,7 +137,8 @@ class ComponentParserTest {
 
 
         //TEST
-        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses)).isEqualTo(new ArrayList<>());
+        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses))
+                .isEqualTo(new ArrayList<>());
     }
 
     @Test
@@ -150,7 +152,8 @@ class ComponentParserTest {
         apiResponses.put("404", response404);
 
         //TEST
-        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses)).isEqualTo(new ArrayList<>());
+        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses))
+                .isEqualTo(new ArrayList<>());
     }
 
     @Test
@@ -165,7 +168,8 @@ class ComponentParserTest {
         apiResponses.put("default", defaultResponse);
 
         //TEST
-        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses)).isEqualTo(new ArrayList<>(defaultResponse.getContent().keySet()));
+        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses))
+                .isEqualTo(new ArrayList<>(defaultResponse.getContent().keySet()));
     }
 
     @Test
@@ -174,7 +178,8 @@ class ComponentParserTest {
         apiResponses.put("default", new ApiResponse());
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses)).isEqualTo(new ArrayList<>());
+        assertThat(ComponentParser.getInstance().getResponseContents(apiResponses))
+                .isEqualTo(new ArrayList<>());
     }
 
     @Test
@@ -197,7 +202,8 @@ class ComponentParserTest {
         names.add(hashMap);
 
         //TESTS
-        assertThat(ComponentParser.getInstance().generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>())).isEqualTo(names);
+        assertThat(ComponentParser.getInstance().generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>()))
+                .isEqualTo(names);
     }
 
     @Test
@@ -220,7 +226,8 @@ class ComponentParserTest {
         names.add(hashMap);
 
         //TESTS
-        assertThat(ComponentParser.getInstance().generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>())).isEqualTo(names);
+        assertThat(ComponentParser.getInstance().generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>()))
+                .isEqualTo(names);
     }
 
     @Test
@@ -238,7 +245,8 @@ class ComponentParserTest {
         names.add(hashMap);
 
         //TESTS
-        assertThat(ComponentParser.getInstance().generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>())).isEqualTo(names);
+        assertThat(ComponentParser.getInstance().generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>()))
+                .isEqualTo(names);
     }
 
     @Test
@@ -261,7 +269,8 @@ class ComponentParserTest {
         names.add(hashMap);
 
         //TESTS
-        assertThat(ComponentParser.getInstance().generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>())).isEqualTo(names);
+        assertThat(ComponentParser.getInstance().generateNames(nameCombinations, new ArrayList<>(), 0, new LinkedHashMap<>()))
+                .isEqualTo(names);
     }
 
     @Test
@@ -276,7 +285,8 @@ class ComponentParserTest {
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "connection"), openAPI.getInfo().getTitle()));
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getInfo(componentName, pathName, get, versionNumber, openAPI.getInfo().getTitle())).isEqualTo(componentParameters);
+        assertThat(ComponentParser.getInstance().getInfo(componentName, pathName, get, versionNumber, openAPI.getInfo().getTitle()))
+                .isEqualTo(componentParameters);
     }
 
     @Test
@@ -292,7 +302,8 @@ class ComponentParserTest {
                 "findByStatus, #findByStatus#"));
 
 
-        assertThat(ComponentParser.getInstance().getQueryParams(componentName, Arrays.asList(parameter, parameter1), versionNumber)).isEqualTo(queryParams);
+        assertThat(ComponentParser.getInstance().getQueryParams(componentName, Arrays.asList(parameter, parameter1), versionNumber))
+                .isEqualTo(queryParams);
     }
 
     @Test
@@ -358,7 +369,8 @@ class ComponentParserTest {
 
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getHeaders(componentName, partNames, operation, openAPI)).isEqualTo(parameters);
+        assertThat(ComponentParser.getInstance().getHeaders(componentName, partNames, operation, openAPI))
+                .isEqualTo(parameters);
 
     }
 
@@ -372,7 +384,8 @@ class ComponentParserTest {
         partNames.put("response", "application/json");
 
         //TESTS
-        assertThat(ComponentParser.getInstance().buildName(operationId, partNames)).isEqualTo("updatePet.petstore_auth.FORM.JSON");
+        assertThat(ComponentParser.getInstance().buildName(operationId, partNames))
+                .isEqualTo("updatePet.petstore_auth.FORM.JSON");
     }
 
     @Test
@@ -385,7 +398,8 @@ class ComponentParserTest {
         partNames.put("response", "application/json");
 
         //TESTS
-        assertThat(ComponentParser.getInstance().buildName(operationId, partNames)).isEqualTo("updatePet._._.JSON");
+        assertThat(ComponentParser.getInstance().buildName(operationId, partNames))
+                .isEqualTo("updatePet._._.JSON");
     }
 
     @Test
@@ -393,7 +407,8 @@ class ComponentParserTest {
         String contentName = "application/json";
 
         //TESTS
-        assertThat(ComponentParser.getInstance().serializeContentName(contentName)).isEqualTo("JSON");
+        assertThat(ComponentParser.getInstance().serializeContentName(contentName))
+                .isEqualTo("JSON");
     }
 
     @Test
@@ -401,7 +416,8 @@ class ComponentParserTest {
         String contentName = "unknown/unknown";
 
         //TESTS
-        assertThat(ComponentParser.getInstance().serializeContentName(contentName)).isEqualTo("??");
+        assertThat(ComponentParser.getInstance().serializeContentName(contentName))
+                .isEqualTo("??");
     }
 
 }

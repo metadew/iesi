@@ -214,7 +214,7 @@ public class ComponentParser {
 
     public List<ComponentParameter> getInfo(ComponentKey componentKey, String pathName, PathItem.HttpMethod operationName, String connectionName) {
         List<ComponentParameter> componentParameters = new ArrayList<>();
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"), translatePathName(pathName)));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"),  pathName.replaceAll("[{}]", "#")));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "type"), operationName.name()));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "connection"), connectionName));
         return componentParameters;
@@ -303,10 +303,6 @@ public class ComponentParser {
             throw new UnsuportedSecurityScheme(String.format("Provided a wrong/unsupported security schema type %s", securityType));
         }
         return componentParameterValue;
-    }
-
-    public String translatePathName(String pathName) {
-        return pathName.replaceAll("[{}]", "#");
     }
 
     public boolean isGreenStatus(String statusCode) {

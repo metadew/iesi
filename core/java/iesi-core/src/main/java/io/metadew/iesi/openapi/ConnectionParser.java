@@ -5,27 +5,28 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Log4j2
 public class ConnectionParser {
-    private static ConnectionParser INSTANCE;
+    private static ConnectionParser instance;
 
     private ConnectionParser() {
     }
 
-    public synchronized static ConnectionParser getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ConnectionParser();
+    public static synchronized  ConnectionParser getInstance() {
+        if (instance == null) {
+            instance = new ConnectionParser();
         }
-        return INSTANCE;
+        return instance;
     }
 
     public List<Connection> parse(OpenAPI openAPI) {
@@ -41,11 +42,12 @@ public class ConnectionParser {
                             .ifPresent(port -> connectionParameters.add(
                                     new ConnectionParameter(name, environment, "port", port)
                             ));
+                    getBaseUrl(address)
+                            .ifPresent(baseUrl -> connectionParameters.add(
+                                    new ConnectionParameter(name, environment, "baseUrl", baseUrl)
+                            ));
                     connectionParameters.add(new ConnectionParameter(name, environment, "host", getHost(address)));
                     connectionParameters.add(new ConnectionParameter(name, environment, "tls", getProtocol(address)));
-                    connectionParameters.add(new ConnectionParameter(name, environment, "baseUrl", getBaseUrl(address)));
-
-
                     return new Connection(name, "http", description, environment, connectionParameters);
 
                 }).collect(Collectors.toList());
@@ -74,9 +76,10 @@ public class ConnectionParser {
         return protocol.equals("http") ? "N" : "Y";
     }
 
-    public String getBaseUrl(URL url) {
-        // TODO: base url is optional
-        return url.getPath().substring(1, url.getPath().length() - 1);
+    public Optional<String> getBaseUrl(URL url) {
+        String baseUrl = url.getFile();
+        if (baseUrl.equals("")) return Optional.empty();
+        return Optional.of(baseUrl);
     }
 
     public URL toUrlModel(String url) {

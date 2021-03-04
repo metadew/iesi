@@ -3,30 +3,26 @@ package io.metadew.iesi.openapi;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OpenAPIGenerator {
-    private static OpenAPIGenerator INSTANCE;
+    private static OpenAPIGenerator instance;
 
     private OpenAPIGenerator() {}
 
 
-    public synchronized static OpenAPIGenerator getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new OpenAPIGenerator();
+    public static synchronized OpenAPIGenerator getInstance() {
+        if (instance  == null) {
+            instance = new OpenAPIGenerator();
         }
-        return INSTANCE;
+        return instance;
     }
 
     public void generate(List<Connection> connections, List<Component> components) {

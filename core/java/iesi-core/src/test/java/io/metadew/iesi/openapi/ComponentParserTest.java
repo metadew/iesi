@@ -1,7 +1,9 @@
 package io.metadew.iesi.openapi;
 
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -59,7 +61,7 @@ class ComponentParserTest {
                 .security(null);
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getSecurities(operation, openAPI))
+        assertThat(ComponentParser.getInstance().getSecurities(operation, openAPI.getComponents().getSecuritySchemes()))
                 .isEqualTo(new ArrayList<>());
     }
 
@@ -72,7 +74,7 @@ class ComponentParserTest {
                 .addSecurityItem(new SecurityRequirement()
                         .addList("user_auth"));
         //TESTS
-        assertThat(ComponentParser.getInstance().getSecurities(operation, openAPI))
+        assertThat(ComponentParser.getInstance().getSecurities(operation, openAPI.getComponents().getSecuritySchemes()))
                 .isEqualTo(new ArrayList<>(Arrays.asList("petstore_auth", "user_auth")));
     }
 
@@ -86,7 +88,8 @@ class ComponentParserTest {
                         .addList("user_auth"));
 
         //TEST
-        assertThat(ComponentParser.getInstance().getSecurities(operation, openAPI)).isEqualTo(new ArrayList<>(Arrays.asList("api_key", "petstore_auth", "user_auth")));
+        assertThat(ComponentParser.getInstance().getSecurities(operation, openAPI.getComponents().getSecuritySchemes()))
+                .isEqualTo(new ArrayList<>(Arrays.asList("api_key", "petstore_auth", "user_auth")));
     }
 
     @Test
@@ -276,59 +279,76 @@ class ComponentParserTest {
     @Test
     void getInfo() {
         String componentName = "AUTH.JSON.JSON";
+        String componentID = IdentifierTools.getComponentIdentifier(componentName);
         String pathName = "/pet";
+        ComponentKey componentKey = new ComponentKey(
+                componentID,
+              versionNumber);
         List<ComponentParameter> componentParameters = new ArrayList<>();
         PathItem.HttpMethod get = PathItem.HttpMethod.GET;
 
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "endpoint"), pathName));
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "type"), get.name()));
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "connection"), openAPI.getInfo().getTitle()));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentID, versionNumber, "endpoint"), pathName));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentID, versionNumber, "type"), get.name()));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentID, versionNumber, "connection"), openAPI.getInfo().getTitle()));
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getInfo(componentName, pathName, get, versionNumber, openAPI.getInfo().getTitle()))
+        assertThat(ComponentParser.getInstance().getInfo(componentKey, pathName, get, openAPI.getInfo().getTitle()))
                 .isEqualTo(componentParameters);
     }
 
     @Test
     void getInfoWithPathParam() {
         String componentName = "AUTH.JSON.JSON";
+        String componentID = IdentifierTools.getComponentIdentifier(componentName);
         String pathName = "/pet/{id}";
+        ComponentKey componentKey = new ComponentKey(
+                componentID,
+                versionNumber);
         List<ComponentParameter> componentParameters = new ArrayList<>();
         PathItem.HttpMethod get = PathItem.HttpMethod.GET;
 
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "endpoint"), "/pet/#id#"));
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "type"), get.name()));
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentName, versionNumber, "connection"), openAPI.getInfo().getTitle()));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentID, versionNumber, "endpoint"), "/pet/#id#"));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentID, versionNumber, "type"), get.name()));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentID, versionNumber, "connection"), openAPI.getInfo().getTitle()));
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getInfo(componentName, pathName, get, versionNumber, openAPI.getInfo().getTitle())).isEqualTo(componentParameters);
+        assertThat(ComponentParser.getInstance().getInfo(componentKey, pathName, get, openAPI.getInfo().getTitle()))
+                .isEqualTo(componentParameters);
     }
 
 
     @Test
     void getQueryParams() {
+        String componentName = "AUTH.JSON.JSON";
+        String componentID = IdentifierTools.getComponentIdentifier(componentName);
         List<ComponentParameter> queryParams = new ArrayList<>();
         Parameter parameter = new Parameter().in("query").name("findByStatus");
         Parameter parameter1 = new Parameter().in("header");
-        String componentName = "AUTH.JSON.JSON";
+        ComponentKey componentKey = new ComponentKey(
+                componentID,
+                versionNumber);
 
 
         queryParams.add(new ComponentParameter(
-                new ComponentParameterKey(componentName, versionNumber, "queryParam.1"),
+                new ComponentParameterKey(componentID, versionNumber, "queryParam.1"),
                 "findByStatus, #findByStatus#"));
 
 
-        assertThat(ComponentParser.getInstance().getQueryParams(componentName, Arrays.asList(parameter, parameter1), versionNumber))
+        assertThat(ComponentParser.getInstance().getQueryParams(componentKey, Arrays.asList(parameter, parameter1)))
                 .isEqualTo(queryParams);
     }
 
     @Test
     void getHeaders() {
         String componentName = "AUTH.JSON.JSON";
+        String componentID = IdentifierTools.getComponentIdentifier(componentName);
         HashMap<String, String> partNames = new LinkedHashMap<>();
         List<ComponentParameter> parameters = new ArrayList<>();
         Parameter allowHeader = new Parameter().in("header").name("Allow");
         Operation operation = new Operation().parameters(Collections.singletonList(allowHeader));
+        ComponentKey componentKey = new ComponentKey(
+                componentID,
+                versionNumber);
 
         partNames.put("security", "petstore_auth");
         partNames.put("request", "application/x-www-form-urlencoded");
@@ -336,41 +356,47 @@ class ComponentParserTest {
 
         parameters.add(
                 new ComponentParameter(
-                        new ComponentParameterKey(componentName, versionNumber, "header.1"),
+                        new ComponentParameterKey(componentID, versionNumber, "header.1"),
                         "Authorization, Bearer #petstore_auth#"
                 )
         );
         parameters.add(
                 new ComponentParameter(
-                        new ComponentParameterKey(componentName, versionNumber, "header.2"),
+                        new ComponentParameterKey(componentID, versionNumber, "header.2"),
                         "Content-Type, application/x-www-form-urlencoded"
                 )
         );
         parameters.add(
                 new ComponentParameter(
-                        new ComponentParameterKey(componentName, versionNumber, "header.3"),
+                        new ComponentParameterKey(componentID, versionNumber, "header.3"),
                         "Accept, application/json"
                 )
         );
 
         parameters.add(
                 new ComponentParameter(
-                        new ComponentParameterKey(componentName, versionNumber, "header.4"),
+                        new ComponentParameterKey(componentID, versionNumber, "header.4"),
                         "Allow, #Allow#"
                 )
         );
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getHeaders(componentName, partNames, operation, openAPI)).isEqualTo(parameters);
+        assertThat(ComponentParser.getInstance().getHeaders(
+                componentKey,partNames,operation,openAPI.getComponents().getSecuritySchemes()
+        )).isEqualTo(parameters);
 
     }
 
     @Test
     void getHeadersWithNullValues() {
         String componentName = "AUTH.JSON.JSON";
+        String componentID = IdentifierTools.getComponentIdentifier(componentName);
         HashMap<String, String> partNames = new LinkedHashMap<>();
         List<ComponentParameter> parameters = new ArrayList<>();
         Operation operation = mock(Operation.class);
+        ComponentKey componentKey = new ComponentKey(
+                componentID,
+                versionNumber);
 
         partNames.put("security", null);
         partNames.put("request", "application/x-www-form-urlencoded");
@@ -378,14 +404,16 @@ class ComponentParserTest {
 
         parameters.add(
                 new ComponentParameter(
-                        new ComponentParameterKey(componentName, versionNumber, "header.1"),
+                        new ComponentParameterKey(componentID, versionNumber, "header.1"),
                         "Content-Type, application/x-www-form-urlencoded"
                 )
         );
 
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getHeaders(componentName, partNames, operation, openAPI))
+        assertThat(ComponentParser.getInstance().getHeaders(
+                componentKey,partNames,operation,openAPI.getComponents().getSecuritySchemes()
+        ))
                 .isEqualTo(parameters);
 
     }

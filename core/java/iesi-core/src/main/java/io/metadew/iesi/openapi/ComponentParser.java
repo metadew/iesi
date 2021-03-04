@@ -134,8 +134,8 @@ public class ComponentParser {
 
         if (parameters != null) {
             securities = parameters.stream()
-                    .filter(parameter -> securitySchemeMap.containsKey(parameter.getName()))
                     .map(Parameter::getName)
+                    .filter(securitySchemeMap::containsKey)
                     .collect(Collectors.toList());
         }
 
@@ -263,7 +263,7 @@ public class ComponentParser {
                         componentParameterValue = String.format("Accept, %s", value);
                         break;
                     default:
-                        throw new RuntimeException("Unexpected error");
+                        throw new UnexpectedError("Unexpected error");
                 }
                 parameters.add(
                         new ComponentParameter(new ComponentParameterKey(componentKey, String.format(HEADER, ++position)),
@@ -297,10 +297,10 @@ public class ComponentParser {
         } else if (securityScheme.getType().equals(SecurityScheme.Type.APIKEY)) {
             componentParameterValue = String.format("X-API-KEY, #%s#", securityName);
         } else if (securityScheme.getType().equals(SecurityScheme.Type.OPENIDCONNECT)) {
-            // TODO: re-investigate
-            componentParameterValue = String.format("X-API-KEY, #%s#", securityName);
+            //https://connect2id.com/learn/openid-connect
+            componentParameterValue = String.format("Host, #%s#", securityName);
         } else {
-            throw new RuntimeException(String.format("Provided a wrong/unsupported security schema type %s", securityType));
+            throw new UnsuportedSecurityScheme(String.format("Provided a wrong/unsupported security schema type %s", securityType));
         }
         return componentParameterValue;
     }

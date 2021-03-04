@@ -41,25 +41,25 @@ public class ConnectionParserTest {
         //Connection
         ConnectionParameter host = new ConnectionParameter(
                 "Documentation",
-                "TST",
+                "env0",
                 "host",
                 ConnectionParser.getInstance().getHost(address));
         ConnectionParameter tls = new ConnectionParameter(
                 "Documentation",
-                "TST",
+                "env0",
                 "tls",
                 ConnectionParser.getInstance().getProtocol(address));
         ConnectionParameter baseUrl = new ConnectionParameter(
                 "Documentation",
-                "TST",
+                "env0",
                 "baseUrl",
-                ConnectionParser.getInstance().getBaseUrl(address));
-        List<ConnectionParameter> connectionParameters = Arrays.asList(host, tls, baseUrl);
+                ConnectionParser.getInstance().getBaseUrl(address).orElse(""));
+        List<ConnectionParameter> connectionParameters = Arrays.asList(baseUrl, host,tls);
         Connection connection = new Connection(
                 "Documentation",
                 "http",
                 "Documentation description",
-                "TST",
+                "env0",
                 connectionParameters);
         connections.add(connection);
 
@@ -113,17 +113,23 @@ public class ConnectionParserTest {
         assertThat(ConnectionParser.getInstance().getHost(new URL("https://petstore3.swagger.io/api/v3/")))
                 .isEqualTo("petstore3.swagger.io");
     }
+    @Test
+    public void getHostWithoutBaseUrl() throws MalformedURLException {
+        assertThat(ConnectionParser.getInstance().getHost(new URL("https://petstore3.swagger.io")))
+                .isEqualTo("petstore3.swagger.io");
+    }
+
 
     @Test
-    public void getPortWithPotUndefined() throws MalformedURLException {
+    public void getPortWithPortUndefined() throws MalformedURLException {
         assertThat(ConnectionParser.getInstance().getPort(new URL("https://petstore3.swagger.io/api/v3/")))
-                .isNull();
+                .isEmpty();
     }
 
     @Test
     public void getPortWithPortDefined() throws MalformedURLException {
         assertThat(ConnectionParser.getInstance().getPort(new URL("http://petstore3.swagger.io:5000/api/v3/")))
-                .isEqualTo("5000");
+                .isEqualTo(Optional.of("5000"));
     }
 
     @Test
@@ -141,6 +147,14 @@ public class ConnectionParserTest {
     @Test
     public void getBaseUrl() throws MalformedURLException {
         assertThat(ConnectionParser.getInstance().getBaseUrl(new URL("http://petstore3.swagger.io/api/v3/")))
-                .isEqualTo("api/v3");
+                .isEqualTo(Optional.of("/api/v3/"));
     }
+
+
+    @Test
+    public void getNoBaseUrl() throws MalformedURLException {
+        assertThat(ConnectionParser.getInstance().getBaseUrl(new URL("http://petstore3.swagger.io")))
+                .isEmpty();
+    }
+
 }

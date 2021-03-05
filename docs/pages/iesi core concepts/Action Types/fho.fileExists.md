@@ -3,12 +3,12 @@
 This actiontype verifies if a file exists
 
 *Use Cases*
-* Verify is a file exists or has been successfully created 
+* Verify if a file exists or has been successfully created 
 
 ## Fields
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
-|path|Path where the file is be located|string|N|N|
+|path|Path where the file is located|string|N|N|
 |file|File to verify|string|Y|N|
 |connection|Connection where the file is located|string|N|N|
 

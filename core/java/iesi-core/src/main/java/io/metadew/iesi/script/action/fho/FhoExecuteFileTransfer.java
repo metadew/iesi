@@ -1,8 +1,6 @@
 package io.metadew.iesi.script.action.fho;
 
-import io.metadew.iesi.connection.HostConnection;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.connection.operation.FileTransferOperation;
+import io.metadew.iesi.connection.operation.FileTransferService;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransferResult;
 import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
@@ -87,39 +85,34 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
         String targetFilePath = convertTargetFilePath(getTargetFilePath().getValue());
         String targetFileName = convertTargetFileName(getTargetFileName().getValue());
         String targetConnectionName = convertTargetConnection(getTargetConnectionName().getValue());
-        Connection sourceConnection = ConnectionConfiguration.getInstance()
-                .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))
-                .get();
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection sourceHostConnection = connectionOperation.getHostConnection(sourceConnection);
-        Connection targetConnection = ConnectionConfiguration.getInstance()
-                .get(new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))
-                .get();
-        HostConnection targetHostConnection = connectionOperation.getHostConnection(targetConnection);
-
-        // Check if source or target are localhost
+         // Check if source or target are localhost
         // TODO check the creation of the sourceConnections
         boolean sourceIsOnLocalHost = HostConnectionTools.isOnLocalhost(
                 sourceConnectionName, this.getExecutionControl().getEnvName());
         boolean targetIsOnLocalHost = HostConnectionTools.isOnLocalhost(
                 targetConnectionName, this.getExecutionControl().getEnvName());
-        ;
 
         // Run the action
-        FileTransferOperation fileTransferOperation = new FileTransferOperation();
-        FileTransferResult fileTransferResult = null;
+        FileTransferResult fileTransferResult;
         if (sourceIsOnLocalHost && !targetIsOnLocalHost) {
-            fileTransferResult = fileTransferOperation.transferLocalToRemote(sourceFilePath,
-                    sourceFileName, sourceConnection, targetFilePath, targetFileName, targetConnection);
+            Connection targetConnection = ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))
+                    .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))));
+            fileTransferResult = FileTransferService.getInstance().transferLocalToRemote(sourceFilePath,
+                    sourceFileName, targetFilePath, targetFileName, targetConnection);
         } else if (!sourceIsOnLocalHost && targetIsOnLocalHost) {
-            fileTransferResult = fileTransferOperation.transferRemoteToLocal(sourceFilePath,
+            Connection sourceConnection = ConnectionConfiguration.getInstance()
+                    .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))
+                    .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))));
+
+            fileTransferResult = FileTransferService.getInstance().transferRemoteToLocal(sourceFilePath,
                     sourceFileName, sourceConnection, targetFilePath,
-                    targetFileName, targetConnection);
+                    targetFileName);
         } else if (sourceIsOnLocalHost && targetIsOnLocalHost) {
-            fileTransferResult = fileTransferOperation.transferLocalToLocal(sourceFilePath,
-                    sourceFileName, sourceConnection, targetFilePath,
-                    targetFileName, targetConnection);
-        } else if (!sourceIsOnLocalHost && !targetIsOnLocalHost) {
+
+            fileTransferResult = FileTransferService.getInstance().transferLocalToLocal(sourceFilePath,
+                    sourceFileName, targetFilePath, targetFileName);
+        } else {
             throw new RuntimeException("Method not supported yet");
         }
 

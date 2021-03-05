@@ -1,9 +1,6 @@
 package io.metadew.iesi.server.rest.dataset;
 
 
-import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -18,37 +15,28 @@ import java.util.stream.Collectors;
 public class DatasetDtoListResultSetExtractor {
 
     public List<DatasetDto> extractData(CachedRowSet rs) throws SQLException {
-        Map<UUID,DatasetDtoBuilder> datasetBuilderMap = new LinkedHashMap<>();
+        Map<UUID, DatasetDtoBuilder> datasetBuilderMap = new LinkedHashMap<>();
         DatasetDtoBuilder datasetDtoBuilder;
         while (rs.next()) {
             datasetDtoBuilder = datasetBuilderMap.get(UUID.fromString(rs.getString("dataset_id")));
 
             if (datasetDtoBuilder == null) {
                 datasetDtoBuilder = mapDatasetDtoBuilder(rs);
-                datasetBuilderMap.put(UUID.fromString(rs.getString("dataset_id")),datasetDtoBuilder);
+                datasetBuilderMap.put(UUID.fromString(rs.getString("dataset_id")), datasetDtoBuilder);
             }
-
-            addImplementation(datasetDtoBuilder,rs);
-
+            addImplementationUUID(datasetDtoBuilder, rs);
         }
         return datasetBuilderMap.values().stream().map(DatasetDtoBuilder::build).collect(Collectors.toList());
     }
 
-    private void addImplementation(DatasetDtoBuilder datasetDtoBuilder, CachedRowSet rs) throws SQLException {
+
+    private void addImplementationUUID(DatasetDtoBuilder datasetDtoBuilder, CachedRowSet rs) throws SQLException {
         if (rs.getString("dataset_impl_id") == null) {
             return;
         }
         UUID datasetImplementationId = UUID.fromString(rs.getString("dataset_impl_id"));
         datasetDtoBuilder.getDatasetImplementationBuilders().add(datasetImplementationId);
 
-    }
-
-    private DatasetDtoBuilder mapDatasetDtoBuilder(CachedRowSet rs) throws SQLException {
-        return new DatasetDtoBuilder(
-                UUID.fromString(rs.getString("dataset_id")),
-                rs.getString("dataset_name"),
-                new HashSet<>()
-        );
     }
 
     @AllArgsConstructor
@@ -60,19 +48,18 @@ public class DatasetDtoListResultSetExtractor {
         private final Set<UUID> datasetImplementationBuilders;
 
         public DatasetDto build() {
-            return new DatasetDto(uuid, name,datasetImplementationBuilders);
+            return new DatasetDto(uuid, name, datasetImplementationBuilders);
         }
     }
 
-    @AllArgsConstructor
-    @Getter
-    @ToString
-    public abstract static class DatasetImplementationDtoBuilder {
-        private final UUID uuid;
-        private final Map<UUID, DatasetImplementationLabelDto> datasetImplementationLabels;
 
-        public abstract DatasetImplementationDto build();
-
+    private DatasetDtoBuilder mapDatasetDtoBuilder(CachedRowSet rs) throws SQLException {
+        return new DatasetDtoBuilder(
+                UUID.fromString(rs.getString("dataset_id")),
+                rs.getString("dataset_name"),
+                new HashSet<>()
+        );
     }
+
 
 }

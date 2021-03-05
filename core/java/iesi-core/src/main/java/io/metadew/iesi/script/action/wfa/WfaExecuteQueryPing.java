@@ -2,7 +2,6 @@ package io.metadew.iesi.script.action.wfa;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
-import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -19,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 
 public class WfaExecuteQueryPing extends ActionTypeExecution {
@@ -108,7 +108,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         }
     }
 
-    protected boolean executeAction() throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException, SQLException {
         // Get Connection
         String query = convertQuery(getSqlQuery().getValue());
         String connectionName = convertConnectionName(getConnectionName().getValue());
@@ -121,7 +121,6 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
-        ConnectionOperation connectionOperation = new ConnectionOperation();
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
 
         // Run the action
@@ -217,7 +216,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         }
     }
 
-    private boolean doneWaiting(Database database, String query, boolean hasResult, boolean setRuntimeVariables) {
+    private boolean doneWaiting(Database database, String query, boolean hasResult, boolean setRuntimeVariables) throws SQLException {
         CachedRowSet crs;
         crs = DatabaseHandler.getInstance().executeQuery(database, query);
         if (SQLTools.getRowCount(crs) > 0) {
@@ -236,7 +235,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         }
     }
 
-    private void setRuntimeVariable(CachedRowSet crs, boolean setRuntimeVariables) {
+    private void setRuntimeVariable(CachedRowSet crs, boolean setRuntimeVariables) throws SQLException {
         if (setRuntimeVariables) {
             this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(getActionExecution(), crs);
         }

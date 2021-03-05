@@ -96,8 +96,7 @@ public class FhoDeleteFolder extends ActionTypeExecution {
             Connection connection = ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
 
             if (path.isEmpty()) {
                 this.setScope(folder);

@@ -36,7 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,10 +43,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -188,6 +184,35 @@ class DatasetsControllerTest {
 
     @Test
     @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_READ@PUBLIC"})
+    void testGetByUuidImplementations() {
+        UUID uuid = UUID.randomUUID();
+
+        List<DatasetImplementationDto> datasetImplementationDtoList = new ArrayList<>();
+        datasetImplementationDtoList.add(new InMemoryDatasetImplementationDto());
+
+        when(datasetDtoService.fetchImplementationsByUuid(uuid))
+                .thenReturn(datasetImplementationDtoList);
+
+        assertThat(datasetController.getImplementationsByUuid(uuid))
+                .containsAll(datasetImplementationDtoList);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_READ@PUBLIC"})
+    void testGetByUuidImplementationsNotFound() {
+        UUID uuid = UUID.randomUUID();
+
+        when(datasetDtoService.fetchImplementationsByUuid(uuid))
+                .thenReturn(null);
+
+        assertThatThrownBy(() -> datasetController.get(uuid))
+                .isInstanceOf(MetadataDoesNotExistException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
             authorities = {"DATASETS_WRITE@PUBLIC"})
     void testCreateDatasetsWrite() {
         DatasetPostDto datasetPostDto = DatasetPostDto.builder()
@@ -255,7 +280,7 @@ class DatasetsControllerTest {
                                 ).collect(Collectors.toSet()))
                                 .build()
                 )
-                        .map(e -> e.getUuid())
+                        .map(e-> e.getUuid())
                         .collect(Collectors.toSet()))
                 .build();
         when(datasetDtoModelAssembler.toModel((Dataset) any()))
@@ -449,7 +474,7 @@ class DatasetsControllerTest {
                                 ).collect(Collectors.toSet()))
                                 .build()
                 )
-                        .map(e->e.getUuid())
+                        .map(e -> e.getUuid())
                         .collect(Collectors.toSet()))
                 .build();
         when(datasetDtoModelAssembler.toModel((Dataset) any()))

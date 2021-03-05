@@ -12,7 +12,7 @@ iesi:
           # init_sql: alter  current....
 
           type: sqlite
-          file: /home/robbe/IESISandbox/0.6.0/security/repository.db3
+          file: ./repository.db3
 
 #          type: h2
 #          mode: memory

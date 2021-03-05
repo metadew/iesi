@@ -1,5 +1,0 @@
----
-type: Environment
-data:
-  name: "tutorial"
-  description: "Tutorial environment"

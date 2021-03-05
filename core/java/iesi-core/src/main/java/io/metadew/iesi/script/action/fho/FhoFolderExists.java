@@ -110,8 +110,7 @@ public class FhoFolderExists extends ActionTypeExecution {
             Connection connection = ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
 
             for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
                     FilenameUtils.separatorsToUnix(file.getParent()), FilenameUtils.separatorsToUnix(file.getName()), true)) {

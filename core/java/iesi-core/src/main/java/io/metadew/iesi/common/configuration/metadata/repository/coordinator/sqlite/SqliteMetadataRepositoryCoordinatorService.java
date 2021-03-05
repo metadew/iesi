@@ -1,8 +1,8 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.sqlite;
 
 import io.metadew.iesi.common.FrameworkControl;
-import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sqlite.SqliteDatabase;
 import io.metadew.iesi.connection.database.sqlite.SqliteDatabaseConnection;

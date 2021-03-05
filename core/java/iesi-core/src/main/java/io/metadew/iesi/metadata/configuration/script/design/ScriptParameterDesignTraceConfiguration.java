@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script.design;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.design.ScriptParameterDesignTrace;
@@ -28,10 +29,7 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
     }
 
     private ScriptParameterDesignTraceConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override
@@ -40,8 +38,8 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
             String query = "SELECT SCRIPT_PAR_VAL FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                     " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + ";";
+                    " RUN_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -87,8 +85,8 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
         String query = "SELECT * FROM " +
                 getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -96,9 +94,9 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
     private String deleteStatement(ScriptParameterDesignTraceKey scriptParameterDesignTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + " AND " +
-                " SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterDesignTraceKey.getScriptParameterName()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTraceKey.getProcessId()) + " AND " +
+                " SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterDesignTraceKey.getScriptParameterName()) + ";";
     }
 
     @Override
@@ -111,10 +109,10 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
     private String insertStatement(ScriptParameterDesignTrace scriptParameterDesignTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
                 " (RUN_ID, PRC_ID, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getScriptParameterName()) + "," +
-                SQLTools.GetStringForSQL(scriptParameterDesignTrace.getScriptParameterValue()) + ");";
+                SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getScriptParameterName()) + "," +
+                SQLTools.getStringForSQL(scriptParameterDesignTrace.getScriptParameterValue()) + ");";
     }
 
     @Override
@@ -126,9 +124,9 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
 
     private String updateStatement(ScriptParameterDesignTrace scriptParameterDesignTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
-                " SET SCRIPT_PAR_VAL = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getScriptParameterValue()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getProcessId()) +
-                " AND SCRIPT_PAR_NM = " + SQLTools.GetStringForSQL(scriptParameterDesignTrace.getMetadataKey().getScriptParameterName()) + ";";
+                " SET SCRIPT_PAR_VAL = " + SQLTools.getStringForSQL(scriptParameterDesignTrace.getScriptParameterValue()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getProcessId()) +
+                " AND SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getScriptParameterName()) + ";";
     }
 }

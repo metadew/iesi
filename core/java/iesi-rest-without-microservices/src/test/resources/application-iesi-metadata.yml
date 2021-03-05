@@ -1,6 +1,153 @@
 iesi:
   metadata:
     tables:
+      - name: DATA_SET
+        label: Datasets
+        description: Metadata for datasets
+        category: data
+        fields:
+          ID:
+            description: primary key for the dataset
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
+          NAME:
+            description: Name of the dataset
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 4
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DATA_SET_IMPL
+        label: DatasetImplementations
+        description: metadata for dataset implementation
+        category: data
+        fields:
+          ID:
+            description: primary key for the dataset implementation
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
+          DATASET_ID:
+            description: foreign key of the dataset
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 4
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DATA_SET_IMPL_LBL
+        label: DatasetImplementationLabels
+        description: metadata for dataset implementation labels
+        category: data
+        fields:
+          ID:
+            description: primary key for the dataset implementation label
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
+          DATASET_IMPL_ID:
+            description: foreign key of the dataset implementation
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          VALUE:
+            description: label value
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 4
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DATA_SET_IMPL_MEM
+        label: DatasetInMemoryImplementations
+        description: metadata for dataset implementation in memory
+        category: data
+        fields:
+          ID:
+            description: primary key for the dataset implementation, also foreign key to dataset implementation
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 4
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DATA_SET_IMPL_MEM_KVS
+        label: DatasetInMemoryImplementationKeyValues
+        description: metadata for dataset implementation in memory implementations key value pair
+        category: data
+        fields:
+          ID:
+            description: primary key for the dataset implementation key value pair
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
+          IMPL_MEM_ID:
+            description: foreign key of the dataset implementation
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          KEY:
+            description: label value
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          VALUE:
+            description: label value
+            order: 2
+            type: CLOB
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 4
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
       - name: CXN_CONN
         label: Connections
         description: Design metadata for connections
@@ -9,31 +156,33 @@ iesi:
           CONN_NM:
             description: Unique short name for the connection
             order: 1
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           CONN_TYP_NM:
             description: Keyword for the connection type
             order: 2
-            type: string
+            type: STRING
             length: 100
             nullable: false
             defaultTimestamp:
           CONN_DSC:
             description: Description for the connection
             order: 3
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 4
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
+
       - name: CXN_CONN_IMP
         label: Impersonations
         description: Design metadata for connection impersonations
@@ -42,21 +191,53 @@ iesi:
           IMP_NM:
             description: Unique short name for the impersonation
             order: 1
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           IMP_DSC:
             description: Description for the impersonation
             order: 2
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 3
-            type: timestamp
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: CTL_SEC_OBJECT
+        label: SecurityObjects
+        description: data related to security objects
+        category: control
+        fields:
+          ID:
+            description: UUID of the security object
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          SECURITY_GROUP_NAME:
+            description: name of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -68,191 +249,221 @@ iesi:
           ID:
             description: Unique short name for the impersonation
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             primaryKey: true
           USERNAME:
             description: user name of the user
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             unique: true
           PASSWORD:
             description: hashed password of the user
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
           ENABLED:
             description: Boolean determining if the user is activated or not
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
           EXPIRED:
-            description: Boolean determining if the user is activated or not
+            description: Boolean determining if the user is expired or not
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
           CREDENTIALS_EXPIRED:
-            description: Boolean determining if the user is activated or not
+            description: Boolean determining if the users credentials are expired or not
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
           LOCKED:
-            description: Boolean determining if the user is activated or not
+            description: Boolean determining if the user is locked or not
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-
-      - name: CTL_GROUPS
-        label: Groups
-        description: Group data
+      - name: CTL_TEAMS
+        label: Teams
+        description: Team data
         category: control
         fields:
           ID:
-            description: Unique short name for the impersonation
+            description: UUID of the team
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             primaryKey: true
-          GROUP_NAME:
-            description: name of the group
+          TEAM_NAME:
+            description: name of the team
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
             unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-
-      - name: CTL_AUTHORITIES
-        label: Authorities
+      - name: CTL_PRIVILEGES
+        label: Privileges
         description: authority data
         category: control
         fields:
           ID:
             description: id
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp:
             primaryKey: true
-          AUTHORITY:
-            description: name of the authority
+          ROLE_ID:
+            description: foreign id of the role
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          PRIVILEGE:
+            description: name of the privilege
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
             unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-
-      - name: CTL_USER_AUTHORITIES
-        label: UserAuthorities
-        description: authorities linked to users
+      - name: CTL_USERS_ROLES
+        label: UserRoles
+        description: roles linked to users
         category: control
         fields:
           USER_ID:
             description: user id
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp:
             primaryKey: true
-          AUTHORITY_ID:
+          ROLE_ID:
             description: authority id
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
             primaryKey: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-
-      - name: CTL_GROUP_AUTHORITIES
-        label: GroupAuthorities
-        description: Link authorities to groups
+      - name: CTL_SEC_GROUPS
+        label: SecurityGroups
+        description: security groups data
         category: control
         fields:
-          GROUP_ID:
-            description: Id of the group
+          ID:
+            description: Id of the security group
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp:
             primaryKey: true
-          AUTHORITY_ID:
-            description: Id of the authority
+          NAME:
+            description: Id of the team
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            primaryKey: true
+            unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-
-
-      - name: CTL_GROUP_MEMBERS
-        label: GroupMembers
-        description: Link users to groups
+      - name: CTL_SEC_GROUP_TEAMS
+        label: SecurityGroupTeams
+        description: Link security groups to teams
         category: control
         fields:
-          GROUP_ID:
-            description: Id of the group
+          SECURITY_GROUP_ID:
+            description: Id of the security group
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp:
             primaryKey: true
-          USER_ID:
-            description: Id of the user
+          TEAM_ID:
+            description: Id of the team
             order: 2
-            type: string
+            type: STRING
             length: 255
             nullable: false
             primaryKey: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: CTL_ROLES
+        label: Roles
+        description: role data
+        category: control
+        fields:
+          ID:
+            description: Id of the role
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          ROLE_NAME:
+            description: name of the role
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          TEAM_ID:
+            description: foreign key of the team
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -264,35 +475,37 @@ iesi:
           IMP_NM:
             description: Unique short name for the impersonation
             order: 1
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           CONN_NM:
             description: Unique short name for the connection
             order: 2
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           CONN_IMP_NM:
             description: Unique short name for the connection that is impersonated
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
             defaultTimestamp:
           CONN_IMP_DSC:
             description: Description for the connection impersonation
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -304,35 +517,38 @@ iesi:
           CONN_NM:
             description: Unique short name for the connection
             order: 1
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ENV_NM:
             description: Short name for the envioronment
             order: 2
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           CONN_PAR_NM:
             description: Name of the connection parameter
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           CONN_PAR_VAL:
             description: String type parameter value
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -344,21 +560,22 @@ iesi:
           ENV_NM:
             description: Unique short name for the envioronment
             order: 1
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ENV_DSC:
             description: Environment description
             order: 2
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 3
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -370,42 +587,219 @@ iesi:
           ID:
             description: Unique identifier for the script label
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            unique: true
             defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
+            unique: true
             defaultTimestamp:
           NAME:
             description: Name of the script label
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            unique: true
             defaultTimestamp:
           VALUE:
             description: value of the script label
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DES_TEMPL
+        label: Templates
+        description: Design metadata for templates
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the template
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          NAME:
+            description: Unique name for the template
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          VERSION:
+            description: Version number of the template
+            order: 2
+            type: NUMBER
+            length: 0
+            nullable: false
+            unique: true
+          DESCRIPTION:
+            description: description of the template
+            order: 1
+            type: STRING
+            length: 4000
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DES_MATCH
+        label: Matchers
+        description: Design metadata for matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the matcher
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          KEY:
+            description: key to match the matcher against
+            order: 1
+            type: STRING
+            length: 255
+            unique: true
+            nullable: false
+          TEMPLATE_ID:
+            description: foreign key reference to the matcher
+            order: 1
+            type: STRING
+            length: 255
+            unique: true
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DES_MATCH_VAL
+        label: MatcherValues
+        description: Design metadata for value matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the value matcher
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          MATCHER_ID:
+            description: foreign key reference to the matcher
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DES_MATCH_VAL_ANY
+        label: AnyMatcherValues
+        description: Design metadata for any value matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the value matcher
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DES_MATCH_VAL_FIX
+        label: FixedMatcherValues
+        description: Design metadata for fixed value matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the value matcher
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          VALUE:
+            description: Unique identifier for the matcher
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: TIMESTAMP
+            length: 0
+            nullable: false
+            defaultTimestamp: true
+      - name: DES_MATCH_VAL_TEMPL
+        label: TemplateMatcherValues
+        description: Design metadata for template value matchers
+        category: design
+        fields:
+          ID:
+            description: Unique identifier for the value matcher
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          TEMPLATE_NAME:
+            description: Unique name of the template
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+          TEMPLATE_VERSION:
+            description: Version number of the template
+            order: 2
+            type: NUMBER
+            length: 0
+            nullable: false
+            unique: true
+          LOAD_TMS:
+            description: Load timestamp indicating when the record was inserted in the table
+            order: 5
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -417,7 +811,7 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
@@ -425,7 +819,7 @@ iesi:
           PRC_ID:
             description: Process number for the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
             defaultTimestamp:
@@ -433,7 +827,7 @@ iesi:
           SCRIPT_LBL_ID:
             description: Unique identifier for the script label
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
@@ -441,35 +835,35 @@ iesi:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
             defaultTimestamp:
           NAME:
             description: Name of the script label
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
             defaultTimestamp:
           VALUE:
             description: value of the script label
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -481,59 +875,59 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_LBL_ID:
             description: Unique identifier for the script label
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           NAME:
             description: Name of the script label
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           VALUE:
             description: value of the script label
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -545,36 +939,36 @@ iesi:
           ID:
             description: Unique identifier for the script label
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           REQUEST_ID:
             description: Unique identifier for the request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           NAME:
             description: Name of the script label
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           VALUE:
             description: value of the script label
             order: 4
-            type: string
+            type: STRING
             length: 2000
-            nullable: true
-            defaultTimestamp: 
+            nullable: false
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -586,32 +980,33 @@ iesi:
           ENV_NM:
             description: Unique short name for the envioronment
             order: 1
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ENV_PAR_NM:
             description: Name of the environment parameter
             order: 2
-            type: string
+            type: STRING
             length: 100
+            primaryKey: true
             nullable: false
             defaultTimestamp:
           ENV_PAR_VAL:
             description: Environment parameter value
             order: 3
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-                
       - name: EXE_REQ
         label: ExecutionRequests
         description: In-process runtime requests for execution
@@ -620,63 +1015,64 @@ iesi:
           REQUEST_ID:
             description: Unique identifier for the request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            primaryKey: true
+            defaultTimestamp:
           REQUEST_TMS:
             description: Request timestamp
             order: 4
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           REQUEST_NM:
             description: Request name
             order: 5
-            type: string
+            type: STRING
             length: 200
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           REQUEST_DSC:
             description: Request description
             order: 6
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           NOTIF_EMAIL:
             description: Email addresses to send a notification to
             order: 8
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           SCOPE_NM:
             description: Scope of the request
             order: 9
-            type: string
+            type: STRING
             length: 100
-            nullable: false
-            defaultTimestamp: 
+            nullable: true
+            defaultTimestamp:
           CONTEXT_NM:
             description: Context of the request
             order: 10
-            type: string
+            type: STRING
             length: 100
-            nullable: false
-            defaultTimestamp: 
+            nullable: true
+            defaultTimestamp:
           ST_NM:
             description: Status
             order: 10
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -688,40 +1084,39 @@ iesi:
           REQUEST_ID:
             description: Unique identifier for the request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            primaryKey: true
+            defaultTimestamp:
           SPACE_NM:
             description: Unique identifier for the space
             order: 11
-            type: string
+            type: STRING
             length: 100
-            nullable: false
-            defaultTimestamp: 
+            nullable: true
+            defaultTimestamp:
           USER_NM:
             description: Unique identifier for the user
             order: 12
-            type: string
+            type: STRING
             length: 100
-            nullable: false
-            defaultTimestamp: 
+            nullable: true
+            defaultTimestamp:
           USER_PASSWORD:
             description: User password
             order: 13
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-
-          
       - name: EXE_REQ_NON_AUTH
         label: NonAuthenticatedExecutionRequests
         description: In-process runtime requests for execution
@@ -730,14 +1125,15 @@ iesi:
           REQUEST_ID:
             description: Unique identifier for the request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            primaryKey: true
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -749,35 +1145,37 @@ iesi:
           REQUEST_ID:
             description: Unique identifier for the request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            primaryKey: true
+            defaultTimestamp:
           REQUEST_PAR_TYP_NM:
             description: Keyword for the request parameter type
             order: 2
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           REQUEST_PAR_NM:
             description: Parameter name
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            primaryKey: true
+            defaultTimestamp:
           REQUEST_PAR_VAL:
             description: Parameter value
             order: 4
-            type: string
+            type: STRING
             length: 2000
-            nullable: true
-            defaultTimestamp: 
+            nullable: false
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -789,49 +1187,50 @@ iesi:
           ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            primaryKey: true
+            defaultTimestamp:
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           RUN_ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ST_NM:
             description: Status
             order: 10
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           STRT_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: false
           END_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: true
             defaultTimestamp: false
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -843,43 +1242,43 @@ iesi:
           ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             primaryKey: true
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           EXIT:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           ENVIRONMENT:
             description: Request timestamp
             order: 4
-            type: string
+            type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           ST_NM:
             description: Status
             order: 10
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -891,29 +1290,29 @@ iesi:
           ID:
             description: Unique identifier for the script execution request id
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_EXEC_REQ_ID:
             description: Unique identifier for the script execution request id
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           IMP_ID:
             description: Unique identifier for impersonation
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -925,7 +1324,7 @@ iesi:
           ID:
             description: Unique identifier for the script execution request parameter id
             order: '1'
-            type: string
+            type: STRING
             length: '255'
             nullable: false
             defaultTimestamp: ''
@@ -933,32 +1332,31 @@ iesi:
           SCRIPT_EXEC_REQ_ID:
             description: Unique identifier for the script execution request id
             order: '1'
-            type: string
+            type: STRING
             length: '255'
             nullable: false
             defaultTimestamp: ''
           NAME:
             description: name
             order: '1'
-            type: string
+            type: STRING
             length: '255'
             nullable: false
             defaultTimestamp: ''
           VALUE:
             description: value
             order: '1'
-            type: string
+            type: STRING
             length: '255'
             nullable: false
             defaultTimestamp: ''
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: '15'
-            type: timestamp
+            type: TIMESTAMP
             length: '0'
             nullable: false
             defaultTimestamp: true
-
       - name: EXE_SCRPT_FL_EXEC_REQ
         label: ScriptFileExecutionRequests
         description: In-process runtime script requests for execution
@@ -967,7 +1365,7 @@ iesi:
           ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
@@ -975,21 +1373,21 @@ iesi:
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRPT_FILENAME:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -1001,7 +1399,7 @@ iesi:
           ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
@@ -1009,224 +1407,31 @@ iesi:
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRPT_NAME:
             description: Unique identifier for the script request item
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRPT_VRS:
             description: Unique identifier for the script request item
             order: 1
-            type: number
+            type: NUMBER
             length: 255
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 15
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-      #      CXN_REPO:
-      #        label: Repositories
-      #        description: Design metadata for repositories
-      #        type: design
-      #        category: connectivity
-      #        fields:
-      #          REPO_ID
-      #            description: Unique identifier for the repository
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_NM
-      #            description: Unique short name for the repository
-      #            order: 2
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_TYP_NM
-      #            description: Keyword for the repository type
-      #            order: 3
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_DSC
-      #            description: Description for the repository
-      #            order: 4
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 5
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      CXN_REPO_INST:
-      #        label: RepositoryInstances
-      #        description: Design metadata for repository instances
-      #        type: design
-      #        category: connectivity
-      #        fields:
-      #          REPO_ID
-      #            description: Unique identifier for the repository
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_INST_ID
-      #            description: Unique identifier for the instance
-      #            order: 2
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_INST_NM
-      #            description: Unique short name for the repository instance
-      #            order: 3
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_INST_DSC
-      #            description: Description for the repository instance
-      #            order: 4
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 5
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      CXN_REPO_INST_LBL:
-      #        label: RepositoryInstanceLabels
-      #        description: Design metadata for repository instance labels
-      #        type: design
-      #        category: connectivity
-      #        fields:
-      #          REPO_ID
-      #            description: Unique identifier for the repository
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_INST_ID
-      #            description: Unique identifier for the instance
-      #            order: 2
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_INST_LBL_VAL
-      #            description: Value of the label
-      #            order: 3
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 4
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      CXN_REPO_INST_PAR:
-      #        label: RepositoryInstanceParameters
-      #        description: Design metadata for repository instance parameters
-      #        type: design
-      #        category: connectivity
-      #        fields:
-      #          REPO_ID
-      #            description: Unique identifier for the repository
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_INST_ID
-      #            description: Unique identifier for the instance
-      #            order: 2
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_INST_PAR_NM
-      #            description: Name of the parameter
-      #            order: 2
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_INST_PAR_VAL
-      #            description: Value of the parameter
-      #            order: 3
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 4
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      CXN_REPO_PAR:
-      #        label: RepositoryParameters
-      #        description: Design metadata for repository paramters
-      #        type: design
-      #        category: connectivity
-      #
-      #
-      #        fields:
-      #          REPO_ID
-      #            description: Unique identifier for the repository
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_PAR_NM
-      #            description: Name of the parameter
-      #            order: 2
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          REPO_PAR_VAL
-      #            description: Value of the parameter
-      #            order: 3
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 4
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
       - name: DES_ACTION
         label: Actions
         description: Design metadata for actions
@@ -1235,84 +1440,87 @@ iesi:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ACTION_ID:
             description: Unique identifier for the action design
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ACTION_NB:
             description: Order number for the action within the script design
             order: 4
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
             defaultTimestamp:
           ACTION_TYP_NM:
             description: Keyword for the action type
             order: 5
-            type: string
+            type: STRING
             length: 100
             nullable: false
             defaultTimestamp:
           ACTION_NM:
             description: Unique short name for the action
             order: 6
-            type: string
+            type: STRING
             length: 200
             nullable: false
             defaultTimestamp:
           ACTION_DSC:
             description: Description of the action
             order: 7
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           COMP_NM:
             description: Unique short name for the applicable component
             order: 8
-            type: string
+            type: STRING
             length: 200
             nullable: true
             defaultTimestamp:
           ITERATION_VAL:
             description: Value for the applicable iteration
             order: 9
-            type: string
+            type: STRING
             length: 200
             nullable: true
             defaultTimestamp:
           CONDITION_VAL:
             description: Value for the applicable condition
             order: 10
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           RETRIES_VAL:
             description: Value for the number of retries on error
             order: 11
-            type: string
+            type: STRING
             length: 200
             nullable: true
             defaultTimestamp:
           EXP_ERR_FL:
             description: Flag indicating if the action is expected to raise an error
             order: 12
-            type: flag
+            type: FLAG
             length: 1
             nullable: false
             defaultTimestamp:
@@ -1320,14 +1528,14 @@ iesi:
             description: Flag indicating if the script needs to stop when this action raises
               an error
             order: 13
-            type: flag
+            type: FLAG
             length: 1
             nullable: false
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 14
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -1339,42 +1547,46 @@ iesi:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ACTION_ID:
             description: Unique identifier for the action design
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ACTION_PAR_NM:
             description: Name of the action parameter
             order: 4
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ACTION_PAR_VAL:
             description: String type parameter value
             order: 5
-            type: string
+            type: STRING
             length: 4000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -1386,35 +1598,36 @@ iesi:
           COMP_ID:
             description: Unique identifier for the component
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           COMP_TYP_NM:
             description: Keyword for the component type
             order: 2
-            type: string
+            type: STRING
             length: 100
             nullable: false
             defaultTimestamp:
           COMP_NM:
             description: Unique short name for the component
             order: 3
-            type: string
+            type: STRING
             length: 200
             nullable: false
             defaultTimestamp:
           COMP_DSC:
             description: Description of the component
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -1426,42 +1639,46 @@ iesi:
           COMP_ID:
             description: Unique identifier for the component
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           COMP_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ENV_NM:
             description: Short name for the envioronment
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           COMP_ATT_NM:
             description: Name of the attribute
             order: 4
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           COMP_ATT_VAL:
             description: String type attribute value
             order: 5
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -1473,35 +1690,38 @@ iesi:
           COMP_ID:
             description: Unique identifier for the component
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           COMP_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
+            primaryKey: true
             nullable: false
             defaultTimestamp:
           COMP_PAR_NM:
             description: Name of the component parameter
             order: 3
-            type: string
+            type: STRING
             length: 100
+            primaryKey: true
             nullable: false
             defaultTimestamp:
           COMP_PAR_VAL:
             description: String type parameter value
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -1513,456 +1733,33 @@ iesi:
           COMP_ID:
             description: Unique identifier for the component
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           COMP_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           COMP_VRS_DSC:
             description: Description of the version
             order: 3
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 4
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
-      #      DES_GEN_CRL:
-      #        label: GenerationControlRules
-      #        description: Design metadata for data generation control rules
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_CTL_ID
-      #            description: Unique identifier for the generation control design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_RULE_ID
-      #            description: Unique identifier for the control rule design
-      #            order: 2
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_RULE_NB
-      #            description: Order number for the rule within the generation control design
-      #            order: 3
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_RULE_TYP_NM
-      #            description: Keyword for the control rule type
-      #            order: 4
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_RULE_NM
-      #            description: Unique short name for the control rule
-      #            order: 5
-      #            type: string
-      #            length: 200
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_RULE_DSC
-      #            description: Description of the control rule
-      #            order: 6
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 7
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      DES_GEN_CRL_PAR:
-      #        label: GenerationControlRuleParameters
-      #        description: Design metadata for data generation control rule parameters
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_CTL_RULE_ID
-      #            description: Unique identifier for the control rule design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_RULE_PAR_NM
-      #            description: Name of the control rule parameter
-      #            order: 2
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_RULE_PAR_VAL
-      #            description: String type parameter value
-      #            order: 3
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 4
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #
-      #      DES_GEN_CTL:
-      #        label: GenerationControls
-      #        description: Design metadata for data generation control
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_ID
-      #            description: Unique identifier for the generation design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_ID
-      #            description: Unique identifier for the generation control design
-      #            order: 2
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_NM
-      #            description: Unique short name for the generator control
-      #            order: 3
-      #            type: string
-      #            length: 200
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_TYP_NM
-      #            description: Keyword for the generation control type
-      #            order: 4
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_DSC
-      #            description: Description of the generator control
-      #            order: 5
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 6
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      DES_GEN_CTL_PAR:
-      #        label: GenerationControlParameters
-      #        description: Design metadata for data generation control parameters
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_CTL_ID
-      #            description: Unique identifier for the generation control design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_PAR_NM
-      #            description: Name of the generation control parameter
-      #            order: 2
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_CTL_PAR_VAL
-      #            description: String type parameter value
-      #            order: 3
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 4
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      DES_GEN_OUT:
-      #        label: GenerationOutputs
-      #        description: Design metadata for data generation output
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_ID
-      #            description: Unique identifier for the generation design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_OUT_ID
-      #            description: Unique identifier for the generation output design
-      #            order: 2
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_OUT_NM
-      #            description: Unique short name for the generator output
-      #            order: 3
-      #            type: string
-      #            length: 200
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_OUT_TYP_NM
-      #            description: Keyword for the generation output type
-      #            order: 4
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_OUT_DSC
-      #            description: Description of the generator output
-      #            order: 5
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 6
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      DES_GEN_OUT_PAR:
-      #        label: GenerationOutputParameters
-      #        description: Design metadata for data generation output parameters
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_OUT_ID
-      #            description: Unique identifier for the generation output design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_OUT_PAR_NM
-      #            description: Name of the generation output parameter
-      #            order: 2
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_OUT_PAR_VAL
-      #            description: String type parameter value
-      #            order: 3
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 4
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #      DES_GEN_PAR:
-      #        label: GenerationParameters
-      #        description: Design metadata for data generation parameters
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_ID
-      #            description: Unique identifier for the generation design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_PAR_NM
-      #            description: Name of the generation parameter
-      #            order: 2
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_PAR_VAL
-      #            description: String type parameter value
-      #            order: 3
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 4
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #
-      #      DES_GEN_RULE:
-      #        label: GenerationRules
-      #        description: Design metadata for data generation rules
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_ID
-      #            description: Unique identifier for the generation design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_RULE_ID
-      #            description: Unique identifier for the rule design
-      #            order: 2
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_RULE_NB
-      #            description: Order number for the rule within the generation design
-      #            order: 3
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_RULE_TYP_NM
-      #            description: Keyword for the rule type
-      #            order: 4
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          FIELD_NM
-      #            description: Unique short name for the field
-      #            order: 5
-      #            type: string
-      #            length: 200
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_RULE_DSC
-      #            description: Description of the rule
-      #            order: 6
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          BLANK_INJ_FL
-      #            description: Flag indicating if blank injection is required
-      #            order: 7
-      #            type: flag
-      #            length: 1
-      #            nullable: false
-      #            defaultTimestamp:
-      #          BLANK_INJ_UNIT
-      #            description: Keyword for the blank injection unit
-      #            order: 8
-      #            type: string
-      #            length: 20
-      #            nullable: false
-      #            defaultTimestamp:
-      #          BLANK_INJ_MEAS
-      #            description: Measure for the amount of blanks to inject
-      #            order: 9
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          BLANK_INJ_VAL
-      #            description: Value to use as blank
-      #            order: 10
-      #            type: string
-      #            length: 20
-      #            nullable: false
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 11
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
-      #
-      #      DES_GEN_RULE_PAR:
-      #        label: GenerationRuleParameters
-      #        description: Design metadata for data generation rule parameters
-      #        type: design
-      #        category: generation
-      #
-      #
-      #        fields:
-      #          GEN_RULE_ID
-      #            description: Unique identifier for the rule design
-      #            order: 1
-      #            type: number
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_RULE_PAR_NM
-      #            description: Name of the rule parameter
-      #            order: 2
-      #            type: string
-      #            length: 100
-      #            nullable: false
-      #            defaultTimestamp:
-      #          GEN_RULE_PAR_VAL
-      #            description: String type parameter value
-      #            order: 3
-      #            type: string
-      #            length: 2000
-      #            nullable: true
-      #            defaultTimestamp:
-      #          LOAD_TMS
-      #            description: Load timestamp indicating when the record was inserted in the table
-      #            order: 4
-      #            type: timestamp
-      #            length: 0
-      #            nullable: false
-      #            defaultTimestamp: true
       - name: DES_SCRIPT
         label: Scripts
         description: Design metadata for scripts
@@ -1971,35 +1768,48 @@ iesi:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          SECURITY_GROUP_NAME:
+            description: name of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
           SCRIPT_TYP_NM:
             description: Keyword for the script type
             order: 2
-            type: string
+            type: STRING
             length: 100
             nullable: true
             defaultTimestamp:
           SCRIPT_NM:
             description: Unique short name for the script
             order: 3
-            type: string
+            type: STRING
             length: 200
             nullable: false
             defaultTimestamp:
           SCRIPT_DSC:
             description: Description of the script
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2011,35 +1821,38 @@ iesi:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           SCRIPT_PAR_NM:
             description: Name of the script parameter
             order: 3
-            type: string
+            type: STRING
             length: 100
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           SCRIPT_PAR_VAL:
             description: String type parameter value
             order: 4
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2051,28 +1864,30 @@ iesi:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           SCRIPT_VRS_DSC:
             description: Description of the script version
             order: 3
-            type: string
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 4
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2084,101 +1899,101 @@ iesi:
           RUN_ID:
             description: Unique identifier for the action execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the action execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           ACTION_ID:
             description: Unique identifier for the action design
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_NB:
             description: Order number for the action within the script design
             order: 4
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_TYP_NM:
             description: Keyword for the action type
             order: 5
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_NM:
             description: Unique short name for the action
             order: 6
-            type: string
+            type: STRING
             length: 200
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_DSC:
             description: Description of the action
             order: 7
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           COMP_NM:
             description: Unique short name for the applicable component
             order: 8
-            type: string
+            type: STRING
             length: 200
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           ITERATION_VAL:
             description: Value for the applicable iteration
             order: 9
-            type: string
+            type: STRING
             length: 200
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           CONDITION_VAL:
             description: Value for the applicable condition
             order: 10
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           RETRIES_VAL:
             description: Value for the number of retries on error
             order: 11
-            type: string
+            type: STRING
             length: 200
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           EXP_ERR_FL:
             description: Flag indicating if the action is expected to raise an error
             order: 12
-            type: flag
+            type: FLAG
             length: 1
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           STOP_ERR_FL:
             description: Flag indicating if the script needs to stop when this action raises
               an error
             order: 13
-            type: flag
+            type: FLAG
             length: 1
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 14
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2190,45 +2005,45 @@ iesi:
           RUN_ID:
             description: Unique identifier for the action execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the action execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           ACTION_ID:
             description: Unique identifier for the action design
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_PAR_NM:
             description: Name of the action parameter
             order: 4
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           ACTION_PAR_VAL:
             description: String type parameter value
             order: 5
-            type: string
+            type: STRING
             length: 4000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2240,101 +2055,101 @@ iesi:
           RUN_ID:
             description: Unique identifier for the action execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the action execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           ACTION_ID:
             description: Unique identifier for the action design
             order: 5
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_NB:
             description: Order number for the action within the script design
             order: 6
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_TYP_NM:
             description: Keyword for the action type
             order: 7
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_NM:
             description: Unique short name for the action
             order: 8
-            type: string
+            type: STRING
             length: 200
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_DSC:
             description: Description of the action
             order: 9
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           COMP_NM:
             description: Unique short name for the applicable component
             order: 10
-            type: string
+            type: STRING
             length: 200
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           ITERATION_VAL:
             description: Value for the applicable iteration
             order: 11
-            type: string
+            type: STRING
             length: 200
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           CONDITION_VAL:
             description: Value for the applicable condition
             order: 12
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           RETRIES_VAL:
             description: Value for the number of retries on error
             order: 13
-            type: string
+            type: STRING
             length: 200
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           EXP_ERR_FL:
             description: Flag indicating if the action is expected to raise an error
             order: 14
-            type: flag
+            type: FLAG
             length: 1
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           STOP_ERR_FL:
             description: Flag indicating if the script needs to stop when this action raises
               an error
             order: 15
-            type: flag
+            type: FLAG
             length: 1
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 16
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2346,45 +2161,45 @@ iesi:
           RUN_ID:
             description: Unique identifier for the action execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the action execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           ACTION_ID:
             description: Unique identifier for the action design
             order: 5
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_PAR_NM:
             description: Name of the action parameter
             order: 6
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           ACTION_PAR_VAL:
             description: String type parameter value
             order: 7
-            type: string
+            type: STRING
             length: 4000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 8
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2396,58 +2211,64 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PARENT_PRC_ID:
             description: Process number for the parent executing the script
             order: 3
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 4
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_TYP_NM:
             description: Keyword for the script type
             order: 5
-            type: string
+            type: STRING
             length: 100
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_NM:
             description: Unique short name for the script
             order: 6
-            type: string
+            type: STRING
             length: 200
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_DSC:
             description: Description of the script
             order: 7
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
+          SECURITY_GROUP_NAME:
+            description: Unique short name for the script
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 8
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2459,38 +2280,38 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_PAR_NM:
             description: Name of the script parameter
             order: 5
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_PAR_VAL:
             description: String type parameter value
             order: 6
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 7
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2502,37 +2323,37 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 4
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_VRS_DSC:
             description: Description of the script version
             order: 5
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2544,58 +2365,64 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PARENT_PRC_ID:
             description: Process number for the parent executing the script
             order: 3
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 4
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_NM:
             description: Unique short name for the script
             order: 5
-            type: string
+            type: STRING
             length: 200
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_TYP_NM:
             description: Keyword for the script type
             order: 7
-            type: string
+            type: STRING
             length: 100
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_DSC:
             description: Description of the script
             order: 8
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
+          SECURITY_GROUP_NAME:
+            description: Unique short name for the script
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 9
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2607,38 +2434,38 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_PAR_NM:
             description: Name of the script parameter
             order: 4
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_PAR_VAL:
             description: String type parameter value
             order: 5
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2650,37 +2477,37 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 4
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_VRS_DSC:
             description: Description of the script version
             order: 5
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2692,68 +2519,68 @@ iesi:
           RUN_ID:
             description: Unique identifier for the action execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the action execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_PRC_ID:
             description: Process number for the script execution
             order: 3
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_ID:
             description: Unique identifier for the action design
             order: 4
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ACTION_NM:
             description: Unique short name for the action
             order: 5
-            type: string
+            type: STRING
             length: 200
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ENV_NM:
             description: Environment name on which the action was executed
             order: 6
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ST_NM:
             description: Status result of the action execution
             order: 7
-            type: string
+            type: STRING
             length: 30
             nullable: false
             defaultTimestamp:
           STRT_TMS:
             description: Starting timestamp for the action execution
             order: 8
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           END_TMS:
             description: Ending timestamp for the action execution
             order: 9
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
       - name: RES_ACTION_OUT
         label: ActionResultOutputs
         description: Opertional metadata for action result outputs
@@ -2762,45 +2589,45 @@ iesi:
           RUN_ID:
             description: Unique identifier for the action execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the action within the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           ACTION_ID:
             description: Unique identifier for the action design
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           OUT_NM:
             description: Keyword for the output generated by the action execution
             order: 4
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           OUT_VAL:
             description: String type output value
             order: 5
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
@@ -2812,158 +2639,62 @@ iesi:
           RUN_ID:
             description: Unique identifier for the action execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the action within the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           ACTION_ID:
             description: Unique identifier for the action design
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           CONTEXT_NM:
             description: Context name for the performance entry
             order: 4
-            type: string
+            type: STRING
             length: 200
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCOPE_NM:
             description: Scope name for the performance entry
             order: 5
-            type: string
+            type: STRING
             length: 200
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           STRT_TMS:
             description: Starting timestamp for the performance entry
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           END_TMS:
             description: Ending timestamp for the performance entry
             order: 7
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           DURATION_VAL:
             description: Duraction value for the performance entry
             order: 8
-            type: number
+            type: NUMBER
             length: 0
             nullable: true
-            defaultTimestamp: 
-      - name: RES_REQUEST
-        label: RequestResults
-        description: Opertional metadata for request results
-        category: result
-        fields:
-          REQUEST_ID:
-            description: Unique identifier for the request item
-            order: 1
-            type: string
-            length: 255
-            nullable: false
-            defaultTimestamp: 
-          PARENT_REQUEST_ID:
-            description: Unique identifier for the parent request item
-            order: 2
-            type: string
-            length: 255
-            nullable: false
-            defaultTimestamp: 
-          RUN_ID:
-            description: Unique identifier for the script execution
-            order: 3
-            type: string
-            length: 255
-            nullable: false
-            defaultTimestamp: 
-          ORIGIN_NM:
-            description: Request origin
-            order: 4
-            type: string
-            length: 200
-            nullable: false
-            defaultTimestamp: 
-          REQUEST_NM:
-            description: Request name
-            order: 5
-            type: string
-            length: 200
-            nullable: false
-            defaultTimestamp: 
-          SCOPE_NM:
-            description: Scope of the request
-            order: 9
-            type: string
-            length: 100
-            nullable: false
-            defaultTimestamp: 
-          CONTEXT_NM:
-            description: Context of the request
-            order: 10
-            type: string
-            length: 100
-            nullable: false
-            defaultTimestamp: 
-          SPACE_NM:
-            description: Unique identifier for the space
-            order: 11
-            type: string
-            length: 100
-            nullable: false
-            defaultTimestamp: 
-          USER_NM:
-            description: Unique identifier for the user
-            order: 12
-            type: string
-            length: 100
-            nullable: false
-            defaultTimestamp: 
-          REQUEST_TMS:
-            description: Request timestamp
-            order: 4
-            type: timestamp
-            length: 0
-            nullable: false
-            defaultTimestamp: 
-          ST_NM:
-            description: Status result of the script execution
-            order: 7
-            type: string
-            length: 30
-            nullable: false
-            defaultTimestamp: 
-          STRT_TMS:
-            description: Starting timestamp for the request execution
-            order: 8
-            type: timestamp
-            length: 0
-            nullable: true
-            defaultTimestamp: 
-          END_TMS:
-            description: Ending timestamp for the request execution
-            order: 9
-            type: timestamp
-            length: 0
-            nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
       - name: RES_SCRIPT
         label: ScriptResults
         description: Opertional metadata for script outputs
@@ -2972,75 +2703,81 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script execution
             order: 1
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PARENT_PRC_ID:
             description: Process number for the parent executing the script
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_NM:
             description: Unique short name for the script
             order: 4
-            type: string
+            type: STRING
             length: 200
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
             order: 5
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
+          SECURITY_GROUP_NAME:
+            description: name of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
           ENV_NM:
             description: Environment name on which the script was executed
             order: 6
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           ST_NM:
             description: Status result of the script execution
             order: 7
-            type: string
+            type: STRING
             length: 30
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           STRT_TMS:
             description: Starting timestamp for the script execution
             order: 8
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           END_TMS:
             description: Ending timestamp for the script execution
             order: 9
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
       - name: RES_SCRIPT_OUT
         label: ScriptResultOutputs
         description: Opertional metadata for script result outputs
@@ -3049,48 +2786,456 @@ iesi:
           RUN_ID:
             description: Unique identifier for the script execution
             order: 1
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           PRC_ID:
             description: Process number for the script within the script execution
             order: 2
-            type: number
+            type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           SCRIPT_ID:
             description: Unique identifier for the script design
             order: 3
-            type: string
+            type: STRING
             length: 255
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
           OUT_NM:
             description: Keyword for the output generated by the script execution
             order: 4
-            type: string
+            type: STRING
             length: 100
             nullable: false
-            defaultTimestamp: 
+            defaultTimestamp:
             primaryKey: true
           OUT_VAL:
             description: String type output value
             order: 5
-            type: string
+            type: STRING
             length: 2000
             nullable: true
-            defaultTimestamp: 
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 6
-            type: timestamp
+            type: TIMESTAMP
             length: 0
             nullable: false
             defaultTimestamp: true
+      - name: TRC_COMP_DES
+        label: TraceComponentDesign
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceComponentDesign
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          RUN_ID:
+            description: Unique identifier for the script execution
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          PRC_ID:
+            description: Process number for the script within the script execution
+            order: 3
+            type: NUMBER
+            length: 0
+            nullable: false
+            defaultTimestamp:
+          ACTION_PAR_NM:
+              description: Name of the action parameter
+              order: 4
+              type: STRING
+              length: 255
+              nullable: false
+              defaultTimestamp:
+          COMP_TYP_NM:
+              description: Keyword for the component type
+              order: 5
+              type: STRING
+              length: 255
+              nullable: false
+              defaultTimestamp:
+          COMP_NM:
+              description: Unique short name for the applicable component
+              order: 6
+              type: STRING
+              length: 255
+              nullable: true
+              defaultTimestamp:
+          COMP_DSC:
+            description: Description of the component
+            order: 7
+            type: STRING
+            length: 2000
+            nullable: true
+            defaultTimestamp:
+          COMP_VRS_NB:
+              description: Unique identifier for the component version
+              order: 8
+              type: NUMBER
+              length: 0
+              nullable: false
+              defaultTimestamp: false
+      - name: TRC_HTTP_COMP_DES
+        label: TraceHttpComponentDesign
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentDesign
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          CONN_NM:
+            description: Unique short name for the connection
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          TYPE:
+            description: Type of the TraceHttpComponentDesign
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          ENDPOINT:
+            description: Endpoint of the TraceHttpComponentDesign
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP_HEAD_DES
+        label: TraceHttpComponentHeaderDesign
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentHeaderDesign
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          HTTP_COMP_DES_ID:
+            description: Unique short name for the TraceHttpComponentHeaderDesign
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: Name of the TraceHttpComponentDesign
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: Value of the TraceHttpComponentDesign
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP_QUER_DES
+        label: TraceHttpComponentQueryDesign
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentQueryDesign
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          HTTP_COMP_DES_ID:
+            description: Unique short name for the TraceHttpComponentQueryDesign
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: Name of the TraceHttpComponentQueryDesign
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: Value of the TraceHttpComponentQueryDesign
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_COMP
+        label: TraceComponent
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceComponent
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          RUN_ID:
+            description: Unique identifier for the script execution
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          PRC_ID:
+            description: Process number for the script within the script execution
+            order: 3
+            type: NUMBER
+            length: 0
+            nullable: false
+            defaultTimestamp:
+          ACTION_PAR_NM:
+            description: Name of the action parameter
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          COMP_TYP_NM:
+            description: Keyword for the component type
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          COMP_NM:
+            description: Unique short name for the applicable component
+            order: 7
+            type: STRING
+            length: 255
+            nullable: true
+            defaultTimestamp:
+          COMP_DSC:
+            description: Description of the component
+            order: 8
+            type: STRING
+            length: 2000
+            nullable: true
+            defaultTimestamp:
+          COMP_VRS_NB:
+            description: Unique identifier for the script version
+            order: 9
+            type: NUMBER
+            length: 0
+            nullable: false
+            primaryKey: true
+            defaultTimestamp: false
+      - name: TRC_HTTP_COMP
+        label: TraceHttpComponent
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponent
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          CONN_NM:
+            description: Unique short name for the connection
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          TYPE:
+            description: Type of the TraceHttpComponent
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          ENDPOINT:
+            description: Endpoint of the TraceHttpComponent
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP_HEAD
+        label: TraceHttpComponentHeader
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentHeader
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          HTTP_COMP_ID:
+            description: Unique short name for the TraceHttpComponentHeader
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: NAME of the TraceHttpComponentHeader
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: VALUE of the TraceHttpComponentHeader
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_HTTP_COMP_QUER
+        label: TraceHttpComponentQuery
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceHttpComponentQuery
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          HTTP_COMP_ID:
+            description: Unique short name for the TraceHttpComponentQuery
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          NAME:
+            description: Name of the TraceHttpComponentQuery
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          VALUE:
+            description: Value of the TraceHttpComponentQuery
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+      - name: TRC_CONN
+        label: ConnectionTraces
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceConnection
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          RUN_ID:
+            description: Unique identifier for the script execution
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          PRC_ID:
+            description: Process number for the script within the script execution
+            order: 3
+            type: NUMBER
+            length: 0
+            nullable: false
+            unique: true
+          ACTION_PAR_NM:
+            description: Name of the action parameter
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+          CONN_TYP_NM:
+            description: Keyword for the component type
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+          CONN_NM:
+            description: Unique short name for the applicable component
+            order: 7
+            type: STRING
+            length: 255
+            nullable: false
+          CONN_DESC:
+            description: Description of the component
+            order: 8
+            type: STRING
+            length: 2000
+            nullable: true
+      - name: TRC_HTTP_CONN
+        label: HttpConnectionTraces
+        description: to do
+        category: trace
+        fields:
+          ID:
+            description: Unique ID for the TraceConnection
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          HOST:
+            description: hostname of the http connection
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          PORT:
+            description: port of the http connection
+            order: 3
+            type: NUMBER
+            length: 0
+            nullable: true
+          BASE_URL:
+            description: base url of the http connection
+            order: 4
+            type: STRING
+            length: 255
+            nullable: true
+          TLS:
+            description: whether or not http connection is tls encrypted
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
     objects:
       Connection:
         label: Connections
@@ -3104,10 +3249,6 @@ iesi:
         label: Impersonations
         description: Design metadata for impersonations
         category: connectivity
-#      Repository:
-#        label: Repositories
-#        description: Design metadata for repositories
-#        category: connectivity
       Component:
         label: Components
         description: Design metadata for components

@@ -1,0 +1,18 @@
+iesi:
+  guard:
+    authenticate: N
+#  script:
+#    execution:
+#       runtime: ''
+  server:
+#    mode: off
+    mode: standalone
+    threads:
+      timeout: 30
+#  home: 'C:/Users/tawbane.ouamar/Desktop/iesi-sandbox/0.6.0/IesiSecurityTest'
+  home: '/home/robbe/IESISandbox/0.6.0/develop'
+  security:
+    enabled: true
+    jwt:
+      secret: secret
+      expiry-date: 10

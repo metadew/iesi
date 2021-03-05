@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class Environment extends Metadata<EnvironmentKey> {
     private String description;
     private List<EnvironmentParameter> parameters;
 
+    @Builder
     public Environment(String name, String description, List<EnvironmentParameter> parameters) {
         super(new EnvironmentKey(name));
         this.description = description;

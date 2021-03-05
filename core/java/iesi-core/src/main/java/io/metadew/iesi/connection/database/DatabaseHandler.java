@@ -3,6 +3,7 @@ package io.metadew.iesi.connection.database;
 import com.zaxxer.hikari.HikariDataSource;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.connection.database.bigquery.BigqueryDatabaseService;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.db2.Db2DatabaseService;
 import io.metadew.iesi.connection.database.dremio.DremioDatabaseService;
@@ -49,6 +50,8 @@ public class DatabaseHandler implements IDatabaseHandler {
 
     private DatabaseHandler() {
         databaseServiceMap = new HashMap<>();
+        databaseServiceMap.put(new ClassStringPair(BigqueryDatabaseService.getInstance().keyword(), BigqueryDatabaseService.getInstance().appliesTo()),
+                BigqueryDatabaseService.getInstance());
         databaseServiceMap.put(new ClassStringPair(Db2DatabaseService.getInstance().keyword(), Db2DatabaseService.getInstance().appliesTo()),
                 Db2DatabaseService.getInstance());
         databaseServiceMap.put(new ClassStringPair(DremioDatabaseService.getInstance().keyword(), DremioDatabaseService.getInstance().appliesTo()),

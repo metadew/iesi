@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action.trace;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.trace.ActionTrace;
@@ -28,10 +29,7 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
     }
 
     private ActionTraceConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override
@@ -40,9 +38,9 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
             String query = "SELECT ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL FROM " +
                     getMetadataRepository().getTableNameByLabel("ActionTraces") +
                     " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getProcessId()) + " AND " +
-                    " ACTION_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getActionId()) + ";";
+                    " RUN_ID = " + SQLTools.getStringForSQL(actionTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.getStringForSQL(actionTraceKey.getProcessId()) + " AND " +
+                    " ACTION_ID = " + SQLTools.getStringForSQL(actionTraceKey.getActionId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -105,9 +103,9 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
     private String deleteStatement(ActionTraceKey actionTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getProcessId()) + " AND " +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionTraceKey.getActionId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(actionTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(actionTraceKey.getProcessId()) + " AND " +
+                " ACTION_ID = " + SQLTools.getStringForSQL(actionTraceKey.getActionId()) + ";";
     }
 
     @Override
@@ -121,19 +119,19 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ActionTraces") +
                 " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM," +
                 " ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
-                SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getActionId()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getNumber()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getType()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getName()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getDescription()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getComponent()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getIteration()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getCondition()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getRetries()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getErrorExpected()) + "," +
-                SQLTools.GetStringForSQL(actionTrace.getErrorStop()) + ");";
+                SQLTools.getStringForSQL(actionTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getMetadataKey().getActionId()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getNumber()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getType()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getName()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getDescription()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getComponent()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getIteration()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getCondition()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getRetries()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getErrorExpected()) + "," +
+                SQLTools.getStringForSQL(actionTrace.getErrorStop()) + ");";
     }
 
     @Override
@@ -145,19 +143,19 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
 
     private String updateStatement(ActionTrace actionTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionTraces") +
-                " SET ACTION_NB = " + SQLTools.GetStringForSQL(actionTrace.getNumber()) + "," +
-                "ACTION_TYP_NM = " + SQLTools.GetStringForSQL(actionTrace.getType()) + "," +
-                "ACTION_NM = " + SQLTools.GetStringForSQL(actionTrace.getName()) + "," +
-                "ACTION_DSC = " + SQLTools.GetStringForSQL(actionTrace.getDescription()) + "," +
-                "COMP_NM = " + SQLTools.GetStringForSQL(actionTrace.getComponent()) + "," +
-                "ITERATION_VAL = " + SQLTools.GetStringForSQL(actionTrace.getIteration()) + "," +
-                "CONDITION_VAL = " + SQLTools.GetStringForSQL(actionTrace.getCondition()) + "," +
-                "RETRIES_VAL = " + SQLTools.GetStringForSQL(actionTrace.getRetries()) + "," +
-                "EXP_ERR_FL = " + SQLTools.GetStringForSQL(actionTrace.getErrorExpected()) + "," +
-                "STOP_ERR_FL =" + SQLTools.GetStringForSQL(actionTrace.getErrorStop()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getProcessId()) +
-                " AND ACTION_ID= " + SQLTools.GetStringForSQL(actionTrace.getMetadataKey().getActionId()) + ";";
+                " SET ACTION_NB = " + SQLTools.getStringForSQL(actionTrace.getNumber()) + "," +
+                "ACTION_TYP_NM = " + SQLTools.getStringForSQL(actionTrace.getType()) + "," +
+                "ACTION_NM = " + SQLTools.getStringForSQL(actionTrace.getName()) + "," +
+                "ACTION_DSC = " + SQLTools.getStringForSQL(actionTrace.getDescription()) + "," +
+                "COMP_NM = " + SQLTools.getStringForSQL(actionTrace.getComponent()) + "," +
+                "ITERATION_VAL = " + SQLTools.getStringForSQL(actionTrace.getIteration()) + "," +
+                "CONDITION_VAL = " + SQLTools.getStringForSQL(actionTrace.getCondition()) + "," +
+                "RETRIES_VAL = " + SQLTools.getStringForSQL(actionTrace.getRetries()) + "," +
+                "EXP_ERR_FL = " + SQLTools.getStringForSQL(actionTrace.getErrorExpected()) + "," +
+                "STOP_ERR_FL =" + SQLTools.getStringForSQL(actionTrace.getErrorStop()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(actionTrace.getMetadataKey().getProcessId()) +
+                " AND ACTION_ID= " + SQLTools.getStringForSQL(actionTrace.getMetadataKey().getActionId()) + ";";
     }
 
 

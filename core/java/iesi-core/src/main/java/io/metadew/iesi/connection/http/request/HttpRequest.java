@@ -1,12 +1,9 @@
 package io.metadew.iesi.connection.http.request;
 
+import lombok.EqualsAndHashCode;
 import org.apache.http.client.methods.HttpRequestBase;
 
-/**
- * Object for managing the http request to be used in the http connection object.
- *
- * @author peter.billen
- */
+@EqualsAndHashCode
 public abstract class HttpRequest {
 
     private HttpRequestBase httpRequest;

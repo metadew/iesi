@@ -4,17 +4,14 @@ import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -22,9 +19,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
+@Builder
+@Relation(value = "execution_request", collectionRelation = "execution_requests")
 public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto> {
 
     private String executionRequestId;
+    // private String securityGroupName;
+    // private String securityGroupUuid;
     private LocalDateTime requestTimestamp;
     private String name;
     private String description;
@@ -32,17 +33,27 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
     private String context;
     private String email;
     private ExecutionRequestStatus executionRequestStatus;
-    private List<ScriptExecutionRequestDto> scriptExecutionRequests = new ArrayList<>();
-    private List<ExecutionRequestLabelDto> executionRequestLabels = new ArrayList<>();
+    private Set<ScriptExecutionRequestDto> scriptExecutionRequests = new HashSet<>();
+    private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
 
     public ExecutionRequest convertToEntity() {
-        return new NonAuthenticatedExecutionRequest(new ExecutionRequestKey(executionRequestId), requestTimestamp, name,
-                context, description, scope, context, executionRequestStatus, scriptExecutionRequests.stream()
-                .map(ScriptExecutionRequestDto::convertToEntity)
-                .collect(Collectors.toList()),
+        return new NonAuthenticatedExecutionRequest(
+                new ExecutionRequestKey(executionRequestId),
+                // new SecurityGroupKey(UUID.fromString(securityGroupUuid)),
+                // securityGroupName,
+                requestTimestamp,
+                name,
+                context,
+                description,
+                scope,
+                context,
+                executionRequestStatus,
+                scriptExecutionRequests.stream()
+                        .map(ScriptExecutionRequestDto::convertToEntity)
+                        .collect(Collectors.toList()),
                 executionRequestLabels.stream()
                         .map(label -> label.convertToEntity(new ExecutionRequestKey(executionRequestId)))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toSet()));
     }
 
     public ExecutionRequest convertToNewEntity() throws ExecutionRequestBuilderException {
@@ -53,6 +64,10 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
                 .context(context)
                 .description(description)
                 .scope(scope)
+                .executionRequestLabels(executionRequestLabels.stream()
+                        .map(executionRequestLabelDto -> executionRequestLabelDto.convertToEntity(new ExecutionRequestKey(newExecutionRequestId)))
+                        .collect(Collectors.toList()))
+                .email(email)
                 .build();
         List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
         for (ScriptExecutionRequestDto scriptExecutionRequest : this.scriptExecutionRequests) {
@@ -65,7 +80,5 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
         executionRequest.setScriptExecutionRequests(scriptExecutionRequests);
         return executionRequest;
     }
-
-    // public abstract ExecutionRequest convertToEntity(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
 
 }

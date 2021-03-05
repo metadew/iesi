@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.impersonation;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -37,11 +38,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
 
     // Constructors
     private ImpersonationConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ImpersonationParameterConfiguration.getInstance().init(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
     }
 
     @Override
@@ -194,8 +191,8 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
             ImpersonationParameterConfiguration.getInstance().insert(impersonationParameter);
         }
         String query = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") + " (IMP_NM, IMP_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(impersonation.getMetadataKey().getName()) + "," +
-                SQLTools.GetStringForSQL(impersonation.getDescription()) + ");";
+                SQLTools.getStringForSQL(impersonation.getMetadataKey().getName()) + "," +
+                SQLTools.getStringForSQL(impersonation.getDescription()) + ");";
         getMetadataRepository().executeUpdate(query);
     }
 
@@ -209,10 +206,10 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     public List<String> getDeleteStatement(String impersonationName) {
         List<String> queries = new ArrayList<>();
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Impersonations") +
-                " WHERE IMP_NM = " + SQLTools.GetStringForSQL(impersonationName) + ";");
+                " WHERE IMP_NM = " + SQLTools.getStringForSQL(impersonationName) + ";");
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters") +
                 " WHERE IMP_NM = "
-                + SQLTools.GetStringForSQL(impersonationName) + ";");
+                + SQLTools.getStringForSQL(impersonationName) + ";");
         return queries;
     }
 
@@ -220,8 +217,8 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         ImpersonationParameterConfiguration impersonationParameterConfiguration = ImpersonationParameterConfiguration.getInstance();
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") + " (IMP_NM, IMP_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(impersonation.getMetadataKey().getName()) + "," +
-                SQLTools.GetStringForSQL(impersonation.getDescription()) + ");");
+                SQLTools.getStringForSQL(impersonation.getMetadataKey().getName()) + "," +
+                SQLTools.getStringForSQL(impersonation.getDescription()) + ");");
         for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
             queries.add(impersonationParameterConfiguration.getInsertStatement(impersonation.getMetadataKey().getName(), impersonationParameter));
         }
@@ -254,12 +251,12 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
 
         sql += "DELETE FROM " + getMetadataRepository().getTableNameByLabel("Impersonations");
         sql += " WHERE IMP_NM = "
-                + SQLTools.GetStringForSQL(this.getImpersonation().getMetadataKey().getName());
+                + SQLTools.getStringForSQL(this.getImpersonation().getMetadataKey().getName());
         sql += ";";
         sql += "\n";
         sql += "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ImpersonationParameters");
         sql += " WHERE IMP_NM = "
-                + SQLTools.GetStringForSQL(this.getImpersonation().getMetadataKey().getName());
+                + SQLTools.getStringForSQL(this.getImpersonation().getMetadataKey().getName());
         sql += ";";
         sql += "\n";
 
@@ -279,9 +276,9 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         sql += " (IMP_NM, IMP_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += SQLTools.GetStringForSQL(this.getImpersonation().getMetadataKey().getName());
+        sql += SQLTools.getStringForSQL(this.getImpersonation().getMetadataKey().getName());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(this.getImpersonation().getDescription());
+        sql += SQLTools.getStringForSQL(this.getImpersonation().getDescription());
         sql += ")";
         sql += ";";
 

@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.connection;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -33,10 +34,7 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     }
 
     private ConnectionParameterConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
     }
 
     @Override
@@ -45,9 +43,9 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
             String query = "select CONN_NM, CONN_PAR_NM, CONN_PAR_VAL, ENV_NM from " +
                     getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                     " WHERE " +
-                    " CONN_NM  = " + SQLTools.GetStringForSQL(connectionParameterKey.getConnectionKey().getName()) + " AND " +
-                    " ENV_NM  = " + SQLTools.GetStringForSQL(connectionParameterKey.getConnectionKey().getEnvironmentKey().getName()) + " AND " +
-                    " CONN_PAR_NM = " + SQLTools.GetStringForSQL(connectionParameterKey.getParameterName()) + ";";
+                    " CONN_NM  = " + SQLTools.getStringForSQL(connectionParameterKey.getConnectionKey().getName()) + " AND " +
+                    " ENV_NM  = " + SQLTools.getStringForSQL(connectionParameterKey.getConnectionKey().getEnvironmentKey().getName()) + " AND " +
+                    " CONN_PAR_NM = " + SQLTools.getStringForSQL(connectionParameterKey.getParameterName()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -99,9 +97,9 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     private String deleteStatement(ConnectionParameterKey connectionParameterKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                 " WHERE " +
-                " CONN_NM = " + SQLTools.GetStringForSQL(connectionParameterKey.getConnectionKey().getName()) + " AND " +
-                " ENV_NM = " + SQLTools.GetStringForSQL(connectionParameterKey.getConnectionKey().getEnvironmentKey().getName()) + " AND " +
-                " CONN_PAR_NM = " + SQLTools.GetStringForSQL(connectionParameterKey.getParameterName()) + ";";
+                " CONN_NM = " + SQLTools.getStringForSQL(connectionParameterKey.getConnectionKey().getName()) + " AND " +
+                " ENV_NM = " + SQLTools.getStringForSQL(connectionParameterKey.getConnectionKey().getEnvironmentKey().getName()) + " AND " +
+                " CONN_PAR_NM = " + SQLTools.getStringForSQL(connectionParameterKey.getParameterName()) + ";";
     }
 
     @Override
@@ -117,24 +115,24 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     public String insertStatement(ConnectionParameter connectionParameter) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                 " (CONN_NM, ENV_NM, CONN_PAR_NM, CONN_PAR_VAL) VALUES (" +
-                SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) + "," +
-                SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName()) + "," +
-                SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.GetStringForSQL(connectionParameter.getValue()) + ");";
+                SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) + "," +
+                SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName()) + "," +
+                SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + "," +
+                SQLTools.getStringForSQL(connectionParameter.getValue()) + ");";
     }
 
     public void deleteByConnection(ConnectionKey connectionKey) {
         getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
                 " WHERE " +
-                " CONN_NM = " + SQLTools.GetStringForSQL(connectionKey.getName()) + " AND " +
-                " ENV_NM = " + SQLTools.GetStringForSQL(connectionKey.getEnvironmentKey().getName()) + ";");
+                " CONN_NM = " + SQLTools.getStringForSQL(connectionKey.getName()) + " AND " +
+                " ENV_NM = " + SQLTools.getStringForSQL(connectionKey.getEnvironmentKey().getName()) + ";");
     }
 
     public List<ConnectionParameter> getByConnection(ConnectionKey connectionKey) {
         List<ConnectionParameter> connectionParameters = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
-                " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connectionKey.getName()) +
-                " AND ENV_NM = " + SQLTools.GetStringForSQL(connectionKey.getEnvironmentKey().getName()) +
+                " WHERE CONN_NM = " + SQLTools.getStringForSQL(connectionKey.getName()) +
+                " AND ENV_NM = " + SQLTools.getStringForSQL(connectionKey.getEnvironmentKey().getName()) +
                 " order by CONN_NM ASC";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
@@ -159,10 +157,10 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     public void update(ConnectionParameter connectionParameter) {
         if (exists(connectionParameter)) {
             getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
-                    " SET CONN_PAR_VAL = " + SQLTools.GetStringForSQL(connectionParameter.getValue()) +
-                    " WHERE CONN_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) +
-                    " AND ENV_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName()) +
-                    " AND CONN_PAR_NM = " + SQLTools.GetStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + ";");
+                    " SET CONN_PAR_VAL = " + SQLTools.getStringForSQL(connectionParameter.getValue()) +
+                    " WHERE CONN_NM = " + SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) +
+                    " AND ENV_NM = " + SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName()) +
+                    " AND CONN_PAR_NM = " + SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + ";");
         } else {
             insert(connectionParameter);
         }

@@ -9,6 +9,13 @@ spring:
 #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration, org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
+iesi:
+  security:
+    enabled: true
+    jwt:
+      secret: secret
+      expiry-date: 10
+
 management:
   endpoints:
     web:

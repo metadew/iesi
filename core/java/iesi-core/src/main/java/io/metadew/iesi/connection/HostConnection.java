@@ -1,11 +1,11 @@
 package io.metadew.iesi.connection;
 
 import com.jcraft.jsch.*;
+import io.metadew.iesi.common.FrameworkRuntime;
 import io.metadew.iesi.connection.host.LinuxHostUserInfo;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
-import io.metadew.iesi.common.FrameworkRuntime;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -266,11 +266,11 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
+                        String finalJumphostConnection = jumphostConnection;
                         Connection connection = ConnectionConfiguration.getInstance()
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
-                                .get();
-                        ConnectionOperation connectionOperation = new ConnectionOperation();
-                        hostConnection = connectionOperation.getHostConnection(connection);
+                                .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(finalJumphostConnection, shellCommandSettings.getEnvironment()))));
+                        hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }
@@ -420,8 +420,7 @@ public class HostConnection {
                         Connection connection = ConnectionConfiguration.getInstance()
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .get();
-                        ConnectionOperation connectionOperation = new ConnectionOperation();
-                        hostConnection = connectionOperation.getHostConnection(connection);
+                        hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }

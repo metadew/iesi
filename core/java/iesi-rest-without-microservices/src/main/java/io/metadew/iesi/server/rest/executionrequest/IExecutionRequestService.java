@@ -3,24 +3,27 @@ package io.metadew.iesi.server.rest.executionrequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IExecutionRequestService {
 
-    public List<ExecutionRequest> getAll();
+    Page<ExecutionRequestDto> getAll(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters);
 
-    public Optional<ExecutionRequest> getById(String id);
+    Optional<ExecutionRequestDto> getById(Authentication authentication, String id);
 
-    public ExecutionRequest createExecutionRequest(ExecutionRequestDto executionRequestDto) throws ExecutionRequestBuilderException;
+    ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest);
 
-    public void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
+    void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
 
-    public void updateExecutionRequests(List<ExecutionRequestDto> executionRequestDtos);
+    void updateExecutionRequests(List<ExecutionRequestDto> executionRequestDtos);
 
-    public void deleteAll();
+    void deleteAll();
 
-    public void deleteById(String id);
+    void deleteById(String id);
 
 }

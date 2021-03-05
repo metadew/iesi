@@ -5,9 +5,10 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class ScriptExecutionRequestBuilder {
 
@@ -22,8 +23,8 @@ public class ScriptExecutionRequestBuilder {
 
     private List<Long> actionSelect;
     private boolean exit;
-    private List<ScriptExecutionRequestParameter> parameters = new ArrayList<>();
-    private List<ScriptExecutionRequestImpersonation> impersonations = new ArrayList<>();
+    private Set<ScriptExecutionRequestParameter> parameters = new HashSet<>();
+    private Set<ScriptExecutionRequestImpersonation> impersonations = new HashSet<>();
     private String environment;
 
     public ScriptExecutionRequestBuilder() {}
@@ -111,7 +112,12 @@ public class ScriptExecutionRequestBuilder {
         return new ScriptNameExecutionRequest(
                 scriptExecutionRequestKey,
                 executionRequestKey,
-                environment, exit, impersonations, parameters, ScriptExecutionRequestStatus.NEW, scriptName,
+                environment,
+                exit,
+                impersonations,
+                parameters,
+                ScriptExecutionRequestStatus.NEW,
+                scriptName,
                 scriptVersion
         );
     }
@@ -139,7 +145,8 @@ public class ScriptExecutionRequestBuilder {
                 environment,
                 exit,
                 impersonations,
-                parameters, ScriptExecutionRequestStatus.NEW);
+                parameters,
+                ScriptExecutionRequestStatus.NEW);
     }
 
     private Optional<ScriptExecutionRequestKey> getScriptExecutionRequestKey() {

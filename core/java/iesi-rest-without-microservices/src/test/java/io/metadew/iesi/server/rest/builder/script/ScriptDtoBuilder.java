@@ -19,12 +19,13 @@ public class ScriptDtoBuilder {
         return ScriptDto.builder()
                 .name(name)
                 .description(name + " desc")
+                .securityGroupName("PUBLIC")
                 .version(new ScriptVersionDto(n, name + " " + Long.toString(n)))
                 .parameters(
                         Stream.of(
                                 new ScriptParameterDto("Param1", Long.toString(n)),
                                 new ScriptParameterDto("Param2", Long.toString(n))
-                        ).collect(Collectors.toList())
+                        ).collect(Collectors.toSet())
                 )
                 .actions(
                         Stream.of(
@@ -43,16 +44,16 @@ public class ScriptDtoBuilder {
                                                 Stream.of(
                                                         new ActionParameterDto("ActionParameter1", "ActionParameterValue1"),
                                                         new ActionParameterDto("ActionParameter2", "ActionParameterValue2")
-                                                ).collect(Collectors.toList())
+                                                ).collect(Collectors.toSet())
                                         )
                                         .build()
-                        ).collect(Collectors.toList())
+                        ).collect(Collectors.toSet())
                 )
                 .labels(
                         Stream.of(
                                 new ScriptLabelDto("Label1", "Label1Value"),
                                 new ScriptLabelDto("Label2", "Label2Value")
-                        ).collect(Collectors.toList())
+                        ).collect(Collectors.toSet())
                 )
                 .scriptExecutionInformation(new ScriptExecutionInformation(
                                 2L,

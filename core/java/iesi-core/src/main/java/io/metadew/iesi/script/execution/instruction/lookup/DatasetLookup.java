@@ -2,8 +2,8 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
@@ -36,33 +36,35 @@ public class DatasetLookup implements LookupInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-//        // TODO: parse with antlr
-//        Matcher inputParameterMatcher = INPUT_PARAMETER_PATTERN.matcher(parameters);
-//        if (!inputParameterMatcher.find()) {
-//            throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to dataset lookup: {0}", parameters));
-//        }
-
-//        Dataset dataset = getDataset(dataTypeService.resolve(inputParameterMatcher.group(DATASET_NAME_KEY)));
-//        String datasetItemName = inputParameterMatcher.group(DATASET_ITEM_NAME_KEY);
-
+        // TODO: parse with antlr
 
         String[] arguments = splitInput(parameters);
-        Dataset dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
-        Optional<DataType> dataItem = DatasetHandler.getInstance().getDataItem(dataset, arguments[1].trim(), executionRuntime);
+        InMemoryDatasetImplementation dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
+        DataType lookupVariable = convertLookupVariable(DataTypeHandler.getInstance().resolve(arguments[1].trim(), executionRuntime));
+        Optional<DataType> matchedDataItem;
+        if (lookupVariable instanceof Text) {
+            matchedDataItem = InMemoryDatasetImplementationService.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);
+        } else {
+            throw new IllegalArgumentException(MessageFormat.format("Cannot lookup {0} in dataset {1}", lookupVariable, dataset.toString()));
+        }
 
-        if (!dataItem.isPresent()) {
+        if (!matchedDataItem.isPresent()) {
             throw new IllegalArgumentException(MessageFormat.format("No dataset item {0} is attached to dataset {1}", arguments[1], dataset.toString()));
         } else {
-            return dataItem.get().toString();
+            return matchedDataItem.get().toString();
         }
     }
 
-    private Dataset getDataset(DataType dataset) {
+    private DataType convertLookupVariable(DataType lookupVariable) {
+        return lookupVariable;
+    }
+
+    private InMemoryDatasetImplementation getDataset(DataType dataset) {
         if (dataset instanceof Text) {
             return executionRuntime.getDataset(((Text) dataset).getString())
                     .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No dataset found with reference name {0}", ((Text) dataset).getString())));
-        } else if (dataset instanceof Dataset) {
-            return (Dataset) dataset;
+        } else if (dataset instanceof InMemoryDatasetImplementation) {
+            return (InMemoryDatasetImplementation) dataset;
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Dataset cannot be of type {0}", dataset.getClass()));
         }

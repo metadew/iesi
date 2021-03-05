@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.component;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -34,10 +35,7 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
     }
 
     private ComponentBuildConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository){
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
     }
 
     @Override
@@ -81,11 +79,11 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
     private String deleteStatement(ComponentBuildKey componentBuildKey){
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersionBuilds") +
                 " WHERE COMP_ID = " +
-                SQLTools.GetStringForSQL(componentBuildKey.getComponentId()) +
+                SQLTools.getStringForSQL(componentBuildKey.getComponentId()) +
                 "AND COMP_VRS_NB = " +
-                SQLTools.GetStringForSQL(componentBuildKey.getComponentVersionNb()) +
+                SQLTools.getStringForSQL(componentBuildKey.getComponentVersionNb()) +
                 "AND COMP_BLD_NM = " +
-                SQLTools.GetStringForSQL(componentBuildKey.getComponentBuildName()) + ";";
+                SQLTools.getStringForSQL(componentBuildKey.getComponentBuildName()) + ";";
     }
 
     @Override
@@ -107,13 +105,13 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
         sql += " (COMP_ID, COMP_VRS_NB, COMP_BLD_NM, COMP_BLD_DSC) ";
         sql += "VALUES ";
         sql += "(";
-        sql += SQLTools.GetStringForSQL(componentBuildKey.getComponentId());
+        sql += SQLTools.getStringForSQL(componentBuildKey.getComponentId());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(componentBuildKey.getComponentVersionNb());
+        sql += SQLTools.getStringForSQL(componentBuildKey.getComponentVersionNb());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(componentBuild.getName());
+        sql += SQLTools.getStringForSQL(componentBuild.getName());
         sql += ",";
-        sql += SQLTools.GetStringForSQL(componentBuild.getDescription());
+        sql += SQLTools.getStringForSQL(componentBuild.getDescription());
         sql += ")";
         sql += ";";
 
@@ -122,9 +120,9 @@ public class ComponentBuildConfiguration extends Configuration<ComponentBuild, C
 
     public Optional<ComponentBuild> getComponentBuild(String componentId, long componentVersionNb, String componentBuildName) {
         String queryComponentBuild = "select COMP_ID, COMP_VRS_NB, COMP_BLD_NM, COMP_BLD_DSC from " + getMetadataRepository().getTableNameByLabel("ComponentVersionBuilds")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + " and COMP_VRS_NB = "
-                + SQLTools.GetStringForSQL(componentVersionNb) + " and COMP_BLD_NM = "
-                + SQLTools.GetStringForSQL(componentBuildName) + ";";
+                + " where COMP_ID = " + SQLTools.getStringForSQL(componentId) + " and COMP_VRS_NB = "
+                + SQLTools.getStringForSQL(componentVersionNb) + " and COMP_BLD_NM = "
+                + SQLTools.getStringForSQL(componentBuildName) + ";";
         CachedRowSet crsComponentBuild = getMetadataRepository().executeQuery(queryComponentBuild, "reader");
         try {
             if (crsComponentBuild.size()==0){

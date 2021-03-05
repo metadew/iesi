@@ -1,13 +1,14 @@
 package io.metadew.iesi.metadata.configuration.environment;
 
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,10 +25,32 @@ class EnvironmentConfigurationTest {
     private Environment environment1;
     private Environment environment2;
 
+    @BeforeAll
+    static void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
+    }
+
     @BeforeEach
     void setup() {
         connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
-        connectivityMetadataRepository.createAllTables();
         environment1 = new EnvironmentBuilder("env1")
                 .description("description")
                 .numberOfParameters(2)
@@ -36,13 +59,6 @@ class EnvironmentConfigurationTest {
                 .description("description")
                 .numberOfParameters(2)
                 .build();
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        // drop because the designMetadataRepository already is initialized so you can't recreate those tables
-        // in the initializer unless you delete the tables after each test
-        connectivityMetadataRepository.dropAllTables();
     }
 
     @Test

@@ -1,37 +1,47 @@
 package io.metadew.iesi.connection.database.sqlite;
 
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.DatabaseService;
 import io.metadew.iesi.connection.database.IDatabaseService;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandler;
 import io.metadew.iesi.metadata.definition.MetadataField;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class SqliteDatabaseService extends DatabaseService<SqliteDatabase> implements IDatabaseService<SqliteDatabase> {
 
-    private static SqliteDatabaseService INSTANCE;
+    private static SqliteDatabaseService instance;
 
-    private static final String keyword= "db.sqlite";
+    private static final String KEYWORD = "db.sqlite";
+    private static final String FILE_PATH = "filePath";
+    private static final String FILE_NAME = "fileName";
 
 
-    public synchronized static SqliteDatabaseService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new SqliteDatabaseService();
+    public static synchronized SqliteDatabaseService getInstance() {
+        if (instance == null) {
+            instance = new SqliteDatabaseService();
         }
-        return INSTANCE;
+        return instance;
     }
 
-    private SqliteDatabaseService() {}
+    private SqliteDatabaseService() {
+    }
 
     @Override
     public SqliteDatabase getDatabase(io.metadew.iesi.metadata.definition.connection.Connection connection) {
-        return null;
+        return new SqliteDatabase(new SqliteDatabaseConnection(
+                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, FILE_PATH) +
+                        File.separator +
+                        DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, FILE_NAME),
+                ""
+        ));
     }
 
     @Override
     public String keyword() {
-        return keyword;
+        return KEYWORD;
     }
 
     public Connection getConnection(SqliteDatabase sqliteDatabase) {
@@ -53,7 +63,6 @@ public class SqliteDatabaseService extends DatabaseService<SqliteDatabase> imple
             throw new RuntimeException(e);
         }
     }
-
 
 
     @Override
@@ -83,17 +92,14 @@ public class SqliteDatabaseService extends DatabaseService<SqliteDatabase> imple
         StringBuilder fieldQuery = new StringBuilder();
         // Data Types
         switch (field.getType()) {
-            case "string":
+            case STRING:
+            case FLAG:
+            case CLOB:
+            case TIMESTAMP:
                 fieldQuery.append("TEXT");
                 break;
-            case "flag":
-                fieldQuery.append("TEXT");
-                break;
-            case "number":
+            case NUMBER:
                 fieldQuery.append("NUMERIC");
-                break;
-            case "timestamp":
-                fieldQuery.append("TEXT");
                 break;
         }
 

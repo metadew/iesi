@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigurationTest {
-
     @Test
     void initTest() {
         Configuration configuration = Configuration.getInstance();
@@ -23,5 +22,6 @@ class ConfigurationTest {
         GuardConfiguration guardConfiguration = GuardConfiguration.getInstance();
 
         assertTrue(true);
+
     }
 }

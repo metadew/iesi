@@ -2,9 +2,11 @@ package io.metadew.iesi.metadata.definition.script;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.SecuredObject;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -16,7 +18,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class Script extends Metadata<ScriptKey> {
+public class Script extends SecuredObject<ScriptKey> {
 
     private String name;
     private String description;
@@ -25,10 +27,10 @@ public class Script extends Metadata<ScriptKey> {
     private List<Action> actions;
     private List<ScriptLabel> labels;
 
-
-    public Script(ScriptKey scriptKey, String name, String description, ScriptVersion version,
+    @Builder
+    public Script(ScriptKey scriptKey, SecurityGroupKey securityGroupKey, String securityGroupName, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions, List<ScriptLabel> labels) {
-        super(scriptKey);
+        super(scriptKey, securityGroupKey, securityGroupName);
         this.name = name;
         this.description = description;
         this.version = version;

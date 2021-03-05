@@ -3,6 +3,7 @@ package io.metadew.iesi.script.action.wfa;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -10,40 +11,22 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Scanner;
 
-public class WfaGetConfirmation {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class WfaGetConfirmation extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation confirmationType;
     private ActionParameterOperation confirmationQuestion;
     private ActionParameterOperation timeoutInterval;
     private final int defaultTimeoutInterval = 1000;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public WfaGetConfirmation() {
-
-    }
 
     public WfaGetConfirmation(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -58,11 +41,11 @@ public class WfaGetConfirmation {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
-                this.getConfirmationType().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getConfirmationType().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("question")) {
-                this.getConfirmationQuestion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getConfirmationQuestion().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("timeout")) {
-                this.getTimeoutInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getTimeoutInterval().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -72,26 +55,8 @@ public class WfaGetConfirmation {
         this.getActionParameterOperationMap().put("timeout", this.getTimeoutInterval());
     }
 
-	public boolean execute() throws InterruptedException {
-        try {
-            return executeOperation();
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
 
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean executeOperation() throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
         int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
         String question = convertQuestion(getConfirmationQuestion().getValue());
         String type = convertType(getConfirmationType().getValue());
@@ -114,6 +79,8 @@ public class WfaGetConfirmation {
         if (result) {
             this.getActionExecution().getActionControl().increaseSuccessCount();
         } else {
+            getActionExecution().getActionControl().logOutput("action.error",
+                    "Confirmation was negative");
             this.getActionExecution().getActionControl().increaseErrorCount();
         }
 
@@ -301,30 +268,6 @@ public class WfaGetConfirmation {
         readInput = readInput.toUpperCase();
         this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
         return true;
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getActionParameterOperation(String key) {

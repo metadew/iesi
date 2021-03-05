@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script.design;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.design.ScriptLabelDesignTrace;
@@ -30,10 +31,7 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
     }
 
     private ScriptLabelDesignTraceConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override
@@ -42,9 +40,9 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
             String query = "SELECT SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptLabelDesignTraces") +
                     " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getProcessId()) + " AND " +
-                    " SCRIPT_LBL_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getScriptLabelKey().getId()) + ";";
+                    " RUN_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getProcessId()) + " AND " +
+                    " SCRIPT_LBL_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getScriptLabelKey().getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -92,9 +90,9 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
         String query = "SELECT * FROM " +
                 getMetadataRepository().getTableNameByLabel("ScriptLabelDesignTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getProcessId()) + " AND " +
-                " SCRIPT_LBL_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getScriptLabelKey().getId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getProcessId()) + " AND " +
+                " SCRIPT_LBL_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getScriptLabelKey().getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -102,9 +100,9 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
     private String deleteStatement(ScriptLabelDesignTraceKey scriptLabelDesignTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptLabelDesignTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getProcessId()) + " AND " +
-                " SCRIPT_LBL_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTraceKey.getScriptLabelKey().getId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getProcessId()) + " AND " +
+                " SCRIPT_LBL_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTraceKey.getScriptLabelKey().getId()) + ";";
     }
 
     @Override
@@ -117,13 +115,13 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
     private String insertStatement(ScriptLabelDesignTrace scriptLabelDesignTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptLabelDesignTraces") +
                 " (RUN_ID, PRC_ID, SCRIPT_LBL_ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE) VALUES (" +
-                SQLTools.GetStringForSQL(scriptLabelDesignTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabelDesignTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabelDesignTrace.getMetadataKey().getScriptLabelKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptId()) + ", " +
-                SQLTools.GetStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptVersion()) + ", " +
-                SQLTools.GetStringForSQL(scriptLabelDesignTrace.getName()) + ", " +
-                SQLTools.GetStringForSQL(scriptLabelDesignTrace.getValue()) + ");";
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getScriptLabelKey().getId()) + "," +
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptId()) + ", " +
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptVersion()) + ", " +
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getName()) + ", " +
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getValue()) + ");";
     }
 
     @Override
@@ -136,12 +134,12 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
     private String updateStatement(ScriptLabelDesignTrace scriptLabelDesignTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptLabelDesignTraces") +
                 " SET " +
-                " SCRIPT_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptId()) + ", " +
-                " SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptVersion()) + ", " +
-                " NAME = " + SQLTools.GetStringForSQL(scriptLabelDesignTrace.getName()) + ", " +
-                " VALUE = " + SQLTools.GetStringForSQL(scriptLabelDesignTrace.getValue()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTrace.getMetadataKey().getProcessId()) +
-                " AND SCRIPT_LBL_ID = " + SQLTools.GetStringForSQL(scriptLabelDesignTrace.getMetadataKey().getScriptLabelKey().getId()) + ";";
+                " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptId()) + ", " +
+                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptVersion()) + ", " +
+                " NAME = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getName()) + ", " +
+                " VALUE = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getValue()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getProcessId()) +
+                " AND SCRIPT_LBL_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getScriptLabelKey().getId()) + ";";
     }
 }

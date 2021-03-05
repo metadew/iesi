@@ -38,6 +38,17 @@ public class TextService implements IDataTypeService<Text> {
         return new Text(executionRuntime.resolveVariables(input));
     }
 
+
+    public boolean equals(Text _this, Text other, ExecutionRuntime executionRuntime) {
+        if (_this.getString() == null && other.getString() == null) {
+            return true;
+        } else if (_this.getString() == null || other.getString() == null) {
+            return false;
+        } else {
+            return _this.getString().equals(other.getString());
+        }
+    }
+
     public Text resolve(ValueNode jsonNode) {
         return new Text(jsonNode.asText());
     }

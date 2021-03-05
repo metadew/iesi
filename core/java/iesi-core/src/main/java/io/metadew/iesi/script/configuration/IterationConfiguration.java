@@ -4,8 +4,9 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.h2.H2Database;
 import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
-import io.metadew.iesi.script.operation.ConditionOperation;
+import io.metadew.iesi.script.service.ConditionService;
 
 import javax.script.ScriptException;
 import javax.sql.rowset.CachedRowSet;
@@ -43,19 +44,19 @@ public class IterationConfiguration {
 
     // Methods
     public void cleanIterationVariables(String runId)  {
-        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + "";
+        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + "";
         DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, long processId)  {
-        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + " and PRC_ID = "
+        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + " and PRC_ID = "
                 + processId;
         DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, String iterationList)  {
-        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.GetStringForSQL(runId) + " and LIST_NM = "
-                + SQLTools.GetStringForSQL(iterationList) + ";";
+        String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + " and LIST_NM = "
+                + SQLTools.getStringForSQL(iterationList) + ";";
         DatabaseHandler.getInstance().executeUpdate(database, query);
     }
 
@@ -153,22 +154,22 @@ public class IterationConfiguration {
         value = truncateRuntimeVariableValue(value);
         String query = "INSERT INTO " + PRC_ITERATION_EXEC
                 + "(run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val) VALUES ("
-                + SQLTools.GetStringForSQL(runId) + ","
-                + SQLTools.GetStringForSQL(-1) + ","
-                + SQLTools.GetStringForSQL(listId) + ","
-                + SQLTools.GetStringForSQL(listName) + ","
-                + SQLTools.GetStringForSQL(setId) + ","
-                + SQLTools.GetStringForSQL(setName) + ","
-                + SQLTools.GetStringForSQL(order) + ","
-                + SQLTools.GetStringForSQL(name) + ","
-                + SQLTools.GetStringForSQL(value) + ");";
+                + SQLTools.getStringForSQL(runId) + ","
+                + SQLTools.getStringForSQL(-1) + ","
+                + SQLTools.getStringForSQL(listId) + ","
+                + SQLTools.getStringForSQL(listName) + ","
+                + SQLTools.getStringForSQL(setId) + ","
+                + SQLTools.getStringForSQL(setName) + ","
+                + SQLTools.getStringForSQL(order) + ","
+                + SQLTools.getStringForSQL(name) + ","
+                + SQLTools.getStringForSQL(value) + ");";
         DatabaseHandler.getInstance().executeUpdate(database , query);
 
     }
 
     public IterationInstance hasNext(String runId, long orderNumber)  {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
-                + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and order_nb = " + SQLTools.GetStringForSQL(orderNumber);
+                + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.getStringForSQL(runId) + " and order_nb = " + SQLTools.getStringForSQL(orderNumber);
         CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
         IterationInstance iterationInstance = new IterationInstance();
         try {
@@ -184,29 +185,23 @@ public class IterationConfiguration {
         return iterationInstance;
     }
 
-    public IterationInstance hasNext(String condition)  {
+    public IterationInstance hasNext(String condition, ActionExecution actionExecution)  {
         IterationInstance iterationInstance = new IterationInstance();
 
-        boolean conditionResult = true;
-        ConditionOperation conditionOperation = new ConditionOperation(executionControl, condition);
         try {
-            conditionResult = conditionOperation.evaluateCondition();
-        } catch (ScriptException exception) {
-            conditionResult = true;
-        }
-
-        if (conditionResult) {
-            iterationInstance.setEmpty(false);
-            iterationInstance.getVariableMap().put("iterate", "y");
-        }
+            if (ConditionService.getInstance().evaluateCondition(condition, executionControl.getExecutionRuntime(), actionExecution)) {
+                iterationInstance.setEmpty(false);
+                iterationInstance.getVariableMap().put("iterate", "y");
+            }
+        } catch (ScriptException ignored) {}
 
         return iterationInstance;
     }
 
     public IterationInstance hasNextListItem(String runId, String listName, long orderNumber)  {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
-                + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.GetStringForSQL(runId) + " and list_nm = " + SQLTools.GetStringForSQL(listName)
-                + " and order_nb = " + SQLTools.GetStringForSQL(orderNumber) + ";";
+                + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.getStringForSQL(runId) + " and list_nm = " + SQLTools.getStringForSQL(listName)
+                + " and order_nb = " + SQLTools.getStringForSQL(orderNumber) + ";";
         CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
         IterationInstance iterationInstance = new IterationInstance();
         int items = 0;

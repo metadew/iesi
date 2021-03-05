@@ -10,18 +10,18 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ScriptExecutionRequestDtoTest {
+class ScriptExecutionRequestDtoTest {
 
     @Test
-    public void convertToEntityTest() {
+    void convertToEntityTest() {
         String executionRequestId = UUID.randomUUID().toString();
         String scriptExecutionRequestId = UUID.randomUUID().toString();
         ScriptNameExecutionRequest scriptNameExecutionRequest = new ScriptNameExecutionRequest(
@@ -37,7 +37,7 @@ public class ScriptExecutionRequestDtoTest {
                                 new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(scriptExecutionRequestId + "name2")),
                                 new ScriptExecutionRequestKey(scriptExecutionRequestId),
                                 new ImpersonationKey("name2")))
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.toSet()),
                 Stream.of(new ScriptExecutionRequestParameter(
                                 new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(scriptExecutionRequestId + "param1")),
                                 new ScriptExecutionRequestKey(scriptExecutionRequestId),
@@ -47,7 +47,7 @@ public class ScriptExecutionRequestDtoTest {
                                 new ScriptExecutionRequestParameterKey(DigestUtils.sha256Hex(scriptExecutionRequestId + "param2")),
                                 new ScriptExecutionRequestKey(scriptExecutionRequestId),
                                 "param2",
-                                "value2")).collect(Collectors.toList()),
+                                "value2")).collect(Collectors.toSet()),
                 ScriptExecutionRequestStatus.NEW,
                 "script",
                 1L);
@@ -57,17 +57,23 @@ public class ScriptExecutionRequestDtoTest {
                 executionRequestId,
                 "tst",
                 true,
-                Stream.of(new ScriptExecutionRequestImpersonationDto("name1"),
-                        new ScriptExecutionRequestImpersonationDto("name2"))
-                        .collect(Collectors.toList()),
-                Stream.of(new ScriptExecutionRequestParameterDto("param1", "value1"),
-                        new ScriptExecutionRequestParameterDto("param2", "value2"))
-                        .collect(Collectors.toList()),
+                Stream.of(
+                        new ScriptExecutionRequestImpersonationDto("name1"),
+                        new ScriptExecutionRequestImpersonationDto("name2")
+                ).collect(Collectors.toSet()),
+                Stream.of(
+                        new ScriptExecutionRequestParameterDto("param1", "value1"),
+                        new ScriptExecutionRequestParameterDto("param2", "value2")
+                ).collect(Collectors.toSet()),
                 ScriptExecutionRequestStatus.NEW,
                 "script",
-                1L);
+                1L,
+                null,
+                null,
+                null);
 
-        assertEquals(scriptNameExecutionRequest, scriptExecutionRequestDto.convertToEntity());
+        assertThat(scriptExecutionRequestDto.convertToEntity())
+                .isEqualTo(scriptNameExecutionRequest);
     }
 
 }

@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin
 @Tag(name = "actionTypes", description = "Everything about action types")
-@RequestMapping("/action_types")
+@RequestMapping("/action-types")
 public class ActionTypeController {
 
     private IActionTypeDtoService actionTypeDtoService;

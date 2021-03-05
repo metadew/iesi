@@ -1,13 +1,14 @@
 package io.metadew.iesi.metadata.configuration.connection;
 
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.Optional;
 
@@ -24,10 +25,32 @@ class ConnectionParameterConfigurationTest {
     private ConnectionParameter connectionParameter2;
     private ConnectionParameter connectionParameter3;
 
+    @BeforeAll
+    static void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
+    }
+
     @BeforeEach
     void setup() {
         this.connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
-        connectivityMetadataRepository.createAllTables();
         connectionParameter11 = new ConnectionParameterBuilder("connection1", "env1", "parameter name 1")
                 .value("parameter value")
                 .build();
@@ -40,13 +63,6 @@ class ConnectionParameterConfigurationTest {
         connectionParameter3 = new ConnectionParameterBuilder("connection2", "env2", "parameter name 1")
                 .value("parameter value")
                 .build();
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        // drop because the designMetadataRepository already is initialized so you can't recreate those tables
-        // in the initializer unless you delete the tables after each test
-        connectivityMetadataRepository.dropAllTables();
     }
 
     @Test

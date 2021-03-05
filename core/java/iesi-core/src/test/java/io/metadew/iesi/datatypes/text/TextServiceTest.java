@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,4 +48,22 @@ class TextServiceTest {
     }
 
 
+    @Test
+    void equalsTest() {
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+        assertThat(TextService.getInstance().equals(new Text(""), new Text(""), executionRuntime))
+                .isTrue();
+        assertThat(TextService.getInstance().equals(new Text("test"), new Text("test"), executionRuntime))
+                .isTrue();
+        assertThat(TextService.getInstance().equals(new Text(null), new Text(null), executionRuntime))
+                .isTrue();
+        assertThat(TextService.getInstance().equals(new Text("test1"), new Text("test2"), executionRuntime))
+                .isFalse();
+        assertThat(TextService.getInstance().equals(new Text("test1"), new Text("Test1"), executionRuntime))
+                .isFalse();
+        assertThat(TextService.getInstance().equals(new Text("test1"), new Text(null), executionRuntime))
+                .isFalse();
+        assertThat(TextService.getInstance().equals(new Text(null), new Text("Test1"), executionRuntime))
+                .isFalse();
+    }
 }

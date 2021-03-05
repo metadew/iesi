@@ -1,6 +1,6 @@
 ## sql.evaluateResult
 ## Purpose
-This action executes a sql statement on a relational database and evaluates if a result is returned or not. 
+This action **executes** a sql statement on a relational database **and** **evaluates** if a result is returned or not. 
 If a result is found (count > 0) then the evaluation is successful, otherwise it is considered as an error. 
 
 *Use Cases*

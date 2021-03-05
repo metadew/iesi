@@ -16,4 +16,40 @@ This actiontype defines a dataset connection that can be used in any next action
 |labels|Labels associated to the dataset instance|string|N|N|
 
 ## Example
-TBD
+```yaml
+  - number: 1
+    type: "data.setDatasetConnection"
+    name: "setTransferDataset"
+    description: "define my input dataset for transfer"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "sepatransferInput"
+    - name: "dataset"
+      value : "sepatransfer"
+    - name: "labels"
+      value : "demo,input"
+```
+
+```yaml
+  - number: 2
+    type: "data.setDatasetConnection"
+    name: "setTransferDataset"
+    description: "define my output dataset for transfer"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "sepatransferOutput"
+    - name: "dataset"
+      value : "sepatransfer"
+    - name: "labels"
+      value : "{{$run.id}},output"
+```

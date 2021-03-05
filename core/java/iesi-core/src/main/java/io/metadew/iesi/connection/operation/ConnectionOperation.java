@@ -20,16 +20,20 @@ import java.util.Map;
 
 public class ConnectionOperation {
 
-    private boolean missingMandatoryFields;
-    private List<String> missingMandatoryFieldsList;
+    private static ConnectionOperation instance;
 
-    // TODO: remove
+    public static synchronized ConnectionOperation getInstance() {
+        if (instance == null) {
+            instance = new ConnectionOperation();
+        }
+        return instance;
+    }
+
     public ConnectionOperation() {
     }
 
-
     public HostConnection getHostConnection(Connection connection) {
-        this.setMissingMandatoryFieldsList(new ArrayList<>());
+        List<String> missingMandatoryFields = new ArrayList<>();
 
         HostConnection hostConnection = null;
         if (connection.getType().equalsIgnoreCase("host.windows")) {
@@ -47,21 +51,20 @@ public class ConnectionOperation {
             }
 
             // Check Mandatory Parameters
-            this.setMissingMandatoryFields(false);
             ConnectionType connectionType = this.getConnectionType(connection.getType());
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isMandatory()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("host")) {
                         if (hostName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("host");
+                            missingMandatoryFields.add("host");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("temppath")) {
                         if (tempPath.trim().equalsIgnoreCase(""))
-                            this.addMissingField("tempPath");
+                            missingMandatoryFields.add("tempPath");
                     }
                 }
             }
 
-            if (this.isMissingMandatoryFields()) {
+            if (!missingMandatoryFields.isEmpty()) {
                 String message = "Mandatory fields missing for windows host connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
@@ -70,15 +73,15 @@ public class ConnectionOperation {
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isEncrypted()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("host")) {
-                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
+                        hostName = FrameworkCrypto.getInstance().decryptIfNeeded(hostName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("temppath")) {
-                        tempPath = FrameworkCrypto.getInstance().decrypt(tempPath);
+                        tempPath = FrameworkCrypto.getInstance().decryptIfNeeded(tempPath);
                     }
                 }
             }
 
             hostConnection = new WindowsHostConnection(hostName, tempPath);
-        } else if (connection.getType().equalsIgnoreCase("host.linux")) {
+        } else if (connection.getType().equalsIgnoreCase("host.linux") || connection.getType().equalsIgnoreCase("host.unix")) {
             String hostName = "";
             int portNumber = 0;
             String userName = "";
@@ -120,39 +123,38 @@ public class ConnectionOperation {
             }
 
             // Check Mandatory Parameters
-            this.setMissingMandatoryFields(false);
             ConnectionType connectionType = this.getConnectionType(connection.getType());
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isMandatory()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("host")) {
                         if (hostName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("host");
+                            missingMandatoryFields.add("host");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("port")) {
                         if (portNumber == 0)
-                            this.addMissingField("port");
+                            missingMandatoryFields.add("port");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("user")) {
                         if (userName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("user");
+                            missingMandatoryFields.add("user");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("password")) {
                         if (userPassword.trim().equalsIgnoreCase(""))
-                            this.addMissingField("password");
+                            missingMandatoryFields.add("password");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("temppath")) {
                         if (tempPath.trim().equalsIgnoreCase(""))
-                            this.addMissingField("tempPath");
+                            missingMandatoryFields.add("tempPath");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("simulateterminal")) {
                         if (terminalFlag.trim().equalsIgnoreCase(""))
-                            this.addMissingField("simulateTerminal");
+                            missingMandatoryFields.add("simulateTerminal");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("jumphostconnections")) {
                         if (jumpHostConnectionName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("jumphostConnections");
+                            missingMandatoryFields.add("jumphostConnections");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("allowlocalhostexecution")) {
                         if (allowLocalhostExecution.trim().equalsIgnoreCase(""))
-                            this.addMissingField("allowLocalhostExecution");
+                            missingMandatoryFields.add("allowLocalhostExecution");
                     }
                 }
             }
 
-            if (this.isMissingMandatoryFields()) {
+            if (!missingMandatoryFields.isEmpty()) {
                 String message = "Mandatory fields missing for linux host connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
@@ -161,21 +163,21 @@ public class ConnectionOperation {
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isEncrypted()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("host")) {
-                        hostName = FrameworkCrypto.getInstance().decrypt(hostName);
+                        hostName = FrameworkCrypto.getInstance().decryptIfNeeded(hostName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("user")) {
-                        userName = FrameworkCrypto.getInstance().decrypt(userName);
+                        userName = FrameworkCrypto.getInstance().decryptIfNeeded(userName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("password")) {
-                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
+                        userPassword = FrameworkCrypto.getInstance().decryptIfNeeded(userPassword);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("temppath")) {
-                        tempPath = FrameworkCrypto.getInstance().decrypt(tempPath);
+                        tempPath = FrameworkCrypto.getInstance().decryptIfNeeded(tempPath);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("simulateterminal")) {
-                        terminalFlag = FrameworkCrypto.getInstance().decrypt(terminalFlag);
+                        terminalFlag = FrameworkCrypto.getInstance().decryptIfNeeded(terminalFlag);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("jumphostconnections")) {
                         jumpHostConnectionName = FrameworkCrypto.getInstance()
-                                .decrypt(jumpHostConnectionName);
+                                .decryptIfNeeded(jumpHostConnectionName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("allowLocalhostexecution")) {
                         allowLocalhostExecution = FrameworkCrypto.getInstance()
-                                .decrypt(allowLocalhostExecution);
+                                .decryptIfNeeded(allowLocalhostExecution);
                     }
                 }
             }
@@ -188,7 +190,7 @@ public class ConnectionOperation {
     }
 
     public ArtifactoryConnection getArtifactoryConnection(Connection connection) {
-        this.setMissingMandatoryFieldsList(new ArrayList<>());
+        List<String> missingMandatoryFields = new ArrayList<>();
 
         ArtifactoryConnection artifactoryConnection = null;
         if (connection.getType().equalsIgnoreCase("repo.artifactory")) {
@@ -217,27 +219,26 @@ public class ConnectionOperation {
             }
 
             // Check Mandatory Parameters
-            this.setMissingMandatoryFields(false);
             ConnectionType connectionType = this.getConnectionType(connection.getType());
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isMandatory()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("url")) {
                         if (connectionURL.trim().equalsIgnoreCase(""))
-                            this.addMissingField("url");
+                            missingMandatoryFields.add("url");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("user")) {
                         if (userName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("user");
+                            missingMandatoryFields.add("user");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("password")) {
                         if (userPassword.trim().equalsIgnoreCase(""))
-                            this.addMissingField("password");
+                            missingMandatoryFields.add("password");
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("repository")) {
                         if (repositoryName.trim().equalsIgnoreCase(""))
-                            this.addMissingField("repository");
+                            missingMandatoryFields.add("repository");
                     }
                 }
             }
 
-            if (this.isMissingMandatoryFields()) {
+            if (!missingMandatoryFields.isEmpty()) {
                 String message = "Mandatory fields missing for artifactory connection " + connection.getMetadataKey().getName();
                 throw new RuntimeException(message);
             }
@@ -246,13 +247,13 @@ public class ConnectionOperation {
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isEncrypted()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("url")) {
-                        connectionURL = FrameworkCrypto.getInstance().decrypt(connectionURL);
+                        connectionURL = FrameworkCrypto.getInstance().decryptIfNeeded(connectionURL);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("user")) {
-                        userName = FrameworkCrypto.getInstance().decrypt(userName);
+                        userName = FrameworkCrypto.getInstance().decryptIfNeeded(userName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("password")) {
-                        userPassword = FrameworkCrypto.getInstance().decrypt(userPassword);
+                        userPassword = FrameworkCrypto.getInstance().decryptIfNeeded(userPassword);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("repository")) {
-                        repositoryName = FrameworkCrypto.getInstance().decrypt(repositoryName);
+                        repositoryName = FrameworkCrypto.getInstance().decryptIfNeeded(repositoryName);
                     }
                 }
             }
@@ -265,44 +266,17 @@ public class ConnectionOperation {
     }
 
     public boolean isOnLocalConnection(HostConnection hostConnection) {
-        boolean result = false;
-
         try {
             String localHostName = InetAddress.getLocalHost().getHostName();
-            if (hostConnection.getHostName().equalsIgnoreCase(localHostName))
-                result = true;
+            return hostConnection.getHostName().equalsIgnoreCase(localHostName);
         } catch (UnknownHostException e) {
-            result = false;
+            return false;
         }
-
-        return result;
     }
 
     public ConnectionType getConnectionType(String connectionTypeName) {
         ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
         return connectionTypeConfiguration.getConnectionType(connectionTypeName);
-    }
-
-    protected void addMissingField(String fieldName) {
-        this.setMissingMandatoryFields(true);
-        this.getMissingMandatoryFieldsList().add(fieldName);
-    }
-
-    // Getters and Setters
-    public boolean isMissingMandatoryFields() {
-        return missingMandatoryFields;
-    }
-
-    public void setMissingMandatoryFields(boolean missingMandatoryFields) {
-        this.missingMandatoryFields = missingMandatoryFields;
-    }
-
-    public List<String> getMissingMandatoryFieldsList() {
-        return missingMandatoryFieldsList;
-    }
-
-    public void setMissingMandatoryFieldsList(List<String> missingMandatoryFieldsList) {
-        this.missingMandatoryFieldsList = missingMandatoryFieldsList;
     }
 
 }

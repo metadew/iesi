@@ -116,8 +116,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
             Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection definition for {} in environment {}",
                             connectionName, getExecutionControl().getEnvName())));
-            ConnectionOperation connectionOperation = new ConnectionOperation();
-            hostConnection = connectionOperation.getHostConnection(connection);
+            hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
         }
 
 

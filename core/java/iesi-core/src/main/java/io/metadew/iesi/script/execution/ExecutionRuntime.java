@@ -26,9 +26,11 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.sql.rowset.CachedRowSet;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -103,24 +105,27 @@ public class ExecutionRuntime {
         stageOperationMap = new HashMap<>();
     }
 
-    public void setRuntimeVariables(ActionExecution actionExecution, ResultSet rs) {
-        if (SQLTools.getRowCount(rs) == 1) {
-            try {
-                ResultSetMetaData rsmd = rs.getMetaData();
-                int numberOfColums = rsmd.getColumnCount();
-                rs.beforeFirst();
-                while (rs.next()) {
-                    for (int i = 1; i < numberOfColums + 1; i++) {
-                        this.setRuntimeVariable(actionExecution, rsmd.getColumnName(i), rs.getString(i));
-                    }
-                }
-                rs.close();
-            } catch (SQLException e) {
-                throw new RuntimeException("Error getting sql result " + e, e);
-            }
-        } else {
+    public void setRuntimeVariables(ActionExecution actionExecution, CachedRowSet cachedRowSet) throws SQLException {
+        if (cachedRowSet.size() != 1) {
             throw new RuntimeException("Only 1 line of data expected");
         }
+        ResultSetMetaData resultSetMetaData = cachedRowSet.getMetaData();
+        int numberOfColums = resultSetMetaData.getColumnCount();
+        cachedRowSet.beforeFirst();
+        cachedRowSet.next();
+        for (int i = 1; i < numberOfColums + 1; i++) {
+            String columnName;
+            try {
+                columnName = resultSetMetaData.getColumnLabel(i);
+            } catch (SQLFeatureNotSupportedException e) {
+                columnName = resultSetMetaData.getColumnName(i);
+            }
+            setRuntimeVariable(
+                    actionExecution,
+                    columnName,
+                    cachedRowSet.getObject(i).toString());
+        }
+        cachedRowSet.close();
     }
 
     public void setRuntimeVariables(ActionExecution actionExecution, String input) {

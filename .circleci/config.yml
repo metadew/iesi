@@ -24,8 +24,8 @@ jobs:
       - checkout
 
       # Download jars not available from maven central
-      - run: 
-          name: install local dependencies
+      - run:
+          name: Install local dependencies
           command: |
             mvn install:install-file -Dfile=build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
             mvn install:install-file -Dfile=build/ext/artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
@@ -47,13 +47,17 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: |
-          cd ~/repo/core/java/iesi-core
-          mvn dependency:go-offline
+      - run:
+          name: Fetch dependencies for Core
+          command: |
+            cd ~/repo/core/java/iesi-core
+            mvn dependency:go-offline
 
-      - run: |
-          cd ~/repo/core/java/iesi-core
-          mvn clean install
+      - run:
+          name: Build, package and install the Core
+          command: |
+            cd ~/repo/core/java/iesi-core
+            mvn clean install
 
       - run:
           name: Save test results
@@ -64,11 +68,13 @@ jobs:
 
       - store_artifacts:
           path: core/java/iesi-core/target/iesi-core-0.6.0.jar
-      
-      - run: |
-          cd ~/repo/core/java/iesi-rest-without-microservices
-          mvn dependency:go-offline
-          
+
+      - run:
+          name: Fetch dependencies for REST Server
+          command: |
+            cd ~/repo/core/java/iesi-rest-without-microservices
+            mvn dependency:go-offline
+
       - save_cache:
           paths:
             - ~/.m2
@@ -76,9 +82,11 @@ jobs:
 
       # run tests! - This is where we need to some magic
 
-      - run: |
-          cd ~/repo/core/java/iesi-rest-without-microservices
-          mvn clean install
+      - run:
+          name: Build, package and install the REST Server
+          command: |
+            cd ~/repo/core/java/iesi-rest-without-microservices
+            mvn clean install
 
       - run:
           name: Save test results

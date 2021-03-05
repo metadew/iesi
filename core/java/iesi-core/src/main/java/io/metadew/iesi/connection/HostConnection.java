@@ -266,11 +266,11 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
+                        String finalJumphostConnection = jumphostConnection;
                         Connection connection = ConnectionConfiguration.getInstance()
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
-                                .get();
-                        ConnectionOperation connectionOperation = new ConnectionOperation();
-                        hostConnection = connectionOperation.getHostConnection(connection);
+                                .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(finalJumphostConnection, shellCommandSettings.getEnvironment()))));
+                        hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }
@@ -420,8 +420,7 @@ public class HostConnection {
                         Connection connection = ConnectionConfiguration.getInstance()
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .get();
-                        ConnectionOperation connectionOperation = new ConnectionOperation();
-                        hostConnection = connectionOperation.getHostConnection(connection);
+                        hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }

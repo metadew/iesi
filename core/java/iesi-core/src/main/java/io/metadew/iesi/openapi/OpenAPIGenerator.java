@@ -20,16 +20,17 @@ import java.util.List;
 
 @Log4j2
 public class OpenAPIGenerator {
-    private static OpenAPIGenerator INSTANCE;
+    private static OpenAPIGenerator instance;
 
     private OpenAPIGenerator() {}
 
 
+
     public synchronized static OpenAPIGenerator getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new OpenAPIGenerator();
+        if (instance == null) {
+            instance = new OpenAPIGenerator();
         }
-        return INSTANCE;
+        return instance;
     }
 
     public void generate(List<Connection> connections, List<Component> components, String target, boolean load) {
@@ -78,6 +79,7 @@ public class OpenAPIGenerator {
             ConnectionConfiguration.getInstance().insert(connection);
         } catch (MetadataAlreadyExistsException e) {
             ConnectionConfiguration.getInstance().update(connection);
+
         }
     }
 

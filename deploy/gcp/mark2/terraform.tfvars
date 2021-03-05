@@ -1,0 +1,5 @@
+credentials_file=""
+project=""
+region=""
+zone=""
+database_version="POSTGRES_12"

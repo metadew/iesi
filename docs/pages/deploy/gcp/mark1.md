@@ -2,6 +2,8 @@
 
 This configuration will perform a Mark1 deployment using Terraform.
 
+You can find all relevant assets at the following location: ```deploy/gcp/mark1```
+
 ## General prerequisites
 * Make sure that Terraform is up-and-running, if not have a look [here](https://learn.hashicorp.com/terraform/gcp/intro)
 * Select a project to deploy to. If none exists, create a new project.
@@ -25,3 +27,8 @@ terraform apply
 ```
 
 And you are ready to go! Check it out in the console!
+
+## Components
+
+* google_compute_instance -> contains metadata_startup_script using a template
+  * google_compute_address -> static IP address

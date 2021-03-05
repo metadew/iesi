@@ -61,6 +61,8 @@
   * [Connectors](/{{site.repository}}/pages/deploy/connectors.html)
   * Google Cloud Platform (GCP)
     * [Getting started](/{{site.repository}}/pages/deploy/gcp/deploy-on-gcp.html)
+    * [Mark1](/{{site.repository}}/pages/deploy/gcp/mark1.html)
+    * [Mark2](/{{site.repository}}/pages/deploy/gcp/mark2.html)
     * [Applying Terraform code](/{{site.repository}}/pages/deploy/gcp/apply-terraform-code.html)
 * [Understand the framework](/{{site.repository}}/pages/understand/understand.html)
   * [Legend tables](/{{site.repository}}/pages/understand/legend.html)

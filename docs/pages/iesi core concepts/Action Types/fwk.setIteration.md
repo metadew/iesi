@@ -59,9 +59,9 @@ This actiontype defines an interation that can be used in any next action. It re
       value: "for"
     - name: "from"
       value: "1"
-	- name: "to"
+    - name: "to"
       value: "5"
-	- name: "step"
+    - name: "step"
       value: "1"
 ```
 ## Example 3
@@ -103,10 +103,10 @@ This actiontype defines an interation that can be used in any next action. It re
       value: "for"
     - name: "from"
       value: "1"
-	- name: "to"
+    - name: "to"
       value: "5"
-	- name: "step"
+    - name: "step"
       value: "1"
-	- name: "interrupt"
+    - name: "interrupt"
       value: "Y"
 ```

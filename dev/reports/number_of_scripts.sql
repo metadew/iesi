@@ -1,1 +1,0 @@
-select count(*) from iesi_DES_SCRIPT

@@ -6,7 +6,7 @@ Depending on the type of operation, the framework has embedded the notion of act
 
 Goal is to compose the script using the correct ‘building blocks’ and eventually result in a set of scripted actions. 
 
-![Action Types Design](docs/images/introduction/action_types_concept.png)
+![Action Types Design](https://github.com/metadew/iesi/blob/f76e53b5cfc119f3ddb16c8857cec689146055f7/docs/images/introduction/action_types_concept.png)
 
 ## Action Types - Overview
 The action types are prefix based on the **actions category**:

@@ -9,7 +9,7 @@ The automation framework is designed around the principle to configure scripts o
 
 We summarize the process of automating in four key steps:
 
-![IESI Core Concepts](/{{site.repository}}/docs/images/concepts_with_steps.png)
+![IESI Core Concepts](https://github.com/metadew/iesi/blob/dff06fd8d4cd81541635d467797c4eb5c58e36cc/docs/images/concepts_with_steps.png)
 
 
 **1. Define the system landscape** \
@@ -18,7 +18,9 @@ Before we can design our script, we need to think about the following questions:
   * Environment configuration
   * Connection configuration
   * Component configuration
-  
+
+Learn more [here](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Define%20the%20system%20landscape%20-%20Introduction.md) 
+
 **2. Configure the script**\
 Design your script by defining a set of actions that need to be executed in a specific sequence. Depending on the type of action you would like to perform, IESI has embedded the notion of action types which will help the user by limiting the required effort. We will get acquainted with the following concepts of script building:
  
@@ -27,6 +29,8 @@ Design your script by defining a set of actions that need to be executed in a sp
   * Using datasets
   * Using functions/instructions
   * Using expected/stop on error
+
+Learn more [here](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Introduction.md)
   
 **3. Execute the script**\
 Once the design has been finalized and the system landscape has been configured, it is time to execute your script by loading it into the repository and executing it through the interface. We will get acquainted with the following concepts of script execution:
@@ -37,11 +41,3 @@ Once the design has been finalized and the system landscape has been configured,
   
 **4. Verify the result**\
 Validate your result through the IESI interface, by complementing IESI with reporting tooling or by simply having a look in your central repository.
-
-
-
-
-
-
-
-

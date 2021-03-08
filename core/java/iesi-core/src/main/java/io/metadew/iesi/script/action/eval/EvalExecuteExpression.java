@@ -51,6 +51,11 @@ public class EvalExecuteExpression extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "eval.executeExpression";
+    }
+
     private String convertExpression(DataType expression) {
         if (expression instanceof Text) {
             return expression.toString();

@@ -147,6 +147,11 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "ddl.generateFromFile";
+    }
+
     public ActionParameterOperation getActionParameterOperation(String key) {
         return this.getActionParameterOperationMap().get(key);
     }

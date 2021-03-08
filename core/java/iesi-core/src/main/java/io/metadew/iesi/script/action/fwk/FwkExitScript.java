@@ -56,6 +56,11 @@ public class FwkExitScript extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.exitScript";
+    }
+
     private Optional<String> convertStatus(DataType status) {
         if (status == null) {
             return Optional.empty();

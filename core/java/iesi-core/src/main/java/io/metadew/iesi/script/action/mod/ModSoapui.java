@@ -132,6 +132,11 @@ public class ModSoapui extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "mod.soapUi";
+    }
+
     public ActionParameterOperation getActionParameterOperation(String key) {
         return this.getActionParameterOperationMap().get(key);
     }

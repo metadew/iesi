@@ -57,6 +57,11 @@ public class ConnSetStageConnection extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "conn.setStageConnection";
+    }
+
     private String convertStageName(DataType stageName) {
         if (stageName instanceof Text) {
             return stageName.toString();

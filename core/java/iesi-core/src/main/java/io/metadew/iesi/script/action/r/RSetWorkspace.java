@@ -52,6 +52,11 @@ public class RSetWorkspace extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "r.setWorkspace";
+    }
+
     private String convertReferenceName(DataType referenceName) {
         if (referenceName == null) {
             throw new RuntimeException("No reference name defined for RSetWorkspace");

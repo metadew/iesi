@@ -160,6 +160,11 @@ public class CliExecuteCommand extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "cli.executeCommand";
+    }
+
     private String convertSetRuntimeVariablesMode(DataType setRuntimeVariablesMode) {
         // TODO: make optional
         if (setRuntimeVariablesMode == null) {

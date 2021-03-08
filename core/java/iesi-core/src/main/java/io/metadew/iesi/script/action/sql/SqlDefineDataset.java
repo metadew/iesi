@@ -80,6 +80,11 @@ public class SqlDefineDataset extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.defineDataset";
+    }
+
     private String convertIdentifierName(DataType identifierName) {
         // TODO: list?
         if (identifierName instanceof Text) {

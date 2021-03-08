@@ -150,6 +150,11 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "eval.verifySingleField";
+    }
+
     private String convertCheckOperationName(DataType checkOperationName) {
         if (checkOperationName instanceof Text) {
             return checkOperationName.toString();

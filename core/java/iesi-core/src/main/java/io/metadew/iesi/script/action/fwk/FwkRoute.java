@@ -127,6 +127,11 @@ public class FwkRoute extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.route";
+    }
+
     private RouteOperation getRouteOperation(int id) {
         if (this.getRouteOperationMap().containsKey(Integer.toString(id))) {
             return this.getRouteOperationMap().get(Integer.toString(id));

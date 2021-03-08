@@ -60,6 +60,11 @@ public class ConnIsAlive extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "conn.isAlive";
+    }
+
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {
             return connectionName.toString();

@@ -64,6 +64,11 @@ public class RPrepareWorkspace extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return null;
+    }
+
     private String convertWorkspaceReferenceName(DataType referenceName) {
         if (referenceName == null) {
             throw new RuntimeException("No workspace reference name defined for RPrepareWorkspace");

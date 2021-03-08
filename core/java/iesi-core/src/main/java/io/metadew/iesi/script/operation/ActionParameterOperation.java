@@ -20,7 +20,6 @@ import java.text.MessageFormat;
  */
 public class ActionParameterOperation {
 
-    private final ActionTypeParameterConfiguration actionTypeParameterConfiguration;
     private final ExecutionControl executionControl;
     private ActionExecution actionExecution;
     private final String name;
@@ -31,20 +30,18 @@ public class ActionParameterOperation {
 
     // Constructors
     public ActionParameterOperation(ExecutionControl executionControl, ActionExecution actionExecution, String actionTypeName, String name) {
-        actionTypeParameterConfiguration = new ActionTypeParameterConfiguration();
         this.executionControl = executionControl;
         this.actionExecution = actionExecution;
         this.name = name;
-        actionTypeParameter = actionTypeParameterConfiguration.getActionTypeParameter(actionTypeName, name)
+        actionTypeParameter = ActionTypeParameterConfiguration.getInstance().getActionTypeParameter(actionTypeName, name)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("No definition found for parameter {0} of action {1}", name, actionTypeName)));
     }
 
     public ActionParameterOperation(ExecutionControl executionControl,
                                     String actionTypeName, String name, String value) {
-        actionTypeParameterConfiguration = new ActionTypeParameterConfiguration();
         this.executionControl = executionControl;
         this.name = name;
-        actionTypeParameter = actionTypeParameterConfiguration.getActionTypeParameter(actionTypeName, name)
+        actionTypeParameter = ActionTypeParameterConfiguration.getInstance().getActionTypeParameter(actionTypeName, name)
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("No definition found for parameter {0} of action {1}", name, actionTypeName)));
         this.setInputValue(value, executionControl.getExecutionRuntime());
     }

@@ -120,6 +120,11 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.executeProcedure";
+    }
+
     private String convertSqlProcedure(DataType sqlProcedure) {
         if (sqlProcedure instanceof Text) {
             return sqlProcedure.toString();

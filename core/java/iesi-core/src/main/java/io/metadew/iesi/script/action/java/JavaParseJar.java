@@ -81,6 +81,11 @@ public class JavaParseJar extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "java.parseJava";
+    }
+
 
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {

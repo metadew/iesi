@@ -54,6 +54,11 @@ public class RStopShinyApp extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "r.stopShinyApp";
+    }
+
     private String convertWorkspaceReferenceName(DataType referenceName) {
         if (referenceName == null) {
             throw new RuntimeException("No workspace reference name defined for RPrepareWorkspace");

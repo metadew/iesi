@@ -53,6 +53,11 @@ public class FwkSetParameterValue extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.setParameterValue";
+    }
+
     private String convertValue(DataType value) {
         if (value instanceof Text) {
             return value.toString();

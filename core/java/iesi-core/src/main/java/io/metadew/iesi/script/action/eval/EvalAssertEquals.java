@@ -68,4 +68,9 @@ public class EvalAssertEquals extends ActionTypeExecution {
         return evaluation;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "eval.assertEquals";
+    }
+
 }

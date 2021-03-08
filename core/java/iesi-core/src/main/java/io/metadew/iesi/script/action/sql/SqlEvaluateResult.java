@@ -101,6 +101,11 @@ public class SqlEvaluateResult extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.evaluateResult";
+    }
+
 
     private boolean convertHasResult(DataType hasResult) {
         if (hasResult instanceof Text) {

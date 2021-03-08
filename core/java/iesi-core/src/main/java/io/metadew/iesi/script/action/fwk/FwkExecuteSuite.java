@@ -215,6 +215,11 @@ public class FwkExecuteSuite extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.executeSuite";
+    }
+
 
     private String convertToString(DataType field) {
         if (field instanceof Text) {

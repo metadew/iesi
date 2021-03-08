@@ -129,6 +129,11 @@ public class FhoFileExists extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fho.fileExists";
+    }
+
 
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {

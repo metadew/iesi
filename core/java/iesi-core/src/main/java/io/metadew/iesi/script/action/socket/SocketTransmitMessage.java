@@ -127,6 +127,11 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "socket.TransmitMessage";
+    }
+
     private void sendUDPMessage() throws IOException {
         InetSocketAddress socketAddress = new InetSocketAddress(socket.getHostName(), socket.getPort());
         DatagramSocket datagramSocket = new DatagramSocket(socketAddress);

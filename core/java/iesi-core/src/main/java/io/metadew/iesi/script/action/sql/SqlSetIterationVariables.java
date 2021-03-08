@@ -78,6 +78,11 @@ public class SqlSetIterationVariables extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.setIterationVariables";
+    }
+
     private String convertListName(DataType listName) {
         if (listName instanceof Text) {
             return listName.toString();

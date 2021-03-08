@@ -144,6 +144,11 @@ public class FwkExecuteScript extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.executeScript";
+    }
+
     private Map<String, String> convertParameterEntry(DataType parameterEntry) {
         Map<String, String> parameterMap = new HashMap<>();
         if (parameterEntry instanceof Text) {

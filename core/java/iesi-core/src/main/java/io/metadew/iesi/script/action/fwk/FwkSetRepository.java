@@ -81,6 +81,11 @@ public class FwkSetRepository extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.setRepository";
+    }
+
     private String convertRepositoryInstanceName(DataType repositoryInstanceName) {
         if (repositoryInstanceName instanceof Text) {
             return repositoryInstanceName.toString();

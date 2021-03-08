@@ -54,6 +54,11 @@ public class FwkSetEnvironment extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.setEnvironment";
+    }
+
     private String convertEnvironmentName(DataType environmentName) {
         if (environmentName instanceof Text) {
             return environmentName.toString();

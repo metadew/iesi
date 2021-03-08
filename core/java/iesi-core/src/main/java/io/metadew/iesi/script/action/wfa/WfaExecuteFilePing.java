@@ -163,6 +163,11 @@ public class WfaExecuteFilePing extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "wfa.executeFilePing";
+    }
+
 
     private int convertWaitInterval(DataType waitInterval) {
         if (waitInterval == null) {

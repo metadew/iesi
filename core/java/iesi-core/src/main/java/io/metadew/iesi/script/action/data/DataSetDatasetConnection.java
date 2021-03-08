@@ -139,6 +139,11 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "data.setDatasetConnection";
+    }
+
     private String convertDatasetReferenceName(DataType referenceName) {
         if (!(referenceName instanceof Text)) {
             log.warn(MessageFormat.format("{0} does not accept {1} as type for reference name",

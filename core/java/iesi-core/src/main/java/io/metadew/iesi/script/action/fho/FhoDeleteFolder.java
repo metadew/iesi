@@ -113,6 +113,11 @@ public class FhoDeleteFolder extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fho.deleteFolder";
+    }
+
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {
             return connectionName.toString();

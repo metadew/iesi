@@ -55,6 +55,11 @@ public class FwkSetParameterList extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.setParameterList";
+    }
+
     private Map<String, String> convertList(DataType list) {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {

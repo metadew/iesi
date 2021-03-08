@@ -130,6 +130,11 @@ public class FhoFolderExists extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fho.folderExists";
+    }
+
 
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {

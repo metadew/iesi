@@ -118,6 +118,11 @@ public class FhoCreateFolder extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fho.createFolder";
+    }
+
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {
             return connectionName.toString();

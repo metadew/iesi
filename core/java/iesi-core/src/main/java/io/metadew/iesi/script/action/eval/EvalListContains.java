@@ -60,6 +60,11 @@ public class EvalListContains extends ActionTypeExecution {
         return result;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "eval.listContains";
+    }
+
     private boolean executeOperation(Array list, DataType element) throws InterruptedException {
         if (element instanceof Template) {
             for (DataType dataType : list.getList()) {

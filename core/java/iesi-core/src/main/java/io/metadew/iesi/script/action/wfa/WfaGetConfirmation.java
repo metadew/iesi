@@ -87,6 +87,11 @@ public class WfaGetConfirmation extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "wfa.getConfirmation";
+    }
+
     private String convertType(DataType type) {
         if (type instanceof Text) {
             return type.toString();

@@ -71,6 +71,11 @@ public class FwkIncludeScript extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.includeScript";
+    }
+
     private Optional<Long> convertScriptVersion(DataType scriptVersion) {
         if (scriptVersion == null) {
             return Optional.empty();

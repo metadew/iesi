@@ -154,6 +154,11 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.executeQuery";
+    }
+
 
     public ActionParameterOperation getConnectionName() {
         return connectionName;

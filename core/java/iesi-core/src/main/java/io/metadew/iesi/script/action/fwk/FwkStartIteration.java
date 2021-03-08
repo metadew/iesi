@@ -74,6 +74,11 @@ public class FwkStartIteration extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.startIteration";
+    }
+
     public ActionParameterOperation getTypeName() {
         return typeName;
     }

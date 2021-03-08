@@ -67,4 +67,9 @@ public class RCleanWorkspace extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "r.cleanWorkspace";
+    }
+
 }

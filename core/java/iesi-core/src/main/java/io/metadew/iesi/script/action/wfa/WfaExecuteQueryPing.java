@@ -172,6 +172,11 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "wfa.executeQueryPing";
+    }
+
     private boolean converSetRuntimeVariable(DataType setRuntimeVariables) {
         if (setRuntimeVariables == null) {
             return false;

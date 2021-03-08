@@ -81,6 +81,11 @@ public class SqlExecuteStatement extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.executeStatement";
+    }
+
     private String convertSqlStatement(DataType sqlStatement) {
         if (sqlStatement instanceof Text) {
             return sqlStatement.toString();

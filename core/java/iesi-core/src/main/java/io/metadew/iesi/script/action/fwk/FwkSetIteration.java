@@ -106,6 +106,11 @@ public class FwkSetIteration extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.setIteration";
+    }
+
 
     private boolean convertIterationInterrupt(DataType iterationInterrupt) {
         // TODO: remove if different class for every iteration variable

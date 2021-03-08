@@ -99,6 +99,11 @@ public class DataCompareDataset extends ActionTypeExecution {
         return errorsDetected <= 0;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "data.compareDataset";
+    }
+
     private String convertDatasetName(DataType datasetName) {
         if (datasetName instanceof Text) {
             return datasetName.toString();

@@ -75,6 +75,11 @@ public class WfaExecuteWait extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "wfa.executeWait";
+    }
+
     private int convertWaitInterval(DataType waitInterval) {
         if (waitInterval == null) {
             return defaultWaitInterval;

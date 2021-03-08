@@ -100,6 +100,11 @@ public class FwkOutputMessage extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.outputMessage";
+    }
+
     public ActionParameterOperation getMessage() {
         return message;
     }

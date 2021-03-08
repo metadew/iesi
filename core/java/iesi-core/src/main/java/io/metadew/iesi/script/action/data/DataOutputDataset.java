@@ -71,6 +71,11 @@ public class DataOutputDataset extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "data.outputDataset";
+    }
+
 
     private List<String> convertDatasetLabels(DataType datasetLabels, ExecutionRuntime executionRuntime) {
         List<String> labels = new ArrayList<>();

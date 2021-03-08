@@ -73,6 +73,11 @@ public class ScriptLogOutput extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "script.logOutput";
+    }
+
     private String convertOutputValue(DataType outputValue) {
         return outputValue.toString();
     }

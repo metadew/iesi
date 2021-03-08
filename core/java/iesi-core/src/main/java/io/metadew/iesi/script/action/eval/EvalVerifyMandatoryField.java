@@ -149,6 +149,11 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "eval.verifyMandatoryField";
+    }
+
     private boolean convertIsMandatory(DataType isMandatory) {
         if (isMandatory instanceof Text) {
             return isMandatory.toString().equalsIgnoreCase("y");

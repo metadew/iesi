@@ -132,6 +132,11 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fho.executeFileTransfer";
+    }
+
     private String convertTargetConnection(DataType targetConnection) {
         if (targetConnection instanceof Text) {
             return targetConnection.toString();

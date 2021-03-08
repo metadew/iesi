@@ -82,4 +82,9 @@ public class RExecuteScript extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "r.executeScript";
+    }
+
 }

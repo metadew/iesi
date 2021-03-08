@@ -68,6 +68,11 @@ public class SqlSetRuntimeVariables extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.setRuntimeVariables";
+    }
+
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {
             return connectionName.toString();

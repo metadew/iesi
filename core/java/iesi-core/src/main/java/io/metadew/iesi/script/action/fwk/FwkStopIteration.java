@@ -41,6 +41,11 @@ public class FwkStopIteration extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.stopIteration";
+    }
+
     public ActionParameterOperation getStartActionName() {
         return startActionName;
     }

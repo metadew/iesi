@@ -86,4 +86,9 @@ public class RStartShinyApp extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "r.startShinyApp";
+    }
+
 }

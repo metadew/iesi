@@ -117,6 +117,11 @@ public class FhoDeleteFile extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fho.deleteFile";
+    }
+
 
     private String convertConnectionName(DataType connectionName) {
         System.out.println("converting connection name");

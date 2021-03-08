@@ -24,7 +24,7 @@ The core features of the framework can be visualized with the illustration below
 * **Monitor** the activity and current status of the framework and systems under test
 * **Alert** on important or unusual events and detect potential issues sooner
 
-![automation-approach](/{{site.repository}}/images/introduction/automation-approach.png)
+![automation-approach](https://github.com/metadew/iesi/blob/5942732f9e0f99c389cc53331dd56ad31a33e8b7/docs/images/introduction/automation-approach.png)
 
 ## Configuration-driven
 > "Putting reusable configuration central
@@ -35,14 +35,12 @@ It is a toolbelt rather than a one-stop solution:
 - [x] Quick to extend with new functions
 - [x] Effective in growing the coverage of automation
 
-![iesi_concepts](/{{site.repository}}/images/introduction/iesi_concepts.png)
+![iesi_concepts](https://github.com/metadew/iesi/blob/5942732f9e0f99c389cc53331dd56ad31a33e8b7/docs/images/introduction/iesi_concepts.png)
 
 The framework decouples the configuration from the data aspects and manages it in a distributed manner. It is distributed by design allowing to be used on any size of project: low entry installation and onboarding. <br>
 
-![automation-success](/{{site.repository}}/images/introduction/automation-success.png)
-
-A firm solution can only be achieved if you combine your automation framework with solid data management, creative automation design and engineering skills. 
-A mixture of all these ingredients, will result in strong and innovative solutions. <br>
+**A firm solution can only be achieved if you combine your automation framework with solid data management, creative automation design and engineering skills. 
+A mixture of all these ingredients, will result in strong and innovative solutions.** <br>
 
 ## Parameterization
 

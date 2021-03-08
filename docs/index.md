@@ -13,7 +13,7 @@
 
 With IESI, we would like to bring automation to everyone in convenient and affordable way. Automation may not be a boundary or limitation. Whether you are working in a large or small organization, automate end-to-end processes across an entire organization or like to experiment at home or in the cloud, with the IESI framework you should be able to leverage our framework to be up and running in no time. Why still do it manually, if you can use our framework to apply automation in less than 1 hour?
 
-> “Automation needs to be easy, driven by configuration and augmented with metadata”
+> Automation needs to be easy, driven by configuration and augmented with metadata
 
 ## Our framework introduced
 **Intelligent, Enhanced & Seamless Industrialization** or **IESI** is an automation framework originally created at Accenture with focus to automate end-to-end delivery and testing processes for data driven initiatives (integration or migration). **It allows the configuration, execution and reporting on automated executions, therefore driving development, testing and deployment.**
@@ -33,7 +33,7 @@ With every data-driven framework, concepts such as efficiency, reusability and f
 - [x] **Agnostic** <br>
       Technology, vendor, industry independent – Easy plug-in and blend-in.
 
-> “Test automation (and data-driven automation in general) should not be considered a commodity but will provide many ways of differentiation in the future”
+> Test automation (and data-driven automation in general) should not be considered a commodity but will provide many ways of differentiation in the future
 
 ### Key Benefits
 - [x] **Enable digital transformations and end-to-end automation across technologies** <br>

@@ -22,12 +22,12 @@ API and Ecosystem | <ul><li>Verify PSD2 calls between banks</li><li>Verify conne
 
 ## Types of testing
 ### On Test Automation
--- Include introduction
+TBD
 
 ### IESI within the testing field
--- include overview on testing types
+TBD
 
 ## Business case for automation
--- include effort overview
+TBD
 
 

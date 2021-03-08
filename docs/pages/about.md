@@ -20,15 +20,20 @@ Feel free to get in touch via our [Github](https://github.com/metadew/iesi) or o
 # Current committers
 
 * Robbe Berrevoets
-* Thomas Vandendijk
-* Gerrit Van Gelder
 * Peter Billen
-* Aurélien Lejeune
-* Lucie Bestgen
-* Francois Heliodore
-* Kimberly Raskin
+* Naïri Bonte
+* Soumaïa Djerbi
+* Aurélien Benne
+
+
 
 # Past committers
 
 * Jonas Joostens
 * Sam Roose
+* Kimberly Raskin
+* Aurélien Lejeune
+* Lucie Bestgen
+* Francois Heliodore
+* Thomas Vandendijk
+* Gerrit Van Gelder

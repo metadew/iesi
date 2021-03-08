@@ -34,19 +34,18 @@ public class OpenAPIGenerator {
     }
 
     public void generate(List<Connection> connections, List<Component> components, String target, boolean load) {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+
 
 
         try {
             for (Component component : components) {
-                saveComponentInDirectory(writer,target, component, load);
+                saveComponentInDirectory(target, component);
                 if (load) {
                     saveComponent(component);
                 }
             }
             for (Connection connection : connections) {
-                saveConnectionInDirectory(writer, target,connection, load);
+                saveConnectionInDirectory(target,connection);
                 if(load) {
                     saveConnection(connection);
                 }
@@ -56,14 +55,18 @@ public class OpenAPIGenerator {
         }
     }
 
-    private void saveComponentInDirectory(ObjectWriter writer, String target, Component component, boolean load) throws IOException {
+    private void saveComponentInDirectory(String target, Component component) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
         writer.writeValue(
                 new File(
                         target + File.separator + "component_" + component.getName() + "_v" +
                                 component.getMetadataKey().getVersionNumber() + ".json"), component);
 
     }
-    private void saveConnectionInDirectory(ObjectWriter writer, String target, Connection connection, boolean load) throws IOException {
+    private void saveConnectionInDirectory(String target, Connection connection) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
         writer.writeValue(new File(
                 target + File.separator + "Connections.json"
         ), connection);

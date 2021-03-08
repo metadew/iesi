@@ -41,11 +41,15 @@ public class OpenAPIGenerator {
         try {
             for (Component component : components) {
                 saveComponentInDirectory(writer,target, component, load);
-                if (load) saveComponent(component);
+                if (load) {
+                    saveComponent(component);
+                }
             }
             for (Connection connection : connections) {
                 saveConnectionInDirectory(writer, target,connection, load);
-                if(load) saveConnection(connection);
+                if(load) {
+                    saveConnection(connection);
+                }
             }
         } catch (IOException e) {
             log.warn("The target directory doesn't exist, the process is aborted");

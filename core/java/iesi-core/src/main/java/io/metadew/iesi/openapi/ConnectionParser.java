@@ -64,7 +64,7 @@ public class ConnectionParser {
     }
 
 
-Optional<String> getPort(URL url) {
+    public Optional<String> getPort(URL url) {
         int port = url.getPort();
         if (port == -1) return Optional.empty();
         return Optional.of(String.valueOf(port));

@@ -1,6 +1,9 @@
 package io.metadew.iesi.script.action.http;
 
+import io.metadew.iesi.component.http.HttpComponent;
 import io.metadew.iesi.component.http.HttpComponentService;
+import io.metadew.iesi.component.http.HttpHeader;
+import io.metadew.iesi.component.http.HttpQueryParameter;
 import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.request.HttpRequest;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
@@ -13,19 +16,13 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
-import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.script.action.ActionParameterResolvement;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ActionPerformanceLogger;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
-import io.metadew.iesi.script.service.ActionParameterService;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.Header;
 
@@ -34,15 +31,14 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Log4j2
+@Getter
 public class HttpExecuteRequest extends ActionTypeExecution {
 
     private static final String ACTION_TYPE = "http.executeRequest";
@@ -51,6 +47,8 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String PROXY_KEY = "proxy";
     private static final String SET_DATASET_KEY = "setDataset";
     private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
+    private static final String HEADERS_KEY = "headers";
+    private static final String QUERYPARAMS_KEY = "queryParams";
 
     private HttpRequest httpRequest;
     private InMemoryDatasetImplementation outputDataset;
@@ -100,17 +98,28 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 //        getActionParameterOperationMap().put(SET_DATASET_KEY, setDatasetActionParameterOperation);
 //        getActionParameterOperationMap().put(EXPECTED_STATUS_CODES_KEY, expectedStatusCodesActionParameterOperation);
 //        getActionParameterOperationMap().put(PROXY_KEY, proxyActionParameterOperation);
+        HttpComponent httpComponent =  HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)),getActionExecution(), REQUEST_KEY);
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
+        List<HttpHeader> headers = convertHeaders(getParameterResolvedValue(HEADERS_KEY));
+        List<HttpQueryParameter> queryParameters = convertQueryParams(getParameterResolvedValue(QUERYPARAMS_KEY));
+
+
+        if (!headers.isEmpty()) {
+            httpComponent.setHeaders(headers);
+        }
+        if (!queryParameters.isEmpty()) {
+            httpComponent.setQueryParameters(queryParameters);
+        }
+
 
         if (body.isPresent()) {
             getActionExecution().getActionControl().logOutput("request.body", body.get());
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
-                    HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY),
+                    httpComponent,
                     body.get());
         } else {
-            httpRequest = HttpComponentService.getInstance().buildHttpRequest(
-                    HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY));
+            httpRequest = HttpComponentService.getInstance().buildHttpRequest(httpComponent);
         }
         getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
         getActionExecution().getActionControl().logOutput("request.method", httpRequest.getHttpRequest().getMethod());
@@ -142,6 +151,97 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     @Override
     protected String getKeyword() {
         return ACTION_TYPE;
+    }
+
+    private List<HttpHeader> convertHeaders(DataType dataType) {
+        Stream<Optional<HttpHeader>> stream;
+        if (dataType == null) {
+            return new ArrayList<>();
+        } else if (dataType instanceof Text){
+            stream = getParams(dataType.toString())
+                    .map(text -> getHeader(buildParam(text)));
+        } else if (dataType instanceof InMemoryDatasetImplementation) {
+            stream = getDataItems(dataType).entrySet().stream()
+                    .map(dataItem -> getHeader(buildParam(dataItem.getKey(), dataItem.getValue().toString())));
+        }
+        else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for expectedStatusCode"),
+                    dataType.getClass()));
+            return new ArrayList<>();
+        }
+
+        return stream.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    }
+
+    private List<HttpQueryParameter> convertQueryParams(DataType dataType) {
+        Stream<Optional<HttpQueryParameter>> stream;
+        if (dataType == null) {
+            return new ArrayList<>();
+        } else if (dataType instanceof Text){
+            stream = getParams(dataType.toString())
+                    .map(text -> getQueryparam(buildParam(text)));
+        } else if (dataType instanceof InMemoryDatasetImplementation) {
+            stream = getDataItems(dataType).entrySet().stream()
+                    .map(dataItem -> getQueryparam(buildParam(dataItem.getKey(), dataItem.getValue().toString())));
+        }
+        else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for expectedStatusCode"),
+                    dataType.getClass()));
+            return new ArrayList<>();
+        }
+        return stream.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    }
+
+    private Stream<String> getParams(String paramsStr) {
+        List<String> params = new ArrayList<>(Arrays.asList(paramsStr.split(",")));
+        return params.stream();
+    }
+
+    private Map<String, DataType> getDataItems(DataType dataType) {
+        return InMemoryDatasetImplementationService
+                .getInstance()
+                .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
+                        .getExecutionRuntime());
+    }
+
+
+    private Optional<HttpHeader> getHeader(AbstractMap.SimpleEntry<String, String> paramEntry) {
+        if (paramEntry != null) {
+            return Optional.of(new HttpHeader(paramEntry.getKey(), paramEntry.getValue()));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<HttpQueryParameter> getQueryparam(AbstractMap.SimpleEntry<String, String> paramEntry) {
+        if (paramEntry != null) {
+            return Optional.of(new HttpQueryParameter(paramEntry.getKey(), paramEntry.getValue()));
+        }
+        return Optional.empty();
+    }
+
+
+    private AbstractMap.SimpleEntry<String, String> buildParam(String param) {
+        List<String> keyValues;
+        String key;
+        String value;
+        if (!param.contains("=")) {
+            log.warn(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >, ignored", param));
+            return null;
+        }
+
+        keyValues = new ArrayList<>(Arrays.asList(param.split("=")));
+        if (keyValues.size() > 2) {
+            log.warn(String.format("The parameter %s should contain one key value pair, please remove additional separator character, ignored", param));
+            return null;
+        }
+
+        key = keyValues.get(0);
+        value = keyValues.get(1);
+        return new AbstractMap.SimpleEntry<>(key, value);
+    }
+
+    private AbstractMap.SimpleEntry<String, String> buildParam(String key, String value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
     }
 
     private List<String> convertExpectStatusCodes(DataType expectedStatusCodes) {
@@ -284,15 +384,15 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    private Optional<InMemoryDatasetImplementation> getOutputDataset() {
+    protected Optional<InMemoryDatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 
-    private Optional<List<String>> getExpectedStatusCodes() {
+    protected Optional<List<String>> getExpectedStatusCodes() {
         return Optional.ofNullable(expectedStatusCodes);
     }
 
-    private Optional<ProxyConnection> getProxyConnection() {
+    protected Optional<ProxyConnection> getProxyConnection() {
         return Optional.ofNullable(proxyConnection);
     }
 

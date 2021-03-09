@@ -34,9 +34,6 @@ public class OpenAPIGenerator {
     }
 
     public void generate(List<Connection> connections, List<Component> components, String target, boolean load) {
-
-
-
         try {
             for (Component component : components) {
                 saveComponentInDirectory(target, component);
@@ -51,7 +48,7 @@ public class OpenAPIGenerator {
                 }
             }
         } catch (IOException e) {
-            log.warn("The target directory doesn't exist, the process is aborted");
+            log.warn(e);
         }
     }
 

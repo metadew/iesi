@@ -3,30 +3,26 @@ package io.metadew.iesi.openapi;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
 public class OpenAPIGenerator {
     private static OpenAPIGenerator instance;
 
-    private OpenAPIGenerator() {}
+    private OpenAPIGenerator() {
+    }
 
 
-
-    public synchronized static OpenAPIGenerator getInstance() {
+    public static synchronized OpenAPIGenerator getInstance() {
         if (instance == null) {
             instance = new OpenAPIGenerator();
         }
@@ -42,8 +38,8 @@ public class OpenAPIGenerator {
                 }
             }
             for (Connection connection : connections) {
-                saveConnectionInDirectory(target,connection);
-                if(load) {
+                saveConnectionInDirectory(target, connection);
+                if (load) {
                     saveConnection(connection);
                 }
             }
@@ -61,11 +57,14 @@ public class OpenAPIGenerator {
                                 component.getMetadataKey().getVersionNumber() + ".json"), component);
 
     }
+
     private void saveConnectionInDirectory(String target, Connection connection) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+        String connectionName = connection.getMetadataKey().getName();
+        String environmentName = connection.getMetadataKey().getEnvironmentKey().getName();
         writer.writeValue(new File(
-                target + File.separator + "Connections.json"
+                target + File.separator + connectionName + "_" + environmentName + ".json"
         ), connection);
 
     }

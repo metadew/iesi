@@ -17,7 +17,8 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -286,7 +287,7 @@ class ComponentParserTest {
         String pathName = "/pet";
         ComponentKey componentKey = new ComponentKey(
                 componentID,
-              versionNumber);
+                versionNumber);
         List<ComponentParameter> componentParameters = new ArrayList<>();
         PathItem.HttpMethod get = PathItem.HttpMethod.GET;
 
@@ -350,7 +351,7 @@ class ComponentParserTest {
         List<ComponentParameter> parameters = new ArrayList<>();
         Parameter allowHeader = new Parameter().in("header").name("Allow");
         Operation operation = new Operation().parameters(Collections.singletonList(allowHeader));
-     
+
         ComponentKey componentKey = new ComponentKey(
                 componentID,
                 versionNumber);
@@ -363,14 +364,12 @@ class ComponentParserTest {
         parameters.add(
                 new ComponentParameter(
                         new ComponentParameterKey(componentID, versionNumber, "header.1"),
-
                         "Authorization, Bearer #petstore_auth#"
                 )
         );
         parameters.add(
                 new ComponentParameter(
                         new ComponentParameterKey(componentID, versionNumber, "header.2"),
-
                         "Content-Type, application/x-www-form-urlencoded"
                 )
         );
@@ -390,7 +389,7 @@ class ComponentParserTest {
 
         //TESTS
         assertThat(ComponentParser.getInstance().getHeaders(
-                componentKey,partNames,operation,openAPI.getComponents().getSecuritySchemes()
+                componentKey, partNames, operation, openAPI.getComponents().getSecuritySchemes()
         )).isEqualTo(parameters);
 
     }
@@ -420,7 +419,7 @@ class ComponentParserTest {
 
         //TESTS
         assertThat(ComponentParser.getInstance().getHeaders(
-                componentKey,partNames,operation,openAPI.getComponents().getSecuritySchemes()
+                componentKey, partNames, operation, openAPI.getComponents().getSecuritySchemes()
         ))
                 .isEqualTo(parameters);
 

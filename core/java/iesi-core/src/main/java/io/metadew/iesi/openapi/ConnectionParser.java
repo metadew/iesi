@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class ConnectionParser {
     private ConnectionParser() {
     }
 
-    public static synchronized  ConnectionParser getInstance() {
+    public static synchronized ConnectionParser getInstance() {
         if (instance == null) {
             instance = new ConnectionParser();
         }

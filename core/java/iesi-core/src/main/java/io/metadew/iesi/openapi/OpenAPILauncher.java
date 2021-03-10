@@ -25,21 +25,11 @@ public class OpenAPILauncher {
     public static void main(String[] args) throws ParseException {
         ThreadContext.clearAll();
         Options options = new Options()
-                .addOption(Option.builder(SOURCE).hasArg().desc("File that contains openapi documentation").build())
-                .addOption(Option.builder(TARGET).hasArg().desc("Directory to save the configurations").build())
-                .addOption(Option.builder(LOAD).desc("If true, load the configurations in the database").build());
+                .addOption(Option.builder(SOURCE).hasArg().required(true).desc("File that contains openapi documentation").build())
+                .addOption(Option.builder(TARGET).hasArg().required(true).desc("Directory to save the configurations").build())
+                .addOption(Option.builder(LOAD).required(false).desc("If true, load the configurations in the database").build());
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
-
-
-        if (!line.hasOption(SOURCE)) {
-            System.out.println("Please indicate the openapi file");
-            System.exit(0);
-        }
-        if (!line.hasOption(TARGET)) {
-            System.out.println("Please indicate the target directory file");
-            System.exit(0);
-        }
 
 
         Configuration.getInstance();
@@ -47,8 +37,7 @@ public class OpenAPILauncher {
         OpenAPI openAPI = init(line.getOptionValue(SOURCE));
 
         List<Connection> connections = ConnectionParser.getInstance().parse(openAPI);
-        List<Component> components = ComponentParser.getInstance().parse(openAPI);;
-
+        List<Component> components = ComponentParser.getInstance().parse(openAPI);
 
 
         OpenAPIGenerator.getInstance().generate(connections, components, line.getOptionValue(TARGET), line.hasOption(LOAD));

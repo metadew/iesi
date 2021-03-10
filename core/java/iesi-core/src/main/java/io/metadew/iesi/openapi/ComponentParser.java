@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -21,7 +20,6 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
-
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -223,7 +221,7 @@ public class ComponentParser {
 
     public List<ComponentParameter> getInfo(ComponentKey componentKey, String pathName, PathItem.HttpMethod operationName, String connectionName) {
         List<ComponentParameter> componentParameters = new ArrayList<>();
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"),  pathName.replaceAll("[{}]", "#")));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"), pathName.replaceAll("[{}]", "#")));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "type"), operationName.name()));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "connection"), connectionName));
         return componentParameters;
@@ -281,14 +279,18 @@ public class ComponentParser {
             }
         }
 
-        for (Parameter parameter : operation.getParameters()) {
-            String parameterName = parameter.getName();
-            if (parameter.getIn().equals("header") && !partNames.containsValue(parameterName)) {
-                parameters.add(new ComponentParameter(
-                        new ComponentParameterKey(componentKey, String.format(HEADER, ++position)),
-                        String.format("%s, #%s#", parameterName, parameterName)));
+        if (operation.getParameters() != null) {
+            for (Parameter parameter : operation.getParameters()) {
+                String parameterName = parameter.getName();
+                if (parameter.getIn().equals("header") && !partNames.containsValue(parameterName)) {
+                    parameters.add(new ComponentParameter(
+                            new ComponentParameterKey(componentKey, String.format(HEADER, ++position)),
+                            String.format("%s, #%s#", parameterName, parameterName)));
+                }
             }
         }
+
+
 
         return parameters;
     }
@@ -309,7 +311,7 @@ public class ComponentParser {
             //https://connect2id.com/learn/openid-connect
             componentParameterValue = String.format("Host, #%s#", securityName);
         } else {
-            throw new UnsuportedSecurityScheme(String.format("Provided a wrong/unsupported security schema type %s", securityType));
+            throw new UnsupportedSecurityScheme(String.format("Provided a wrong/unsupported security schema type %s", securityType));
         }
         return componentParameterValue;
     }

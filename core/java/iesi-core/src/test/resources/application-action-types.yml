@@ -1004,7 +1004,7 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
-          queryParams:
+          queryParameters:
             description: queryParams
             type: string
             mandatory: false

@@ -48,7 +48,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String SET_DATASET_KEY = "setDataset";
     private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
     private static final String HEADERS_KEY = "headers";
-    private static final String QUERYPARAMS_KEY = "queryParams";
+    private static final String QUERY_PARAMETERS_KEY = "queryParameters";
 
     private HttpRequest httpRequest;
     private InMemoryDatasetImplementation outputDataset;
@@ -68,50 +68,17 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() throws URISyntaxException, HttpRequestBuilderException {
+    public void prepare() throws URISyntaxException, HttpRequestBuilderException, KeyValuePairException {
 
-//        // Reset Parameters
-//        ActionParameterOperation requestNameActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), REQUEST_KEY);
-//        ActionParameterOperation requestBodyActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), BODY_KEY);
-//        ActionParameterOperation setDatasetActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), SET_DATASET_KEY);
-//        ActionParameterOperation expectedStatusCodesActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), EXPECTED_STATUS_CODES_KEY);
-//        ActionParameterOperation proxyActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), PROXY_KEY);
-//
-//        // Get Parameters
-//        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-//            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(REQUEST_KEY)) {
-//                requestNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-//            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(BODY_KEY)) {
-//                requestBodyActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-//            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(SET_DATASET_KEY)) {
-//                setDatasetActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-//            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(EXPECTED_STATUS_CODES_KEY)) {
-//                expectedStatusCodesActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-//            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(PROXY_KEY)) {
-//                proxyActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-//            }
-//        }
-//
-//        // Create parameter list
-//        getActionParameterOperationMap().put(REQUEST_KEY, requestNameActionParameterOperation);
-//        getActionParameterOperationMap().put(BODY_KEY, requestBodyActionParameterOperation);
-//        getActionParameterOperationMap().put(SET_DATASET_KEY, setDatasetActionParameterOperation);
-//        getActionParameterOperationMap().put(EXPECTED_STATUS_CODES_KEY, expectedStatusCodesActionParameterOperation);
-//        getActionParameterOperationMap().put(PROXY_KEY, proxyActionParameterOperation);
-        HttpComponent httpComponent =  HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)),getActionExecution(), REQUEST_KEY);
+        HttpComponent httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
-        List<HttpHeader> headers = convertHeaders(getParameterResolvedValue(HEADERS_KEY));
-        List<HttpQueryParameter> queryParameters = convertQueryParams(getParameterResolvedValue(QUERYPARAMS_KEY));
 
+        List<HttpHeader> headers = combineHeaders(httpComponent.getHeaders());
+        List<HttpQueryParameter> queryParameters = combineQueryParameter(httpComponent.getQueryParameters());
 
-        if (!headers.isEmpty()) {
-            httpComponent.setHeaders(headers);
-        }
-        if (!queryParameters.isEmpty()) {
-            httpComponent.setQueryParameters(queryParameters);
-        }
-
+        httpComponent.setQueryParameters(queryParameters);
+        httpComponent.setHeaders(headers);
 
         if (body.isPresent()) {
             getActionExecution().getActionControl().logOutput("request.body", body.get());
@@ -153,96 +120,87 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         return ACTION_TYPE;
     }
 
-    private List<HttpHeader> convertHeaders(DataType dataType) {
-        Stream<Optional<HttpHeader>> stream;
+    private Map<String, String> convertParameters(DataType dataType) {
         if (dataType == null) {
-            return new ArrayList<>();
-        } else if (dataType instanceof Text){
-            stream = getParams(dataType.toString())
-                    .map(text -> getHeader(buildParam(text)));
+            return new HashMap<>();
+        } else if (dataType instanceof Text) {
+            return Arrays.stream(dataType.toString().split(","))
+                    .map(this::buildParameter).collect(
+                            Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue, (key1, key2) -> key2)
+                    );
+
+
         } else if (dataType instanceof InMemoryDatasetImplementation) {
-            stream = getDataItems(dataType).entrySet().stream()
-                    .map(dataItem -> getHeader(buildParam(dataItem.getKey(), dataItem.getValue().toString())));
-        }
-        else {
+            return InMemoryDatasetImplementationService
+                    .getInstance()
+                    .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
+                            .getExecutionRuntime()).entrySet().stream()
+                    .map(dataItem -> new AbstractMap.SimpleEntry<>(dataItem.getKey(), dataItem.getValue().toString()))
+                    .collect(
+                            Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue, (key1, key2) -> key2)
+                    );
+        } else {
             log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for expectedStatusCode"),
                     dataType.getClass()));
-            return new ArrayList<>();
+            return new HashMap<>();
         }
-
-        return stream.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
-    private List<HttpQueryParameter> convertQueryParams(DataType dataType) {
-        Stream<Optional<HttpQueryParameter>> stream;
-        if (dataType == null) {
-            return new ArrayList<>();
-        } else if (dataType instanceof Text){
-            stream = getParams(dataType.toString())
-                    .map(text -> getQueryparam(buildParam(text)));
-        } else if (dataType instanceof InMemoryDatasetImplementation) {
-            stream = getDataItems(dataType).entrySet().stream()
-                    .map(dataItem -> getQueryparam(buildParam(dataItem.getKey(), dataItem.getValue().toString())));
+    private List<HttpHeader> combineHeaders(List<HttpHeader> defaultHeaders) {
+        Map<String, String> headers = convertParameters(getParameterResolvedValue(HEADERS_KEY));
+        List<HttpHeader> headersRemaining;
+
+        if (headers.isEmpty()) {
+            return defaultHeaders;
         }
-        else {
-            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for expectedStatusCode"),
-                    dataType.getClass()));
-            return new ArrayList<>();
+        //Override Headers to existing Headers
+        defaultHeaders.forEach(header -> {
+            String name = header.getName();
+            if (headers.containsKey(name)) {
+                header.setValue(headers.remove(name));
+            }
+        });
+
+        headersRemaining = headers.entrySet().stream()
+                .map(headerEntry -> new HttpHeader(headerEntry.getKey(), headerEntry.getValue())).collect(Collectors.toList());
+
+        return Stream.of(defaultHeaders, headersRemaining).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    private List<HttpQueryParameter> combineQueryParameter(List<HttpQueryParameter> defaultQueryParameter) {
+        Map<String, String> queryParameters = convertParameters(getParameterResolvedValue(QUERY_PARAMETERS_KEY));
+        if (queryParameters.isEmpty()) {
+            return defaultQueryParameter;
         }
-        return stream.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        //Override Headers to existing Headers
+        defaultQueryParameter.forEach(queryParameter -> {
+            String name = queryParameter.getName();
+            if (queryParameters.containsKey(name)) {
+                queryParameter.setValue(queryParameters.remove(name));
+            }
+        });
+
+        List<HttpQueryParameter> queryParametersRemaining = queryParameters.entrySet().stream()
+                .map(headerEntry -> new HttpQueryParameter(headerEntry.getKey(), headerEntry.getValue())).collect(Collectors.toList());
+
+
+        return Stream.of(defaultQueryParameter, queryParametersRemaining).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    private Stream<String> getParams(String paramsStr) {
-        List<String> params = new ArrayList<>(Arrays.asList(paramsStr.split(",")));
-        return params.stream();
-    }
-
-    private Map<String, DataType> getDataItems(DataType dataType) {
-        return InMemoryDatasetImplementationService
-                .getInstance()
-                .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
-                        .getExecutionRuntime());
-    }
-
-
-    private Optional<HttpHeader> getHeader(AbstractMap.SimpleEntry<String, String> paramEntry) {
-        if (paramEntry != null) {
-            return Optional.of(new HttpHeader(paramEntry.getKey(), paramEntry.getValue()));
-        }
-        return Optional.empty();
-    }
-
-    private Optional<HttpQueryParameter> getQueryparam(AbstractMap.SimpleEntry<String, String> paramEntry) {
-        if (paramEntry != null) {
-            return Optional.of(new HttpQueryParameter(paramEntry.getKey(), paramEntry.getValue()));
-        }
-        return Optional.empty();
-    }
-
-
-    private AbstractMap.SimpleEntry<String, String> buildParam(String param) {
-        List<String> keyValues;
-        String key;
-        String value;
+    private AbstractMap.SimpleEntry<String, String> buildParameter(String param) {
+        String[] keyValues;
         if (!param.contains("=")) {
-            log.warn(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >, ignored", param));
-            return null;
+            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", param));
         }
 
-        keyValues = new ArrayList<>(Arrays.asList(param.split("=")));
-        if (keyValues.size() > 2) {
-            log.warn(String.format("The parameter %s should contain one key value pair, please remove additional separator character, ignored", param));
-            return null;
+        keyValues = param.split("=");
+        if (keyValues.length > 2) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", param));
         }
 
-        key = keyValues.get(0);
-        value = keyValues.get(1);
-        return new AbstractMap.SimpleEntry<>(key, value);
+        return new AbstractMap.SimpleEntry<>(keyValues[0], keyValues[1]);
     }
 
-    private AbstractMap.SimpleEntry<String, String> buildParam(String key, String value) {
-        return new AbstractMap.SimpleEntry<>(key, value);
-    }
 
     private List<String> convertExpectStatusCodes(DataType expectedStatusCodes) {
         if (expectedStatusCodes == null) {

@@ -10,6 +10,6 @@ import lombok.Data;
 public class HttpQueryParameter {
 
     private final String name;
-    private final String value;
+    private String value;
 
 }

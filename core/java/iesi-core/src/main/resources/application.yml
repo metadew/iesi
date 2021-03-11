@@ -2,12 +2,12 @@ iesi:
   home: "."
 
 guard:
-    authenticate: N
-#  script:
-#    execution:
-#       runtime: ''
+  authenticate: N
+  #  script:
+  #    execution:
+  #       runtime: ''
   server:
-#    mode: off
+    #    mode: off
     mode: standalone
     threads:
       timeout: 30

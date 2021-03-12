@@ -18,8 +18,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
@@ -99,6 +97,8 @@ class HttpExecuteRequestTest {
         HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getAllHeaders()).isEmpty();
+        assertThat(httpExecuteRequest.getExpectedStatusCodes()).isEmpty();
+        assertThat(httpExecuteRequest.getProxyConnection()).isEmpty();
     }
 
     @Test
@@ -125,7 +125,6 @@ class HttpExecuteRequestTest {
         assertThat(httpRequest.getAllHeaders()).hasSize(2);
         assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/xml");
         assertThat(httpRequest.getFirstHeader("X-API-KEY").getValue()).isEqualTo("1234");
-
     }
 
     @Test
@@ -151,15 +150,14 @@ class HttpExecuteRequestTest {
 
         assertThat(httpRequest.getAllHeaders()).hasSize(1);
         assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/xml");
-
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"Accept=application/json", "Accept=application/json,X-API-KEY=12345"})
-    void prepareHeaderAndNoQueries(String headers) throws HttpRequestBuilderException, URISyntaxException {
+
+    @Test
+    void prepareHeaderAndNoQueries() throws HttpRequestBuilderException, URISyntaxException {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", headers);
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json");
         Action action = createAction(requestActionParameter, headersActionParameter);
 
         when(actionExecution.getAction())
@@ -175,16 +173,33 @@ class HttpExecuteRequestTest {
 
         HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
 
-        if (headers.equals("Accept=application/json")) {
-            assertThat(httpRequest.getAllHeaders()).hasSize(1);
-            assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json");
-        } else if (headers.equals("Accept=application/json,X-API-KEY=12345")) {
-            assertThat(httpRequest.getAllHeaders()).hasSize(2);
-            assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json");
-            assertThat(httpRequest.getFirstHeader("X-API-KEY").getValue()).isEqualTo("12345");
-        }
+        assertThat(httpRequest.getAllHeaders()).hasSize(1);
+        assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json");
+    }
 
+    @Test
+    void prepareHeadersAndNoQuery() throws HttpRequestBuilderException, URISyntaxException {
 
+        ActionParameter requestActionParameter = createActionParameter("request", "request");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json,X-API-KEY=12345");
+        Action action = createAction(requestActionParameter, headersActionParameter);
+
+        when(actionExecution.getAction())
+                .thenReturn(action);
+
+        mockResolvedValues(requestActionParameter, headersActionParameter);
+
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
+        mockGetAndTraceHttpComponent(httpComponent);
+
+        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
+        httpExecuteRequest.prepare();
+
+        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+
+        assertThat(httpRequest.getAllHeaders()).hasSize(2);
+        assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json");
+        assertThat(httpRequest.getFirstHeader("X-API-KEY").getValue()).isEqualTo("12345");
     }
 
     @Test
@@ -258,12 +273,11 @@ class HttpExecuteRequestTest {
     }
 
 
-    @ParameterizedTest
-    @ValueSource(strings = {"status=sold", "status=sold,name=name"})
-    void prepareNoHeadersAndQuery(String queryParameters) throws HttpRequestBuilderException, URISyntaxException {
+    @Test
+    void prepareNoHeadersAndQuery() throws HttpRequestBuilderException, URISyntaxException {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", queryParameters);
+        ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=sold");
         Action action = createAction(requestActionParameter, queryParametersActionParameter);
 
         when(actionExecution.getAction())
@@ -279,12 +293,30 @@ class HttpExecuteRequestTest {
 
         HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
 
-        if (queryParameters.equals("status=sold")) {
-            assertThat(httpRequest.getURI()).hasToString("https://hostendpoint?status=sold");
-        } else if (queryParameters.equals("status=sold,name=name")) {
-            assertThat(httpRequest.getURI()).hasToString("https://hostendpoint?name=name&status=sold");
-        }
+        assertThat(httpRequest.getURI()).hasToString("https://hostendpoint?status=sold");
+    }
 
+    @Test
+    void prepareNoHeadersAndQueries() throws HttpRequestBuilderException, URISyntaxException {
+
+        ActionParameter requestActionParameter = createActionParameter("request", "request");
+        ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=sold,name=name");
+        Action action = createAction(requestActionParameter, queryParametersActionParameter);
+
+        when(actionExecution.getAction())
+                .thenReturn(action);
+
+        mockResolvedValues(requestActionParameter, queryParametersActionParameter);
+
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
+        mockGetAndTraceHttpComponent(httpComponent);
+
+        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
+        httpExecuteRequest.prepare();
+
+        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+
+        assertThat(httpRequest.getURI()).hasToString("https://hostendpoint?name=name&status=sold");
     }
 
 
@@ -306,27 +338,6 @@ class HttpExecuteRequestTest {
         HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
 
         assertThrows(KeyValuePairException.class, httpExecuteRequest::prepare);
-    }
-
-    @Test
-    void prepareNoStatusCode() throws HttpRequestBuilderException, URISyntaxException {
-
-        ActionParameter requestActionParameter = createActionParameter("request", "request");
-        Action action = createAction(requestActionParameter);
-
-        when(actionExecution.getAction())
-                .thenReturn(action);
-
-        mockResolvedValues(requestActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
-        mockGetAndTraceHttpComponent(httpComponent);
-
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-
-        assertThat(httpExecuteRequest.getExpectedStatusCodes()).isEmpty();
     }
 
     @Test
@@ -373,27 +384,6 @@ class HttpExecuteRequestTest {
 
         assertThat(httpExecuteRequest.getExpectedStatusCodes()).isNotEmpty();
         assertThat(httpExecuteRequest.getExpectedStatusCodes()).get().isEqualTo(expectedStatusCode);
-    }
-
-    @Test
-    void prepareNoProxyConnection() throws HttpRequestBuilderException, URISyntaxException {
-
-        ActionParameter requestActionParameter = createActionParameter("request", "request");
-        Action action = createAction(requestActionParameter);
-
-        when(actionExecution.getAction())
-                .thenReturn(action);
-
-        mockResolvedValues(requestActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
-        mockGetAndTraceHttpComponent(httpComponent);
-
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-
-        assertThat(httpExecuteRequest.getProxyConnection()).isEmpty();
     }
 
 

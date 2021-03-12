@@ -11,7 +11,7 @@ iesi:
         coordinator:
           # init_sql: alter  current....
           type: sqlite
-          file: /home/hkhattabi/iesi-sandboxes/0.6.0/PRTest/repository.db3
+          file: ./repository.db3
 
 #          type: h2
 #          mode: memory

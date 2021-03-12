@@ -1,6 +1,6 @@
 iesi:
 
-  home: "C:/Users/hamza.khattabi/Internship/iesi-sandboxes/0.6.0/PRTest"
+  home: "."
 
   guard:
     authenticate: N

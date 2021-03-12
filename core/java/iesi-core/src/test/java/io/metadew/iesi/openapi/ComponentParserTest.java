@@ -63,7 +63,6 @@ class ComponentParserTest {
 
         //TESTS
         assertThat(ComponentParser.getInstance().getSecurities(operation, openAPI.getComponents().getSecuritySchemes()))
-
                 .isEqualTo(new ArrayList<>());
     }
 
@@ -77,7 +76,6 @@ class ComponentParserTest {
                         .addList("user_auth"));
         //TESTS
         assertThat(ComponentParser.getInstance().getSecurities(operation, openAPI.getComponents().getSecuritySchemes()))
-
                 .isEqualTo(new ArrayList<>(Arrays.asList("petstore_auth", "user_auth")));
     }
 
@@ -297,7 +295,6 @@ class ComponentParserTest {
 
         //TESTS
         assertThat(ComponentParser.getInstance().getInfo(componentKey, pathName, get, openAPI.getInfo().getTitle()))
-
                 .isEqualTo(componentParameters);
     }
 
@@ -388,9 +385,8 @@ class ComponentParserTest {
         );
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getHeaders(
-                componentKey, partNames, operation, openAPI.getComponents().getSecuritySchemes()
-        )).isEqualTo(parameters);
+        assertThat(ComponentParser.getInstance().getHeaders(componentKey, partNames, operation, openAPI.getComponents().getSecuritySchemes()))
+                .isEqualTo(parameters);
 
     }
 
@@ -418,9 +414,8 @@ class ComponentParserTest {
 
 
         //TESTS
-        assertThat(ComponentParser.getInstance().getHeaders(
-                componentKey, partNames, operation, openAPI.getComponents().getSecuritySchemes()
-        ))
+        assertThat(ComponentParser.getInstance()
+                .getHeaders(componentKey, partNames, operation, openAPI.getComponents().getSecuritySchemes()))
                 .isEqualTo(parameters);
 
     }

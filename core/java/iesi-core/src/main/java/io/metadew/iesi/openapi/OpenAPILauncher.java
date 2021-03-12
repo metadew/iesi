@@ -35,7 +35,7 @@ public class OpenAPILauncher {
         Configuration.getInstance();
         FrameworkCrypto.getInstance();
 
-        OpenAPI openAPI = init("/mnt/c/users/hamza.khattabi/Internship/doc.yaml");
+        OpenAPI openAPI = init(line.getOptionValue(SOURCE));
 
 
         List<Connection> connections = ConnectionParser.getInstance().parse(openAPI);

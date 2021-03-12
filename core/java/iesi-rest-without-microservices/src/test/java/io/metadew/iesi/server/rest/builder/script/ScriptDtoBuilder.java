@@ -19,12 +19,20 @@ public class ScriptDtoBuilder {
         return ScriptDto.builder()
                 .name(name)
                 .description(name + " desc")
+<<<<<<< HEAD
+=======
+                .securityGroupName("PUBLIC")
+>>>>>>> master
                 .version(new ScriptVersionDto(n, name + " " + Long.toString(n)))
                 .parameters(
                         Stream.of(
                                 new ScriptParameterDto("Param1", Long.toString(n)),
                                 new ScriptParameterDto("Param2", Long.toString(n))
+<<<<<<< HEAD
                         ).collect(Collectors.toList())
+=======
+                        ).collect(Collectors.toSet())
+>>>>>>> master
                 )
                 .actions(
                         Stream.of(
@@ -43,16 +51,27 @@ public class ScriptDtoBuilder {
                                                 Stream.of(
                                                         new ActionParameterDto("ActionParameter1", "ActionParameterValue1"),
                                                         new ActionParameterDto("ActionParameter2", "ActionParameterValue2")
+<<<<<<< HEAD
                                                 ).collect(Collectors.toList())
                                         )
                                         .build()
                         ).collect(Collectors.toList())
+=======
+                                                ).collect(Collectors.toSet())
+                                        )
+                                        .build()
+                        ).collect(Collectors.toSet())
+>>>>>>> master
                 )
                 .labels(
                         Stream.of(
                                 new ScriptLabelDto("Label1", "Label1Value"),
                                 new ScriptLabelDto("Label2", "Label2Value")
+<<<<<<< HEAD
                         ).collect(Collectors.toList())
+=======
+                        ).collect(Collectors.toSet())
+>>>>>>> master
                 )
                 .scriptExecutionInformation(new ScriptExecutionInformation(
                                 2L,

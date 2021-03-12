@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -17,39 +18,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 
-public class SqlEvaluateResult {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class SqlEvaluateResult extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation sqlQuery;
     private ActionParameterOperation expectedResult;
     private ActionParameterOperation connectionName;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public SqlEvaluateResult() {
-
-    }
 
     public SqlEvaluateResult(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -64,11 +47,11 @@ public class SqlEvaluateResult {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
-                this.getSqlQuery().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getSqlQuery().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("hasresult")) {
-                this.getExpectedResult().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getExpectedResult().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -78,34 +61,17 @@ public class SqlEvaluateResult {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            String query = convertQuery(getSqlQuery().getValue());
-            boolean expectedResult = convertHasResult(getExpectedResult().getValue());
-            String connectionName = convertConnectionName(getConnectionName().getValue());
-            return performAction(query, expectedResult, connectionName);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean performAction(String query, boolean hasResult, String connectionName) throws InterruptedException{
+    protected boolean executeAction() throws InterruptedException {
+        String query = convertQuery(getSqlQuery().getValue());
+        boolean hasResult = convertHasResult(getExpectedResult().getValue());
+        String connectionName = convertConnectionName(getConnectionName().getValue());
 
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
+
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
+
         // Run the action
         CachedRowSet crs;
         crs = DatabaseHandler.getInstance().executeQueryLimitRows(database, query, 10);
@@ -117,6 +83,8 @@ public class SqlEvaluateResult {
                 this.getActionExecution().getActionControl().increaseSuccessCount();
                 return true;
             } else {
+                getActionExecution().getActionControl().logOutput("action.error",
+                        "sql query '" + query + "' does not contain any rows");
                 this.getActionExecution().getActionControl().increaseErrorCount();
                 return false;
             }
@@ -125,6 +93,8 @@ public class SqlEvaluateResult {
                 this.getActionExecution().getActionControl().increaseSuccessCount();
                 return true;
             } else {
+                getActionExecution().getActionControl().logOutput("action.error",
+                        "sql query '" + query + "' contains " + rowCount + " rows");
                 this.getActionExecution().getActionControl().increaseErrorCount();
                 return false;
             }
@@ -162,21 +132,6 @@ public class SqlEvaluateResult {
         }
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
 
     public ActionParameterOperation getExpectedResult() {
         return expectedResult;
@@ -192,14 +147,6 @@ public class SqlEvaluateResult {
 
     public void setConnectionName(ActionParameterOperation connectionName) {
         this.connectionName = connectionName;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getSqlQuery() {

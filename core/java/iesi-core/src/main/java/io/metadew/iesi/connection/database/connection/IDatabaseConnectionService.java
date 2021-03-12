@@ -2,7 +2,6 @@ package io.metadew.iesi.connection.database.connection;
 
 import com.zaxxer.hikari.HikariConfig;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.data.generation.configuration.Time;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
@@ -18,7 +17,7 @@ public interface IDatabaseConnectionService<T extends DatabaseConnection> {
 
     public Connection getConnection(T databaseConnection);
 
-    public String removeIllgegalCharactersForSingleQuery(T databaseConnection, String input);
+    public String removeIllegalCharactersForSingleQuery(T databaseConnection, String input);
 
     public CachedRowSet executeQuery(T databaseConnection, String query) throws SQLException;
 
@@ -49,9 +48,13 @@ public interface IDatabaseConnectionService<T extends DatabaseConnection> {
     public SqlScriptResult executeScript(T databaseConnection, InputStream inputStream, Connection connection) throws IOException, SQLException;
 
     public HikariConfig configure(T databaseConnection, HikariConfig hikariConfig);
+
     @Deprecated
     public PreparedStatement createPreparedStatement(T databaseConnection, Connection connection, String sqlStatement) throws SQLException;
 
     public Class<T> appliesTo();
 
+    public String refactorLimitAndOffset(String query);
+
+    public String generateClobInsertValue(String clobString);
 }

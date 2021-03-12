@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script.trace;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptVersionTrace;
@@ -28,10 +29,7 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
     }
 
     private ScriptVersionTraceConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override
@@ -40,8 +38,8 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
             String query = "SELECT SCRIPT_VRS_NB, SCRIPT_VRS_DSC FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptVersionTraces") +
                     " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionTraceKey.getProcessId()) + ";";
+                    " RUN_ID = " + SQLTools.getStringForSQL(scriptVersionTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.getStringForSQL(scriptVersionTraceKey.getProcessId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -87,8 +85,8 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
     private String deleteStatement(ScriptVersionTraceKey scriptTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptVersionTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(scriptTraceKey.getProcessId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(scriptTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(scriptTraceKey.getProcessId()) + ";";
     }
 
     @Override
@@ -101,10 +99,10 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
     private String insertStatement(ScriptVersionTrace scriptVersionTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptVersionTraces") +
                 " (RUN_ID, PRC_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(scriptVersionTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(scriptVersionTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(scriptVersionTrace.getScriptVersionNumber()) + "," +
-                SQLTools.GetStringForSQL(scriptVersionTrace.getScriptVersionDescription()) + ");";
+                SQLTools.getStringForSQL(scriptVersionTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(scriptVersionTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(scriptVersionTrace.getScriptVersionNumber()) + "," +
+                SQLTools.getStringForSQL(scriptVersionTrace.getScriptVersionDescription()) + ");";
     }
 
     @Override
@@ -116,9 +114,9 @@ public class ScriptVersionTraceConfiguration extends Configuration<ScriptVersion
 
     private String updateStatement(ScriptVersionTrace scriptVersionTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersionTraces") +
-                " SET SCRIPT_VRS_DSC = " + SQLTools.GetStringForSQL(scriptVersionTrace.getScriptVersionDescription()) + ", " +
-                "SCRIPT_VRS_NB = " + SQLTools.GetStringForSQL(scriptVersionTrace.getScriptVersionNumber()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(scriptVersionTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(scriptVersionTrace.getMetadataKey().getProcessId()) + ";";
+                " SET SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersionTrace.getScriptVersionDescription()) + ", " +
+                "SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionTrace.getScriptVersionNumber()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptVersionTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(scriptVersionTrace.getMetadataKey().getProcessId()) + ";";
     }
 }

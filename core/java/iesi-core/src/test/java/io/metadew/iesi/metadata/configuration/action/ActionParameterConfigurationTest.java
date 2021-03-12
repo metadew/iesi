@@ -1,14 +1,15 @@
 package io.metadew.iesi.metadata.configuration.action;
 
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.Optional;
 
@@ -23,23 +24,37 @@ class ActionParameterConfigurationTest {
     private DesignMetadataRepository designMetadataRepository;
     private ActionParameter actionParameter2;
 
+    @BeforeAll
+    static void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
+    }
+
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-        designMetadataRepository.createAllTables();
         actionParameter1 = new ActionParameterBuilder("1", 1, "1", "firstParameter")
                 .value("parameter value")
                 .build();
         actionParameter2 = new ActionParameterBuilder("1", 1, "1", "secondParameter")
                 .value("parameter value")
                 .build();
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        // drop because the designMetadataRepository already is initialized so you can't recreate those tables
-        // in the initializer unless you delete the tables after each test
-        designMetadataRepository.dropAllTables();
     }
 
     @Test

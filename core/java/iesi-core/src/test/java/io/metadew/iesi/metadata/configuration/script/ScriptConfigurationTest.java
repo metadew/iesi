@@ -1,18 +1,22 @@
 package io.metadew.iesi.metadata.configuration.script;
 
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
-import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,31 +32,62 @@ class ScriptConfigurationTest {
     private Script script12;
     private Script script2;
 
+    @BeforeAll
+    static void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
+    }
+
     @BeforeEach
     void setup() {
-        designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-designMetadataRepository.createAllTables();
+        ScriptKey scriptKey1 = new ScriptKey(IdentifierTools.getScriptIdentifier("script1"), 1);
+        ScriptKey scriptKey12 = new ScriptKey(IdentifierTools.getScriptIdentifier("script1"), 2);
+        ScriptKey scriptKey2 = new ScriptKey(IdentifierTools.getScriptIdentifier("dummy"), 1);
+
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
+                .name("DEFAULT")
+                .teamKeys(new HashSet<>())
+                .securedObjects(Stream.of(scriptKey1, scriptKey12, scriptKey2).collect(Collectors.toSet()))
+                .build();
+
         script11 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 1)
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .numberOfActions(2)
                 .numberOfParameters(2)
                 .build();
         script12 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 2)
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .name("script1")
                 .numberOfActions(2)
                 .numberOfParameters(2)
                 .build();
         script2 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("dummy"), 1)
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
                 .numberOfActions(3)
                 .numberOfParameters(3)
                 .build();
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        // drop because the designMetadataRepository already is initialized so you can't recreate those tables
-        // in the initializer unless you delete the tables after each test
-        designMetadataRepository.dropAllTables();
     }
 
     @Test
@@ -119,6 +154,7 @@ designMetadataRepository.createAllTables();
         assertEquals(4, ScriptParameterConfiguration.getInstance().getAll().size());
         assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
     }
+
     @Test
     void scriptInsertMultipleScriptsTest() {
         assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
@@ -139,7 +175,7 @@ designMetadataRepository.createAllTables();
     @Test
     void scriptInsertAlreadyExistsTest() {
         ScriptConfiguration.getInstance().insert(script11);
-        assertThrows(MetadataAlreadyExistsException.class,() -> ScriptConfiguration.getInstance().insert(script11));
+        assertThrows(MetadataAlreadyExistsException.class, () -> ScriptConfiguration.getInstance().insert(script11));
     }
 
     @Test
@@ -191,13 +227,13 @@ designMetadataRepository.createAllTables();
 
     @Test
     void scriptDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class,() -> ScriptConfiguration.getInstance().delete(script11.getMetadataKey()));
+        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
     }
 
     @Test
     void scriptDeleteDoesNotExistMultipleVersionsTest() {
         ScriptConfiguration.getInstance().insert(script12);
-        assertThrows(MetadataDoesNotExistException.class,() -> ScriptConfiguration.getInstance().delete(script11.getMetadataKey()));
+        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
     }
 
     @Test
@@ -249,7 +285,7 @@ designMetadataRepository.createAllTables();
     }
 
     @Test
-    void scriptGetNotExistsTest(){
+    void scriptGetNotExistsTest() {
         assertFalse(ScriptConfiguration.getInstance().exists(script11.getMetadataKey()));
         assertFalse(ScriptConfiguration.getInstance().get(script11.getMetadataKey()).isPresent());
     }

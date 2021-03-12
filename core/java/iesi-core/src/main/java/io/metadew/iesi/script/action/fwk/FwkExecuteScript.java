@@ -1,16 +1,17 @@
 package io.metadew.iesi.script.action.fwk;
 
+import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -19,7 +20,9 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,49 +32,41 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class FwkExecuteScript {
+public class FwkExecuteScript extends ActionTypeExecution {
 
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
 
-    private ActionExecution actionExecution;
-    private ScriptExecution scriptExecution;
-    private ExecutionControl executionControl;
-    // Parameters
     private ActionParameterOperation scriptName;
     private ActionParameterOperation scriptVersion;
     private ActionParameterOperation environmentName;
     private ActionParameterOperation paramList;
     private ActionParameterOperation paramFile;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.executionControl = executionControl;
-        this.actionExecution = actionExecution;
-        this.scriptExecution = scriptExecution;
-        this.actionParameterOperationMap = new HashMap<>();
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
         // Reset Parameters
-        this.setScriptName(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "script"));
-        this.setScriptVersion(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "version"));
-        this.setEnvironmentName(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "environment"));
-        this.setParamList(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "paramList"));
-        this.setParamFile(new ActionParameterOperation(executionControl, actionExecution, actionExecution.getAction().getType(), "paramFile"));
+        this.setScriptName(new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "script"));
+        this.setScriptVersion(new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "version"));
+        this.setEnvironmentName(new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "environment"));
+        this.setParamList(new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "paramList"));
+        this.setParamFile(new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "paramFile"));
 
         // Get Parameters
-        for (ActionParameter actionParameter : actionExecution.getAction().getParameters()) {
+        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("script")) {
-                this.getScriptName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getScriptName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("version")) {
-                this.getScriptVersion().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getScriptVersion().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("environment")) {
-                this.getEnvironmentName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getEnvironmentName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("paramlist")) {
-                this.getParamList().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getParamList().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("paramfile")) {
-                this.getParamFile().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getParamFile().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -83,30 +78,6 @@ public class FwkExecuteScript {
         this.getActionParameterOperationMap().put("paramFile", this.getParamFile());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            String scriptName = convertScriptName(getScriptName().getValue());
-            Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
-            Optional<String> environmentName = convertEnvironmentName(getEnvironmentName().getValue());
-            // TODO: see setParameterList for nicer version
-            Optional<String> parameterList = convertParameterList2(getParamList().getValue());
-            Optional<String> parameterFileName = convertParameterFileName(getParamFile().getValue());
-            return executeScript(scriptName, scriptVersion, environmentName, parameterList, parameterFileName);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            actionExecution.getActionControl().increaseErrorCount();
-
-            actionExecution.getActionControl().logOutput("exception", e.getMessage());
-            actionExecution.getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-    }
-
     private Optional<String> convertParameterList2(DataType parameterList) {
         if (parameterList == null) {
             return Optional.empty();
@@ -114,16 +85,22 @@ public class FwkExecuteScript {
         if (parameterList instanceof Text) {
             return Optional.of(parameterList.toString());
         } else {
-            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for parameterList",
+            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for parameterList",
                     parameterList.getClass()));
             return Optional.empty();
         }
     }
 
-    private boolean executeScript(String scriptName, Optional<Long> scriptVersion, Optional<String> environmentName, Optional<String> parameterList, Optional<String> parameterFileName) throws ScriptExecutionBuildException, InterruptedException {
+    protected boolean executeAction() throws ScriptExecutionBuildException, InterruptedException {
         // Check on Running a script in a loop
-        if (scriptExecution.getScript().getName().equals(scriptName)) {
-            throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, scriptExecution.getScript().getName()));
+        String scriptName = convertScriptName(getScriptName().getValue());
+        Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
+        Optional<String> environmentName = convertEnvironmentName(getEnvironmentName().getValue());
+        // TODO: see setParameterList for nicer version
+        Optional<String> parameterList = convertParameterList2(getParamList().getValue());
+        Optional<String> parameterFileName = convertParameterFileName(getParamFile().getValue());
+        if (getScriptExecution().getScript().getName().equals(scriptName)) {
+            throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, getScriptExecution().getScript().getName()));
         }
 
         // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
@@ -141,25 +118,27 @@ public class FwkExecuteScript {
         // TODO: impersonations?
         ScriptExecution subScriptScriptExecution = new ScriptExecutionBuilder(false, false)
                 .script(script)
-                .executionControl(executionControl)
-                .processId(executionControl.getLastProcessId())
-                .parentScriptExecution(scriptExecution)
+                .executionControl(getExecutionControl())
+                .processId(getExecutionControl().getLastProcessId())
+                .parentScriptExecution(getScriptExecution())
                 .exitOnCompletion(false)
                 .parameters(parameters)
-                .environment(executionControl.getEnvName())
+                .environment(getExecutionControl().getEnvName())
                 .build();
 
         subScriptScriptExecution.execute();
 
         if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.SUCCESS.value())) {
-            actionExecution.getActionControl().increaseSuccessCount();
+            getActionExecution().getActionControl().increaseSuccessCount();
         } else if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.WARNING.value())) {
-            actionExecution.getActionControl().increaseWarningCount();
+            getActionExecution().getActionControl().increaseWarningCount();
         } else if (subScriptScriptExecution.getResult()
                 .equalsIgnoreCase(ScriptRunStatus.ERROR.value())) {
-            actionExecution.getActionControl().increaseErrorCount();
+            getActionExecution().getActionControl().logOutput("action.error", "script " + script.getName() + "-" + script.getVersion().getNumber() + " ended in " + subScriptScriptExecution.getResult());
+            getActionExecution().getActionControl().increaseErrorCount();
         } else {
-            actionExecution.getActionControl().increaseErrorCount();
+            getActionExecution().getActionControl().logOutput("action.error", "script " + script.getName() + "-" + script.getVersion().getNumber() + " ended in " + subScriptScriptExecution.getResult());
+            getActionExecution().getActionControl().increaseErrorCount();
         }
 
         return true;
@@ -172,12 +151,12 @@ public class FwkExecuteScript {
             if (matcher.find()) {
                 parameterMap.put(matcher.group("parameter"), matcher.group("value"));
             } else {
-                LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " parameter entry ''{0}'' does not follow correct syntax",
+                LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " parameter entry ''{0}'' does not follow correct syntax",
                         parameterEntry));
             }
             return parameterMap;
         } else {
-            LOGGER.warn(MessageFormat.format(actionExecution.getAction().getType() + " does not accept {0} as type for parameter entry",
+            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for parameter entry",
                     parameterEntry.getClass()));
             return parameterMap;
         }
@@ -191,7 +170,7 @@ public class FwkExecuteScript {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, executionControl.getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {
@@ -296,30 +275,6 @@ public class FwkExecuteScript {
     }
 
     // Getters and Setters
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
-    public ScriptExecution getScriptExecution() {
-        return scriptExecution;
-    }
-
-    public void setScriptExecution(ScriptExecution scriptExecution) {
-        this.scriptExecution = scriptExecution;
-    }
-
     public ActionParameterOperation getScriptName() {
         return scriptName;
     }
@@ -350,14 +305,6 @@ public class FwkExecuteScript {
 
     public void setParamFile(ActionParameterOperation paramFile) {
         this.paramFile = paramFile;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getScriptVersion() {

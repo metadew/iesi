@@ -1,15 +1,13 @@
 package io.metadew.iesi.metadata.configuration.execution.script;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestImpersonation;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestImpersonationKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
-import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
-import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
@@ -17,9 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 public class ScriptExecutionRequestImpersonationConfiguration extends Configuration<ScriptExecutionRequestImpersonation, ScriptExecutionRequestImpersonationKey> {
@@ -33,11 +29,8 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
         return INSTANCE;
     }
 
-    private ScriptExecutionRequestImpersonationConfiguration() {}
-
-    // Constructors
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+    private ScriptExecutionRequestImpersonationConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
     }
 
     @Override
@@ -45,7 +38,7 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
         try {
             String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, IMP_ID FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                    " WHERE ID = " + SQLTools.GetStringForSQL(scriptExecutionRequestKey.getId()) + ";";
+                    " WHERE ID = " + SQLTools.getStringForSQL(scriptExecutionRequestKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -92,17 +85,17 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
 
     private String deleteStatement(ScriptExecutionRequestImpersonationKey executionRequestKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                " WHERE ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
     }
 
     private String deleteStatement(ScriptExecutionRequestKey executionRequestKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
     }
 
     private String deleteStatement(ImpersonationKey executionRequestKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                " WHERE IMP_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getName()) + ";";
+                " WHERE IMP_ID = " + SQLTools.getStringForSQL(executionRequestKey.getName()) + ";";
     }
 
 
@@ -116,19 +109,19 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
     }
 
     public String insertStatement(ScriptExecutionRequestImpersonation scriptExecutionRequest) {
-        return  "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
+        return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
                 " (ID, SCRIPT_EXEC_REQ_ID, IMP_ID) VALUES (" +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
-                SQLTools.GetStringForSQL(scriptExecutionRequest.getImpersonationKey().getName()) + ");";
+                SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
+                SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
+                SQLTools.getStringForSQL(scriptExecutionRequest.getImpersonationKey().getName()) + ");";
     }
 
-    public List<ScriptExecutionRequestImpersonation> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
+    public Set<ScriptExecutionRequestImpersonation> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
         try {
             List<ScriptExecutionRequestImpersonation> scriptExecutionRequestParameters = new ArrayList<>();
             String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, IMP_ID FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                    " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                    " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptExecutionRequestParameters.add(new ScriptExecutionRequestImpersonation(
@@ -136,7 +129,7 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                         new ImpersonationKey(cachedRowSet.getString("IMP_ID"))));
             }
-            return scriptExecutionRequestParameters;
+            return new HashSet<>(scriptExecutionRequestParameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -147,7 +140,7 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
             List<ScriptExecutionRequestImpersonation> scriptExecutionRequestParameters = new ArrayList<>();
             String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, IMP_ID FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") +
-                    " WHERE IMP_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getName()) + ";";
+                    " WHERE IMP_ID = " + SQLTools.getStringForSQL(executionRequestKey.getName()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 scriptExecutionRequestParameters.add(new ScriptExecutionRequestImpersonation(
@@ -182,9 +175,9 @@ public class ScriptExecutionRequestImpersonationConfiguration extends Configurat
 
     public String updateStatement(ScriptExecutionRequestImpersonation scriptExecutionRequest) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestImpersonations") + " SET " +
-                "SCRIPT_EXEC_REQ_ID=" + SQLTools.GetStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
-                "IMP_ID=" + SQLTools.GetStringForSQL(scriptExecutionRequest.getImpersonationKey().getName()) + "," +
+                "SCRIPT_EXEC_REQ_ID=" + SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
+                "IMP_ID=" + SQLTools.getStringForSQL(scriptExecutionRequest.getImpersonationKey().getName()) + "," +
                 " WHERE " +
-                "ID = " + SQLTools.GetStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";";
+                "ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";";
     }
 }

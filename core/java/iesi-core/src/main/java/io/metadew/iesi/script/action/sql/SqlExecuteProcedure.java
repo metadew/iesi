@@ -3,14 +3,14 @@ package io.metadew.iesi.script.action.sql;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
-import io.metadew.iesi.connection.tools.sql.SQLDataTransfer;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -19,17 +19,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Optional;
 
-public class SqlExecuteProcedure {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class SqlExecuteProcedure extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation sqlProcedure;
@@ -37,24 +31,12 @@ public class SqlExecuteProcedure {
     private ActionParameterOperation sqlParameters;
     private ActionParameterOperation outputDataset;
     private ActionParameterOperation appendOutput;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public SqlExecuteProcedure() {
-
-    }
 
     public SqlExecuteProcedure(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -73,15 +55,15 @@ public class SqlExecuteProcedure {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("procedure")) {
-                this.getSqlProcedure().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getSqlProcedure().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("parameters")) {
-                this.getSqlParameters().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getSqlParameters().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputdataset")) {
-                this.getOutputDataset().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getOutputDataset().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("appendoutput")) {
-                this.getAppendOutput().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getAppendOutput().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -93,44 +75,21 @@ public class SqlExecuteProcedure {
         this.getActionParameterOperationMap().put("appendOutput", this.getAppendOutput());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
 
-            String sqlProcedure = convertSqlProcedure(getSqlProcedure().getValue());
-            String connectionName = convertConnectionName(getSqlProcedure().getValue());
-            String sqlParameters = convertSqlParameters(getSqlProcedure().getValue());
-            String outputDataset = convertDatasetReferenceName(getSqlProcedure().getValue());
-            boolean appendOutput = convertAppendOutput(getSqlProcedure().getValue());
+    protected boolean executeAction() throws SQLException, InterruptedException {
 
-            return execute(sqlProcedure, connectionName, sqlParameters, outputDataset, appendOutput);
-
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean execute(String sqlProcedure, String connectionName, String sqlParameters, String outputDatasetReferenceName, boolean appendOutput) throws SQLException, InterruptedException {
+        String sqlProcedure = convertSqlProcedure(getSqlProcedure().getValue());
+        String connectionName = convertConnectionName(getSqlProcedure().getValue());
+        String sqlParameters = convertSqlParameters(getSqlProcedure().getValue());
+        String outputDatasetReferenceName = convertDatasetReferenceName(getSqlProcedure().getValue());
+        boolean appendOutput = convertAppendOutput(getSqlProcedure().getValue());
 
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
-        if (database == null) {
-            throw new RuntimeException("Error establishing DB connection");
-        }
 
         SqlScriptResult sqlScriptResult = null;
         CachedRowSet crs = null;
@@ -139,10 +98,10 @@ public class SqlExecuteProcedure {
         // TODO Retrieve config from a file
 
         if (!outputDatasetReferenceName.isEmpty()) {
-            Optional<Dataset> dataset = executionControl.getExecutionRuntime().getDataset(outputDatasetReferenceName);
+            Optional<InMemoryDatasetImplementation> dataset = getExecutionControl().getExecutionRuntime().getDataset(outputDatasetReferenceName);
 
             // Perform the action
-            SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), !appendOutput);
+            //SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), !appendOutput);
             sqlScriptResult = new SqlScriptResult(0, "data.transfer.complete", "");
 
         } else {
@@ -213,36 +172,12 @@ public class SqlExecuteProcedure {
         }
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
     public ActionParameterOperation getConnectionName() {
         return connectionName;
     }
 
     public void setConnectionName(ActionParameterOperation connectionName) {
         this.connectionName = connectionName;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getActionParameterOperation(String key) {

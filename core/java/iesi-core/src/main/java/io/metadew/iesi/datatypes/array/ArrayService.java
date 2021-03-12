@@ -5,14 +5,14 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Log4j2
 public class ArrayService implements IDataTypeService<Array> {
 
@@ -48,11 +48,31 @@ public class ArrayService implements IDataTypeService<Array> {
         return new Array(resolvedArguments);
     }
 
-    public Array resolve(KeyValueDataset dataset, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
+    @Override
+    public boolean equals(Array _this, Array other, ExecutionRuntime executionRuntime) {
+        if (_this == null && other == null) {
+            return true;
+        }
+        if (_this == null || other == null) {
+            return false;
+        }
+        if (_this.getList().size() != other.getList().size()) {
+            return false;
+        }
+
+        for (int i = 0; i < _this.getList().size(); i++) {
+            if (!DataTypeHandler.getInstance().equals(_this.getList().get(i), other.getList().get(i), executionRuntime)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Array resolve(InMemoryDatasetImplementation inMemoryDatasetImplementation, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) {
         Array array = new Array();
         int elementCounter = 1;
         for (JsonNode element : jsonNode) {
-            array.add(DataTypeHandler.getInstance().resolve(dataset, key + "." + elementCounter, element, executionRuntime));
+            array.add(DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementation, key + "." + elementCounter, element, executionRuntime));
             elementCounter++;
         }
         return array;

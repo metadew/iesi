@@ -1,10 +1,7 @@
 package io.metadew.iesi.datatypes;
 
-import lombok.EqualsAndHashCode;
+public interface DataType {
 
-@EqualsAndHashCode
-public abstract class DataType {
-
-    public abstract String toString();
+    public String toString();
 
 }

@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action.design;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.design.ActionDesignTrace;
@@ -28,10 +29,7 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
     }
 
     private ActionDesignTraceConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
     }
 
     @Override
@@ -40,9 +38,9 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
             String query = "SELECT ACTION_NB, ACTION_TYP_NM, ACTION_NM, ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL FROM " +
                     getMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
                     " WHERE " +
-                    " RUN_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getRunId()) + " AND " +
-                    " PRC_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getProcessId()) + " AND " +
-                    " ACTION_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getActionId()) + ";";
+                    " RUN_ID = " + SQLTools.getStringForSQL(actionDesignTraceKey.getRunId()) + " AND " +
+                    " PRC_ID = " + SQLTools.getStringForSQL(actionDesignTraceKey.getProcessId()) + " AND " +
+                    " ACTION_ID = " + SQLTools.getStringForSQL(actionDesignTraceKey.getActionId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -105,9 +103,9 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
     private String deleteStatement(ActionDesignTraceKey actionDesignTraceKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getRunId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getProcessId()) + " AND " +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionDesignTraceKey.getActionId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(actionDesignTraceKey.getRunId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(actionDesignTraceKey.getProcessId()) + " AND " +
+                " ACTION_ID = " + SQLTools.getStringForSQL(actionDesignTraceKey.getActionId()) + ";";
     }
 
     @Override
@@ -121,19 +119,19 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
                 " (RUN_ID, PRC_ID, ACTION_ID, ACTION_NB, ACTION_TYP_NM, ACTION_NM," +
                 " ACTION_DSC, COMP_NM, ITERATION_VAL, CONDITION_VAL, RETRIES_VAL, EXP_ERR_FL, STOP_ERR_FL) VALUES (" +
-                SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getRunId()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getProcessId()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getActionId()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getNumber()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getType()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getName()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getDescription()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getComponent()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getIteration()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getCondition()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getRetries()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getErrorExpected()) + "," +
-                SQLTools.GetStringForSQL(actionDesignTrace.getErrorStop()) + ");";
+                SQLTools.getStringForSQL(actionDesignTrace.getMetadataKey().getRunId()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getMetadataKey().getProcessId()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getMetadataKey().getActionId()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getNumber()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getType()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getName()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getDescription()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getComponent()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getIteration()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getCondition()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getRetries()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getErrorExpected()) + "," +
+                SQLTools.getStringForSQL(actionDesignTrace.getErrorStop()) + ");";
     }
 
     @Override
@@ -145,19 +143,19 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
 
     private String updateStatement(ActionDesignTrace actionDesignTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionDesignTraces") +
-                " SET ACTION_NB = " + SQLTools.GetStringForSQL(actionDesignTrace.getNumber()) + "," +
-                "ACTION_TYP_NM = " + SQLTools.GetStringForSQL(actionDesignTrace.getType()) + "," +
-                "ACTION_NM = " + SQLTools.GetStringForSQL(actionDesignTrace.getName()) + "," +
-                "ACTION_DSC = " + SQLTools.GetStringForSQL(actionDesignTrace.getDescription()) + "," +
-                "COMP_NM = " + SQLTools.GetStringForSQL(actionDesignTrace.getComponent()) + "," +
-                "ITERATION_VAL = " + SQLTools.GetStringForSQL(actionDesignTrace.getIteration()) + "," +
-                "CONDITION_VAL = " + SQLTools.GetStringForSQL(actionDesignTrace.getCondition()) + "," +
-                "RETRIES_VAL = " + SQLTools.GetStringForSQL(actionDesignTrace.getRetries()) + "," +
-                "EXP_ERR_FL = " + SQLTools.GetStringForSQL(actionDesignTrace.getErrorExpected()) + "," +
-                "STOP_ERR_FL =" + SQLTools.GetStringForSQL(actionDesignTrace.getErrorStop()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getProcessId()) +
-                " AND ACTION_ID = " + SQLTools.GetStringForSQL(actionDesignTrace.getMetadataKey().getActionId()) + ";";
+                " SET ACTION_NB = " + SQLTools.getStringForSQL(actionDesignTrace.getNumber()) + "," +
+                "ACTION_TYP_NM = " + SQLTools.getStringForSQL(actionDesignTrace.getType()) + "," +
+                "ACTION_NM = " + SQLTools.getStringForSQL(actionDesignTrace.getName()) + "," +
+                "ACTION_DSC = " + SQLTools.getStringForSQL(actionDesignTrace.getDescription()) + "," +
+                "COMP_NM = " + SQLTools.getStringForSQL(actionDesignTrace.getComponent()) + "," +
+                "ITERATION_VAL = " + SQLTools.getStringForSQL(actionDesignTrace.getIteration()) + "," +
+                "CONDITION_VAL = " + SQLTools.getStringForSQL(actionDesignTrace.getCondition()) + "," +
+                "RETRIES_VAL = " + SQLTools.getStringForSQL(actionDesignTrace.getRetries()) + "," +
+                "EXP_ERR_FL = " + SQLTools.getStringForSQL(actionDesignTrace.getErrorExpected()) + "," +
+                "STOP_ERR_FL =" + SQLTools.getStringForSQL(actionDesignTrace.getErrorStop()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionDesignTrace.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(actionDesignTrace.getMetadataKey().getProcessId()) +
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionDesignTrace.getMetadataKey().getActionId()) + ";";
     }
 
 }

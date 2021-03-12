@@ -6,7 +6,7 @@
 
 First, install the necessary development software on your machine:
 * IntelliJ > [link](https://www.jetbrains.com/idea)
-* IntelliJ plugins: Lomkok > [link](https://plugins.jetbrains.com/plugin/6317-lombok)
+* IntelliJ plugins: Lomkok > [link](https://plugins.jetbrains.com/plugin/6317-lombok). *Note: If the Lombok plugin installation still results in issues, try the following resolution path: uninstall -> Invalidate Caches/Restart -> re-install*
 
 Optionally, install any additional tools that facilitate your work (text editors, ...)
 
@@ -24,8 +24,8 @@ This process needs to be performed for all jar files in the folder build/ext.
 
 Next, open each of the following java projects in IntelliJ and organise them according to your favourite way of working.
 * core/java/iesi-core
-* core/java/iesi-test
 * core/java/iesi-rest-without-microservices
+* core/java/iesi-test (optional)
 
 In the order of the projects listed above, each one will be built.
 
@@ -33,13 +33,13 @@ In the order of the projects listed above, each one will be built.
 
 Build using maven goal `clean install project-info-reports:dependencies` and include the profile `dependencies`
 
-### iesi-test
-
-Build using maven goal `clean install`
-
 ### iesi-rest-without-microservices
 
 Build using maven goal `clean install project-info-reports:dependencies`
+
+### iesi-test
+
+Build using maven goal `clean install`
 
 ## Create workspace
 
@@ -49,21 +49,14 @@ Now that each project is built, the solution can be assembled in a workspace:
 
 ## Assemble the solution
 
-Once the workspace folder has been created, the solution can be assembled. Each assembly has a `version` that will be pulled togehter into an `instance` and for wich a `configuration` will be applied.
-* When starting an assembly, the solution will be deployed to `[workspace]/[instance]/[version]`
-* The configuration that is available in `[workspace]/conf/[instance]/[configuration]`
-
-So to move forwasrd, you need to create a folder fo the instance and configuration in the `[workspace]/conf` folder.
+Once the workspace folder has been created, the solution can be assembled. Each assembly has a `version` that will be pulled togehter into an `instance`. When starting an assembly, the solution will be deployed to `[workspace]/[version]/[instance]`
 
 Next, the assembly process can be started from iesi-core java project. Start the AssemblyLauncher - `io.metadew.iesi.launch.AssemblyLauncher` - with the following program arguments:
 ```
 -repository [/path/to/iesi]
--development [/path/to/iesi]
 -sandbox [/path/to/workspace]
--instance [instance]
 -version [version]
--configuration [configuration]
--distribution
+-instance [instance]
 ```
 
-After completion, the solution will be deployed to `[workspace]/[instance]/[version]`
+After completion, the solution will be deployed to `[workspace]/[version]/[instance]`

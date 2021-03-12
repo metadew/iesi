@@ -2,10 +2,7 @@ package io.metadew.iesi.server.rest.connection.dto;
 
 
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ConnectionDto extends RepresentationModel<ConnectionDto> {
 
     private String name;

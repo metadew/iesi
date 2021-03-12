@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -26,14 +27,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-public class WfaExecuteFilePing {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class WfaExecuteFilePing extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation filePath;
@@ -44,25 +41,15 @@ public class WfaExecuteFilePing {
     private ActionParameterOperation waitInterval;
     private ActionParameterOperation timeoutInterval;
     private long startTime;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private final int defaultWaitInterval = 1000;
     private final int defaultTimeoutInterval = -1;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-    public WfaExecuteFilePing() {
-
-    }
 
     public WfaExecuteFilePing(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
+        super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void init(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
-    }
 
     public void prepare() {
         // Set Parameters
@@ -84,19 +71,19 @@ public class WfaExecuteFilePing {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("filepath")) {
-                this.getFilePath().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getFilePath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("filename")) {
-                this.getFileName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getFileName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("hasresult")) {
-                this.getExpectedResult().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getExpectedResult().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("setruntimevariables")) {
-                this.getSetRuntimeVariables().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getSetRuntimeVariables().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("wait")) {
-                this.getWaitInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getWaitInterval().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("timeout")) {
-                this.getTimeoutInterval().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getTimeoutInterval().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -110,41 +97,23 @@ public class WfaExecuteFilePing {
         this.getActionParameterOperationMap().put("timeout", this.getTimeoutInterval());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            String filePath = convertFilePath(getFilePath().getValue());
-            String fileName = convertFileName(getFileName().getValue());
-            boolean hasResult = convertHasResult(getExpectedResult().getValue());
-            boolean setRuntimeVariables = converSetRuntimeVariables(getSetRuntimeVariables().getValue());
-            String connectionName = convertConnectionName(getConnectionName().getValue());
-            int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
-            int waitInterval = convertWaitInterval(getWaitInterval().getValue());
-            return executeFilePing(filePath, fileName, hasResult, setRuntimeVariables, connectionName, waitInterval, timeoutInterval);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-            return false;
-        }
-
-    }
-
-    private boolean executeFilePing(String filePath, String fileName, boolean hasResult, boolean setRuntimeVariables, String connectionName, int waitInterval, int timeoutInterval) throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
         // Get Connection
+
+        String filePath = convertFilePath(getFilePath().getValue());
+        String fileName = convertFileName(getFileName().getValue());
+        boolean hasResult = convertHasResult(getExpectedResult().getValue());
+        boolean setRuntimeVariables = converSetRuntimeVariables(getSetRuntimeVariables().getValue());
+        String connectionName = convertConnectionName(getConnectionName().getValue());
+        int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
+        int waitInterval = convertWaitInterval(getWaitInterval().getValue());
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .get();
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection dcConnection = connectionOperation.getHostConnection(connection);
+                .orElseThrow(InterruptedException::new);
+        HostConnection dcConnection = ConnectionOperation.getInstance().getHostConnection(connection);
 
         // Check if connection is localhost
-        boolean connectionIsLocalHost = connectionOperation.isOnLocalConnection(dcConnection);
+        boolean connectionIsLocalHost = ConnectionOperation.getInstance().isOnLocalConnection(dcConnection);
 
         // Run the action
         int i = 1;
@@ -188,7 +157,7 @@ public class WfaExecuteFilePing {
         } else {
             this.getActionExecution().getActionControl().increaseErrorCount();
 
-            this.getActionExecution().getActionControl().logOutput("out", "time-out");
+            this.getActionExecution().getActionControl().logOutput("action.error", "File ping timed out");
             this.getActionExecution().getActionControl().logOutput("time", Long.toString(elapsedTime));
         }
         return true;
@@ -358,8 +327,7 @@ public class WfaExecuteFilePing {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private List<FileConnection> checkRemoteFolder(Connection connection, String filePath, String fileName) {
         List<FileConnection> connectionsFound = new ArrayList();
-        ConnectionOperation connectionOperation = new ConnectionOperation();
-        HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+        HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
         this.getActionExecution().getActionControl().logOutput("conn.name", connection.getMetadataKey().getName());
 
         try {
@@ -464,21 +432,6 @@ public class WfaExecuteFilePing {
 
     }
 
-    @SuppressWarnings("unused")
-    private void setRuntimeVariable(CachedRowSet crs, boolean setRuntimeVariables) {
-        if (setRuntimeVariables) {
-            this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(actionExecution, crs);
-        }
-    }
-
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
     public ActionParameterOperation getWaitInterval() {
         return waitInterval;
     }
@@ -501,14 +454,6 @@ public class WfaExecuteFilePing {
 
     public void setStartTime(long startTime) {
         this.startTime = startTime;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
     }
 
     public ActionParameterOperation getExpectedResult() {
@@ -543,13 +488,6 @@ public class WfaExecuteFilePing {
         this.fileName = fileName;
     }
 
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
-    }
 
     public ActionParameterOperation getSetRuntimeVariables() {
         return setRuntimeVariables;

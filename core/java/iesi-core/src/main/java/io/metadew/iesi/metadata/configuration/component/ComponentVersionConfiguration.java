@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.component;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -32,18 +33,14 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     }
 
     private ComponentVersionConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ComponentBuildConfiguration.getInstance().init(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
     }
 
     @Override
     public Optional<ComponentVersion> get(ComponentVersionKey componentVersionKey) {
         String queryComponentVersion = "select COMP_ID, COMP_VRS_NB, COMP_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ComponentVersions")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getId()) +
-                " and COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getVersionNumber());
+                + " where COMP_ID = " + SQLTools.getStringForSQL(componentVersionKey.getComponentKey().getId()) +
+                " and COMP_VRS_NB = " + SQLTools.getStringForSQL(componentVersionKey.getComponentKey().getVersionNumber());
         CachedRowSet crsComponentVersion = getMetadataRepository().executeQuery(queryComponentVersion, "reader");
         try {
             if (crsComponentVersion.size() == 0) {
@@ -98,8 +95,8 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
 
     private String deleteStatement(ComponentVersionKey componentVersionKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getId()) +
-                " AND COMP_VRS_NB = " + SQLTools.GetStringForSQL(componentVersionKey.getComponentKey().getVersionNumber()) + ";";
+                " WHERE COMP_ID = " + SQLTools.getStringForSQL(componentVersionKey.getComponentKey().getId()) +
+                " AND COMP_VRS_NB = " + SQLTools.getStringForSQL(componentVersionKey.getComponentKey().getVersionNumber()) + ";";
     }
 
     @Override
@@ -116,9 +113,9 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     public String getInsertStatement(ComponentVersion componentVersion) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ComponentVersions")
                 + " (COMP_ID, COMP_VRS_NB, COMP_VRS_DSC) VALUES (" +
-                SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentKey().getId()) + "," +
-                SQLTools.GetStringForSQL(componentVersion.getMetadataKey().getComponentKey().getVersionNumber()) + "," +
-                SQLTools.GetStringForSQL(componentVersion.getDescription()) + ");";
+                SQLTools.getStringForSQL(componentVersion.getMetadataKey().getComponentKey().getId()) + "," +
+                SQLTools.getStringForSQL(componentVersion.getMetadataKey().getComponentKey().getVersionNumber()) + "," +
+                SQLTools.getStringForSQL(componentVersion.getDescription()) + ");";
     }
 
     public List<ComponentVersion> getByComponent(String componentId) {
@@ -126,7 +123,7 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
             List<ComponentVersion> componentVersions = new ArrayList<>();
             String query = "select * from "
                     + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
-                    " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
+                    " WHERE COMP_ID = " + SQLTools.getStringForSQL(componentId) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 ComponentVersionKey componentVersionKey = new ComponentVersionKey(
@@ -144,14 +141,14 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
 
     public void deleteByComponentId(String componentId) {
         String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
+                " WHERE COMP_ID = " + SQLTools.getStringForSQL(componentId) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
     public long getLatestVersionByComponentId(String componentId) {
         String queryComponentVersion = "select max(COMP_VRS_NB) as \"MAX_VRS_NB\" from "
                 + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
-                " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
+                " where COMP_ID = " + SQLTools.getStringForSQL(componentId) + ";";
         CachedRowSet crsComponentVersion = getMetadataRepository().executeQuery(queryComponentVersion, "reader");
         try {
             if (crsComponentVersion.size() == 0) {

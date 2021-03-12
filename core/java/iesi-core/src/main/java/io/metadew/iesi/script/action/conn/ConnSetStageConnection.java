@@ -3,6 +3,7 @@ package io.metadew.iesi.script.action.conn;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -10,37 +11,18 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
-public class ConnSetStageConnection {
-
-    private ActionExecution actionExecution;
-    private ExecutionControl executionControl;
+public class ConnSetStageConnection extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation stageName;
     private ActionParameterOperation stageCleanup;
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public ConnSetStageConnection() {
-
-    }
 
     public ConnSetStageConnection(ExecutionControl executionControl,
                                   ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -53,9 +35,9 @@ public class ConnSetStageConnection {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("stage")) {
-                this.getStageName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getStageName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("cleanup")) {
-                this.getStageCleanup().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getStageCleanup().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -64,30 +46,10 @@ public class ConnSetStageConnection {
         this.getActionParameterOperationMap().put("cleanup", this.getStageCleanup());
     }
 
-    //
-    public boolean execute() throws InterruptedException {
-        try {
-            String stageName = convertStageName(getStageName().getValue());
-            boolean cleanup = convertCleanup(getStageCleanup().getValue());
-            return execute(stageName, cleanup);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean execute(String stageName, boolean cleanup) throws InterruptedException {
+    protected boolean executeAction() throws InterruptedException {
         // Set the stage connection
+        String stageName = convertStageName(getStageName().getValue());
+        boolean cleanup = convertCleanup(getStageCleanup().getValue());
         this.getExecutionControl().getExecutionRuntime().setStage(stageName, cleanup);
 
         // Increase the success count
@@ -119,37 +81,12 @@ public class ConnSetStageConnection {
         }
     }
 
-    // Getters and Setters
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
     public ActionParameterOperation getStageName() {
         return stageName;
     }
 
     public void setStageName(ActionParameterOperation stageName) {
         this.stageName = stageName;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
     public ActionParameterOperation getStageCleanup() {

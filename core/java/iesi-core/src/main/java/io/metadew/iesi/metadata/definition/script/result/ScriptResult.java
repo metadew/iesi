@@ -19,6 +19,10 @@ public class ScriptResult extends Metadata<ScriptResultKey> {
     private final String scriptId;
     private final String scriptName;
     private final Long scriptVersion;
+<<<<<<< HEAD
+=======
+    private final String securityGroupName;
+>>>>>>> master
     private final String environment;
     private ScriptRunStatus status;
     private LocalDateTime startTimestamp;
@@ -26,13 +30,21 @@ public class ScriptResult extends Metadata<ScriptResultKey> {
 
     @Builder
     public ScriptResult(ScriptResultKey scriptResultKey, Long parentProcessId, String scriptId, String scriptName,
+<<<<<<< HEAD
                         Long scriptVersion, String environment, ScriptRunStatus status, LocalDateTime startTimestamp,
+=======
+                        Long scriptVersion, String securityGroupName, String environment, ScriptRunStatus status, LocalDateTime startTimestamp,
+>>>>>>> master
                         LocalDateTime endTimestamp) {
         super(scriptResultKey);
         this.parentProcessId = parentProcessId;
         this.scriptId = scriptId;
         this.scriptName = scriptName;
         this.scriptVersion = scriptVersion;
+<<<<<<< HEAD
+=======
+        this.securityGroupName = securityGroupName;
+>>>>>>> master
         this.environment = environment;
         this.status = status;
         this.startTimestamp = startTimestamp;

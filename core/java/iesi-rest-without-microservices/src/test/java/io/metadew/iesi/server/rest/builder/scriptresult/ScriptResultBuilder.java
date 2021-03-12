@@ -18,6 +18,7 @@ public class ScriptResultBuilder {
     private ScriptRunStatus status;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;
+    private String securityGroupName;
 
     public ScriptResultBuilder(String runId, long processId) {
         this.runId = runId;
@@ -30,6 +31,10 @@ public class ScriptResultBuilder {
                 .parentProcessId(n)
                 .scriptId(Long.toString(n))
                 .scriptName(Long.toString(n))
+<<<<<<< HEAD
+=======
+                .securityGroupName("PUBLIC")
+>>>>>>> master
                 .scriptVersion(n)
                 .environment(Long.toString(n))
                 .status(ScriptRunStatus.SUCCESS)
@@ -55,6 +60,11 @@ public class ScriptResultBuilder {
 
     public ScriptResultBuilder scriptVersion(Long scriptVersion) {
         this.scriptVersion = scriptVersion;
+        return this;
+    }
+
+    public ScriptResultBuilder securityGroupName(String securityGroupName) {
+        this.securityGroupName = securityGroupName;
         return this;
     }
 
@@ -85,6 +95,7 @@ public class ScriptResultBuilder {
                 IdentifierTools.getScriptIdentifier(scriptName),
                 scriptName,
                 scriptVersion,
+                securityGroupName,
                 environment,
                 status,
                 startTimestamp,

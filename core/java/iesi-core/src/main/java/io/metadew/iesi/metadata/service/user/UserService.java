@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.service.user;
 
 import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
+<<<<<<< HEAD
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,24 @@ public class UserService {
             INSTANCE = new UserService();
         }
         return INSTANCE;
+=======
+import lombok.extern.log4j.Log4j2;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+@Log4j2
+public class UserService {
+
+    private static UserService instance;
+
+    public static synchronized UserService getInstance() {
+        if (instance == null) {
+            instance = new UserService();
+        }
+        return instance;
+>>>>>>> master
     }
 
     private UserService() {
@@ -41,7 +60,11 @@ public class UserService {
     }
 
     public Optional<User> get(String username) {
+<<<<<<< HEAD
         return UserConfiguration.getInstance().get(username);
+=======
+        return UserConfiguration.getInstance().getByName(username);
+>>>>>>> master
     }
 
     public void update(User user) {
@@ -56,6 +79,7 @@ public class UserService {
         UserConfiguration.getInstance().delete(username);
     }
 
+<<<<<<< HEAD
     public List<Authority> getAuthorities(UserKey userKey) {
         return UserConfiguration.getInstance().getAuthorities(userKey);
     }
@@ -86,6 +110,26 @@ public class UserService {
 
     public void removeAuthority(String username, String authority) {
         UserConfiguration.getInstance().removeAuthority(username, authority);
+=======
+    public Set<Privilege> getPrivileges(UserKey userKey) {
+        return UserConfiguration.getInstance().getPrivileges(userKey);
+    }
+
+    public Set<Role> getRoles(UserKey userKey) {
+        return UserConfiguration.getInstance().getRoles(userKey);
+    }
+
+    public Set<Team> getTeams(UserKey userKey) {
+        return UserConfiguration.getInstance().getTeams(userKey);
+    }
+
+    public void addRole(UserKey user, Role role) {
+        UserConfiguration.getInstance().addRole(user, role.getMetadataKey());
+    }
+
+    public void removeRole(User user, Role role) {
+        UserConfiguration.getInstance().removeRole(user.getMetadataKey(), role.getMetadataKey());
+>>>>>>> master
     }
 
 }

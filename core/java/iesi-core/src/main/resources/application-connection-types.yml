@@ -1,6 +1,29 @@
 iesi:
   metadata:
     connection-types:
+      http:
+        description: Connection to a server exposing HTTP endpoints
+        parameters:
+          host:
+            description: The host name of the server where the endpoints are hosted
+            type: string
+            mandatory: true
+            encrypted: false
+          port:
+            description: Set the specific port for the host. In case the default port (80 for http, 443 for HTTPS) this parameter can be omitted
+            type: number
+            mandatory: false
+            encrypted: false
+          baseUrl:
+            description: all endpoints hosted at the host start with this specific endpoint
+            type: string
+            mandatory: true
+            encrypted: false
+          tls:
+            description: Whether or not the connection to the host is encrypted using TLS
+            type: boolean
+            mandatory: true
+            encrypted: false
       db.db2:
         description: IBM DB2 Database Connection
         parameters:
@@ -289,6 +312,16 @@ iesi:
             type: string
             mandatory: false
             encrypted: false
+          schema:
+            description: The schema name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          mode:
+            description: 'what connection mode is chosen: service or tns'
+            type: string
+            mandatory: true
+            encrypted: false
       db.postgresql:
         description: Postgresql Database Connection
         parameters:
@@ -358,7 +391,7 @@ iesi:
             type: string
             mandatory: true
             encrypted: false
-          filefalseame:
+          filename:
             description: The file name of the the database
             type: string
             mandatory: true

@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.configuration.action.result;
 
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.result.ActionResult;
@@ -29,10 +30,7 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
     }
 
     private ActionResultConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
     }
 
     @Override
@@ -40,8 +38,8 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
         try {
             String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
                     + getMetadataRepository().getTableNameByLabel("ActionResults")
-                    + " where RUN_ID = " + SQLTools.GetStringForSQL(actionResultKey.getRunId()) + " and PRC_ID = " + SQLTools.GetStringForSQL(actionResultKey.getProcessId())
-                    + " and ACTION_ID = " + SQLTools.GetStringForSQL(actionResultKey.getActionId()) + ";";
+                    + " where RUN_ID = " + SQLTools.getStringForSQL(actionResultKey.getRunId()) + " and PRC_ID = " + SQLTools.getStringForSQL(actionResultKey.getProcessId())
+                    + " and ACTION_ID = " + SQLTools.getStringForSQL(actionResultKey.getActionId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -96,9 +94,9 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
     private String deleteStatement(ActionResultKey actionResultKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionResults") +
                 " WHERE " +
-                " RUN_ID = " + SQLTools.GetStringForSQL(actionResultKey.getRunId()) + " AND " +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionResultKey.getActionId()) + " AND " +
-                " PRC_ID = " + SQLTools.GetStringForSQL(actionResultKey.getProcessId()) + ";";
+                " RUN_ID = " + SQLTools.getStringForSQL(actionResultKey.getRunId()) + " AND " +
+                " ACTION_ID = " + SQLTools.getStringForSQL(actionResultKey.getActionId()) + " AND " +
+                " PRC_ID = " + SQLTools.getStringForSQL(actionResultKey.getProcessId()) + ";";
     }
 
     @Override
@@ -112,15 +110,15 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
         return "INSERT INTO "
                 + getMetadataRepository().getTableNameByLabel("ActionResults")
                 + " (RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
-                + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getRunId()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getProcessId()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getScriptProcessId()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getActionId()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getActionName()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getEnvironment()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getStatus().value()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getStartTimestamp()) + ","
-                + SQLTools.GetStringForSQL(actionResult.getEndTimestamp()) + ");";
+                + SQLTools.getStringForSQL(actionResult.getMetadataKey().getRunId()) + ","
+                + SQLTools.getStringForSQL(actionResult.getMetadataKey().getProcessId()) + ","
+                + SQLTools.getStringForSQL(actionResult.getScriptProcessId()) + ","
+                + SQLTools.getStringForSQL(actionResult.getMetadataKey().getActionId()) + ","
+                + SQLTools.getStringForSQL(actionResult.getActionName()) + ","
+                + SQLTools.getStringForSQL(actionResult.getEnvironment()) + ","
+                + SQLTools.getStringForSQL(actionResult.getStatus().value()) + ","
+                + SQLTools.getStringForSQL(actionResult.getStartTimestamp()) + ","
+                + SQLTools.getStringForSQL(actionResult.getEndTimestamp()) + ");";
     }
 
     @Override
@@ -132,15 +130,15 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
 
     private String updateStatement(ActionResult actionResult) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResults") +
-                " SET SCRIPT_PRC_ID = " + SQLTools.GetStringForSQL(actionResult.getScriptProcessId()) + "," +
-                "ACTION_ID = " + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getActionId()) + "," +
-                "ACTION_NM = " + SQLTools.GetStringForSQL(actionResult.getActionName()) + "," +
-                "ENV_NM = " + SQLTools.GetStringForSQL(actionResult.getEnvironment()) + "," +
-                "ST_NM = " + SQLTools.GetStringForSQL(actionResult.getStatus().value()) + "," +
-                "STRT_TMS = " + SQLTools.GetStringForSQL(actionResult.getStartTimestamp()) + "," +
-                "END_TMS = " + SQLTools.GetStringForSQL(actionResult.getEndTimestamp()) +
-                "WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionResult.getMetadataKey().getProcessId()) + ";";
+                " SET SCRIPT_PRC_ID = " + SQLTools.getStringForSQL(actionResult.getScriptProcessId()) + "," +
+                "ACTION_ID = " + SQLTools.getStringForSQL(actionResult.getMetadataKey().getActionId()) + "," +
+                "ACTION_NM = " + SQLTools.getStringForSQL(actionResult.getActionName()) + "," +
+                "ENV_NM = " + SQLTools.getStringForSQL(actionResult.getEnvironment()) + "," +
+                "ST_NM = " + SQLTools.getStringForSQL(actionResult.getStatus().value()) + "," +
+                "STRT_TMS = " + SQLTools.getStringForSQL(actionResult.getStartTimestamp()) + "," +
+                "END_TMS = " + SQLTools.getStringForSQL(actionResult.getEndTimestamp()) +
+                "WHERE RUN_ID = " + SQLTools.getStringForSQL(actionResult.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(actionResult.getMetadataKey().getProcessId()) + ";";
 
 
     }

@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.execution;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -13,9 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionRequestLabel, ExecutionRequestLabelKey> {
@@ -30,17 +29,14 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
     }
 
     private ExecutionRequestLabelConfiguration() {
-    }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
     }
 
     @Override
     public Optional<ExecutionRequestLabel> get(ExecutionRequestLabelKey executionRequestLabelKey) {
         try {
             String queryScriptLabel = "select ID, REQUEST_ID, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
-                    + " where ID = " + SQLTools.GetStringForSQL(executionRequestLabelKey.getId()) + ";";
+                    + " where ID = " + SQLTools.getStringForSQL(executionRequestLabelKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptLabel, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -90,7 +86,7 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
 
     private String deleteStatement(ExecutionRequestLabelKey executionRequestLabelKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") +
-                " WHERE ID = " + SQLTools.GetStringForSQL(executionRequestLabelKey.getId()) + ";";
+                " WHERE ID = " + SQLTools.getStringForSQL(executionRequestLabelKey.getId()) + ";";
     }
 
     @Override
@@ -101,16 +97,16 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
         }
         getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") +
                 " (ID, REQUEST_ID, NAME, VALUE) VALUES (" +
-                SQLTools.GetStringForSQL(executionRequestLabel.getMetadataKey().getId()) + "," +
-                SQLTools.GetStringForSQL(executionRequestLabel.getExecutionRequestKey().getId()) + "," +
-                SQLTools.GetStringForSQL(executionRequestLabel.getName()) + "," +
-                SQLTools.GetStringForSQL(executionRequestLabel.getValue()) + ");");
+                SQLTools.getStringForSQL(executionRequestLabel.getMetadataKey().getId()) + "," +
+                SQLTools.getStringForSQL(executionRequestLabel.getExecutionRequestKey().getId()) + "," +
+                SQLTools.getStringForSQL(executionRequestLabel.getName()) + "," +
+                SQLTools.getStringForSQL(executionRequestLabel.getValue()) + ");");
 
     }
 
     public boolean exists(ExecutionRequestLabelKey executionRequestLabelKey) {
         String queryScriptParameter = "select ID, REQUEST_ID, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
-                + " where ID = " + SQLTools.GetStringForSQL(executionRequestLabelKey.getId()) + ";";
+                + " where ID = " + SQLTools.getStringForSQL(executionRequestLabelKey.getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -118,14 +114,14 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
     public void deleteByExecutionRequest(ExecutionRequestKey executionRequestKey) {
         String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") +
                 " WHERE " +
-                " REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                " REQUEST_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    public List<ExecutionRequestLabel> getByExecutionRequest(ExecutionRequestKey executionRequestKey) {
-        List<ExecutionRequestLabel> scriptLabels = new ArrayList<>();
+    public Set<ExecutionRequestLabel> getByExecutionRequest(ExecutionRequestKey executionRequestKey) {
+        Set<ExecutionRequestLabel> scriptLabels = new HashSet<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
-                + " where REQUEST_ID = " + SQLTools.GetStringForSQL(executionRequestKey.getId()) + ";";
+                + " where REQUEST_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (cachedRowSet.next()) {
@@ -152,10 +148,10 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
 
     private String updateStatement(ExecutionRequestLabel executionRequestLabel) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") + " SET " +
-                "REQUEST_ID=" + SQLTools.GetStringForSQL(executionRequestLabel.getExecutionRequestKey().getId()) + "," +
-                "NAME=" + SQLTools.GetStringForSQL(executionRequestLabel.getName()) + "," +
-                "VALUE=" + SQLTools.GetStringForSQL(executionRequestLabel.getValue()) +
+                "REQUEST_ID=" + SQLTools.getStringForSQL(executionRequestLabel.getExecutionRequestKey().getId()) + "," +
+                "NAME=" + SQLTools.getStringForSQL(executionRequestLabel.getName()) + "," +
+                "VALUE=" + SQLTools.getStringForSQL(executionRequestLabel.getValue()) +
                 " WHERE " +
-                "REQUEST_ID =" + SQLTools.GetStringForSQL(executionRequestLabel.getMetadataKey().getId()) + ";";
+                "REQUEST_ID =" + SQLTools.getStringForSQL(executionRequestLabel.getMetadataKey().getId()) + ";";
     }
 }

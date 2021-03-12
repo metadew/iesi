@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.action.performance;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.performance.ActionPerformance;
@@ -28,21 +29,17 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
     }
 
     private ActionPerformanceConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
     }
-
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-    }
-
 
     @Override
     public Optional<ActionPerformance> get(ActionPerformanceKey key) {
         try {
             String queryAction = "select RUN_ID, PRC_ID, ACTION_ID, CONTEXT_NM, SCOPE_NM, STRT_TMS, END_TMS, DURATION_VAL from "
                     + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
-                    "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
+                    "RUN_ID = " + SQLTools.getStringForSQL(key.getRunId()) + " AND " +
                     "PRC_ID = " + key.getProcedureId() + " AND " +
-                    "SCOPE_NM = " + SQLTools.GetStringForSQL(key.getScope()) + ";";
+                    "SCOPE_NM = " + SQLTools.getStringForSQL(key.getScope()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryAction, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -90,9 +87,9 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
     public void delete(ActionPerformanceKey key) {
         String queryAction = "delete from "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") + " where " +
-                "RUN_ID = " + SQLTools.GetStringForSQL(key.getRunId()) + " AND " +
-                "PRC_ID = " + SQLTools.GetStringForSQL(key.getProcedureId()) + " AND " +
-                "SCOPE_NM = " + SQLTools.GetStringForSQL(key.getScope()) + ";";
+                "RUN_ID = " + SQLTools.getStringForSQL(key.getRunId()) + " AND " +
+                "PRC_ID = " + SQLTools.getStringForSQL(key.getProcedureId()) + " AND " +
+                "SCOPE_NM = " + SQLTools.getStringForSQL(key.getScope()) + ";";
         getMetadataRepository().executeUpdate(queryAction);
     }
 
@@ -101,14 +98,14 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
         String queryAction = "insert into "
                 + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
                 " (RUN_ID, PRC_ID, ACTION_ID, SCOPE_NM, CONTEXT_NM, STRT_TMS, END_TMS, DURATION_VAL) values (" +
-                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getActionId()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
-                SQLTools.GetStringForSQL(actionPerformance.getDuration()) + ");";
+                SQLTools.getStringForSQL(actionPerformance.getMetadataKey().getRunId()) + ", " +
+                SQLTools.getStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) + ", " +
+                SQLTools.getStringForSQL(actionPerformance.getActionId()) + ", " +
+                SQLTools.getStringForSQL(actionPerformance.getMetadataKey().getScope()) + ", " +
+                SQLTools.getStringForSQL(actionPerformance.getContext()) + ", " +
+                SQLTools.getStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
+                SQLTools.getStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
+                SQLTools.getStringForSQL(actionPerformance.getDuration()) + ");";
         getMetadataRepository().executeUpdate(queryAction);
     }
 
@@ -116,14 +113,14 @@ public class ActionPerformanceConfiguration extends Configuration<ActionPerforma
     public void update(ActionPerformance actionPerformance) {
         String queryAction = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultPerformances") +
                 " SET " +
-                "CONTEXT_NM = " + SQLTools.GetStringForSQL(actionPerformance.getContext()) + ", " +
-                "STRT_TMS = " + SQLTools.GetStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
-                "END_TMS = " + SQLTools.GetStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
-                "DURATION_VAL = " + SQLTools.GetStringForSQL(actionPerformance.getDuration()) +
-                " WHERE RUN_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getRunId()) +
-                " AND PRC_ID = " + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) +
-                " ACTION_ID = " + SQLTools.GetStringForSQL(actionPerformance.getActionId()) +
-                " AND SCOPE_NM =" + SQLTools.GetStringForSQL(actionPerformance.getMetadataKey().getScope()) + ";";
+                "CONTEXT_NM = " + SQLTools.getStringForSQL(actionPerformance.getContext()) + ", " +
+                "STRT_TMS = " + SQLTools.getStringForSQL(actionPerformance.getStartTimestamp()) + ", " +
+                "END_TMS = " + SQLTools.getStringForSQL(actionPerformance.getEndTimestamp()) + ", " +
+                "DURATION_VAL = " + SQLTools.getStringForSQL(actionPerformance.getDuration()) +
+                " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionPerformance.getMetadataKey().getRunId()) +
+                " AND PRC_ID = " + SQLTools.getStringForSQL(actionPerformance.getMetadataKey().getProcedureId()) +
+                " ACTION_ID = " + SQLTools.getStringForSQL(actionPerformance.getActionId()) +
+                " AND SCOPE_NM =" + SQLTools.getStringForSQL(actionPerformance.getMetadataKey().getScope()) + ";";
 
 
         getMetadataRepository().executeUpdate(queryAction);

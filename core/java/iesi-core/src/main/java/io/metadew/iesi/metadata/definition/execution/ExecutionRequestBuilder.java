@@ -1,12 +1,12 @@
 package io.metadew.iesi.metadata.definition.execution;
 
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ExecutionRequestBuilder {
 
@@ -25,7 +25,7 @@ public class ExecutionRequestBuilder {
     private String email;
 
     private List<ScriptExecutionRequest> scriptExecutionRequests;
-    private List<ExecutionRequestLabel> executionRequestLabels = new ArrayList<>();
+    private Set<ExecutionRequestLabel> executionRequestLabels = new HashSet<>();
 
     public ExecutionRequestBuilder name(String name) {
         this.name = name;
@@ -98,8 +98,16 @@ public class ExecutionRequestBuilder {
     }
 
     private NonAuthenticatedExecutionRequest buildNonAuthenticatedExecutionRequest() {
+//        if (securityGroupName == null) {
+//            securityGroupName = "iesi";
+//        }
+//        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
+//                .orElseThrow(() -> new RuntimeException(String.format("Cannot find security group %s ", securityGroupName)));
+
         return new NonAuthenticatedExecutionRequest(
                 new ExecutionRequestKey(id),
+                // securityGroup.getMetadataKey(),
+                // securityGroup.getName(),
                 LocalDateTime.now(),
                 name,
                 description,
@@ -113,8 +121,16 @@ public class ExecutionRequestBuilder {
 
     private AuthenticatedExecutionRequest buildAuthenticatedExecutionRequest() throws ExecutionRequestBuilderException {
         verifyMandatoryAuthenticationArguments();
+//        if (securityGroupName == null) {
+//            securityGroupName = "iesi";
+//        }
+//        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
+//                .orElseThrow(() -> new RuntimeException(String.format("Cannot find security group %s ", securityGroupName)));
+
         return new AuthenticatedExecutionRequest(
                 new ExecutionRequestKey(id),
+                // securityGroup.getMetadataKey(),
+                // securityGroup.getName(),
                 LocalDateTime.now(),
                 name,
                 description,

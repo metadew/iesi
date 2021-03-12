@@ -8,12 +8,20 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionService<OracleDatabaseConnection> implements ISchemaDatabaseConnectionService<OracleDatabaseConnection> {
 
     private static OracleDatabaseConnectionService INSTANCE;
+
+    private static final String CLOB_TEMPLATE = " to_clob(''{0}'') ";
 
     public synchronized static OracleDatabaseConnectionService getInstance() {
         if (INSTANCE == null) {
@@ -55,5 +63,32 @@ public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionSer
             log.debug("exception.stacktrace=" + stackTrace.toString());
             throw new RuntimeException(e);
         }
+    }
+
+    public String refactorLimitAndOffset(String query) {
+
+        Pattern pattern = Pattern.compile("(?i)limit\\s+(?<limit>\\d+)\\s+(?i)offset\\s+(?<offset>\\d+)");
+        Matcher matcher = pattern.matcher(query);
+
+        StringBuilder stringBuilder = new StringBuilder(query);
+        while (matcher.find()) {
+            int limit = Integer.parseInt(matcher.group("limit"));
+            int offset = Integer.parseInt(matcher.group("offset"));
+            int matchStartIndex = matcher.start();
+            int matchEndIndex = matcher.end();
+            stringBuilder.replace(matchStartIndex, matchEndIndex, " OFFSET " + offset + " ROWS FETCH NEXT " + limit + " ROWS ONLY ");
+            matcher.reset(stringBuilder);
+        }
+        return stringBuilder.toString();
+    }
+
+    public String generateClobInsertValue(String clobString) {
+        List<String> splitClobString = new ArrayList<>();
+        while (clobString.length() > 4000) {
+            splitClobString.add(MessageFormat.format(CLOB_TEMPLATE, clobString.substring(0, 4000)));
+            clobString = clobString.substring(4000);
+        }
+        splitClobString.add(MessageFormat.format(CLOB_TEMPLATE, clobString));
+        return String.join("||", splitClobString);
     }
 }

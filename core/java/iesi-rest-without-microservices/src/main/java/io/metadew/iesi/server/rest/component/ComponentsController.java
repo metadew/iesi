@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -40,6 +41,7 @@ public class ComponentsController {
     }
 
     @GetMapping("")
+    @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public HalMultipleEmbeddedResource<ComponentDto> getAll() {
         List<Component> components = componentService.getAll();
         return new HalMultipleEmbeddedResource<>(components.stream()
@@ -48,6 +50,7 @@ public class ComponentsController {
     }
 
     @GetMapping("/{name}")
+    @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public HalMultipleEmbeddedResource<ComponentDto> getByName(@PathVariable String name) {
         List<Component> components = componentService.getByName(name);
         return new HalMultipleEmbeddedResource<>(components.stream()
@@ -56,13 +59,15 @@ public class ComponentsController {
     }
 
     @GetMapping("/{name}/{version}")
+    @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public ComponentDto get(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
-        Component component = componentService.getByNameAndVersion(name, version).
-                orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
+        Component component = componentService.getByNameAndVersion(name, version)
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
         return componentDtoResourceAssembler.toModel(component);
     }
 
     @PostMapping("")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public ComponentDto post(@Valid @RequestBody ComponentDto component) {
         try {
             componentService.createComponent(component);
@@ -71,10 +76,10 @@ public class ComponentsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Component " + component.getName() + " already exists");
         }
-
     }
 
     @PutMapping("")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public HalMultipleEmbeddedResource<ComponentDto> putAll(@Valid @RequestBody List<ComponentDto> componentDtos) throws MetadataDoesNotExistException {
         componentService.updateComponents(componentDtos);
         HalMultipleEmbeddedResource<ComponentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
@@ -89,6 +94,7 @@ public class ComponentsController {
     }
 
     @PutMapping("/{name}/{version}")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public ComponentDto put(@PathVariable String name, @PathVariable Long version, @RequestBody ComponentDto component) throws MetadataDoesNotExistException {
         if (!component.getName().equals(name)) {
             throw new DataBadRequestException(name);
@@ -101,18 +107,21 @@ public class ComponentsController {
     }
 
     @DeleteMapping("")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public ResponseEntity<?> deleteAll() {
         componentService.deleteAll();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public ResponseEntity<?> deleteByName(@PathVariable String name) {
         componentService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{name}/{version}")
+    @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
     public ResponseEntity<?> delete(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
         componentService.deleteByNameAndVersion(name, version);
         return ResponseEntity.status(HttpStatus.OK).build();

@@ -19,7 +19,7 @@ public class Configuration {
 
     private static final String iesiKeyword = "iesi";
     private static Configuration INSTANCE;
-    private HashMap<String, Object> properties;
+    private Map<String, Object> properties;
 
     public synchronized static Configuration getInstance() {
         if (INSTANCE == null) {
@@ -67,8 +67,9 @@ public class Configuration {
         systemProperties.entrySet().stream()
                 .filter(entry -> entry.getKey().toString().startsWith(iesiKeyword))
                 .forEach(entry -> {
+                            log.debug("property " + entry.getKey() + " set via System variable");
                             HashMap<String, Object> filteredSystemProperties = new HashMap<>();
-                            String[] splittedKey = entry.getKey().toString().split("\\.");
+                            String[] splittedKey = entry.getKey().toString().substring(5).split("\\.");
                             HashMap<String, Object> currentHashmap = filteredSystemProperties;
                             for (int i = 0; i < splittedKey.length - 1; i++) {
                                 HashMap<String, Object> newHashMap = new HashMap<>();
@@ -96,7 +97,7 @@ public class Configuration {
                         throws IOException {
                     if (isIESIApplicationConfigurationFile(file.getFileName().toString())) {
                         Yaml yaml = new Yaml();
-                        Map<String, Object> yamlProperties = yaml.load(Files.newBufferedReader(file));
+                        Map<String, Object> yamlProperties = (Map<String, Object>) yaml.load(Files.newBufferedReader(file));
                         if (yamlProperties.containsKey(iesiKeyword)) {
                             log.debug("loading configurations from " + file.getFileName());
                             update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), iesiKeyword);
@@ -123,7 +124,7 @@ public class Configuration {
     private void loadClasspathFiles() {
         Yaml yaml = new Yaml();
         for (String resourceName : getApplicationResourceFiles()) {
-            Map<String, Object> yamlProperties = yaml.load(getClass().getClassLoader().getResourceAsStream(resourceName));
+            Map<String, Object> yamlProperties = (Map<String, Object>) yaml.load(getClass().getClassLoader().getResourceAsStream(resourceName));
             if (yamlProperties.containsKey(iesiKeyword)) {
                 update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), iesiKeyword);
             } else {
@@ -139,7 +140,8 @@ public class Configuration {
             if (original.containsKey(entry.getKey()) && original.get(entry.getKey()) == null) {
                 original.put(entry.getKey(), entry.getValue());
             } else if (original.containsKey(entry.getKey())) {
-                if (original.get(entry.getKey()).getClass().equals(entry.getValue().getClass())) {
+                if (original.get(entry.getKey()).getClass().isAssignableFrom(entry.getValue().getClass())
+                        || entry.getValue().getClass().isAssignableFrom(original.get(entry.getKey()).getClass())) {
                     if (entry.getValue() instanceof Map) {
                         update((Map<String, Object>) original.get(entry.getKey()), (Map<String, Object>) entry.getValue(), initialKey + "." + entry.getKey());
                     } else {
@@ -163,7 +165,9 @@ public class Configuration {
             String resource;
 
             while ((resource = br.readLine()) != null) {
+                log.trace("found " + resource + " in classpath");
                 if (isIESIApplicationConfigurationFile(resource)) {
+                    log.debug("parsing " + resource + " for configuration");
                     filenames.add(resource);
                 }
             }

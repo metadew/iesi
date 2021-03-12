@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -21,12 +22,24 @@ public abstract class ExecutionRequest extends Metadata<ExecutionRequestKey> {
     private String email;
     private ExecutionRequestStatus executionRequestStatus;
     private List<ScriptExecutionRequest> scriptExecutionRequests;
-    private List<ExecutionRequestLabel> executionRequestLabels;
+    private Set<ExecutionRequestLabel> executionRequestLabels;
 
-    public ExecutionRequest(ExecutionRequestKey executionRequestKey, LocalDateTime requestTimestamp, String name, String description, String email,
-                            String scope, String context, ExecutionRequestStatus executionRequestStatus, List<ScriptExecutionRequest> scriptExecutionRequests,
-                            List<ExecutionRequestLabel> executionRequestLabels) {
-        super(executionRequestKey);
+    public ExecutionRequest(ExecutionRequestKey executionRequestKey,
+                            // SecurityGroupKey securityGroupKey,
+                            // String securityGroupName,
+                            LocalDateTime requestTimestamp,
+                            String name,
+                            String description,
+                            String email,
+                            String scope,
+                            String context,
+                            ExecutionRequestStatus executionRequestStatus,
+                            List<ScriptExecutionRequest> scriptExecutionRequests,
+                            Set<ExecutionRequestLabel> executionRequestLabels) {
+        super(executionRequestKey
+        //        ,securityGroupKey,
+        //        securityGroupName
+        );
         this.requestTimestamp = requestTimestamp;
         this.name = name;
         this.description = description;

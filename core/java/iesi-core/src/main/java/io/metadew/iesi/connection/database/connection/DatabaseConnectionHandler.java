@@ -1,6 +1,8 @@
 package io.metadew.iesi.connection.database.connection;
 
 import com.zaxxer.hikari.HikariConfig;
+import io.metadew.iesi.connection.database.Database;
+import io.metadew.iesi.connection.database.bigquery.BigqueryDatabaseConnectionService;
 import io.metadew.iesi.connection.database.db2.Db2DatabaseConnectionService;
 import io.metadew.iesi.connection.database.dremio.DremioDatabaseConnectionService;
 import io.metadew.iesi.connection.database.drill.DrillDatabaseConnectionService;
@@ -12,9 +14,9 @@ import io.metadew.iesi.connection.database.netezza.NetezzaDatabaseConnectionServ
 import io.metadew.iesi.connection.database.oracle.OracleDatabaseConnectionService;
 import io.metadew.iesi.connection.database.postgresql.PostgresqlDatabaseConnectionService;
 import io.metadew.iesi.connection.database.presto.PrestoDatabaseConnectionService;
+import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.connection.database.sqlite.SqliteDatabaseConnectionService;
 import io.metadew.iesi.connection.database.teradata.TeradataDatabaseConnectionService;
-import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
@@ -41,6 +43,7 @@ public class DatabaseConnectionHandler implements IDatabaseConnectionHandler {
 
     private DatabaseConnectionHandler() {
         databaseConnectionServiceMap = new HashMap<>();
+        databaseConnectionServiceMap.put(BigqueryDatabaseConnectionService.getInstance().appliesTo(), BigqueryDatabaseConnectionService.getInstance());
         databaseConnectionServiceMap.put(Db2DatabaseConnectionService.getInstance().appliesTo(), Db2DatabaseConnectionService.getInstance());
         databaseConnectionServiceMap.put(DremioDatabaseConnectionService.getInstance().appliesTo(), DremioDatabaseConnectionService.getInstance());
         databaseConnectionServiceMap.put(DrillDatabaseConnectionService.getInstance().appliesTo(), DrillDatabaseConnectionService.getInstance());
@@ -68,7 +71,7 @@ public class DatabaseConnectionHandler implements IDatabaseConnectionHandler {
 
     @SuppressWarnings("unchecked")
     public String removeIllgegalCharactersForSingleQuery(DatabaseConnection databaseConnection, String input) {
-        return getDatabaseConnectionService(databaseConnection).removeIllgegalCharactersForSingleQuery(databaseConnection, input);
+        return getDatabaseConnectionService(databaseConnection).removeIllegalCharactersForSingleQuery(databaseConnection, input);
     }
 
     @SuppressWarnings("unchecked")
@@ -150,6 +153,11 @@ public class DatabaseConnectionHandler implements IDatabaseConnectionHandler {
     @Deprecated
     public PreparedStatement createPreparedStatement(DatabaseConnection databaseConnection, Connection connection, String sqlStatement) throws SQLException {
         return getDatabaseConnectionService(databaseConnection).createPreparedStatement(databaseConnection, connection, sqlStatement);
+    }
+
+    @Override
+    public String generateClobInsertValue(DatabaseConnection databaseConnection, String clobString) {
+        return getDatabaseConnectionService(databaseConnection).generateClobInsertValue(clobString);
     }
 
     private IDatabaseConnectionService getDatabaseConnectionService(DatabaseConnection databaseConnection) {

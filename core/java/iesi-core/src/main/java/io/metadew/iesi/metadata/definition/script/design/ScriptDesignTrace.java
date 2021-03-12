@@ -3,40 +3,34 @@ package io.metadew.iesi.metadata.definition.script.design;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptDesignTraceKey;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class ScriptDesignTrace extends Metadata<ScriptDesignTraceKey> {
 
-    // RUN_ID, PRC_ID, PARENT_PRC_ID, SCRIPT_ID, SCRIPT_TYP_NM, SCRIPT_NM, SCRIPT_DSC
     private Long parentProcessId;
     private String scriptId;
     private String scriptName;
     private String scriptDescription;
+    private String securityGroupName;
 
-    public ScriptDesignTrace(ScriptDesignTraceKey scriptDesignTraceKey, String scriptId, Long parentProcessId, String scriptName, String scriptDescription) {
+    @Builder
+    public ScriptDesignTrace(ScriptDesignTraceKey scriptDesignTraceKey, String scriptId, Long parentProcessId, String scriptName, String scriptDescription, String securityGroupName) {
         super(scriptDesignTraceKey);
         this.scriptId = scriptId;
         this.parentProcessId = parentProcessId;
         this.scriptName = scriptName;
         this.scriptDescription = scriptDescription;
+        this.securityGroupName = securityGroupName;
     }
 
     public ScriptDesignTrace(String runId, Long processId, Long parentProcessId, Script script) {
-        this(new ScriptDesignTraceKey(runId, processId), script.getMetadataKey().getScriptId(), parentProcessId, script.getName(), script.getDescription());
+        this(new ScriptDesignTraceKey(runId, processId), script.getMetadataKey().getScriptId(), parentProcessId, script.getName(), script.getDescription(), script.getSecurityGroupName());
     }
 
-    public Long getParentProcessId() {
-        return parentProcessId;
-    }
-
-    public String getScriptName() {
-        return scriptName;
-    }
-
-    public String getScriptDescription() {
-        return scriptDescription;
-    }
-
-    public String getScriptId() {
-        return scriptId;
-    }
 }

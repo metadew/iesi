@@ -4,6 +4,9 @@ import io.metadew.iesi.connection.database.connection.ISchemaDatabaseConnectionS
 import io.metadew.iesi.connection.database.connection.SchemaDatabaseConnectionService;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Log4j2
 public class DrillDatabaseConnectionService extends SchemaDatabaseConnectionService<DrillDatabaseConnection> implements ISchemaDatabaseConnectionService<DrillDatabaseConnection> {
 
@@ -26,5 +29,20 @@ public class DrillDatabaseConnectionService extends SchemaDatabaseConnectionServ
     @Override
     public Class<DrillDatabaseConnection> appliesTo() {
         return DrillDatabaseConnection.class;
+    }
+
+    public String refactorLimitAndOffset(String query) {
+
+        Pattern pattern = Pattern.compile("(?i)limit\\s+(?<limit>\\d+)\\s+(?i)offset\\s+(?<offset>\\d++(?!\\s+(?i)rows))");
+        Matcher matcher = pattern.matcher(query);
+
+        StringBuilder stringBuilder = new StringBuilder(query);
+        while (matcher.find()) {
+            int matchEndIndex = matcher.end();
+            stringBuilder.insert(matchEndIndex, " ROWS ");
+            matcher.reset(stringBuilder);
+        }
+        matcher.reset(stringBuilder);
+        return stringBuilder.toString();
     }
 }

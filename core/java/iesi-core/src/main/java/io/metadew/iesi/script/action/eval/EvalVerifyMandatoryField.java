@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
@@ -16,18 +17,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 
-public class EvalVerifyMandatoryField {
-
-    private ActionExecution actionExecution;
-
-    private ExecutionControl executionControl;
+public class EvalVerifyMandatoryField extends ActionTypeExecution {
 
     // Parameters
     private ActionParameterOperation databaseName;
@@ -51,24 +45,11 @@ public class EvalVerifyMandatoryField {
 
     private String sqlError;
 
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
     private static final Logger LOGGER = LogManager.getLogger();
-
-    // Constructors
-    public EvalVerifyMandatoryField() {
-
-    }
 
     public EvalVerifyMandatoryField(ExecutionControl executionControl,
                                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.init(executionControl, scriptExecution, actionExecution);
-    }
-
-    public void init(ExecutionControl executionControl,
-                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
-        this.setExecutionControl(executionControl);
-        this.setActionExecution(actionExecution);
-        this.setActionParameterOperationMap(new HashMap<String, ActionParameterOperation>());
+        super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
@@ -95,21 +76,21 @@ public class EvalVerifyMandatoryField {
         // Get Parameters
         for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
             if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("database")) {
-                this.getDatabaseName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getDatabaseName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("schema")) {
-                this.getSchemaName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getSchemaName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("table")) {
-                this.getTableName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getTableName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("field")) {
-                this.getFieldName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getFieldName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("evaluationfield")) {
-                this.getEvaluationFieldName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getEvaluationFieldName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("evaluationvalue")) {
-                this.getEvaluationFieldValue().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getEvaluationFieldValue().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("ismandatory")) {
-                this.getMandatoryFlag().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getMandatoryFlag().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), executionControl.getExecutionRuntime());
+                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
             }
         }
 
@@ -124,34 +105,15 @@ public class EvalVerifyMandatoryField {
         this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
-    public boolean execute() throws InterruptedException {
-        try {
-            String databaseName = convertDatabaseName(getDatabaseName().getValue());
-            String schemaName = convertSchemaName(getSchemaName().getValue());
-            String tableName = convertTableName(getTableName().getValue());
-            String fieldName = convertFieldName(getFieldName().getValue());
-            String evaluationFieldName = convertEvaluationFieldName(getEvaluationFieldName().getValue());
-            String evaluationFieldValue = convertEvaluationFieldValue(getEvaluationFieldValue().getValue());
-            boolean isMandatory = convertIsMandatory(getMandatoryFlag().getValue());
-            String connectionName = convertConnectionName(getConnectionName().getValue());
-            return verifyMandatoryField(databaseName, schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory, connectionName);
-        } catch (InterruptedException e) {
-            throw (e);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-
-            this.getActionExecution().getActionControl().increaseErrorCount();
-
-            this.getActionExecution().getActionControl().logOutput("exception", e.getMessage());
-            this.getActionExecution().getActionControl().logOutput("stacktrace", StackTrace.toString());
-
-            return false;
-        }
-
-    }
-
-    private boolean verifyMandatoryField(String databaseName, String schemaName, String tableName, String fieldName, String evaluationFieldName, String evaluationFieldValue, boolean isMandatory, String connectionName) throws SQLException, InterruptedException {
+    protected boolean executeAction() throws SQLException, InterruptedException {
+        String databaseName = convertDatabaseName(getDatabaseName().getValue());
+        String schemaName = convertSchemaName(getSchemaName().getValue());
+        String tableName = convertTableName(getTableName().getValue());
+        String fieldName = convertFieldName(getFieldName().getValue());
+        String evaluationFieldName = convertEvaluationFieldName(getEvaluationFieldName().getValue());
+        String evaluationFieldValue = convertEvaluationFieldValue(getEvaluationFieldValue().getValue());
+        boolean isMandatory = convertIsMandatory(getMandatoryFlag().getValue());
+        String connectionName = convertConnectionName(getConnectionName().getValue());
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
@@ -183,7 +145,7 @@ public class EvalVerifyMandatoryField {
             return true;
         } else {
             this.getActionExecution().getActionControl().increaseErrorCount();
-            return true;
+            return false;
         }
     }
 
@@ -330,22 +292,6 @@ public class EvalVerifyMandatoryField {
         return resTestQueries;
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
-
-    public ActionExecution getActionExecution() {
-        return actionExecution;
-    }
-
-    public void setActionExecution(ActionExecution actionExecution) {
-        this.actionExecution = actionExecution;
-    }
-
     public ActionParameterOperation getDatabaseName() {
         return databaseName;
     }
@@ -424,14 +370,6 @@ public class EvalVerifyMandatoryField {
 
     public void setSqlError(String sqlError) {
         this.sqlError = sqlError;
-    }
-
-    public HashMap<String, ActionParameterOperation> getActionParameterOperationMap() {
-        return actionParameterOperationMap;
-    }
-
-    public void setActionParameterOperationMap(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        this.actionParameterOperationMap = actionParameterOperationMap;
     }
 
 }

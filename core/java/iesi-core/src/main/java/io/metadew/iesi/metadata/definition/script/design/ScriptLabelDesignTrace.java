@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.definition.script.design;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptLabelDesignTraceKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,6 +15,7 @@ public class ScriptLabelDesignTrace extends Metadata<ScriptLabelDesignTraceKey> 
     private final String name;
     private final String value;
 
+    @Builder
     public ScriptLabelDesignTrace(ScriptLabelDesignTraceKey scriptLabelDesignTraceKey, ScriptKey scriptKey, String name, String value) {
         super(scriptLabelDesignTraceKey);
         this.scriptKey = scriptKey;

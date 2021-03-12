@@ -1,0 +1,38 @@
+{
+	"name": "CreateEnvironment",
+	"implementations": [
+	{
+			"labels": [{
+					"label": "singlelabel"
+				}, {
+					"label": "p2"
+				}, {
+					"label": "r49fd6378-320a-43a8-bfc8-2a8504ecc254"
+				}
+			],
+			"keyValues": [{
+					"key": "protocol.version.major",
+					"value": "1"
+				}, {
+					"key": "status.code",
+					"value": "200"
+				}, {
+					"key": "protocol",
+					"value": "HTTP"
+				}, {
+					"key": "body",
+					"value": "{\"name\":\"not.existing.environment\",\"description\":\"dummy environment\",\"parameters\":[],\"_links\":{\"self\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment\"},\"connections\":{\"href\":\"http://localhost:8080/api/environments/not.existing.environment/connections\"}}}"
+				}, {
+					"key": "headers",
+					"value": "{{^list(Vary:Origin, Vary:Access-Control-Request-Method, Vary:Access-Control-Request-Headers, Content-Type:application/hal+json, Transfer-Encoding:chunked, Date:Wed, 02 Sep 2020 15:55:46 GMT, Keep-Alive:timeout=60, Connection:keep-alive)}}"
+				}, {
+					"key": "protocol.version.minor",
+					"value": "1"
+				}, {
+					"key": "status.reason",
+					"value": ""
+				}
+			]
+		}
+	]
+}

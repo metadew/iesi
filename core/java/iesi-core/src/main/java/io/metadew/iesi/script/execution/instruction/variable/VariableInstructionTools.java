@@ -21,6 +21,10 @@ public final class VariableInstructionTools {
             case "run.identifier":
                 output = "run.id";
                 break;
+            case "process.id":
+            case "prc.id":
+                output = "process.id";
+                break;
             default:
                 output = input;
                 break;

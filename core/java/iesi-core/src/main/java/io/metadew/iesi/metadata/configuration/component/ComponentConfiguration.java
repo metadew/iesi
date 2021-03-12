@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.component;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -37,21 +38,52 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
 
     // Constructors
     private ComponentConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
     }
 
 
-    public void init(MetadataRepository metadataRepository) {
-        setMetadataRepository(metadataRepository);
-        ComponentVersionConfiguration.getInstance().init(metadataRepository);
-        ComponentParameterConfiguration.getInstance().init(metadataRepository);
-        ComponentAttributeConfiguration.getInstance().init(metadataRepository);
+    public Optional<Component> getByNameAndVersion(String name, Long version) {
+        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
+                + getMetadataRepository().getTableNameByLabel("Components")
+                + " where COMP_NM = " + SQLTools.getStringForSQL(name);
+        CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
+        try {
+            if (crsComponent.size() == 0) {
+                return Optional.empty();
+            } else if (crsComponent.size() > 1) {
+                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}. Returning first implementation.", name));
+            }
+            crsComponent.next();
+            ComponentKey componentKey = new ComponentKey(crsComponent.getString("COMP_ID"), version);
+            // get version
+            Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().get(new ComponentVersionKey(componentKey));
+            if (!componentVersion.isPresent()) {
+                return Optional.empty();
+            }
+
+            List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
+            List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
+
+            String componentType = crsComponent.getString("COMP_TYP_NM");
+            String componentDescription = crsComponent.getString("COMP_DSC");
+            String componentName = crsComponent.getString("COMP_NM");
+            crsComponent.close();
+            return Optional.of(new Component(componentKey,
+                    componentType,
+                    componentName,
+                    componentDescription,
+                    componentVersion.get(),
+                    componentParameters,
+                    componentAttributes));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @Override
     public Optional<Component> get(ComponentKey componentKey) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
                 + getMetadataRepository().getTableNameByLabel("Components")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId());
+                + " where COMP_ID = " + SQLTools.getStringForSQL(componentKey.getId());
         CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
         try {
             if (crsComponent.size() == 0) {
@@ -124,13 +156,13 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         ComponentAttributeConfiguration.getInstance().deleteByComponentId(componentId);
 
         getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Components") +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";");
+                " WHERE COMP_ID = " + SQLTools.getStringForSQL(componentId) + ";");
     }
 
     public List<Component> getByID(String componentId) {
         List<Component> components = new ArrayList<>();
         String queryComponent = "select distinct(COMP_ID) from " + getMetadataRepository().getTableNameByLabel("Components") +
-                " where COMP_ID = " + SQLTools.GetStringForSQL(componentId) + ";";
+                " where COMP_ID = " + SQLTools.getStringForSQL(componentId) + ";";
         CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
         try {
             if (crsComponent.size() == 0) {
@@ -156,7 +188,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     public boolean exists(ComponentKey componentKey) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
                 + getMetadataRepository().getTableNameByLabel("Components")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId());
+                + " where COMP_ID = " + SQLTools.getStringForSQL(componentKey.getId());
         CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
         if (crsComponent.size() == 0) {
             return false;
@@ -174,14 +206,14 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     private Optional<String> getDeleteStatement(ComponentKey componentKey) {
         String countQuery = "SELECT COUNT(DISTINCT COMP_VRS_NB ) AS total_versions FROM "
                 + getMetadataRepository().getTableNameByLabel("ComponentVersions")
-                + " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) + " AND "
-                + " COMP_VRS_NB != " + SQLTools.GetStringForSQL(componentKey.getVersionNumber()) + ";";
+                + " WHERE COMP_ID = " + SQLTools.getStringForSQL(componentKey.getId()) + " AND "
+                + " COMP_VRS_NB != " + SQLTools.getStringForSQL(componentKey.getVersionNumber()) + ";";
         CachedRowSet crs = getMetadataRepository().executeQuery(countQuery, "reader");
 
         try {
             if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
                 return Optional.of("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Components") +
-                        " WHERE COMP_ID = " + SQLTools.GetStringForSQL(componentKey.getId()) + ";");
+                        " WHERE COMP_ID = " + SQLTools.getStringForSQL(componentKey.getId()) + ";");
             }
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();
@@ -213,10 +245,10 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         if (!existsById(component.getMetadataKey().getId())) {
             return Optional.of("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Components") +
                     " (COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC) VALUES (" +
-                    SQLTools.GetStringForSQL(component.getMetadataKey().getId()) + "," +
-                    SQLTools.GetStringForSQL(component.getType()) + "," +
-                    SQLTools.GetStringForSQL(component.getName()) + "," +
-                    SQLTools.GetStringForSQL(component.getDescription()) + ");");
+                    SQLTools.getStringForSQL(component.getMetadataKey().getId()) + "," +
+                    SQLTools.getStringForSQL(component.getType()) + "," +
+                    SQLTools.getStringForSQL(component.getName()) + "," +
+                    SQLTools.getStringForSQL(component.getDescription()) + ");");
         }
         return Optional.empty();
     }
@@ -224,7 +256,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     private boolean existsById(String componentId) {
         String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
                 + getMetadataRepository().getTableNameByLabel("Components")
-                + " where COMP_ID = " + SQLTools.GetStringForSQL(componentId);
+                + " where COMP_ID = " + SQLTools.getStringForSQL(componentId);
         CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
         return crsComponent.size() != 0;
     }
@@ -251,9 +283,9 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             ComponentAttributeConfiguration.getInstance().insert(componentAttribute);
         }
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Components") +
-                " SET COMP_TYP_NM = " + SQLTools.GetStringForSQL(component.getType()) + "," +
-                " COMP_NM = " + SQLTools.GetStringForSQL(component.getName()) + "," +
-                " COMP_DSC = " + SQLTools.GetStringForSQL(component.getDescription()) +
-                " WHERE COMP_ID = " + SQLTools.GetStringForSQL(component.getMetadataKey().getId()) + ";");
+                " SET COMP_TYP_NM = " + SQLTools.getStringForSQL(component.getType()) + "," +
+                " COMP_NM = " + SQLTools.getStringForSQL(component.getName()) + "," +
+                " COMP_DSC = " + SQLTools.getStringForSQL(component.getDescription()) +
+                " WHERE COMP_ID = " + SQLTools.getStringForSQL(component.getMetadataKey().getId()) + ";");
     }
 }

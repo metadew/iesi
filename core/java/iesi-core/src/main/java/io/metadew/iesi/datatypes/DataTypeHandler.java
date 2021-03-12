@@ -1,16 +1,21 @@
 package io.metadew.iesi.datatypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.*;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
+import io.metadew.iesi.datatypes._null.Null;
+import io.metadew.iesi.datatypes._null.NullService;
 import io.metadew.iesi.datatypes.array.ArrayService;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
-import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDatasetService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -19,57 +24,54 @@ import java.util.regex.Pattern;
 @Log4j2
 public class DataTypeHandler {
 
-    private final static String DatatypeStartCharacters = "{{";
-    private final static String DatatypeStopCharacters = "}}";
-    private final static Pattern DatatypePattern = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
+    private static final String DATATYPE_START_CHARACTERS = "{{";
+    private static final String DATATYPE_STOP_CHARACTERS = "}}";
+    private static final Pattern DATATYPE_PATTERN = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
 
     private Map<ClassStringPair, IDataTypeService> dataTypeServiceMap;
 
-    private static DataTypeHandler INSTANCE;
+    private static DataTypeHandler instance;
 
-    public synchronized static DataTypeHandler getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DataTypeHandler();
+    public static synchronized DataTypeHandler getInstance() {
+        if (instance == null) {
+            instance = new DataTypeHandler();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private DataTypeHandler() {
         dataTypeServiceMap = new HashMap<>();
         dataTypeServiceMap.put(new ClassStringPair(TextService.getInstance().keyword(), TextService.getInstance().appliesTo()), TextService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());
-        dataTypeServiceMap.put(new ClassStringPair(KeyValueDatasetService.getInstance().keyword(), KeyValueDatasetService.getInstance().appliesTo()), KeyValueDatasetService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(TemplateService.getInstance().keyword(), TemplateService.getInstance().appliesTo()), TemplateService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(InMemoryDatasetImplementationService.getInstance().keyword(), InMemoryDatasetImplementationService.getInstance().appliesTo()), InMemoryDatasetImplementationService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(NullService.getInstance().keyword(), NullService.getInstance().appliesTo()), NullService.getInstance());
     }
 
     /*
         In case of multiple dataset types (keyvalue, resultset..) --> proposition dataset.kv and dataset.rs as keys
     */
     public DataType resolve(String input, ExecutionRuntime executionRuntime) {
+        if (input == null) {
+            return new Null();
+        }
         log.trace(MessageFormat.format("resolving {0} for datatype", input));
-        if (input.startsWith(DatatypeStartCharacters) && input.endsWith(DatatypeStopCharacters)) {
-            Matcher matcher = DatatypePattern.matcher(input.substring(DatatypeStartCharacters.length(), input.length() - DatatypeStopCharacters.length()));
+        if (input.startsWith(DATATYPE_START_CHARACTERS) && input.endsWith(DATATYPE_STOP_CHARACTERS)) {
+            Matcher matcher = DATATYPE_PATTERN.matcher(input.substring(DATATYPE_START_CHARACTERS.length(), input.length() - DATATYPE_STOP_CHARACTERS.length()));
             if (matcher.find()) {
                 return getDataTypeService(matcher.group("datatype"))
                         .resolve(matcher.group("arguments"), executionRuntime);
-//
-//                switch (matcher.group("datatype")) {
-//                    case "list":
-//                        return ArrayService.getInstance().resolve(matcher.group("arguments"), executionRuntime);
-//                    case "dataset":
-//                        try {
-//                            return KeyValueDatasetService.getInstance().resolve(matcher.group("arguments"), executionRuntime);
-//                        } catch (IOException e) {
-//                            throw new RuntimeException(e);
-//                        }
-//                    default:
-//                        throw new RuntimeException(MessageFormat.format("Input ''{0}'' does not have a correct datatype", input));
-//                }
             } else {
                 return TextService.getInstance().resolve(input, executionRuntime);
             }
         } else {
             return TextService.getInstance().resolve(input, executionRuntime);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean equals(DataType _this, DataType other, ExecutionRuntime executionRuntime) {
+        return getDataTypeService(_this.getClass()).equals(_this, other, executionRuntime);
     }
 
     public IDataTypeService getDataTypeService(String key) {
@@ -133,20 +135,20 @@ public class DataTypeHandler {
         return instructionArguments;
     }
 
-    public DataType resolve(KeyValueDataset rootDataset, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) throws IOException {
+    public DataType resolve(InMemoryDatasetImplementation inMemoryDatasetImplementation, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) {
         if (jsonNode.getNodeType().equals(JsonNodeType.ARRAY)) {
-            return ArrayService.getInstance().resolve(rootDataset, key, (ArrayNode) jsonNode, executionRuntime);
+            return ArrayService.getInstance().resolve(inMemoryDatasetImplementation, key, (ArrayNode) jsonNode, executionRuntime);
         } else if (jsonNode.getNodeType().equals(JsonNodeType.NULL)) {
-            return TextService.getInstance().resolve((NullNode) jsonNode);
+            return new Null();
         } else if (jsonNode.isValueNode()) {
             return TextService.getInstance().resolve((ValueNode) jsonNode);
         }
         if (jsonNode.getNodeType().equals(JsonNodeType.OBJECT)) {
-            return KeyValueDatasetService.getInstance().resolve(rootDataset, key, (ObjectNode) jsonNode, executionRuntime);
+            return InMemoryDatasetImplementationService.getInstance().resolve(inMemoryDatasetImplementation, key, (ObjectNode) jsonNode, executionRuntime);
         } else {
             log.warn(MessageFormat.format("dataset.json.unknownnode=cannot decipher json node of type {0}", jsonNode.getNodeType().toString()));
         }
-        return rootDataset;
+        return inMemoryDatasetImplementation;
     }
 
     @RequiredArgsConstructor

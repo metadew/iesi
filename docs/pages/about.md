@@ -24,7 +24,7 @@ Feel free to get in touch via our [Github](https://github.com/metadew/iesi) or o
 * Naïri Bonte
 * Soumaïa Djerbi
 * Aurélien Benne
-
+* Hamza Khattabi
 
 
 # Past committers
@@ -37,3 +37,5 @@ Feel free to get in touch via our [Github](https://github.com/metadew/iesi) or o
 * Francois Heliodore
 * Thomas Vandendijk
 * Gerrit Van Gelder
+* Kimberly Raskin
+* Tawbane Ouamar

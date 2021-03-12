@@ -156,7 +156,7 @@ class HttpExecuteRequestTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Accept=application/json", "Accept=application/json,X-API-KEY=12345"})
-    void prepareHeaderAndNotQueries(String headers) throws HttpRequestBuilderException, URISyntaxException {
+    void prepareHeaderAndNoQueries(String headers) throws HttpRequestBuilderException, URISyntaxException {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", headers);

@@ -1,9 +1,6 @@
 package io.metadew.iesi.script.action.http;
 
-import io.metadew.iesi.component.http.HttpComponent;
-import io.metadew.iesi.component.http.HttpComponentService;
-import io.metadew.iesi.component.http.HttpHeader;
-import io.metadew.iesi.component.http.HttpQueryParameter;
+import io.metadew.iesi.component.http.*;
 import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.request.HttpRequest;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
@@ -31,10 +28,12 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Log4j2
@@ -74,8 +73,8 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
 
-        List<HttpHeader> headers = combineHeaders(httpComponent.getHeaders());
-        List<HttpQueryParameter> queryParameters = combineQueryParameter(httpComponent.getQueryParameters());
+        List<HttpHeader> headers = combineParameters(httpComponent.getHeaders(), convertHeaderParameters(getParameterResolvedValue(HEADERS_KEY)));
+        List<HttpQueryParameter> queryParameters = combineParameters(httpComponent.getQueryParameters(), convertHttpQueryParameters(getParameterResolvedValue(QUERY_PARAMETERS_KEY)));
 
         httpComponent.setQueryParameters(queryParameters);
         httpComponent.setHeaders(headers);
@@ -120,14 +119,22 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         return ACTION_TYPE;
     }
 
-    private Map<String, String> convertParameters(DataType dataType) {
+    private <T extends HttpParameter> List<T> combineParameters(List<T> componentLevelParameters, List<T> actionLevelParameters) {
+        List<T> additionalParameters = componentLevelParameters.stream()
+                .filter(componentLevelHeader -> actionLevelParameters.stream()
+                        .noneMatch(actionLevelHeader -> actionLevelHeader.getName().equals(componentLevelHeader.getName())))
+                .collect(Collectors.toList());
+        actionLevelParameters.addAll(additionalParameters);
+        return actionLevelParameters;
+    }
+
+
+    private List<HttpHeader> convertHeaderParameters(DataType dataType) {
         if (dataType == null) {
-            return new HashMap<>();
+            return new ArrayList<>();
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
-                    .map(this::buildParameter).collect(
-                            Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue, (key1, key2) -> key2)
-                    );
+                    .map(this::buildHttpHeader).collect(Collectors.toList());
 
 
         } else if (dataType instanceof InMemoryDatasetImplementation) {
@@ -135,72 +142,70 @@ public class HttpExecuteRequest extends ActionTypeExecution {
                     .getInstance()
                     .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
                             .getExecutionRuntime()).entrySet().stream()
-                    .map(dataItem -> new AbstractMap.SimpleEntry<>(dataItem.getKey(), dataItem.getValue().toString()))
+                    .map(dataItem -> new HttpHeader(dataItem.getKey(), dataItem.getValue().toString()))
                     .collect(
-                            Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue, (key1, key2) -> key2)
+                            Collectors.toList()
                     );
         } else {
-            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for expectedStatusCode"),
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for headers"),
                     dataType.getClass()));
-            return new HashMap<>();
+            return new ArrayList<>();
         }
     }
 
-    private List<HttpHeader> combineHeaders(List<HttpHeader> defaultHeaders) {
-        Map<String, String> headers = convertParameters(getParameterResolvedValue(HEADERS_KEY));
-        List<HttpHeader> headersRemaining;
+    private List<HttpQueryParameter> convertHttpQueryParameters(DataType dataType) {
+        if (dataType == null) {
+            return new ArrayList<>();
+        } else if (dataType instanceof Text) {
+            return Arrays.stream(dataType.toString().split(","))
+                    .map(this::buildHttpQueryParameter).collect(Collectors.toList());
 
-        if (headers.isEmpty()) {
-            return defaultHeaders;
+
+        } else if (dataType instanceof InMemoryDatasetImplementation) {
+            return InMemoryDatasetImplementationService
+                    .getInstance()
+                    .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
+                            .getExecutionRuntime()).entrySet().stream()
+                    .map(dataItem -> new HttpQueryParameter(dataItem.getKey(), dataItem.getValue().toString()))
+                    .collect(
+                            Collectors.toList()
+                    );
+        } else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for queryParameters"),
+                    dataType.getClass()));
+            return new ArrayList<>();
         }
-        //Override Headers to existing Headers
-        defaultHeaders.forEach(header -> {
-            String name = header.getName();
-            if (headers.containsKey(name)) {
-                header.setValue(headers.remove(name));
-            }
-        });
-
-        headersRemaining = headers.entrySet().stream()
-                .map(headerEntry -> new HttpHeader(headerEntry.getKey(), headerEntry.getValue())).collect(Collectors.toList());
-
-        return Stream.of(defaultHeaders, headersRemaining).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    private List<HttpQueryParameter> combineQueryParameter(List<HttpQueryParameter> defaultQueryParameter) {
-        Map<String, String> queryParameters = convertParameters(getParameterResolvedValue(QUERY_PARAMETERS_KEY));
-        if (queryParameters.isEmpty()) {
-            return defaultQueryParameter;
-        }
-        //Override Headers to existing Headers
-        defaultQueryParameter.forEach(queryParameter -> {
-            String name = queryParameter.getName();
-            if (queryParameters.containsKey(name)) {
-                queryParameter.setValue(queryParameters.remove(name));
-            }
-        });
-
-        List<HttpQueryParameter> queryParametersRemaining = queryParameters.entrySet().stream()
-                .map(headerEntry -> new HttpQueryParameter(headerEntry.getKey(), headerEntry.getValue())).collect(Collectors.toList());
-
-
-        return Stream.of(defaultQueryParameter, queryParametersRemaining).flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    private AbstractMap.SimpleEntry<String, String> buildParameter(String param) {
+    private HttpHeader buildHttpHeader(String header) {
         String[] keyValues;
-        if (!param.contains("=")) {
-            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", param));
+
+        if (!header.contains("=")) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", header));
         }
 
-        keyValues = param.split("=");
+        keyValues = header.split("=");
         if (keyValues.length > 2) {
-            throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", param));
+            throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", header));
         }
 
-        return new AbstractMap.SimpleEntry<>(keyValues[0], keyValues[1]);
+        return new HttpHeader(keyValues[0], keyValues[1]);
     }
 
+    private HttpQueryParameter buildHttpQueryParameter(String queryParameter) {
+        String[] keyValues;
+
+        if (!queryParameter.contains("=")) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", queryParameter));
+        }
+
+        keyValues = queryParameter.split("=");
+        if (keyValues.length > 2) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", queryParameter));
+        }
+
+        return new HttpQueryParameter(keyValues[0], keyValues[1]);
+    }
 
     private List<String> convertExpectStatusCodes(DataType expectedStatusCodes) {
         if (expectedStatusCodes == null) {

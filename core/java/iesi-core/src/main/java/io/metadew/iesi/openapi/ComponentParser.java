@@ -23,12 +23,9 @@ import java.util.Map.Entry;
 @Data
 public class ComponentParser {
     private static ComponentParser instance;
-    private static final String COMPONENT_TYPE = "http.request";
-
 
     private ComponentParser() {
     }
-
 
     public static synchronized ComponentParser getInstance() {
         if (instance == null) {
@@ -79,7 +76,7 @@ public class ComponentParser {
 
         return new Component(
                 componentKey,
-                COMPONENT_TYPE,
+                "http.request",
                 operation.getOperationId(),
                 operation.getDescription(),
                 new ComponentVersion(new ComponentVersionKey(componentKey), operation.getDescription()),

@@ -23,11 +23,7 @@ import java.util.Map.Entry;
 @Data
 public class ComponentParser {
     private static ComponentParser instance;
-    private static final String SECURITY = "security";
-    private static final String REQUEST = "Content-Type";
-    private static final String RESPONSE = "Accept";
     private static final String COMPONENT_TYPE = "http.request";
-    private static final String HEADER = "header.%s";
 
 
     private ComponentParser() {
@@ -62,18 +58,16 @@ public class ComponentParser {
                         operationEntry.getKey().toString()
                 ));
             }
-
         }
 
         return components;
     }
 
-    public Component createComponent(Long componentVersion, String connectionName,Operation operation, String pathName, String method) {
+    public Component createComponent(Long componentVersion, String connectionName, Operation operation, String pathName, String method) {
         List<ComponentParameter> componentParameters = new ArrayList<>();
         ComponentKey componentKey = new ComponentKey(
                 IdentifierTools.getComponentIdentifier(operation.getOperationId()),
                 componentVersion);
-
 
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"), pathName.replaceAll("[{}]", "#")));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "type"), method));
@@ -83,7 +77,8 @@ public class ComponentParser {
             operation.setDescription("");
         }
 
-        return new Component(componentKey,
+        return new Component(
+                componentKey,
                 COMPONENT_TYPE,
                 operation.getOperationId(),
                 operation.getDescription(),

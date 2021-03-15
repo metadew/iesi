@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
+
 class ComponentParserTest {
 
     private OpenAPI openAPI;

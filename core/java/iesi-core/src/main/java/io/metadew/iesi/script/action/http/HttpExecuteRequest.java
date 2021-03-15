@@ -135,8 +135,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
                     .map(this::buildHttpHeader).collect(Collectors.toList());
-
-
         } else if (dataType instanceof InMemoryDatasetImplementation) {
             return InMemoryDatasetImplementationService
                     .getInstance()
@@ -159,8 +157,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
                     .map(this::buildHttpQueryParameter).collect(Collectors.toList());
-
-
         } else if (dataType instanceof InMemoryDatasetImplementation) {
             return InMemoryDatasetImplementationService
                     .getInstance()

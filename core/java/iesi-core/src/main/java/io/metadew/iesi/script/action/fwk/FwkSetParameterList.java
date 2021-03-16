@@ -4,12 +4,10 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,33 +20,18 @@ import java.util.regex.Pattern;
 
 public class FwkSetParameterList extends ActionTypeExecution {
 
-    private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
-
-    // Parameters
-    private ActionParameterOperation parameterList;
+    private static final String PARAMETER_LIST_KEY = "list";
     private static final Logger LOGGER = LogManager.getLogger();
+    private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
 
     public FwkSetParameterList(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        this.setParameterList(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
-                this.getActionExecution().getAction().getType(), "list"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list"))
-                this.getParameterList().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-        }
-
-        //Create parameter list
-        this.getActionParameterOperationMap().put("list", this.getParameterList());
-    }
+    public void prepare() { }
 
     protected boolean executeAction() throws InterruptedException {
-        Map<String, String> list = convertList(getParameterList().getValue());
+        Map<String, String> list = convertList(getParameterResolvedValue(PARAMETER_LIST_KEY));
         for (Map.Entry<String, String> parameter : list.entrySet()) {
             getExecutionControl().getExecutionRuntime().setRuntimeVariable(getActionExecution(), parameter.getKey(), parameter.getValue());
         }
@@ -94,14 +77,6 @@ public class FwkSetParameterList extends ActionTypeExecution {
                     parameterEntry.getClass()));
             return parameterMap;
         }
-    }
-
-    public ActionParameterOperation getParameterList() {
-        return parameterList;
-    }
-
-    public void setParameterList(ActionParameterOperation parameterList) {
-        this.parameterList = parameterList;
     }
 
 }

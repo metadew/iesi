@@ -5,7 +5,6 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.action.fwk.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
-import io.metadew.iesi.script.operation.RouteOperation;
 import lombok.ToString;
 import org.apache.logging.log4j.Level;
 
@@ -66,10 +65,10 @@ public abstract class ScriptExecution {
 					continue;
 				}
 
-				if (action.getType().equalsIgnoreCase("fwk.route")) {
-					executeFwkRouteAction(actionExecution);
-					break;
-				}
+//				if (action.getType().equalsIgnoreCase("fwk.route")) {
+//					executeFwkRouteAction(actionExecution);
+//					break;
+//				}
 
 				if (action.getType().equalsIgnoreCase("fwk.startIteration")) {
 					// Do not change - work in progress
@@ -149,46 +148,46 @@ public abstract class ScriptExecution {
 		actionsToExecute.addAll(actionIndex, fwkIncludeScript.getScript().getActions());
 	}
 
-	private void executeFwkRouteAction(ActionExecution actionExecution) throws InterruptedException {
-		actionExecution.execute(null);
-
-		// Create future variables
-		int threads = actionExecution.getActionControl().getActionRuntime().getRouteOperations().size();
-		CompletionService<ScriptExecution> completionService = new ExecutorCompletionService<>(Executors.newFixedThreadPool(threads));
-		Set<Future<ScriptExecution>> futureScriptExecutions = new HashSet<>();
-
-		// Submit routes
-		for (RouteOperation routeOperation : actionExecution.getActionControl().getActionRuntime()
-				.getRouteOperations()) {
-
-			Callable<ScriptExecution> callableScriptExecution = () -> new ScriptExecutionBuilder(true, true)
-					.script(routeOperation.getScript())
-					.executionControl(executionControl)
-					.parentScriptExecution(parentScriptExecution)
-					.executionMetrics(executionMetrics)
-					.actionSelectOperation(new ActionSelectOperation(""))
-					.exitOnCompletion(true)
-					.build();
-
-			futureScriptExecutions.add(completionService.submit(callableScriptExecution));
-		}
-
-		Future<ScriptExecution> completedFuture;
-		ScriptExecution completedScriptExecution;
-		while (!futureScriptExecutions.isEmpty()) {
-			try {
-				completedFuture = completionService.take();
-				futureScriptExecutions.remove(completedFuture);
-
-				completedScriptExecution = completedFuture.get();
-				this.getExecutionMetrics()
-						.mergeExecutionMetrics(completedScriptExecution.getExecutionMetrics());
-			} catch (ExecutionException e) {
-				Throwable cause = e.getCause();
-				this.getExecutionControl().logMessage("route.error=" + cause, Level.INFO);
-			}
-		}
-	}
+//	private void executeFwkRouteAction(ActionExecution actionExecution) throws InterruptedException {
+//		actionExecution.execute(null);
+//
+//		// Create future variables
+//		int threads = actionExecution.getActionControl().getActionRuntime().getRouteOperations().size();
+//		CompletionService<ScriptExecution> completionService = new ExecutorCompletionService<>(Executors.newFixedThreadPool(threads));
+//		Set<Future<ScriptExecution>> futureScriptExecutions = new HashSet<>();
+//
+//		// Submit routes
+////		for (RouteOperation routeOperation : actionExecution.getActionControl().getActionRuntime()
+////				.getRouteOperations()) {
+////
+////			Callable<ScriptExecution> callableScriptExecution = () -> new ScriptExecutionBuilder(true, true)
+////					.script(routeOperation.getScript())
+////					.executionControl(executionControl)
+////					.parentScriptExecution(parentScriptExecution)
+////					.executionMetrics(executionMetrics)
+////					.actionSelectOperation(new ActionSelectOperation(""))
+////					.exitOnCompletion(true)
+////					.build();
+////
+////			futureScriptExecutions.add(completionService.submit(callableScriptExecution));
+////		}
+//
+//		Future<ScriptExecution> completedFuture;
+//		ScriptExecution completedScriptExecution;
+//		while (!futureScriptExecutions.isEmpty()) {
+//			try {
+//				completedFuture = completionService.take();
+//				futureScriptExecutions.remove(completedFuture);
+//
+//				completedScriptExecution = completedFuture.get();
+//				this.getExecutionMetrics()
+//						.mergeExecutionMetrics(completedScriptExecution.getExecutionMetrics());
+//			} catch (ExecutionException e) {
+//				Throwable cause = e.getCause();
+//				this.getExecutionControl().logMessage("route.error=" + cause, Level.INFO);
+//			}
+//		}
+//	}
 
 	public void traceDesignMetadata() {
 		ExecutionTrace.getInstance().setExecution(this);

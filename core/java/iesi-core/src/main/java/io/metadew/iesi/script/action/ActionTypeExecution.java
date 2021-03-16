@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.service.ActionParameterService;
 import lombok.Getter;
 
@@ -22,7 +21,6 @@ public abstract class ActionTypeExecution {
     private final ScriptExecution scriptExecution;
     private final ActionExecution actionExecution;
     private final List<ActionParameterResolvement> actionParameterResolvements = new ArrayList<>();
-    private HashMap<String, ActionParameterOperation> actionParameterOperationMap = new HashMap<>();
 
     protected ActionTypeExecution(ExecutionControl executionControl,
                         ScriptExecution scriptExecution, ActionExecution actionExecution) {

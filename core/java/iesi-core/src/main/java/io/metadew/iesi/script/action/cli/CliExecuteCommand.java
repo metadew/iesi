@@ -8,44 +8,29 @@ import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 import java.text.MessageFormat;
 import java.util.Optional;
 
-/**
- * Action type to execute command line instructions.
- *
- * @author peter.billen
- */
+@Log4j2
 public class CliExecuteCommand extends ActionTypeExecution {
 
 
     // Parameters
-    private ActionParameterOperation shellPath;
-    private static final String shellPathKey = "path";
-    private ActionParameterOperation shellCommand;
-    private final static String shellCommandKey = "command";
-    private ActionParameterOperation setRunVar;
-    private final static String setRunVarKey = "setRuntimeVariables";
-    private ActionParameterOperation setRunVarPrefix;
-    private final static String setRunVarPrefixKey = "setRuntimeVariablesPrefix";
-    private ActionParameterOperation setRunVarMode;
-    private final static String setRunVarModeKey = "setRuntimeVariablesMode";
-    private ActionParameterOperation connectionName;
-    private final static String connectionNameKey = "connection";
-    private ActionParameterOperation systemOutputName;
-    private final static String systemOutputNameKey = "output";
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final String SHELL_PATH_KEY = "path";
+    private static  final String SHELL_COMMAND_KEY = "command";
+    private static final String SET_RUN_VAR_KEY = "setRuntimeVariables";
+    private static final String SET_RUN_VAR_PREFIX_KEY = "setRuntimeVariablesPrefix";
+    private static final String SET_RUN_VAR_MODE_KEY = "setRuntimeVariablesMode";
+    private static final String CONNECTION_NAME_KEY = "connection";
+    private static final String SYSTEM_OUTPUT_NAME_KEY = "output";
 
     public CliExecuteCommand(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -54,59 +39,16 @@ public class CliExecuteCommand extends ActionTypeExecution {
 
     public void prepare() {
         // Reset Parameters
-        this.shellPath = new ActionParameterOperation(getExecutionControl(),
-                getActionExecution(), getActionExecution().getAction().getType(), shellPathKey);
-        this.shellCommand = new ActionParameterOperation(getExecutionControl(),
-                getActionExecution(), getActionExecution().getAction().getType(), shellCommandKey);
-        this.setRunVar = new ActionParameterOperation(getExecutionControl(),
-                getActionExecution(), getActionExecution().getAction().getType(), setRunVarKey);
-        this.setRunVarPrefix = new ActionParameterOperation(getExecutionControl(),
-                getActionExecution(), getActionExecution().getAction().getType(),
-                setRunVarPrefixKey);
-        this.setRunVarMode = new ActionParameterOperation(getExecutionControl(),
-                getActionExecution(), getActionExecution().getAction().getType(), setRunVarModeKey);
-        this.systemOutputName = new ActionParameterOperation(getExecutionControl(),
-                getActionExecution(), getActionExecution().getAction().getType(), systemOutputNameKey);
-        this.connectionName = new ActionParameterOperation(getExecutionControl(),
-                getActionExecution(), getActionExecution().getAction().getType(), connectionNameKey);
-
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(shellPathKey)) {
-                shellPath.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(shellCommandKey)) {
-                shellCommand.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarKey)) {
-                setRunVar.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarPrefixKey)) {
-                setRunVarPrefix.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(setRunVarModeKey)) {
-                setRunVarMode.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(systemOutputNameKey)) {
-                systemOutputName.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(connectionNameKey)) {
-                connectionName.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put(shellPathKey, shellPath);
-        this.getActionParameterOperationMap().put(shellCommandKey, shellCommand);
-        this.getActionParameterOperationMap().put(setRunVarKey, setRunVar);
-        this.getActionParameterOperationMap().put(setRunVarPrefixKey, setRunVarPrefix);
-        this.getActionParameterOperationMap().put(setRunVarModeKey, setRunVarMode);
-        this.getActionParameterOperationMap().put(systemOutputNameKey, systemOutputName);
-        this.getActionParameterOperationMap().put(connectionNameKey, connectionName);
     }
 
     protected boolean executeAction() throws InterruptedException {
         // Get Connection
-        String shellPath = convertShellPath(this.shellPath.getValue());
-        String shellCommand = convertShellCommand(this.shellCommand.getValue());
-        boolean settingRuntimeVariables = convertSetRuntimeVariables(this.setRunVar.getValue());
-        String settingRuntimeVariablesPrefix = convertSetRuntimeVariablesPrefix(this.setRunVarPrefix.getValue());
-        String settingRuntimeVariablesMode = convertSetRuntimeVariablesMode(this.setRunVarMode.getValue());
-        String connectionName = convertConnectionName(this.connectionName.getValue());
+        String shellPath = convertShellPath(getParameterResolvedValue(SHELL_PATH_KEY));
+        String shellCommand = convertShellCommand(getParameterResolvedValue(SHELL_COMMAND_KEY));
+        boolean settingRuntimeVariables = convertSetRuntimeVariables(getParameterResolvedValue(SET_RUN_VAR_KEY));
+        String settingRuntimeVariablesPrefix = convertSetRuntimeVariablesPrefix(getParameterResolvedValue(SET_RUN_VAR_PREFIX_KEY));
+        String settingRuntimeVariablesMode = convertSetRuntimeVariablesMode(getParameterResolvedValue(SET_RUN_VAR_MODE_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, getExecutionControl().getEnvName());
         HostConnection hostConnection;
@@ -148,7 +90,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseErrorCount();
         }
 
-        convertName(this.systemOutputName.getValue())
+        convertName(getParameterResolvedValue(SYSTEM_OUTPUT_NAME_KEY))
                 .ifPresent(systemOutputName -> getExecutionControl().getExecutionRuntime().setRuntimeVariable(getActionExecution(),
                         systemOutputName, shellCommandResult.getSystemOutput()));
 
@@ -173,7 +115,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         if (setRuntimeVariablesMode instanceof Text) {
             return setRuntimeVariablesMode.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariablesMode",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariablesMode",
                     setRuntimeVariablesMode.getClass()));
             return setRuntimeVariablesMode.toString();
         }
@@ -185,7 +127,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         } else if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()));
             return connectionName.toString();
         }
@@ -199,7 +141,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         if (setRuntimeVariablesPrefix instanceof Text) {
             return setRuntimeVariablesPrefix.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariablesPrefix",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariablesPrefix",
                     setRuntimeVariablesPrefix.getClass()));
             return setRuntimeVariablesPrefix.toString();
         }
@@ -212,7 +154,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         if (setRuntimeVariables instanceof Text) {
             return setRuntimeVariables.toString().equalsIgnoreCase("y");
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariables",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for setRuntimeVariables",
                     setRuntimeVariables.getClass()));
             return false;
         }
@@ -222,7 +164,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         if (shellCommand instanceof Text) {
             return shellCommand.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for shellCommand",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for shellCommand",
                     shellCommand.getClass()));
             return shellCommand.toString();
         }
@@ -232,7 +174,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         if (ShellPath instanceof Text) {
             return ShellPath.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for ShellPath",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for ShellPath",
                     ShellPath.getClass()));
             return ShellPath.toString();
         }
@@ -244,7 +186,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         } else if (name instanceof Text) {
             return Optional.of(name.toString());
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for name",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for name",
                     name.getClass()));
             return Optional.of(name.toString());
         }

@@ -2,12 +2,10 @@ package io.metadew.iesi.script.action.wfa;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,9 +15,9 @@ import java.util.Scanner;
 public class WfaGetConfirmation extends ActionTypeExecution {
 
     // Parameters
-    private ActionParameterOperation confirmationType;
-    private ActionParameterOperation confirmationQuestion;
-    private ActionParameterOperation timeoutInterval;
+    private static final String TYPE_KEY = "type";
+    private static final String QUESTION_KEY = "question";
+    private static final String TIMEOUT_KEY = "timeout";
     private final int defaultTimeoutInterval = 1000;
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -30,36 +28,13 @@ public class WfaGetConfirmation extends ActionTypeExecution {
     }
 
     public void prepare() {
-        // Set Parameters
-        this.setConfirmationType(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
-        this.setConfirmationQuestion(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "question"));
-        this.setTimeoutInterval(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
-                this.getActionExecution().getAction().getType(), "timeout"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
-                this.getConfirmationType().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("question")) {
-                this.getConfirmationQuestion().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("timeout")) {
-                this.getTimeoutInterval().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("type", this.getConfirmationType());
-        this.getActionParameterOperationMap().put("question", this.getConfirmationQuestion());
-        this.getActionParameterOperationMap().put("timeout", this.getTimeoutInterval());
     }
 
 
     protected boolean executeAction() throws InterruptedException {
-        int timeoutInterval = convertTimeoutInterval(getTimeoutInterval().getValue());
-        String question = convertQuestion(getConfirmationQuestion().getValue());
-        String type = convertType(getConfirmationType().getValue());
+        int timeoutInterval = convertTimeoutInterval(getParameterResolvedValue(TIMEOUT_KEY));
+        String question = convertQuestion(getParameterResolvedValue(QUESTION_KEY));
+        String type = convertType(getParameterResolvedValue(TYPE_KEY));
 
         // Run the action
         boolean result = false;
@@ -134,7 +109,7 @@ public class WfaGetConfirmation extends ActionTypeExecution {
         // prompt
         String prompt = null;
         if (question != null && !question.isEmpty()) {
-            prompt = this.getConfirmationQuestion().getValue() + " Y/[N]/STOP ";
+            prompt = question + " Y/[N]/STOP ";
         } else {
             prompt = "Has the action been finished successfully? Y/[N]/STOP ";
         }
@@ -189,7 +164,7 @@ public class WfaGetConfirmation extends ActionTypeExecution {
         // prompt
         String prompt;
         if (question != null && !question.isEmpty()) {
-            prompt = this.getConfirmationQuestion().getValue() + " [Y]/STOP ";
+            prompt = question + " [Y]/STOP ";
         } else {
             prompt = "Do you confirm to proceed? [Y]/STOP ";
         }
@@ -260,7 +235,7 @@ public class WfaGetConfirmation extends ActionTypeExecution {
         // prompt
         String prompt = null;
         if (question != null && !question.isEmpty()) {
-            prompt = "AUTO-CONFIRMATION: " + this.getConfirmationQuestion().getValue();
+            prompt = "AUTO-CONFIRMATION: " + question;
         } else {
             prompt = "AUTO-CONFIRMATION: The action has been confirmed automatically!";
         }
@@ -273,34 +248,6 @@ public class WfaGetConfirmation extends ActionTypeExecution {
         readInput = readInput.toUpperCase();
         this.getActionExecution().getActionControl().logOutput("confirmation", readInput);
         return true;
-    }
-
-    public ActionParameterOperation getActionParameterOperation(String key) {
-        return this.getActionParameterOperationMap().get(key);
-    }
-
-    public ActionParameterOperation getConfirmationType() {
-        return confirmationType;
-    }
-
-    public void setConfirmationType(ActionParameterOperation confirmationType) {
-        this.confirmationType = confirmationType;
-    }
-
-    public ActionParameterOperation getConfirmationQuestion() {
-        return confirmationQuestion;
-    }
-
-    public void setConfirmationQuestion(ActionParameterOperation confirmationQuestion) {
-        this.confirmationQuestion = confirmationQuestion;
-    }
-
-    public ActionParameterOperation getTimeoutInterval() {
-        return timeoutInterval;
-    }
-
-    public void setTimeoutInterval(ActionParameterOperation timeoutInterval) {
-        this.timeoutInterval = timeoutInterval;
     }
 
 }

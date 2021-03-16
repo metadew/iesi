@@ -5,57 +5,36 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
-
+@Log4j2
 public class SqlSetRuntimeVariables extends ActionTypeExecution {
 
     // Parameters
-    private ActionParameterOperation sqlQuery;
-    private ActionParameterOperation connectionName;
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final String QUERY_KEY = "query";
+    private static final String CONNECTION_KEY = "connection";
 
     public SqlSetRuntimeVariables(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
 
     public void prepare() {
-        // Reset Parameters
-        this.sqlQuery = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "query");
-        this.connectionName = new ActionParameterOperation(this.getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "connection");
-
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
-                sqlQuery.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                connectionName.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        //Create parameter list
-        getActionParameterOperationMap().put("query", sqlQuery);
-        getActionParameterOperationMap().put("connection", connectionName);
     }
 
     protected boolean executeAction() throws InterruptedException, SQLException {
 
-        String query = convertQuery(sqlQuery.getValue());
-        String connectionName = convertConnectionName(this.connectionName.getValue());
+        String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName + " for env " + getExecutionControl().getEnvName()));
@@ -77,7 +56,7 @@ public class SqlSetRuntimeVariables extends ActionTypeExecution {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()));
             return connectionName.toString();
         }
@@ -87,7 +66,7 @@ public class SqlSetRuntimeVariables extends ActionTypeExecution {
         if (query instanceof Text) {
             return query.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for query",
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for query",
                     query.getClass()));
             return query.toString();
         }

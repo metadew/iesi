@@ -2,9 +2,9 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.script.action.ActionParameterResolvement;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.configuration.IterationInstance;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
 import io.metadew.iesi.script.service.ConditionService;
 import lombok.extern.log4j.Log4j2;
@@ -14,9 +14,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -87,9 +85,8 @@ public class ActionExecution {
                 instance.prepare();
 
                 // A clone is needed since the iterator through the hashmap will remove the current item to avoid a ConcurrentModificationException
-                Map<String, ActionParameterOperation> actionParameterOperationMap = Collections.unmodifiableMap(instance.getActionParameterOperationMap());
-                actionControl.getActionRuntime().setRuntimeParameters(actionParameterOperationMap);
-                traceDesignMetadata(actionParameterOperationMap);
+                actionControl.getActionRuntime().setRuntimeParameters(instance.getActionParameterResolvements());
+                traceDesignMetadata(instance.getActionParameterResolvements());
 
                 LocalDateTime start = LocalDateTime.now();
                 instance.execute();
@@ -116,6 +113,10 @@ public class ActionExecution {
         }
         actionControl.getActionRuntime().getRuntimeActionCacheConfiguration().shutdown();
         executionControl.logEnd(this, scriptExecution);
+    }
+
+    private void traceDesignMetadata(List<ActionParameterResolvement> actionParameterResolvements) {
+        ExecutionTrace.getInstance().setExecution(this, actionParameterResolvements);
     }
 
     private void verifyExecutionMetrics() {
@@ -160,10 +161,6 @@ public class ActionExecution {
         // Log Skip
         executionControl.logSkip(this);
 
-    }
-
-    public void traceDesignMetadata(Map<String, ActionParameterOperation> actionParameterOperationMap) {
-        ExecutionTrace.getInstance().setExecution(this, actionParameterOperationMap);
     }
 
     public Action getAction() {

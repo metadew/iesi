@@ -21,32 +21,32 @@ With IESI, we would like to bring automation to everyone in convenient and affor
 With every data-driven framework, concepts such as efficiency, reusability and flexibility are key for delivering a high-end automation framework.  We would like to further differentiate ourselves by also making it accessible and affordable for any project or organization. 
 
 ### Key Features
-- [x] **Fast Install** <br>
-      Zero-touch on-premise (Future: Cloud Containers) - Be up and running in less than 1 hour.
+- **Fast Install** <br>
+    Zero-touch on-premise (Future: Cloud Containers) - Be up and running in less than 1 hour.
 
-- [x] **Broad Access** <br>
-      Get [ROI](/{{site.repository}}/pages/benefits/businesscase.html) for small and large projects or organizations - Instant ROI and savings with our tool that you can           trial before buying.
+- **Broad Access** <br>
+    Get [ROI](/{{site.repository}}/pages/benefits/businesscase.html) for small and large projects or organizations - Instant ROI and savings with our tool that you can               trial before buying.
       
-- [x] **Easy to use** <br>
-      Fast automation through reusable configuration and modularity – Increase test coverage and execute more in less time.
+- **Easy to use** <br>
+    Fast automation through reusable configuration and modularity – Increase test coverage and execute more in less time.
       
-- [x] **Agnostic** <br>
-      Technology, vendor, industry independent – Easy plug-in and blend-in.
+- **Agnostic** <br>
+    Technology, vendor, industry independent – Easy plug-in and blend-in.
 
 > Test automation (and data-driven automation in general) should not be considered a commodity but will provide many ways of differentiation in the future
 
 ### Key Benefits
-- [x] **Enable digital transformations and end-to-end automation across technologies** <br>
-      With IESI, we bring a powerful and intelligent engine that connects to any type of technology, orchestrates actions and caches information, being able to run on top of       both legacy and new systems.
+- **Enable digital transformations and end-to-end automation across technologies** <br>
+    With IESI, we bring a powerful and intelligent engine that connects to any type of technology, orchestrates actions and caches information, being able to run on top of           both legacy and new systems.
       
-- [x] **Accelerate time-to-market** <br>
-      Increase your delivery time through the flexible, reusable approach of our configuration and design. Being able to create and run agonistic of the target environment         (from development to production), configuration and script design are highly maintainable and easy for non-programmers to use.
+- **Accelerate time-to-market** <br>
+    Increase your delivery time through the flexible, reusable approach of our configuration and design. Being able to create and run agonistic of the target environment             (from development to production), configuration and script design are highly maintainable and easy for non-programmers to use.
 
-- [x] **Monitor the user experience proactively**<br>
-      Apply pro-active alerting and detect irregularities faster through the end-to-end (functional) monitoring capabilities. Provide the team with faster feedback and             reduced debugging time.
+- **Monitor the user experience proactively**<br>
+    Apply pro-active alerting and detect irregularities faster through the end-to-end (functional) monitoring capabilities. Provide the team with faster feedback and                 reduced debugging time.
       
-- [x] **Complement and augment existing automation tools**<br>
-      Integrate into your DevOps pipeline and complement your test automation tools with the IESI framework. We complement rather than replace what you currently have and           create on-demand plugins for specific technologies or logic. 
+- **Complement and augment existing automation tools**<br>
+    Integrate into your DevOps pipeline and complement your test automation tools with the IESI framework. We complement rather than replace what you currently have and             create on-demand plugins for specific technologies or logic. 
 
 > Grows best when we combine innovation with real life experiences and common sense, together with the community.
 
@@ -57,21 +57,21 @@ Our framework can run on Linux/Unix, Mac and Windows systems.
 
 |Technology|Configuration|Connectivity|Data|
 |----------|    :---:    |   :---:    |   :---:    |
-|Apache Drill|![grey](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/grey-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|Dremio|![grey](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/grey-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|File System|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|
-|H2|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|Google BigQuery|![grey](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/grey-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|
-|IBM DB2|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|Maria DB|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|Microsoft SQL Server|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|MySQL|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|Netezza|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|Oracle|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![yellow](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/yellow-dot.png)|
-|Postgresql|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|Presto|![grey](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/grey-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|SQLite|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
-|Teradata|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|![green](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/green-dot.png)|![red](https://github.com/metadew/iesi/blob/73603f56fef0a3f0d73bc19c6f35d31fb565b171/docs/images/icons/red-dot.png)|
+|Apache Drill|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Dremio|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|File System|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|
+|H2|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Google BigQuery|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![grey](/{{site.repository}}/images/icons/grey-dot.png)|
+|IBM DB2|![red](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Maria DB|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Microsoft SQL Server|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|MySQL|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Netezza|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Oracle|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![yellow](/{{site.repository}}/images/icons/yellow-dot.png)|
+|Postgresql|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Presto|![grey](/{{site.repository}}/images/icons/grey-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|SQLite|![green](/{{site.repository}}/images/icons/green-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
+|Teradata|![red](/{{site.repository}}/images/icons/red-dot.png)|![green](/{{site.repository}}/images/icons/green-dot.png)|![red](/{{site.repository}}/images/icons/red-dot.png)|
 
 By default, technology connectors are not included unless used by the framework's core functions.
 [Adding a connector](/{{site.repository}}/pages/deploy/connectors.html) is made as simple as possible.

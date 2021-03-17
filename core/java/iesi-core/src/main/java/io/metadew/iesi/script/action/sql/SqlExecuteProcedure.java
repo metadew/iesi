@@ -79,10 +79,10 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
     protected boolean executeAction() throws SQLException, InterruptedException {
 
         String sqlProcedure = convertSqlProcedure(getSqlProcedure().getValue());
-        String connectionName = convertConnectionName(getSqlProcedure().getValue());
-        String sqlParameters = convertSqlParameters(getSqlProcedure().getValue());
-        String outputDatasetReferenceName = convertDatasetReferenceName(getSqlProcedure().getValue());
-        boolean appendOutput = convertAppendOutput(getSqlProcedure().getValue());
+        String connectionName = convertConnectionName(getConnectionName().getValue());
+        String sqlParameters = convertSqlParameters(getSqlParameters().getValue());
+        String outputDatasetReferenceName = convertDatasetReferenceName(getOutputDataset().getValue());
+        boolean appendOutput = convertAppendOutput(getAppendOutput().getValue());
 
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()

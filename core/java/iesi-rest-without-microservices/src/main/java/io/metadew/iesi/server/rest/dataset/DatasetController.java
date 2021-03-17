@@ -122,6 +122,20 @@ public class DatasetController {
         return datasetDtoService.fetchImplementationsByUuid(uuid);
     }
 
+    @DeleteMapping("/{datasetUuid}/implementations/{datasetImplementationUuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
+    public ResponseEntity deleteImplementationByUuid(@PathVariable UUID datasetUuid, @PathVariable UUID datasetImplementationUuid) {
+        datasetImplementationService.delete(new DatasetImplementationKey(datasetImplementationUuid));
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{datasetUuid}/implementations")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
+    public ResponseEntity deleteImplementationsByDatasetUuid(@PathVariable UUID datasetUuid) {
+        datasetImplementationService.deleteByDatasetId(new DatasetKey(datasetUuid));
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public DatasetDto get(@PathVariable UUID uuid) {

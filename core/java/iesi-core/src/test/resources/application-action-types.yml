@@ -245,6 +245,25 @@ iesi:
             subroutine:
             impersonate: false
         status: stable
+      eval.listContains:
+        className: io.metadew.iesi.script.action.eval.EvalListContains
+        description: Evaluate if two values are equal
+        parameters:
+          list:
+            description: Expected value to evaluate
+            type: string
+            mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+          value:
+            description: Actual value to evaluate
+            type: string
+            mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+        status: stable
       eval.executeExpression:
         className: io.metadew.iesi.script.action.eval.EvalExecuteExpression
         description: Evaluate an expression using scripted syntax
@@ -936,13 +955,6 @@ iesi:
         className: io.metadew.iesi.script.action.http.HttpExecuteRequest
         description: Execute a http request
         parameters:
-          type:
-            description: Type of request
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
           request:
             description: Name of the request to use
             type: string
@@ -980,6 +992,20 @@ iesi:
             impersonate: false
           proxy:
             description: proxy
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
+          headers:
+            description: headers
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
+          queryParameters:
+            description: queryParams
             type: string
             mandatory: false
             encrypted: false

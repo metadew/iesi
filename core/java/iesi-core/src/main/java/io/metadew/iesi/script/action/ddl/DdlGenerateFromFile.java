@@ -8,13 +8,11 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,13 +21,12 @@ import java.text.MessageFormat;
 
 public class DdlGenerateFromFile extends ActionTypeExecution {
 
-    // Parameters
-    private ActionParameterOperation inputPath;
-    private ActionParameterOperation inputFile;
-    private ActionParameterOperation outputType;
-    private ActionParameterOperation outputPath;
-    private ActionParameterOperation outputFile;
     private static final Logger LOGGER = LogManager.getLogger();
+        private static final String INPUT_PATH_KEY = "inputPath";
+        private static final String INPUT_FILE_KEY = "inputFile";
+        private static final String TYPE_KEY = "type";
+        private static final String OUTPUT_PATH_KEY = "outputPath";
+        private static final String OUTPUT_FILE_KEY = "outputFile";
 
 
     public DdlGenerateFromFile(ExecutionControl executionControl,
@@ -38,39 +35,6 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
     }
 
     public void prepare() {
-        // Set Parameters
-        this.setInputPath(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "inputPath"));
-        this.setInputFile(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "inputFile"));
-        this.setOutputType(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
-        this.setOutputPath(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "outputPath"));
-        this.setOutputFile(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "outputFile"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("inputPath")) {
-                this.getInputPath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("inputFile")) {
-                this.getInputFile().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
-                this.getOutputType().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputPath")) {
-                this.getOutputPath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputFile")) {
-                this.getOutputFile().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("inputPath", this.getInputPath());
-        this.getActionParameterOperationMap().put("inputFile", this.getInputFile());
-        this.getActionParameterOperationMap().put("type", this.getOutputType());
-        this.getActionParameterOperationMap().put("outputPath", this.getOutputPath());
-        this.getActionParameterOperationMap().put("outputFile", this.getOutputFile());
     }
 
     private String convertInputFile(DataType inputFile) {
@@ -126,11 +90,11 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
 
     protected boolean executeAction() throws InterruptedException {
 
-        String inputPath = convertInputPath(getInputPath().getValue());
-        String inputFile = convertInputFile(getInputFile().getValue());
-        String outputType = convertOutputType(getOutputType().getValue());
-        String outputPath = convertOutputPath(getOutputPath().getValue());
-        String outputFile = convertOutputFile(getOutputFile().getValue());
+        String inputPath = convertInputPath(getParameterResolvedValue(INPUT_PATH_KEY));
+        String inputFile = convertInputFile(getParameterResolvedValue(INPUT_FILE_KEY));
+        String outputType = convertOutputType(getParameterResolvedValue(TYPE_KEY));
+        String outputPath = convertOutputPath(getParameterResolvedValue(OUTPUT_PATH_KEY));
+        String outputFile = convertOutputFile(getParameterResolvedValue(OUTPUT_FILE_KEY));
         // TODO - fix for schema databases (dummy database connection)
         Database database = null;
         //DatabaseTools.getDatabase("io.metadew.iesi.connection.database.sqlite.SqliteDatabase");
@@ -147,48 +111,9 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
         return true;
     }
 
-    public ActionParameterOperation getActionParameterOperation(String key) {
-        return this.getActionParameterOperationMap().get(key);
-    }
-
-    public ActionParameterOperation getInputPath() {
-        return inputPath;
-    }
-
-    public void setInputPath(ActionParameterOperation inputPath) {
-        this.inputPath = inputPath;
-    }
-
-    public ActionParameterOperation getInputFile() {
-        return inputFile;
-    }
-
-    public void setInputFile(ActionParameterOperation inputFile) {
-        this.inputFile = inputFile;
-    }
-
-    public ActionParameterOperation getOutputPath() {
-        return outputPath;
-    }
-
-    public void setOutputPath(ActionParameterOperation outputPath) {
-        this.outputPath = outputPath;
-    }
-
-    public ActionParameterOperation getOutputFile() {
-        return outputFile;
-    }
-
-    public void setOutputFile(ActionParameterOperation outputFile) {
-        this.outputFile = outputFile;
-    }
-
-    public ActionParameterOperation getOutputType() {
-        return outputType;
-    }
-
-    public void setOutputType(ActionParameterOperation outputType) {
-        this.outputType = outputType;
+    @Override
+    protected String getKeyword() {
+        return "ddl.generateFromFile";
     }
 
 }

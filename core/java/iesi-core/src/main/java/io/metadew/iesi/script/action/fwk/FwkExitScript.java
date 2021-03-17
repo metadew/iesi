@@ -3,12 +3,10 @@ package io.metadew.iesi.script.action.fwk;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +21,7 @@ import java.util.Optional;
 public class FwkExitScript extends ActionTypeExecution {
 
     // Parameters
-    private ActionParameterOperation status;
+    private static final String STATUS_KEY = "status";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExitScript(ExecutionControl executionControl,
@@ -31,29 +29,20 @@ public class FwkExitScript extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        this.setStatus(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "status"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("status")) {
-                this.getStatus().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("status", this.getStatus());
-    }
+    public void prepare() { }
 
     protected boolean executeAction() throws InterruptedException {
-        Optional<String> status = convertStatus(getStatus().getValue());
+        Optional<String> status = convertStatus(getParameterResolvedValue(STATUS_KEY));
         // Verify if the status is empty
         if (status.map(status1 -> status1.trim().isEmpty()).orElse(false)) {
-            this.getStatus().setInputValue(ScriptRunStatus.SUCCESS.value(), getExecutionControl().getExecutionRuntime());
+            status = Optional.of(ScriptRunStatus.SUCCESS.value());
         }
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "fwk.exitScript";
     }
 
     private Optional<String> convertStatus(DataType status) {
@@ -68,13 +57,4 @@ public class FwkExitScript extends ActionTypeExecution {
             return Optional.of(status.toString());
         }
     }
-
-    public ActionParameterOperation getStatus() {
-        return status;
-    }
-
-    public void setStatus(ActionParameterOperation status) {
-        this.status = status;
-    }
-
 }

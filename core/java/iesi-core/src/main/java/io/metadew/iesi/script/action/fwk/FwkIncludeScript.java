@@ -3,7 +3,6 @@ package io.metadew.iesi.script.action.fwk;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
@@ -11,7 +10,6 @@ import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,8 +23,8 @@ import java.util.Optional;
  */
 public class FwkIncludeScript extends ActionTypeExecution {
 
-    private ActionParameterOperation scriptName;
-    private ActionParameterOperation scriptVersion;
+    private static final String SCRIPT_NAME_KEY = "script";
+    private static final String SCRIPT_VERSION_KEY = "version";
 
     // Exposed Script
     private Script script;
@@ -39,36 +37,22 @@ public class FwkIncludeScript extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        this.setScriptName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "script"));
-        this.setScriptVersion(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "version"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("script")) {
-                this.getScriptName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("version")) {
-                this.getScriptVersion().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("script", this.getScriptName());
-        this.getActionParameterOperationMap().put("version", this.getScriptVersion());
-    }
+    public void prepare() { }
 
     protected boolean executeAction() throws InterruptedException {
-        String scriptName = convertScriptName(getScriptName().getValue());
-        Optional<Long> scriptVersion = convertScriptVersion(getScriptVersion().getValue());
+        String scriptName = convertScriptName(getParameterResolvedValue(SCRIPT_NAME_KEY));
+        Optional<Long> scriptVersion = convertScriptVersion(getParameterResolvedValue(SCRIPT_VERSION_KEY));
         Script script = scriptVersion
                 .map(scriptVersion1 -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion1)))
                 .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)).get();
         setScript(script);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "fwk.includeScript";
     }
 
     private Optional<Long> convertScriptVersion(DataType scriptVersion) {
@@ -95,28 +79,12 @@ public class FwkIncludeScript extends ActionTypeExecution {
         }
     }
 
-    public ActionParameterOperation getScriptName() {
-        return scriptName;
-    }
-
-    public void setScriptName(ActionParameterOperation scriptName) {
-        this.scriptName = scriptName;
-    }
-
     public Script getScript() {
         return script;
     }
 
     public void setScript(Script script) {
         this.script = script;
-    }
-
-    public ActionParameterOperation getScriptVersion() {
-        return scriptVersion;
-    }
-
-    public void setScriptVersion(ActionParameterOperation scriptVersion) {
-        this.scriptVersion = scriptVersion;
     }
 
 }

@@ -4,12 +4,10 @@ import io.metadew.iesi.connection.r.RCommandResult;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 
@@ -18,8 +16,8 @@ import java.text.MessageFormat;
 @Log4j2
 public class RStartShinyApp extends ActionTypeExecution {
 
-    private static final String portKey = "port";
-    private static final String workspaceReferenceNameKey = "workspace";
+    private static final String PORT_KEY = "port";
+    private static final String WORKSPACE_REFERENCE_NAME_KEY = "workspace";
     private String workspaceReferenceName;
     private int port;
 
@@ -29,24 +27,8 @@ public class RStartShinyApp extends ActionTypeExecution {
     }
 
     public void prepare() {
-        ActionParameterOperation scriptActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), portKey);
-        ActionParameterOperation workspaceReferenceNameActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), workspaceReferenceNameKey);
-
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(workspaceReferenceNameKey)) {
-                workspaceReferenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(portKey)) {
-                scriptActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        getActionParameterOperationMap().put(workspaceReferenceNameKey, workspaceReferenceNameActionParameterOperation);
-        getActionParameterOperationMap().put(portKey, scriptActionParameterOperation);
-
-        this.workspaceReferenceName = convertWorkspaceReferenceName(workspaceReferenceNameActionParameterOperation.getValue());
-        this.port = convertPort(scriptActionParameterOperation.getValue());
+        this.workspaceReferenceName = convertWorkspaceReferenceName(getParameterResolvedValue(WORKSPACE_REFERENCE_NAME_KEY));
+        this.port = convertPort(getParameterResolvedValue(PORT_KEY));
     }
 
     private String convertWorkspaceReferenceName(DataType referenceName) {
@@ -84,6 +66,11 @@ public class RStartShinyApp extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "r.startShinyApp";
     }
 
 }

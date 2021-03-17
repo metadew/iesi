@@ -997,6 +997,20 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
+          headers:
+            description: headers
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
+          queryParameters:
+            description: queryParams
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
         status: stable
       java.parseJar:
         className: io.metadew.iesi.script.action.java.JavaParseJar

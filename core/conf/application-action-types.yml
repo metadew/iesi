@@ -998,14 +998,14 @@ iesi:
             subroutine:
             impersonate: false
           headers:
-            description: headers
+            description: Additionnal header to add to the request (String or Dataset)
             type: string
             mandatory: false
             encrypted: false
             subroutine:
             impersonate: false
           queryParameters:
-            description: queryParams
+            description: Additionnal query parameters to add to the request (String or Dataset)
             type: string
             mandatory: false
             encrypted: false

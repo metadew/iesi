@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -13,7 +14,8 @@ public interface IDatasetDtoRepository {
 
     Page<DatasetDto> fetchAll(Pageable pageable, Set<DatasetFilter> datasetFilters);
 
-    List<DatasetImplementationDto> fetchImplementationsByUuid(UUID uuid);
+    List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid);
 
+    Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid);
 
 }

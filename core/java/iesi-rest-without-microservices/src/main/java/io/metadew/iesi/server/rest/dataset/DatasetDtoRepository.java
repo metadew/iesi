@@ -44,15 +44,27 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-    public List<DatasetImplementationDto> fetchImplementationsByUuid(UUID datasetUuid) {
+    public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
-                    MessageFormat.format(getFetchImplementationsByIdQuery(),
+                    MessageFormat.format(getFetchImplementationsByDatasetIdQuery(),
                             SQLTools.getStringForSQL(datasetUuid)),
-                            "reader");
+                    "reader");
 
             return new DatasetImplementationDtoListResultSetExtractor().extractData(cachedRowSet);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    public Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid) {
+        try {
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
+                    MessageFormat.format(getFetchImplementationByIdQuery(),
+                            SQLTools.getStringForSQL(uuid)),
+                    "reader");
+            return new DatasetImplementationDtoListResultSetExtractor().extractData(cachedRowSet).stream()
+                    .findFirst();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +81,24 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "on dataset_impls.DATASET_ID=datasets.ID ;";
     }
 
-    private String getFetchImplementationsByIdQuery() {
+    private String getFetchImplementationByIdQuery() {
+        return "SELECT " +
+                "dataset_impls.ID as dataset_impl_id, " +
+                "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
+                "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+                "on dataset_impls.DATASET_ID=datasets.ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
+                "on dataset_impls.ID = dataset_in_mem_impls.ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+                "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
+                "where dataset_impls.ID={0};";
+    }
+
+    private String getFetchImplementationsByDatasetIdQuery() {
         return "SELECT " +
                 "dataset_impls.ID as dataset_impl_id, " +
                 "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +

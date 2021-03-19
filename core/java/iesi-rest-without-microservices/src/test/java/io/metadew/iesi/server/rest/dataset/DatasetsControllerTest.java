@@ -185,29 +185,57 @@ class DatasetsControllerTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"DATASETS_READ@PUBLIC"})
-    void testGetByUuidImplementations() {
+    void testGetImplementationsByDatasetUuid() {
         UUID uuid = UUID.randomUUID();
 
         List<DatasetImplementationDto> datasetImplementationDtoList = new ArrayList<>();
         datasetImplementationDtoList.add(new InMemoryDatasetImplementationDto());
 
-        when(datasetDtoService.fetchImplementationsByUuid(uuid))
+        when(datasetDtoService.fetchImplementationsByDatasetUuid(uuid))
                 .thenReturn(datasetImplementationDtoList);
 
-        assertThat(datasetController.getImplementationsByUuid(uuid))
+        assertThat(datasetController.getImplementationsByDatasetUuid(uuid))
                 .containsAll(datasetImplementationDtoList);
     }
 
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"DATASETS_READ@PUBLIC"})
-    void testGetByUuidImplementationsNotFound() {
+    void testGetImplementationsByDatasetUuidNotFound() {
         UUID uuid = UUID.randomUUID();
 
-        when(datasetDtoService.fetchImplementationsByUuid(uuid))
+        when(datasetDtoService.fetchImplementationsByDatasetUuid(uuid))
                 .thenReturn(null);
 
         assertThatThrownBy(() -> datasetController.get(uuid))
+                .isInstanceOf(MetadataDoesNotExistException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_READ@PUBLIC"})
+    void testGetImplementationByUuid() {
+        UUID uuid = UUID.randomUUID();
+
+        DatasetImplementationDto datasetImplementationDto = new InMemoryDatasetImplementationDto();
+
+        when(datasetDtoService.fetchImplementationByUuid(uuid))
+                .thenReturn(Optional.of(datasetImplementationDto));
+
+        assertThat(datasetController.getImplementationByUuid(UUID.randomUUID(), uuid))
+                .isEqualTo(datasetImplementationDto);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_READ@PUBLIC"})
+    void testGetImplementationByUuidNotFound() {
+        UUID uuid = UUID.randomUUID();
+
+        when(datasetDtoService.fetchImplementationByUuid(uuid))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> datasetController.getImplementationByUuid(UUID.randomUUID(), uuid))
                 .isInstanceOf(MetadataDoesNotExistException.class);
     }
 
@@ -280,7 +308,7 @@ class DatasetsControllerTest {
                                 ).collect(Collectors.toSet()))
                                 .build()
                 )
-                        .map(e-> e.getUuid())
+                        .map(e -> e.getUuid())
                         .collect(Collectors.toSet()))
                 .build();
         when(datasetDtoModelAssembler.toModel((Dataset) any()))
@@ -332,77 +360,6 @@ class DatasetsControllerTest {
                 .isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
-    public boolean equalsWithoutUuid(Dataset dataset1, Dataset dataset2) {
-        if (!dataset1.getName().equals(dataset2.getName())) {
-            return false;
-        } else if (dataset1.getDatasetImplementations().size() != dataset2.getDatasetImplementations().size()) {
-            return false;
-        } else if (dataset1.getDatasetImplementations().stream()
-                .noneMatch(datasetImplementation1 -> dataset2.getDatasetImplementations().stream()
-                        .anyMatch(datasetImplementation2 -> equalsWithoutUuid(datasetImplementation1, datasetImplementation2)))) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public boolean equalsWithoutUuid(DatasetImplementation datasetImplementation1, DatasetImplementation datasetImplementation2) {
-        if (!(datasetImplementation1 instanceof InMemoryDatasetImplementation
-                && datasetImplementation2 instanceof InMemoryDatasetImplementation)) {
-            return false;
-        } else if (!datasetImplementation1.getName().equals(datasetImplementation2.getName())) {
-            return false;
-        } else if (((InMemoryDatasetImplementation) datasetImplementation1).getKeyValues().size() != ((InMemoryDatasetImplementation) datasetImplementation2).getKeyValues().size()) {
-            return false;
-        } else if (((InMemoryDatasetImplementation) datasetImplementation1).getKeyValues().stream()
-                .noneMatch(keyValue1 -> ((InMemoryDatasetImplementation) datasetImplementation2).getKeyValues().stream()
-                        .anyMatch(keyValue2 -> keyValue2.getKey().equals(keyValue1.getKey())
-                                && keyValue2.getValue().equals(keyValue1.getValue())))) {
-            return false;
-        } else if (datasetImplementation1.getDatasetImplementationLabels().stream()
-                .noneMatch(label1 -> datasetImplementation2.getDatasetImplementationLabels().stream()
-                        .anyMatch(label2 -> label2.getValue().equals(label1.getValue())))) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-
-    public boolean equalsWithoutUuid(DatasetImplementationDto datasetImplementation1, DatasetImplementationDto datasetImplementation2) {
-        if (!(datasetImplementation1 instanceof InMemoryDatasetImplementationDto
-                && datasetImplementation2 instanceof InMemoryDatasetImplementationDto)) {
-            return false;
-        } else if (((InMemoryDatasetImplementationDto) datasetImplementation1).getKeyValues().size() != ((InMemoryDatasetImplementationDto) datasetImplementation2).getKeyValues().size()) {
-            return false;
-        } else if (((InMemoryDatasetImplementationDto) datasetImplementation1).getKeyValues().stream()
-                .noneMatch(keyValue1 -> ((InMemoryDatasetImplementationDto) datasetImplementation2).getKeyValues().stream()
-                        .anyMatch(keyValue2 -> keyValue2.getKey().equals(keyValue1.getKey())
-                                && keyValue2.getValue().equals(keyValue1.getValue())))) {
-            return false;
-        } else if (datasetImplementation1.getLabels().stream()
-                .noneMatch(label1 -> datasetImplementation2.getLabels().stream()
-                        .anyMatch(label2 -> label2.getLabel().equals(label1.getLabel())))) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-/*
-    public boolean equalsWithoutUuid(DatasetDto dataset1, DatasetDto dataset2) {
-        if (!dataset1.getName().equals(dataset2.getName())) {
-            return false;
-        } else if (dataset1.getImplementations().size() != dataset2.getImplementations().size()) {
-            return false;
-        } else if (dataset1.getImplementations().stream()
-                .noneMatch(datasetImplementation1 -> dataset2.getImplementations().stream()
-                        .anyMatch(datasetImplementation2 -> equalsWithoutUuid(datasetImplementation1, datasetImplementation2)))) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-*/
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"DATASETS_WRITE@PUBLIC"})
@@ -555,4 +512,136 @@ class DatasetsControllerTest {
         assertThat(responseEntity.getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_WRITE@PUBLIC"})
+    void testDeleteImplementationsByDatasetId() {
+        UUID datasetUuid = UUID.randomUUID();
+        when(datasetService.exists(new DatasetKey(datasetUuid)))
+                .thenReturn(true);
+        ResponseEntity<Object> responseEntity = datasetController.deleteImplementationsByDatasetUuid(datasetUuid);
+        verify(datasetImplementationService, times(1))
+                .deleteByDatasetId((new DatasetKey(datasetUuid)));
+        assertThat(responseEntity.getStatusCode())
+                .isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_WRITE@PUBLIC"})
+    void testDeleteImplementationsByDatasetIdNotFound() {
+        UUID datasetUuid = UUID.randomUUID();
+        when(datasetService.exists(new DatasetKey(datasetUuid)))
+                .thenReturn(false);
+        ResponseEntity<Object> responseEntity = datasetController.deleteImplementationsByDatasetUuid(datasetUuid);
+        verify(datasetImplementationService, times(0))
+                .deleteByDatasetId((new DatasetKey(datasetUuid)));
+        assertThat(responseEntity.getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_WRITE@PUBLIC"})
+    void testDeleteImplementationById() {
+        UUID datasetImplementationUuid = UUID.randomUUID();
+        when(datasetImplementationService.exists(new DatasetImplementationKey(datasetImplementationUuid)))
+                .thenReturn(true);
+        ResponseEntity<Object> responseEntity = datasetController.deleteImplementationByUuid(
+                UUID.randomUUID(),
+                datasetImplementationUuid);
+        verify(datasetImplementationService, times(1))
+                .delete((new DatasetImplementationKey(datasetImplementationUuid)));
+        assertThat(responseEntity.getStatusCode())
+                .isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"DATASETS_WRITE@PUBLIC"})
+    void testDeleteImplementationByIdNotFound() {
+        UUID datasetImplementationUuid = UUID.randomUUID();
+        when(datasetImplementationService.exists(new DatasetImplementationKey(datasetImplementationUuid)))
+                .thenReturn(false);
+        ResponseEntity<Object> responseEntity = datasetController.deleteImplementationByUuid(
+                UUID.randomUUID(),
+                datasetImplementationUuid);
+        verify(datasetImplementationService, times(0))
+                .delete((new DatasetImplementationKey(datasetImplementationUuid)));
+        assertThat(responseEntity.getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    public boolean equalsWithoutUuid(Dataset dataset1, Dataset dataset2) {
+        if (!dataset1.getName().equals(dataset2.getName())) {
+            return false;
+        } else if (dataset1.getDatasetImplementations().size() != dataset2.getDatasetImplementations().size()) {
+            return false;
+        } else if (dataset1.getDatasetImplementations().stream()
+                .noneMatch(datasetImplementation1 -> dataset2.getDatasetImplementations().stream()
+                        .anyMatch(datasetImplementation2 -> equalsWithoutUuid(datasetImplementation1, datasetImplementation2)))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean equalsWithoutUuid(DatasetImplementation datasetImplementation1, DatasetImplementation datasetImplementation2) {
+        if (!(datasetImplementation1 instanceof InMemoryDatasetImplementation
+                && datasetImplementation2 instanceof InMemoryDatasetImplementation)) {
+            return false;
+        } else if (!datasetImplementation1.getName().equals(datasetImplementation2.getName())) {
+            return false;
+        } else if (((InMemoryDatasetImplementation) datasetImplementation1).getKeyValues().size() != ((InMemoryDatasetImplementation) datasetImplementation2).getKeyValues().size()) {
+            return false;
+        } else if (((InMemoryDatasetImplementation) datasetImplementation1).getKeyValues().stream()
+                .noneMatch(keyValue1 -> ((InMemoryDatasetImplementation) datasetImplementation2).getKeyValues().stream()
+                        .anyMatch(keyValue2 -> keyValue2.getKey().equals(keyValue1.getKey())
+                                && keyValue2.getValue().equals(keyValue1.getValue())))) {
+            return false;
+        } else if (datasetImplementation1.getDatasetImplementationLabels().stream()
+                .noneMatch(label1 -> datasetImplementation2.getDatasetImplementationLabels().stream()
+                        .anyMatch(label2 -> label2.getValue().equals(label1.getValue())))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    public boolean equalsWithoutUuid(DatasetImplementationDto datasetImplementation1, DatasetImplementationDto datasetImplementation2) {
+        if (!(datasetImplementation1 instanceof InMemoryDatasetImplementationDto
+                && datasetImplementation2 instanceof InMemoryDatasetImplementationDto)) {
+            return false;
+        } else if (((InMemoryDatasetImplementationDto) datasetImplementation1).getKeyValues().size() != ((InMemoryDatasetImplementationDto) datasetImplementation2).getKeyValues().size()) {
+            return false;
+        } else if (((InMemoryDatasetImplementationDto) datasetImplementation1).getKeyValues().stream()
+                .noneMatch(keyValue1 -> ((InMemoryDatasetImplementationDto) datasetImplementation2).getKeyValues().stream()
+                        .anyMatch(keyValue2 -> keyValue2.getKey().equals(keyValue1.getKey())
+                                && keyValue2.getValue().equals(keyValue1.getValue())))) {
+            return false;
+        } else if (datasetImplementation1.getLabels().stream()
+                .noneMatch(label1 -> datasetImplementation2.getLabels().stream()
+                        .anyMatch(label2 -> label2.getLabel().equals(label1.getLabel())))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+/*
+    public boolean equalsWithoutUuid(DatasetDto dataset1, DatasetDto dataset2) {
+        if (!dataset1.getName().equals(dataset2.getName())) {
+            return false;
+        } else if (dataset1.getImplementations().size() != dataset2.getImplementations().size()) {
+            return false;
+        } else if (dataset1.getImplementations().stream()
+                .noneMatch(datasetImplementation1 -> dataset2.getImplementations().stream()
+                        .anyMatch(datasetImplementation2 -> equalsWithoutUuid(datasetImplementation1, datasetImplementation2)))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+*/
 }

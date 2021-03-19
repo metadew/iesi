@@ -6,6 +6,8 @@ import io.metadew.iesi.connection.database.SchemaDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
+import java.util.Optional;
+
 public class Db2DatabaseService extends SchemaDatabaseService<Db2Database> implements ISchemaDatabaseService<Db2Database> {
 
     private static Db2DatabaseService INSTANCE;
@@ -34,15 +36,15 @@ public class Db2DatabaseService extends SchemaDatabaseService<Db2Database> imple
     public Db2Database getDatabase(Connection connection) {
         String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
         String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
+        Optional<String> schemaName = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, schemaKey);
         Db2DatabaseConnection db2DatabaseConnection;
         if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             db2DatabaseConnection = new Db2DatabaseConnection(
                     DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
-                    schemaName);
-            return new Db2Database(db2DatabaseConnection, schemaName);
+                    schemaName.orElse(null));
+            return new Db2Database(db2DatabaseConnection, schemaName.orElse(null));
         }
 
         String hostName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
@@ -54,7 +56,7 @@ public class Db2DatabaseService extends SchemaDatabaseService<Db2Database> imple
                 databaseName,
                 userName,
                 userPassword);
-        return new Db2Database(db2DatabaseConnection, schemaName);
+        return new Db2Database(db2DatabaseConnection, schemaName.orElse(null));
     }
 
     @Override

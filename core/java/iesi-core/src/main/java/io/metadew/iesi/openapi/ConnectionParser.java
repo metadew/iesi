@@ -22,7 +22,7 @@ public class ConnectionParser {
     private ConnectionParser() {
     }
 
-    public static synchronized  ConnectionParser getInstance() {
+    public static synchronized ConnectionParser getInstance() {
         if (instance == null) {
             instance = new ConnectionParser();
         }
@@ -75,6 +75,7 @@ public class ConnectionParser {
         String protocol = url.getProtocol();
         return protocol.equals("http") ? "N" : "Y";
     }
+
 
     public Optional<String> getBaseUrl(URL url) {
         String baseUrl = url.getFile();

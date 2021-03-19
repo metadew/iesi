@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+
 @Log4j2
 @Data
 public class ComponentParser {
@@ -50,7 +51,6 @@ public class ComponentParser {
 
     public List<Component> parse(OpenAPI openAPI) {
         List<Component> components = new ArrayList<>();
-
         Paths paths = openAPI.getPaths();
         Map<String, SecurityScheme> securitySchemeMap = openAPI.getComponents().getSecuritySchemes();
         String connectionName = openAPI.getInfo().getTitle();
@@ -59,6 +59,7 @@ public class ComponentParser {
         for (Entry<String, PathItem> path : paths.entrySet()) {
             PathItem pathItem = path.getValue();
             Map<PathItem.HttpMethod, Operation> operations = pathItem.readOperationsMap();
+
 
             for (Entry<PathItem.HttpMethod, Operation> operationEntry : operations.entrySet()) {
                 components.addAll(createComponentsForOperation(
@@ -99,6 +100,7 @@ public class ComponentParser {
         }
         return components;
     }
+
 
     private Component createBaseComponent(String componentName, Long componentVersion, String description) {
         ComponentKey componentKey = new ComponentKey(
@@ -141,11 +143,13 @@ public class ComponentParser {
 
         if (securityRequirements != null) {
             securities.addAll(securityRequirements.stream()
+
                     .map(securityRequirement -> (String) securityRequirement.keySet().toArray()[0])
                     .collect(Collectors.toList()));
         }
         return securities;
     }
+
 
     public List<String> getRequestContents(RequestBody requestBody) {
         if (requestBody != null && requestBody.getContent() != null) {
@@ -155,6 +159,7 @@ public class ComponentParser {
     }
 
     public List<String> getResponseContents(ApiResponses apiResponses) {
+
 
         if (apiResponses != null) {
             for (Entry<String, ApiResponse> entry : apiResponses.entrySet()) {
@@ -175,6 +180,7 @@ public class ComponentParser {
             return result;
         }
         if (lists.get(depth).isEmpty()) {
+
             generateNames(lists, result, depth + 1, createName(null, current, depth));
         }
         for (int i = 0; i < lists.get(depth).size(); i++) {
@@ -184,6 +190,7 @@ public class ComponentParser {
 
         return result;
     }
+
 
     public Map<String, String> createName(String value, Map<String, String> current, int depth) {
         switch (depth) {
@@ -214,7 +221,7 @@ public class ComponentParser {
 
     public List<ComponentParameter> getInfo(ComponentKey componentKey, String pathName, PathItem.HttpMethod operationName, String connectionName) {
         List<ComponentParameter> componentParameters = new ArrayList<>();
-        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"),  pathName.replaceAll("[{}]", "#")));
+        componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"), pathName.replaceAll("[{}]", "#")));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "type"), operationName.name()));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "connection"), connectionName));
         return componentParameters;
@@ -272,14 +279,18 @@ public class ComponentParser {
             }
         }
 
-        for (Parameter parameter : operation.getParameters()) {
-            String parameterName = parameter.getName();
-            if (parameter.getIn().equals("header") && !partNames.containsValue(parameterName)) {
-                parameters.add(new ComponentParameter(
-                        new ComponentParameterKey(componentKey, String.format(HEADER, ++position)),
-                        String.format("%s, #%s#", parameterName, parameterName)));
+        if (operation.getParameters() != null) {
+            for (Parameter parameter : operation.getParameters()) {
+                String parameterName = parameter.getName();
+                if (parameter.getIn().equals("header") && !partNames.containsValue(parameterName)) {
+                    parameters.add(new ComponentParameter(
+                            new ComponentParameterKey(componentKey, String.format(HEADER, ++position)),
+                            String.format("%s, #%s#", parameterName, parameterName)));
+                }
             }
         }
+
+
 
         return parameters;
     }
@@ -300,7 +311,7 @@ public class ComponentParser {
             //https://connect2id.com/learn/openid-connect
             componentParameterValue = String.format("Host, #%s#", securityName);
         } else {
-            throw new UnsuportedSecurityScheme(String.format("Provided a wrong/unsupported security schema type %s", securityType));
+            throw new UnsupportedSecurityScheme(String.format("Provided a wrong/unsupported security schema type %s", securityType));
         }
         return componentParameterValue;
     }
@@ -309,6 +320,7 @@ public class ComponentParser {
         Pattern pattern = Pattern.compile("2[0-9][0-9]");
         return pattern.matcher(statusCode).matches();
     }
+
 
     public String buildName(String operationId, Map<String, String> partNames) {
         List<String> formattedPartNames = partNames.keySet().stream().map(key -> {
@@ -324,6 +336,7 @@ public class ComponentParser {
 
         return operationId.concat("." + String.join(".", formattedPartNames));
     }
+
 
     public String serializeContentName(String contentName) {
         switch (contentName) {

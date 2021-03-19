@@ -114,7 +114,7 @@ class ComponentParserTest {
                 .operationId("operationId");
         ComponentKey componentKey = new ComponentKey(
                 IdentifierTools.getComponentIdentifier(operation.getOperationId()),
-                componentVersion)
+                componentVersion);
 
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"), "/pet/#id#"));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "type"), "POST"));

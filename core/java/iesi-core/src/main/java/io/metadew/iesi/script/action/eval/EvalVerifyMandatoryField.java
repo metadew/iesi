@@ -5,14 +5,12 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,22 +21,14 @@ import java.text.MessageFormat;
 
 public class EvalVerifyMandatoryField extends ActionTypeExecution {
 
-    // Parameters
-    private ActionParameterOperation databaseName;
-
-    private ActionParameterOperation schemaName;
-
-    private ActionParameterOperation tableName;
-
-    private ActionParameterOperation fieldName;
-
-    private ActionParameterOperation evaluationFieldName;
-
-    private ActionParameterOperation evaluationFieldValue;
-
-    private ActionParameterOperation mandatoryFlag;
-
-    private ActionParameterOperation connectionName;
+        private static final String DATABASE_KEY = "database";
+        private static final String SCHEMA_KEY = "schema";
+        private static final String TABLE_KEY = "table";
+        private static final String FIELD_KEY = "field";
+        private static final String EVALUATION_FIELD_KEY = "evaluationField";
+        private static final String EVALUATION_VALUE_KEY = "evaluationValue";
+        private static final String IS_MANDATORY_KEY = "isMandatory";
+        private static final String CONNECTION_KEY = "connection";
 
     // Local
     private String sqlSuccess;
@@ -53,67 +43,17 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
     }
 
     public void prepare() {
-        // Reset Parameters
-        this.setDatabaseName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "database"));
-        this.setSchemaName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "schema"));
-        this.setTableName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "table"));
-        this.setFieldName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "field"));
-        this.setEvaluationFieldName(
-                new ActionParameterOperation(this.getExecutionControl(),
-                        this.getActionExecution(), this.getActionExecution().getAction().getType(), "evaluationField"));
-        this.setEvaluationFieldValue(
-                new ActionParameterOperation(this.getExecutionControl(),
-                        this.getActionExecution(), this.getActionExecution().getAction().getType(), "evaluationValue"));
-        this.setMandatoryFlag(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "isMandatory"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("database")) {
-                this.getDatabaseName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("schema")) {
-                this.getSchemaName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("table")) {
-                this.getTableName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("field")) {
-                this.getFieldName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("evaluationfield")) {
-                this.getEvaluationFieldName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("evaluationvalue")) {
-                this.getEvaluationFieldValue().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("ismandatory")) {
-                this.getMandatoryFlag().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("database", this.getDatabaseName());
-        this.getActionParameterOperationMap().put("schema", this.getSchemaName());
-        this.getActionParameterOperationMap().put("table", this.getTableName());
-        this.getActionParameterOperationMap().put("field", this.getFieldName());
-        this.getActionParameterOperationMap().put("evaluationField", this.getEvaluationFieldName());
-        this.getActionParameterOperationMap().put("evaluationValue", this.getEvaluationFieldValue());
-        this.getActionParameterOperationMap().put("isMandatory", this.getMandatoryFlag());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
     }
 
     protected boolean executeAction() throws SQLException, InterruptedException {
-        String databaseName = convertDatabaseName(getDatabaseName().getValue());
-        String schemaName = convertSchemaName(getSchemaName().getValue());
-        String tableName = convertTableName(getTableName().getValue());
-        String fieldName = convertFieldName(getFieldName().getValue());
-        String evaluationFieldName = convertEvaluationFieldName(getEvaluationFieldName().getValue());
-        String evaluationFieldValue = convertEvaluationFieldValue(getEvaluationFieldValue().getValue());
-        boolean isMandatory = convertIsMandatory(getMandatoryFlag().getValue());
-        String connectionName = convertConnectionName(getConnectionName().getValue());
+        String databaseName = convertDatabaseName(getParameterResolvedValue(DATABASE_KEY));
+        String schemaName = convertSchemaName(getParameterResolvedValue(SCHEMA_KEY));
+        String tableName = convertTableName(getParameterResolvedValue(TABLE_KEY));
+        String fieldName = convertFieldName(getParameterResolvedValue(FIELD_KEY));
+        String evaluationFieldName = convertEvaluationFieldName(getParameterResolvedValue(EVALUATION_FIELD_KEY));
+        String evaluationFieldValue = convertEvaluationFieldValue(getParameterResolvedValue(EVALUATION_VALUE_KEY));
+        boolean isMandatory = convertIsMandatory(getParameterResolvedValue(IS_MANDATORY_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
@@ -147,6 +87,11 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
             this.getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "eval.verifyMandatoryField";
     }
 
     private boolean convertIsMandatory(DataType isMandatory) {
@@ -290,70 +235,6 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         }
 
         return resTestQueries;
-    }
-
-    public ActionParameterOperation getDatabaseName() {
-        return databaseName;
-    }
-
-    public void setDatabaseName(ActionParameterOperation databaseName) {
-        this.databaseName = databaseName;
-    }
-
-    public ActionParameterOperation getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(ActionParameterOperation schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public ActionParameterOperation getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(ActionParameterOperation tableName) {
-        this.tableName = tableName;
-    }
-
-    public ActionParameterOperation getFieldName() {
-        return fieldName;
-    }
-
-    public void setFieldName(ActionParameterOperation fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    public ActionParameterOperation getEvaluationFieldName() {
-        return evaluationFieldName;
-    }
-
-    public void setEvaluationFieldName(ActionParameterOperation evaluationFieldName) {
-        this.evaluationFieldName = evaluationFieldName;
-    }
-
-    public ActionParameterOperation getEvaluationFieldValue() {
-        return evaluationFieldValue;
-    }
-
-    public void setEvaluationFieldValue(ActionParameterOperation evaluationFieldValue) {
-        this.evaluationFieldValue = evaluationFieldValue;
-    }
-
-    public ActionParameterOperation getMandatoryFlag() {
-        return mandatoryFlag;
-    }
-
-    public void setMandatoryFlag(ActionParameterOperation mandatoryFlag) {
-        this.mandatoryFlag = mandatoryFlag;
-    }
-
-    public ActionParameterOperation getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(ActionParameterOperation connectionName) {
-        this.connectionName = connectionName;
     }
 
     public String getSqlSuccess() {

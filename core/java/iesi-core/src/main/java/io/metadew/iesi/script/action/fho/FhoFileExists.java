@@ -9,14 +9,12 @@ import io.metadew.iesi.connection.tools.fho.FileConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,9 +30,9 @@ import java.util.List;
  */
 public class FhoFileExists extends ActionTypeExecution {
 
-    private ActionParameterOperation filePath;
-    private ActionParameterOperation fileName;
-    private ActionParameterOperation connectionName;
+    private static final String FILE_PATH_KEY = "path";
+    private static final String FILE_NAME_KEY = "file";
+    private static final String CONNECTION_NAME_KEY = "connection";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FhoFileExists(ExecutionControl executionControl,
@@ -42,37 +40,13 @@ public class FhoFileExists extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        this.setFilePath(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "path"));
-        this.setFileName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "file"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("path")) {
-                this.getFilePath().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("file")) {
-                this.getFileName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("path", this.getFilePath());
-        this.getActionParameterOperationMap().put("file", this.getFileName());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
-    }
+    public void prepare() { }
 
 
     protected boolean executeAction() throws InterruptedException {
-        String path = convertPath(getFilePath().getValue());
-        String fileName = convertFile(getFileName().getValue());
-        String connectionName = convertConnectionName(getConnectionName().getValue());
+        String path = convertPath(getParameterResolvedValue(FILE_PATH_KEY));
+        String fileName = convertFile(getParameterResolvedValue(FILE_NAME_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
         boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
@@ -85,11 +59,9 @@ public class FhoFileExists extends ActionTypeExecution {
             }
         } else {
             if (isOnLocalhost) {
-                subjectFilePath = FilenameUtils.normalize(
-                        this.getFilePath().getValue() + File.separator + this.getFileName().getValue());
+                subjectFilePath = FilenameUtils.normalize(path+ File.separator + fileName);
             } else {
-                subjectFilePath = this.getFilePath().getValue() + "/"
-                        + this.getFileName().getValue();
+                subjectFilePath = path + "/" + fileName;
             }
         }
         File file = new File(subjectFilePath);
@@ -127,6 +99,11 @@ public class FhoFileExists extends ActionTypeExecution {
         }
 
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "fho.fileExists";
     }
 
 
@@ -173,29 +150,4 @@ public class FhoFileExists extends ActionTypeExecution {
         this.getActionExecution().getActionControl().logOutput("file.exists.success", "confirmed");
         this.getActionExecution().getActionControl().increaseSuccessCount();
     }
-
-    public ActionParameterOperation getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(ActionParameterOperation connectionName) {
-        this.connectionName = connectionName;
-    }
-
-    public ActionParameterOperation getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(ActionParameterOperation filePath) {
-        this.filePath = filePath;
-    }
-
-    public ActionParameterOperation getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(ActionParameterOperation fileName) {
-        this.fileName = fileName;
-    }
-
 }

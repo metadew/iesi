@@ -4,12 +4,10 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,10 +20,10 @@ import java.util.List;
 
 public class FwkSetRepository extends ActionTypeExecution {
 
-    private ActionParameterOperation repositoryReferenceName;
-    private ActionParameterOperation repositoryName;
-    private ActionParameterOperation repositoryInstanceName;
-    private ActionParameterOperation repositoryInstanceLabels;
+    private static final String REPOSITORY_REFERENCE_NAME_KEY = "name";
+    private static final String REPOSITORY_NAME_KEY = "repository";
+    private static final String REPOSITORY_INSTANCE_NAME_KEY = "instance";
+    private static final String REPOSITORY_INSTANCE_LABELS_KEY = "labels";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkSetRepository(ExecutionControl executionControl,
@@ -33,44 +31,13 @@ public class FwkSetRepository extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        this.setRepositoryReferenceName(
-                new ActionParameterOperation(this.getExecutionControl(),
-                        this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
-        this.setRepositoryName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "repository"));
-        this.setRepositoryInstanceName(
-                new ActionParameterOperation(this.getExecutionControl(),
-                        this.getActionExecution(), this.getActionExecution().getAction().getType(), "instance"));
-        this.setRepositoryInstanceLabels(
-                new ActionParameterOperation(this.getExecutionControl(),
-                        this.getActionExecution(), this.getActionExecution().getAction().getType(), "labels"));
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("repository")) {
-                this.getRepositoryName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
-                this.getRepositoryReferenceName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("instance")) {
-                this.getRepositoryInstanceName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("labels")) {
-                this.getRepositoryInstanceLabels().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("name", this.getRepositoryReferenceName());
-        this.getActionParameterOperationMap().put("repository", this.getRepositoryName());
-        this.getActionParameterOperationMap().put("instance", this.getRepositoryInstanceName());
-        this.getActionParameterOperationMap().put("labels", this.getRepositoryInstanceLabels());
-    }
+    public void prepare() { }
 
     protected boolean executeAction() throws SQLException, InterruptedException {
-        String repositoryReferenceName = convertRepositoryReferenceName(getRepositoryReferenceName().getValue());
-        String repositoryName = convertRepositoryName(getRepositoryName().getValue());
-        String repositoryInstanceName = convertRepositoryInstanceName(getRepositoryInstanceName().getValue());
-        List<String> repositoryInstanceLabels = convertRepositoryInstanceLabels(getRepositoryInstanceLabels().getValue());
+        String repositoryReferenceName = convertRepositoryReferenceName(getParameterResolvedValue(REPOSITORY_REFERENCE_NAME_KEY));
+        String repositoryName = convertRepositoryName(getParameterResolvedValue(REPOSITORY_NAME_KEY));
+        String repositoryInstanceName = convertRepositoryInstanceName(getParameterResolvedValue(REPOSITORY_INSTANCE_NAME_KEY));
+        List<String> repositoryInstanceLabels = convertRepositoryInstanceLabels(getParameterResolvedValue(REPOSITORY_INSTANCE_LABELS_KEY));
 
         // Run the action
         //this.getExecutionControl().getExecutionRuntime().setRepository(this.getExecutionControl(), repositoryReferenceName,
@@ -79,6 +46,11 @@ public class FwkSetRepository extends ActionTypeExecution {
         this.getActionExecution().getActionControl().increaseSuccessCount();
 
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "fwk.setRepository";
     }
 
     private String convertRepositoryInstanceName(DataType repositoryInstanceName) {
@@ -140,38 +112,6 @@ public class FwkSetRepository extends ActionTypeExecution {
                     datasetLabel.getClass()));
             return datasetLabel.toString();
         }
-    }
-
-    public ActionParameterOperation getRepositoryName() {
-        return repositoryName;
-    }
-
-    public void setRepositoryName(ActionParameterOperation repositoryName) {
-        this.repositoryName = repositoryName;
-    }
-
-    public ActionParameterOperation getRepositoryInstanceName() {
-        return repositoryInstanceName;
-    }
-
-    public void setRepositoryInstanceName(ActionParameterOperation repositoryInstanceName) {
-        this.repositoryInstanceName = repositoryInstanceName;
-    }
-
-    public ActionParameterOperation getRepositoryInstanceLabels() {
-        return repositoryInstanceLabels;
-    }
-
-    public void setRepositoryInstanceLabels(ActionParameterOperation repositoryInstanceLabels) {
-        this.repositoryInstanceLabels = repositoryInstanceLabels;
-    }
-
-    public ActionParameterOperation getRepositoryReferenceName() {
-        return repositoryReferenceName;
-    }
-
-    public void setRepositoryReferenceName(ActionParameterOperation repositoryReferenceName) {
-        this.repositoryReferenceName = repositoryReferenceName;
     }
 
 }

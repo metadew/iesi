@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+
 @Log4j2
 @Data
 public class ComponentParser {
@@ -36,7 +37,6 @@ public class ComponentParser {
 
     public List<Component> parse(OpenAPI openAPI) {
         List<Component> components = new ArrayList<>();
-
         Paths paths = openAPI.getPaths();
         String connectionName = openAPI.getInfo().getTitle();
         Long componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
@@ -44,6 +44,7 @@ public class ComponentParser {
         for (Entry<String, PathItem> path : paths.entrySet()) {
             PathItem pathItem = path.getValue();
             Map<PathItem.HttpMethod, Operation> operations = pathItem.readOperationsMap();
+
 
             for (Entry<PathItem.HttpMethod, Operation> operationEntry : operations.entrySet()) {
 
@@ -82,5 +83,6 @@ public class ComponentParser {
                 new ComponentVersion(new ComponentVersionKey(componentKey), operation.getDescription()),
                 componentParameters,
                 new ArrayList<>());
+
     }
 }

@@ -22,4 +22,9 @@ public class FwkDummy extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.dummy";
+    }
+
 }

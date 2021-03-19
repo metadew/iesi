@@ -12,7 +12,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,19 +38,17 @@ class ComponentParserTest {
                 .version("1")
                 .title("Swagger Petstore - OpenAPI 3.0");
         Map<String, SecurityScheme> securitySchemeMap = new HashMap<>();
+      
         securitySchemeMap.put("petstore_auth", oAuthScheme);
         securitySchemeMap.put("api_key", apiKeyScheme);
-
 
         this.openAPI = new OpenAPI()
                 .info(info)
                 .components(new Components()
                         .securitySchemes(securitySchemeMap));
         this.componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
-
     }
-
-
+  
     @Test
     void createComponent() {
         Component component;
@@ -60,7 +57,6 @@ class ComponentParserTest {
         Operation operation = new Operation()
                 .description("a description")
                 .operationId("operationId");
-
         ComponentKey componentKey = new ComponentKey(
                 IdentifierTools.getComponentIdentifier(operation.getOperationId()),
                 componentVersion);
@@ -78,7 +74,6 @@ class ComponentParserTest {
                 new ArrayList<>());
 
         assertThat(ComponentParser.getInstance().createComponent(componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
-
     }
 
     @Test
@@ -117,10 +112,9 @@ class ComponentParserTest {
         Operation operation = new Operation()
                 .description("a description")
                 .operationId("operationId");
-
         ComponentKey componentKey = new ComponentKey(
                 IdentifierTools.getComponentIdentifier(operation.getOperationId()),
-                componentVersion);
+                componentVersion)
 
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"), "/pet/#id#"));
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "type"), "POST"));
@@ -137,6 +131,4 @@ class ComponentParserTest {
         assertThat(ComponentParser.getInstance().createComponent(componentVersion, connectionName, operation, "/pet/{id}", "POST")).isEqualTo(component);
 
     }
-
-
 }

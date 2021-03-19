@@ -7,14 +7,12 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,64 +23,27 @@ import java.util.Optional;
 
 public class SqlExecuteProcedure extends ActionTypeExecution {
 
-    // Parameters
-    private ActionParameterOperation sqlProcedure;
-    private ActionParameterOperation connectionName;
-    private ActionParameterOperation sqlParameters;
-    private ActionParameterOperation outputDataset;
-    private ActionParameterOperation appendOutput;
+    private static final String SQL_PROCEDURE_KEY = "procedure";
+    private static final String CONNECTION_NAME_KEY = "connection";
+    private static final String SQL_PARAMETERS_KEY = "parameters";
+    private static final String OUTPUT_DATASET_KEY = "outputDataset";
+    private static final String APPEND_OUTPUT_KEY = "appendOutput";
     private static final Logger LOGGER = LogManager.getLogger();
-
 
     public SqlExecuteProcedure(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Set Parameters
-        this.setSqlProcedure(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "procedure"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
-        this.setSqlParameters(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "parameters"));
-        this.setOutputDataset(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "outputDataset"));
-        this.setAppendOutput(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "appendOutput"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("procedure")) {
-                this.getSqlProcedure().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("parameters")) {
-                this.getSqlParameters().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputdataset")) {
-                this.getOutputDataset().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("appendoutput")) {
-                this.getAppendOutput().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("procedure", this.getSqlProcedure());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
-        this.getActionParameterOperationMap().put("parameters", this.getSqlParameters());
-        this.getActionParameterOperationMap().put("outputDataset", this.getOutputDataset());
-        this.getActionParameterOperationMap().put("appendOutput", this.getAppendOutput());
-    }
-
+    public void prepare() { }
 
     protected boolean executeAction() throws SQLException, InterruptedException {
 
-        String sqlProcedure = convertSqlProcedure(getSqlProcedure().getValue());
-        String connectionName = convertConnectionName(getSqlProcedure().getValue());
-        String sqlParameters = convertSqlParameters(getSqlProcedure().getValue());
-        String outputDatasetReferenceName = convertDatasetReferenceName(getSqlProcedure().getValue());
-        boolean appendOutput = convertAppendOutput(getSqlProcedure().getValue());
+        String sqlProcedure = convertSqlProcedure(getParameterResolvedValue(SQL_PROCEDURE_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
+        String sqlParameters = convertSqlParameters(getParameterResolvedValue(SQL_PARAMETERS_KEY));
+        String outputDatasetReferenceName = convertDatasetReferenceName(getParameterResolvedValue(OUTPUT_DATASET_KEY));
+        boolean appendOutput = convertAppendOutput(getParameterResolvedValue(APPEND_OUTPUT_KEY));
 
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
@@ -120,6 +81,11 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.executeProcedure";
+    }
+
     private String convertSqlProcedure(DataType sqlProcedure) {
         if (sqlProcedure instanceof Text) {
             return sqlProcedure.toString();
@@ -140,7 +106,6 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         }
     }
 
-
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {
             return connectionName.toString();
@@ -150,7 +115,6 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
             return connectionName.toString();
         }
     }
-
 
     private boolean convertAppendOutput(DataType appendOutput) {
         if (appendOutput instanceof Text) {
@@ -171,49 +135,4 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
             return datasetReferenceName.toString();
         }
     }
-
-    public ActionParameterOperation getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(ActionParameterOperation connectionName) {
-        this.connectionName = connectionName;
-    }
-
-    public ActionParameterOperation getActionParameterOperation(String key) {
-        return this.getActionParameterOperationMap().get(key);
-    }
-
-    public ActionParameterOperation getOutputDataset() {
-        return outputDataset;
-    }
-
-    public void setOutputDataset(ActionParameterOperation outputDataset) {
-        this.outputDataset = outputDataset;
-    }
-
-    public ActionParameterOperation getAppendOutput() {
-        return appendOutput;
-    }
-
-    public void setAppendOutput(ActionParameterOperation appendOutput) {
-        this.appendOutput = appendOutput;
-    }
-
-    public ActionParameterOperation getSqlProcedure() {
-        return sqlProcedure;
-    }
-
-    public void setSqlProcedure(ActionParameterOperation sqlProcedure) {
-        this.sqlProcedure = sqlProcedure;
-    }
-
-    public ActionParameterOperation getSqlParameters() {
-        return sqlParameters;
-    }
-
-    public void setSqlParameters(ActionParameterOperation sqlParameters) {
-        this.sqlParameters = sqlParameters;
-    }
-
 }

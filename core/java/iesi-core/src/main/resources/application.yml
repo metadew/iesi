@@ -1,8 +1,7 @@
 iesi:
   home: "."
-
-guard:
-  authenticate: N
+  guard:
+    authenticate: N
   #  script:
   #    execution:
   #       runtime: ''
@@ -11,3 +10,4 @@ guard:
     mode: standalone
     threads:
       timeout: 30
+  home: "."

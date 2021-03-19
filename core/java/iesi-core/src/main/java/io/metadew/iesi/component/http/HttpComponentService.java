@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 @Log4j2
 public class HttpComponentService implements IHttpComponentService {
 
-    private static HttpComponentService INSTANCE;
+    private static HttpComponentService instance;
 
-    public synchronized static HttpComponentService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpComponentService();
+    public static synchronized HttpComponentService getInstance() {
+        if (instance == null) {
+            instance = new HttpComponentService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private HttpComponentService() {

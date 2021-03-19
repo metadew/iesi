@@ -1,11 +1,7 @@
 package io.metadew.iesi.component.http;
 
-import lombok.Data;
-
-@Data
-public class HttpHeader {
-
-    private final String name;
-    private final String value;
-
+public class HttpHeader extends HttpParameter {
+    public HttpHeader(String name, String value) {
+        super(name, value);
+    }
 }

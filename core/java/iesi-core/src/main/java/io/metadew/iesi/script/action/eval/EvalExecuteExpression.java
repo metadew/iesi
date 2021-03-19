@@ -2,12 +2,10 @@ package io.metadew.iesi.script.action.eval;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.service.ConditionService;
 import lombok.extern.log4j.Log4j2;
 
@@ -17,6 +15,7 @@ import java.text.MessageFormat;
 @Log4j2
 public class EvalExecuteExpression extends ActionTypeExecution {
 
+    private static final String EXPRESSION_KEY = "expression";
     private String expression;
 
     public EvalExecuteExpression(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -24,20 +23,7 @@ public class EvalExecuteExpression extends ActionTypeExecution {
     }
 
     public void prepare() {
-        // Reset Parameters
-        ActionParameterOperation evaluationExpression = new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "expression");
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("expression")) {
-                evaluationExpression.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("expression", evaluationExpression);
-        this.expression = convertExpression(evaluationExpression.getValue());
+        this.expression = convertExpression(getParameterResolvedValue(EXPRESSION_KEY));
     }
 
     protected boolean executeAction() throws InterruptedException, ScriptException {
@@ -49,6 +35,11 @@ public class EvalExecuteExpression extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "eval.executeExpression";
     }
 
     private String convertExpression(DataType expression) {

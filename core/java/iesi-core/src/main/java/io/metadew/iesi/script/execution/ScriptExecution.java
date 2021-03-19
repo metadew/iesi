@@ -1,15 +1,14 @@
 package io.metadew.iesi.script.execution;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.script.action.fwk.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import lombok.ToString;
 import org.apache.logging.log4j.Level;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @ToString
 public abstract class ScriptExecution {
@@ -101,11 +100,6 @@ public abstract class ScriptExecution {
 					}
 				}
 
-
-				if (action.getType().equalsIgnoreCase("fwk.includeScript")) {
-					executeFwkIncludeAction(actionExecution, actionsToExecute, actionIndex);
-				}
-
 				if (action.getType().equalsIgnoreCase("fwk.exitScript")) {
 					executionControl.logMessage("script.exit", Level.INFO);
 					executionControl.setScriptExit(true);
@@ -142,11 +136,6 @@ public abstract class ScriptExecution {
 		return rootingStrategy;
 	}
 
-	private void executeFwkIncludeAction(ActionExecution actionExecution, List<Action> actionsToExecute, int actionIndex) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		FwkIncludeScript fwkIncludeScript = objectMapper.convertValue(actionExecution.getActionTypeExecution(), FwkIncludeScript.class);
-		actionsToExecute.addAll(actionIndex, fwkIncludeScript.getScript().getActions());
-	}
 
 //	private void executeFwkRouteAction(ActionExecution actionExecution) throws InterruptedException {
 //		actionExecution.execute(null);

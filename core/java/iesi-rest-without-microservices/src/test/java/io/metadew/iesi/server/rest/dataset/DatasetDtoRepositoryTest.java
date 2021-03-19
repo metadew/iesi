@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
@@ -91,34 +92,54 @@ class DatasetDtoRepositoryTest {
     }
 
     @Test
-    void getDatasetImplementationsByUuid() {
+    void getDatasetImplementationByUuid() {
         Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
-        assertThat(datasetDtoRepository.fetchImplementationsByUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
+        assertThat(datasetDtoRepository.fetchImplementationByUuid(((DatasetImplementation) dataset1Info.get("datasetImplementation1")).getMetadataKey().getUuid()))
+                .hasValue((DatasetImplementationDto) dataset1Info.get("datasetImplementationDto1"));
+    }
+
+    @Test
+    void getDatasetImplementationByUuidNotFound() {
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
+        Dataset dataset = (Dataset) dataset1Info.get("dataset");
+        datasetConfiguration.insert(dataset);
+
+        assertThat(datasetDtoRepository.fetchImplementationByUuid(UUID.randomUUID()))
+                .isEmpty();
+    }
+
+    @Test
+    void getDatasetImplementationsByDatasetUuid() {
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
+        Dataset dataset = (Dataset) dataset1Info.get("dataset");
+        datasetConfiguration.insert(dataset);
+
+        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
                 .containsOnly((DatasetImplementationDto) dataset1Info.get("datasetImplementationDto1"),
                         (DatasetImplementationDto) dataset1Info.get("datasetImplementationDto0"));
     }
 
     @Test
-    void getDatasetImplementationsByUuidNotExisting() {
+    void getDatasetImplementationsByDatasetUuidNotExisting() {
         Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
-        assertThat(datasetDtoRepository.fetchImplementationsByUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
+        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
                 .doesNotContain((DatasetImplementationDto) dataset1Info.get("datasetImplementationDto3"),
                         (DatasetImplementationDto) dataset1Info.get("datasetImplementationDto4"));
     }
 
     @Test
-    void getDatasetImplementationsByUuidEmpty() {
+    void getDatasetImplementationsByDatasetUuidEmpty() {
         Map<String, Object> dataset1Info = generateDataset(0, 0, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
-        assertThat(datasetDtoRepository.fetchImplementationsByUuid(UUID.randomUUID())
+        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(UUID.randomUUID())
                 .isEmpty());
     }
 
@@ -233,7 +254,7 @@ class DatasetDtoRepositoryTest {
                                 .map(implementationIndex -> {
                                     UUID datasetImplementationUUID = UUID.randomUUID();
                                     info.put(String.format("datasetImplementation%dUUID", implementationIndex), datasetImplementationUUID);
-                                    return InMemoryDatasetImplementation.builder()
+                                    DatasetImplementation datasetImplementation = InMemoryDatasetImplementation.builder()
                                             .metadataKey(new DatasetImplementationKey(datasetImplementationUUID))
                                             .datasetKey(new DatasetKey(datasetUUID))
                                             .name(String.format("dataset%d", datasetIndex))
@@ -264,6 +285,9 @@ class DatasetDtoRepositoryTest {
                                                             }).collect(Collectors.toSet())
                                             )
                                             .build();
+                                    info.put(String.format("datasetImplementation%d", implementationIndex), datasetImplementation);
+                                    return datasetImplementation;
+
                                 })
                                 .collect(Collectors.toSet()))
                 .build();

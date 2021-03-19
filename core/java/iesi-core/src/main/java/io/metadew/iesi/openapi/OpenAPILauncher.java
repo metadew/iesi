@@ -34,7 +34,9 @@ public class OpenAPILauncher {
 
         Configuration.getInstance();
         FrameworkCrypto.getInstance();
+
         OpenAPI openAPI = init(line.getOptionValue(SOURCE));
+
 
         List<Connection> connections = ConnectionParser.getInstance().parse(openAPI);
         List<Component> components = ComponentParser.getInstance().parse(openAPI);

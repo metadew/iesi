@@ -1,7 +1,5 @@
 iesi:
-
   home: "."
-
   guard:
     authenticate: N
 #  script:

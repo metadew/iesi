@@ -24,7 +24,7 @@ jobs:
       - checkout
 
       # Download jars not available from maven central
-      - run: 
+      - run:
           name: Install local dependencies
           command: |
             mvn install:install-file -Dfile=build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
@@ -67,14 +67,14 @@ jobs:
           when: always
 
       - store_artifacts:
-          path: core/java/iesi-core/target/iesi-core-0.6.0.jar
-      
+          path: core/java/iesi-core/target/iesi-core-0.7.0.jar
+
       - run:
           name: Fetch dependencies for REST Server
           command: |
             cd ~/repo/core/java/iesi-rest-without-microservices
             mvn dependency:go-offline
-          
+
       - save_cache:
           paths:
             - ~/.m2
@@ -99,4 +99,4 @@ jobs:
           path: ~/test-results
 
       - store_artifacts:
-          path: core/java/iesi-rest-without-microservices/target/iesi-rest-0.6.0.jar
+          path: core/java/iesi-rest-without-microservices/target/iesi-rest-0.7.0.jar

@@ -102,7 +102,6 @@ public class ComponentJsonComponent {
             // write version
             ComponentVersion componentVersion = component.getVersion();
             jsonGenerator.writeObjectFieldStart(Field.VERSION_KEY.value());
-            jsonGenerator.writeStartObject();
             jsonGenerator.writeNumberField(ComponentVersionJsonComponent.Field.NUMBER_KEY.value(), componentVersion.getMetadataKey().getComponentKey().getVersionNumber());
             jsonGenerator.writeStringField(ComponentVersionJsonComponent.Field.DESCRIPTION_KEY.value(), componentVersion.getDescription());
             jsonGenerator.writeEndObject();
@@ -118,8 +117,9 @@ public class ComponentJsonComponent {
 
             jsonGenerator.writeEndArray();
 
+
             // write parameters
-            jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
+            jsonGenerator.writeArrayFieldStart(Field.ATTRIBUTES_KEY.value());
             for (ComponentAttribute componentAttribute : component.getAttributes()) {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField(ComponentAttributeJsonComponent.Field.NAME_KEY.value(), componentAttribute.getMetadataKey().getComponentAttributeName());
@@ -130,6 +130,7 @@ public class ComponentJsonComponent {
             jsonGenerator.writeEndArray();
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
+
         }
     }
 }

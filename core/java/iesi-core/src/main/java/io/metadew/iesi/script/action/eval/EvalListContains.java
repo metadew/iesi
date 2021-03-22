@@ -4,6 +4,7 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.template.TemplateService;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.script.action.ActionTypeExecution;
@@ -81,6 +82,12 @@ public class EvalListContains extends ActionTypeExecution {
     private Array convertList(DataType expectedValue) {
         if (expectedValue instanceof Array) {
             return (Array) expectedValue;
+        } else if (expectedValue instanceof Text) {
+            return getExecutionControl().getExecutionRuntime()
+                    .getArray(((Text) expectedValue).getString())
+                    .orElseThrow(() -> new RuntimeException(
+                            String.format("Cannot find list with reference name %s",
+                                    ((Text) expectedValue).getString())));
         } else {
             throw new RuntimeException(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for expectedValue",
                     expectedValue.getClass()));

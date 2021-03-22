@@ -1,18 +1,8 @@
 package io.metadew.iesi.openapi;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
-import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.swagger.parser.OpenAPIParser;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
-
-import java.io.File;
-import java.util.List;
 
 @Log4j2
 public class OpenAPILauncher {
@@ -31,28 +21,7 @@ public class OpenAPILauncher {
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
 
-
-        Configuration.getInstance();
-        FrameworkCrypto.getInstance();
-
-        OpenAPI openAPI = init(line.getOptionValue(SOURCE));
-
-
-        List<Connection> connections = ConnectionParser.getInstance().parse(openAPI);
-        List<Component> components = ComponentParser.getInstance().parse(openAPI);
-
-
-        OpenAPIGenerator.getInstance().generate(connections, components, line.getOptionValue(TARGET), line.hasOption(LOAD));
-    }
-
-
-    private static OpenAPI init(String docLocation) {
-        File docFile = new File(docLocation);
-        SwaggerParseResult result = new OpenAPIParser().readLocation(String.valueOf(docFile), null, null);
-
-        if (result.getMessages() != null)
-            result.getMessages().forEach(log::warn); // validation errors and warnings
-
-        return result.getOpenAPI();
+        TransformResult transformResult = OpenAPIGenerator.getInstance().transformFromFile(line.getOptionValue(SOURCE));
+        OpenAPIGenerator.getInstance().generate(transformResult, line.getOptionValue(TARGET),line.hasOption(LOAD));
     }
 }

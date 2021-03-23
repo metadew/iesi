@@ -3,8 +3,6 @@ package io.metadew.iesi.openapi;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -61,8 +59,6 @@ public class OpenAPIGenerator {
     }
 
     public void generate(TransformResult transformResult, String target, boolean load) {
-        Configuration.getInstance();
-        FrameworkCrypto.getInstance();
         try {
             for (Component component : transformResult.getComponents()) {
                 saveComponentInDirectory(target, component);

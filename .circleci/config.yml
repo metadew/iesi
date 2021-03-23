@@ -110,7 +110,7 @@ jobs:
             mvn project-info-reports:dependencies
             cd ~/repo/core/java/iesi-core/target
             java -cp iesi-core-0.6.1-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.6.1 
-            cd ~/sandbox/6.1.0/assembly
+            cd ~/sandbox/0.6.1/assembly
             zip -r iesi-dist-v0.6.1.zip ./*
             mv iesi-dist-v0.6.1.zip ..
             tar -czvf iesi-dist-v0.6.1.tar.gz ./* 

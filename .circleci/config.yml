@@ -100,3 +100,25 @@ jobs:
 
       - store_artifacts:
           path: core/java/iesi-rest-without-microservices/target/iesi-rest-0.6.0.jar
+
+      - run:
+          name: build assembly
+          command: |
+            mkdir -p ~/sandbox/assembly/6.1.0
+            cd ~/repo/core/java/iesi-core
+            mvn -P dependencies project-info-reports:dependencies
+            cd ~/repo/core/java/iesi-rest-without-microservices
+            mvn project-info-reports:dependencies
+            cd ~/repo/core/java/iesi-core/target
+            java -cp iesi-core-0.6.1-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.6.1 
+            cd ~/sandbox/assembly/6.1.0
+            zip -r iesi-dist-v0.6.1.zip ./*
+            mv iesi-dist-v0.6.1.zip ..
+            tar -czvf iesi-dist-v0.6.1.tar.gz ./* 
+            mv iesi-dist-v0.6.1.tar.gz ..
+
+      - store_artifacts:
+          path: ~/sandbox/assembly/iesi-dist-v0.6.1.zip
+
+      - store_artifacts:
+          path: ~/sandbox/assembly/iesi-dist-v0.6.1.tar.gz

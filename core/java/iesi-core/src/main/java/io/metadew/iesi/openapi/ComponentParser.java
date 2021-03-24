@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 
 @Log4j2
 @Data
-public class ComponentParser {
+public class ComponentParser implements Parser<Component> {
     private static ComponentParser instance;
 
     private ComponentParser() {

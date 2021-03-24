@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Log4j2
-public class ConnectionParser {
+public class ConnectionParser implements Parser<Connection> {
     private static ConnectionParser instance;
 
     private ConnectionParser() {

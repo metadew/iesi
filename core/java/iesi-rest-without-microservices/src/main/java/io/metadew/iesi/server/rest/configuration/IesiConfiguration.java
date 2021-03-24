@@ -31,6 +31,7 @@ import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
+import io.metadew.iesi.openapi.OpenAPIGenerator;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -214,8 +215,13 @@ public class IesiConfiguration {
 
     @Bean
     @DependsOn("frameworkInstance")
-    public  ScriptLabelDesignTraceConfiguration scriptLabelDesignTraceConfiguration() {
+    public ScriptLabelDesignTraceConfiguration scriptLabelDesignTraceConfiguration() {
         return ScriptLabelDesignTraceConfiguration.getInstance();
     }
 
+    @Bean
+    @DependsOn("frameworkInstance")
+    public OpenAPIGenerator openAPIGenerator() {
+        return OpenAPIGenerator.getInstance();
+    }
 }

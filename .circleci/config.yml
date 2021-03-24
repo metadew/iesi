@@ -105,7 +105,7 @@ jobs:
           name: build assembly
           command: |
             cd ~/repo/core/java/iesi-core
-            mvn -P dependencies project-info-reports:dependencies
+            mvn -P dependencies validate project-info-reports:dependencies
             cd ~/repo/core/java/iesi-rest-without-microservices
             mvn project-info-reports:dependencies
             cd ~/repo/core/java/iesi-core/target

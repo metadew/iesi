@@ -11,18 +11,6 @@ iesi:
         coordinator:
          type: sqlite
          file: ./repository.db3
-<<<<<<< HEAD
-
-#          type: h2
-#          mode: memory
-#          database: test;ALIAS_COLUMN_NAME=TRUE
-#          owner:
-#            user: ""
-#            password: ""
-#          type: sqlite
-#          file:
-=======
->>>>>>> master
 
 #          type: h2
 #          mode: embedded

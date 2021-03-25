@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Log4j2
 public class OpenAPIGenerator {
@@ -30,10 +31,10 @@ public class OpenAPIGenerator {
         return instance;
     }
 
-    public TransformResult transformFromFile(String path) {
+    public TransformResult transformFromFile(String path) throws SwaggerParserException {
         File docFile = new File(path);
         SwaggerParseResult result = new OpenAPIParser().readLocation(String.valueOf(docFile), null, null);
-        checkForMessages(result);
+        checkForMessages(result.getMessages());
 
         return new TransformResult(
                 ConnectionParser.getInstance().parse(result.getOpenAPI()),
@@ -41,9 +42,9 @@ public class OpenAPIGenerator {
         );
     }
 
-    public TransformResult transformFromJsonContent(String doc) {
+    public TransformResult transformFromJsonContent(String doc) throws SwaggerParserException {
         SwaggerParseResult result = new OpenAPIParser().readContents(doc, null, null);
-        checkForMessages(result);
+        checkForMessages(result.getMessages());
 
         return new TransformResult(
                 ConnectionParser.getInstance().parse(result.getOpenAPI()),
@@ -52,9 +53,9 @@ public class OpenAPIGenerator {
     }
 
 
-    private void checkForMessages(SwaggerParseResult result) {
-        if (result.getMessages() != null) {
-            result.getMessages().forEach(log::warn);
+    private void checkForMessages(List<String> messages) {
+        if (!messages.isEmpty()) {
+            throw new SwaggerParserException(messages.get(0));
         }
     }
 

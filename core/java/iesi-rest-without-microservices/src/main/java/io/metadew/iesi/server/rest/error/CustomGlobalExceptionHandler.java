@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.error;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.openapi.SwaggerParserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,7 +32,17 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	@ExceptionHandler(DataBadRequestException.class)
 	public void HandleBadRequest(HttpServletResponse response) throws IOException {
 		response.sendError(HttpStatus.BAD_REQUEST.value());
+	}
 
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(SwaggerParserException.class)
+	@ResponseBody
+	public Map<String, String> handleSwaggerParserException(SwaggerParserException e) {
+		Map<String, String> errMessages = new HashMap<>();
+		errMessages.put("error", "Something is wrong in your documentation");
+		errMessages.put("errorCode", "400");
+		errMessages.put("message", e.getMessage());
+		return errMessages;
 	}
 
 	@ExceptionHandler(value = { MethodArgumentTypeMismatchException.class })

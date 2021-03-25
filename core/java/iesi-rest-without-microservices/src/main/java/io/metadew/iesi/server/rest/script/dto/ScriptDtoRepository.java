@@ -211,7 +211,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                         cachedRowSet.getString("ACTION_TYP_NM"),
                         cachedRowSet.getString("ACTION_DSC"),
                         cachedRowSet.getString("COMP_NM"),
-                        cachedRowSet.getString("CONDITION_VAL"),
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "CONDITION_VAL"),
                         cachedRowSet.getString("ITERATION_VAL"),
                         cachedRowSet.getString("EXP_ERR_FL").equalsIgnoreCase("y"),
                         cachedRowSet.getString("STOP_ERR_FL").equalsIgnoreCase("y"),
@@ -229,7 +229,8 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
             ActionParameterDto actionParameterDto = actionDtoBuilder.getParameters().get(actionParameterName);
             if (actionParameterDto == null) {
                 actionDtoBuilder.getParameters().put(actionParameterName, new ActionParameterDto(
-                        cachedRowSet.getString("ACTION_PAR_NM"), cachedRowSet.getString("ACTION_PAR_VAL")
+                        cachedRowSet.getString("ACTION_PAR_NM"),
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL")
                 ));
             }
         }

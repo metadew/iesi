@@ -49,7 +49,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
             return Optional.of(new ScriptExecutionRequestParameter(scriptExecutionRequestKey,
                     new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                     cachedRowSet.getString("NAME"),
-                    cachedRowSet.getString("VALUE")));
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -68,7 +68,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
                         new ScriptExecutionRequestParameterKey(cachedRowSet.getString("ID")),
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                         cachedRowSet.getString("NAME"),
-                        cachedRowSet.getString("VALUE")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")));
             }
 
             return scriptExecutionRequests;
@@ -102,8 +102,10 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
                 SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getName()) + "," +
-                SQLTools.getStringForSQL(MetadataFieldService.getInstance()
-                        .truncateAccordingToConfiguration("ScriptExecutionRequestParameters", "VALUE", scriptExecutionRequest.getValue())) + ");";
+                SQLTools.getStringForSQLClob(scriptExecutionRequest.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     public Set<ScriptExecutionRequestParameter> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
@@ -118,7 +120,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
                         new ScriptExecutionRequestParameterKey(cachedRowSet.getString("ID")),
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                         cachedRowSet.getString("NAME"),
-                        cachedRowSet.getString("VALUE")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")));
             }
             return new HashSet<>(scriptExecutionRequestParameters);
         } catch (SQLException e) {
@@ -153,8 +155,10 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     public String updateStatement(ScriptExecutionRequestParameter scriptExecutionRequest) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") + " SET " +
                 "NAME=" + SQLTools.getStringForSQL(scriptExecutionRequest.getName()) + "," +
-                "VALUE=" + SQLTools.getStringForSQL(MetadataFieldService.getInstance()
-                .truncateAccordingToConfiguration("ScriptExecutionRequestParameters", "VALUE", scriptExecutionRequest.getValue())) +
+                SQLTools.getStringForSQLClob(scriptExecutionRequest.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) +
                 " WHERE ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";";
     }
 }

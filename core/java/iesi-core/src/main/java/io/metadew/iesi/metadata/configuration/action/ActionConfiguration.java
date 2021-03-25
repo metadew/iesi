@@ -62,7 +62,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                     crsAction.getString("ACTION_NM"),
                     crsAction.getString("ACTION_DSC"),
                     crsAction.getString("COMP_NM"),
-                    crsAction.getString("CONDITION_VAL"),
+                    SQLTools.getStringFromSQLClob(crsAction, "ACTION_CONDITION_VAL"),
                     crsAction.getString("ITERATION_VAL"),
                     crsAction.getString("EXP_ERR_FL"),
                     crsAction.getString("STOP_ERR_FL"),
@@ -97,7 +97,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                         crs.getString("ACTION_NM"),
                         crs.getString("ACTION_DSC"),
                         crs.getString("COMP_NM"),
-                        crs.getString("CONDITION_VAL"),
+                        SQLTools.getStringFromSQLClob(crs, "ACTION_CONDITION_VAL"),
                         crs.getString("ITERATION_VAL"),
                         crs.getString("EXP_ERR_FL"),
                         crs.getString("STOP_ERR_FL"),
@@ -146,7 +146,10 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                 SQLTools.getStringForSQL(action.getDescription()) + "," +
                 SQLTools.getStringForSQL(action.getComponent()) + "," +
                 SQLTools.getStringForSQL(action.getIteration()) + "," +
-                SQLTools.getStringForSQL(action.getCondition()) + "," +
+                SQLTools.getStringForSQLClob(action.getCondition(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + "," +
                 SQLTools.getStringForSQL(action.getRetries()) + "," +
                 SQLTools.getStringForSQL(action.getErrorExpected()) + "," +
                 SQLTools.getStringForSQL(action.getErrorStop()) + ");";
@@ -187,7 +190,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                         crs.getString("ACTION_NM"),
                         crs.getString("ACTION_DSC"),
                         crs.getString("COMP_NM"),
-                        crs.getString("CONDITION_VAL"),
+                        SQLTools.getStringFromSQLClob(crs, "ACTION_CONDITION_VAL"),
                         crs.getString("ITERATION_VAL"),
                         crs.getString("EXP_ERR_FL"),
                         crs.getString("STOP_ERR_FL"),

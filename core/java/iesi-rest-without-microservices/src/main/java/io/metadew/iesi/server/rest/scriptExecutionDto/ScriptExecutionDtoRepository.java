@@ -130,7 +130,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         String outputName = cachedRowSet.getString("SCRIPT_OUTPUT_NM");
         if (outputName != null && scriptExecutionDtoBuildHelper.getOutput().get(outputName) == null) {
             scriptExecutionDtoBuildHelper.getOutput()
-                    .put(outputName, new OutputDto(outputName, cachedRowSet.getString("SCRIPT_OUTPUT_VAL")));
+                    .put(outputName, new OutputDto(outputName,
+                            SQLTools.getStringFromSQLClob(cachedRowSet, "SCRIPT_OUTPUT_VAL")));
         }
         // Infotype 3: rows are present only if containing Execution Labels
         String executionLabelName = cachedRowSet.getString("SCRIPT_EXE_LBL_NM");
@@ -158,8 +159,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
             if (actionParameterName != null && actionExecutionDtoBuildHelper.getInputParameters().get(actionParameterName) == null) {
                 actionExecutionDtoBuildHelper.getInputParameters()
                         .put(actionParameterName, new ActionInputParametersDto(actionParameterName,
-                                cachedRowSet.getString("ACTION_PAR_VAL_RAW"),
-                                cachedRowSet.getString("ACTION_PAR_VAL_RESOLVED")));
+                                SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL_RAW"),
+                                SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL_RESOLVED")));
             }
             // Infotype 5: could not be present if the action doesn't contain any action
             // script + script action + action output
@@ -167,7 +168,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
             if (actionOutput != null && actionExecutionDtoBuildHelper.getOutput().get(actionOutput) == null) {
                 actionExecutionDtoBuildHelper.getOutput()
                         .put(actionOutput, new OutputDto(actionOutput,
-                                cachedRowSet.getString("ACTION_OUTPUT_VAL")));
+                                SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_OUTPUT_VAL")));
             }
         }
 
@@ -213,7 +214,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 cachedRowSet.getString("ACTION_TYP_NM"),
                 cachedRowSet.getString("ACTION_NM"),
                 cachedRowSet.getString("ACTION_DSC"),
-                cachedRowSet.getString("ACTION_CONDITION_VAL"),
+                SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_CONDITION_VAL"),
                 cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("y") ||
                         cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("yes"),
                 cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("y") ||
@@ -313,7 +314,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         List<String> conditions = new ArrayList<>();
         if (runId != null) conditions.add(" results.RUN_ID = " + SQLTools.getStringForSQL(runId));
         if (processId != null) conditions.add(" results.prc_id = " + SQLTools.getStringForSQL(processId));
-        if (conditions.isEmpty()) return Optional.empty();        // Only filter on authentication if explicitly mentioned
+        if (conditions.isEmpty())
+            return Optional.empty();        // Only filter on authentication if explicitly mentioned
         if (authentication != null) {
             Set<String> securityGroups = authentication.getAuthorities().stream()
                     .filter(authority -> authority instanceof IESIGrantedAuthority)

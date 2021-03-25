@@ -61,7 +61,11 @@ public class MatcherConfiguration extends Configuration<Matcher, MatcherKey> {
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(insertMatcherQuery,
                         SQLTools.getStringForSQL(matcher.getMetadataKey().getId()),
-                        SQLTools.getStringForSQL(matcher.getKey()), SQLTools.getStringForSQL(matcher.getTemplateKey().getId())));
+                        SQLTools.getStringForSQLClob(matcher.getKey(),
+                                getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                        .findFirst()
+                                        .orElseThrow(RuntimeException::new)),
+                        SQLTools.getStringForSQL(matcher.getTemplateKey().getId())));
         MatcherValue matcherValue = matcher.getMatcherValue();
         MatcherValueConfiguration.getInstance().insert(matcherValue);
     }

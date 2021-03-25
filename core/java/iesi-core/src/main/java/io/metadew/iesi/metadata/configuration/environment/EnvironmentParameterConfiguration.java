@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentParameterKey;
+import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,7 +68,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
                 LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", metadataKey.toString()));
             }
             crsEnvironmentParameter.next();
-            String environmentParameterValue = crsEnvironmentParameter.getString("ENV_PAR_VAL");
+            String environmentParameterValue = SQLTools.getStringFromSQLClob(crsEnvironmentParameter, "ENV_PAR_VAL");
             crsEnvironmentParameter.close();
             return Optional.of(new EnvironmentParameter(metadataKey, environmentParameterValue));
         } catch (SQLException e) {
@@ -86,7 +87,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
                 environmentParameters.add(new EnvironmentParameter(
                         crs.getString("ENV_NM"),
                         crs.getString("ENV_PAR_NM"),
-                        crs.getString("ENV_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(crs, "ENV_PAR_VAL")));
 
             }
             crs.close();
@@ -128,7 +129,10 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
                 .getTableNameByLabel("EnvironmentParameters") + " (ENV_NM, ENV_PAR_NM, ENV_PAR_VAL) VALUES (" +
                 SQLTools.getStringForSQL(environmentParameter.getMetadataKey().getEnvironmentKey().getName()) + "," +
                 SQLTools.getStringForSQL(environmentParameter.getName()) + "," +
-                SQLTools.getStringForSQL(environmentParameter.getValue()) + ");";
+                SQLTools.getStringForSQLClob(environmentParameter.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new))  +");";
     }
 
     public void deleteByEnvironment(EnvironmentKey environmentKey) {
@@ -148,7 +152,7 @@ public class EnvironmentParameterConfiguration extends Configuration<Environment
             while (crsEnvironmentParameter.next()) {
                 environmentParameters.add(new EnvironmentParameter(environmentKey.getName(),
                         crsEnvironmentParameter.getString("ENV_PAR_NM"),
-                        crsEnvironmentParameter.getString("ENV_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(crsEnvironmentParameter, "ENV_PAR_VAL")));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

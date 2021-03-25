@@ -49,7 +49,7 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
             cachedRowSet.next();
             return Optional.of(new ScriptResultOutput(scriptResultOutputKey,
                     cachedRowSet.getString("SCRIPT_ID"),
-                    cachedRowSet.getString("OUT_VAL")));
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "OUT_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -67,7 +67,7 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
                         cachedRowSet.getLong("PRC_ID"),
                         cachedRowSet.getString("OUT_NM")),
                         cachedRowSet.getString("SCRIPT_ID"),
-                        cachedRowSet.getString("OUT_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "OUT_VAL")));
             }
             return scriptResultOutputs;
         } catch (SQLException e) {
@@ -105,7 +105,10 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
                 + SQLTools.getStringForSQL(scriptResultOutput.getMetadataKey().getProcessId()) + ","
                 + SQLTools.getStringForSQL(scriptResultOutput.getScriptId()) + ","
                 + SQLTools.getStringForSQL(scriptResultOutput.getMetadataKey().getOutputName()) + ","
-                + SQLTools.getStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ScriptResultOutputs", "OUT_VAL", scriptResultOutput.getValue())) + ");";
+                + SQLTools.getStringForSQLClob(scriptResultOutput.getValue(),
+                getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                        .findFirst()
+                        .orElseThrow(RuntimeException::new)) + ");";
     }
 
     @Override
@@ -118,7 +121,11 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
     private String updateStatement(ScriptResultOutput scriptResultOutput) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptResultOutputs")
                 + " SET SCRIPT_ID = " + SQLTools.getStringForSQL(scriptResultOutput.getScriptId()) + "," +
-                " OUT_VAL = " + SQLTools.getStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ScriptResultOutputs", "OUT_VAL", scriptResultOutput.getValue())) +
+                " OUT_VAL = " +
+                SQLTools.getStringForSQLClob(scriptResultOutput.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptResultOutput.getMetadataKey().getRunId()) +
                 " AND PRC_ID =" + SQLTools.getStringForSQL(scriptResultOutput.getMetadataKey().getProcessId()) +
                 " AND OUT_NM = " + SQLTools.getStringForSQL(scriptResultOutput.getMetadataKey().getOutputName()) + ";";
@@ -136,7 +143,7 @@ public class ScriptResultOutputConfiguration extends Configuration<ScriptResultO
                         cachedRowSet.getLong("PRC_ID"),
                         cachedRowSet.getString("OUT_NM")),
                         cachedRowSet.getString("SCRIPT_ID"),
-                        cachedRowSet.getString("OUT_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "OUT_VAL")));
             }
             return resultOutputs;
         } catch (SQLException e) {

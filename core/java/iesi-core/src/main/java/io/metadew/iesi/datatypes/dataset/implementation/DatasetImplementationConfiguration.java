@@ -355,7 +355,11 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                     getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_IN_MEMORY_DATASET_IMPLEMENTATION_KEY_VALUE_QUERY,
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid()),
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
-                            SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getKey()),
+                            SQLTools.getStringForSQLClob(inMemoryDatasetImplementationKeyValue.getKey(),
+                                    getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                            .findFirst()
+                                            .orElseThrow(RuntimeException::new)
+                            ),
                             SQLTools.getStringForSQLClob(inMemoryDatasetImplementationKeyValue.getValue(),
                                     getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                             .findFirst()
@@ -387,12 +391,14 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private void mapInMemoryDatasetImplementation(CachedRowSet cachedRowSet, InMemoryDatasetImplementationBuilder inMemoryDatasetImplementationBuilder) throws SQLException {
         String inMemoryKeyValueId = cachedRowSet.getString("dataset_in_mem_impl_kv_id");
         if (inMemoryKeyValueId != null && inMemoryDatasetImplementationBuilder.getKeyValues().get(inMemoryKeyValueId) == null) {
+            String clobKey = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_key");
             String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
+
             inMemoryDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
                     new InMemoryDatasetImplementationKeyValue(
                             new InMemoryDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                             new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
-                            cachedRowSet.getString("dataset_in_mem_impl_kvs_key"),
+                            clobKey,
                             clobValue)
             );
         }

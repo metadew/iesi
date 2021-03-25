@@ -247,7 +247,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
 
         Matcher matcher = Matcher.builder()
                 .matcherKey(matcherKey)
-                .key(SQLTools.getStringForSQL("matcher_key"))
+                .key(cachedRowSet.getString("matcher_key"))
                 .templateKey(template.getMetadataKey())
                 .matcherValue(matcherValue)
                 .build();

@@ -57,7 +57,7 @@ public class DatasetImplementationDtoListResultSetExtractor {
     private void mapInMemoryDatasetImplementationDto(CachedRowSet rs, InMemoryDatasetImplementationDtoBuilder datasetImplementationBuilder) throws SQLException {
         String inMemoryKeyValueId = rs.getString("dataset_in_mem_impl_kv_id");
         if (inMemoryKeyValueId != null && datasetImplementationBuilder.getKeyValues().get(UUID.fromString(inMemoryKeyValueId)) == null) {
-            String key = SQLTools.getStringForSQL("dataset_in_mem_impl_kvs_key");
+            String key = rs.getString("dataset_in_mem_impl_kvs_key");
             String clobValue = SQLTools.getStringFromSQLClob(rs, "dataset_in_mem_impl_kvs_value");
             datasetImplementationBuilder.getKeyValues().put(UUID.fromString(inMemoryKeyValueId),
                     new InMemoryDatasetImplementationKeyValueDto(

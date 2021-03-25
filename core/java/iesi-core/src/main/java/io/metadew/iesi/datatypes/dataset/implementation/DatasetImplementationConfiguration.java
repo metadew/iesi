@@ -391,14 +391,14 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private void mapInMemoryDatasetImplementation(CachedRowSet cachedRowSet, InMemoryDatasetImplementationBuilder inMemoryDatasetImplementationBuilder) throws SQLException {
         String inMemoryKeyValueId = cachedRowSet.getString("dataset_in_mem_impl_kv_id");
         if (inMemoryKeyValueId != null && inMemoryDatasetImplementationBuilder.getKeyValues().get(inMemoryKeyValueId) == null) {
-            String clobKey = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_key");
+            String key = SQLTools.getStringForSQL("dataset_in_mem_impl_kvs_key");
             String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
 
             inMemoryDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
                     new InMemoryDatasetImplementationKeyValue(
                             new InMemoryDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                             new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
-                            clobKey,
+                            key,
                             clobValue)
             );
         }

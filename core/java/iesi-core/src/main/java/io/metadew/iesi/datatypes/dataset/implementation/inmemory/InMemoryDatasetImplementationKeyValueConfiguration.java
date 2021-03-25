@@ -171,10 +171,7 @@ public class InMemoryDatasetImplementationKeyValueConfiguration extends Configur
                 SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid()),
                 SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
                 SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getKey()),
-                SQLTools.getStringForSQLClob(inMemoryDatasetImplementationKeyValue.getValue(),
-                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
-                                .findFirst()
-                                .orElseThrow(RuntimeException::new)
+                SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getValue()
                 )));
     }
 
@@ -183,22 +180,18 @@ public class InMemoryDatasetImplementationKeyValueConfiguration extends Configur
         getMetadataRepository().executeUpdate(MessageFormat.format(UPDATE_QUERY,
                 SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
                 SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getKey()),
-                SQLTools.getStringForSQLClob(inMemoryDatasetImplementationKeyValue.getValue(),
-                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
-                                .findFirst()
-                                .orElseThrow(RuntimeException::new)
-                ),
+                SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getValue()),
                 SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid())));
     }
 
     public InMemoryDatasetImplementationKeyValue mapRow(CachedRowSet cachedRowSet) throws SQLException {
         String inMemoryKeyValueId = cachedRowSet.getString("dataset_in_mem_impl_kv_id");
-        String clobKey = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_key");
+        String key = SQLTools.getStringForSQL("dataset_in_mem_impl_kvs_key");
         String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
         return new InMemoryDatasetImplementationKeyValue(
                 new InMemoryDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                 new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
-                clobKey,
+                key,
                 clobValue);
     }
 }

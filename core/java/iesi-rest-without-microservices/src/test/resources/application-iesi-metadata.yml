@@ -131,8 +131,8 @@ iesi:
           KEY:
             description: label key
             order: 2
-            type: CLOB
-            length: 255
+            type: STRING
+            length: 2000
             nullable: false
             unique: true
           VALUE:
@@ -684,8 +684,8 @@ iesi:
           KEY:
             description: key to match the matcher against
             order: 1
-            type: CLOB
-            length: 255
+            type: STRING
+            length: 2000
             unique: true
             nullable: false
           TEMPLATE_ID:

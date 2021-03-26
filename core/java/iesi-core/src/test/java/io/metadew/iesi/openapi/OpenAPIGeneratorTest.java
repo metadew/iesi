@@ -61,7 +61,7 @@ class OpenAPIGeneratorTest {
         }
 
         RuntimeException exception = assertThrows(SwaggerParserException.class, () -> openAPIGenerator.transformFromFile(filePath));
-        assertThat(exception.getMessage()).isEqualTo("attribute info.title is missing");
+        assertThat(exception.getMessage()).isEqualTo(String.format("- attribute info.title is missing %n"));
     }
 
 

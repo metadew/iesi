@@ -55,7 +55,11 @@ public class OpenAPIGenerator {
 
     private void checkForMessages(List<String> messages) {
         if (!messages.isEmpty()) {
-            throw new SwaggerParserException(messages.get(0));
+            StringBuilder messagesStr = new StringBuilder();
+            for (String message : messages) {
+                messagesStr.append(String.format("- %s %n", message));
+            }
+            throw new SwaggerParserException(messagesStr.toString());
         }
     }
 

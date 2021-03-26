@@ -41,7 +41,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		Map<String, String> errMessages = new HashMap<>();
 		errMessages.put("error", "Something is wrong in your documentation");
 		errMessages.put("errorCode", "400");
-		errMessages.put("message", e.getMessage());
+		errMessages.put("message", String.format("We found the following errors : %n %s", e.getMessage()));
 		return errMessages;
 	}
 

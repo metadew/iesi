@@ -20,10 +20,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -54,14 +52,15 @@ class OpenAPIGeneratorTest {
     @Test
     void transformFromWrongFile() throws IOException {
         File file = File.createTempFile("doc", null);
+        List<String> messages = Collections.singletonList("attribute info.title is missing");
         String filePath = file.getPath();
         OpenAPIGenerator openAPIGenerator = OpenAPIGenerator.getInstance();
         try (OutputStream os = new FileOutputStream(file)) {
             os.write(wrongDocFile);
         }
 
-        RuntimeException exception = assertThrows(SwaggerParserException.class, () -> openAPIGenerator.transformFromFile(filePath));
-        assertThat(exception.getMessage()).isEqualTo(String.format("- attribute info.title is missing %n"));
+        SwaggerParserException exception = assertThrows(SwaggerParserException.class, () -> openAPIGenerator.transformFromFile(filePath));
+        assertThat(exception.getMessages()).isEqualTo(messages);
     }
 
 

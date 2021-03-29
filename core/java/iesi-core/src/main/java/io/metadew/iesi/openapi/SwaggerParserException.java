@@ -1,8 +1,18 @@
 package io.metadew.iesi.openapi;
 
-public class SwaggerParserException extends RuntimeException  {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-    public SwaggerParserException(String message) {
-        super(message);
+import java.util.List;
+
+
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class SwaggerParserException extends RuntimeException  {
+    private final List<String> messages;
+
+    public SwaggerParserException(List<String> messages) {
+        this.messages = messages;
     }
 }

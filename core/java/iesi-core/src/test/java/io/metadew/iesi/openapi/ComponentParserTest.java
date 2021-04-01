@@ -15,12 +15,10 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class ComponentParserTest {
@@ -130,5 +128,14 @@ class ComponentParserTest {
 
         assertThat(ComponentParser.getInstance().createComponent(componentVersion, connectionName, operation, "/pet/{id}", "POST")).isEqualTo(component);
 
+    }
+
+    @Test
+    void createComponentWithStringVersion() {
+        List<String> messages = Collections.singletonList("The version should be a number");
+        openAPI.getInfo().setVersion("1.1-SNAPSHOT");
+
+        SwaggerParserException exception = assertThrows(SwaggerParserException.class, () -> ComponentParser.getInstance().parse(openAPI));
+        assertThat(exception.getMessages()).isEqualTo(messages);
     }
 }

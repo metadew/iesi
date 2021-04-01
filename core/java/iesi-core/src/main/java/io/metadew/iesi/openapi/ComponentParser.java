@@ -15,6 +15,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +40,13 @@ public class ComponentParser implements Parser<Component> {
         List<Component> components = new ArrayList<>();
         Paths paths = openAPI.getPaths();
         String connectionName = openAPI.getInfo().getTitle();
-        Long componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
+        Long componentVersion;
+        try {
+            componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
+        } catch (NumberFormatException numberFormatException) {
+            throw new SwaggerParserException(Collections.singletonList("The version should be a number"));
+        }
+
 
         for (Entry<String, PathItem> path : paths.entrySet()) {
             PathItem pathItem = path.getValue();

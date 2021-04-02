@@ -147,30 +147,29 @@ Another way to provide the variable value is by adding an additional action (`fw
 ### Apply variables in a dataset
 Goal: Design datasets in a generic way for high re-usability (~ don't create a separate dataset for each possible solution, but rather create a generic dataset for which the user could provide input (ad-hoc or through the looping of inputdate)).
 
-```yaml
-{
-	"type": "dataset",
-	"data": {
-		"name": "datasetOne",
-		"implementations": [
+```json
+{"type": "dataset",
+"data": {
+	"name": "datasetOne",
+	"implementations": [
+	{
+		"type": "in_memory",
+		"labels": [
 			{
-				"type": "in_memory",
-				"labels": [
-					{
-						"label": "env.#env.code#"
-					}
-				],
-				"key_values": [
-					{
-						"key": "petNumber",
-						"value": "#petNumber#"
-					},
-					{
-						"key": "...",
-						"value": "..."
-					}
-			]
-	}
+			"label": "env.#env.code#"
+			}
+		],
+		"key_values": [
+			{
+			"key": "petNumber",
+			"value": "#petNumber#"
+			},
+			{
+			"key": "...",
+			"value": "..."
+			}
+	]
+}
 ```
 
 **Execution Way 1** \

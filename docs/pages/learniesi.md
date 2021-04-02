@@ -9,11 +9,15 @@ Eager to learn about the framework and concepts? Have a look at our detailed doc
   * Define the system landscape
      * Introduction
      * Connection types
+     * Component types
   * Configure your script
     * Introduction
-    * Example
-    * Action Types
-    * Subroutine Types
+    * Using Action Types
+    * Using Variables
+    * Using Subroutines
+    * Using Datasets
+    * Using Expected Error
+    * Using Stop on Erro
   * Execute your script
   * Verify your result
   

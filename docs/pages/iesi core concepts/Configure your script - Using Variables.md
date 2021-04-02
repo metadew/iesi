@@ -23,6 +23,7 @@ Variables are always defined as **key-value pairs** and  defined with the `#` sy
 
 ## Examples
 ### Apply variables in a script
+Goal: Design scripts in a generic way for high re-usability (~ don't create a separate script for each possible solution, but rather create a generic script for which the user could provide input (ad-hoc or through the looping of inputdate)).
 
 **Example with fixed values**
 ```yaml
@@ -55,7 +56,7 @@ data:
 ---
 type: "script"
 data:
-  name: "OriginalScript"
+  name: "NewScript"
   description: "API call using fixed values"
   parameters: []
   actions:
@@ -76,16 +77,19 @@ data:
     - name: "...."
       value : "...."
 ```
-**Solution 1**
+**Execution Way 1** \
 When now executing the script, we provide the value of our variable at runtime through the **'Input Parameters'** functionality in the UI. Once provided, **the parameters will be resolved during execution.**
 
 Thus, we add the following input parameters in the execution window:
   * Name: **accountNumber** - Value: **BE32987654321236**
 
-**Solution 2**
+**Execution Way 2** \
+Another way to provide the variable value is by adding an additional action (`fwk.setParameterValue` - for 1 specific value or `fwk.setParameterList` - for a list of values) in your (parent)script. This is often used for script-in-script design and execution. 
 
 
 ### Apply variables in a component
+Goal: Design components in a generic way for high re-usability (~ don't create a separate component for each possible solution, but rather create a generic component for which the user could provide input.
+
 **Example with fixed values**
 
 ```yaml
@@ -131,7 +135,50 @@ data:
     value: ""
 ```
 
+**Execution Way 1** \
+When now executing the script, we provide the value of our variable at runtime through the **'Input Parameters'** functionality in the UI. Once provided, **the parameters will be resolved during execution.**
+
+Thus, we add the following input parameters in the execution window:
+  * Name: **petId** - Value: **1**
+
+**Execution Way 2** \
+Another way to provide the variable value is by adding an additional action (`fwk.setParameterValue` - for 1 specific value or `fwk.setParameterList` - for a list of values) in your (parent)script. This is often used for script-in-script design and execution. 
+
 ### Apply variables in a dataset
-### Apply variables during runtime
-Define them in script
-provide them at runtime
+Goal: Design datasets in a generic way for high re-usability (~ don't create a separate dataset for each possible solution, but rather create a generic dataset for which the user could provide input (ad-hoc or through the looping of inputdate)).
+
+```yaml
+{
+	"type": "dataset",
+	"data": {
+		"name": "datasetOne",
+		"implementations": [
+			{
+				"type": "in_memory",
+				"labels": [
+					{
+						"label": "env.#env.code#"
+					}
+				],
+				"key_values": [
+					{
+						"key": "petNumber",
+						"value": "#petNumber#"
+					},
+					{
+						"key": "...",
+						"value": "..."
+					}
+			]
+	}
+```
+
+**Execution Way 1** \
+When now executing the script, we provide the value of our variable at runtime through the **'Input Parameters'** functionality in the UI. Once provided, **the parameters will be resolved during execution.**
+
+Thus, we add the following input parameters in the execution window:
+  * Name: **petNumber** - Value: **1**
+
+**Execution Way 2** \
+Another way to provide the variable value is by adding an additional action (`fwk.setParameterValue` - for 1 specific value or `fwk.setParameterList` - for a list of values) in your (parent)script. This is often used for script-in-script design and execution. 
+

@@ -76,14 +76,62 @@ data:
     - name: "...."
       value : "...."
 ```
-
+**Solution 1**
 When now executing the script, we provide the value of our variable at runtime through the **'Input Parameters'** functionality in the UI. Once provided, **the parameters will be resolved during execution.**
 
 Thus, we add the following input parameters in the execution window:
   * Name: **accountNumber** - Value: **BE32987654321236**
 
-### Apply variables in a component
+**Solution 2**
 
+
+### Apply variables in a component
+**Example with fixed values**
+
+```yaml
+---
+type: Component
+data:
+  type: "http.request"
+  name: "add.new.pet"
+  version: "1"
+  description: "add a new pet to the store"
+  parameters:
+  - name: "endpoint"
+    value: "/pet/1"
+  - name: "type"
+    value: "GET"
+  - name: "connection"
+    value: "pets"
+  - name: "headers"
+    value: ""
+  - name: "queryParameters"
+    value: ""
+```
+**Example with a variable**
+
+```yaml
+---
+type: Component
+data:
+  type: "http.request"
+  name: "add.new.pet"
+  version: "1"
+  description: "add a new pet to the store"
+  parameters:
+  - name: "endpoint"
+    value: "/pet/#petId#"
+  - name: "type"
+    value: "GET"
+  - name: "connection"
+    value: "pets"
+  - name: "headers"
+    value: ""
+  - name: "queryParameters"
+    value: ""
+```
 
 ### Apply variables in a dataset
 ### Apply variables during runtime
+Define them in script
+provide them at runtime

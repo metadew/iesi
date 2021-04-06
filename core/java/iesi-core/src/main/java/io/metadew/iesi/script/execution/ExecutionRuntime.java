@@ -85,7 +85,7 @@ public class ExecutionRuntime {
         // Initialize extensions
 
         // Initialize data instructions
-        dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution());
+        dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution(),this);
         variableInstructions = VariableInstructionRepository.getRepository(executionControl);
         lookupInstructions = LookupInstructionRepository.getRepository(executionControl, this);
         datasetMap = new HashMap<>();

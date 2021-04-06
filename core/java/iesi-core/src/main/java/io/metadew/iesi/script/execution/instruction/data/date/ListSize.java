@@ -28,7 +28,7 @@ public class ListSize implements DataInstruction {
     @Override
     public String generateOutput(String parameters) {
         Array array = getArray(DataTypeHandler.getInstance().resolve(parameters, executionRuntime));
-        List list = array.getList();
+        List<DataType> list = array.getList();
         return Integer.toString(list.size());
     }
 

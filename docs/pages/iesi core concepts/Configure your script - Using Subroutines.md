@@ -17,6 +17,7 @@ The syntax of a subroutine contains out of the following elements: `{{<instructi
 * `<subroutine>`: refers to the name of the function ~ i.e. person.firstname, connection, time.travel, ...
 * `<args>`: refers to the parameters that need to be used as input for the subroutine function
 
+Subroutines can also be **nested**, containing subroutines in subroutines (e.g. for date formatting)
 
 **Instruction items** (`<instruction>`)
 |Syntax|Function|Description|
@@ -55,4 +56,6 @@ The syntax of a subroutine contains out of the following elements: `{{<instructi
 |        |$                 |<variablename>|Get the value of a specific (framework) variable|{{$[variablename]}}|{{$run.id}}|0214587956214dds7adsdf4554445|
 |        |$                 |<variablename>|Get the value of a specific (framework) variable|{{$[variablename]}}|{{$process.id}}|445|
 
-## Give it a try?
+
+**Testing of subroutines**
+

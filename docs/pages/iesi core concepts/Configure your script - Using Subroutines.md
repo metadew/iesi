@@ -57,5 +57,32 @@ Subroutines can also be **nested**, containing subroutines in subroutines (e.g. 
 |        |$                 |<variablename>|Get the value of a specific (framework) variable|{{$[variablename]}}|{{$process.id}}|445|
 
 
-**Testing of subroutines**
+### User-defined subroutines
 
+
+### Testing of subroutines
+Subroutines can be easily used in datasets and scripts. Want to test/try it first? Find an example below:
+
+```yaml
+---
+type: "script"
+data:
+  name: "TestScript"
+  description: "Script to test subroutine functions"
+  parameters: []
+  actions:
+  - number: 1
+    type: "fwk.setParametervalue"
+    name: "test"
+    description: "test the subroutine function"
+    component: ""
+    condition: ""
+    iteration: ""
+    errorExpected: "N"
+    errorStop: "N"
+    parameters:
+    - name: "name"
+      value : "test"
+    - name: "value"
+      value : "{{*date.today()}}"
+```

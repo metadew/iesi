@@ -30,7 +30,7 @@ Design your script by defining a set of actions that need to be executed in a sp
   * Using functions/instructions
   * Using expected/stop on error
 
-Learn more [here](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Introduction.md)
+Learn more [here](https://github.com/metadew/iesi/blob/af9e5095eb8063708c0cd19f93c82f472a6fd5d7/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Introduction.md)
   
 **3. Execute the script**\
 Once the design has been finalized and the system landscape has been configured, it is time to execute your script by loading it into the repository and executing it through the interface. We will get acquainted with the following concepts of script execution:

@@ -9,8 +9,7 @@ The automation framework is designed around the principle to configure scripts o
 
 We summarize the process of automating in four key steps:
 
-![IESI Core Concepts](https://github.com/metadew/iesi/blob/dff06fd8d4cd81541635d467797c4eb5c58e36cc/docs/images/concepts_with_steps.png)
-
+![IESI Core Concepts]((/{{site.repository}}/images/icons/concepts_with_steps.png)
 
 **1. Define the system landscape** \
 Before we can design our script, we need to think about the following questions: On which systems will the actions be performed? How can our framework connect to these systems? How can I call these connectivity end points? … We thus need to configure the necessary definitions in order to get started on our script design. For this, we will get acquainted with the following:

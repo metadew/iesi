@@ -24,11 +24,12 @@ Learn more [here](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83
 **2. Configure the script**\
 Design your script by defining a set of actions that need to be executed in a specific sequence. Depending on the type of action you would like to perform, IESI has embedded the notion of action types which will help the user by limiting the required effort. We will get acquainted with the following concepts of script building:
  
-  * Using action types
-  * Using variables
-  * Using datasets
-  * Using functions/instructions
-  * Using expected/stop on error
+  * Using Action Types
+  * Using Variables
+  * Using Subroutines
+  * Using Datasets
+  * Using Expected Error
+  * Using Stop on Error
 
 Learn more [here](https://github.com/metadew/iesi/blob/af9e5095eb8063708c0cd19f93c82f472a6fd5d7/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Introduction.md)
   

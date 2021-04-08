@@ -37,7 +37,7 @@ public class ListSize implements DataInstruction {
             return (Array) array;
         } else if (array instanceof Text) {
             return executionRuntime.getArray(((Text) array).getString())
-                    .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No array found", ((Text) array).getString())));
+                    .orElseThrow(() -> new IllegalArgumentException(String.format("No array %s found in memory", ((Text) array).getString())));
         } else {
             throw new IllegalArgumentException(MessageFormat.format("list cannot be of type {0}", array.getClass()));
         }

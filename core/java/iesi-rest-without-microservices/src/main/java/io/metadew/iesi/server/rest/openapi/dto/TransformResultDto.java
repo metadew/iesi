@@ -13,4 +13,6 @@ import java.util.List;
 public class TransformResultDto extends RepresentationModel<TransformResultDto> {
     private List<ConnectionDto> connections;
     private List<ComponentDto> components;
+    private String title;
+    private String version;
 }

@@ -88,7 +88,6 @@ class OpenAPIControllerTest {
     @Test
     void transformFromYAML() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("file", yamlFile);
-
         given(openAPIService.transform(multipartFile)).willReturn(getTransformResult());
         given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
 

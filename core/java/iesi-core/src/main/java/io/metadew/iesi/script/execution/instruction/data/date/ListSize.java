@@ -6,6 +6,7 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
+
 import java.text.MessageFormat;
 import java.util.List;
 

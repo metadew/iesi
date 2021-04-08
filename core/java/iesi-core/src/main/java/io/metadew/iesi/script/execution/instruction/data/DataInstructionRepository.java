@@ -56,7 +56,7 @@ public class DataInstructionRepository {
         dataInstructions.put(textSubstring.getKeyword(), textSubstring);
 
         ListSize listSize = new ListSize(executionRuntime);
-        dataInstructions.put(listSize.getKeyword(),listSize);
+        dataInstructions.put(listSize.getKeyword(), listSize);
 
         return dataInstructions;
     }

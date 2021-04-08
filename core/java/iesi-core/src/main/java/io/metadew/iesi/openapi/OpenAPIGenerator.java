@@ -38,7 +38,9 @@ public class OpenAPIGenerator {
 
         return new TransformResult(
                 ConnectionParser.getInstance().parse(result.getOpenAPI()),
-                ComponentParser.getInstance().parse(result.getOpenAPI())
+                ComponentParser.getInstance().parse(result.getOpenAPI()),
+                result.getOpenAPI().getInfo().getTitle(),
+                result.getOpenAPI().getInfo().getVersion()
         );
     }
 
@@ -48,7 +50,9 @@ public class OpenAPIGenerator {
 
         return new TransformResult(
                 ConnectionParser.getInstance().parse(result.getOpenAPI()),
-                ComponentParser.getInstance().parse(result.getOpenAPI())
+                ComponentParser.getInstance().parse(result.getOpenAPI()),
+                result.getOpenAPI().getInfo().getTitle(),
+                result.getOpenAPI().getInfo().getVersion()
         );
     }
 

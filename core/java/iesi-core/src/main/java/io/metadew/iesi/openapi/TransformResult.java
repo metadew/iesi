@@ -12,4 +12,6 @@ import java.util.List;
 public class TransformResult {
     private List<Connection> connections;
     private List<Component> components;
+    private String title;
+    private String version;
 }

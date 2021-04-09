@@ -65,7 +65,7 @@ class OpenAPIGeneratorTest {
 
 
     private TransformResult getTransformResult() {
-        EnvironmentKey environmentKey = new EnvironmentKey("env0");
+        EnvironmentKey environmentKey = new EnvironmentKey(null);
         ConnectionKey connectionKey = new ConnectionKey(
                 "Swagger Petstore - OpenAPI 3.0",
                 environmentKey);

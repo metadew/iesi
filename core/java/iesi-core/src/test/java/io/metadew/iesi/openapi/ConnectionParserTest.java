@@ -41,25 +41,24 @@ public class ConnectionParserTest {
         //Connection
         ConnectionParameter host = new ConnectionParameter(
                 "Documentation",
-                "env0",
+                null,
                 "host",
                 ConnectionParser.getInstance().getHost(address));
         ConnectionParameter tls = new ConnectionParameter(
                 "Documentation",
-                "env0",
+                null,
                 "tls",
                 ConnectionParser.getInstance().getProtocol(address));
         ConnectionParameter baseUrl = new ConnectionParameter(
                 "Documentation",
-                "env0",
+                null,
                 "baseUrl",
                 ConnectionParser.getInstance().getBaseUrl(address).orElse(""));
         List<ConnectionParameter> connectionParameters = Arrays.asList(baseUrl, host,tls);
         Connection connection = new Connection(
                 "Documentation",
                 "http",
-                "Documentation description",
-                "env0",
+                "Documentation description", null,
                 connectionParameters);
         connections.add(connection);
 

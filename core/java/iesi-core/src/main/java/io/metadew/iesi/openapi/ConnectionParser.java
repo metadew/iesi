@@ -1,13 +1,17 @@
 package io.metadew.iesi.openapi;
 
+import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
+import org.sqlite.SQLiteException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,23 +36,30 @@ public class ConnectionParser implements Parser<Connection> {
     public List<Connection> parse(OpenAPI openAPI) {
         String name = openAPI.getInfo().getTitle();
         String description = openAPI.getInfo().getDescription();
-        List<URL> adresses = getAdresses(openAPI.getServers());
-        return IntStream.range(0, adresses.size()).boxed()
+        Optional<Environment> environment = Optional.empty();
+        List<URL> addresses = getAdresses(openAPI.getServers());
+        try {
+            environment = EnvironmentConfiguration.getInstance().getAll().stream().findFirst();
+        } catch(RuntimeException exception) {
+
+        }
+
+        Optional<Environment> finalEnvironment = environment;
+        return IntStream.range(0, addresses.size()).boxed()
                 .map(index -> {
-                    URL address = adresses.get(index);
-                    String environment = String.format("env%s", index);
+                    URL address = addresses.get(index);
                     final List<ConnectionParameter> connectionParameters = new ArrayList<>();
                     getPort(address)
                             .ifPresent(port -> connectionParameters.add(
-                                    new ConnectionParameter(name, environment, "port", port)
+                                    new ConnectionParameter(name, finalEnvironment.map(Environment::getName).orElse(null), "port", port)
                             ));
                     getBaseUrl(address)
                             .ifPresent(baseUrl -> connectionParameters.add(
-                                    new ConnectionParameter(name, environment, "baseUrl", baseUrl)
+                                    new ConnectionParameter(name,finalEnvironment.map(Environment::getName).orElse(null), "baseUrl", baseUrl)
                             ));
-                    connectionParameters.add(new ConnectionParameter(name, environment, "host", getHost(address)));
-                    connectionParameters.add(new ConnectionParameter(name, environment, "tls", getProtocol(address)));
-                    return new Connection(name, "http", description, environment, connectionParameters);
+                    connectionParameters.add(new ConnectionParameter(name, finalEnvironment.map(Environment::getName).orElse(null), "host", getHost(address)));
+                    connectionParameters.add(new ConnectionParameter(name, finalEnvironment.map(Environment::getName).orElse(null), "tls", getProtocol(address)));
+                    return new Connection(name, "http", description, finalEnvironment.map(Environment::getName).orElse(null), connectionParameters);
 
                 }).collect(Collectors.toList());
     }

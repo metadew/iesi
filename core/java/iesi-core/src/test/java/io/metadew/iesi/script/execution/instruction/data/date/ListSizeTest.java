@@ -79,4 +79,23 @@ class ListSizeTest {
         assertThrows(IllegalArgumentException.class, () -> listSize.generateOutput(null));
 
     }
+
+    @Test
+    void generateOutputWithExceptionMSG() {
+        doReturn(new Null()).when(dataTypeHandlerServiceSpy).resolve(null, executionRuntime);
+        listSize = new ListSize(executionRuntime);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> listSize.generateOutput(null));
+        assertThat(exception.getMessage()).isEqualTo("list cannot be of type class io.metadew.iesi.datatypes._null.Null");
+
+    }
+
+    @Test
+    void generateOutputWithOptionalArrayMessage() {
+        doReturn(new Text("array")).when(dataTypeHandlerServiceSpy).resolve("array", executionRuntime);
+        when(executionRuntime.getArray("array")).thenReturn(Optional.empty());
+        ListSize listSize = new ListSize(executionRuntime);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> listSize.generateOutput("array"));
+        assertThat(exception.getMessage()).isEqualTo("No array array found in memory");
+    }
+    
 }

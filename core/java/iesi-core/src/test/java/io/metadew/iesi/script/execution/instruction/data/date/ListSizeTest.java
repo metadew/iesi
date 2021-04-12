@@ -45,7 +45,6 @@ class ListSizeTest {
 
     @Test
     void getKeyword() {
-        listSize = new ListSize(executionRuntime);
         assertThat(listSize.getKeyword()).isEqualTo("list.size");
     }
 
@@ -53,7 +52,6 @@ class ListSizeTest {
     void generateOutputWithText() {
         doReturn(new Text("array")).when(dataTypeHandlerServiceSpy).resolve("array", executionRuntime);
         when(executionRuntime.getArray("array")).thenReturn(Optional.of(new Array(new ArrayList<>())));
-        ListSize listSize = new ListSize(executionRuntime);
         assertThat(listSize.generateOutput("array")).isEqualTo("0");
     }
 
@@ -61,7 +59,6 @@ class ListSizeTest {
     void generateOutputWithOptionalArray() {
         doReturn(new Text("array")).when(dataTypeHandlerServiceSpy).resolve("array", executionRuntime);
         when(executionRuntime.getArray("array")).thenReturn(Optional.empty());
-        ListSize listSize = new ListSize(executionRuntime);
         assertThatThrownBy(() -> listSize.generateOutput("array"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("No array array found in memory");
@@ -71,14 +68,12 @@ class ListSizeTest {
     void generateOutputWithList() {
         doReturn(new Array(Stream.of(new Text("1"), new Text("2"), new Text("3")).collect(Collectors.toList())))
                 .when(dataTypeHandlerServiceSpy).resolve("{{^list(1,2,3)}}", executionRuntime);
-        listSize = new ListSize(executionRuntime);
         assertThat(listSize.generateOutput("{{^list(1,2,3)}}")).isEqualTo("3");
     }
 
     @Test
     void generateOutputWithNull() {
         doReturn(new Null()).when(dataTypeHandlerServiceSpy).resolve(null, executionRuntime);
-        listSize = new ListSize(executionRuntime);
         assertThatThrownBy(() -> listSize.generateOutput(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("list cannot be of type class io.metadew.iesi.datatypes._null.Null");

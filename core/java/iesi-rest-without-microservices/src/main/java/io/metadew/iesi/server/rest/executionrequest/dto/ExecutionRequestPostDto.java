@@ -33,9 +33,10 @@ public class ExecutionRequestPostDto extends RepresentationModel<ExecutionReques
     private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
 
 
+    //TODO: Add userId And Username by method call
     public ExecutionRequest convertToEntity() {
         String newExecutionRequestId = UUID.randomUUID().toString();
-        return NonAuthenticatedExecutionRequest.builder()
+        return AuthenticatedExecutionRequest.builder()
                 .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
                 .name(name)
                 .context(context)

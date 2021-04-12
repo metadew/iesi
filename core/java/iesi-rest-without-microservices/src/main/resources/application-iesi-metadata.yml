@@ -1089,26 +1089,26 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
-          SPACE_NM:
-            description: Unique identifier for the space
-            order: 11
-            type: STRING
-            length: 100
-            nullable: true
-            defaultTimestamp:
-          USER_NM:
+         # SPACE_NM:
+         #  description: Unique identifier for the space
+         #   order: 11
+         #  type: STRING
+         #   length: 100
+         #   nullable: true
+         #   defaultTimestamp:
+          USER_ID:
             description: Unique identifier for the user
-            order: 12
+            order: 12  #What is Order ADd in increment order
             type: STRING
-            length: 100
-            nullable: true
+            length: 255 #Need Confirmation
+            nullable: false #Need Confirmation
             defaultTimestamp:
-          USER_PASSWORD:
-            description: User password
+          USERNAME_NM:
+            description: Unique Username for the user #Need Confirmation of var
             order: 13
             type: STRING
-            length: 2000
-            nullable: true
+            length: 255
+            nullable: false
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table

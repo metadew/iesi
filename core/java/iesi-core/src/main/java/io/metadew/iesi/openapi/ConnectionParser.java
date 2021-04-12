@@ -32,10 +32,10 @@ public class ConnectionParser implements Parser<Connection> {
     public List<Connection> parse(OpenAPI openAPI) {
         String name = openAPI.getInfo().getTitle();
         String description = openAPI.getInfo().getDescription();
-        List<URL> adresses = getAdresses(openAPI.getServers());
-        return IntStream.range(0, adresses.size()).boxed()
+        List<URL> addresses = getAddresses(openAPI.getServers());
+        return IntStream.range(0, addresses.size()).boxed()
                 .map(index -> {
-                    URL address = adresses.get(index);
+                    URL address = addresses.get(index);
                     String environment = String.format("env%s", index);
                     final List<ConnectionParameter> connectionParameters = new ArrayList<>();
                     getPort(address)
@@ -53,7 +53,7 @@ public class ConnectionParser implements Parser<Connection> {
                 }).collect(Collectors.toList());
     }
 
-    public List<URL> getAdresses(List<Server> servers) {
+    public List<URL> getAddresses(List<Server> servers) {
         return servers.stream()
                 .map(server -> toUrlModel(server.getUrl()))
                 .filter(Objects::nonNull)

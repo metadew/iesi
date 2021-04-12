@@ -92,7 +92,7 @@ public class ConnectionParserTest {
         servers.add(server);
         urls.add(url);
 
-        assertThat(ConnectionParser.getInstance().getAdresses(servers))
+        assertThat(ConnectionParser.getInstance().getAddresses(servers))
                 .isEqualTo(urls);
     }
 
@@ -104,7 +104,7 @@ public class ConnectionParserTest {
 
         servers.add(server);
 
-        assertThat(ConnectionParser.getInstance().getAdresses(servers))
+        assertThat(ConnectionParser.getInstance().getAddresses(servers))
                 .isEqualTo(new ArrayList<>());
     }
 

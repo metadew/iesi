@@ -96,7 +96,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
 
     @Override
     protected String getKeyword() {
-        return "socket.TransmitMessage";
+        return "socket.transmitMessage";
     }
 
     private void sendUDPMessage() throws IOException {

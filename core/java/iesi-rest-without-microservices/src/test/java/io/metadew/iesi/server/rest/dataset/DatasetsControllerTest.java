@@ -381,6 +381,19 @@ class DatasetsControllerTest {
                                                 .label("label1")
                                                 .build()
                                 ).collect(Collectors.toSet()))
+                                .build(),
+                        InMemoryDatasetImplementationPostDto.builder()
+                                .keyValues(Stream.of(
+                                        InMemoryDatasetImplementationKeyValuePostDto.builder()
+                                                .key("key1")
+                                                .value("value1")
+                                                .build()
+                                ).collect(Collectors.toSet()))
+                                .labels(Stream.of(
+                                        DatasetImplementationLabelPostDto.builder()
+                                                .label("label2")
+                                                .build()
+                                ).collect(Collectors.toSet()))
                                 .build()
                 ).collect(Collectors.toSet()))
                 .build();
@@ -407,6 +420,26 @@ class DatasetsControllerTest {
                                                 .value("label1")
                                                 .build()
                                 ).collect(Collectors.toSet()))
+                                .build(),
+                        InMemoryDatasetImplementation.builder()
+                                .metadataKey(new DatasetImplementationKey(UUID.randomUUID()))
+                                .datasetKey(new DatasetKey(UUID.randomUUID()))
+                                .name("dataset")
+                                .keyValues(Stream.of(
+                                        InMemoryDatasetImplementationKeyValue.builder()
+                                                .metadataKey(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                                .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
+                                                .key("key1")
+                                                .value("value1")
+                                                .build()
+                                ).collect(Collectors.toSet()))
+                                .datasetImplementationLabels(Stream.of(
+                                        DatasetImplementationLabel.builder()
+                                                .metadataKey(new DatasetImplementationLabelKey(UUID.randomUUID()))
+                                                .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
+                                                .value("label2")
+                                                .build()
+                                ).collect(Collectors.toSet()))
                                 .build())
                         .collect(Collectors.toSet()))
                 .build();
@@ -427,6 +460,21 @@ class DatasetsControllerTest {
                                         DatasetImplementationLabelDto.builder()
                                                 .uuid(UUID.randomUUID())
                                                 .label("label1")
+                                                .build()
+                                ).collect(Collectors.toSet()))
+                                .build(),
+                        InMemoryDatasetImplementationDto.builder()
+                                .keyValues(Stream.of(
+                                        InMemoryDatasetImplementationKeyValueDto.builder()
+                                                .uuid(UUID.randomUUID())
+                                                .key("key1")
+                                                .value("value1")
+                                                .build()
+                                ).collect(Collectors.toSet()))
+                                .labels(Stream.of(
+                                        DatasetImplementationLabelDto.builder()
+                                                .uuid(UUID.randomUUID())
+                                                .label("label2")
                                                 .build()
                                 ).collect(Collectors.toSet()))
                                 .build()

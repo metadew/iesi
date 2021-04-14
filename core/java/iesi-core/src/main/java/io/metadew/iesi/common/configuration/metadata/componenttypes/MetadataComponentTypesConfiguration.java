@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.component.ComponentType;
+import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.HashMap;
@@ -44,6 +45,10 @@ public class MetadataComponentTypesConfiguration {
 
     public Optional<ComponentType> getComponentType(String componentType) {
         return Optional.ofNullable(componentTypeMap.get(componentType));
+    }
+
+    public Map<String, ComponentType> getComponentTypes() {
+        return componentTypeMap;
     }
 
     @SuppressWarnings("unchecked")

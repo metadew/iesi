@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.componentTypes.parameter;
+package io.metadew.iesi.server.rest.componentTypes.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

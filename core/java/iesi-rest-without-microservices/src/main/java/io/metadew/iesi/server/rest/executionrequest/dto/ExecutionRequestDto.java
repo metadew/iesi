@@ -1,18 +1,14 @@
 package io.metadew.iesi.server.rest.executionrequest.dto;
 
-import io.metadew.iesi.metadata.definition.execution.*;
-import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Data
@@ -32,12 +28,14 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
     private String scope;
     private String context;
     private String email;
+    private String userId;
+    private String username;
     private ExecutionRequestStatus executionRequestStatus;
     private Set<ScriptExecutionRequestDto> scriptExecutionRequests = new HashSet<>();
     private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
 
-
-    public ExecutionRequest convertToEntity() {
+    /*
+   public ExecutionRequest convertToEntity() {
         return new NonAuthenticatedExecutionRequest(
                 new ExecutionRequestKey(executionRequestId),
                 // new SecurityGroupKey(UUID.fromString(securityGroupUuid)),
@@ -81,5 +79,5 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
         executionRequest.setScriptExecutionRequests(scriptExecutionRequests);
         return executionRequest;
     }
-
+*/
 }

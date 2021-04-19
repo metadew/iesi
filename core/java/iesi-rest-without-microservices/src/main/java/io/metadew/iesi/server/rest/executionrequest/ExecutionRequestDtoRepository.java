@@ -40,7 +40,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
         return "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
                 // " execution_requests.SECURITY_GROUP_ID as exe_req_security_group_id, execution_requests.SECURITY_GROUP_NAME as exe_req_security_group_name, " +
-                "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass, " +
+                //"auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass, " +
+                "auth_execution_requests.REQUEST_ID as exe_req_auth,  auth_execution_requests.USER_ID as exe_req_auth_user_id, auth_execution_requests.USERNAME as exe_req_auth_username, " +
                 "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
                 "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
                 "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
@@ -361,6 +362,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 cachedRowSet.getString("exe_req_scope"),
                 cachedRowSet.getString("exe_req_context"),
                 cachedRowSet.getString("exe_req_email"),
+                cachedRowSet.getString("exe_req_user_id"),
+                cachedRowSet.getString("exe_req_username"),
                 ExecutionRequestStatus.valueOf(cachedRowSet.getString("exec_req_status")),
                 new HashMap<>(),
                 new HashMap<>()
@@ -380,11 +383,12 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         private String scope;
         private String context;
         private String email;
+        private String userId;
+        private String username;
         private ExecutionRequestStatus executionRequestStatus;
         private Map<String, ScriptExecutionRequestBuilder> scriptExecutionRequests;
         public Map<String, ExecutionRequestLabelDto> executionRequestLabels;
 
-        //TODO : Add both the parameter
         public ExecutionRequestDto build() {
             return new ExecutionRequestDto(
                     executionRequestId,
@@ -396,6 +400,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     scope,
                     context,
                     email,
+                    userId, //TODO : Check
+                    username, //TODO : Check
                     executionRequestStatus,
                     scriptExecutionRequests.values().stream()
                             .map(ScriptExecutionRequestBuilder::build)

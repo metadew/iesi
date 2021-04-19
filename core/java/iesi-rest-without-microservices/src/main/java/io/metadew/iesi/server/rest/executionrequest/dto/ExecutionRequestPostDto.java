@@ -9,6 +9,7 @@ import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRe
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -33,8 +34,7 @@ public class ExecutionRequestPostDto extends RepresentationModel<ExecutionReques
     private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
 
 
-    //TODO: Add userId And Username by method call
-    public ExecutionRequest convertToEntity() {
+   /* public ExecutionRequest convertToEntity() {
         String newExecutionRequestId = UUID.randomUUID().toString();
         return AuthenticatedExecutionRequest.builder()
                 .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
@@ -52,6 +52,8 @@ public class ExecutionRequestPostDto extends RepresentationModel<ExecutionReques
                 .executionRequestStatus(ExecutionRequestStatus.NEW)
                 .requestTimestamp(LocalDateTime.now())
                 .build();
-    }
+
+
+    }*/
 
 }

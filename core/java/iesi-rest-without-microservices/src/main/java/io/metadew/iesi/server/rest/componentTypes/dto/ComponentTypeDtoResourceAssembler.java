@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.componentTypes.dto;
 
 import io.metadew.iesi.metadata.definition.component.ComponentType;
+import io.metadew.iesi.metadata.definition.component.ComponentTypeParameter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -11,11 +12,8 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ComponentTypeDtoResourceAssembler extends RepresentationModelAssemblerSupport<ComponentType, ComponentTypeDto> {
 
-    private final IComponentTypeParameterService componentTypeParameterService;
-
-    public ComponentTypeDtoResourceAssembler(IComponentTypeParameterService componentTypeParameterService) {
+    public ComponentTypeDtoResourceAssembler() {
         super(ComponentType.class, ComponentTypeDto.class);
-        this.componentTypeParameterService = componentTypeParameterService;
     }
 
     @Override
@@ -29,7 +27,16 @@ public class ComponentTypeDtoResourceAssembler extends RepresentationModelAssemb
                 componentType.getName(),
                 componentType.getDescription(),
                 componentType.getParameters().entrySet().stream()
-                        .map(entry -> componentTypeParameterService.convertToDto(entry.getValue(), entry.getKey()))
+                        .map(entry -> {
+                            ComponentTypeParameter parameter = entry.getValue();
+                            return new ComponentTypeParameterDto(
+                                    entry.getKey(),
+                                    parameter.getDescription(),
+                                    parameter.getType(),
+                                    parameter.isMandatory(),
+                                    parameter.isEncrypted()
+                            );
+                        })
                         .collect(Collectors.toList())
         );
     }

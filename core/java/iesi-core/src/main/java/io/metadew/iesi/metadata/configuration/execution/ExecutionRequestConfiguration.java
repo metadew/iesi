@@ -43,7 +43,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         try {
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
-                    "AUTH_EXECUTION_REQUEST.USER_ID_NM, AUTH_EXECUTION_REQUEST.USERNAME_NM, " +
+                    "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     // Replace with case in case of Spring
                     // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
                     // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
@@ -79,8 +79,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
                         ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
-                        cachedRowSet.getString("USER_ID_NM"),
-                        cachedRowSet.getString("USERNAME_NM")));
+                        cachedRowSet.getString("USER_ID"),
+                        cachedRowSet.getString("USERNAME")));
             } else if (cachedRowSet.getString("NON_AUTH") != null) {
                 return Optional.of(new NonAuthenticatedExecutionRequest(
                         executionRequestKey,
@@ -131,14 +131,13 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         }
     }
 
-    //TODO : Remove NM
     @Override
     public List<ExecutionRequest> getAll() {
         try {
             List<ExecutionRequest> executionRequests = new ArrayList<>();
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
-                    "AUTH_EXECUTION_REQUEST.USER_ID_NM, AUTH_EXECUTION_REQUEST.USERNAME_NM, " +
+                    "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     // Replace with case in case of Spring
                     // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
                     // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
@@ -169,8 +168,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                            cachedRowSet.getString("USER_ID_NM"),
-                            cachedRowSet.getString("USERNAME_NM")));
+                            cachedRowSet.getString("USER_ID"),
+                            cachedRowSet.getString("USERNAME")));
                 } else if (cachedRowSet.getString("NON_AUTH") != null) {
                     executionRequests.add(new NonAuthenticatedExecutionRequest(
                             new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
@@ -220,13 +219,12 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         }
     }
 
-    //TODO : Remove NM
     public List<ExecutionRequest> getAllNew() {
         try {
             List<ExecutionRequest> executionRequests = new ArrayList<>();
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
-                    "AUTH_EXECUTION_REQUEST.USER_ID_NM, AUTH_EXECUTION_REQUEST.USERNAME, " +
+                    "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     // Replace with case in case of Spring
                     // "CASE WHEN AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 1 " +
                     // "WHEN NON_AUTH_EXECUTION_REQUEST.REQUEST_ID IS NOT NULL THEN 2 " +
@@ -258,8 +256,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                            cachedRowSet.getString("USER_ID_NM"),
-                            cachedRowSet.getString("USERNAME_NM")));
+                            cachedRowSet.getString("USER_ID"),
+                            cachedRowSet.getString("USERNAME")));
                 } else if (cachedRowSet.getString("NON_AUTH") != null) {
                     executionRequests.add(new NonAuthenticatedExecutionRequest(
                             new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
@@ -351,7 +349,6 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         getMetadataRepository().executeBatch(insertStatement);
     }
 
-    //TODO : Remove NM
     private List<String> insertStatement(ExecutionRequest executionRequest) {
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") +
@@ -370,7 +367,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                 SQLTools.getStringForSQL(executionRequest.getExecutionRequestStatus().value()) + ");");
         if (executionRequest instanceof AuthenticatedExecutionRequest) {
             queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") +
-                    " (REQUEST_ID, USER_ID_NM, USERNAME) VALUES (" +
+                    " (REQUEST_ID, USER_ID, USERNAME) VALUES (" +
                     SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
                     SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUserID()) + "," +
                     SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUsername()) + ");");
@@ -404,7 +401,6 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         getMetadataRepository().executeBatch(updateStatement);
     }
 
-    //TODO : Remove NM
     private List<String> updateStatement(ExecutionRequest executionRequest) {
         List<String> queries = new ArrayList<>();
         queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") + " SET " +
@@ -419,7 +415,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                 "REQUEST_ID =" + SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
         if (executionRequest instanceof AuthenticatedExecutionRequest) {
             queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " SET " +
-                    "USER_ID_NM=" + SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUserID()) + "," +
+                    "USER_ID=" + SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUserID()) + "," +
                     "USERNAME=" + SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUsername())  +
                     " WHERE " +
                     "REQUEST_ID =" + SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + ";");

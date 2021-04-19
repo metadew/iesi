@@ -155,12 +155,6 @@ public class ExecutionRequestBuilder {
                 username);
     }
 
-    /*private void verifyMandatoryAuthenticationArguments() throws ExecutionRequestBuilderException {
-        if (user == null || password == null) {
-            throw new ExecutionRequestBuilderException();
-        }
-    }*/
-
     private void verifyMandatoryAuthenticationArguments() throws ExecutionRequestBuilderException {
         if (userId == null || username == null) {
             throw new ExecutionRequestBuilderException();

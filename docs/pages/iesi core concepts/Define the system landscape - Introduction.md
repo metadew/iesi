@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # Define the system landscape - Introduction
 
 ## General

@@ -13,19 +13,19 @@ Our realized use cases supported in the:
 ## Realized Use Cases
 |Type | Examples|
 |---- |---------|
-|Data Platform | End-to-end processing and data completeness / correctness tests|
+|**Data Platform** | End-to-end processing and data completeness / correctness tests|
 |              |Deployment automation for common components|
 |              |Data comparisons using SQL minus queries|
 |              |Regression testing for data loads and processing|
 |              |Monitor data quality after implementation|
-|Data Migration | Data structure comparisons|
+|**Data Migration** | Data structure comparisons|
 |               |Data comparisons across servers and locations|
 |               |Correctness and completeness verifications during parallel run|
-|Integration Services | Automate data creation by combining integration services|
+|**Integration Services** | Automate data creation by combining integration services|
 |                     |Combine core services and digital capabilities (ATM, web, …)|
 |                     |Simulate access through different channels|
 |                     |Verify services during and after data updates|
-|API and Ecosystem | Verify PSD2 calls between banks|
+|**API and Ecosystem**| Verify PSD2 calls between banks|
 |                  |Verify connections between banks and ecosystem partners|
 |                  |...|            
 

@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # Configure your script - Using Variables
 ## What is a variable?
 Variables allow automation scripts to be designed in a generic manner where **execution depends on user input or execution context**. In this way, it is possible to create reusable configurations that can be executed many times without requiring additional configuration. This is a great way of multiplying the number of automation execution fast and easy.

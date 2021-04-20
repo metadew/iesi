@@ -19,7 +19,7 @@ Before we can design our script, we need to think about the following questions:
   * Connection configuration
   * Component configuration
 
-Learn more [here](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Define%20the%20system%20landscape%20-%20Introduction.md) 
+Learn more [here](/{{site.repository}}/pages/iesicoreconcepts/DefineTheSystemLandscapeIntroduction.html)
 
 **2. Configure the script**\
 Design your script by defining a set of actions that need to be executed in a specific sequence. Depending on the type of action you would like to perform, IESI has embedded the notion of action types which will help the user by limiting the required effort. We will get acquainted with the following concepts of script building:
@@ -31,7 +31,7 @@ Design your script by defining a set of actions that need to be executed in a sp
   * Using Expected Error
   * Using Stop on Error
 
-Learn more [here](https://github.com/metadew/iesi/blob/af9e5095eb8063708c0cd19f93c82f472a6fd5d7/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Introduction.md)
+Learn more [here](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptIntroduction.html)
   
 **3. Execute the script**\
 Once the design has been finalized and the system landscape has been configured, it is time to execute your script by loading it into the repository and executing it through the interface. We will get acquainted with the following concepts of script execution:

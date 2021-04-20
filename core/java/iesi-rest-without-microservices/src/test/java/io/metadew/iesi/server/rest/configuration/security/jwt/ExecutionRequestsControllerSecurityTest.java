@@ -17,6 +17,8 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModel
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestPostDto;
+import io.metadew.iesi.server.rest.user.UserDto;
+import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,7 +44,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Log4j2
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
@@ -68,6 +71,10 @@ class ExecutionRequestsControllerSecurityTest {
 
     @MockBean
     private ScriptConfiguration scriptConfiguration;
+
+    @MockBean
+    private UserDtoRepository userDtoRepository;
+
 
     @Test
     void testGetAllNoUser() {
@@ -298,6 +305,14 @@ class ExecutionRequestsControllerSecurityTest {
                 .name("name")
                 .scope("scope")
                 .build();
+
+        UserDto userDto = mock(UserDto.class);
+        when(userDto.getId())
+                .thenReturn(UUID.randomUUID());
+        when(userDto.getUsername())
+                .thenReturn("spring");
+        when(userDtoRepository.get("spring"))
+                .thenReturn(Optional.of(userDto));
         when(scriptConfiguration
                 .getSecurityGroup("script1"))
                 .thenReturn(Optional.of(new SecurityGroup(
@@ -331,6 +346,7 @@ class ExecutionRequestsControllerSecurityTest {
                 .name("name")
                 .scope("scope")
                 .build();
+
         when(scriptConfiguration
                 .getSecurityGroup("script1"))
                 .thenReturn(Optional.of(new SecurityGroup(

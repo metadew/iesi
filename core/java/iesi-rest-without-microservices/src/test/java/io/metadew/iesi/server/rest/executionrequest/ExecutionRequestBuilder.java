@@ -148,6 +148,8 @@ public class ExecutionRequestBuilder {
                 .description("description")
                 .email("email")
                 .name("name")
+                .userId("userId")
+                .username("username")
                 .executionRequestLabels(IntStream.range(0, labelCount).boxed()
                         .map(labelIndex -> {
                                     ExecutionRequestLabelDto executionRequestLabelDto = ExecutionRequestLabelDto.builder()

@@ -28,7 +28,7 @@ public class FwkSetParameterList extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     protected boolean executeAction() throws InterruptedException {
         Map<String, String> list = convertList(getParameterResolvedValue(PARAMETER_LIST_KEY));

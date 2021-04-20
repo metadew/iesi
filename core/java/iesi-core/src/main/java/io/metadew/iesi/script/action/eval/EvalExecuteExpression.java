@@ -22,7 +22,7 @@ public class EvalExecuteExpression extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
         this.expression = convertExpression(getParameterResolvedValue(EXPRESSION_KEY));
     }
 

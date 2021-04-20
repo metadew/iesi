@@ -28,7 +28,9 @@ public class CoalesceLookup implements LookupInstruction {
         Optional<String> hit = Arrays.stream(parameters.split(","))
                 .map(String::trim)
                 .filter(value -> !value.isEmpty())
-                .filter(value -> !(DataTypeHandler.getInstance().resolve(value, executionRuntime) instanceof Null))
+                .map(value -> DataTypeHandler.getInstance().resolve(value, executionRuntime))
+                .filter(value -> !(value instanceof Null))
+                .map(DataType::toString)
                 .findFirst();
         return hit.orElse(DEFAULT);
     }

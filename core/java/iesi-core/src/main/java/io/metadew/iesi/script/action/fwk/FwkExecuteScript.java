@@ -45,7 +45,7 @@ public class FwkExecuteScript extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     private Optional<String> convertParameterList2(DataType parameterList) {
         if (parameterList == null) {

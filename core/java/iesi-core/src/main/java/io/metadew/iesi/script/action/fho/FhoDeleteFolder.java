@@ -41,7 +41,7 @@ public class FhoDeleteFolder extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     protected boolean executeAction() throws InterruptedException {
         String path = convertPath(getParameterResolvedValue(FOLDER_PATH_KEY));

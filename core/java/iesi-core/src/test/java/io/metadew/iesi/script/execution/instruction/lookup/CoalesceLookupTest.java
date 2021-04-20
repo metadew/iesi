@@ -27,6 +27,10 @@ class CoalesceLookupTest {
         doReturn(new Text("test"))
                 .when(dataTypeHandlerSpy)
                 .resolve("test", executionRuntime);
+        when(executionRuntime.resolveVariables(""))
+                .thenReturn("");
+        when(executionRuntime.resolveVariables("test"))
+                .thenReturn("test");
 
         CoalesceLookup coalesceLookup = new CoalesceLookup(executionRuntime);
         assertThat(coalesceLookup.generateOutput("test"))
@@ -34,6 +38,12 @@ class CoalesceLookupTest {
         assertThat(coalesceLookup.generateOutput(",test"))
                 .isEqualTo("test");
         assertThat(coalesceLookup.generateOutput("{{^null()}},test"))
+                .isEqualTo("test");
+        assertThat(coalesceLookup.generateOutput("{{^null()}},{{^text()}}"))
+                .isEmpty();
+        assertThat(coalesceLookup.generateOutput("{{^null()}},{{^text()}},test"))
+                .isEmpty();
+        assertThat(coalesceLookup.generateOutput("{{^null()}},{{^text(test)}},{{^null()}}"))
                 .isEqualTo("test");
 
 

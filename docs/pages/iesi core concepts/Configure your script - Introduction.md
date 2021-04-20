@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # Configure your script - Introduction
 ## Before you start
 The automation framework focuses on configuring scripts once and executing them many times. To achieve this in the most effective and efficient manner, automation engineers can make use of a variety of reusable constructs for which we often refer to as ‘building blocks’ during the design phase. It is possible to automate a single use case in many ways. It is the engineer’s level of skill, creativity and design expertise that will result extremely powerful and effective automation solutions.

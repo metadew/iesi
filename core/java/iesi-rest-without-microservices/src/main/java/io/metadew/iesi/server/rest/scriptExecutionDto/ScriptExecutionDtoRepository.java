@@ -274,8 +274,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "action_trc_par.ACTION_PAR_VAL ACTION_PAR_VAL_RESOLVED, " +
                 "action_res_output.OUT_NM ACTION_OUTPUT_NM, " +
                 "action_res_output.OUT_VAL ACTION_OUTPUT_VAL, " +
-                "auth_execution_requests.USER_ID exe_req_auth_user_id, " +
-                "auth_execution_requests.USERNAME exe_req_auth_username " +
+                "auth_execution_requests.USER_ID as exe_req_auth_user_id, " +
+                "auth_execution_requests.USERNAME as exe_req_auth_username " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_exec " +
                 "on results.RUN_ID = script_exec.RUN_ID AND results.PRC_ID = -1 " +

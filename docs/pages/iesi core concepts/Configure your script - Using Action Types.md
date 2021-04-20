@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # Configure your script - Using Action Types
 ## What are Action Types?
 Action types are the **reusable building blocks** of automation scripts. **Each type performs a specific operation and requires a different set of input parameters**.

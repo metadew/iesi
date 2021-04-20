@@ -290,7 +290,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " IER " +
                 "on IESER.ID = IER.REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
-                "on base_execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
+                "on IER.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " script_exec_lbl " +
                 "on IER.REQUEST_ID = script_exec_lbl.REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +

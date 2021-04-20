@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # Configure your script - Using Subroutines
 ## What are subroutines?
 Subroutines is a capability to **define reusable snippets of code** that can be used as **part of action parameter values**. In that way, a similar piece of configuration needs to be defined only once and can be reused many times. It can be compared to a **spreadsheet function**. As a user, you need to know the function name and what it does, not how it works in the background.

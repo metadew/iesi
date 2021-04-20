@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## Connection types
 Connection types are the reusable configuration blocks. 
 Each type allows the framework to connect to specific technology and requires a different set of input parameters. 

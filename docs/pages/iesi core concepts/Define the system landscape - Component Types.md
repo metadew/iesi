@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## Component Types
 Components are created in order to provide the automation engineers with **high reusability and parameterization**. The component type is used as a switch for the connectivity options and is stored in a component-library.
 

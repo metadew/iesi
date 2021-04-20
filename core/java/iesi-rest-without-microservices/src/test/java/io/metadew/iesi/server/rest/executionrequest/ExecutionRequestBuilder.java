@@ -50,9 +50,6 @@ public class ExecutionRequestBuilder {
                 .requestTimestamp(requestTimestamp)
                 .context("context")
                 .email("email")
-                .password("password")
-                .user("user")
-                .space("space")
                 .scope("scope")
                 .name("name")
                 .description("description")
@@ -118,6 +115,8 @@ public class ExecutionRequestBuilder {
                                     info.put(String.format("scriptExecutionRequest%d%d", executionRequestIndex, scriptExecutionRequestIndex), scriptNameExecutionRequest);
                                     return scriptNameExecutionRequest;
                                 }).collect(Collectors.toList()))
+                .username("username")
+                .userID("userId")
                 .build();
         info.put("executionRequest", executionRequest);
 

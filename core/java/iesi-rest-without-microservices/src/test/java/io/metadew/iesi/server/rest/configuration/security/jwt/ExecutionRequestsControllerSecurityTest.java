@@ -1,9 +1,17 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.Application;
@@ -16,6 +24,7 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
@@ -41,6 +50,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -320,8 +330,53 @@ class ExecutionRequestsControllerSecurityTest {
                         "PUBLIC",
                         new HashSet<>(),
                         new HashSet<>())));
-        executionRequestController.post(executionRequestDto);
+
+        String newExecutionRequestId = UUID.randomUUID().toString();
+        AuthenticatedExecutionRequest authenticatedExecutionRequest = AuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
+                .name("name")
+                .username("spring")
+                .userID("12345")
+                .context("context")
+                .description("description")
+                .scope("scope")
+                .executionRequestLabels(Stream.of(ExecutionRequestLabel.builder()
+                        .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                        .name("key1")
+                        .value("value1")
+                        .build())
+                        .collect(Collectors.toSet()))
+                .email("email")
+                .scriptExecutionRequests(Stream.of(ScriptNameExecutionRequest.builder()
+                        .scriptName("script1")
+                        .scriptVersion(1L)
+                        .environment("test")
+                        .exit(false)
+                        .impersonations(new HashSet<>())
+                        .parameters(new HashSet<>())
+                        .build())
+                        .collect(Collectors.toList()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .requestTimestamp(LocalDateTime.now())
+                .build();
+
+        when(executionRequestService.createExecutionRequest(any())).thenReturn(authenticatedExecutionRequest);
+        ExecutionRequestDto executionRequestDto1 = executionRequestController.post(executionRequestDto);
+
+
     }
+
+
+    /*public boolean equalsWithoutUuid(ExecutionRequestDto executionRequestDto1) {
+        if (executionRequestDto1 !=null) {
+            if(executionRequestDto1.getName().equals("name")
+                    && executionRequestDto1.getContext().equals("context")
+                    && executionRequestDto1.getDescription().equals("description")) {
+                return  true;
+            }
+        }
+        return false;
+    }*/
 
     @Test
     @WithIesiUser(username = "spring",

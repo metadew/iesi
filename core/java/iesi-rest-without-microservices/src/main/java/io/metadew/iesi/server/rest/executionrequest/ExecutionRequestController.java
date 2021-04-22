@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
-import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
@@ -123,7 +122,7 @@ public class ExecutionRequestController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDto userDto = userDtoRepository.get(username).orElseThrow(() -> new RuntimeException("Cannot find user :" + username));
         String newExecutionRequestId = UUID.randomUUID().toString();
-        ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(AuthenticatedExecutionRequest.builder()
+        AuthenticatedExecutionRequest authenticatedExecutionRequest = AuthenticatedExecutionRequest.builder()
                 .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
                 .name(executionRequestPostDto.getName())
                 .username(userDto.getUsername())
@@ -140,8 +139,8 @@ public class ExecutionRequestController {
                         .collect(Collectors.toList()))
                 .executionRequestStatus(ExecutionRequestStatus.NEW)
                 .requestTimestamp(LocalDateTime.now())
-                .build());
-        //ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(executionRequestPostDto.convertToEntity());
+                .build();
+        ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(authenticatedExecutionRequest);
         return executionRequestDtoModelAssembler.toModel(executionRequest);
     }
 

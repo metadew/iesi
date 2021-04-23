@@ -296,7 +296,7 @@ class ExecutionRequestsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"EXECUTION_REQUESTS_WRITE@PUBLIC"})
     void testCreateExecutionRequestsWrite() {
-        ExecutionRequestPostDto executionRequestDto = ExecutionRequestPostDto.builder()
+        ExecutionRequestPostDto executionRequestPostDto = ExecutionRequestPostDto.builder()
                 .executionRequestLabels(new HashSet<>())
                 .requestTimestamp(LocalDateTime.now())
                 .scriptExecutionRequests(Stream.of(
@@ -331,37 +331,7 @@ class ExecutionRequestsControllerSecurityTest {
                         new HashSet<>(),
                         new HashSet<>())));
 
-        String newExecutionRequestId = UUID.randomUUID().toString();
-        AuthenticatedExecutionRequest authenticatedExecutionRequest = AuthenticatedExecutionRequest.builder()
-                .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
-                .name("name")
-                .username("spring")
-                .userID("12345")
-                .context("context")
-                .description("description")
-                .scope("scope")
-                .executionRequestLabels(Stream.of(ExecutionRequestLabel.builder()
-                        .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
-                        .name("key1")
-                        .value("value1")
-                        .build())
-                        .collect(Collectors.toSet()))
-                .email("email")
-                .scriptExecutionRequests(Stream.of(ScriptNameExecutionRequest.builder()
-                        .scriptName("script1")
-                        .scriptVersion(1L)
-                        .environment("test")
-                        .exit(false)
-                        .impersonations(new HashSet<>())
-                        .parameters(new HashSet<>())
-                        .build())
-                        .collect(Collectors.toList()))
-                .executionRequestStatus(ExecutionRequestStatus.NEW)
-                .requestTimestamp(LocalDateTime.now())
-                .build();
-
-        when(executionRequestService.createExecutionRequest(any())).thenReturn(authenticatedExecutionRequest);
-        ExecutionRequestDto executionRequestDto1 = executionRequestController.post(executionRequestDto);
+        executionRequestController.post(executionRequestPostDto);
 
 
     }

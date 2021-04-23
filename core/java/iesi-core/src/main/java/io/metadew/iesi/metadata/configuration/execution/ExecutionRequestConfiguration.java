@@ -80,7 +80,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
                         ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
                         cachedRowSet.getString("USER_ID"),
-                        cachedRowSet.getString("USERNAME")));
+                        cachedRowSet.getString("USERNAME")
+                        ));
             } else if (cachedRowSet.getString("NON_AUTH") != null) {
                 return Optional.of(new NonAuthenticatedExecutionRequest(
                         executionRequestKey,
@@ -169,7 +170,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             cachedRowSet.getString("USER_ID"),
-                            cachedRowSet.getString("USERNAME")));
+                            cachedRowSet.getString("USERNAME")
+                            ));
                 } else if (cachedRowSet.getString("NON_AUTH") != null) {
                     executionRequests.add(new NonAuthenticatedExecutionRequest(
                             new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
@@ -257,7 +259,9 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             cachedRowSet.getString("USER_ID"),
-                            cachedRowSet.getString("USERNAME")));
+                            cachedRowSet.getString("USERNAME")
+
+                          ));
                 } else if (cachedRowSet.getString("NON_AUTH") != null) {
                     executionRequests.add(new NonAuthenticatedExecutionRequest(
                             new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),

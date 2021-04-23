@@ -115,8 +115,8 @@ public class ExecutionRequestBuilder {
                                     info.put(String.format("scriptExecutionRequest%d%d", executionRequestIndex, scriptExecutionRequestIndex), scriptNameExecutionRequest);
                                     return scriptNameExecutionRequest;
                                 }).collect(Collectors.toList()))
-                .username("username")
                 .userID("userId")
+                .username("username")
                 .build();
         info.put("executionRequest", executionRequest);
 

@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # host.unix
 ## Purpose
 This connection is for unix based host systems. Remote connections require ssh to be active.

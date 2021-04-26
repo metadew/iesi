@@ -1,4 +1,5 @@
 
+{% include navigation.html %}
 # db.drill
 ## Purpose
 This connection is for Apache Drill schema free sql query engine (https://drill.apache.org)

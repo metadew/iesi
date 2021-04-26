@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.oracle
 ## Purpose
 Oracle Database Connection

@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.sqlite
 ## Purpose
 This type connects to a Sqlite database ([https://www.sqlite.org](https://www.sqlite.org)).

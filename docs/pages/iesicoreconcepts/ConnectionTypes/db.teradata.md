@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.teradata
 ## Purpose
 This type connects to a Teradata database ([https://www.teradata.com/](https://www.teradata.com/)).

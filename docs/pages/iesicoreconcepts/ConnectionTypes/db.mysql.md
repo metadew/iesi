@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.mysql
 ## Purpose
 This type connects to a MySQL DB database ([https://www.mysql.com/](https://www.mysql.com/)).

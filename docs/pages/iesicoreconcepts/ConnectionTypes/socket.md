@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # socket
 ## Purpose
 Socket Connection

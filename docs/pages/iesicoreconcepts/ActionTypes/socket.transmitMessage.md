@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## socket.transmitMessage
 ## Purpose
 This actiontype executes a socket message

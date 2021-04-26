@@ -17,10 +17,10 @@ Examples of actions:
 
 In this section, we will highlight the most important aspects of script design. You can find more detailed information about each aspect in our subpages:
 
-* [Using Action Types](https://github.com/metadew/iesi/blob/676ca835bc988560d1182d16d1e17248d5f62be1/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Using%20Action%20Types.md)
-* [Using Variables](https://github.com/metadew/iesi/blob/2f6742e48fb6cf6065742992f6398c459830d51d/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Using%20Variables.md)
-* [Using Subroutines](https://github.com/metadew/iesi/blob/2f6742e48fb6cf6065742992f6398c459830d51d/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Using%20Variables.md)
-* [Using Datasets](https://github.com/metadew/iesi/blob/2f6742e48fb6cf6065742992f6398c459830d51d/docs/pages/iesi%20core%20concepts/Configure%20your%20script%20-%20Using%20Datasets.md)
+* [Using Action Types](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptUsingActionTypes.html)
+* [Using Variables](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptUsingVariables.html)
+* [Using Subroutines](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptUsingSubroutines.html)
+* [Using Datasets](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptUsingDatasets.html)
 * Using Expected Error (link TBD)
 * Using Stop On Error (link TBD)
 

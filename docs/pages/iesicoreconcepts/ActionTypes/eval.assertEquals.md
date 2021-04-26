@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## eval.assertEquals
 ## Purpose
 This actiontype evaluates if two values are equal

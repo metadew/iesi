@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # http
 ## Purpose
 Connection to a server exposing HTTP endpoints

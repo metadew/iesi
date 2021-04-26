@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # host.windows
 ## Purpose
 This connection is for windows based host systems. Remote connections are not possible. This is only used when running the framework on a windows machine.

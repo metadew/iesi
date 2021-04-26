@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## sql.executeQuery
 ## Purpose
 This actiontype runs a sql query on a relational database returning a result after execution. Output values can captured after select query execution if required.

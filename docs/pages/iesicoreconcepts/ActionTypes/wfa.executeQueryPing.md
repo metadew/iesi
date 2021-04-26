@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## wfa.executeQueryPing.md
 ## Purpose
 This actiontype runs a sql query on a relational database waiting for returning a result or not. Output values can captured as runtime variable when a result has been received.

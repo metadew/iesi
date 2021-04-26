@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fho.fileExists
 ## Purpose
 This actiontype verifies if a file exists

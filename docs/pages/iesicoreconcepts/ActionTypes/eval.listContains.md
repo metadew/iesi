@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## eval.listContains
 ## Purpose
 This actiontype evaluates if value exists in list

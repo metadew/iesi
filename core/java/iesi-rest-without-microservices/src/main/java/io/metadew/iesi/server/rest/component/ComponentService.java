@@ -6,6 +6,9 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,14 +18,16 @@ import java.util.Optional;
 public class ComponentService implements IComponentService {
 
     private ComponentConfiguration componentConfiguration;
+    private ComponentDtoRepository componentDtoRepository;
 
     @Autowired
-    public ComponentService(ComponentConfiguration componentConfiguration) {
+    public ComponentService(ComponentConfiguration componentConfiguration, ComponentDtoRepository componentDtoRepository) {
         this.componentConfiguration = componentConfiguration;
+        this.componentDtoRepository = componentDtoRepository;
     }
 
-    public List<Component> getAll() {
-        return componentConfiguration.getAll();
+    public Page<ComponentDto> getAll(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
+        return componentDtoRepository.getAll(authentication, pageable, componentFilters);
     }
 
     public List<Component> getByName(String name) {

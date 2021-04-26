@@ -9,7 +9,6 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.component.ComponentService;
 import io.metadew.iesi.server.rest.component.ComponentsController;
-import io.metadew.iesi.server.rest.component.IComponentService;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.component.dto.ComponentDtoResourceAssembler;
 import io.metadew.iesi.server.rest.component.dto.ComponentParameterDto;
@@ -20,16 +19,15 @@ import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -64,7 +62,8 @@ class ComponentsControllerSecurityTest {
 
     @Test
     void testGetAllNoUser() throws Exception {
-        assertThatThrownBy(() -> componentsController.getAll())
+        Pageable pageable = Pageable.unpaged();
+        assertThatThrownBy(() -> componentsController.getAll(pageable, null))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -96,7 +95,8 @@ class ComponentsControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetAllNoComponentReadPrivilege() throws Exception {
-        assertThatThrownBy(() -> componentsController.getAll())
+        Pageable pageable = Pageable.unpaged();
+        assertThatThrownBy(() -> componentsController.getAll(pageable, null))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -104,7 +104,8 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetComponentReadPrivilege() throws Exception {
-        componentsController.getAll();
+        Pageable pageable = Pageable.unpaged();
+        componentsController.getAll(pageable, null);
     }
 
     @Test

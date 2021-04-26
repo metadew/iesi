@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 @Log4j2
 @Repository
-public class ScriptDtoRepository extends PaginatedRepository implements IScriptDtoRepository {
+public class  ScriptDtoRepository extends PaginatedRepository implements IScriptDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;

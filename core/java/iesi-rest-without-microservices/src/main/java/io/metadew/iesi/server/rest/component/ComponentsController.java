@@ -11,13 +11,19 @@ import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,21 +37,38 @@ public class ComponentsController {
 
     private IComponentService componentService;
     private ComponentDtoResourceAssembler componentDtoResourceAssembler;
+    private final PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler;
 
     @Autowired
     ComponentsController(ComponentDtoResourceAssembler componentDtoResourceAssembler,
-                         ComponentService componentService) {
+                         ComponentService componentService, PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler) {
         this.componentDtoResourceAssembler = componentDtoResourceAssembler;
         this.componentService = componentService;
+        this.componentDtoPagedResourcesAssembler = componentDtoPagedResourcesAssembler;
     }
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
-    public HalMultipleEmbeddedResource<ComponentDto> getAll() {
-        List<Component> components = componentService.getAll();
-        return new HalMultipleEmbeddedResource<>(components.stream()
-                .map(component -> componentDtoResourceAssembler.toModel(component))
-                .collect(Collectors.toList()));
+    public PagedModel<ComponentDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
+        List<ComponentFilter> componentFilters = extractComponentFilterOptions(name);
+        Page<ComponentDto> componentDtoPage = componentService.getAll(
+                SecurityContextHolder.getContext().getAuthentication(),
+                pageable,
+                componentFilters
+        );
+
+        if (componentDtoPage.hasContent())
+            return componentDtoPagedResourcesAssembler.toModel(componentDtoPage, componentDtoResourceAssembler::toModel);
+        //noinspection unchecked
+        return (PagedModel<ComponentDto>) componentDtoPagedResourcesAssembler.toEmptyModel(componentDtoPage, ComponentDto.class);
+    }
+
+    private List<ComponentFilter> extractComponentFilterOptions(String name) {
+        List<ComponentFilter> componentFilters = new ArrayList<>();
+        if (name != null) {
+            componentFilters.add(new ComponentFilter(ComponentFilterOption.NAME, name, false));
+        }
+        return componentFilters;
     }
 
     @GetMapping("/{name}")

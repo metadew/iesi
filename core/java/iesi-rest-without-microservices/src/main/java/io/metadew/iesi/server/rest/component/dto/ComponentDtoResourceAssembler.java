@@ -47,4 +47,7 @@ public class ComponentDtoResourceAssembler extends RepresentationModelAssemblerS
         return new ComponentAttributeDto(componentAttribute.getMetadataKey().getEnvironmentKey().getName(),
                 componentAttribute.getMetadataKey().getComponentAttributeName(), componentAttribute.getValue());
     }
+    public ComponentDto toModel(ComponentDto componentDto) {
+        return componentDto;
+    }
 }

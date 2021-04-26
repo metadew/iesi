@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## sql.executeProcedure
 ## Purpose
 This actiontype executes a sql stored procedure on a relational database. The input parameters can be provided as one of the parameters. Output values can captured after select statement execution if required.

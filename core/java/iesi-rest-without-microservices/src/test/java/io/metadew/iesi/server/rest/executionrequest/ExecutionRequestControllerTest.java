@@ -72,7 +72,8 @@ class ExecutionRequestControllerTest {
     @WithIesiUser(username = "spring",
             authorities = {"EXECUTION_REQUESTS_WRITE@PUBLIC"})
     void testCreateExecutionRequestsWrite() {
-        ExecutionRequestPostDto executionRequestDto = ExecutionRequestPostDto.builder()
+        // Create test method argument(s)
+        ExecutionRequestPostDto executionRequestPostDto = ExecutionRequestPostDto.builder()
                 .executionRequestLabels(new HashSet<>())
                 .requestTimestamp(LocalDateTime.now())
                 .scriptExecutionRequests(Stream.of(
@@ -92,6 +93,7 @@ class ExecutionRequestControllerTest {
                 .scope("scope")
                 .build();
 
+        // Define mocks behaviour
         UUID userUUID = UUID.randomUUID();
         UserDto userDto = mock(UserDto.class);
         when(userDto.getId())
@@ -145,7 +147,11 @@ class ExecutionRequestControllerTest {
 
         when(executionRequestService.createExecutionRequest(argThat(executionRequest -> equalsWithoutUuid(executionRequest, expectedAuthenticatedExecutionRequest))))
                 .thenReturn(expectedAuthenticatedExecutionRequest);
-        ExecutionRequestDto executionRequestDto1 = executionRequestController.post(executionRequestDto);
+
+        // Perform test method
+        ExecutionRequestDto executionRequestDto1 = executionRequestController.post(executionRequestPostDto);
+
+        // Perform assertions
         assertThat(executionRequestDto1)
                 .isEqualTo(ExecutionRequestDto.builder()
                         .executionRequestId(newExecutionRequestId)

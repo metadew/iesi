@@ -120,7 +120,8 @@ public class ExecutionRequestController {
             throw new AccessDeniedException("User is not allowed to delete this execution request");
         }
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserDto userDto = userDtoRepository.get(username).orElseThrow(() -> new RuntimeException("Cannot find user :" + username));
+        UserDto userDto = userDtoRepository.get(username)
+                .orElseThrow(() -> new RuntimeException("Cannot find user :" + username));
         String newExecutionRequestId = UUID.randomUUID().toString();
         AuthenticatedExecutionRequest authenticatedExecutionRequest = AuthenticatedExecutionRequest.builder()
                 .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
@@ -140,6 +141,7 @@ public class ExecutionRequestController {
                 .executionRequestStatus(ExecutionRequestStatus.NEW)
                 .requestTimestamp(LocalDateTime.now())
                 .build();
+
         ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(authenticatedExecutionRequest);
         return executionRequestDtoModelAssembler.toModel(executionRequest);
     }

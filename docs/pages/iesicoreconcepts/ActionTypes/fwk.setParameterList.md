@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fwk.setParameterList
 ## Purpose
 This actiontype adds a list of parameters into the framework's runtime variables. It is integrated with the with the settings and subroutines allowing to derive and lookup values. 

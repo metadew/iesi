@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## script.logOutput
 ## Purpose
 This actiontype stores an output value as part of the script results. It allows to log script related outputs specifically in the script output for reporting or processing purposes.

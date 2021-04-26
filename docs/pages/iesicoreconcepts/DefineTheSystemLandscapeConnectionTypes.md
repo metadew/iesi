@@ -22,7 +22,7 @@ Additional details on the parameters per connection type are provided below.
 |--------|----|-----------------------|
 |**db**|
 |      |[db.db2](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.db2.html)|IBM Database Connection|
-|      |[db.dremio](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.dremio.md)|Dremio Database Connection|
+|      |[db.dremio](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.dremio.html)|Dremio Database Connection|
 |      |[db.drill](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.drill.md)|Apache Drill Database Connection|
 |      |[db.h2](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.h2.md)|H2 Database Connection|
 |      |[db.mariadb](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.mariadb.md)|MariaDB Database Connection|

@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fho.deleteFolder
 ## Purpose
 This action deletes a folder and all its contents. All subfolders and contents are also deleted.

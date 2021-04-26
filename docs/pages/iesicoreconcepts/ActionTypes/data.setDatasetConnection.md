@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## data.setDatasetConnection
 ## Purpose
 This actiontype defines a dataset connection that can be used in any next action  

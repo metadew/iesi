@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.h2
 ## Purpose
 This type connects to a H2 database (https://www.h2database.com).

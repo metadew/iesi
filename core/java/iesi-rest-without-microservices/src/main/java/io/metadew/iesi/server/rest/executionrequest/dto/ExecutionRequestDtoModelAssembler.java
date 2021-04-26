@@ -70,16 +70,14 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
                     executionRequest.getExecutionRequestLabels().stream()
                             .map(this::convertToDto)
                             .collect(Collectors.toSet()));
-        }
-        else if(executionRequest instanceof AuthenticatedExecutionRequest)
-        {
+        } else if (executionRequest instanceof AuthenticatedExecutionRequest) {
             return new ExecutionRequestDto(
                     executionRequest.getMetadataKey().getId(),
                     executionRequest.getRequestTimestamp(),
                     executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
                     executionRequest.getContext(), executionRequest.getEmail(),
-                    ((AuthenticatedExecutionRequest)executionRequest).getUserID(),
-                    ((AuthenticatedExecutionRequest)executionRequest).getUsername(),
+                    ((AuthenticatedExecutionRequest) executionRequest).getUserID(),
+                    ((AuthenticatedExecutionRequest) executionRequest).getUsername(),
                     executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
                             .map(scriptExecutionRequestDtoModelAssembler::toModel)
@@ -87,8 +85,7 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
                     executionRequest.getExecutionRequestLabels().stream()
                             .map(this::convertToDto)
                             .collect(Collectors.toSet()));
-        }
-        else {
+        } else {
             throw new RuntimeException(MessageFormat.format("Cannot convert ExecutionRequest of type {0} to DTO", executionRequest.getClass().getSimpleName()));
         }
     }

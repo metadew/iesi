@@ -400,8 +400,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     scope,
                     context,
                     email,
-                    userId, //TODO : Check
-                    username, //TODO : Check
+                    userId,
+                    username,
                     executionRequestStatus,
                     scriptExecutionRequests.values().stream()
                             .map(ScriptExecutionRequestBuilder::build)

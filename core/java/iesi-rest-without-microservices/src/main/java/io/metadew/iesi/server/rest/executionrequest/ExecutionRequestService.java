@@ -39,14 +39,6 @@ public class ExecutionRequestService implements IExecutionRequestService {
         return executionRequest;
     }
 
-    public void updateExecutionRequest(ExecutionRequestDto executionRequestDto) {
-       // executionRequestConfiguration.update(executionRequestDto.convertToEntity());
-    }
-
-    public void updateExecutionRequests(List<ExecutionRequestDto> executionRequestDtos) {
-        executionRequestDtos.forEach(this::updateExecutionRequest);
-    }
-
     public void deleteAll() {
     }
 

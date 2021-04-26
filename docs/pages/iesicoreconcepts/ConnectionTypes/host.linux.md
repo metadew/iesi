@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # host.linux
 ## Purpose
 This connection is for linux based host systems. Remote connections require ssh to be active.

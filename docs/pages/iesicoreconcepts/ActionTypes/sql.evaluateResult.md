@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## sql.evaluateResult
 ## Purpose
 This action **executes** a sql statement on a relational database **and** **evaluates** if a result is returned or not. 

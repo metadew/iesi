@@ -12,5 +12,5 @@ The table provides an overview of all component types. Additional details on the
 |Category|Type|Description|
 |--------|----|-----------|
 |**http**|
-|    |[http.request](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Component%20Types/http.request.md)|Component type used for API Testing|
+|    |[http.request](/{{site.repository}}/pages/iesicoreconcepts/ComponentTypes/http.request.html)|Component type used for API Testing|
 

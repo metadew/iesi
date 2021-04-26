@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## wfa.executeFilePing
 ## Purpose
 This actiontype waits until a file statement returns a result or not

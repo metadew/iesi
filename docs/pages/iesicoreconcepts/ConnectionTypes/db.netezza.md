@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.netezza
 ## Purpose
 This type connects to a Netezza database ([https://www.ibm.com/analytics/netezza](https://www.ibm.com/analytics/netezza)).

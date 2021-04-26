@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fwk.outputMessage
 ## Purpose
 This actiontype prints a message that can be used for logging or debugging purposes. It is integrated with the framework's execution engine that manages settings and runtime variables. 

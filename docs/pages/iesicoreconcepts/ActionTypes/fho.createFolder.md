@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fho.createFolder
 ## Purpose
 This actiontype creates a folder

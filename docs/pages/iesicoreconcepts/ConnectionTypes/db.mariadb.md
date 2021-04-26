@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.mariadb
 ## Purpose
 This type connects to a Maria DB database (https://mariadb.org).

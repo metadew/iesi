@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## cli.executeCommand
 ## Purpose
 This action executes a command on a host. 

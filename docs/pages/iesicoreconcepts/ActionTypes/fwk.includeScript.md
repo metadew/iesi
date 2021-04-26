@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fwk.includeScript
 ## Purpose
 This action injects the actions of a specific script into the current script. 

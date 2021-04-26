@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # repo.artifcatory
 This connection is for artifactory repository connections ([https://jfrog.com/artifactory/](https://jfrog.com/artifactory/)).
 

@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fwk.executeScript
 ## Purpose
 This action executes another script inside the current script's execution. 

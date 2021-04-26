@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## sql.setRuntimeVariables
 ## Purpose
 This actiontype executes a sql statement on a relational database and stores the result as runtime variables that can be used by other actions. The column names in the sql statement will be used as variable name, the query result as variable value. Therefore, only 1 row is expected to be returned as result.

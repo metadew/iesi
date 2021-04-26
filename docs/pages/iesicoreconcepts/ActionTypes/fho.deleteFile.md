@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fho.deleteFile
 ## Purpose
 This actiontype deletes one or more files in a folder.

@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## sql.executeStatement
 ## Purpose
 This actiontype runs a sql statement on a relational database without returning a result after execution.

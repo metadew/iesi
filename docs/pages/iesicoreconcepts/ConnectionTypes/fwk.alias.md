@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # fwk.alias
 ## Purpose
 This connection is virtual and acts as a placeholder. It needs to be used together with the impersonation concept. 

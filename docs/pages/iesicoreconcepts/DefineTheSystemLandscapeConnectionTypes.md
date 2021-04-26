@@ -23,26 +23,26 @@ Additional details on the parameters per connection type are provided below.
 |**db**|
 |      |[db.db2](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.db2.html)|IBM Database Connection|
 |      |[db.dremio](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.dremio.html)|Dremio Database Connection|
-|      |[db.drill](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.drill.md)|Apache Drill Database Connection|
-|      |[db.h2](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.h2.md)|H2 Database Connection|
-|      |[db.mariadb](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.mariadb.md)|MariaDB Database Connection|
-|      |[db.mssql](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.mssql.md)|Microsoft SQL Database Connection|
-|      |[db.mysql](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.mysql.md)|MySql Database Connection|
-|      |[db.netezza](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.netezza.md)|Netezza Database Connection|
-|      |[db.oracle](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.oracle.md)|Oracle Database Connection|
-|      |[db.postgresql](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.postgresql.md)|Postgresql Database Connection|
-|      |[db.presto](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.presto.md)|Presto Database Connection|
-|      |[db.sqlite](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.sqlite.md)|SQLite Database Connection|
-|      |[db.teradata](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/db.teradata.md)|Teradata Database Connection|
+|      |[db.drill](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.drill.html)|Apache Drill Database Connection|
+|      |[db.h2](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.h2.html)|H2 Database Connection|
+|      |[db.mariadb](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.mariadb.html)|MariaDB Database Connection|
+|      |[db.mssql](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.mssql.html)|Microsoft SQL Database Connection|
+|      |[db.mysql](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.mysql.html)|MySql Database Connection|
+|      |[db.netezza](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.netezza.html)|Netezza Database Connection|
+|      |[db.oracle](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.oracle.html)|Oracle Database Connection|
+|      |[db.postgresql](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.postgresql.html)|Postgresql Database Connection|
+|      |[db.presto](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.presto.html)|Presto Database Connection|
+|      |[db.sqlite](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.sqlite.html)|SQLite Database Connection|
+|      |[db.teradata](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/db.teradata.html)|Teradata Database Connection|
 |**fwk**|
-|      |[fwk.alias](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/fwk.alias.md)|Connection alias only to be used for impersonation|
+|      |[fwk.alias](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/fwk.alias.html)|Connection alias only to be used for impersonation|
 |**host**|
-|      |[host.linux](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/host.linux.md)|Linux-Based Operating System Connection|
-|      |[host.unix](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/host.unix.md)|Unix-Based Operating System Connection|
-|      |[host.windows](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/host.windows.md)|Windows-Based Operating System Connection|
+|      |[host.linux](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/host.linux.html)|Linux-Based Operating System Connection|
+|      |[host.unix](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/host.unix.html)|Unix-Based Operating System Connection|
+|      |[host.windows](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/host.windows.html)|Windows-Based Operating System Connection|
 |**http**|
-|      |[http](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/http.md)|Http Host Connection|
+|      |[http](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/http.html)|Http Host Connection|
 |**repo**|
-|      |[repo.artifactory](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/repo.artifactory.md)|Artifactory Repository Connection|
+|      |[repo.artifactory](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/repo.artifactory.html)|Artifactory Repository Connection|
 |**socket**|
-|      |[socket](https://github.com/metadew/iesi/blob/2bf8147b794d0c7bebd8a1f83f566d77200625b8/docs/pages/iesi%20core%20concepts/Connection%20Types/socket.md)|Socket Connection|
+|      |[socket](/{{site.repository}}/pages/iesicoreconcepts/ConnectionTypes/socket.html)|Socket Connection|

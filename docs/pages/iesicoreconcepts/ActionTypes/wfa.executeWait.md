@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # wfa.executeWait
 ## Purpose
 This actiontype waits (sleeps) for a while and then ends successfully.

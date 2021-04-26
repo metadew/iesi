@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.mssql
 ## Purpose
 This type connects to a Microsoft SQL Server database ([https://www.microsoft.com/nl-nl/sql-server/](https://www.microsoft.com/nl-nl/sql-server/)).

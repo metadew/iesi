@@ -7,8 +7,10 @@ import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.server.rest.Application;
+import io.metadew.iesi.server.rest.component.ComponentDtoRepository;
 import io.metadew.iesi.server.rest.component.ComponentService;
 import io.metadew.iesi.server.rest.component.ComponentsController;
+import io.metadew.iesi.server.rest.component.IComponentService;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.component.dto.ComponentDtoResourceAssembler;
 import io.metadew.iesi.server.rest.component.dto.ComponentParameterDto;
@@ -16,16 +18,21 @@ import io.metadew.iesi.server.rest.component.dto.ComponentVersionDto;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
+import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import lombok.extern.log4j.Log4j2;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -59,6 +66,12 @@ class ComponentsControllerSecurityTest {
 
     @MockBean
     private ComponentDtoResourceAssembler componentDtoResourceAssembler;
+
+    @MockBean
+    private ComponentDtoRepository componentDtoRepository;
+
+    @MockBean
+    private PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler;
 
     @Test
     void testGetAllNoUser() throws Exception {
@@ -104,8 +117,10 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetComponentReadPrivilege() throws Exception {
-        Pageable pageable = Pageable.unpaged();
-        componentsController.getAll(pageable, null);
+        when(componentService
+                .getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
+        componentsController.getAll(Pageable.unpaged(), null);
     }
 
     @Test

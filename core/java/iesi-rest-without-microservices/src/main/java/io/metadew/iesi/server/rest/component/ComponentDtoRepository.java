@@ -10,6 +10,8 @@ import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +23,14 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Repository
 public class ComponentDtoRepository extends PaginatedRepository implements IComponentDtoRepository {
+
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
 
+    @Autowired
     public ComponentDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
         this.filterService = filterService;
@@ -87,7 +92,6 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     private String getOrderByClause(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) return " ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
-            // add further sort on the ScriptAndScriptVersionTable here
             if (order.getProperty().equalsIgnoreCase("NAME")) {
                 return "component_designs.COMP_NM" + " " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
@@ -106,7 +110,13 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
 
     private String getWhereClause(List<ComponentFilter> componentFilters) {
         String filterStatements = componentFilters.stream()
-                .map(componentFilter -> filterService.getStringCondition("component_designs.COMP_NM", componentFilter))
+                .map(componentFilter -> {
+                    if (componentFilter.getFilterOption().equals(ComponentFilterOption.NAME)) {
+                        return filterService.getStringCondition("component_designs.COMP_NM", componentFilter);
+                    } else {
+                        return null;
+                    }
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
 

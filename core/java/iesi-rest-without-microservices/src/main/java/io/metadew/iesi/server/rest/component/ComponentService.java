@@ -17,8 +17,8 @@ import java.util.Optional;
 @Service
 public class ComponentService implements IComponentService {
 
-    private ComponentConfiguration componentConfiguration;
-    private ComponentDtoRepository componentDtoRepository;
+    private final ComponentConfiguration componentConfiguration;
+    private final ComponentDtoRepository componentDtoRepository;
 
     @Autowired
     public ComponentService(ComponentConfiguration componentConfiguration, ComponentDtoRepository componentDtoRepository) {
@@ -27,6 +27,7 @@ public class ComponentService implements IComponentService {
     }
 
     public Page<ComponentDto> getAll(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
+        System.out.println("TEST");
         return componentDtoRepository.getAll(authentication, pageable, componentFilters);
     }
 

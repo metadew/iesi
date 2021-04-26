@@ -35,8 +35,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/components")
 public class ComponentsController {
 
-    private IComponentService componentService;
-    private ComponentDtoResourceAssembler componentDtoResourceAssembler;
+    private final IComponentService componentService;
+    private final ComponentDtoResourceAssembler componentDtoResourceAssembler;
     private final PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler;
 
     @Autowired

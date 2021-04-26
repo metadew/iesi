@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fho.folderExists
 ## Purpose
 This actiontype verifies if a folder exists

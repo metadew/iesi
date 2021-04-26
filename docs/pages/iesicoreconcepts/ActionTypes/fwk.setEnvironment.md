@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fwk.setEnvironment
 ## Purpose
 This actiontype changes the environment on which the script execution has been initiated for. It is integrated with the framework's execution engine that manages the connectivity.

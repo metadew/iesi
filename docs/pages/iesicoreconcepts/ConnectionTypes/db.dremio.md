@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.dremio
 ## Purpose
 This connection is for Dremio Data-as-a-Service platform (https://www.dremio.com)

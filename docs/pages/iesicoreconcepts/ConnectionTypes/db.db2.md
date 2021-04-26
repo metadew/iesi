@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.db2
 ## Purpose
 IBM DB2 Database Connection

@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fwk.setIteration
 ## Purpose
 This actiontype defines an interation that can be used in any next action. It represents the definition of where to iterate over.

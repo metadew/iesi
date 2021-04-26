@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## eval.executeExpression
 ## Purpose
 This actiontype evaluates an expression using scripted syntax

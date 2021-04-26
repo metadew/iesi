@@ -1,3 +1,4 @@
+{% include navigation.html %}
 # db.postgresql
 ## Purpose
 This type connects to a Postgresql database ([https://www.postgresql.org/](https://www.postgresql.org/)).

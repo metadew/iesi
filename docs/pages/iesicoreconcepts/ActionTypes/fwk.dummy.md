@@ -1,3 +1,4 @@
+{% include navigation.html %}
 ## fwk.dummy
 ## Purpose
 This actiontype is a dummy for adding a placeholder step

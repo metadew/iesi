@@ -11,8 +11,8 @@ import java.util.Set;
 
 public class AuthenticatedExecutionRequest extends ExecutionRequest {
 
-    private String username;
     private String userID;
+    private String username;
 
     @Builder
     public AuthenticatedExecutionRequest(ExecutionRequestKey executionRequestKey,
@@ -27,8 +27,9 @@ public class AuthenticatedExecutionRequest extends ExecutionRequest {
                                          ExecutionRequestStatus executionRequestStatus,
                                          List<ScriptExecutionRequest> scriptExecutionRequests,
                                          Set<ExecutionRequestLabel> executionRequestLabels,
-                                         String username,
-                                         String userID) {
+                                         String userID,
+                                         String username
+                                         ) {
         super(executionRequestKey,
                 // securityGroupKey,
                 // securityGroupName,
@@ -41,8 +42,9 @@ public class AuthenticatedExecutionRequest extends ExecutionRequest {
                 executionRequestStatus,
                 scriptExecutionRequests,
                 executionRequestLabels);
-        this.username = username;
         this.userID = userID;
+        this.username = username;
+
     }
 
     public String getUsername() {

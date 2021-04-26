@@ -16,10 +16,6 @@ public class ExecutionRequestBuilder {
     private String scope;
     private String context;
 
-    // private String space;
-    // private String user;
-    // private String password;
-
     private String userId;
     private String username;
 
@@ -152,7 +148,8 @@ public class ExecutionRequestBuilder {
                 getScriptExecutionRequests().orElse(new ArrayList<>()),
                 executionRequestLabels,
                 userId,
-                username);
+                username
+                );
     }
 
     private void verifyMandatoryAuthenticationArguments() throws ExecutionRequestBuilderException {

@@ -157,7 +157,7 @@ public class ScriptLauncher {
             executionRequestBuilder.username(line.getOptionValue("username"));
         }
 
-        // Get the user password
+        // Get the userId
         if (line.hasOption("userId")) {
             System.out.println("Option -userId (userId) value = " + "userId");
             executionRequestBuilder.userId(line.getOptionValue("userId"));

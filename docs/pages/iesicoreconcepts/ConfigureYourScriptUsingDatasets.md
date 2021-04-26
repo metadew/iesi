@@ -17,4 +17,4 @@ An exercise can be found here (link TBD)
 
 ## Action types - Using datasets
 Action types related to the use of datasets:
-*	[data.setDatasetConnection](https://github.com/metadew/iesi/blob/b66495be0076f1a8014bebf0bde0f649710a6008/docs/pages/iesi%20core%20concepts/Action%20Types/data.setDatasetConnection.md): Define a dataset connection that can be used in any next action
+*	[data.setDatasetConnection](/{{site.repository}}/pages/iesicoreconcepts/ActionTypes/data.setDatasetConnection.html): Define a dataset connection that can be used in any next action

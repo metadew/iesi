@@ -11,6 +11,7 @@ Our realized use cases supported in the:
 
 
 ## Realized Use Cases
+
 |Type | Examples|
 |---- |---------|
 |**Data Platform** | End-to-end processing and data completeness / correctness tests|
@@ -28,6 +29,7 @@ Our realized use cases supported in the:
 |**API and Ecosystem**| Verify PSD2 calls between banks|
 |                  |Verify connections between banks and ecosystem partners|
 |                  |...|            
+
 
 
 

@@ -151,17 +151,6 @@ public class ScriptLauncher {
             }
         }
 
-        // Get the user name
-        if (line.hasOption("username")) {
-            System.out.println("Option -user (user) value = " + line.getOptionValue("username"));
-            executionRequestBuilder.username(line.getOptionValue("username"));
-        }
-
-        // Get the userId
-        if (line.hasOption("userId")) {
-            System.out.println("Option -userId (userId) value = " + "userId");
-            executionRequestBuilder.userId(line.getOptionValue("userId"));
-        }
         // Get the labels
         if (line.hasOption("labels")) {
             System.out.println("Option -labels (labels) value = " + Arrays.toString(line.getOptionValues("labels")));

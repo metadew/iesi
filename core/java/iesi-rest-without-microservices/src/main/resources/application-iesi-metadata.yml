@@ -907,7 +907,6 @@ iesi:
             description: Unique identifier for the script version
             order: 2
             type: NUMBER
-            length: 0
             nullable: false
             defaultTimestamp:
           NAME:

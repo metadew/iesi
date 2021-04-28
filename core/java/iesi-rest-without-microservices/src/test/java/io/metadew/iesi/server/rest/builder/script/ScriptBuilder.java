@@ -28,6 +28,7 @@ public class ScriptBuilder {
     private List<ScriptParameter> scriptParameters = new ArrayList<>();
     private List<ScriptLabel> scriptLabels = new ArrayList<>();
     private String name;
+    private String deleted_At;
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;

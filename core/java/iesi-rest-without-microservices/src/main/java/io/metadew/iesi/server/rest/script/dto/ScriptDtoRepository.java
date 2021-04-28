@@ -252,6 +252,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         private final ScriptVersionDto version;
         private final Map<Long, ActionDtoBuilder> actions;
         private final Map<String, ScriptLabelDto> labels;
+        private boolean isActive;
 
         public ScriptDto build() {
             return new ScriptDto(name,
@@ -262,7 +263,8 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     actions.values().stream().map(ActionDtoBuilder::build).collect(Collectors.toSet()),
                     new HashSet<>(labels.values()),
                     null,
-                    null);
+                    null,
+                    isActive);
         }
     }
 
@@ -296,7 +298,8 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 new ScriptVersionDto(cachedRowSet.getLong("SCRIPT_VRS_NB"),
                         cachedRowSet.getString("SCRIPT_VRS_DSC")),
                 new HashMap<>(),
-                new HashMap<>());
+                new HashMap<>(),
+                cachedRowSet.getBoolean("IS_ACTIVE"));
     }
 
     @Override

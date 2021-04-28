@@ -75,6 +75,7 @@ public class ScriptDtoBuilder {
                                 ).collect(Collectors.toList())
                         )
                 )
+                .isActive(true)
                 .build();
     }
 }

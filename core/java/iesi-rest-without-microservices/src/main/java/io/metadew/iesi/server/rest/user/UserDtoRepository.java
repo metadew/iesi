@@ -55,7 +55,7 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
             " ON privileges.ROLE_ID = roles.ID " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
             " ON teams.ID = roles.TEAM_ID " +
-            " WHERE users.NAME={0};";
+            " WHERE users.USERNAME={0};";
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;

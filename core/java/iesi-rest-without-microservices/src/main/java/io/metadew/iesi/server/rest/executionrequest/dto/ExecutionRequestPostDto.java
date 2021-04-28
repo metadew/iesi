@@ -9,6 +9,7 @@ import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRe
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -31,26 +32,5 @@ public class ExecutionRequestPostDto extends RepresentationModel<ExecutionReques
     private String email;
     private Set<ScriptExecutionRequestPostDto> scriptExecutionRequests = new HashSet<>();
     private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
-
-
-    public ExecutionRequest convertToEntity() {
-        String newExecutionRequestId = UUID.randomUUID().toString();
-        return NonAuthenticatedExecutionRequest.builder()
-                .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
-                .name(name)
-                .context(context)
-                .description(description)
-                .scope(scope)
-                .executionRequestLabels(executionRequestLabels.stream()
-                        .map(executionRequestLabelDto -> executionRequestLabelDto.convertToEntity(new ExecutionRequestKey(newExecutionRequestId)))
-                        .collect(Collectors.toSet()))
-                .email(email)
-                .scriptExecutionRequests(scriptExecutionRequests.stream()
-                        .map(scriptExecutionRequestPostDto -> scriptExecutionRequestPostDto.convertToEntity(newExecutionRequestId))
-                        .collect(Collectors.toList()))
-                .executionRequestStatus(ExecutionRequestStatus.NEW)
-                .requestTimestamp(LocalDateTime.now())
-                .build();
-    }
 
 }

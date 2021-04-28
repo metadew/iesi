@@ -1,9 +1,17 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.Application;
@@ -16,7 +24,10 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestPostDto;
+import io.metadew.iesi.server.rest.user.UserDto;
+import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +40,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -38,10 +50,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Log4j2
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
@@ -68,6 +81,10 @@ class ExecutionRequestsControllerSecurityTest {
 
     @MockBean
     private ScriptConfiguration scriptConfiguration;
+
+    @MockBean
+    private UserDtoRepository userDtoRepository;
+
 
     @Test
     void testGetAllNoUser() {
@@ -279,7 +296,7 @@ class ExecutionRequestsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"EXECUTION_REQUESTS_WRITE@PUBLIC"})
     void testCreateExecutionRequestsWrite() {
-        ExecutionRequestPostDto executionRequestDto = ExecutionRequestPostDto.builder()
+        ExecutionRequestPostDto executionRequestPostDto = ExecutionRequestPostDto.builder()
                 .executionRequestLabels(new HashSet<>())
                 .requestTimestamp(LocalDateTime.now())
                 .scriptExecutionRequests(Stream.of(
@@ -298,6 +315,14 @@ class ExecutionRequestsControllerSecurityTest {
                 .name("name")
                 .scope("scope")
                 .build();
+
+        UserDto userDto = mock(UserDto.class);
+        when(userDto.getId())
+                .thenReturn(UUID.randomUUID());
+        when(userDto.getUsername())
+                .thenReturn("spring");
+        when(userDtoRepository.get("spring"))
+                .thenReturn(Optional.of(userDto));
         when(scriptConfiguration
                 .getSecurityGroup("script1"))
                 .thenReturn(Optional.of(new SecurityGroup(
@@ -305,7 +330,8 @@ class ExecutionRequestsControllerSecurityTest {
                         "PUBLIC",
                         new HashSet<>(),
                         new HashSet<>())));
-        executionRequestController.post(executionRequestDto);
+
+        executionRequestController.post(executionRequestPostDto);
     }
 
     @Test
@@ -331,6 +357,7 @@ class ExecutionRequestsControllerSecurityTest {
                 .name("name")
                 .scope("scope")
                 .build();
+
         when(scriptConfiguration
                 .getSecurityGroup("script1"))
                 .thenReturn(Optional.of(new SecurityGroup(
@@ -341,137 +368,6 @@ class ExecutionRequestsControllerSecurityTest {
         assertThatThrownBy(() -> executionRequestController.post(executionRequestDto))
                 .isInstanceOf(AccessDeniedException.class);
     }
-
-    // update bulk components
-//    @Test
-//    @WithIesiUser(username = "spring",
-//            authorities = {
-//                    "SCRIPTS_WRITE@PUBLIC",
-//                    "SCRIPTS_READ@PUBLIC",
-//                    "COMPONENTS_WRITE@PUBLIC",
-//                    "COMPONENTS_READ@PUBLIC",
-//                    "CONNECTIONS_WRITE@PUBLIC",
-//                    "CONNECTIONS_READ@PUBLIC",
-//                    "ENVIRONMENTS_WRITE@PUBLIC",
-//                    "ENVIRONMENTS_READ@PUBLIC",
-//                    // "EXECUTION_REQUESTS_WRITE@PUBLIC",
-//                    "EXECUTION_REQUESTS_READ@PUBLIC",
-//                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-//                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-//                    "IMPERSONATIONS_READ@PUBLIC",
-//                    "IMPERSONATIONS_WRITE@PUBLIC",
-//                    "SCRIPT_RESULTS_READ@PUBLIC",
-//                    "USERS_WRITE@PUBLIC",
-//                    "USERS_READ@PUBLIC",
-//                    "USERS_DELETE@PUBLIC",
-//                    "TEAMS_WRITE@PUBLIC",
-//                    "TEAMS_READ@PUBLIC",
-//                    "ROLES_WRITE@PUBLIC",
-//                    "GROUPS_WRITE@PUBLIC",
-//                    "GROUPS_READ@PUBLIC",
-//                    "DATASETS_READ@PUBLIC",
-//                    "DATASETS_WRITE@PUBLIC"})
-//    void testUpdateBulkNoExecutionRequestWritePrivilege() {
-//        List<ExecutionRequestDto> executionRequestDtos = Collections.singletonList(ExecutionRequestDto.builder()
-//                .executionRequestId("id")
-//                .executionRequestLabels(new HashSet<>())
-//                .executionRequestStatus(ExecutionRequestStatus.ACCEPTED)
-//                .requestTimestamp(LocalDateTime.now())
-//                .scriptExecutionRequests(new HashSet<>())
-//                .context("context")
-//                .description("description")
-//                .email("email")
-//                .name("name")
-//                .scope("scope")
-//                .build());
-//        assertThatThrownBy(() -> executionRequestController.putAll(executionRequestDtos))
-//                .isInstanceOf(AccessDeniedException.class);
-//    }
-//
-//    @Test
-//    @WithIesiUser(username = "spring",
-//            authorities = {"EXECUTION_REQUESTS_WRITE@PUBLIC"})
-//    void testUpdateBulkExecutionRequestWritePrivilege() {
-//        List<ExecutionRequestDto> executionRequestDtos = Collections.singletonList(
-//                ExecutionRequestDto.builder()
-//                        .executionRequestId("id")
-//                        .executionRequestLabels(new HashSet<>())
-//                        .executionRequestStatus(ExecutionRequestStatus.ACCEPTED)
-//                        .requestTimestamp(LocalDateTime.now())
-//                        .scriptExecutionRequests(new HashSet<>())
-//                        .context("context")
-//                        .description("description")
-//                        .email("email")
-//                        .name("name")
-//                        .scope("scope")
-//                        .build());
-//        executionRequestController.putAll(executionRequestDtos);
-//    }
-
-    // update single component
-//    @Test
-//    @WithIesiUser(username = "spring",
-//            authorities = {
-//                    "SCRIPTS_WRITE@PUBLIC",
-//                    "SCRIPTS_READ@PUBLIC",
-//                    "COMPONENTS_WRITE@PUBLIC",
-//                    "COMPONENTS_READ@PUBLIC",
-//                    "CONNECTIONS_WRITE@PUBLIC",
-//                    "CONNECTIONS_READ@PUBLIC",
-//                    "ENVIRONMENTS_WRITE@PUBLIC",
-//                    "ENVIRONMENTS_READ@PUBLIC",
-//                    // "EXECUTION_REQUESTS_WRITE@PUBLIC",
-//                    "EXECUTION_REQUESTS_READ@PUBLIC",
-//                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-//                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-//                    "IMPERSONATIONS_READ@PUBLIC",
-//                    "IMPERSONATIONS_WRITE@PUBLIC",
-//                    "SCRIPT_RESULTS_READ@PUBLIC",
-//                    "USERS_WRITE@PUBLIC",
-//                    "USERS_READ@PUBLIC",
-//                    "USERS_DELETE@PUBLIC",
-//                    "TEAMS_WRITE@PUBLIC",
-//                    "TEAMS_READ@PUBLIC",
-//                    "ROLES_WRITE@PUBLIC",
-//                    "GROUPS_WRITE@PUBLIC",
-//                    "GROUPS_READ@PUBLIC",
-//                    "DATASETS_READ@PUBLIC",
-//                    "DATASETS_WRITE@PUBLIC"})
-//    void testUpdateSingleNoExecutionRequestWritePrivilege() {
-//        ExecutionRequestDto executionRequestDto = ExecutionRequestDto.builder()
-//                .executionRequestId("id")
-//                .executionRequestLabels(new HashSet<>())
-//                .executionRequestStatus(ExecutionRequestStatus.ACCEPTED)
-//                .requestTimestamp(LocalDateTime.now())
-//                .scriptExecutionRequests(new HashSet<>())
-//                .context("context")
-//                .description("description")
-//                .email("email")
-//                .name("name")
-//                .scope("scope")
-//                .build();
-//        assertThatThrownBy(() -> executionRequestController.put("id", executionRequestDto))
-//                .isInstanceOf(AccessDeniedException.class);
-//    }
-//
-//    @Test
-//    @WithIesiUser(username = "spring",
-//            authorities = {"EXECUTION_REQUESTS_WRITE@PUBLIC"})
-//    void testUpdateSingleExecutionRequestWritePrivilege() {
-//        ExecutionRequestDto executionRequestDto = ExecutionRequestDto.builder()
-//                .executionRequestId("id")
-//                .executionRequestLabels(new HashSet<>())
-//                .executionRequestStatus(ExecutionRequestStatus.ACCEPTED)
-//                .requestTimestamp(LocalDateTime.now())
-//                .scriptExecutionRequests(new HashSet<>())
-//                .context("context")
-//                .description("description")
-//                .email("email")
-//                .name("name")
-//                .scope("scope")
-//                .build();
-//        executionRequestController.put("id", executionRequestDto);
-//    }
 
     //delete by name
     @Test

@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ public class ScriptBuilder {
     private List<ScriptParameter> scriptParameters = new ArrayList<>();
     private List<ScriptLabel> scriptLabels = new ArrayList<>();
     private String name;
+    private String deleted_At;
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;
@@ -76,6 +78,11 @@ public class ScriptBuilder {
         return this;
     }
 
+    public ScriptBuilder deleted_At(String deleted_At) {
+        this.deleted_At = deleted_At;
+        return this;
+    }
+
     public Script build() {
         scriptParameters.addAll(IntStream.range(0, numberOfParameters)
                 .boxed()
@@ -102,9 +109,10 @@ public class ScriptBuilder {
                 securityGroupName,
                 name == null ? "dummy" : name,
                 "dummy",
-                new ScriptVersionBuilder(scriptId, versionNumber).build(),
+                new ScriptVersionBuilder(scriptId, versionNumber, deleted_At).build(),
                 scriptParameters,
-                actions, scriptLabels);
+                actions, scriptLabels,
+                deleted_At);
     }
 
 }

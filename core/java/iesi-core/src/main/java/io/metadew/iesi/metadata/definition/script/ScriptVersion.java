@@ -10,16 +10,19 @@ import lombok.EqualsAndHashCode;
 public class ScriptVersion extends Metadata<ScriptVersionKey> {
 
     private String description = "Default version";
+    private String deleted_At = "NA";
 
     @Builder
-    public ScriptVersion(ScriptVersionKey scriptVersionKey, String description) {
+    public ScriptVersion(ScriptVersionKey scriptVersionKey, String description, String deleted_At) {
         super(scriptVersionKey);
         this.description = description;
+        this.deleted_At = deleted_At;
     }
 
-    public ScriptVersion(String scriptId, long number, String description) {
+    public ScriptVersion(String scriptId, long number, String description, String deleted_At) {
         super(new ScriptVersionKey(new ScriptKey(scriptId, number)));
         this.description = description;
+        this.deleted_At = deleted_At;
     }
 
     // Getters and Setters
@@ -38,4 +41,8 @@ public class ScriptVersion extends Metadata<ScriptVersionKey> {
     public String getScriptId() {
         return getMetadataKey().getScriptKey().getScriptId();
     }
+
+    public String getDeleted_At() { return deleted_At; }
+
+    public void setDeleted_At(String deleted_At) { this.deleted_At = deleted_At; }
 }

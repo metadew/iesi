@@ -208,7 +208,6 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
     @Override
     public InMemoryDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Dataset Implementation", arguments));
-        // arguments = executionRuntime.resolveVariables(arguments);
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
         if (splittedArguments.size() == 2) {
             List<DataType> resolvedArguments = splittedArguments.stream()

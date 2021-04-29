@@ -52,7 +52,6 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
     @Override
     public Template resolve(String input, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Template", input));
-        // input = executionRuntime.resolveVariables(input);
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(input);
         if (splittedArguments.size() == 2) {
             DataType templateName = DataTypeHandler.getInstance().resolve(splittedArguments.get(0), executionRuntime);

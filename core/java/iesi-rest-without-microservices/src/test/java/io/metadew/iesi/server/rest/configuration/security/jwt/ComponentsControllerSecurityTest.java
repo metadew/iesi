@@ -199,18 +199,17 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetByNameAndVersionAdminComponentsReadPrivilege() throws Exception {
-        Component component = Component.builder()
-                .name("component")
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("test")
                 .type("type")
                 .description("description")
                 .attributes(new ArrayList<>())
-                .version(new ComponentVersion(new ComponentVersionKey("component", 1L), "description"))
-                .parameters(Stream.of(
-                        new ComponentParameter(new ComponentParameterKey("component", 1L, "param1"), "value1")
-                ).collect(Collectors.toList()))
+                .version(new ComponentVersionDto(1L, "version description"))
+                .parameters(new ArrayList<>())
+                .attributes(new ArrayList<>())
                 .build();
-        when(componentService.getByNameAndVersion("test", 1L))
-                .thenReturn(Optional.of(component));
+        when(componentDtoService.getByNameAndVersion("test", 1L))
+                .thenReturn(Optional.of(componentDto));
         componentsController.get("test", 1L);
     }
 

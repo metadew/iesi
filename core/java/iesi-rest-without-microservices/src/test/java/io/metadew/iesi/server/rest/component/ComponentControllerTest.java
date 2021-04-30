@@ -54,7 +54,6 @@ class ComponentControllerTest {
     @MockBean
     private ComponentDtoService componentDtoService;
 
-
     @Test
     void getAllNoResult() throws Exception {
         // Mock Service
@@ -367,6 +366,4 @@ class ComponentControllerTest {
         mvc.perform(get("/components/nameTest/0").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
-
-
 }

@@ -1,6 +1,5 @@
 package io.metadew.iesi.server.rest.component.dto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
@@ -10,19 +9,19 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.Application;
-import io.metadew.iesi.server.rest.component.ComponentDtoRepository;
-import io.metadew.iesi.server.rest.component.ComponentsController;
+import io.metadew.iesi.server.rest.security_group.SecurityGroupController;
+import io.metadew.iesi.server.rest.user.UserController;
+import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -40,23 +39,17 @@ import static org.junit.Assert.assertEquals;
 @DirtiesContext
 class ComponentDtoTest {
 
-    @Autowired
-    private ObjectMapper jacksonObjectMapper;
-
-    @Autowired
-    private ComponentsController componentsController;
+    @MockBean
+    private SecurityGroupController securityGroupController;
 
     @MockBean
-    private ComponentDtoService componentDtoService;
+    private SecurityGroupService securityGroupService;
 
     @MockBean
-    private ComponentDtoResourceAssembler componentDtoResourceAssembler;
+    private TeamsController teamsController;
 
     @MockBean
-    private ComponentDtoRepository componentDtoRepository;
-
-    @MockBean
-    private PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler;
+    private UserController userController;
 
     @Test
     void convertToEntityTest() {

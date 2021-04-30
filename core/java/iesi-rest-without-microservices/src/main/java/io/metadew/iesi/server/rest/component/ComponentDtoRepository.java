@@ -218,6 +218,5 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                     new ArrayList<>()
             );
         }
-
     }
 }

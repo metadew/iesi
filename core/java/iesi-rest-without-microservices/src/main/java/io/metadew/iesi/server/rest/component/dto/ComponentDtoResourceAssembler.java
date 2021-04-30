@@ -3,7 +3,7 @@ package io.metadew.iesi.server.rest.component.dto;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.server.rest.component.ComponentsController;
+import io.metadew.iesi.server.rest.component.ComponentService;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 
@@ -16,17 +16,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ComponentDtoResourceAssembler extends RepresentationModelAssemblerSupport<Component, ComponentDto> {
 
     public ComponentDtoResourceAssembler() {
-        super(ComponentsController.class, ComponentDto.class);
+        super(ComponentService.class, ComponentDto.class);
     }
 
     @Override
     public ComponentDto toModel(Component component) {
         ComponentDto componentDto = convertToDto(component);
-        Link selfLink = linkTo(methodOn(ComponentsController.class).get(component.getName(),
+        Link selfLink = linkTo(methodOn(ComponentService.class).getByNameAndVersion(component.getName(),
                 component.getVersion().getMetadataKey().getComponentKey().getVersionNumber()))
-                .withRel("component:" + componentDto.getName() +"-"+ componentDto.getVersion().getNumber());
+                .withRel("component:" + componentDto.getName() + "-" + componentDto.getVersion().getNumber());
         componentDto.add(selfLink);
-        Link versionLink = linkTo(methodOn(ComponentsController.class).getByName(component.getName()))
+        Link versionLink = linkTo(methodOn(ComponentService.class).getByName(component.getName()))
                 .withRel("component");
         componentDto.add(versionLink);
         return componentDto;
@@ -47,6 +47,7 @@ public class ComponentDtoResourceAssembler extends RepresentationModelAssemblerS
         return new ComponentAttributeDto(componentAttribute.getMetadataKey().getEnvironmentKey().getName(),
                 componentAttribute.getMetadataKey().getComponentAttributeName(), componentAttribute.getValue());
     }
+
     public ComponentDto toModel(ComponentDto componentDto) {
         return componentDto;
     }

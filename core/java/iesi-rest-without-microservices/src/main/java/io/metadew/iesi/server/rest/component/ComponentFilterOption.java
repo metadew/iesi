@@ -2,7 +2,8 @@ package io.metadew.iesi.server.rest.component;
 
 public enum ComponentFilterOption {
 
-    NAME("name");
+    NAME("name"),
+    VERSION("version");
 
     private final String keyword;
 

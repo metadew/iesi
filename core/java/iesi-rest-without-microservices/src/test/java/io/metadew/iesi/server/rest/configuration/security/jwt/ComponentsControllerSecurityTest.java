@@ -10,17 +10,11 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.component.ComponentDtoRepository;
 import io.metadew.iesi.server.rest.component.ComponentService;
 import io.metadew.iesi.server.rest.component.ComponentsController;
-import io.metadew.iesi.server.rest.component.IComponentService;
-import io.metadew.iesi.server.rest.component.dto.ComponentDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentDtoResourceAssembler;
-import io.metadew.iesi.server.rest.component.dto.ComponentParameterDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentVersionDto;
+import io.metadew.iesi.server.rest.component.dto.*;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
-import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import lombok.extern.log4j.Log4j2;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -63,6 +57,9 @@ class ComponentsControllerSecurityTest {
 
     @MockBean
     private ComponentService componentService;
+
+    @MockBean
+    private ComponentDtoService componentDtoService;
 
     @MockBean
     private ComponentDtoResourceAssembler componentDtoResourceAssembler;
@@ -117,8 +114,8 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetComponentReadPrivilege() throws Exception {
-        when(componentService
-                .getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
+        when(componentDtoService
+                .getAll( Pageable.unpaged(), new ArrayList<>()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         componentsController.getAll(Pageable.unpaged(), null);
     }
@@ -151,7 +148,8 @@ class ComponentsControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetByNameNoComponentRead() throws Exception {
-        assertThatThrownBy(() -> componentsController.getByName("test"))
+        Pageable pageable = Pageable.unpaged();
+        assertThatThrownBy(() -> componentsController.getByName(pageable,"test"))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -159,7 +157,10 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetByNameComponentRead() throws Exception {
-        componentsController.getByName("test");
+        Pageable pageable = Pageable.unpaged();        when(componentDtoService
+                .getByName( Pageable.unpaged(), "test"))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
+        componentsController.getByName(pageable,"test");
     }
 
     @Test

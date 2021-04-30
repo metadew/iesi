@@ -15,13 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Log4j2
 @Repository
@@ -36,10 +36,10 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         this.filterService = filterService;
     }
 
-    private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
+    private String getFetchAllQuery(Pageable pageable, List<ComponentFilter> componentFilters) {
         return "select component_designs.COMP_ID,component_designs.COMP_TYP_NM, component_designs.COMP_NM, component_designs.COMP_DSC, versions.COMP_VRS_NB, " +
                 "versions.COMP_VRS_DSC, " + "parameters.COMP_PAR_NM, " + "parameters.COMP_PAR_VAL, " + "versions.COMP_VRS_DSC " +
-                "FROM (" + getBaseQuery(authentication, pageable, componentFilters) + ") base_components " +
+                "FROM (" + getBaseQuery(pageable, componentFilters) + ") base_components " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "on base_components.COMP_ID = component_designs.COMP_ID " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
@@ -50,7 +50,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 ";";
     }
 
-    private String getBaseQuery(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
+    private String getBaseQuery(Pageable pageable, List<ComponentFilter> componentFilters) {
         return "select distinct component_designs.COMP_ID, versions.COMP_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
@@ -61,10 +61,10 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     }
 
     @Override
-    public Page<ComponentDto> getAll(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
+    public Page<ComponentDto> getAll(Pageable pageable, List<ComponentFilter> componentFilters) {
         try {
             Map<ComponentKey, ComponentDtoBuilder> componentDtoBuilders = new LinkedHashMap<>();
-            String query = getFetchAllQuery(authentication, pageable, componentFilters);
+            String query = getFetchAllQuery(pageable, componentFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
 
             while (cachedRowSet.next()) {
@@ -73,17 +73,61 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
             List<ComponentDto> componentDtoList = componentDtoBuilders.values().stream()
                     .map(ComponentDtoBuilder::build)
                     .collect(Collectors.toList());
-            return new PageImpl<>(componentDtoList, pageable, getRowSize(authentication));
+            return new PageImpl<>(componentDtoList, pageable, getRowSize(componentFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private long getRowSize(Authentication authentication) throws SQLException {
+    @Override
+    public Page<ComponentDto> getByName(Pageable pageable, String name) {
+        try {
+            Map<ComponentKey, ComponentDtoBuilder> componentDtoBuilders = new LinkedHashMap<>();
+            List<ComponentFilter> componentFilters = Stream.of(new ComponentFilter(ComponentFilterOption.NAME, name, true)).collect(Collectors.toList());
+            String query = getFetchAllQuery(pageable, componentFilters);
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                mapRow(cachedRowSet, componentDtoBuilders);
+            }
+            return new PageImpl<>(
+                    componentDtoBuilders.values().stream()
+                            .map(ComponentDtoBuilder::build)
+                            .collect(Collectors.toList()),
+                    pageable,
+                    getRowSize(componentFilters));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<ComponentDto> getByNameAndVersion(String name, long version) {
+        try {
+            Map<ComponentKey, ComponentDtoBuilder> componentDtoBuilders = new HashMap<>();
+            List<ComponentFilter> componentFilters = Stream.of(new ComponentFilter(ComponentFilterOption.NAME, name, true),
+                    new ComponentFilter(ComponentFilterOption.VERSION, Long.toString(version), true))
+                    .collect(Collectors.toList());
+            String query = getFetchAllQuery(Pageable.unpaged(), componentFilters);
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                mapRow(cachedRowSet, componentDtoBuilders);
+            }
+            if (componentDtoBuilders.values().size() > 1) {
+                log.warn("found multiple script for script " + name + "-" + version);
+            }
+            return componentDtoBuilders.values().stream().findFirst().map(ComponentDtoBuilder::build);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private long getRowSize(List<ComponentFilter> componentFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct component_designs.COMP_ID, versions.COMP_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
-                "on component_designs.COMP_ID = versions.COMP_ID );";
+                "on component_designs.COMP_ID = versions.COMP_ID ) " +
+                getWhereClause(componentFilters);
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

@@ -2,11 +2,11 @@ package io.metadew.iesi.server.rest.component;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.component.dto.ComponentDtoResourceAssembler;
+import io.metadew.iesi.server.rest.component.dto.IComponentDtoService;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,14 +18,12 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -36,14 +34,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ComponentsController {
 
     private final IComponentService componentService;
+    private final IComponentDtoService componentDtoService;
     private final ComponentDtoResourceAssembler componentDtoResourceAssembler;
     private final PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler;
 
     @Autowired
     ComponentsController(ComponentDtoResourceAssembler componentDtoResourceAssembler,
-                         ComponentService componentService, PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler) {
+                         IComponentService componentService,
+                         IComponentDtoService componentDtoService,
+                         PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler) {
         this.componentDtoResourceAssembler = componentDtoResourceAssembler;
         this.componentService = componentService;
+        this.componentDtoService = componentDtoService;
         this.componentDtoPagedResourcesAssembler = componentDtoPagedResourcesAssembler;
     }
 
@@ -51,11 +53,7 @@ public class ComponentsController {
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public PagedModel<ComponentDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
         List<ComponentFilter> componentFilters = extractComponentFilterOptions(name);
-        Page<ComponentDto> componentDtoPage = componentService.getAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                pageable,
-                componentFilters
-        );
+        Page<ComponentDto> componentDtoPage = componentDtoService.getAll(pageable, componentFilters);
 
         if (componentDtoPage.hasContent())
             return componentDtoPagedResourcesAssembler.toModel(componentDtoPage, componentDtoResourceAssembler::toModel);
@@ -73,17 +71,18 @@ public class ComponentsController {
 
     @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
-    public HalMultipleEmbeddedResource<ComponentDto> getByName(@PathVariable String name) {
-        List<Component> components = componentService.getByName(name);
-        return new HalMultipleEmbeddedResource<>(components.stream()
-                .map(component -> componentDtoResourceAssembler.toModel(component))
-                .collect(Collectors.toList()));
+    public PagedModel<ComponentDto> getByName(Pageable pageable, @PathVariable String name) {
+        Page<ComponentDto> componentDtoPage = componentDtoService.getByName(pageable, name);
+        if (componentDtoPage.hasContent())
+            return componentDtoPagedResourcesAssembler.toModel(componentDtoPage, componentDtoResourceAssembler::toModel);
+        //noinspection unchecked
+        return (PagedModel<ComponentDto>) componentDtoPagedResourcesAssembler.toEmptyModel(componentDtoPage, ComponentDto.class);
     }
 
     @GetMapping("/{name}/{version}")
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public ComponentDto get(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
-        Component component = componentService.getByNameAndVersion(name, version)
+        ComponentDto component = componentDtoService.getByNameAndVersion(name, version)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
         return componentDtoResourceAssembler.toModel(component);
     }

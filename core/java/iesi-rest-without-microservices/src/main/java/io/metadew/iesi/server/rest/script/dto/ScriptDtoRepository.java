@@ -129,7 +129,7 @@ public class  ScriptDtoRepository extends PaginatedRepository implements IScript
      * @return a String containing the ORDER BY statement
      */
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ";
+        if (pageable.getSort().isUnsorted()) return "ORDER BY script_designs.SCRIPT_ID";
         List<String> sorting = pageable.getSort().stream().map(order -> {
             // add further sort on the ScriptAndScriptVersionTable here
             if (order.getProperty().equalsIgnoreCase("NAME")) {
@@ -137,7 +137,7 @@ public class  ScriptDtoRepository extends PaginatedRepository implements IScript
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
                 return "versions.SCRIPT_VRS_NB" + " " + order.getDirection();
             } else {
-                return null;
+                return "ORDER BY script_designs.SCRIPT_ID";
             }
         })
                 .filter(Objects::nonNull)

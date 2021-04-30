@@ -134,7 +134,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ";
+        if (pageable.getSort().isUnsorted()) return "ORDER BY component_designs.COMP_ID ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
             if (order.getProperty().equalsIgnoreCase("NAME")) {
                 return "component_designs.COMP_NM" + " " + order.getDirection();
@@ -147,7 +147,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return "";
+            return "ORDER BY component_designs.COMP_ID ";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @JsonDeserialize(using = ScriptJsonComponent.Deserializer.class)

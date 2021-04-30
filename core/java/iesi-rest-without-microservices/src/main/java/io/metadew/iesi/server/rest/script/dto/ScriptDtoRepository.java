@@ -61,8 +61,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 "on base_scripts.SCRIPT_ID = actions.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = actions.SCRIPT_VRS_NB " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() + " action_parameters " +
                 "on base_scripts.SCRIPT_ID = action_parameters.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = action_parameters.SCRIPT_VRS_NB and actions.ACTION_ID = action_parameters.ACTION_ID" +
-                getOrderByClause(pageable) +
-                ";";
+                getOrderByClause(pageable) + ";";
     }
 
     /**
@@ -119,6 +118,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_versions " +
                     "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) ";
         }
+        filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script.DELETED_AT = 'NA' ";
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
@@ -252,7 +252,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         private final ScriptVersionDto version;
         private final Map<Long, ActionDtoBuilder> actions;
         private final Map<String, ScriptLabelDto> labels;
-        private boolean isActive;
+        private String deleted_At;
 
         public ScriptDto build() {
             return new ScriptDto(name,
@@ -264,7 +264,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     new HashSet<>(labels.values()),
                     null,
                     null,
-                    isActive);
+                    deleted_At);
         }
     }
 
@@ -296,10 +296,11 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 cachedRowSet.getString("SECURITY_GROUP_NAME"),
                 cachedRowSet.getString("SCRIPT_DSC"),
                 new ScriptVersionDto(cachedRowSet.getLong("SCRIPT_VRS_NB"),
-                        cachedRowSet.getString("SCRIPT_VRS_DSC")),
+                        cachedRowSet.getString("SCRIPT_VRS_DSC"),
+                        cachedRowSet.getString("DELETED_AT")),
                 new HashMap<>(),
                 new HashMap<>(),
-                cachedRowSet.getBoolean("IS_ACTIVE"));
+                cachedRowSet.getString("DELETED_AT"));
     }
 
     @Override

@@ -52,7 +52,7 @@ public class ScriptDtoService implements IScriptDtoService {
                 scriptDto.getLabels().stream()
                         .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
                         .collect(Collectors.toList()),
-                scriptDto.isActive());
+                scriptDto.getDeleted_At());
     }
 
     @Override

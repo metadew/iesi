@@ -53,7 +53,8 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                         .collect(Collectors.toList()),
                 scriptDto.getLabels().stream()
                         .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                scriptDto.getDeleted_At());
     }
 
     public ScriptPostDto convertToDto(Script script) {
@@ -63,7 +64,8 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                 scriptVersionDtoService.convertToDto(script.getVersion()),
                 script.getParameters().stream().map(scriptParameterDtoService::convertToDto).collect(Collectors.toSet()),
                 script.getActions().stream().map(scriptActionDtoService::convertToDto).collect(Collectors.toSet()),
-                script.getLabels().stream().map(scriptLabelDtoService::convertToDto).collect(Collectors.toSet()));
+                script.getLabels().stream().map(scriptLabelDtoService::convertToDto).collect(Collectors.toSet()),
+                script.getDeleted_At());
     }
 
 }

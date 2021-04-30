@@ -37,7 +37,7 @@ public class ScriptDto extends NoEmptyLinksRepresentationModel<ScriptDto> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("scheduling")
     private ScriptSchedulingInformation scriptSchedulingInformation;
-    private boolean isActive = true;
+    private String deleted_At = "NA";
 
     public void addActionDto(ActionDto actionDto) {
         actions.add(actionDto);

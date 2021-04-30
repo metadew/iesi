@@ -276,7 +276,7 @@ class ScriptDtoRepositoryTest {
                 .securityGroupName(securityGroup.getName())
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -321,7 +321,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -552,7 +552,7 @@ class ScriptDtoRepositoryTest {
                 .securityGroupName(securityGroup.getName())
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -597,7 +597,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -825,7 +825,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -1050,7 +1050,7 @@ class ScriptDtoRepositoryTest {
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -1095,7 +1095,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -1320,7 +1320,7 @@ class ScriptDtoRepositoryTest {
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -1365,7 +1365,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -1590,7 +1590,7 @@ class ScriptDtoRepositoryTest {
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -1635,7 +1635,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -1863,7 +1863,7 @@ class ScriptDtoRepositoryTest {
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -1908,7 +1908,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -2137,7 +2137,7 @@ class ScriptDtoRepositoryTest {
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(2L, "version description"))
+                .version(new ScriptVersionDto(2L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -2524,7 +2524,7 @@ class ScriptDtoRepositoryTest {
                 .name("scriptB")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(2L, "version description"))
+                .version(new ScriptVersionDto(2L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -2569,7 +2569,7 @@ class ScriptDtoRepositoryTest {
                 .name("scriptBA")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(3L, "version description"))
+                .version(new ScriptVersionDto(3L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -2886,7 +2886,7 @@ class ScriptDtoRepositoryTest {
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -2931,7 +2931,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -2976,7 +2976,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(2L, "version description"))
+                .version(new ScriptVersionDto(2L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -3464,7 +3464,7 @@ class ScriptDtoRepositoryTest {
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -3509,7 +3509,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(2L, "version description"))
+                .version(new ScriptVersionDto(2L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -3817,7 +3817,7 @@ class ScriptDtoRepositoryTest {
                 .name("script1")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(1L, "version description"))
+                .version(new ScriptVersionDto(1L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")
@@ -3862,7 +3862,7 @@ class ScriptDtoRepositoryTest {
                 .name("script2")
                 .description("script description")
                 .parameters(new HashSet<>())
-                .version(new ScriptVersionDto(2L, "version description"))
+                .version(new ScriptVersionDto(2L, "version description","NA"))
                 .actions(Stream.of(
                         ActionDto.builder()
                                 .name("action1")

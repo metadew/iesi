@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 public class ScriptVersionDtoService implements IScriptVersionDtoService {
 
     public ScriptVersion convertToEntity(ScriptVersionDto scriptVersionDto, String scriptId) {
-        return new ScriptVersion(scriptId, scriptVersionDto.getNumber(), scriptVersionDto.getDescription());
+        return new ScriptVersion(scriptId, scriptVersionDto.getNumber(), scriptVersionDto.getDescription(),scriptVersionDto.getDeleted_At());
 
     }
 
     public ScriptVersionDto convertToDto(ScriptVersion scriptVersion) {
-        return new ScriptVersionDto(scriptVersion.getNumber(), scriptVersion.getDescription());
+        return new ScriptVersionDto(scriptVersion.getNumber(), scriptVersion.getDescription(), scriptVersion.getDeleted_At());
     }
 
 }

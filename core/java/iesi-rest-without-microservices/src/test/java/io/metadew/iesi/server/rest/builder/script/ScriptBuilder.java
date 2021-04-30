@@ -76,6 +76,11 @@ public class ScriptBuilder {
         return this;
     }
 
+    public ScriptBuilder deleted_At(String deleted_At){
+        this.deleted_At = deleted_At;
+        return this;
+    }
+
     public Script build() {
         scriptParameters.addAll(IntStream.range(0, numberOfParameters)
                 .boxed()
@@ -104,7 +109,8 @@ public class ScriptBuilder {
                 "dummy",
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
-                actions, scriptLabels);
+                actions, scriptLabels,
+                deleted_At);
     }
 
 }

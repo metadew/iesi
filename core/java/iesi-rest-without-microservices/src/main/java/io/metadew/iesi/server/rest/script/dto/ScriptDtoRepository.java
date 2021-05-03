@@ -118,7 +118,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_versions " +
                     "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) ";
         }
-        filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script.DELETED_AT = 'NA' ";
+        filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT = 'NA' ";
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
@@ -296,11 +296,10 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 cachedRowSet.getString("SECURITY_GROUP_NAME"),
                 cachedRowSet.getString("SCRIPT_DSC"),
                 new ScriptVersionDto(cachedRowSet.getLong("SCRIPT_VRS_NB"),
-                        cachedRowSet.getString("SCRIPT_VRS_DSC"),
-                        cachedRowSet.getString("DELETED_AT")),
+                        cachedRowSet.getString("SCRIPT_VRS_DSC"), "NA"),
                 new HashMap<>(),
                 new HashMap<>(),
-                cachedRowSet.getString("DELETED_AT"));
+                "NA");
     }
 
     @Override

@@ -30,7 +30,7 @@ public class ScriptBuilder {
     private List<ScriptParameter> scriptParameters = new ArrayList<>();
     private List<ScriptLabel> scriptLabels = new ArrayList<>();
     private String name;
-    private String deleted_At;
+    private String deleted_At = "NA";
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;

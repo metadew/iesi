@@ -211,6 +211,7 @@ public class ExecutionRequestBuilder {
                 .name(scriptName)
                 .version(new ScriptVersionDto(scriptVersion, "description","NA"))
                 .securityGroupName(scriptSecurityGroup)
+                .deleted_At("NA")
                 .build();
         info.put("scriptDto", scriptDto);
 

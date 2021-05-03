@@ -1813,6 +1813,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_SCRIPT_PAR
         label: ScriptParameters
         description: Design metadata for script parameters
@@ -1891,6 +1899,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 5
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: TRC_ACTION
         label: ActionTraces
         description: Trace metadata for actions

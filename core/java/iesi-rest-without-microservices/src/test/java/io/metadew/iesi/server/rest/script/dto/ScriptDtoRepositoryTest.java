@@ -115,7 +115,7 @@ class ScriptDtoRepositoryTest {
                 .teamKeys(new HashSet<>())
                 .build();
 
-        securityGroupConfiguration.insert(securityGroup);
+        securityGroupConfiguration.update(securityGroup);
 
         Script script1 = Script.builder()
                 .scriptKey(new ScriptKey(script1Uuid.toString(), 1L))
@@ -126,6 +126,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -192,6 +193,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
@@ -202,6 +204,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -268,6 +271,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -315,6 +319,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -360,6 +365,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         Pageable pageable = Pageable.unpaged();
         assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
@@ -390,7 +396,7 @@ class ScriptDtoRepositoryTest {
                 .teamKeys(new HashSet<>())
                 .build();
 
-        securityGroupConfiguration.insert(securityGroup);
+        securityGroupConfiguration.update(securityGroup);
 
 
         Script script1 = Script.builder()
@@ -402,6 +408,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -468,6 +475,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
@@ -478,6 +486,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -544,6 +553,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -591,6 +601,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -636,6 +647,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         Pageable pageable = PageRequest.of(0, 2);
         assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
@@ -665,7 +677,7 @@ class ScriptDtoRepositoryTest {
                 .teamKeys(new HashSet<>())
                 .build();
 
-        securityGroupConfiguration.insert(securityGroup);
+        securityGroupConfiguration.update(securityGroup);
         Script script1 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
                 .securityGroupName(securityGroup.getName())
@@ -675,6 +687,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -741,6 +754,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -751,6 +765,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -817,6 +832,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -864,6 +880,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         Pageable pageable = PageRequest.of(0, 1);
 //        assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
@@ -900,6 +917,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -966,6 +984,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -976,6 +995,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1042,6 +1062,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -1089,6 +1110,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -1134,6 +1156,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
         assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
@@ -1170,6 +1193,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1236,6 +1260,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -1246,6 +1271,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1312,6 +1338,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -1359,6 +1386,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -1404,6 +1432,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
         assertThat(scriptDtoRepository.getAll(null, pageable, new ArrayList<>(), false, new ArrayList<>()))
@@ -1440,6 +1469,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1506,6 +1536,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -1516,6 +1547,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1582,6 +1614,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -1629,6 +1662,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -1674,6 +1708,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "ript", false)).collect(Collectors.toList())))
                 .containsOnly(script2Dto, script1Dto);
@@ -1713,6 +1748,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1779,6 +1815,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -1789,6 +1826,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1855,6 +1893,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -1902,6 +1941,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -1947,6 +1987,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label2", "value2a"),
                         new ScriptLabelDto("label3", "value3"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), false, Stream.of(new ScriptFilter(ScriptFilterOption.LABEL, "label1:value", false)).collect(Collectors.toList())))
                 .containsOnly(script1Dto);
@@ -1987,6 +2028,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2053,6 +2095,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2063,6 +2106,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 2L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2129,6 +2173,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -2176,6 +2221,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label2", "value2a"),
                         new ScriptLabelDto("label3", "value3"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         assertThat(scriptDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>(), true, new ArrayList<>()))
                 .containsOnly(script2Dto);
@@ -2220,6 +2266,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2286,6 +2333,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2296,6 +2344,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 2L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2362,6 +2411,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2372,6 +2422,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script3Uuid.toString(), 2L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2438,6 +2489,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script4 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2448,6 +2500,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script4Uuid.toString(), 3L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2514,6 +2567,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -2563,6 +2617,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label2", "value2a"),
                         new ScriptLabelDto("label3", "value3"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script4Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -2608,6 +2663,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label2", "value2a"),
                         new ScriptLabelDto("label3", "value3"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         System.out.println(scriptDtoRepository.getAll(null, PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name")),
                 new ArrayList<>(),
@@ -2659,6 +2715,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2725,6 +2782,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2735,6 +2793,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2801,6 +2860,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2811,6 +2871,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 2L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2877,6 +2938,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -2925,6 +2987,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script2Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -2970,6 +3033,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script3Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -3015,6 +3079,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         Pageable pageable = Pageable.unpaged();
         assertThat(scriptDtoRepository.getByName(null, pageable, "script1", new ArrayList<>(), false))
@@ -3053,6 +3118,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3119,6 +3185,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3129,6 +3196,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3195,6 +3263,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -3237,6 +3306,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3303,6 +3373,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3313,6 +3384,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3379,6 +3451,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3389,6 +3462,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 2L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3455,6 +3529,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -3503,6 +3578,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script3Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -3548,6 +3624,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         Pageable pageable = Pageable.unpaged();
         assertThat(scriptDtoRepository.getByName(null, pageable, "script1", new ArrayList<>(), true))
@@ -3590,6 +3667,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3656,6 +3734,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3666,6 +3745,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3732,6 +3812,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3742,6 +3823,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 2L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3808,6 +3890,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -3856,6 +3939,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         ScriptDto script3Dto = ScriptDto.builder()
                 .securityGroupName(securityGroup.getName())
@@ -3901,6 +3985,7 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label1", "value1"),
                         new ScriptLabelDto("label2", "value2"))
                         .collect(Collectors.toSet()))
+                .deleted_At("NA")
                 .build();
         assertThat(scriptDtoRepository.getByNameAndVersion(null, "script1", 1L, new ArrayList<>()))
                 .hasValue(script1Dto);
@@ -3942,6 +4027,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -4008,6 +4094,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -4018,6 +4105,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -4084,6 +4172,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -4094,6 +4183,7 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 2L)))
                         .description("version description")
+                        .deleted_At("NA")
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -4160,6 +4250,7 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .deleted_At("NA")
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);

@@ -68,7 +68,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     public List<ScriptVersion> getAll() {
         List<ScriptVersion> scriptVersions = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + "where DELETED_AT = 'NA' order by SCRIPT_ID";
+                + " where DELETED_AT = 'NA' order by SCRIPT_ID";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
@@ -203,7 +203,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, DELETED_AT) VALUES (" +
                 SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) + ", " +
                 SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptVersion()) + ", " +
-                SQLTools.getStringForSQL(scriptVersion.getDescription()) +
+                SQLTools.getStringForSQL(scriptVersion.getDescription()) + ", " +
                 " 'NA' "+ ");";
     }
 

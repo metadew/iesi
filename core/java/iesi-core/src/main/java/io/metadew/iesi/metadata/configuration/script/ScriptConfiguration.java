@@ -40,17 +40,17 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     private static final String FETCH_BY_NAME_QUERY = "SELECT " +
             "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_NM = %s AND DELETED_AT = 'NA ;";
+            " WHERE SCRIPT_NM = %s AND DELETED_AT = 'NA' ;";
 
     private static final String FETCH_BY_ID_QUERY = "SELECT " +
             "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_ID = %s AND DELETED_AT = 'NA;";
+            " WHERE SCRIPT_ID = %s AND DELETED_AT = 'NA' ;";
 
     private static final String EXISTS_BY_NAME_QUERY = "SELECT " +
             "SCRIPT_ID " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_NM = %s AND DELETED_AT = 'NA;";
+            " WHERE SCRIPT_NM = %s AND DELETED_AT = 'NA' ;";
 
     private static final String EXISTS_BY_ID_QUERY = "SELECT " +
             "SCRIPT_ID " +

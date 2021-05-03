@@ -238,8 +238,11 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     }
 
     public void update(Connection connection) {
+        ConnectionParameterConfiguration.getInstance().deleteByConnection(
+                connection.getMetadataKey()
+        );
         for (ConnectionParameter connectionParameter : connection.getParameters()) {
-            ConnectionParameterConfiguration.getInstance().update(connectionParameter);
+            ConnectionParameterConfiguration.getInstance().insert(connectionParameter);
         }
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Connections") +
                 " SET CONN_TYP_NM = " + SQLTools.getStringForSQL(connection.getType()) +

@@ -1,14 +1,15 @@
 package io.metadew.iesi.datatypes.dataset.implementation.inmemory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
@@ -20,17 +21,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.powermock.reflect.Whitebox;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static io.metadew.iesi.datatypes.dataset.DatasetBuilder.generateDataset;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 class InMemoryDatasetImplementationServiceTest {
 
@@ -164,7 +168,7 @@ class InMemoryDatasetImplementationServiceTest {
         Map<String, Object> datasetMap = generateDataset(0, 2, 2, 2);
         DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
         assertThat(InMemoryDatasetImplementationService.getInstance()
-                .getDataItems((InMemoryDatasetImplementation) datasetMap.get("datasetImplementation0"),  executionRuntime))
+                .getDataItems((InMemoryDatasetImplementation) datasetMap.get("datasetImplementation0"), executionRuntime))
                 .isEqualTo(
                         Stream.of(
                                 new AbstractMap.SimpleEntry<String, DataType>("key000", new Text("value000")),
@@ -194,7 +198,7 @@ class InMemoryDatasetImplementationServiceTest {
         Map<String, Object> datasetMap = generateDataset(0, 2, 2, 0);
         DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
         assertThat(InMemoryDatasetImplementationService.getInstance()
-                .getDataItems((InMemoryDatasetImplementation) datasetMap.get("datasetImplementation0"),  executionRuntime))
+                .getDataItems((InMemoryDatasetImplementation) datasetMap.get("datasetImplementation0"), executionRuntime))
                 .isEmpty();
         assertThat(InMemoryDatasetImplementationService.getInstance()
                 .getDataItems((InMemoryDatasetImplementation) datasetMap.get("datasetImplementation1"), executionRuntime))
@@ -264,6 +268,121 @@ class InMemoryDatasetImplementationServiceTest {
                 .map(InMemoryDatasetImplementationKeyValue::getValue)
                 .get()
                 .isEqualTo("value001");
+    }
+
+    @Test
+    void testResolve() throws JsonProcessingException {
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+        InMemoryDatasetImplementation inMemoryDatasetImplementation = InMemoryDatasetImplementation.builder()
+                .metadataKey(datasetImplementationKey)
+                .datasetKey(new DatasetKey(UUID.randomUUID()))
+                .name("dataset")
+                .datasetImplementationLabels(Stream.of(
+                        new DatasetImplementationLabel(
+                                new DatasetImplementationLabelKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "label1"
+                        )).collect(Collectors.toSet()))
+                .keyValues(new HashSet<>())
+                .build();
+
+        ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":\"value1\",\"key2\":\"value2\"}");
+
+        DataType dataType = InMemoryDatasetImplementationService.getInstance()
+                .resolve(
+                        inMemoryDatasetImplementation,
+                        "key",
+                        jsonNode,
+                        executionRuntime
+                );
+        assertThat(dataType)
+                .isInstanceOf(InMemoryDatasetImplementation.class);
+        assertThat(((InMemoryDatasetImplementation) dataType).getKeyValues())
+                .hasSize(2)
+                .usingElementComparatorOnFields("key", "value")
+                .containsOnly(
+                        new InMemoryDatasetImplementationKeyValue(
+                                new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "key1",
+                                "value1"
+                        ),
+                        new InMemoryDatasetImplementationKeyValue(
+                                new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "key2",
+                                "value2"
+                        ));
+    }
+
+    @Test
+    void testResolveNested() throws JsonProcessingException {
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+        when(executionRuntime.resolveVariables(anyString()))
+                .thenAnswer((Answer<String>) invocation -> {
+                    Object[] args = invocation.getArguments();
+                    return (String) args[0];
+                });
+
+
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+
+        InMemoryDatasetImplementation inMemoryDatasetImplementation = InMemoryDatasetImplementation.builder()
+                .metadataKey(datasetImplementationKey)
+                .datasetKey(datasetKey)
+                .name("dataset")
+                .datasetImplementationLabels(Stream.of(
+                        new DatasetImplementationLabel(
+                                new DatasetImplementationLabelKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "key1"
+                        )).collect(Collectors.toSet()))
+                .keyValues(new HashSet<>())
+                .build();
+        Dataset dataset = new Dataset(
+                datasetKey,
+                "dataset",
+                Stream.of(inMemoryDatasetImplementation).collect(Collectors.toSet())
+        );
+
+        DatasetConfiguration.getInstance().insert(dataset);
+
+        ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":{\"key2\":\"value2\"}}");
+
+        DataType dataType = InMemoryDatasetImplementationService.getInstance()
+                .resolve(
+                        inMemoryDatasetImplementation,
+                        "key",
+                        jsonNode,
+                        executionRuntime
+                );
+        assertThat(dataType)
+                .isInstanceOf(InMemoryDatasetImplementation.class);
+        assertThat(((InMemoryDatasetImplementation) dataType).getKeyValues())
+                .hasSize(1)
+                .usingElementComparatorOnFields("key")
+                .containsOnly(
+                        new InMemoryDatasetImplementationKeyValue(
+                                new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "key1",
+                                "dataset"
+                        ));
+        DataType dataType1 = DataTypeHandler.getInstance().resolve(((InMemoryDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
+        assertThat(dataType1)
+                .isInstanceOf(InMemoryDatasetImplementation.class);
+        assertThat(((InMemoryDatasetImplementation) dataType1).getKeyValues())
+                .hasSize(1)
+                .usingElementComparatorOnFields("key")
+                .containsOnly(
+                        new InMemoryDatasetImplementationKeyValue(
+                                new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "key2",
+                                "value2"
+                        ));
     }
 
 

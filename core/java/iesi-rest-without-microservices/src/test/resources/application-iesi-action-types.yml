@@ -81,52 +81,6 @@ iesi:
             subroutine:
             impersonate: true
         status: alpha
-      conn.setStageConnection:
-        className: io.metadew.iesi.script.action.conn.ConnSetStageConnection
-        description: Define a stage connection that can be used in any next step
-        parameters:
-          stage:
-            description: Name of the stage connection
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          cleanup:
-            description: Flag to indicate if the stage connection needs to be cleaned up
-              after processing
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-        status: beta
-      data.compareDataset:
-        className: io.metadew.iesi.script.action.data.DataCompareDataset
-        description: Compare two datasets
-        parameters:
-          leftDataset:
-            description: Dataset to compare
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-          rightDataset:
-            description: Dataset to compare against
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-          mapping:
-            description: Mapping to use for comparing the dataset
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-        status: experimental
       data.outputDataset:
         className: io.metadew.iesi.script.action.data.DataOutputDataset
         description: Prints a dataset for logging and debugging purposes
@@ -238,6 +192,25 @@ iesi:
             subroutine:
             impersonate: false
           actual:
+            description: Actual value to evaluate
+            type: string
+            mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+        status: stable
+      eval.listContains:
+        className: io.metadew.iesi.script.action.eval.EvalListContains
+        description: Evaluate if two values are equal
+        parameters:
+          list:
+            description: Expected value to evaluate
+            type: string
+            mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+          value:
             description: Actual value to evaluate
             type: string
             mandatory: true
@@ -601,119 +574,6 @@ iesi:
             subroutine:
             impersonate: false
         status: stable
-      fwk.executeSuite:
-        className: io.metadew.iesi.script.action.fwk.FwkExecuteSuite
-        description: Execute a test suite of multiple scripts
-        parameters:
-          component:
-            description: Component for which to run a suite
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          suite:
-            description: Suite name to execute
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          version:
-            description: Version of the suite to run
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          build:
-            description: Build of the version to run
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-          connection:
-            description: Connection where the suite is stored
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: true
-          componentPath:
-            description: Path to the component in the repository
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          suitePath:
-            description: Path to the suite in the repository
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          versionPath:
-            description: Path to the suite in the repository
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          buildPath:
-            description: Path to the build in the repository
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          asset:
-            description: Definition of the build asset
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          environment:
-            description: Environment name where the execution needs to take place
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-        status: alpha
-      fwk.exitScript:
-        className: io.metadew.iesi.script.action.fwk.FwkExitScript
-        description: Exit the script execution
-        parameters:
-          status:
-            description: Exit status for the script
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-        status: beta
-      fwk.includeScript:
-        className: io.metadew.iesi.script.action.fwk.FwkIncludeScript
-        description: Include the actions of another script and execute as one script
-        parameters:
-          script:
-            description: Script name to execute
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          version:
-            description: Version of the script to run
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-        status: stable
       fwk.outputMessage:
         className: io.metadew.iesi.script.action.fwk.FwkOutputMessage
         description: Prints a message for logging and debugging purposes
@@ -727,37 +587,6 @@ iesi:
             impersonate: false
           onScreen:
             description: Flag indicating if the message needs to be printed on the screen
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-        status: stable
-      fwk.route:
-        className: io.metadew.iesi.script.action.fwk.FwkRoute
-        description: Route to one or more specific actions
-        parameters:
-          condition:
-            description: Condition to apply to follow a route
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-          destination:
-            description: Destination to go to if the condition is met
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-        status: alpha
-      fwk.setEnvironment:
-        className: io.metadew.iesi.script.action.fwk.FwkSetEnvironment
-        description: Set the environment where the next steps will be executed on
-        parameters:
-          environment:
-            description: Environment name where the next action will be executed on
             type: string
             mandatory: false
             encrypted: false
@@ -831,7 +660,7 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
-        status: stable
+        status: experimental
       fwk.setParameterFile:
         className: io.metadew.iesi.script.action.fwk.FwkSetParameterFile
         description: Load a parameter file as runtime variables
@@ -926,12 +755,12 @@ iesi:
         className: io.metadew.iesi.script.action.fwk.FwkStartIteration
         description: Start an iteration block for the steps
         parameters: {}
-        status: alpha
+        status: experimental
       fwk.stopIteration:
         className: io.metadew.iesi.script.action.fwk.FwkStopIteration
         description: Stop the iteration block
         parameters: {}
-        status: alpha
+        status: experimental
       http.executeRequest:
         className: io.metadew.iesi.script.action.http.HttpExecuteRequest
         description: Execute a http request
@@ -940,6 +769,13 @@ iesi:
             description: Name of the request to use
             type: string
             mandatory: true
+            encrypted: false
+            subroutine:
+            impersonate: false
+          setRuntimeVariables:
+            description: Flag indicating if an expected result will be set as a runtime variable
+            type: string
+            mandatory: false
             encrypted: false
             subroutine:
             impersonate: false
@@ -971,33 +807,21 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
+          headers:
+            description: headers
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
+          queryParameters:
+            description: queryParams
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
         status: stable
-      java.parseJar:
-        className: io.metadew.iesi.script.action.java.JavaParseJar
-        description: Parses a Java archive file
-        parameters:
-          path:
-            description: Path where the file is located
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: false
-          file:
-            description: File(s) to parse
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          connection:
-            description: Connection where the file is located
-            type: string
-            mandatory: false
-            encrypted: false
-            subroutine:
-            impersonate: true
-        status: alpha
       mod.soapui:
         className: io.metadew.iesi.script.action.mod.ModSoapui
         description: Run a SOAP UI test scope
@@ -1083,32 +907,6 @@ iesi:
             subroutine:
             impersonate: false
         status: stable
-      sql.defineDataset:
-        className: io.metadew.iesi.script.action.sql.SqlDefineDataset
-        description: Define a SQL dataset
-        parameters:
-          name:
-            description: Reference name for the dataset definition
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-          statement:
-            description: SQL statement that defines the dataset
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine: query
-            impersonate: false
-          identifier:
-            description: Unique identifier for records in the dataset
-            type: string
-            mandatory: true
-            encrypted: false
-            subroutine:
-            impersonate: false
-        status: alpha
       sql.evaluateResult:
         className: io.metadew.iesi.script.action.sql.SqlEvaluateResult
         description: Checks if a SQL query returns a result or not

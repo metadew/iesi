@@ -26,7 +26,7 @@ public class DataTypeHandler {
 
     private static final String DATATYPE_START_CHARACTERS = "{{";
     private static final String DATATYPE_STOP_CHARACTERS = "}}";
-    private static final Pattern DATATYPE_PATTERN = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.+)\\)");
+    private static final Pattern DATATYPE_PATTERN = Pattern.compile("\\^(?<datatype>\\w+)\\((?<arguments>.*)\\)");
 
     private Map<ClassStringPair, IDataTypeService> dataTypeServiceMap;
 

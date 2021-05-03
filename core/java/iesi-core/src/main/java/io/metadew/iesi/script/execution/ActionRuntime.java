@@ -1,12 +1,12 @@
 package io.metadew.iesi.script.execution;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.script.action.ActionParameterResolvement;
 import io.metadew.iesi.script.configuration.RuntimeActionCacheConfiguration;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
-import io.metadew.iesi.script.operation.RouteOperation;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ActionRuntime {
 
@@ -14,7 +14,6 @@ public class ActionRuntime {
     private String runCacheFolderName;
     private String runId;
     private Long processId;
-    private List<RouteOperation> routeOperations;
 
     public ActionRuntime(String runId, long processId) {
         this.setRunId(runId);
@@ -25,13 +24,6 @@ public class ActionRuntime {
     public void initActionCache(String runCacheFolderName) {
         this.runCacheFolderName = runCacheFolderName + File.separator + processId;
         this.runtimeActionCacheConfiguration = new RuntimeActionCacheConfiguration(this.runCacheFolderName);
-    }
-
-    public void setRuntimeParameters(Map<String, ActionParameterOperation> actionParameterOperationMap) {
-        actionParameterOperationMap.values().stream()
-                .filter(actionParameterOperation -> actionParameterOperation != null && actionParameterOperation.getValue() != null)
-                .forEach(actionParameterOperation -> this.getRuntimeActionCacheConfiguration().setRuntimeCache(this.getRunId(), this.processId, "param",
-                        actionParameterOperation.getName(), actionParameterOperation.getValue().toString()));
     }
 
     public void setRuntimeParameters(String type, Map<String, String> variableMap) {
@@ -103,15 +95,18 @@ public class ActionRuntime {
         return runtimeActionCacheConfiguration;
     }
 
-    public List<RouteOperation> getRouteOperations() {
-        return routeOperations;
-    }
-
-    public void setRouteOperations(List<RouteOperation> routeOperations) {
-        this.routeOperations = routeOperations;
-    }
-
     public void setProcessId(Long processId) {
         this.processId = processId;
+    }
+
+    public void setRuntimeParameters(List<ActionParameterResolvement> actionParameterResolvements) {
+        actionParameterResolvements
+                .forEach(actionParameterResolvement -> getRuntimeActionCacheConfiguration()
+                        .setRuntimeCache(this.getRunId(),
+                                this.processId,
+                                "param",
+                                actionParameterResolvement.getActionParameter().getMetadataKey().getParameterName(),
+                                actionParameterResolvement.getResolvedValue().toString()));
+
     }
 }

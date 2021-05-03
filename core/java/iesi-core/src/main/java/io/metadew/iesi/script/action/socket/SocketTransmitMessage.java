@@ -7,14 +7,12 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ActionPerformanceLogger;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,11 +32,11 @@ import java.util.Optional;
 public class SocketTransmitMessage extends ActionTypeExecution {
 
     private static Logger LOGGER = LogManager.getLogger();
-    private static final String socketKey = "socket";
-    private static final String messageKey = "message";
-    private static final String protocolKey = "protocol";
-    private static final String outputKey = "output";
-    private static final String timeoutKey = "timeout";
+    private static final String SOCKET_KEY = "socket";
+    private static final String MESSAGE_KEY = "message";
+    private static final String PROTOCOL_KEY = "protocol";
+    private static final String OUTPUT_KEY = "output";
+    private static final String TIMEOUT_KEY = "timeout";
 
     private String message;
     private String protocol;
@@ -52,40 +50,10 @@ public class SocketTransmitMessage extends ActionTypeExecution {
     }
 
     public void prepare() {
-        // Reset Parameters
-        ActionParameterOperation socketActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), socketKey);
-        ActionParameterOperation messageActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), messageKey);
-        ActionParameterOperation protocolActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), protocolKey);
-        ActionParameterOperation outputActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), outputKey);
-        ActionParameterOperation timeoutActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), timeoutKey);
-
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(messageKey)) {
-                messageActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(socketKey)) {
-                socketActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(protocolKey)) {
-                protocolActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(outputKey)) {
-                outputActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(timeoutKey)) {
-                timeoutActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        getActionParameterOperationMap().put(socketKey, socketActionParameterOperation);
-        getActionParameterOperationMap().put(messageKey, messageActionParameterOperation);
-        getActionParameterOperationMap().put(protocolKey, protocolActionParameterOperation);
-        getActionParameterOperationMap().put(outputKey, outputActionParameterOperation);
-        getActionParameterOperationMap().put(timeoutKey, timeoutActionParameterOperation);
-
-        this.message = convertMessage(messageActionParameterOperation.getValue());
-        this.protocol = convertProtocol(protocolActionParameterOperation.getValue());
-        this.socket = convertSocket(socketActionParameterOperation.getValue());
-        this.outputDataset = convertOutputDataset(outputActionParameterOperation.getValue());
-        this.timeout = convertTimeout(timeoutActionParameterOperation.getValue());
+        this.message = convertMessage(getParameterResolvedValue(MESSAGE_KEY));
+        this.protocol = convertProtocol(getParameterResolvedValue(PROTOCOL_KEY));
+        this.socket = convertSocket(getParameterResolvedValue(SOCKET_KEY));
+        this.outputDataset = convertOutputDataset(getParameterResolvedValue(OUTPUT_KEY));
     }
 
     private Integer convertTimeout(DataType timeout) {
@@ -117,7 +85,6 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         }
     }
 
-
     protected boolean executeAction() throws IOException, InterruptedException {
         if (protocol.equalsIgnoreCase("tcp")) {
             sendTCPMessage();
@@ -125,6 +92,11 @@ public class SocketTransmitMessage extends ActionTypeExecution {
             sendUDPMessage();
         }
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "socket.transmitMessage";
     }
 
     private void sendUDPMessage() throws IOException {

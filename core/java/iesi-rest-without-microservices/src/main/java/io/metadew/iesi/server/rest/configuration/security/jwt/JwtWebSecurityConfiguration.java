@@ -95,7 +95,13 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+        CorsConfiguration corsConfiguration = new CorsConfiguration(); //.applyPermitDefaultValues();
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.setMaxAge(1800L);
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedMethod(HttpMethod.GET);
+        corsConfiguration.addAllowedMethod(HttpMethod.HEAD);
+        corsConfiguration.addAllowedMethod(HttpMethod.POST);
         corsConfiguration.addAllowedMethod(HttpMethod.PUT);
         corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
         source.registerCorsConfiguration("/**", corsConfiguration);

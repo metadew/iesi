@@ -1,22 +1,21 @@
 package io.metadew.iesi.server.rest.dataset;
 
 import io.metadew.iesi.datatypes.dataset.Dataset;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSupport<Dataset, DatasetDto> {
 
-    private final DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler;
-
     @Autowired
-    public DatasetDtoModelAssembler(DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler) {
+    public DatasetDtoModelAssembler() {
         super(DatasetController.class, DatasetDto.class);
-        this.datasetImplementationDtoModelAssembler = datasetImplementationDtoModelAssembler;
     }
 
     @Override
@@ -26,7 +25,7 @@ public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSuppor
         datasetDto.setUuid(dataset.getMetadataKey().getUuid());
         datasetDto.setName(dataset.getName());
         datasetDto.setImplementations(dataset.getDatasetImplementations().stream()
-                .map(datasetImplementationDtoModelAssembler::toModel)
+                .map(e -> e.getMetadataKey().getUuid())
                 .collect(Collectors.toSet()));
 
         return datasetDto;
@@ -35,5 +34,4 @@ public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSuppor
     public DatasetDto toModel(DatasetDto datasetDto) {
         return datasetDto;
     }
-
 }

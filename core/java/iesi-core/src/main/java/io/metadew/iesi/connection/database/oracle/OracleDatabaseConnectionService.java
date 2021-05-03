@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Log4j2
 public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionService<OracleDatabaseConnection> implements ISchemaDatabaseConnectionService<OracleDatabaseConnection> {
@@ -47,14 +46,11 @@ public class OracleDatabaseConnectionService extends SchemaDatabaseConnectionSer
     public Connection getConnection(OracleDatabaseConnection oracleDatabaseConnection) {
         try {
             Connection connection = super.getConnection(oracleDatabaseConnection);
-
             Optional<String> schema = oracleDatabaseConnection.getSchema();
             if (schema.isPresent()) {
-                // TODO: The old JDBC API does not support the setSchema call
                 connection.createStatement().execute("alter session set current_schema=" + schema.get());
                 // connection.setSchema(schema.get());
             }
-            connection.createStatement().execute("alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF'");
             return connection;
         } catch (SQLException e) {
             StringWriter stackTrace = new StringWriter();

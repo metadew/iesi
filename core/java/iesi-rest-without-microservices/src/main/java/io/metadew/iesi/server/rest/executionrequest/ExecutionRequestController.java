@@ -3,7 +3,9 @@ package io.metadew.iesi.server.rest.executionrequest;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
@@ -12,6 +14,8 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
+import io.metadew.iesi.server.rest.user.UserDto;
+import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,8 +30,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -41,16 +47,20 @@ public class ExecutionRequestController {
     private final PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage;
     private final IesiSecurityChecker iesiSecurityChecker;
     private final ScriptConfiguration scriptConfiguration;
+    private final UserDtoRepository userDtoRepository;
+
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
                                ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler,
-                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage, IesiSecurityChecker iesiSecurityChecker, ScriptConfiguration scriptConfiguration) {
+                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage, IesiSecurityChecker iesiSecurityChecker,
+                               ScriptConfiguration scriptConfiguration, UserDtoRepository userDtoRepository) {
         this.executionRequestService = executionRequestService;
         this.executionRequestDtoModelAssembler = executionRequestDtoModelAssembler;
         this.executionRequestDtoResourceAssemblerPage = executionRequestDtoResourceAssemblerPage;
         this.iesiSecurityChecker = iesiSecurityChecker;
         this.scriptConfiguration = scriptConfiguration;
+        this.userDtoRepository = userDtoRepository;
     }
 
     @SuppressWarnings("unchecked")
@@ -109,7 +119,30 @@ public class ExecutionRequestController {
                         .collect(Collectors.toList()))) {
             throw new AccessDeniedException("User is not allowed to delete this execution request");
         }
-        ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(executionRequestPostDto.convertToEntity());
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserDto userDto = userDtoRepository.get(username)
+                .orElseThrow(() -> new RuntimeException("Cannot find user :" + username));
+        String newExecutionRequestId = UUID.randomUUID().toString();
+        AuthenticatedExecutionRequest authenticatedExecutionRequest = AuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
+                .name(executionRequestPostDto.getName())
+                .username(userDto.getUsername())
+                .userID(userDto.getId().toString())
+                .context(executionRequestPostDto.getContext())
+                .description(executionRequestPostDto.getDescription())
+                .scope(executionRequestPostDto.getScope())
+                .executionRequestLabels(executionRequestPostDto.getExecutionRequestLabels().stream()
+                        .map(executionRequestLabelDto -> executionRequestLabelDto.convertToEntity(new ExecutionRequestKey(newExecutionRequestId)))
+                        .collect(Collectors.toSet()))
+                .email(executionRequestPostDto.getEmail())
+                .scriptExecutionRequests(executionRequestPostDto.getScriptExecutionRequests().stream()
+                        .map(scriptExecutionRequestPostDto -> scriptExecutionRequestPostDto.convertToEntity(newExecutionRequestId))
+                        .collect(Collectors.toList()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .requestTimestamp(LocalDateTime.now())
+                .build();
+
+        ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(authenticatedExecutionRequest);
         return executionRequestDtoModelAssembler.toModel(executionRequest);
     }
 

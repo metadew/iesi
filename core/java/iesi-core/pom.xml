@@ -6,7 +6,7 @@
 
     <groupId>io.metadew</groupId>
     <artifactId>iesi-core</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
     <name>io.metadew:iesi-core</name>
     <description>IESI Core artifact</description>
     <url>https://metadew.github.io/metadew/</url>
@@ -52,7 +52,7 @@
                         <executions>
                             <execution>
                                 <id>copy-dependencies</id>
-                                <phase>package</phase>
+                                <phase>validate</phase>
                                 <goals>
                                     <goal>copy-dependencies</goal>
                                 </goals>
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.10.3</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -122,12 +122,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.9</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.9.9</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -167,7 +167,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.27.2.1</version>
+            <version>3.34.0</version>
         </dependency>
         <dependency>
             <groupId>javassist</groupId>
@@ -194,12 +194,6 @@
             <artifactId>commons-collections4</artifactId>
             <version>4.3</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.junit.jupiter</groupId>-->
-        <!--            <artifactId>junit-jupiter-api</artifactId>-->
-        <!--            <version>5.5.1</version>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -295,13 +289,17 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.13.3</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.16.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>2.0.24</version>
         </dependency>
     </dependencies>
 

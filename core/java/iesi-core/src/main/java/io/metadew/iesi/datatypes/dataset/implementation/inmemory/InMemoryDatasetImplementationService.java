@@ -153,13 +153,15 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
             inMemoryDatasetImplementationKeyValue.get().setValue(value.toString());
             InMemoryDatasetImplementationKeyValueConfiguration.getInstance().update(inMemoryDatasetImplementationKeyValue.get());
         } else {
+            InMemoryDatasetImplementationKeyValue newInMemoryDatasetImplementationKeyValue = new InMemoryDatasetImplementationKeyValue(
+                    new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                    datasetImplementation.getMetadataKey(),
+                    key,
+                    value.toString()
+            );
+            datasetImplementation.getKeyValues().add(newInMemoryDatasetImplementationKeyValue);
             InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
-                    .insert(new InMemoryDatasetImplementationKeyValue(
-                            new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
-                            datasetImplementation.getMetadataKey(),
-                            key,
-                            value.toString()
-                    ));
+                    .insert(newInMemoryDatasetImplementationKeyValue);
         }
     }
 
@@ -184,7 +186,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
             List<String> labels = inMemoryDatasetImplementation.getDatasetImplementationLabels().stream()
                     .map(DatasetImplementationLabel::getValue)
                     .collect(Collectors.toList());
-            labels.add(keyPrefix);
+            labels.add(UUID.randomUUID().toString());
             return createNewDatasetImplementation(inMemoryDatasetImplementation.getDatasetKey(), inMemoryDatasetImplementation.getName(), labels);
         } else {
             return inMemoryDatasetImplementation;

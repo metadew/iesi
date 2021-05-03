@@ -7,7 +7,6 @@ iesi:
       - categories:
           - general
         instance:
-
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           type: sqlite

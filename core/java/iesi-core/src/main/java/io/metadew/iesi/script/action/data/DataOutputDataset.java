@@ -6,13 +6,11 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -27,10 +25,11 @@ import java.util.List;
 @Log4j2
 public class DataOutputDataset extends ActionTypeExecution {
 
+    private static final String DATASET_NAME_KEY = "name";
+    private static final String DATASET_LABELS_KEY = "labels";
+    private static final String DATASET_ON_SCREEN_KEY = "onScreen";
+
     // Parameters
-    private ActionParameterOperation datasetName;
-    private ActionParameterOperation datasetLabels;
-    private ActionParameterOperation onScreen;
 
     public DataOutputDataset(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -38,37 +37,26 @@ public class DataOutputDataset extends ActionTypeExecution {
     }
 
     public void prepare() {
-        // Reset Parameters
-        datasetName = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "name");
-        datasetLabels = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "labels");
-        onScreen = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "onScreen");
-
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
-                this.getDatasetName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("labels")) {
-                this.getDatasetLabels().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("onScreen")) {
-                this.getOnScreen().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        getActionParameterOperationMap().put("name", this.getDatasetName());
-        getActionParameterOperationMap().put("labels", this.getDatasetLabels());
-        getActionParameterOperationMap().put("onScreen", this.getOnScreen());
     }
 
     protected boolean executeAction() throws InterruptedException, IOException {
-        InMemoryDatasetImplementation dataset = InMemoryDatasetImplementationService.getInstance().getDatasetImplementation(convertDatasetName(getDatasetName().getValue()), convertDatasetLabels(getDatasetLabels().getValue(), getExecutionControl().getExecutionRuntime()))
-                .orElseThrow(() -> new RuntimeException("Could not find dataset with " + convertDatasetName(getDatasetName().getValue()) + " " + convertDatasetLabels(getDatasetLabels().getValue(), getExecutionControl().getExecutionRuntime())));
-        boolean onScreen = convertOnScreen(getOnScreen().getValue());
+        InMemoryDatasetImplementation dataset = InMemoryDatasetImplementationService.getInstance()
+                .getDatasetImplementation(
+                        convertDatasetName(getParameterResolvedValue(DATASET_NAME_KEY)),
+                        convertDatasetLabels(getParameterResolvedValue(DATASET_LABELS_KEY),
+                                getExecutionControl().getExecutionRuntime()))
+                .orElseThrow(() -> new RuntimeException("Could not find dataset with " + convertDatasetName(getParameterResolvedValue(DATASET_NAME_KEY)) + " " + convertDatasetLabels(getParameterResolvedValue(DATASET_LABELS_KEY), getExecutionControl().getExecutionRuntime())));
+        boolean onScreen = convertOnScreen(getParameterResolvedValue(DATASET_ON_SCREEN_KEY));
         InMemoryDatasetImplementationService.getInstance().getDataItems(dataset, getExecutionControl().getExecutionRuntime())
                 .forEach((key, value) -> log.info(MessageFormat.format("{0}:{1}", key, value)));
 
         getActionExecution().getActionControl().increaseSuccessCount();
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "data.outputDataset";
     }
 
 
@@ -121,31 +109,6 @@ public class DataOutputDataset extends ActionTypeExecution {
                     onScreen.getClass()));
             return false;
         }
-    }
-
-
-    public ActionParameterOperation getOnScreen() {
-        return onScreen;
-    }
-
-    public void setOnScreen(ActionParameterOperation onScreen) {
-        this.onScreen = onScreen;
-    }
-
-    public ActionParameterOperation getDatasetName() {
-        return datasetName;
-    }
-
-    public void setDatasetName(ActionParameterOperation datasetName) {
-        this.datasetName = datasetName;
-    }
-
-    public ActionParameterOperation getDatasetLabels() {
-        return datasetLabels;
-    }
-
-    public void setDatasetLabels(ActionParameterOperation datasetLabels) {
-        this.datasetLabels = datasetLabels;
     }
 
 }

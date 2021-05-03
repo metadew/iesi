@@ -3,7 +3,6 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.r.RWorkspace;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
@@ -18,7 +17,6 @@ import io.metadew.iesi.script.execution.instruction.lookup.LookupInstructionRepo
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ImpersonationOperation;
 import io.metadew.iesi.script.operation.IterationOperation;
 import io.metadew.iesi.script.operation.StageOperation;
@@ -26,9 +24,11 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.sql.rowset.CachedRowSet;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -85,7 +85,7 @@ public class ExecutionRuntime {
         // Initialize extensions
 
         // Initialize data instructions
-        dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution());
+        dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution(), this);
         variableInstructions = VariableInstructionRepository.getRepository(executionControl);
         lookupInstructions = LookupInstructionRepository.getRepository(executionControl, this);
         datasetMap = new HashMap<>();
@@ -103,24 +103,27 @@ public class ExecutionRuntime {
         stageOperationMap = new HashMap<>();
     }
 
-    public void setRuntimeVariables(ActionExecution actionExecution, ResultSet rs) {
-        if (SQLTools.getRowCount(rs) == 1) {
-            try {
-                ResultSetMetaData rsmd = rs.getMetaData();
-                int numberOfColums = rsmd.getColumnCount();
-                rs.beforeFirst();
-                while (rs.next()) {
-                    for (int i = 1; i < numberOfColums + 1; i++) {
-                        this.setRuntimeVariable(actionExecution, rsmd.getColumnName(i), rs.getString(i));
-                    }
-                }
-                rs.close();
-            } catch (SQLException e) {
-                throw new RuntimeException("Error getting sql result " + e, e);
-            }
-        } else {
+    public void setRuntimeVariables(ActionExecution actionExecution, CachedRowSet cachedRowSet) throws SQLException {
+        if (cachedRowSet.size() != 1) {
             throw new RuntimeException("Only 1 line of data expected");
         }
+        ResultSetMetaData resultSetMetaData = cachedRowSet.getMetaData();
+        int numberOfColums = resultSetMetaData.getColumnCount();
+        cachedRowSet.beforeFirst();
+        cachedRowSet.next();
+        for (int i = 1; i < numberOfColums + 1; i++) {
+            String columnName;
+            try {
+                columnName = resultSetMetaData.getColumnLabel(i);
+            } catch (SQLFeatureNotSupportedException e) {
+                columnName = resultSetMetaData.getColumnName(i);
+            }
+            setRuntimeVariable(
+                    actionExecution,
+                    columnName,
+                    cachedRowSet.getObject(i).toString());
+        }
+        cachedRowSet.close();
     }
 
     public void setRuntimeVariables(ActionExecution actionExecution, String input) {
@@ -241,30 +244,30 @@ public class ExecutionRuntime {
         return input;
     }
 
-
-    public String resolveActionTypeVariables(String input, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        int openPos;
-        int closePos;
-        String variable_char_open = "[";
-        String variable_char_close = "]";
-        String midBit;
-        String replaceValue;
-        String temp = input;
-        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
-            openPos = temp.indexOf(variable_char_open);
-            closePos = temp.indexOf(variable_char_close, openPos + 1);
-            midBit = temp.substring(openPos + 1, closePos);
-
-            // Replace
-            replaceValue = actionParameterOperationMap.get(midBit).getValue().toString();
-            if (replaceValue != null) {
-                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
-            }
-            temp = temp.substring(closePos + 1, temp.length());
-
-        }
-        return input;
-    }
+//
+//    public String resolveActionTypeVariables(String input, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+//        int openPos;
+//        int closePos;
+//        String variable_char_open = "[";
+//        String variable_char_close = "]";
+//        String midBit;
+//        String replaceValue;
+//        String temp = input;
+//        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
+//            openPos = temp.indexOf(variable_char_open);
+//            closePos = temp.indexOf(variable_char_close, openPos + 1);
+//            midBit = temp.substring(openPos + 1, closePos);
+//
+//            // Replace
+//            replaceValue = actionParameterOperationMap.get(midBit).getValue().toString();
+//            if (replaceValue != null) {
+//                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
+//            }
+//            temp = temp.substring(closePos + 1, temp.length());
+//
+//        }
+//        return input;
+//    }
 
     public String resolveComponentTypeVariables(String input, List<ComponentAttribute> componentAttributeList,
                                                 String environment) {

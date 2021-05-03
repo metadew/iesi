@@ -10,12 +10,12 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
-
+          connection: jdbc:mysql://localhost:3306/IESI?useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
           type: mysql
-          host: localhost
-          name: IESI
-          port: 3306
-          schema: IESI?useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
+#          host: localhost
+#          name: IESI
+#          port: 3306
+          schema: IESI
           owner:
             user: root
             password: iesi_root

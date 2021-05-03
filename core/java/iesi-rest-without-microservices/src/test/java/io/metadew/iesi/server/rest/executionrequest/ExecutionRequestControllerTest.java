@@ -1,175 +1,244 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
+import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
+import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
-import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestPostDto;
+import io.metadew.iesi.server.rest.user.UserDto;
+import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Log4j2
-@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
-@ContextConfiguration(classes = {TestConfiguration.class, MethodSecurityConfiguration.class})
+@SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
+        properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@AutoConfigureMockMvc
-@ActiveProfiles({"test"})
+@ActiveProfiles({"http", "test"})
 @DirtiesContext
 class ExecutionRequestControllerTest {
 
     @Autowired
-    private MockMvc mvc;
+    private ExecutionRequestController executionRequestController;
+
     @MockBean
     private ExecutionRequestService executionRequestService;
 
-    @BeforeEach
-    void setup() {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "user",
-                null,
-                Stream.of(
-                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_WRITE"),
-                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_READ"),
-                        new IESIGrantedAuthority("PUBLIC", "EXECUTION_REQUESTS_WRITE")
-                ).collect(Collectors.toSet())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    @MockBean
+    private UserDtoRepository userDtoRepository;
 
-    }
+    @MockBean
+    private ScriptConfiguration scriptConfiguration;
+
 
     @Test
-    @WithMockUser(username = "spring")
-    void getAllNoResult() throws Exception {
-        Pageable pageable = PageRequest.of(0, 20);
-        List<ExecutionRequestDto> executionRequestDtoList = new ArrayList<>();
-        Page<ExecutionRequestDto> page = new PageImpl<>(executionRequestDtoList, pageable, 0);
-        given(executionRequestService.getAll(any(), any(), any())).willReturn(page);
-
-        mvc.perform(get("/execution-requests").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.execution_requests").exists())
-                .andExpect(jsonPath("$._embedded.execution_requests").isArray())
-                .andExpect(jsonPath("$._embedded.execution_requests").isEmpty());
-    }
-
-    @Test
-    @WithMockUser(username = "spring")
-    void getAllResultWithPagination() throws Exception {
-        ExecutionRequestDto executionRequest1 = ExecutionRequestDto.builder()
-                .executionRequestId("newExecutionRequestId")
-                .name("name")
-                .context("context1")
-                .description("description")
-                .scope("scope")
+    @WithIesiUser(username = "spring",
+            authorities = {"EXECUTION_REQUESTS_WRITE@PUBLIC"})
+    void testCreateExecutionRequestsWrite() {
+        // Create test method argument(s)
+        ExecutionRequestPostDto executionRequestPostDto = ExecutionRequestPostDto.builder()
+                .executionRequestLabels(new HashSet<>())
                 .requestTimestamp(LocalDateTime.now())
-                .build();
-        ExecutionRequestDto executionRequest2 = ExecutionRequestDto.builder()
-                .executionRequestId("newExecutionRequestId2")
+                .scriptExecutionRequests(Stream.of(
+                        ScriptExecutionRequestPostDto.builder()
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .environment("test")
+                                .exit(false)
+                                .impersonations(new HashSet<>())
+                                .parameters(new HashSet<>())
+                                .build()
+                ).collect(Collectors.toSet()))
+                .context("context")
+                .description("description")
+                .email("email")
                 .name("name")
+                .scope("scope")
+                .build();
+
+        // Define mocks behaviour
+        UUID userUUID = UUID.randomUUID();
+        UserDto userDto = mock(UserDto.class);
+        when(userDto.getId())
+                .thenReturn(userUUID);
+        when(userDto.getUsername())
+                .thenReturn("spring");
+        when(userDtoRepository.get("spring"))
+                .thenReturn(Optional.of(userDto));
+        when(scriptConfiguration
+                .getSecurityGroup("script1"))
+                .thenReturn(Optional.of(new SecurityGroup(
+                        new SecurityGroupKey(UUID.randomUUID()),
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>())));
+
+        String newExecutionRequestId = UUID.randomUUID().toString();
+        String newScriptExecutionRequestId = UUID.randomUUID().toString();
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        AuthenticatedExecutionRequest expectedAuthenticatedExecutionRequest = AuthenticatedExecutionRequest.builder()
+                .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
+                .name("name")
+                .username("spring")
+                .userID(userUUID.toString())
                 .context("context")
                 .description("description")
                 .scope("scope")
-                .requestTimestamp(LocalDateTime.now())
+                .executionRequestLabels(Stream.of(ExecutionRequestLabel.builder()
+                        .metadataKey(new ExecutionRequestLabelKey(UUID.randomUUID().toString()))
+                        .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
+                        .name("key1")
+                        .value("value1")
+                        .build())
+                        .collect(Collectors.toSet()))
+                .email("email")
+                .scriptExecutionRequests(Stream.of(ScriptNameExecutionRequest.builder()
+                        .scriptExecutionRequestKey(new ScriptExecutionRequestKey(newScriptExecutionRequestId))
+                        .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
+                        .scriptName("script1")
+                        .scriptVersion(1L)
+                        .environment("test")
+                        .exit(false)
+                        .impersonations(new HashSet<>())
+                        .parameters(new HashSet<>())
+                        .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                        .build())
+                        .collect(Collectors.toList()))
+                .executionRequestStatus(ExecutionRequestStatus.NEW)
+                .requestTimestamp(requestTimestamp)
                 .build();
-        ExecutionRequestDto executionRequest3 = ExecutionRequestDto.builder()
-                .executionRequestId("newExecutionRequestId3")
-                .name("name")
-                .context("context")
-                .description("description")
-                .scope("scope")
-                .requestTimestamp(LocalDateTime.now())
-                .build();
-        int size = 1;
-        Pageable pageable1 = PageRequest.of(0, size);
-        Pageable pageable2 = PageRequest.of(1, size);
-        Pageable pageable3 = PageRequest.of(2, size);
-        List<ExecutionRequestDto> executionRequestDtoList1 = Stream.of(executionRequest1).collect(Collectors.toList());
-        List<ExecutionRequestDto> executionRequestDtoList2 = Stream.of(executionRequest2).collect(Collectors.toList());
-        List<ExecutionRequestDto> executionRequestDtoList3 = Stream.of(executionRequest3).collect(Collectors.toList());
-        List<ExecutionRequestDto> executionRequestDtoList = Stream.of(executionRequest1, executionRequest2, executionRequest3).collect(Collectors.toList());
-        Page<ExecutionRequestDto> page1 = new PageImpl<>(executionRequestDtoList1, pageable1, 3);
-        Page<ExecutionRequestDto> page2 = new PageImpl<>(executionRequestDtoList2, pageable2, 3);
-        Page<ExecutionRequestDto> page3 = new PageImpl<>(executionRequestDtoList3, pageable3, 3);
 
-        given(executionRequestService.getAll(any(), any(), any())).willReturn(page1);
-        mvc.perform(get("/execution-requests?page=0&size=1")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
-                .andExpect(jsonPath("$").exists())
-                .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.execution_requests[0].name", is(executionRequestDtoList1.get(0).getName())))
-                .andExpect(jsonPath("$._embedded.execution_requests[0].executionRequestId", is(executionRequestDtoList1.get(0).getExecutionRequestId())))
-                .andExpect(jsonPath("$._embedded.execution_requests[0].description", is(executionRequestDtoList1.get(0).getDescription())))
-                .andExpect(jsonPath("$._embedded.execution_requests[0].scope", is(executionRequestDtoList1.get(0).getScope())))
-                .andExpect(jsonPath("$._embedded.execution_requests[0].context", is(executionRequestDtoList1.get(0).getContext())))
-                .andExpect(jsonPath("$._embedded.execution_requests[0].email", is(executionRequestDtoList1.get(0).getEmail())))
-                .andExpect(jsonPath("$._embedded.execution_requests[0].executionRequestStatus", is(executionRequestDtoList1.get(0).getExecutionRequestStatus())))
-                .andExpect(jsonPath("$._embedded.execution_requests[0].scriptExecutionRequests", is(executionRequestDtoList1.get(0).getScriptExecutionRequests())))
-                .andExpect(jsonPath("$._embedded.execution_requests[0].executionRequestLabels", is(executionRequestDtoList1.get(0).getExecutionRequestLabels())))
-                .andExpect(jsonPath("$.page.size", is(size)))
-                .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList1.size())))))
-                .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
-        ;
+        when(executionRequestService.createExecutionRequest(argThat(executionRequest -> equalsWithoutUuid(executionRequest, expectedAuthenticatedExecutionRequest))))
+                .thenReturn(expectedAuthenticatedExecutionRequest);
 
-        given(executionRequestService.getAll(any(), any(), any())).willReturn(page2);
-        mvc.perform(get("/execution-requests?page=1&size=1")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
-                .andExpect(jsonPath("$").exists())
-                .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.execution_requests[0].name", is(executionRequestDtoList2.get(0).getName())))
-                .andExpect(jsonPath("$.page.size", is(size)))
-                .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList2.size())))))
-                .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
+        // Perform test method
+        ExecutionRequestDto executionRequestDto1 = executionRequestController.post(executionRequestPostDto);
 
-        given(executionRequestService.getAll(any(), any(), any())).willReturn(page3);
-        mvc.perform(get("/execution-requests?page=2&size=1")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk())
-                .andExpect(jsonPath("$").exists())
-                .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.execution_requests[0].name", is(executionRequestDtoList3.get(0).getName())))
-                .andExpect(jsonPath("$.page.size", is(size)))
-                .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtoList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList3.size())))))
-                .andExpect(jsonPath("$.page.number", is(pageable3.getPageNumber())));
+        // Perform assertions
+        assertThat(executionRequestDto1)
+                .isEqualTo(ExecutionRequestDto.builder()
+                        .executionRequestId(newExecutionRequestId)
+                        .executionRequestStatus(ExecutionRequestStatus.NEW)
+                        .executionRequestLabels(Stream.of(ExecutionRequestLabelDto.builder()
+                                .name("key1")
+                                .value("value1")
+                                .build())
+                                .collect(Collectors.toSet()))
+                        .context("context")
+                        .description("description")
+                        .requestTimestamp(requestTimestamp)
+                        .email("email")
+                        .name("name")
+                        .scope("scope")
+                        .userId(userUUID.toString())
+                        .username("spring")
+                        .scriptExecutionRequests(Stream.of(ScriptExecutionRequestDto.builder()
+                                .scriptExecutionRequestId(newScriptExecutionRequestId)
+                                .executionRequestId(newExecutionRequestId)
+                                .scriptName("script1")
+                                .scriptVersion(1L)
+                                .environment("test")
+                                .exit(false)
+                                .impersonations(new HashSet<>())
+                                .parameters(new HashSet<>())
+                                .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
+                                .build())
+                                .collect(Collectors.toSet()))
+                        .build());
 
     }
+
+    public boolean equalsWithoutUuid(ExecutionRequest executionRequest1, ExecutionRequest executionRequest2) {
+        if (!executionRequest1.getClass().equals(executionRequest2.getClass())) {
+            return false;
+        } else if (!executionRequest1.getName().equals(executionRequest2.getName()) ||
+                !executionRequest1.getContext().equals(executionRequest2.getContext()) ||
+                !executionRequest1.getEmail().equals(executionRequest2.getEmail()) ||
+                !executionRequest1.getScope().equals(executionRequest2.getScope()) ||
+                // !executionRequest1.getRequestTimestamp().equals(executionRequest2.getRequestTimestamp()) ||
+                !executionRequest1.getExecutionRequestStatus().equals(executionRequest2.getExecutionRequestStatus()) ||
+                !executionRequest1.getDescription().equals(executionRequest2.getDescription())) {
+            return false;
+        } else if (executionRequest1.getExecutionRequestLabels().stream()
+                .anyMatch(label1 -> executionRequest2.getExecutionRequestLabels().stream()
+                        .noneMatch(label2 -> label2.getValue().equals(label1.getValue())))) {
+            return false;
+        } else if (executionRequest1.getScriptExecutionRequests().stream()
+                .noneMatch(scriptExecutionRequest1 -> executionRequest2.getScriptExecutionRequests().stream()
+                        .anyMatch(scriptExecutionRequest2 -> equalsWithoutUuid(scriptExecutionRequest1, scriptExecutionRequest2)))) {
+            return false;
+        }
+        if (executionRequest1 instanceof AuthenticatedExecutionRequest) {
+            if (!((AuthenticatedExecutionRequest) executionRequest1).getUsername().equals(((AuthenticatedExecutionRequest) executionRequest2).getUsername()) ||
+                    !((AuthenticatedExecutionRequest) executionRequest1).getUserID().equals(((AuthenticatedExecutionRequest) executionRequest2).getUserID())) {
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+
+    public boolean equalsWithoutUuid(ScriptExecutionRequest scriptExecutionRequest1, ScriptExecutionRequest scriptExecutionRequest2) {
+        if (!scriptExecutionRequest1.getClass().equals(scriptExecutionRequest2.getClass())) {
+            return false;
+        } else if (!scriptExecutionRequest1.getScriptExecutionRequestStatus().equals(scriptExecutionRequest2.getScriptExecutionRequestStatus()) ||
+                !scriptExecutionRequest1.getEnvironment().equals(scriptExecutionRequest2.getEnvironment())) {
+            return false;
+        } else if (
+                scriptExecutionRequest1.getParameters().size() != scriptExecutionRequest2.getParameters().size() ||
+                        scriptExecutionRequest1.getParameters().stream()
+                                .anyMatch(requestParameter1 -> scriptExecutionRequest2.getParameters().stream()
+                                        .noneMatch(requestParameter2 -> requestParameter2.getName().equals(requestParameter1.getName()) &&
+                                                requestParameter1.getValue().equals(requestParameter2.getValue())))) {
+            return false;
+        } else if (scriptExecutionRequest1.getImpersonations().size() != scriptExecutionRequest2.getImpersonations().size()) {
+            return false;
+        }
+        if (scriptExecutionRequest1 instanceof ScriptNameExecutionRequest) {
+            if (!((ScriptNameExecutionRequest) scriptExecutionRequest1).getScriptName().equals(((ScriptNameExecutionRequest) scriptExecutionRequest2).getScriptName()) ||
+                    !((ScriptNameExecutionRequest) scriptExecutionRequest1).getScriptVersion().equals(((ScriptNameExecutionRequest) scriptExecutionRequest2).getScriptVersion())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

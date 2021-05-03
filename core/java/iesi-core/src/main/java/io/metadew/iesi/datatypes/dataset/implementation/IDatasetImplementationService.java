@@ -43,6 +43,8 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
 
     void delete(DatasetImplementationKey datasetImplementationKey);
 
+    void deleteByDatasetId(DatasetKey datasetKey);
+
     void update(T datasetImplementation);
 
     List<DatasetImplementation> getAll();

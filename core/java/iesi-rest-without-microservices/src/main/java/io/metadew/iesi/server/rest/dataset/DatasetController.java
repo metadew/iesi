@@ -12,6 +12,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,10 +40,11 @@ import java.util.stream.Collectors;
 public class DatasetController {
 
     private final DatasetDtoModelAssembler datasetDtoModelAssembler;
-    private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetService datasetService;
-    private final IDatasetImplementationService datasetImplementationService;
+    private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetDtoService datasetDtoService;
+    private final IDatasetImplementationService datasetImplementationService;
+
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
@@ -111,6 +114,39 @@ public class DatasetController {
         );
         datasetService.create(dataset);
         return ResponseEntity.ok(datasetDtoModelAssembler.toModel(dataset));
+    }
+
+    @GetMapping("/{uuid}/implementations")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
+    public List<DatasetImplementationDto> getImplementationsByDatasetUuid(@PathVariable UUID uuid) {
+        return datasetDtoService.fetchImplementationsByDatasetUuid(uuid);
+    }
+
+    @GetMapping("/{datasetUuid}/implementations/{datasetImplementationUuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
+    public DatasetImplementationDto getImplementationByUuid(@PathVariable UUID datasetUuid, @PathVariable UUID datasetImplementationUuid) {
+        return datasetDtoService.fetchImplementationByUuid(datasetImplementationUuid)
+                .orElseThrow(() -> new MetadataDoesNotExistException(new DatasetImplementationKey(datasetImplementationUuid)));
+    }
+
+    @DeleteMapping("/{datasetUuid}/implementations/{datasetImplementationUuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
+    public ResponseEntity<Object> deleteImplementationByUuid(@PathVariable UUID datasetUuid, @PathVariable UUID datasetImplementationUuid) {
+        if (!datasetImplementationService.exists(new DatasetImplementationKey(datasetImplementationUuid))) {
+            return ResponseEntity.notFound().build();
+        }
+        datasetImplementationService.delete(new DatasetImplementationKey(datasetImplementationUuid));
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{datasetUuid}/implementations")
+    @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
+    public ResponseEntity<Object> deleteImplementationsByDatasetUuid(@PathVariable UUID datasetUuid) {
+        if (!datasetService.exists(new DatasetKey(datasetUuid))) {
+            return ResponseEntity.notFound().build();
+        }
+        datasetImplementationService.deleteByDatasetId(new DatasetKey(datasetUuid));
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{uuid}")

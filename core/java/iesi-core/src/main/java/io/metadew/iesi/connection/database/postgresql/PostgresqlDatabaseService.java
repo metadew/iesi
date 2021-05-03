@@ -23,6 +23,7 @@ public class PostgresqlDatabaseService extends SchemaDatabaseService<PostgresqlD
 
     @Override
     public PostgresqlDatabase getDatabase(Connection connection) {
+        // TODO: create Database from connection
         return null;
     }
 

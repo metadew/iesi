@@ -1,11 +1,11 @@
-package io.metadew.iesi.server.rest.component;
+package io.metadew.iesi.server.rest.component.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
-import io.metadew.iesi.server.rest.component.dto.ComponentDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentParameterDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentVersionDto;
+import io.metadew.iesi.server.rest.component.ComponentFilter;
+import io.metadew.iesi.server.rest.component.ComponentFilterOption;
+import io.metadew.iesi.server.rest.component.IComponentDtoRepository;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
@@ -113,7 +113,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 mapRow(cachedRowSet, componentDtoBuilders);
             }
             if (componentDtoBuilders.values().size() > 1) {
-                log.warn("found multiple script for script " + name + "-" + version);
+                log.warn("found multiple components for component " + name + "-" + version);
             }
             return componentDtoBuilders.values().stream().findFirst().map(ComponentDtoBuilder::build);
         } catch (SQLException e) {
@@ -126,8 +126,9 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         String query = "select count(*) as row_count from (select distinct component_designs.COMP_ID, versions.COMP_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
-                "on component_designs.COMP_ID = versions.COMP_ID ) " +
-                getWhereClause(componentFilters);
+                "on component_designs.COMP_ID = versions.COMP_ID " +
+                getWhereClause(componentFilters) +
+                ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
@@ -147,7 +148,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ";
+            return " ORDER BY script_designs.SCRIPT_ID ";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
@@ -157,6 +158,8 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 .map(componentFilter -> {
                     if (componentFilter.getFilterOption().equals(ComponentFilterOption.NAME)) {
                         return filterService.getStringCondition("component_designs.COMP_NM", componentFilter);
+                    } else if (componentFilter.getFilterOption().equals(ComponentFilterOption.VERSION)) {
+                        return filterService.getStringCondition("versions.COMP_VRS_NB", componentFilter);
                     } else {
                         return null;
                     }

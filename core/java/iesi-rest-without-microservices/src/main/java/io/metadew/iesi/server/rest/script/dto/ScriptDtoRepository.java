@@ -143,7 +143,7 @@ public class  ScriptDtoRepository extends PaginatedRepository implements IScript
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ";
+            return " ORDER BY script_designs.SCRIPT_ID ";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

@@ -619,7 +619,7 @@ iesi:
           VALUE:
             description: value of the script label
             order: 4
-            type: CLOB
+            type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:

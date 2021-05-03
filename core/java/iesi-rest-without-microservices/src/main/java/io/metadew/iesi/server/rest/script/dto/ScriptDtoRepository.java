@@ -239,7 +239,9 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     private void mapScriptLabel(CachedRowSet cachedRowSet, ScriptDtoBuilder scriptBuilderDto) throws SQLException {
         String labelId = cachedRowSet.getString("LABEL_ID");
         if (labelId != null && scriptBuilderDto.getLabels().get(labelId) == null) {
-            scriptBuilderDto.getLabels().put(labelId, new ScriptLabelDto(cachedRowSet.getString("LABEL_NAME"), cachedRowSet.getString("LABEL_VALUE")));
+            scriptBuilderDto.getLabels().put(labelId, new ScriptLabelDto(
+                    cachedRowSet.getString("LABEL_NAME"),
+                    cachedRowSet.getString("LABEL_VALUE")));
         }
     }
 

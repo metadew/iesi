@@ -336,7 +336,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
             return;
         }
         ExecutionRequestLabelDto executionRequestLabelDto = executionRequestBuilder.getExecutionRequestLabels().get(executionRequestLabelId);
-
         if (executionRequestLabelDto == null) {
             executionRequestLabelDto = new ExecutionRequestLabelDto(
                     cachedRowSet.getString("exe_req_label_name"),

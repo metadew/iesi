@@ -191,6 +191,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 cachedRowSet.getLong("SCRIPT_VRS_NB"),
                 cachedRowSet.getString("SCRIPT_SECURITY_GROUP_NAME"),
                 cachedRowSet.getString("ENV_NM"),
+                cachedRowSet.getString("USER_ID"),
+                cachedRowSet.getString("USERNAME"),
                 ScriptRunStatus.valueOf(cachedRowSet.getString("SCRIPT_ST_NM")),
                 SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_STRT_TMS")),
                 SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_END_TMS")),
@@ -272,7 +274,9 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "action_des_trc_par.ACTION_PAR_VAL ACTION_PAR_VAL_RAW, " +
                 "action_trc_par.ACTION_PAR_VAL ACTION_PAR_VAL_RESOLVED, " +
                 "action_res_output.OUT_NM ACTION_OUTPUT_NM, " +
-                "action_res_output.OUT_VAL ACTION_OUTPUT_VAL " +
+                "action_res_output.OUT_VAL ACTION_OUTPUT_VAL, " +
+                "auth_execution_requests.USER_ID USER_ID, " +
+                "auth_execution_requests.USERNAME USERNAME " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_exec " +
                 "on results.RUN_ID = script_exec.RUN_ID AND results.PRC_ID = -1 " +
@@ -286,6 +290,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "on script_exec.SCRPT_REQUEST_ID = IESER.SCRPT_REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " IER " +
                 "on IESER.ID = IER.REQUEST_ID " +
+                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
+                "on IER.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " script_exec_lbl " +
                 "on IER.REQUEST_ID = script_exec_lbl.REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +
@@ -348,6 +354,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         private final Long scriptVersion;
         private final String securityGroupName;
         private final String environment;
+        private final String userId;
+        private final String username;
         private final ScriptRunStatus status;
         private final LocalDateTime startTimestamp;
         private final LocalDateTime endTimestamp;
@@ -366,6 +374,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                     scriptVersion,
                     securityGroupName,
                     environment,
+                    userId,
+                    username,
                     status,
                     startTimestamp,
                     endTimestamp,

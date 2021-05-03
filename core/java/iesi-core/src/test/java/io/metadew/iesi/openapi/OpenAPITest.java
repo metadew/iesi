@@ -29,7 +29,7 @@ public class OpenAPITest {
     }
 
     @Test
-    public void initWithNoMessages() throws IOException {
+    public void initWithNoMessages() {
         File docFile = new File("doc.yaml");
         SwaggerParseResult result = new OpenAPIParser().readLocation(String.valueOf(docFile), null, null);
         assertNull(result.getMessages());

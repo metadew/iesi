@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor

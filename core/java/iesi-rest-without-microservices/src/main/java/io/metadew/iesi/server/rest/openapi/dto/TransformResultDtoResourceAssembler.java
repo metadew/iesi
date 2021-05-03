@@ -31,7 +31,9 @@ public class TransformResultDtoResourceAssembler extends RepresentationModelAsse
                 transformResult.getConnections().stream()
                         .map(connection -> connectionDtoResourceAssembler.toModel(connection)).collect(Collectors.toList()),
                 transformResult.getComponents().stream()
-                        .map(component -> componentDtoResourceAssembler.toModel(component)).collect(Collectors.toList())
+                        .map(component -> componentDtoResourceAssembler.toModel(component)).collect(Collectors.toList()),
+                transformResult.getTitle(),
+                transformResult.getVersion()
         );
     }
 }

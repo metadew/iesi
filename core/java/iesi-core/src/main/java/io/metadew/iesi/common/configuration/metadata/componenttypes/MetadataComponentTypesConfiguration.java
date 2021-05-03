@@ -46,6 +46,10 @@ public class MetadataComponentTypesConfiguration {
         return Optional.ofNullable(componentTypeMap.get(componentType));
     }
 
+    public Map<String, ComponentType> getComponentTypes() {
+        return componentTypeMap;
+    }
+
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
         return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&

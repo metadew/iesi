@@ -3,7 +3,9 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes._null.Null;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import org.mozilla.javascript.EvaluatorException;
 import org.springframework.expression.EvaluationException;
 
 import java.util.Arrays;
@@ -30,7 +32,13 @@ public class CoalesceLookup implements LookupInstruction {
                 .filter(value -> !value.isEmpty())
                 .map(value -> DataTypeHandler.getInstance().resolve(value, executionRuntime))
                 .filter(value -> !(value instanceof Null))
-                .map(DataType::toString)
+                .map(value -> {
+                    if (value instanceof Text) {
+                        return ((Text) value).getString();
+                    } else {
+                        return value.toString();
+                    }
+                })
                 .findFirst();
         return hit.orElse(DEFAULT);
     }

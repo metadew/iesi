@@ -388,11 +388,4 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             return Optional.empty();
         }
     }
-
-    /*public String getCurrentTimeStampAsString(){
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        return sdf1.format(timestamp);
-    }
-*/
 }

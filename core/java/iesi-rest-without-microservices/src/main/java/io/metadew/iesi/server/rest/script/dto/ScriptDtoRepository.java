@@ -252,7 +252,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         private final ScriptVersionDto version;
         private final Map<Long, ActionDtoBuilder> actions;
         private final Map<String, ScriptLabelDto> labels;
-        private String deleted_At;
+        private String deletedAt;
 
         public ScriptDto build() {
             return new ScriptDto(name,
@@ -264,7 +264,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     new HashSet<>(labels.values()),
                     null,
                     null,
-                    deleted_At);
+                    deletedAt);
         }
     }
 

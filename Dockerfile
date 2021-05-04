@@ -22,7 +22,7 @@ WORKDIR /app/sandbox/0.7.0/assembly
 RUN chmod ug+x bin/*.sh
 
 FROM debian:10
-RUN apt-get update && apt-get -y install software-properties-common gettext-base
+RUN apt-get update && apt-get -y install software-properties-common gettext-base procps
 RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main' && apt-get update
 RUN apt-get -y install openjdk-8-jdk
 COPY --from=staging /app/sandbox/0.7.0/assembly /opt/iesi

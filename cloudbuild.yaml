@@ -19,27 +19,27 @@ steps:
     secretEnv: [ 'DATABASE_CONNECTION', 'DATABASE_PASSWORD', 'DATABASE_TYPE', 'DATABASE_USER' ]
     args:
       - '-c'
-      - 'gcloud run services update $_SERVICE_NAME --platform=managed --image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS --region=$_DEPLOY_REGION --set-env-vars "'DATABASE_CONNECTION=$$DATABASE_CONNECTION,DATABASE_PASSWORD=$$DATABASE_PASSWORD,DATABASE_TYPE=$$DATABASE_TYPE,DATABASE_USER=$$DATABASE_USER" --quiet'
+      - 'gcloud run services update $_SERVICE_NAME --platform=managed --image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS --region=$_DEPLOY_REGION --set-env-vars "'DATABASE_CONNECTION_URL=$$DATABASE_CONNECTION_URL,DATABASE_PASSWORD=$$DATABASE_PASSWORD,DATABASE_TYPE=$$DATABASE_TYPE,DATABASE_USER=$$DATABASE_USER" --quiet'
     id: Deploy
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
 options:
   substitutionOption: ALLOW_LOOSE
 substitutions:
-  _PLATFORM: managed
   _SERVICE_NAME: iesi-backend
   _DEPLOY_REGION: europe-west1
   _GCR_HOSTNAME: eu.gcr.io
-  _LABELS: gcb-trigger-id=fb32aa3b-3506-4638-bfa4-44709a8432ea
-  _TRIGGER_ID: fb32aa3b-3506-4638-bfa4-44709a8432ea
+  _PLATFORM: managed
+  _LABELS: gcb-trigger-id=79e6bc7b-0132-4d83-a03e-7345f147482d
+  _TRIGGER_ID: 79e6bc7b-0132-4d83-a03e-7345f147482d
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
-  - data-generator-frontend
+  - iesi-backend
 availableSecrets:
   secretManager:
     - versionName: projects/acn-fotg-gcp/secrets/iesi-database-connection-url/versions/latest
-      env: 'DATABASE_CONNECTION'
+      env: 'DATABASE_CONNECTION_URL'
     - versionName: projects/acn-fotg-gcp/secrets/iesi-database-password/versions/latest
       env: 'DATABASE_PASSWORD'
     - versionName: projects/acn-fotg-gcp/secrets/iesi-database-type/versions/latest

@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.metadata.configuration.action.ActionBuilder;
-import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
@@ -11,7 +10,6 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +28,7 @@ public class ScriptBuilder {
     private List<ScriptParameter> scriptParameters = new ArrayList<>();
     private List<ScriptLabel> scriptLabels = new ArrayList<>();
     private String name;
-    private String deleted_At = "NA";
+    private String deletedAt = "NA";
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;
@@ -79,7 +77,7 @@ public class ScriptBuilder {
     }
 
     public ScriptBuilder deleted_At(String deleted_At) {
-        this.deleted_At = deleted_At;
+        this.deletedAt = deleted_At;
         return this;
     }
 
@@ -109,10 +107,10 @@ public class ScriptBuilder {
                 securityGroupName,
                 name == null ? "dummy" : name,
                 "dummy",
-                new ScriptVersionBuilder(scriptId, versionNumber, deleted_At).build(),
+                new ScriptVersionBuilder(scriptId, versionNumber, deletedAt).build(),
                 scriptParameters,
                 actions, scriptLabels,
-                deleted_At);
+                deletedAt);
     }
 
 }

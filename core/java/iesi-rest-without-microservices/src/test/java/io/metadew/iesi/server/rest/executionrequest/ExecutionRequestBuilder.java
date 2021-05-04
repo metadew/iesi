@@ -135,7 +135,7 @@ public class ExecutionRequestBuilder {
                 ).collect(Collectors.toList()))
                 .parameters(new ArrayList<>())
                 .name(scriptName)
-                .version(new ScriptVersion(scriptName, scriptVersion, "description","NA"))
+                .version(new ScriptVersion(scriptName, scriptVersion, "description", "NA"))
                 .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                 .securityGroupName(scriptSecurityGroup)
                 .build();
@@ -209,9 +209,9 @@ public class ExecutionRequestBuilder {
                 .labels(new HashSet<>())
                 .parameters(new HashSet<>())
                 .name(scriptName)
-                .version(new ScriptVersionDto(scriptVersion, "description","NA"))
+                .version(new ScriptVersionDto(scriptVersion, "description", "NA"))
                 .securityGroupName(scriptSecurityGroup)
-                .deleted_At("NA")
+                .deletedAt("NA")
                 .build();
         info.put("scriptDto", scriptDto);
 

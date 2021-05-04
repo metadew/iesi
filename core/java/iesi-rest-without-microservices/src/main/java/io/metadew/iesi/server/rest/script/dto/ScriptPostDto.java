@@ -24,7 +24,5 @@ public class ScriptPostDto extends RepresentationModel<ScriptPostDto> {
     private Set<ScriptParameterDto> parameters;
     private Set<ActionDto> actions;
     private Set<ScriptLabelDto> labels;
-    private String deleted_At = "NA";
-
 
 }

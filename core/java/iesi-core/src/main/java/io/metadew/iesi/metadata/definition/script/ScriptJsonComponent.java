@@ -143,7 +143,8 @@ public class ScriptJsonComponent {
                     scriptVersion,
                     scriptParameters,
                     scriptActions,
-                    scriptLabels, "NA");
+                    scriptLabels,
+                    "NA");
         }
     }
 

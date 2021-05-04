@@ -17,6 +17,6 @@ public class ScriptVersionDto extends NoEmptyLinksRepresentationModel<ScriptVers
 
     private long number;
     private String description;
-    private String deleted_At = "NA";
+    private String deletedAt = "NA";
 
 }

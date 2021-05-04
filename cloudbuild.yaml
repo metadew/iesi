@@ -16,7 +16,7 @@ steps:
     id: Push
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: 'bash'
-    secretEnv: [ 'DATABASE_CONNECTION', 'DATABASE_PASSWORD', 'DATABASE_TYPE', 'DATABASE_USER' ]
+    secretEnv: [ 'DATABASE_CONNECTION_URL', 'DATABASE_PASSWORD', 'DATABASE_TYPE', 'DATABASE_USER' ]
     args:
       - '-c'
       - 'gcloud run services update $_SERVICE_NAME --platform=managed --image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS --region=$_DEPLOY_REGION --set-env-vars "DATABASE_CONNECTION_URL=$$DATABASE_CONNECTION_URL,DATABASE_PASSWORD=$$DATABASE_PASSWORD,DATABASE_TYPE=$$DATABASE_TYPE,DATABASE_USER=$$DATABASE_USER" --quiet'
@@ -46,3 +46,4 @@ availableSecrets:
       env: 'DATABASE_TYPE'
     - versionName: projects/acn-fotg-gcp/secrets/iesi-database-user/versions/latest
       env: 'DATABASE_USER'
+timeout: 1200s

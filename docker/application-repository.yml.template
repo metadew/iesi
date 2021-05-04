@@ -11,10 +11,11 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           type: $DATABASE_TYPE
-          connection: $DATABASE_CONNECTION_URL
+          schema: IESI
+          connection: '$DATABASE_CONNECTION_URL'
           owner:
-            user: $DATABASE_USER
-            password: $DATABASE_PASSWORD
+            user: '$DATABASE_USER'
+            password: '$DATABASE_PASSWORD'
 #          reader:
 #            user:
 #            password:

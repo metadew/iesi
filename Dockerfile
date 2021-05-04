@@ -31,4 +31,5 @@ ENV DATABASE_CONNECTION_URL jdbc:sqlite:../repository.db3
 ENV DATABASE_TYPE sqlite
 ENV DATABASE_USER ''
 ENV DATABASE_PASSWORD '' 
+PORT 8080
 CMD sh -c "envsubst '\$DATABASE_CONNECTION_URL:\$DATABASE_CONNECTION_URL,\$DATABASE_TYPE:\$DATABASE_TYPE,\$DATABASE_USER:\$DATABASE_USER,\$DATABASE_PASSWORD:\$DATABASE_PASSWORD' < /opt/iesi/conf/application-repository.yml.template > /opt/iesi/conf/application-repository.yml && /opt/iesi/bin/iesi-backend.sh"

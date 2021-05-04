@@ -52,7 +52,6 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
     @Override
     public Template resolve(String input, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Template", input));
-        input = executionRuntime.resolveVariables(input);
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(input);
         if (splittedArguments.size() == 2) {
             DataType templateName = DataTypeHandler.getInstance().resolve(splittedArguments.get(0), executionRuntime);
@@ -66,6 +65,31 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
             }
         } else {
             throw new IllegalArgumentException("Cannot fetch template with parameters " + input);
+        }
+    }
+
+    private boolean equals(MatcherValue _this, MatcherValue other, ExecutionRuntime executionRuntime) {
+        if (_this == null && other == null) {
+            return true;
+        }
+        if (_this == null || other == null) {
+            return false;
+        }
+        if (!_this.getClass().equals(other.getClass())) {
+            return false;
+        }
+        if (_this instanceof MatcherAnyValue) {
+            return true;
+        } else if (_this instanceof MatcherFixedValue) {
+            return DataTypeHandler.getInstance().equals(
+                    DataTypeHandler.getInstance().resolve(((MatcherFixedValue) _this).getValue(), executionRuntime),
+                    DataTypeHandler.getInstance().resolve(((MatcherFixedValue) other).getValue(), executionRuntime),
+                    executionRuntime);
+        } else if (_this instanceof MatcherTemplate) {
+            return ((MatcherTemplate) _this).getTemplateName().equals(((MatcherTemplate) other).getTemplateName()) &&
+                    ((MatcherTemplate) _this).getTemplateVersion().equals(((MatcherTemplate) other).getTemplateVersion());
+        } else {
+            return false;
         }
     }
 
@@ -93,31 +117,6 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
                 .allMatch(thisMatcher -> otherMatchers.parallelStream()
                         .anyMatch(otherMatcher -> otherMatcher.getKey().equals(thisMatcher.getKey())
                                 && equals(thisMatcher.getMatcherValue(), otherMatcher.getMatcherValue(), executionRuntime)));
-    }
-
-    private boolean equals(MatcherValue _this, MatcherValue other, ExecutionRuntime executionRuntime) {
-        if (_this == null && other == null) {
-            return true;
-        }
-        if (_this == null || other == null) {
-            return false;
-        }
-        if (!_this.getClass().equals(other.getClass())) {
-            return false;
-        }
-        if (_this instanceof MatcherAnyValue) {
-            return true;
-        } else if (_this instanceof MatcherFixedValue) {
-            return DataTypeHandler.getInstance().equals(
-                    DataTypeHandler.getInstance().resolve(((MatcherFixedValue) _this).getValue(), executionRuntime),
-                    DataTypeHandler.getInstance().resolve(((MatcherFixedValue) other).getValue(), executionRuntime),
-                    executionRuntime);
-        } else if (_this instanceof MatcherTemplate) {
-            return ((MatcherTemplate) _this).getTemplateName().equals(((MatcherTemplate) other).getTemplateName()) &&
-                    ((MatcherTemplate) _this).getTemplateVersion().equals(((MatcherTemplate) other).getTemplateVersion());
-        } else {
-            return false;
-        }
     }
 
     public List<Template> getAll() {

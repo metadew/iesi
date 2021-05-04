@@ -15,6 +15,7 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplat
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -138,6 +139,10 @@ class TemplateServiceTest {
     @Test
     void equalsTest() {
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+        when(executionRuntime.resolveVariables("value2"))
+                .thenReturn("value2");
+        when(executionRuntime.resolveConceptLookup("value2"))
+                .thenReturn(new LookupResult("value2", null, null));
 
         assertThat(TemplateService.getInstance().equals(null, null, executionRuntime))
                 .isTrue();
@@ -157,15 +162,25 @@ class TemplateServiceTest {
     void resolveTest() {
         MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-        when(executionRuntime.resolveVariables(anyString()))
-                .thenReturn("template1, 1")
-                .thenReturn("template1")
+
+        when(executionRuntime.resolveVariables("template1"))
+                .thenReturn("template1");
+        when(executionRuntime.resolveConceptLookup("template1"))
+                .thenReturn(new LookupResult("template1", null, null));
+        when(executionRuntime.resolveVariables("1"))
                 .thenReturn("1");
+        when(executionRuntime.resolveConceptLookup("1"))
+                .thenReturn(new LookupResult("1", null, null));
+        when(executionRuntime.resolveVariables("2"))
+                .thenReturn("2");
+        when(executionRuntime.resolveConceptLookup("2"))
+                .thenReturn(new LookupResult("2", null, null));
+
 
         assertThat(TemplateService.getInstance().resolve("template1, 1", executionRuntime))
                 .isEqualTo(template1);
         assertThatThrownBy(() -> TemplateService.getInstance().resolve("template1, 2", executionRuntime))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(RuntimeException.class);
         assertThatThrownBy(() -> TemplateService.getInstance().resolve("template1", executionRuntime))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -176,6 +191,9 @@ class TemplateServiceTest {
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
         when(executionRuntime.resolveVariables(anyString()))
                 .thenReturn("value2");
+        when(executionRuntime.resolveConceptLookup("value2"))
+                .thenReturn(new LookupResult("value2", null, null));
+
 
         InMemoryDatasetImplementationService datasetHandler = InMemoryDatasetImplementationService.getInstance();
         InMemoryDatasetImplementationService datasetHandlerSpy = Mockito.spy(datasetHandler);

@@ -3,6 +3,7 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
@@ -27,6 +28,14 @@ class CoalesceLookupTest {
         doReturn(new Text("test"))
                 .when(dataTypeHandlerSpy)
                 .resolve("test", executionRuntime);
+        when(executionRuntime.resolveVariables("{{^null()}}"))
+                .thenReturn("{{^null()}}");
+        when(executionRuntime.resolveConceptLookup("{{^null()}}"))
+                .thenReturn(new LookupResult("{{^null()}}", null, null));
+        when(executionRuntime.resolveVariables("test"))
+                .thenReturn("test");
+        when(executionRuntime.resolveConceptLookup("test"))
+                .thenReturn(new LookupResult("test", null, null));
 
         CoalesceLookup coalesceLookup = new CoalesceLookup(executionRuntime);
         assertThat(coalesceLookup.generateOutput("test"))

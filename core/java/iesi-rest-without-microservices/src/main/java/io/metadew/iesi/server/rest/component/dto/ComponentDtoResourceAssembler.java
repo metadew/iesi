@@ -36,8 +36,8 @@ public class ComponentDtoResourceAssembler extends RepresentationModelAssemblerS
     private ComponentDto convertToDto(Component component) {
         return new ComponentDto(component.getType(), component.getName(), component.getDescription(),
                 new ComponentVersionDto(component.getVersion().getMetadataKey().getComponentKey().getVersionNumber(), component.getVersion().getDescription()),
-                component.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()),
-                component.getAttributes().stream().map(this::convertToDto).collect(Collectors.toList()));
+                component.getParameters().stream().map(this::convertToDto).collect(Collectors.toSet()),
+                component.getAttributes().stream().map(this::convertToDto).collect(Collectors.toSet()));
     }
 
     private ComponentParameterDto convertToDto(ComponentParameter componentParameter) {

@@ -4,7 +4,7 @@ import io.metadew.iesi.server.rest.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.component.dto.ComponentParameterDto;
 import io.metadew.iesi.server.rest.component.dto.ComponentVersionDto;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,9 +22,9 @@ public class ComponentDtoBuilder {
                                 new ComponentParameterDto("connection", "myconnection"),
                                 new ComponentParameterDto("endpoint", "/endpoiint"),
                                 new ComponentParameterDto("type", "GET")
-                        ).collect(Collectors.toList())
+                        ).collect(Collectors.toSet())
                 )
-                .attributes(new ArrayList<>())
+                .attributes(new HashSet<>())
                 .build();
     }
 }

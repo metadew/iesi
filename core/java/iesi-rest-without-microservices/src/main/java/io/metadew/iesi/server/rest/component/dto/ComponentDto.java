@@ -6,7 +6,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -22,8 +22,8 @@ public class ComponentDto extends RepresentationModel<ComponentDto> {
     private String description;
     private ComponentVersionDto version;
 
-    private List<ComponentParameterDto> parameters;
-    private List<ComponentAttributeDto> attributes;
+    private Set<ComponentParameterDto> parameters;
+    private Set<ComponentAttributeDto> attributes;
 
     public Component convertToEntity() {
         return new Component(new ComponentKey(IdentifierTools.getComponentIdentifier(name),
@@ -39,5 +39,4 @@ public class ComponentDto extends RepresentationModel<ComponentDto> {
                         .map(attribute -> attribute.convertToEntity(IdentifierTools.getComponentIdentifier(name), version.getNumber()))
                         .collect(Collectors.toList()));
     }
-
 }

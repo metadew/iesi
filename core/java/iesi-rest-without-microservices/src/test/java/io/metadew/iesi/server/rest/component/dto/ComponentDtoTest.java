@@ -66,18 +66,12 @@ class ComponentDtoTest {
                         .collect(Collectors.toList()));
         ComponentDto componentDto = new ComponentDto("type", "name", "description",
                 new ComponentVersionDto(1L, "descriptions"),
-                Stream.of(new ComponentParameterDto( "name1", "value1"),
+                Stream.of(new ComponentParameterDto("name1", "value1"),
                         new ComponentParameterDto("name1", "value1"))
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.toSet()),
                 Stream.of(new ComponentAttributeDto("tst", "name1", "value1"),
                         new ComponentAttributeDto("tst", "name2", "value2"))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toSet()));
         assertEquals(component, componentDto.convertToEntity());
     }
-
-    @Test
-    void paginationTest() {
-
-    }
-
 }

@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 @Log4j2
 @Repository
-public class  ScriptDtoRepository extends PaginatedRepository implements IScriptDtoRepository {
+public class ScriptDtoRepository extends PaginatedRepository implements IScriptDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
@@ -137,13 +137,13 @@ public class  ScriptDtoRepository extends PaginatedRepository implements IScript
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
                 return "versions.SCRIPT_VRS_NB" + " " + order.getDirection();
             } else {
-                return  " ORDER BY script_designs.SCRIPT_ID ";
+                return null;
             }
         })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ORDER BY script_designs.SCRIPT_ID ";
+            sorting.add("ORDER BY script_designs.SCRIPT_ID");
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

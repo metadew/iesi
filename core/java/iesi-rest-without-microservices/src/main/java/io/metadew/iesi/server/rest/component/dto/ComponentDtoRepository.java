@@ -121,7 +121,6 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         }
     }
 
-
     private long getRowSize(List<ComponentFilter> componentFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct component_designs.COMP_ID, versions.COMP_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
@@ -135,7 +134,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY component_designs.COMP_ID ASC ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY component_designs.COMP_ID ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
             if (order.getProperty().equalsIgnoreCase("NAME")) {
                 return "component_designs.COMP_NM" + " " + order.getDirection();
@@ -148,7 +147,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ORDER BY script_designs.SCRIPT_ID ";
+            sorting.add("ORDER BY component_designs.COMP_ID");
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
@@ -217,8 +216,8 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         public ComponentDto build() {
             return new ComponentDto(
                     type, name, description, version,
-                    new ArrayList<>(parameters.values()),
-                    new ArrayList<>()
+                    new HashSet<>(parameters.values()),
+                    new HashSet<>()
             );
         }
     }

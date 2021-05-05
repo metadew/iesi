@@ -1,7 +1,11 @@
 #!/bin/bash
-current_dir=$(dirname "${BASH_SOURCE[0]}")
+calling_dir=$(pwd)
+relative_dir=$(dirname "${BASH_SOURCE[0]}")
+absolute_dir=$calling_dir/$relative_dir
+
+cd $absolute_dir
 # Start the first process
-$current_dir/iesi-server.sh -D
+./iesi-server.sh &
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start my_first_process: $status"
@@ -9,7 +13,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Start the second process
-$current_dir/iesi-rest.sh -D
+./iesi-rest.sh &
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start my_second_process: $status"
@@ -34,3 +38,5 @@ while sleep 60; do
     exit 1
   fi
 done
+
+cd $calling_dir

@@ -1,9 +1,11 @@
 #!/bin/bash
-current_dir=$(dirname "${BASH_SOURCE[0]}")
-lib_dir=$current_dir/../rest
+calling_dir=$(pwd)
+relative_dir=$(dirname "${BASH_SOURCE[0]}")
+absolute_dir=$calling_dir/$relative_dir
+lib_dir=$absolute_dir/../rest
 
 cd $lib_dir
 
 java -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest.jar
 
-cd $current_dir
+cd $calling_dir

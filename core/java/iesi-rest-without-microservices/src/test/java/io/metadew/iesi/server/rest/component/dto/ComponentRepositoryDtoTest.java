@@ -135,7 +135,7 @@ public class ComponentRepositoryDtoTest {
                 Stream.of(
                         new ComponentFilter(ComponentFilterOption.NAME, "nent", false)
                 ).collect(Collectors.toList())
-        )).containsExactly(component1Dto, component2Dto);
+        )).containsOnly(component2Dto, component1Dto);
         assertThat(componentDtoRepository.getAll(Pageable.unpaged(),
                 Stream.of(
                         new ComponentFilter(ComponentFilterOption.NAME, "nent1", false)
@@ -166,7 +166,7 @@ public class ComponentRepositoryDtoTest {
                 Stream.of(
                         new ComponentFilter(ComponentFilterOption.VERSION, "1", false)
                 ).collect(Collectors.toList())
-        )).containsExactly(component1Dto, component2Dto);
+        )).containsOnly(component1Dto, component2Dto);
     }
 
     @Test

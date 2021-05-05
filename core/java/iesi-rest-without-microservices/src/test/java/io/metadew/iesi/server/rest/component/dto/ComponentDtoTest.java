@@ -29,7 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Log4j2
 @SpringBootTest(classes = {Application.class, TestConfiguration.class},
@@ -58,20 +58,20 @@ class ComponentDtoTest {
                 "name",
                 "description",
                 new ComponentVersion(new ComponentVersionKey(IdentifierTools.getComponentIdentifier("name"), 1L), "descriptions"),
-                Stream.of(new ComponentParameter(new ComponentParameterKey(new ComponentKey(IdentifierTools.getComponentIdentifier("name"), 1L), "name1"), "value1"),
-                        new ComponentParameter(new ComponentParameterKey(new ComponentKey(IdentifierTools.getComponentIdentifier("name"), 1L), "name1"), "value1"))
+                Stream.of(new ComponentParameter(new ComponentParameterKey(new ComponentKey(IdentifierTools.getComponentIdentifier("name"), 1L), "name1"), "value1"))
                         .collect(Collectors.toList()),
                 Stream.of(new ComponentAttribute(new ComponentAttributeKey(new ComponentKey(IdentifierTools.getComponentIdentifier("name"), 1L), new EnvironmentKey("tst"), "name1"), "value1"),
                         new ComponentAttribute(new ComponentAttributeKey(new ComponentKey(IdentifierTools.getComponentIdentifier("name"), 1L), new EnvironmentKey("tst"), "name2"), "value2"))
                         .collect(Collectors.toList()));
+
+
         ComponentDto componentDto = new ComponentDto("type", "name", "description",
                 new ComponentVersionDto(1L, "descriptions"),
-                Stream.of(new ComponentParameterDto("name1", "value1"),
-                        new ComponentParameterDto("name1", "value1"))
+                Stream.of(new ComponentParameterDto("name1", "value1"))
                         .collect(Collectors.toSet()),
                 Stream.of(new ComponentAttributeDto("tst", "name1", "value1"),
                         new ComponentAttributeDto("tst", "name2", "value2"))
                         .collect(Collectors.toSet()));
-        assertEquals(component, componentDto.convertToEntity());
+        assertThat(componentDto.convertToEntity()).isEqualTo(component);
     }
 }

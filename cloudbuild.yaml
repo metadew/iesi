@@ -19,7 +19,7 @@ steps:
     secretEnv: [ 'DATABASE_CONNECTION_URL', 'DATABASE_PASSWORD', 'DATABASE_TYPE', 'DATABASE_USER', 'DATABASE_CONNECTION_NAME' ]
     args:
       - '-c'
-      - 'gcloud run services update $_SERVICE_NAME --platform=managed --image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS --region=$_DEPLOY_REGION --set-env-vars "DATABASE_CONNECTION_URL=$$DATABASE_CONNECTION_URL" --set-env-vars "DATABASE_PASSWORD=$$DATABASE_PASSWORD" --set-env-vars "DATABASE_TYPE=$$DATABASE_TYPE" --set-env-vars "DATABASE_USER=$$DATABASE_USER" --set-env-vars INSTANCE_CONNECTION_NAME=$DATABASE_CONNECTION_NAME --add-cloudsql-instances $DATABASE_CONNECTION_NAME --quiet'
+      - 'gcloud run services update $_SERVICE_NAME --platform=managed --image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS --region=$_DEPLOY_REGION --set-env-vars "DATABASE_CONNECTION_URL=$$DATABASE_CONNECTION_URL" --set-env-vars "DATABASE_PASSWORD=$$DATABASE_PASSWORD" --set-env-vars "DATABASE_TYPE=$$DATABASE_TYPE" --set-env-vars "DATABASE_USER=$$DATABASE_USER" --set-env-vars "INSTANCE_CONNECTION_NAME=$DATABASE_CONNECTION_NAME" --add-cloudsql-instances $DATABASE_CONNECTION_NAME --quiet'
     id: Deploy
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'

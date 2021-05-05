@@ -1,7 +1,7 @@
 #!/bin/bash
 current_dir=$(dirname "${BASH_SOURCE[0]}")
 # Start the first process
-$current_dir/iesi-server.sh &
+$current_dir/iesi-server.sh -D
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start my_first_process: $status"
@@ -9,7 +9,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Start the second process
-$current_dir/iesi-rest.sh &
+$current_dir/iesi-rest.sh -D
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start my_second_process: $status"

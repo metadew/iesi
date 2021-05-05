@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
 @DirtiesContext
-class ComponentRepositoryDtoTest {
+public class ComponentRepositoryDtoTest {
 
     @Autowired
     private ComponentDtoRepository componentDtoRepository;
@@ -217,37 +217,34 @@ class ComponentRepositoryDtoTest {
                 .type("http.request")
                 .name(name)
                 .description("component description")
-                .version(
-                        new ComponentVersion(
-                                new ComponentVersionKey(componentKey),
-                                "Component description"
-                        ))
+                .version(componentVersion(componentKey))
                 .parameters(
                         Stream.of(
-                                new ComponentParameter(
-                                        new ComponentParameterKey(
-                                                componentKey,
-                                                "name"
-                                        ),
-                                        "connection"
-                                ),
-                                new ComponentParameter(
-                                        new ComponentParameterKey(
-                                                componentKey,
-                                                "endpoint"
-                                        ),
-                                        "/users"
-                                ),
-                                new ComponentParameter(
-                                        new ComponentParameterKey(
-                                                componentKey,
-                                                "type"
-                                        ),
-                                        "GET"
-                                )
+                                componentParameter(componentKey, "connection", "connection"),
+                                componentParameter(componentKey, "endpoint", "/users"),
+                                componentParameter(componentKey, "type", "GET")
                         ).collect(Collectors.toList())
                 )
                 .attributes(new ArrayList<>())
                 .build();
     }
+
+
+    ComponentVersion componentVersion(ComponentKey componentKey) {
+        return new ComponentVersion(
+                new ComponentVersionKey(componentKey),
+                "Component description"
+        );
+    }
+
+    ComponentParameter componentParameter(ComponentKey componentKey, String name, String value) {
+        return new ComponentParameter(
+                new ComponentParameterKey(
+                        componentKey,
+                        name
+                ),
+                value
+        );
+    }
+
 }

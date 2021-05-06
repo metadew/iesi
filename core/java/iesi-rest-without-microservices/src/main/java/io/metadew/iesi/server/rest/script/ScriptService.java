@@ -59,4 +59,11 @@ public class ScriptService implements IScriptService {
         scriptConfiguration.delete(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version));
     }
 
+    @Override
+    public void restoreByNameAndVersion(String name, long version) {
+        scriptConfiguration.restoreDeletedScript(
+                new ScriptKey(IdentifierTools.getScriptIdentifier(name), version));
+    }
+
+
 }

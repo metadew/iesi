@@ -37,6 +37,8 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
+    private boolean fetchAllScript = false;
+    private boolean isOnlyInactive = false;
 
     @Autowired
     public ScriptDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
@@ -118,7 +120,12 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_versions " +
                     "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) ";
         }
-        filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT = 'NA' ";
+        if (!fetchAllScript && !isOnlyInactive) {
+            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT = 'NA' ";
+        }
+        if(isOnlyInactive) {
+            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT != 'NA' ";
+        }
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
@@ -158,6 +165,12 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
 
     @Override
     public Page<ScriptDto> getAll(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
+        fetchAllScript = true;
+        return  getAllActive(authentication, pageable, expansions, isLatestVersionOnly, scriptFilters);
+    }
+
+    @Override
+    public Page<ScriptDto> getAllActive(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
         try {
             Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders = new LinkedHashMap<>();
             String query = getFetchAllQuery(authentication, pageable, isLatestVersionOnly, scriptFilters, expansions);
@@ -172,6 +185,12 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Page<ScriptDto> getAllInActive(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters){
+        isOnlyInactive = true;
+        return  getAllActive(authentication, pageable, expansions, isLatestVersionOnly, scriptFilters);
     }
 
     private long getRowSize(Authentication authentication, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters) throws SQLException {
@@ -303,6 +322,12 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     }
 
     @Override
+    public Page<ScriptDto> getAllByName(Authentication authentication, Pageable pageable, String name, List<String> expansions, boolean isLatestVersionOnly) {
+        fetchAllScript = true;
+        return getByName(authentication, pageable, name, expansions, isLatestVersionOnly);
+    }
+
+    @Override
     public Page<ScriptDto> getByName(Authentication authentication, Pageable pageable, String name, List<String> expansions, boolean isLatestVersionOnly) {
         try {
             Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders = new LinkedHashMap<>();
@@ -339,6 +364,30 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 log.warn("found multiple script for script " + name + "-" + version);
             }
             return scriptDtoBuilders.values().stream().findFirst().map(ScriptDtoBuilder::build);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Page<ScriptDto> getAllByNameAndVersion(Authentication authentication, Pageable pageable, String name, long version, List<String> expansions) {
+        fetchAllScript = true;
+        try {
+            Map<ScriptKey, ScriptDtoBuilder> scriptDtoBuilders = new HashMap<>();
+            List<ScriptFilter> scriptFilters = Stream.of(new ScriptFilter(ScriptFilterOption.NAME, name, true),
+                    new ScriptFilter(ScriptFilterOption.VERSION, Long.toString(version), true))
+                    .collect(Collectors.toList());
+            String query = getFetchAllQuery(authentication, Pageable.unpaged(), false, scriptFilters, expansions);
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                mapRow(cachedRowSet, scriptDtoBuilders);
+            }
+            return new PageImpl<>(
+                    scriptDtoBuilders.values().stream()
+                            .map(ScriptDtoBuilder::build)
+                            .collect(Collectors.toList()),
+                    pageable,
+                    getRowSize(authentication, false, scriptFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

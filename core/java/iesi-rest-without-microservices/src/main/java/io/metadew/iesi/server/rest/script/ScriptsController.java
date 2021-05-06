@@ -75,7 +75,7 @@ public class ScriptsController {
         List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination);
         boolean lastVersion = extractLastVersion(version);
         Page<ScriptDto> scriptDtoPage = scriptDtoService
-                .getAll(SecurityContextHolder.getContext().getAuthentication(),
+                .getAllActive(SecurityContextHolder.getContext().getAuthentication(),
                         pageable,
                         expansions,
                         lastVersion,
@@ -226,6 +226,13 @@ public class ScriptsController {
         }
 
         scriptService.deleteByNameAndVersion(name, version);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PutMapping("/{name}/{version}")
+    @PreAuthorize("hasPrivilege('SCRIPTS_WRITE')")
+    public ResponseEntity<?> restore(@PathVariable String name, @PathVariable long version) {
+        scriptService.restoreByNameAndVersion(name, version);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

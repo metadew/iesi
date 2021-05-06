@@ -55,6 +55,12 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " WHERE SCRIPT_ID = %s AND DELETED_AT = 'NA' ;";
 
+    private static final String EXISTS_DELETED_BY_ID_QUERY = "SELECT " +
+            "SCRIPT_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT != 'NA' ;";
+
+
     private static final String INSERT_QUERY = "INSERT INTO " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT) VALUES " +
@@ -72,6 +78,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     private static final String SOFT_DELETE_BY_ID_QUERY = "UPDATE " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
             " DELETED_AT = %s " +
+            " WHERE SCRIPT_ID = %s;";
+
+    private static final String RESTORE_SOFT_DELETED_BY_ID_QUERY = "UPDATE " +
+            MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
+            " DELETED_AT = 'NA' " +
             " WHERE SCRIPT_ID = %s;";
 
 
@@ -387,5 +398,24 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         } else {
             return Optional.empty();
         }
+    }
+
+    public void restoreDeletedScript(ScriptKey scriptKey) {
+        log.trace(MessageFormat.format("Restoring Deleted script {0}", scriptKey.toString()));
+        ScriptVersionConfiguration.getInstance().restoreDeletedScriptVersion(scriptKey);
+        getScriptRestoreStatement(scriptKey).
+                ifPresent(getMetadataRepository()::executeUpdate);
+    }
+
+    private Optional<String> getScriptRestoreStatement(ScriptKey scriptKey) {
+        CachedRowSet crsScript = getMetadataRepository().executeQuery(
+                String.format(EXISTS_DELETED_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
+                "reader");
+        if (crsScript.size() != 0){
+            return Optional.of(String.format(
+                    RESTORE_SOFT_DELETED_BY_ID_QUERY,
+                    SQLTools.getStringForSQL(scriptKey.getScriptId())));
+        }
+        return Optional.empty();
     }
 }

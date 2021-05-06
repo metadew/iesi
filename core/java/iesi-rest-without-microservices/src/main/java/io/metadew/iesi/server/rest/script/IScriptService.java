@@ -26,4 +26,6 @@ public interface IScriptService {
 
     public void deleteByNameAndVersion(String name, long version);
 
+    public void restoreByNameAndVersion(String name, long version);
+
 }

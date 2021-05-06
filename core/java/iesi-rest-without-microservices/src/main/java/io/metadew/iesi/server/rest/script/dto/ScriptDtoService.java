@@ -61,6 +61,21 @@ public class ScriptDtoService implements IScriptDtoService {
     }
 
     @Override
+    public Page<ScriptDto> getAllActive(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
+        return  scriptDtoRepository.getAllActive(authentication, pageable, expansions, isLatestVersionOnly, scriptFilters);
+    }
+
+    @Override
+    public Page<ScriptDto> getAllInActive(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters) {
+        return scriptDtoRepository.getAllInActive(authentication, pageable, expansions, isLatestVersionOnly, scriptFilters);
+    }
+
+    @Override
+    public Page<ScriptDto> getAllByName(Authentication authentication, Pageable pageable, String name, List<String> expansions, boolean isLatestOnly) {
+        return scriptDtoRepository.getAllByName(authentication, pageable, name, expansions, isLatestOnly);
+    }
+
+    @Override
     public Page<ScriptDto> getByName(Authentication authentication, Pageable pageable, String name, List<String> expansions, boolean isLatestOnly) {
         return scriptDtoRepository.getByName(authentication, pageable, name, expansions, isLatestOnly);
     }
@@ -68,5 +83,10 @@ public class ScriptDtoService implements IScriptDtoService {
     @Override
     public Optional<ScriptDto> getByNameAndVersion(Authentication authentication, String name, long version, List<String> expansions) {
         return scriptDtoRepository.getByNameAndVersion(authentication, name, version, expansions);
+    }
+
+    @Override
+    public Page<ScriptDto> getAllByNameAndVersion(Authentication authentication, Pageable pageable, String name, long version, List<String> expansions) {
+        return scriptDtoRepository.getAllByNameAndVersion(authentication, pageable, name, version, expansions);
     }
 }

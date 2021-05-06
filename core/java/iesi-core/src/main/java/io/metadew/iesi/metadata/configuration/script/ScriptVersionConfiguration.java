@@ -160,6 +160,15 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         getMetadataRepository().executeUpdate(getUpdateStatement(scriptVersion));
     }
 
+    public void restoreDeletedScriptVersion(ScriptKey scriptKey){
+        LOGGER.trace(MessageFormat.format("Restoring deleted ScriptVersion {0}", scriptKey.toString()));
+        if(!existsDeleted(scriptKey)){
+            throw new MetadataDoesNotExistException(scriptKey);
+        }
+        getMetadataRepository().executeUpdate(markActiveScriptVersion(scriptKey));
+        LOGGER.trace(MessageFormat.format("Successfully Restored deleted ScriptVersion {0}", scriptKey.toString()));
+    }
+
     private String markInactiveScriptVersion(ScriptVersionKey scriptVersionKey) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersions") + " SET " +
                 " DELETED_AT = " + SQLTools.getStringForSQL(LocalDateTime.now()) +
@@ -167,11 +176,27 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
     }
 
+    private String markActiveScriptVersion(ScriptKey scriptKey) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersions") + " SET " +
+                " DELETED_AT = 'NA' " +
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";";
+    }
+
     public boolean exists(ScriptVersionKey scriptVersionKey) {
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) +
                 " and DELETED_AT = 'NA' ;";
+        CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+        return cachedRowSet.size() >= 1;
+    }
+
+    public boolean existsDeleted(ScriptKey scriptKey) {
+        String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
+                " and DELETED_AT != 'NA' ;";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -191,5 +216,6 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) +
                 " AND DELETED_AT = 'NA' ;";
     }
+
 
 }

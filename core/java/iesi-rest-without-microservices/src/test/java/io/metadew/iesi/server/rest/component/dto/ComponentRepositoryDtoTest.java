@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
 @DirtiesContext
-public class ComponentRepositoryDtoTest {
+class ComponentRepositoryDtoTest {
 
     @Autowired
     private ComponentDtoRepository componentDtoRepository;
@@ -62,8 +63,8 @@ public class ComponentRepositoryDtoTest {
 
     @Test
     void getAllTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
         ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
@@ -76,56 +77,114 @@ public class ComponentRepositoryDtoTest {
 
     @Test
     void getAllPaginatedAllInclusiveTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
+        Component component3 = createComponent("component3", "3");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
+        componentConfiguration.insert(component3);
         ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
         ComponentDto component2Dto = componentDtoResourceAssembler.toModel(component2);
+        ComponentDto component3Dto = componentDtoResourceAssembler.toModel(component3);
 
-        Pageable pageable = PageRequest.of(0, 2);
-        assertThat(componentDtoRepository.getAll(pageable, new ArrayList<>())).containsOnly(
+        Pageable page1 = PageRequest.of(0, 2);
+        Pageable page2 = PageRequest.of(1, 2);
+        assertThat(componentDtoRepository.getAll(page1, new ArrayList<>())).containsOnly(
                 component1Dto,
                 component2Dto
+        );
+        assertThat(componentDtoRepository.getAll(page2, new ArrayList<>())).containsOnly(
+                component3Dto
         );
     }
 
     @Test
     void getAllPaginatedSortedAscTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
+        Component component3 = createComponent("component3", "3");
+        Component component4 = createComponent("component4", "4");
+        Component component5 = createComponent("component5", "5");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
+        componentConfiguration.insert(component3);
+        componentConfiguration.insert(component4);
+        componentConfiguration.insert(component5);
         ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
         ComponentDto component2Dto = componentDtoResourceAssembler.toModel(component2);
+        ComponentDto component3Dto = componentDtoResourceAssembler.toModel(component3);
+        ComponentDto component4Dto = componentDtoResourceAssembler.toModel(component4);
+        ComponentDto component5Dto = componentDtoResourceAssembler.toModel(component5);
 
-        Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
-        assertThat(componentDtoRepository.getAll(pageable, new ArrayList<>())).containsExactly(
+        PageRequest pageable1 = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
+        PageRequest pageable2 = PageRequest.of(1, 2, Sort.by(Sort.Direction.ASC, "name"));
+        PageRequest pageable3 = PageRequest.of(2, 2, Sort.by(Sort.Direction.ASC, "name"));
+
+        Page<ComponentDto> page1 = componentDtoRepository.getAll(pageable1, new ArrayList<>());
+        Page<ComponentDto> page2 = componentDtoRepository.getAll(pageable2, new ArrayList<>());
+        Page<ComponentDto> page3 = componentDtoRepository.getAll(pageable3, new ArrayList<>());
+        assertThat(page1).containsExactly(
                 component1Dto,
                 component2Dto
         );
+        assertThat(page2).containsExactly(
+                component3Dto,
+                component4Dto
+        );
+        assertThat(page3).containsExactly(
+                component5Dto
+        );
+        assertThat(page1.getNumberOfElements()).isEqualTo(2);
+        assertThat(page1.getTotalElements()).isEqualTo(5);
+        assertThat(page1.getTotalPages()).isEqualTo(3);
+
     }
 
     @Test
     void getAllPaginatedSortedDescTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
+        Component component3 = createComponent("component3", "3");
+        Component component4 = createComponent("component4", "4");
+        Component component5 = createComponent("component5", "5");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
+        componentConfiguration.insert(component3);
+        componentConfiguration.insert(component4);
+        componentConfiguration.insert(component5);
         ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
         ComponentDto component2Dto = componentDtoResourceAssembler.toModel(component2);
+        ComponentDto component3Dto = componentDtoResourceAssembler.toModel(component3);
+        ComponentDto component4Dto = componentDtoResourceAssembler.toModel(component4);
+        ComponentDto component5Dto = componentDtoResourceAssembler.toModel(component5);
 
-        Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
-        assertThat(componentDtoRepository.getAll(pageable, new ArrayList<>())).containsExactly(
-                component2Dto,
+        PageRequest pageable1 = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
+        PageRequest pageable2 = PageRequest.of(1, 2, Sort.by(Sort.Direction.DESC, "name"));
+        PageRequest pageable3 = PageRequest.of(2, 2, Sort.by(Sort.Direction.DESC, "name"));
+
+        Page<ComponentDto> page1 = componentDtoRepository.getAll(pageable1, new ArrayList<>());
+        Page<ComponentDto> page2 = componentDtoRepository.getAll(pageable2, new ArrayList<>());
+        Page<ComponentDto> page3 = componentDtoRepository.getAll(pageable3, new ArrayList<>());
+        assertThat(page1).containsExactly(
+                component5Dto,
+                component4Dto
+        );
+        assertThat(page2).containsExactly(
+                component3Dto,
+                component2Dto
+        );
+        assertThat(page3).containsExactly(
                 component1Dto
         );
+        assertThat(page1.getNumberOfElements()).isEqualTo(2);
+        assertThat(page1.getTotalElements()).isEqualTo(5);
+        assertThat(page1.getTotalPages()).isEqualTo(3);
     }
 
     @Test
     void getAllFilteredOnNameTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
         ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
@@ -150,8 +209,8 @@ public class ComponentRepositoryDtoTest {
 
     @Test
     void getAllByVersionTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
         ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
@@ -171,8 +230,8 @@ public class ComponentRepositoryDtoTest {
 
     @Test
     void getByNameTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
         ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
@@ -186,8 +245,8 @@ public class ComponentRepositoryDtoTest {
 
     @Test
     void getByNameNoResultsTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
 
@@ -197,8 +256,8 @@ public class ComponentRepositoryDtoTest {
 
     @Test
     void getByNameAndVersionNoResultsTest() {
-        Component component1 = createComponent("component1");
-        Component component2 = createComponent("component2");
+        Component component1 = createComponent("component1", "1");
+        Component component2 = createComponent("component2", "2");
         componentConfiguration.insert(component1);
         componentConfiguration.insert(component2);
 
@@ -209,9 +268,8 @@ public class ComponentRepositoryDtoTest {
     }
 
 
-    Component createComponent(String name) {
-        UUID componentUuid = UUID.randomUUID();
-        ComponentKey componentKey = new ComponentKey(componentUuid.toString(), 1L);
+    Component createComponent(String name, String id) {
+        ComponentKey componentKey = new ComponentKey(id, 1L);
         return Component.builder()
                 .componentKey(componentKey)
                 .type("http.request")

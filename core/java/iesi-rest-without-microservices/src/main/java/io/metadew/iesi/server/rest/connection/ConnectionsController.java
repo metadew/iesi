@@ -4,12 +4,17 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoService;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,23 +34,40 @@ import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 public class ConnectionsController {
 
     private ConnectionService connectionService;
+    private ConnectionDtoService connectionDtoService;
     private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
+    private PagedResourcesAssembler<ConnectionDto> connectionDtoPagedResourcesAssembler;
 
     @Autowired
     ConnectionsController(ConnectionService connectionService,
-                          ConnectionDtoResourceAssembler connectionDtoResourceAssembler) {
-        this.connectionDtoResourceAssembler = connectionDtoResourceAssembler;
+                          ConnectionDtoService connectionDtoService,
+                          ConnectionDtoResourceAssembler connectionDtoResourceAssembler,
+                          PagedResourcesAssembler<ConnectionDto> connectionDtoPagedResourcesAssembler) {
         this.connectionService = connectionService;
+        this.connectionDtoService = connectionDtoService;
+        this.connectionDtoResourceAssembler = connectionDtoResourceAssembler;
+        this.connectionDtoPagedResourcesAssembler = connectionDtoPagedResourcesAssembler;
     }
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
-    public HalMultipleEmbeddedResource<ConnectionDto> getAll() {
-        List<Connection> connections = connectionService.getAll();
-        return new HalMultipleEmbeddedResource<>(connections.stream()
-                .filter(distinctByKey(connection -> connection.getMetadataKey().getName()))
-                .map(connection -> connectionDtoResourceAssembler.toModel(connection))
-                .collect(Collectors.toList()));
+    public PagedModel<ConnectionDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
+        List<ConnectionFilter> connectionFilters = extractConnectionFilterOptions(name);
+        Page<ConnectionDto> connectionDtoPage  = connectionDtoService.getAll(pageable, connectionFilters);
+
+        if (connectionDtoPage.hasContent()) {
+            return connectionDtoPagedResourcesAssembler.toModel(connectionDtoPage, connectionDtoResourceAssembler::toModel);
+        }
+        return (PagedModel<ConnectionDto>) connectionDtoPagedResourcesAssembler.toEmptyModel(connectionDtoPage, ConnectionDto.class);
+    }
+
+
+    private List<ConnectionFilter> extractConnectionFilterOptions(String name) {
+        List<ConnectionFilter> componentFilters = new ArrayList<>();
+        if (name != null) {
+            componentFilters.add(new ConnectionFilter(ConnectionFilterOption.NAME, name, false));
+        }
+        return componentFilters;
     }
 
     @GetMapping("/{name}")

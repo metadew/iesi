@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
@@ -58,7 +59,7 @@ class ConnectionsControllerSecurityTest {
 
     @Test
     void testGetAllNoUser() throws Exception {
-        assertThatThrownBy(() -> connectionsController.getAll())
+        assertThatThrownBy(() -> connectionsController.getAll(Pageable.unpaged(), ""))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -90,7 +91,7 @@ class ConnectionsControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetAllNoConnectionReadPrivilege() throws Exception {
-        assertThatThrownBy(() -> connectionsController.getAll())
+        assertThatThrownBy(() -> connectionsController.getAll(Pageable.unpaged(), ""))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -98,7 +99,7 @@ class ConnectionsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"CONNECTIONS_READ@PUBLIC"})
     void testGetConnectionReadPrivilege() throws Exception {
-        connectionsController.getAll();
+        connectionsController.getAll(Pageable.unpaged(), "");
     }
 
     @Test

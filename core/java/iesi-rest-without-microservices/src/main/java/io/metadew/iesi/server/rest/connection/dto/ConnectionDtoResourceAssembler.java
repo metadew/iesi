@@ -50,4 +50,9 @@ public class ConnectionDtoResourceAssembler extends RepresentationModelAssembler
         return new ConnectionParameterDto(connectionParameter.getName(), connectionParameter.getValue());
     }
 
+    public ConnectionDto toModel(ConnectionDto componentDto) {
+        return componentDto;
+    }
+
+
 }

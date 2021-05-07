@@ -224,15 +224,8 @@ public class ScriptsController {
         ) {
             throw new AccessDeniedException("User is not allowed to delete this script");
         }
-
         scriptService.deleteByNameAndVersion(name, version);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PutMapping("/{name}/{version}")
-    @PreAuthorize("hasPrivilege('SCRIPTS_WRITE')")
-    public ResponseEntity<?> restore(@PathVariable String name, @PathVariable long version) {
-        scriptService.restoreByNameAndVersion(name, version);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 }

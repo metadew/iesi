@@ -58,7 +58,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     private static final String EXISTS_DELETED_BY_ID_QUERY = "SELECT " +
             "SCRIPT_ID " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_ID = %s AND DELETED_AT != 'NA' ;";
+            " WHERE SCRIPT_ID = %s AND DELETED_AT = %s ;";
 
 
     private static final String INSERT_QUERY = "INSERT INTO " +
@@ -83,7 +83,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     private static final String RESTORE_SOFT_DELETED_BY_ID_QUERY = "UPDATE " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
             " DELETED_AT = 'NA' " +
-            " WHERE SCRIPT_ID = %s;";
+            " WHERE SCRIPT_ID = %s AND DELETED_AT = %s;";
 
 
     private static ScriptConfiguration instance;
@@ -400,21 +400,29 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    public void restoreDeletedScript(ScriptKey scriptKey) {
+    public void restoreDeletedScript(ScriptKey scriptKey, String deletedAt) {
         log.trace(MessageFormat.format("Restoring Deleted script {0}", scriptKey.toString()));
-        ScriptVersionConfiguration.getInstance().restoreDeletedScriptVersion(scriptKey);
-        getScriptRestoreStatement(scriptKey).
+        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
+                new ScriptKey(
+                        scriptKey.getScriptId(),
+                        scriptKey.getScriptVersion()
+                ));
+        ScriptVersionConfiguration.getInstance().restoreDeletedScriptVersion(scriptVersionKey, deletedAt);
+        getScriptRestoreStatement(scriptKey, deletedAt).
                 ifPresent(getMetadataRepository()::executeUpdate);
     }
 
-    private Optional<String> getScriptRestoreStatement(ScriptKey scriptKey) {
-        CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                String.format(EXISTS_DELETED_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
-                "reader");
-        if (crsScript.size() != 0){
-            return Optional.of(String.format(
-                    RESTORE_SOFT_DELETED_BY_ID_QUERY,
-                    SQLTools.getStringForSQL(scriptKey.getScriptId())));
+    private Optional<String> getScriptRestoreStatement(ScriptKey scriptKey, String deletedAt) {
+        if (!existsById(scriptKey.getScriptId())){
+            CachedRowSet crsScript = getMetadataRepository().executeQuery(
+                    String.format(EXISTS_DELETED_BY_ID_QUERY,
+                            SQLTools.getStringForSQL(scriptKey.getScriptId()),
+                            SQLTools.getStringForSQL(deletedAt)), "reader");
+            if (crsScript.size() != 0){
+                return Optional.of(String.format(
+                        RESTORE_SOFT_DELETED_BY_ID_QUERY,
+                        SQLTools.getStringForSQL(scriptKey.getScriptId())));
+            }
         }
         return Optional.empty();
     }

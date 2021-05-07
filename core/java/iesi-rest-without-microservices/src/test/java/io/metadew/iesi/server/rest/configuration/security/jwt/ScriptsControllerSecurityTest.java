@@ -107,7 +107,7 @@ class ScriptsControllerSecurityTest {
             authorities = {"SCRIPTS_READ@PUBLIC"})
     void testGetScriptReadPrivilege() {
         when(scriptDtoService
-                .getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>(), false, new ArrayList<>()))
+                .getAllActive(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>(), false, new ArrayList<>()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         scriptsController.getAll(Pageable.unpaged(), new ArrayList<>(), null, null, null);
     }

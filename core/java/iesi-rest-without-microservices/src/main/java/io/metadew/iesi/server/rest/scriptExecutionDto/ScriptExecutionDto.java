@@ -31,6 +31,8 @@ public class ScriptExecutionDto extends RepresentationModel<ScriptExecutionDto> 
     private Long scriptVersion;
     private String securityGroupName;
     private String environment;
+    private String userId;
+    private String username;
     private ScriptRunStatus status;
     private LocalDateTime startTimestamp;
     private LocalDateTime endTimestamp;

@@ -18,10 +18,6 @@ public interface IExecutionRequestService {
 
     ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest);
 
-    void updateExecutionRequest(ExecutionRequestDto executionRequestDto);
-
-    void updateExecutionRequests(List<ExecutionRequestDto> executionRequestDtos);
-
     void deleteAll();
 
     void deleteById(String id);

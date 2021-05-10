@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.connection.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.server.rest.connection.ConnectionFilter;
 import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
@@ -20,6 +21,7 @@ import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 public class ConnectionDtoRepository extends PaginatedRepository implements IConnectionDtoRepository {
@@ -35,18 +37,16 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
 
     private String getFetchAllQuery(Pageable pageable, List<ConnectionFilter> connectionFilters) {
         return "select connections.CONN_NM, connections.CONN_TYP_NM, connections.CONN_DSC, " +
-                "parameters.CONN_PAR_NM, " + "parameters.CONN_PAR_VAL, base_connections.ENV_NM " +
+                "base_connections.CONN_PAR_NM, " + "base_connections.CONN_PAR_VAL, base_connections.ENV_NM " +
                 "FROM (" + getBaseQuery(pageable, connectionFilters) + ") base_connections " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 "on base_connections.CONN_NM = connections.CONN_NM " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() + " parameters " +
-                "on base_connections.CONN_NM = parameters.CONN_NM " +
                 getOrderByClause(pageable) +
                 ";";
     }
 
     private String getBaseQuery(Pageable pageable, List<ConnectionFilter> connectionFilters) {
-        return "select distinct connections.CONN_NM, environments.ENV_NM " +
+        return "select distinct connections.CONN_NM, environments.ENV_NM, parameters.CONN_PAR_NM, parameters.CONN_PAR_VAL " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() + " parameters " +
                 "on connections.CONN_NM = parameters.CONN_NM " +
@@ -60,7 +60,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
     @Override
     public Page<ConnectionDto> getAll(Pageable pageable, List<ConnectionFilter> connectionFilters) {
         try {
-            Map<ConnectionKey, ConnectionDtoBuilder> connectionDtoBuilders = new HashMap<>();
+            Map<String, ConnectionDtoBuilder> connectionDtoBuilders = new LinkedHashMap<>();
             String query = getFetchAllQuery(pageable, connectionFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -76,13 +76,25 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
     }
 
     @Override
-    public Page<ConnectionDto> getByName(Pageable pageable, String name) {
-        return null;
-    }
+    public Optional<ConnectionDto> getByName(String name) {
+        try {
+            Map<String, ConnectionDtoBuilder> connectionDtoBuilders = new HashMap<>();
+            List<ConnectionFilter> connectionFilters = Stream.of(
+                    new ConnectionFilter(ConnectionFilterOption.NAME, name, true)
+            ).collect(Collectors.toList());
+            String query = getFetchAllQuery(Pageable.unpaged(), connectionFilters);
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                mapRow(cachedRowSet, connectionDtoBuilders);
+            }
+            List<ConnectionDto> connectionDtoList = connectionDtoBuilders.values().stream()
+                    .map(ConnectionDtoBuilder::build)
+                    .collect(Collectors.toList());
 
-    @Override
-    public Optional<ConnectionDto> getByNameAndVersion(String name, long version) {
-        return Optional.empty();
+            return connectionDtoBuilders.values().stream().findFirst().map(ConnectionDtoBuilder::build);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private long getRowSize(List<ConnectionFilter> connectionFilters) throws SQLException {
@@ -131,12 +143,12 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
-    private void mapRow(CachedRowSet cachedRowSet, Map<ConnectionKey, ConnectionDtoBuilder> connectionDtoBuilders) throws SQLException {
-        ConnectionKey connectionKey = new ConnectionKey(cachedRowSet.getString("CONN_NM"), cachedRowSet.getString("ENV_NM"));
-        ConnectionDtoBuilder connectionDtoBuilder = connectionDtoBuilders.get(connectionKey);
+    private void mapRow(CachedRowSet cachedRowSet, Map<String, ConnectionDtoBuilder> connectionDtoBuilders) throws SQLException {
+        String connectionName = cachedRowSet.getString("CONN_NM");
+        ConnectionDtoBuilder connectionDtoBuilder = connectionDtoBuilders.get(connectionName);
         if (connectionDtoBuilder == null) {
             connectionDtoBuilder = mapConnectionDto(cachedRowSet);
-            connectionDtoBuilders.put(connectionKey, connectionDtoBuilder);
+            connectionDtoBuilders.put(connectionName, connectionDtoBuilder);
         }
         mapConnectionParameters(cachedRowSet, connectionDtoBuilder);
     }
@@ -146,23 +158,62 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
                 cachedRowSet.getString("CONN_NM"),
                 cachedRowSet.getString("CONN_TYP_NM"),
                 cachedRowSet.getString("CONN_DSC"),
-                cachedRowSet.getString("ENV_NM"),
                 new HashMap<>()
         );
     }
 
     private void mapConnectionParameters(CachedRowSet cachedRowSet, ConnectionDtoBuilder connectionDtoBuilder) throws SQLException {
+        String environmentName = cachedRowSet.getString("ENV_NM");
+        ConnectionEnvironmentBuilder connectionEnvironmentBuilder = connectionDtoBuilder.getEnvironments().get(environmentName);
+
+        if (connectionEnvironmentBuilder == null) {
+            connectionEnvironmentBuilder = mapConnectionEnvironment(cachedRowSet);
+            connectionDtoBuilder.getEnvironments().put(environmentName, connectionEnvironmentBuilder);
+        }
+
+        mapEnvironmentsParameters(cachedRowSet, connectionEnvironmentBuilder);
+    }
+
+    private ConnectionEnvironmentBuilder mapConnectionEnvironment(CachedRowSet cachedRowSet) throws SQLException {
+        return new ConnectionEnvironmentBuilder(
+                cachedRowSet.getString("ENV_NM"),
+                new HashMap<>()
+        );
+    }
+
+    private void mapEnvironmentsParameters(CachedRowSet cachedRowSet, ConnectionEnvironmentBuilder connectionEnvironmentBuilder) throws SQLException {
+        String parameterName = cachedRowSet.getString("CONN_PAR_NM");
+        if (parameterName != null) {
+            ConnectionParameterDto connectionParameter = connectionEnvironmentBuilder.getParameters().get(parameterName);
+            if (connectionParameter == null) {
+                connectionEnvironmentBuilder.getParameters().put(
+                        cachedRowSet.getString("CONN_PAR_NM"),
+                        new ConnectionParameterDto(
+                                cachedRowSet.getString("CONN_PAR_NM"),
+                                cachedRowSet.getString("CONN_PAR_VAL")
+                        )
+                );
+            }
+        }
+    }
+
+
+    /*
+    private void mapConnectionParameters(CachedRowSet cachedRowSet, ConnectionDtoBuilder connectionDtoBuilder) throws SQLException {
         String connectionParameterName = cachedRowSet.getString("CONN_PAR_NM");
+        String environmentName = cachedRowSet.getString("ENV_NM");
+
         if (connectionParameterName != null) {
             ConnectionParameterDto connectionParameterDto = connectionDtoBuilder.getParameters().get(connectionParameterName);
             if (connectionParameterDto == null) {
-                connectionDtoBuilder.getParameters().put(connectionParameterName, new ConnectionParameterDto(
+                connectionDtoBuilder.getEnvironments().put(connectionParameterName, new ConnectionParameterDto(
                         cachedRowSet.getString("CONN_PAR_NM"),
                         cachedRowSet.getString("CONN_PAR_VAL")
                 ));
             }
         }
     }
+    */
 
     @AllArgsConstructor
     @Getter
@@ -170,17 +221,29 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         private final String name;
         private final String type;
         private final String description;
-        private final String environment;
-        private final Map<String, ConnectionParameterDto> parameters;
+        private final Map<String, ConnectionEnvironmentBuilder> environments;
 
         public ConnectionDto build() {
             return new ConnectionDto(
                     name,
                     type,
                     description,
+                    new HashSet<>(environments.values().stream().map(ConnectionEnvironmentBuilder::build).collect(Collectors.toList()))
+            );
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    private static class ConnectionEnvironmentBuilder {
+        private final String environment;
+        private final Map<String, ConnectionParameterDto> parameters;
+
+        public ConnectionEnvironmentDto build() {
+            return new ConnectionEnvironmentDto(
                     environment,
-                    new ArrayList<>(parameters.values()
-            ));
+                    new HashSet<>(parameters.values())
+            );
         }
     }
 }

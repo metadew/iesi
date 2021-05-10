@@ -11,7 +11,5 @@ import java.util.Optional;
 public interface IConnectionDtoRepository {
     Page<ConnectionDto> getAll(Pageable pageable, List<ConnectionFilter> connectionFilters);
 
-    Page<ConnectionDto> getByName(Pageable pageable, String name);
-
-    Optional<ConnectionDto> getByNameAndVersion(String name, long version);
+    Optional<ConnectionDto> getByName(String name);
 }

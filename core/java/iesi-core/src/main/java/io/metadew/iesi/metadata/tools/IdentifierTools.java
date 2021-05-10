@@ -19,6 +19,9 @@ public final class IdentifierTools {
     public static String getComponentIdentifier(String input) {
         return DigestUtils.sha256Hex(input);
     }
+    public static String getConnectionIdentifier(String input) {
+        return DigestUtils.sha256Hex(input);
+    }
 
     public static String getScriptExecutionRequestIdentifier() {
         return UUID.randomUUID().toString();

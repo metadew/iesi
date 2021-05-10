@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ConnectionDtoService implements IConnectionDtoService {
@@ -21,5 +22,10 @@ public class ConnectionDtoService implements IConnectionDtoService {
     @Override
     public Page<ConnectionDto> getAll(Pageable pageable, List<ConnectionFilter> componentFilters) {
         return connectionDtoRepository.getAll(pageable, componentFilters);
+    }
+
+    @Override
+    public Optional<ConnectionDto> getByName(String name) {
+        return connectionDtoRepository.getByName(name);
     }
 }

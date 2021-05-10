@@ -38,11 +38,15 @@ public class ConnectionService implements IConnectionService {
     }
 
     public void createConnection(ConnectionDto connectionDto) {
-        connectionConfiguration.insert(connectionDto.convertToEntity());
+        for (Connection connection : connectionDto.convertToEntity()) {
+            connectionConfiguration.insert(connection);
+        }
     }
 
     public void updateConnection(ConnectionDto connectionDto) {
-        connectionConfiguration.update(connectionDto.convertToEntity());
+        for (Connection connection : connectionDto.convertToEntity()) {
+            connectionConfiguration.update(connection);
+        }
     }
 
     public void updateConnections(List<ConnectionDto> connectionDtos) {

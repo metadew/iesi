@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ComponentsController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {ComponentsController.class, CustomGlobalExceptionHandler.class, ComponentDtoService.class,
-        ComponentDtoResourceAssembler.class, ComponentDtoResourceAssembler.class, TestConfiguration.class,
+        ComponentDtoResourceAssembler.class, TestConfiguration.class,
         IesiConfiguration.class, IesiSecurityChecker.class})
 @ActiveProfiles("test")
 @DirtiesContext
@@ -56,7 +56,6 @@ class ComponentControllerTest {
 
     @Test
     void getAllNoResult() throws Exception {
-        // Mock Service
         Pageable pageable = PageRequest.of(0, 20);
         List<ComponentDto> componentDtoList = new ArrayList<>();
         Page<ComponentDto> page = new PageImpl<>(componentDtoList, pageable, 1);
@@ -268,8 +267,6 @@ class ComponentControllerTest {
     }
 
     @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_READ@PUBLIC"})
     void getByNamePaginationTest() throws Exception {
         String name = "componentNameTest";
         ComponentDto componentDto1 = ComponentDtoBuilder.simpleComponentDto(name, 0);
@@ -329,17 +326,13 @@ class ComponentControllerTest {
     }
 
     @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"COMPONENTS_READ@PUBLIC"})
-    void getByNameAndVersion400AndPropertyPresenceCheck() throws Exception {
-        // Mock Service
+    void getByNameAndVersionAndPropertyPresenceCheck() throws Exception {
         Optional<ComponentDto> optionalComponentDto = Optional.of(ComponentDtoBuilder.simpleComponentDto("nameTest", 0));
         given(componentDtoService.getByNameAndVersion("nameTest", 0))
                 .willReturn(optionalComponentDto);
 
         mvc.perform(get("/components/nameTest/0").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$.name", is("nameTest")))
@@ -358,7 +351,6 @@ class ComponentControllerTest {
 
     @Test
     void getByNameAndVersion404() throws Exception {
-        // Mock Service
         Optional<ComponentDto> optionalComponentDto = Optional.empty();
         given(componentDtoService.getByNameAndVersion(eq("nameTest"), eq(0)))
                 .willReturn(optionalComponentDto);

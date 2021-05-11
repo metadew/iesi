@@ -9,7 +9,7 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '/home/hkhattabi/internship/iesi-sandboxes/0.7.0/PRTest'
+  home: '.'
   security:
     enabled: true
     jwt:

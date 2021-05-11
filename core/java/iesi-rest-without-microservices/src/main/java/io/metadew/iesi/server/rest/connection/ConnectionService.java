@@ -49,8 +49,8 @@ public class ConnectionService implements IConnectionService {
         }
     }
 
-    public void updateConnections(List<ConnectionDto> connections) {
-        connections.forEach(this::updateConnection);
+    public void updateConnections(List<ConnectionDto> connectionDtos) {
+        connectionDtos.forEach(this::updateConnection);
     }
 
     public void deleteAll() {

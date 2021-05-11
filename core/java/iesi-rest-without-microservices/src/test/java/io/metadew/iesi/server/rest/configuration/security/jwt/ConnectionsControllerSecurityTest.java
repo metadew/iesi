@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;

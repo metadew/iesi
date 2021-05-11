@@ -2,8 +2,6 @@ package io.metadew.iesi.server.rest.connection.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.server.rest.connection.ConnectionFilter;
 import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
 import io.metadew.iesi.server.rest.dataset.FilterService;
@@ -15,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -37,21 +34,21 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
 
     private String getFetchAllQuery(Pageable pageable, List<ConnectionFilter> connectionFilters) {
         return "select connections.CONN_NM, connections.CONN_TYP_NM, connections.CONN_DSC, " +
-                "base_connections.CONN_PAR_NM, " + "base_connections.CONN_PAR_VAL, base_connections.ENV_NM " +
+                "parameters.CONN_PAR_NM, " + "parameters.CONN_PAR_VAL, environments.ENV_NM " +
                 "FROM (" + getBaseQuery(pageable, connectionFilters) + ") base_connections " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 "on base_connections.CONN_NM = connections.CONN_NM " +
+                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() + " parameters " +
+                "on connections.CONN_NM = parameters.CONN_NM " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " environments " +
+                "on parameters.ENV_NM = environments.ENV_NM " +
                 getOrderByClause(pageable) +
                 ";";
     }
 
     private String getBaseQuery(Pageable pageable, List<ConnectionFilter> connectionFilters) {
-        return "select distinct connections.CONN_NM, environments.ENV_NM, parameters.CONN_PAR_NM, parameters.CONN_PAR_VAL " +
+        return "select distinct connections.CONN_NM " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() + " parameters " +
-                "on connections.CONN_NM = parameters.CONN_NM " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " environments " +
-                "on parameters.ENV_NM = environments.ENV_NM " +
                 getWhereClause(connectionFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -63,6 +60,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
             Map<String, ConnectionDtoBuilder> connectionDtoBuilders = new LinkedHashMap<>();
             String query = getFetchAllQuery(pageable, connectionFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
+
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, connectionDtoBuilders);
             }
@@ -87,10 +85,6 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, connectionDtoBuilders);
             }
-            List<ConnectionDto> connectionDtoList = connectionDtoBuilders.values().stream()
-                    .map(ConnectionDtoBuilder::build)
-                    .collect(Collectors.toList());
-
             return connectionDtoBuilders.values().stream().findFirst().map(ConnectionDtoBuilder::build);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -98,12 +92,8 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
     }
 
     private long getRowSize(List<ConnectionFilter> connectionFilters) throws SQLException {
-        String query = "select count(*) as row_count from (select distinct connections.CONN_NM, environments.ENV_NM " +
+        String query = "select count(*) as row_count from (select distinct connections.CONN_NM " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() + " parameters " +
-                "on connections.CONN_NM = parameters.CONN_NM " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " environments " +
-                "on parameters.ENV_NM = environments.ENV_NM " +
                 getWhereClause(connectionFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
@@ -123,7 +113,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ORDER BY connections.CONN_N% ASC";
+            return " ORDER BY connections.CONN_NM ASC";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
@@ -196,24 +186,6 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
             }
         }
     }
-
-
-    /*
-    private void mapConnectionParameters(CachedRowSet cachedRowSet, ConnectionDtoBuilder connectionDtoBuilder) throws SQLException {
-        String connectionParameterName = cachedRowSet.getString("CONN_PAR_NM");
-        String environmentName = cachedRowSet.getString("ENV_NM");
-
-        if (connectionParameterName != null) {
-            ConnectionParameterDto connectionParameterDto = connectionDtoBuilder.getParameters().get(connectionParameterName);
-            if (connectionParameterDto == null) {
-                connectionDtoBuilder.getEnvironments().put(connectionParameterName, new ConnectionParameterDto(
-                        cachedRowSet.getString("CONN_PAR_NM"),
-                        cachedRowSet.getString("CONN_PAR_VAL")
-                ));
-            }
-        }
-    }
-    */
 
     @AllArgsConstructor
     @Getter

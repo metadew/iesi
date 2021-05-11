@@ -35,7 +35,7 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     protected boolean executeAction() throws SQLException, InterruptedException {
 

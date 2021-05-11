@@ -67,7 +67,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() throws URISyntaxException, HttpRequestBuilderException, KeyValuePairException {
+    public void prepareAction() throws URISyntaxException, HttpRequestBuilderException, KeyValuePairException {
 
         HttpComponent httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
 

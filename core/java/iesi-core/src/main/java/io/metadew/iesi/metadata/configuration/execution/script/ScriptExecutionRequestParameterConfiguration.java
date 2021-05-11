@@ -155,7 +155,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     public String updateStatement(ScriptExecutionRequestParameter scriptExecutionRequest) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") + " SET " +
                 "NAME=" + SQLTools.getStringForSQL(scriptExecutionRequest.getName()) + "," +
-                SQLTools.getStringForSQLClob(scriptExecutionRequest.getValue(),
+                "VALUE=" + SQLTools.getStringForSQLClob(scriptExecutionRequest.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
                                 .orElseThrow(RuntimeException::new)) +

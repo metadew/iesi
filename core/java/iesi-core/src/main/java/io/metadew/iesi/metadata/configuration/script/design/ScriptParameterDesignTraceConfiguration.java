@@ -48,7 +48,7 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
             }
             cachedRowSet.next();
             return Optional.of(new ScriptParameterDesignTrace(scriptParameterDesignTraceKey,
-                    cachedRowSet.getString("SCRIPT_PAR_VAL")));
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "SCRIPT_PAR_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -66,7 +66,7 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
                         cachedRowSet.getString("RUN_ID"),
                         cachedRowSet.getLong("PRC_ID"),
                         cachedRowSet.getString("SCRIPT_PAR_NM")),
-                        cachedRowSet.getString("SCRIPT_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "SCRIPT_PAR_VAL")));
             }
             return scriptParameterDesignTraces;
         } catch (SQLException e) {
@@ -112,7 +112,10 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
                 SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getScriptParameterName()) + "," +
-                SQLTools.getStringForSQL(scriptParameterDesignTrace.getScriptParameterValue()) + ");";
+                SQLTools.getStringForSQLClob(scriptParameterDesignTrace.getScriptParameterValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     @Override
@@ -124,7 +127,11 @@ public class ScriptParameterDesignTraceConfiguration extends Configuration<Scrip
 
     private String updateStatement(ScriptParameterDesignTrace scriptParameterDesignTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptParameterDesignTraces") +
-                " SET SCRIPT_PAR_VAL = " + SQLTools.getStringForSQL(scriptParameterDesignTrace.getScriptParameterValue()) +
+                " SET SCRIPT_PAR_VAL = " + SQLTools.getStringForSQLClob(
+                scriptParameterDesignTrace.getScriptParameterValue(),
+                getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                        .findFirst()
+                        .orElseThrow(RuntimeException::new)) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getProcessId()) +
                 " AND SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterDesignTrace.getMetadataKey().getScriptParameterName()) + ";";

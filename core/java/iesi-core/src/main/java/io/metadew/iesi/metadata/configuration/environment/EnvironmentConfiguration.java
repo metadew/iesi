@@ -26,7 +26,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
     private static EnvironmentConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public synchronized static EnvironmentConfiguration getInstance(){
+    public synchronized static EnvironmentConfiguration getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new EnvironmentConfiguration();
         }
@@ -34,7 +34,8 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
     }
 
     private EnvironmentConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());}
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+    }
 
     @Override
     public Optional<Environment> get(EnvironmentKey environmentKey) {
@@ -47,16 +48,10 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
                 return Optional.empty();
             }
             crsEnvironment.next();
-            // Get parameters
-            String queryEnvironmentParameters = "select ENV_NM, ENV_PAR_NM, ENV_PAR_VAL from "
-                    + getMetadataRepository().getTableNameByLabel("EnvironmentParameters")
-                    + " where ENV_NM = '" + environmentKey.getName() + "'";
-            CachedRowSet crsEnvironmentParameters = getMetadataRepository()
-                    .executeQuery(queryEnvironmentParameters, "reader");
-                        Environment environment = new Environment(environmentKey,
+            Environment environment = new Environment(environmentKey,
                     crsEnvironment.getString("ENV_DSC"),
-                    EnvironmentParameterConfiguration.getInstance().getByEnvironment(environmentKey));
-            crsEnvironmentParameters.close();
+                    EnvironmentParameterConfiguration.getInstance()
+                            .getByEnvironment(environmentKey));
             crsEnvironment.close();
             return Optional.of(environment);
         } catch (SQLException e) {
@@ -109,7 +104,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         }
         getMetadataRepository().executeUpdate(getInsertStatement(environment));
     }
-    
+
     public boolean exists(EnvironmentKey environmentKey) {
         String queryEnvironment = "select * from "
                 + getMetadataRepository().getTableNameByLabel("Environments")
@@ -141,7 +136,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Environments") +
                 " (ENV_NM, ENV_DSC) VALUES (" +
                 SQLTools.getStringForSQL(environment.getName()) + "," +
-                SQLTools.getStringForSQL(environment.getDescription())+ ");";
+                SQLTools.getStringForSQL(environment.getDescription()) + ");";
     }
 
 }

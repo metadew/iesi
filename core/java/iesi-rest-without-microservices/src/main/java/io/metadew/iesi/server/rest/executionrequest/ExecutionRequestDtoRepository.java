@@ -306,7 +306,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         if (scriptExecutionRequestParameterDto == null) {
             scriptExecutionRequestParameterDto = new ScriptExecutionRequestParameterDto(
                     cachedRowSet.getString("script_exe_req_par_name"),
-                    cachedRowSet.getString("script_exe_req_par_val")
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "script_exe_req_par_val")
             );
             scriptExecutionRequestBuilder.getParameters().put(scriptExecutionRequestParameterId, scriptExecutionRequestParameterDto);
         }
@@ -337,7 +337,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
             return;
         }
         ExecutionRequestLabelDto executionRequestLabelDto = executionRequestBuilder.getExecutionRequestLabels().get(executionRequestLabelId);
-
         if (executionRequestLabelDto == null) {
             executionRequestLabelDto = new ExecutionRequestLabelDto(
                     cachedRowSet.getString("exe_req_label_name"),

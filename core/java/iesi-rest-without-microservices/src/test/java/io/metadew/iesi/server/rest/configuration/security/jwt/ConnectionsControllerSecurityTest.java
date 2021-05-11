@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -139,8 +140,9 @@ class ConnectionsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"CONNECTIONS_READ@PUBLIC"})
-    void testGetByNameConnectionRead() throws Exception {
-        connectionsController.getByName("test");
+    void testGetByNameNozConnectionReadNoResult() throws Exception {
+        assertThatThrownBy(() -> connectionsController.getByName("test"))
+                .isInstanceOf(MetadataDoesNotExistException.class);
     }
 
     // create connections

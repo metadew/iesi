@@ -76,7 +76,7 @@ public class ConnectionsController {
     public ConnectionDto getByName(@PathVariable String name) {
         ConnectionDto connection = connectionDtoService.getByName(name)
                 .orElseThrow(() -> new MetadataDoesNotExistException(
-                        new ConnectionKey(IdentifierTools.getConnectionIdentifier(name), "")
+                        new ConnectionKey(name, "")
                 ));
         return connectionDtoResourceAssembler.toModel(connection);
     }

@@ -22,8 +22,7 @@ public class FwkSetParameterValue extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-    }
+    public void prepareAction() { }
 
     protected boolean executeAction() throws InterruptedException {
         String name = convertName(getParameterResolvedValue(OPERATION_NAME_KEY));

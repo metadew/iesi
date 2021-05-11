@@ -31,7 +31,7 @@ public class SqlEvaluateResult extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     protected boolean executeAction() throws InterruptedException {
         String query = convertQuery(getParameterResolvedValue(SQL_QUERY_KEY));

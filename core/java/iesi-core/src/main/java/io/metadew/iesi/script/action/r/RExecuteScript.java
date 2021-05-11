@@ -23,7 +23,7 @@ public class RExecuteScript extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
         this.workspaceReferenceName = convertWorkspaceReferenceName(getParameterResolvedValue(WORKSPACE_REFERENCE_NAME_KEY));
         this.script = convertScript(getParameterResolvedValue(SCRIPT_KEY));
     }

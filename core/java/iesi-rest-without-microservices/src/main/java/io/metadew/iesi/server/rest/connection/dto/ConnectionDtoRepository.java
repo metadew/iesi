@@ -60,7 +60,6 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
             Map<String, ConnectionDtoBuilder> connectionDtoBuilders = new LinkedHashMap<>();
             String query = getFetchAllQuery(pageable, connectionFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
-
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, connectionDtoBuilders);
             }

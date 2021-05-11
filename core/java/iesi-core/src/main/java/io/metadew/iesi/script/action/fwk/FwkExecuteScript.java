@@ -38,7 +38,7 @@ public class FwkExecuteScript extends ActionTypeExecution {
     private static final String PARAM_LIST_KEY = "paramList";
     private static final String PARAM_FILE_KEY = "paramFile";
 
-    private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
+    private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.*)\\s*");
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {

@@ -22,7 +22,8 @@ public class FwkSetParameterValue extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepare() {
+    }
 
     protected boolean executeAction() throws InterruptedException {
         String name = convertName(getParameterResolvedValue(OPERATION_NAME_KEY));
@@ -38,13 +39,7 @@ public class FwkSetParameterValue extends ActionTypeExecution {
     }
 
     private String convertValue(DataType value) {
-        if (value instanceof Text) {
-            return value.toString();
-        } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for value",
-                    value.getClass()));
-            return value.toString();
-        }
+        return value.toString();
     }
 
     private String convertName(DataType name) {

@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.component.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.server.rest.component.ComponentFilter;
 import io.metadew.iesi.server.rest.component.ComponentFilterOption;
@@ -198,7 +199,8 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
             ComponentParameterDto componentParameterDto = componentDtoBuilder.getParameters().get(componentParameterName);
             if (componentParameterDto == null) {
                 componentDtoBuilder.getParameters().put(componentParameterName, new ComponentParameterDto(
-                        cachedRowSet.getString("COMP_PAR_NM"), cachedRowSet.getString("COMP_PAR_VAL")
+                        cachedRowSet.getString("COMP_PAR_NM"),
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "COMP_PAR_VAL")
                 ));
             }
         }

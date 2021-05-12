@@ -1817,8 +1817,7 @@ iesi:
             order: 6
             type: STRING
             length: 255
-            nullable: false
-            primaryKey: true
+            nullable: true
             defaultTimestamp:
       - name: DES_SCRIPT_PAR
         label: ScriptParameters
@@ -1903,8 +1902,7 @@ iesi:
             order: 5
             type: STRING
             length: 255
-            nullable: false
-            primaryKey: true
+            nullable: true
             defaultTimestamp:
       - name: TRC_ACTION
         label: ActionTraces

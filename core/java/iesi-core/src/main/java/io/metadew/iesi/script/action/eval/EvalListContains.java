@@ -29,7 +29,7 @@ public class EvalListContains extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
         //template = convertTemplate(templateActionParameterOperation.getValue());
         list = convertList(getParameterResolvedValue(LIST_KEY));
         value = getParameterResolvedValue(TEMPLATE_KEY);

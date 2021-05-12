@@ -55,7 +55,7 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
                     cachedRowSet.getString("ACTION_DSC"),
                     cachedRowSet.getString("COMP_NM"),
                     cachedRowSet.getString("ITERATION_VAL"),
-                    cachedRowSet.getString("CONDITION_VAL"),
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "CONDITION_VAL"),
                     cachedRowSet.getInt("RETRIES_VAL"),
                     cachedRowSet.getString("EXP_ERR_FL"),
                     cachedRowSet.getString("STOP_ERR_FL")));
@@ -82,7 +82,7 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
                         cachedRowSet.getString("ACTION_DSC"),
                         cachedRowSet.getString("COMP_NM"),
                         cachedRowSet.getString("ITERATION_VAL"),
-                        cachedRowSet.getString("CONDITION_VAL"),
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "CONDITION_VAL"),
                         cachedRowSet.getInt("RETRIES_VAL"),
                         cachedRowSet.getString("EXP_ERR_FL"),
                         cachedRowSet.getString("STOP_ERR_FL")));
@@ -128,7 +128,10 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
                 SQLTools.getStringForSQL(actionDesignTrace.getDescription()) + "," +
                 SQLTools.getStringForSQL(actionDesignTrace.getComponent()) + "," +
                 SQLTools.getStringForSQL(actionDesignTrace.getIteration()) + "," +
-                SQLTools.getStringForSQL(actionDesignTrace.getCondition()) + "," +
+                SQLTools.getStringForSQLClob(actionDesignTrace.getCondition(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + "," +
                 SQLTools.getStringForSQL(actionDesignTrace.getRetries()) + "," +
                 SQLTools.getStringForSQL(actionDesignTrace.getErrorExpected()) + "," +
                 SQLTools.getStringForSQL(actionDesignTrace.getErrorStop()) + ");";
@@ -149,7 +152,10 @@ public class ActionDesignTraceConfiguration extends Configuration<ActionDesignTr
                 "ACTION_DSC = " + SQLTools.getStringForSQL(actionDesignTrace.getDescription()) + "," +
                 "COMP_NM = " + SQLTools.getStringForSQL(actionDesignTrace.getComponent()) + "," +
                 "ITERATION_VAL = " + SQLTools.getStringForSQL(actionDesignTrace.getIteration()) + "," +
-                "CONDITION_VAL = " + SQLTools.getStringForSQL(actionDesignTrace.getCondition()) + "," +
+                "CONDITION_VAL = " + SQLTools.getStringForSQLClob(actionDesignTrace.getCondition(),
+                getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                        .findFirst()
+                        .orElseThrow(RuntimeException::new)) + "," +
                 "RETRIES_VAL = " + SQLTools.getStringForSQL(actionDesignTrace.getRetries()) + "," +
                 "EXP_ERR_FL = " + SQLTools.getStringForSQL(actionDesignTrace.getErrorExpected()) + "," +
                 "STOP_ERR_FL =" + SQLTools.getStringForSQL(actionDesignTrace.getErrorStop()) +

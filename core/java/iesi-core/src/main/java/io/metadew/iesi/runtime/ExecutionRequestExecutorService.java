@@ -54,7 +54,7 @@ public class ExecutionRequestExecutorService {
             e.printStackTrace(new PrintWriter(stackTrace));
             log.info("exception=" + e);
             log.debug("exception.stacktrace=" + stackTrace.toString());
-            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
+            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.STOPPED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
         }
     }

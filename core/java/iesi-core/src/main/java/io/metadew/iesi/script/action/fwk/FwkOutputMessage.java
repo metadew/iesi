@@ -32,7 +32,7 @@ public class FwkOutputMessage extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     private boolean convertOnScreen(DataType onScreen) {
         if (onScreen instanceof Text) {

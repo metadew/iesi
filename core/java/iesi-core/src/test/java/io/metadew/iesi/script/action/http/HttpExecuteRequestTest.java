@@ -78,7 +78,7 @@ class HttpExecuteRequestTest {
 
 
     @Test
-    void prepareNoHeadersAndNoQueries() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareNoHeadersAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         Action action = createAction(requestActionParameter);
@@ -102,7 +102,7 @@ class HttpExecuteRequestTest {
     }
 
     @Test
-    void prepareDefaultHeaderAndNoQueries() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareDefaultHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "X-API-KEY=1234");
@@ -128,7 +128,7 @@ class HttpExecuteRequestTest {
     }
 
     @Test
-    void prepareOverrideHeaderAndNoQueries() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareOverrideHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/xml");
@@ -154,7 +154,7 @@ class HttpExecuteRequestTest {
 
 
     @Test
-    void prepareHeaderAndNoQueries() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json");
@@ -178,7 +178,7 @@ class HttpExecuteRequestTest {
     }
 
     @Test
-    void prepareHeadersAndNoQuery() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareHeadersAndNoQuery() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json,X-API-KEY=12345");
@@ -223,7 +223,7 @@ class HttpExecuteRequestTest {
     }
 
     @Test
-    void prepareDefaultNoHeadersAndQuery() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareDefaultNoHeadersAndQuery() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter queryParameterActionParameter = createActionParameter("queryParameters", "name=name");
@@ -249,7 +249,7 @@ class HttpExecuteRequestTest {
 
 
     @Test
-    void prepareOverrideNoHeaderAndQuery() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareOverrideNoHeaderAndQuery() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=sold");
@@ -274,7 +274,7 @@ class HttpExecuteRequestTest {
 
 
     @Test
-    void prepareNoHeadersAndQuery() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareNoHeadersAndQuery() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=sold");
@@ -297,7 +297,7 @@ class HttpExecuteRequestTest {
     }
 
     @Test
-    void prepareNoHeadersAndQueries() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareNoHeadersAndQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=sold,name=name");
@@ -341,7 +341,7 @@ class HttpExecuteRequestTest {
     }
 
     @Test
-    void prepareStatusCode() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareStatusCode() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter statusCodeActionParameter = createActionParameter("expectedStatusCodes", "200");
@@ -364,7 +364,7 @@ class HttpExecuteRequestTest {
     }
 
     @Test
-    void prepareMultipleStatusCode() throws HttpRequestBuilderException, URISyntaxException {
+    void prepareMultipleStatusCode() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter statusCodeActionParameter = createActionParameter("expectedStatusCodes", "200,400,500");

@@ -16,6 +16,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -324,6 +325,11 @@ class InMemoryDatasetImplementationServiceTest {
                     Object[] args = invocation.getArguments();
                     return (String) args[0];
                 });
+        when(executionRuntime.resolveConceptLookup(anyString()))
+                .thenAnswer((Answer<LookupResult>) invocation -> {
+                    Object[] args = invocation.getArguments();
+                    return new LookupResult((String) args[0], null, null);
+                });
 
 
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
@@ -370,7 +376,8 @@ class InMemoryDatasetImplementationServiceTest {
                                 "key1",
                                 "dataset"
                         ));
-        DataType dataType1 = DataTypeHandler.getInstance().resolve(((InMemoryDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
+        DataType dataType1 = DataTypeHandler.getInstance()
+                .resolve(((InMemoryDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
         assertThat(dataType1)
                 .isInstanceOf(InMemoryDatasetImplementation.class);
         assertThat(((InMemoryDatasetImplementation) dataType1).getKeyValues())

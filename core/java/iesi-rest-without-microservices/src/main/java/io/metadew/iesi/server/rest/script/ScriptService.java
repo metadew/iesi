@@ -60,9 +60,8 @@ public class ScriptService implements IScriptService {
     }
 
     @Override
-    public void restoreByNameAndVersion(String name, long version, String deletedAt) {
-        scriptConfiguration.restoreDeletedScript(
-                new ScriptKey(IdentifierTools.getScriptIdentifier(name), version),deletedAt);
+    public void restoreByNameAndVersion(Script script) {
+        scriptConfiguration.restoreDeletedScript(script);
     }
 
 

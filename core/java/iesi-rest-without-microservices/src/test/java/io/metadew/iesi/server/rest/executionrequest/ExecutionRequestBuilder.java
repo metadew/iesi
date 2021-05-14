@@ -138,6 +138,7 @@ public class ExecutionRequestBuilder {
                 .version(new ScriptVersion(scriptName, scriptVersion, "description", "NA"))
                 .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                 .securityGroupName(scriptSecurityGroup)
+                .deletedAt("NA")
                 .build();
         info.put("script", script);
 
@@ -211,7 +212,6 @@ public class ExecutionRequestBuilder {
                 .name(scriptName)
                 .version(new ScriptVersionDto(scriptVersion, "description", "NA"))
                 .securityGroupName(scriptSecurityGroup)
-                .deletedAt("NA")
                 .build();
         info.put("scriptDto", scriptDto);
 

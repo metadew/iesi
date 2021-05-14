@@ -191,7 +191,7 @@ class ScriptConfigurationTest {
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
         assertEquals(2, ScriptParameterConfiguration.getInstance().getAll().size());
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(1,ScriptConfiguration.getInstance().getAllDeleted().size());
+        assertEquals(1, ScriptConfiguration.getInstance().getAllDeleted().size());
     }
 
     @Test
@@ -209,9 +209,9 @@ class ScriptConfigurationTest {
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
         assertEquals(4, ScriptParameterConfiguration.getInstance().getAll().size());
         assertEquals(4, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0,ScriptConfiguration.getInstance().getAllDeleted().size());
+        assertEquals(0, ScriptConfiguration.getInstance().getAllDeleted().size());
         ScriptVersionConfiguration.getInstance().getDeleted(new ScriptVersionKey(script11.getMetadataKey())).ifPresent(versions::add);
-        assertEquals(1,versions.size());
+        assertEquals(1, versions.size());
     }
 
     @Test
@@ -228,12 +228,11 @@ class ScriptConfigurationTest {
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
         assertEquals(5, ScriptParameterConfiguration.getInstance().getAll().size());
         assertEquals(5, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(1,ScriptConfiguration.getInstance().getAllDeleted().size());
+        assertEquals(1, ScriptConfiguration.getInstance().getAllDeleted().size());
     }
 
     @Test
-    void scriptRestoreAfterDeletion()
-    {
+    void scriptRestoreAfterDeletion() {
         assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
         ScriptConfiguration.getInstance().insert(script11);
 
@@ -242,15 +241,60 @@ class ScriptConfigurationTest {
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
-        assertEquals(1,ScriptConfiguration.getInstance().getAllDeleted().size());
+        assertEquals(1, ScriptConfiguration.getInstance().getAllDeleted().size());
 
         Script script = ScriptConfiguration.getInstance().
                 getDeleted(script11.getMetadataKey()).orElseThrow(() -> new MetadataDoesNotExistException(script11.getMetadataKey()));
 
-        ScriptConfiguration.getInstance().restoreDeletedScript(script);
+        ScriptConfiguration.getInstance().restoreDeletedScript(new ScriptKey(
+                script.getMetadataKey().getScriptId(),
+                script.getVersion().getNumber(),
+                script.getDeletedAt()));
+
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
-        assertEquals(0,ScriptConfiguration.getInstance().getAllDeleted().size());
+        assertEquals(0, ScriptConfiguration.getInstance().getAllDeleted().size());
     }
+
+    @Test
+    void multipleScriptRestoreAfterDeletion() {
+        List<ScriptVersion> versions = new ArrayList<>();
+        assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
+        ScriptConfiguration.getInstance().insert(script11);
+        ScriptConfiguration.getInstance().insert(script12);
+
+        assertEquals(2, ScriptConfiguration.getInstance().getAll().size());
+
+        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
+        ScriptVersionConfiguration.getInstance().getDeleted(new ScriptVersionKey(script11.getMetadataKey())).ifPresent(versions::add);
+
+        assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
+        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(1, versions.size());
+
+        ScriptVersionConfiguration.getInstance().restoreDeletedScriptVersion(new ScriptVersionKey(script11.getMetadataKey()));
+        assertEquals(2, ScriptConfiguration.getInstance().getAll().size());
+
+    }
+
+    @Test
+    void scriptRestoreAlreadyExistsTest() {
+        ScriptConfiguration.getInstance().insert(script11);
+        assertThrows(MetadataAlreadyExistsException.class, () -> ScriptConfiguration.getInstance().restoreDeletedScript(
+                new ScriptKey(script11.getMetadataKey().getScriptId(),
+                script11.getVersion().getNumber(),
+                script11.getDeletedAt())));
+    }
+
+    @Test
+    void scriptDeletedNotExistsTest() {
+        ScriptConfiguration.getInstance().insert(script11);
+        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
+        assertThrows(MetadataDoesNotExistException.class, () -> ScriptConfiguration.getInstance().restoreDeletedScript(
+                new ScriptKey(script11.getMetadataKey().getScriptId(),
+                        script11.getVersion().getNumber(),
+                        script11.getDeletedAt())));
+    }
+
 
     @Test
     void scriptDeleteDoesNotExistTest() {

@@ -60,8 +60,8 @@ public class ScriptService implements IScriptService {
     }
 
     @Override
-    public void restoreByNameAndVersion(Script script) {
-        scriptConfiguration.restoreDeletedScript(script);
+    public void restoreByNameAndVersion(ScriptKey scriptKey) {
+        scriptConfiguration.restoreDeletedScript(scriptKey);
     }
 
 

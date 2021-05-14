@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.script;
 
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
 
 import java.util.List;
@@ -26,6 +27,6 @@ public interface IScriptService {
 
     public void deleteByNameAndVersion(String name, long version);
 
-    public void restoreByNameAndVersion(Script script);
+    public void restoreByNameAndVersion(ScriptKey scriptKey);
 
 }

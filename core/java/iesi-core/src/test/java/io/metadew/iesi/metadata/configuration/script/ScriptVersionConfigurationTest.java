@@ -5,11 +5,15 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -107,7 +111,10 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
 
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
-        ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey());
+        ScriptVersionConfiguration.getInstance().delete(new ScriptVersionKey(
+                new ScriptKey(scriptVersion1.getScriptId(),
+                        scriptVersion1.getNumber(),
+                        LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))));
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
     }
 
@@ -117,7 +124,10 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
         assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
-        ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey());
+        ScriptVersionConfiguration.getInstance().delete(new ScriptVersionKey(
+                new ScriptKey(scriptVersion1.getScriptId(),
+                        scriptVersion1.getNumber(),
+                        LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))));
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
     }
 

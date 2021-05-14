@@ -23,8 +23,10 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Log4j2
@@ -237,7 +239,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             crsScript.next();
 
             // Get the version
-            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().getDeleted(new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
+            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().getDeleted(new ScriptVersionKey(
+                    new ScriptKey(
+                            scriptKey.getScriptId(),
+                            scriptKey.getScriptVersion())));
+
             if (!scriptVersion.isPresent()) {
                 return Optional.empty();
             }
@@ -365,11 +371,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     @Override
     public void delete(ScriptKey scriptKey) {
         log.trace(MessageFormat.format("Marking Delete script {0}", scriptKey.toString()));
-        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
-                new ScriptKey(
-                        scriptKey.getScriptId(),
-                        scriptKey.getScriptVersion()
-                ));
+        LocalDateTime localDateTime =  LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        String deletedAt = localDateTime.format(formatter);
+        scriptKey.setDeletedAt(deletedAt);
+        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(scriptKey);
         ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
         getDeleteStatement(scriptKey)
                 .ifPresent(getMetadataRepository()::executeUpdate);
@@ -453,19 +459,19 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    private Optional<String> getDeleteStatement(ScriptKey scriptVersionKey) {
+    private Optional<String> getDeleteStatement(ScriptKey scriptKey) {
         CachedRowSet crs = getMetadataRepository().executeQuery(
                 String.format(COUNT_QUERY,
-                        SQLTools.getStringForSQL(scriptVersionKey.getScriptId()),
-                        SQLTools.getStringForSQL(scriptVersionKey.getScriptVersion())),
+                        SQLTools.getStringForSQL(scriptKey.getScriptId()),
+                        SQLTools.getStringForSQL(scriptKey.getScriptVersion())),
                 "reader");
 
         try {
             if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
                 return Optional.of(String.format(
                         SOFT_DELETE_BY_ID_QUERY,
-                        SQLTools.getStringForSQL(SQLTools.getStringForSQL(LocalDateTime.now())),
-                        SQLTools.getStringForSQL(scriptVersionKey.getScriptId())));
+                        SQLTools.getStringForSQL(scriptKey.getDeletedAt()),
+                        SQLTools.getStringForSQL(scriptKey.getScriptId())));
             } else {
                 return Optional.empty();
             }
@@ -488,24 +494,25 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    public void restoreDeletedScript(Script script) {
-        log.trace(MessageFormat.format("Restoring Deleted script {0}", script.getMetadataKey().toString()));
-        ScriptVersionConfiguration.getInstance().restoreDeletedScriptVersion(script.getVersion());
-        getScriptRestoreStatement(script).
+    public void restoreDeletedScript(ScriptKey scriptKey) {
+        log.trace(MessageFormat.format("Restoring Deleted script {0}", scriptKey.getScriptId()));
+        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(scriptKey);
+        ScriptVersionConfiguration.getInstance().restoreDeletedScriptVersion(scriptVersionKey);
+        getScriptRestoreStatement(scriptKey).
                 ifPresent(getMetadataRepository()::executeUpdate);
     }
 
-    private Optional<String> getScriptRestoreStatement(Script script) {
-        if (!existsById(script.getMetadataKey().getScriptId())){
+    private Optional<String> getScriptRestoreStatement(ScriptKey scriptKey) {
+        if (!existsById(scriptKey.getScriptId())){
             CachedRowSet crsScript = getMetadataRepository().executeQuery(
                     String.format(EXISTS_DELETED_BY_ID_QUERY,
-                            SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()),
-                            SQLTools.getStringForSQL(script.getDeletedAt())), "reader");
+                            SQLTools.getStringForSQL(scriptKey.getScriptId()),
+                            SQLTools.getStringForSQL(scriptKey.getDeletedAt())), "reader");
             if (crsScript.size() != 0){
                 return Optional.of(String.format(
                         RESTORE_SOFT_DELETED_BY_ID_QUERY,
-                        SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()),
-                        SQLTools.getStringForSQL(script.getDeletedAt())));
+                        SQLTools.getStringForSQL(scriptKey.getScriptId()),
+                        SQLTools.getStringForSQL(scriptKey.getDeletedAt())));
             }
         }
         return Optional.empty();

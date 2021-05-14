@@ -53,7 +53,8 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
                 LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", connectionParameterKey.toString()));
             }
             cachedRowSet.next();
-            return Optional.of(new ConnectionParameter(connectionParameterKey, cachedRowSet.getString("CONN_PAR_VAL")));
+            String connectionParameterValue = SQLTools.getStringFromSQLClob(cachedRowSet, "CONN_PAR_VAL");
+            return Optional.of(new ConnectionParameter(connectionParameterKey, connectionParameterValue));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -71,7 +72,7 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
                         crs.getString("CONN_NM"),
                         crs.getString("ENV_NM"),
                         crs.getString("CONN_PAR_NM"),
-                        crs.getString("CONN_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(crs, "CONN_PAR_VAL")));
 
             }
             crs.close();
@@ -118,7 +119,10 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
                 SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) + "," +
                 SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName()) + "," +
                 SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.getStringForSQL(connectionParameter.getValue()) + ");";
+                SQLTools.getStringForSQLClob(connectionParameter.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     public void deleteByConnection(ConnectionKey connectionKey) {
@@ -141,7 +145,7 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
                         crs.getString("CONN_NM"),
                         crs.getString("ENV_NM"),
                         crs.getString("CONN_PAR_NM"),
-                        crs.getString("CONN_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(crs, "CONN_PAR_VAL")));
 
             }
             crs.close();
@@ -157,7 +161,10 @@ public class ConnectionParameterConfiguration extends Configuration<ConnectionPa
     public void update(ConnectionParameter connectionParameter) {
         if (exists(connectionParameter)) {
             getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("ConnectionParameters") +
-                    " SET CONN_PAR_VAL = " + SQLTools.getStringForSQL(connectionParameter.getValue()) +
+                    " SET CONN_PAR_VAL = " + SQLTools.getStringForSQLClob(connectionParameter.getValue(),
+                            getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                    .findFirst()
+                                    .orElseThrow(RuntimeException::new)) +
                     " WHERE CONN_NM = " + SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getName()) +
                     " AND ENV_NM = " + SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName()) +
                     " AND CONN_PAR_NM = " + SQLTools.getStringForSQL(connectionParameter.getMetadataKey().getParameterName()) + ";");

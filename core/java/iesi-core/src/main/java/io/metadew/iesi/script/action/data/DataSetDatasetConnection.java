@@ -46,7 +46,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
 
         referenceName = convertDatasetReferenceName(getParameterResolvedValue(NAME_KEY));
         datasetName = convertDatasetName(getParameterResolvedValue(DATASET_KEY));

@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.executionrequest.dto;
 
+import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
@@ -60,7 +61,24 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
                     // executionRequest.getSecurityGroupName(),
                     executionRequest.getRequestTimestamp(),
                     executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
-                    executionRequest.getContext(), executionRequest.getEmail(), executionRequest.getExecutionRequestStatus(),
+                    executionRequest.getContext(), executionRequest.getEmail(),
+                    null, null,
+                    executionRequest.getExecutionRequestStatus(),
+                    executionRequest.getScriptExecutionRequests().stream()
+                            .map(scriptExecutionRequestDtoModelAssembler::toModel)
+                            .collect(Collectors.toSet()),
+                    executionRequest.getExecutionRequestLabels().stream()
+                            .map(this::convertToDto)
+                            .collect(Collectors.toSet()));
+        } else if (executionRequest instanceof AuthenticatedExecutionRequest) {
+            return new ExecutionRequestDto(
+                    executionRequest.getMetadataKey().getId(),
+                    executionRequest.getRequestTimestamp(),
+                    executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
+                    executionRequest.getContext(), executionRequest.getEmail(),
+                    ((AuthenticatedExecutionRequest) executionRequest).getUserID(),
+                    ((AuthenticatedExecutionRequest) executionRequest).getUsername(),
+                    executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
                             .map(scriptExecutionRequestDtoModelAssembler::toModel)
                             .collect(Collectors.toSet()),

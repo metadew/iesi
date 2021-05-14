@@ -22,7 +22,7 @@ public class RSetWorkspace extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
         this.referenceName = convertReferenceName(getParameterResolvedValue(REFERENCE_NAME_KEY));
         this.path = convertPath(getParameterResolvedValue(PATH_KEY));
     }

@@ -35,7 +35,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
     }
 
     private String convertConnectionName(DataType connectionName) {

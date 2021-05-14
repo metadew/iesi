@@ -5,7 +5,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptParameterTraceKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,7 +47,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
         }
         cachedRowSet.next();
         return Optional.of(new ScriptParameterTrace(scriptParameterTraceKey,
-                cachedRowSet.getString("SCRIPT_PAR_VAL")));
+                SQLTools.getStringFromSQLClob(cachedRowSet, "SCRIPT_PAR_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -66,7 +65,7 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
                         cachedRowSet.getString("RUN_ID"),
                         cachedRowSet.getLong("PRC_ID"),
                         cachedRowSet.getString("SCRIPT_PAR_NM")),
-                        cachedRowSet.getString("SCRIPT_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "SCRIPT_PAR_VAL")));
             }
             return scriptParameterTraces;
         } catch (SQLException e) {
@@ -102,7 +101,10 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
                 SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + "," +
-                SQLTools.getStringForSQL(scriptParameterTrace.getScriptParameterValue()) + ");";
+                SQLTools.getStringForSQLClob(scriptParameterTrace.getScriptParameterValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     @Override
@@ -114,7 +116,10 @@ public class ScriptParameterTraceConfiguration extends Configuration<ScriptParam
 
     private String updateStatement(ScriptParameterTrace scriptParameterTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptParameterTraces") +
-                " SET SCRIPT_PAR_VAL = " + SQLTools.getStringForSQL(scriptParameterTrace.getScriptParameterValue()) +
+                " SET SCRIPT_PAR_VAL = " + SQLTools.getStringForSQLClob(scriptParameterTrace.getScriptParameterValue(),
+                getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                        .findFirst()
+                        .orElseThrow(RuntimeException::new)) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getProcessId()) +
                 " AND SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterTrace.getMetadataKey().getScriptParameterName()) + ";";

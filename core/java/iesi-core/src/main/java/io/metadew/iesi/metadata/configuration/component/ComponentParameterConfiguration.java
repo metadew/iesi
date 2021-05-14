@@ -46,12 +46,12 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
                 " and COMP_VRS_NB = " + SQLTools.getStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) + ";";
         CachedRowSet crsComponentParameter = getMetadataRepository().executeQuery(queryComponentParameter, "reader");
         try {
-            if (crsComponentParameter.size()==0){
+            if (crsComponentParameter.size() == 0) {
                 return Optional.empty();
             }
             crsComponentParameter.next();
             ComponentParameter componentParameter = new ComponentParameter(componentParameterKey,
-                    crsComponentParameter.getString("COMP_PAR_VAL"));
+                    SQLTools.getStringFromSQLClob(crsComponentParameter, "COMP_PAR_VAL"));
             crsComponentParameter.close();
             return Optional.of(componentParameter);
         } catch (SQLException e) {
@@ -75,7 +75,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
                         cachedRowSet.getString("COMP_PAR_NM"));
                 componentParameters.add(new ComponentParameter(
                         componentParameterKey,
-                        cachedRowSet.getString("COMP_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "COMP_PAR_VAL")));
             }
             return componentParameters;
         } catch (SQLException e) {
@@ -93,7 +93,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
-    private String deleteStatement(ComponentParameterKey componentParameterKey){
+    private String deleteStatement(ComponentParameterKey componentParameterKey) {
         return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ComponentParameters") +
                 " WHERE COMP_ID = " + SQLTools.getStringForSQL(componentParameterKey.getComponentKey().getId()) +
                 " AND COMP_VRS_NB = " + SQLTools.getStringForSQL(componentParameterKey.getComponentKey().getVersionNumber()) +
@@ -117,7 +117,10 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
                 SQLTools.getStringForSQL(componentParameter.getMetadataKey().getComponentKey().getId()) + "," +
                 SQLTools.getStringForSQL(componentParameter.getMetadataKey().getComponentKey().getVersionNumber()) + "," +
                 SQLTools.getStringForSQL(componentParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.getStringForSQL(componentParameter.getValue()) + ");";
+                SQLTools.getStringForSQLClob(componentParameter.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     public List<ComponentParameter> getByComponent(ComponentKey componentKey) {
@@ -131,7 +134,7 @@ public class ComponentParameterConfiguration extends Configuration<ComponentPara
             while (cachedRowSet.next()) {
                 componentParameters.add(new ComponentParameter(
                         new ComponentParameterKey(componentKey, cachedRowSet.getString("COMP_PAR_NM")),
-                        cachedRowSet.getString("COMP_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "COMP_PAR_VAL")));
             }
             return componentParameters;
         } catch (SQLException e) {

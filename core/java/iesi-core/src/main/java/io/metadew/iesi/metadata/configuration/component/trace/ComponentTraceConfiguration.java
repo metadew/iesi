@@ -152,7 +152,10 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
                                     SQLTools.getStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentHeaderTrace.getHttpComponentHeaderID().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentHeaderTrace.getName()) + ", " +
-                                    SQLTools.getStringForSQL(httpComponentHeaderTrace.getValue()) + ") "));
+                                    SQLTools.getStringForSQLClob(httpComponentHeaderTrace.getValue(),
+                                            getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                                    .findFirst()
+                                                    .orElseThrow(RuntimeException::new)) + ") "));
 
             ((HttpComponentTrace) metadata).getHttpComponentQueries().forEach(httpComponentTrace ->
                     getMetadataRepository().executeUpdate(
@@ -161,7 +164,10 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
                                     SQLTools.getStringForSQL(httpComponentTrace.getMetadataKey().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentTrace.getHttpComponentQueryID().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentTrace.getName()) + ", " +
-                                    SQLTools.getStringForSQL(httpComponentTrace.getValue()) + ") "));
+                                    SQLTools.getStringForSQLClob(httpComponentTrace.getValue(),
+                                            getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                                    .findFirst()
+                                                    .orElseThrow(RuntimeException::new)) + ") "));
         }
     }
 
@@ -202,7 +208,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
                             new HttpComponentHeaderTraceKey(UUID.fromString(mapHttpComponentHeaderId)),
                             new ComponentTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeader_HTTP_COMP_ID"))),
                             cachedRowSet.getString("TraceHttpComponentHeader_NAME"),
-                            cachedRowSet.getString("TraceHttpComponentHeader_VALUE")
+                            SQLTools.getStringFromSQLClob(cachedRowSet, "TraceHttpComponentHeader_VALUE")
                     )
             );
         }
@@ -217,7 +223,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
                             new HttpComponentQueryParameterTraceKey(UUID.fromString(httpComponentQueryId)),
                             new ComponentTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQuery_HTTP_COMP_ID"))),
                             cachedRowSet.getString("TraceHttpComponentQuery_NAME"),
-                            cachedRowSet.getString("TraceHttpComponentQuery_VALUE")
+                            SQLTools.getStringFromSQLClob(cachedRowSet, "TraceHttpComponentQuery_VALUE")
                     )
             );
         }

@@ -51,7 +51,8 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
                 LOGGER.info(MessageFormat.format("Found multiple implementations for ScriptParameter {0}. Returning first implementation", scriptParameterKey.toString()));
             }
             cachedRowSet.next();
-            return Optional.of(new ScriptParameter(scriptParameterKey, cachedRowSet.getString("SCRIPT_PAR_VAL")));
+            return Optional.of(new ScriptParameter(scriptParameterKey,
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "SCRIPT_PAR_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -67,11 +68,11 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
             while (crs.next()) {
                 ScriptParameterKey scriptParameterKey = new ScriptParameterKey(
                         new ScriptKey(crs.getString("SCRIPT_ID"),
-                        crs.getLong("SCRIPT_VRS_NB")),
+                                crs.getLong("SCRIPT_VRS_NB")),
                         crs.getString("SCRIPT_PAR_NM"));
                 scriptParameters.add(new ScriptParameter(
                         scriptParameterKey,
-                        crs.getString("SCRIPT_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(crs, "SCRIPT_PAR_VAL")));
 
             }
             crs.close();
@@ -107,12 +108,15 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         if (exists(scriptParameter)) {
             throw new MetadataAlreadyExistsException(scriptParameter);
         }
-        getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
+        getMetadataRepository().executeUpdate("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
                 " (SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_PAR_NM, SCRIPT_PAR_VAL) VALUES (" +
                 SQLTools.getStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getScriptId()) + "," +
                 SQLTools.getStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getScriptVersion()) + "," +
                 SQLTools.getStringForSQL(scriptParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.getStringForSQL(scriptParameter.getValue()) + ");");
+                SQLTools.getStringForSQLClob(scriptParameter.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");");
 
     }
 
@@ -144,11 +148,11 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
             while (crs.next()) {
                 ScriptParameterKey scriptParameterKey = new ScriptParameterKey(
                         new ScriptKey(crs.getString("SCRIPT_ID"),
-                        crs.getLong("SCRIPT_VRS_NB")),
+                                crs.getLong("SCRIPT_VRS_NB")),
                         crs.getString("SCRIPT_PAR_NM"));
                 scriptParameters.add(new ScriptParameter(
                         scriptParameterKey,
-                        crs.getString("SCRIPT_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(crs, "SCRIPT_PAR_VAL")));
 
             }
             crs.close();

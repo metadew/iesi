@@ -42,7 +42,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
     }
 
     private int convertWaitInterval(DataType waitInterval) {

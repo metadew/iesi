@@ -2558,6 +2558,13 @@ iesi:
             length: 0
             nullable: true
             defaultTimestamp:
+          ACTION_TYP_NM:
+            description: the action type of the action that was performed
+            order: 10
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
       - name: RES_ACTION_OUT
         label: ActionResultOutputs
         description: Opertional metadata for action result outputs

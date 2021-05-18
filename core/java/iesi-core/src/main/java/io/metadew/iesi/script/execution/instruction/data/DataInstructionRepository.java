@@ -9,7 +9,6 @@ import io.metadew.iesi.script.execution.instruction.data.person.PersonEmail;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonFirstName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonLastName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonPhoneNumber;
-import io.metadew.iesi.script.execution.instruction.data.text.TextReplace;
 import io.metadew.iesi.script.execution.instruction.data.text.TextSubstring;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeFormat;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeNow;
@@ -58,9 +57,6 @@ public class DataInstructionRepository {
 
         ListSize listSize = new ListSize(executionRuntime);
         dataInstructions.put(listSize.getKeyword(), listSize);
-
-        TextReplace textReplace = new TextReplace();
-        dataInstructions.put(textReplace.getKeyword(), textReplace);
 
         return dataInstructions;
     }

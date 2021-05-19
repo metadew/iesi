@@ -2,12 +2,10 @@ package io.metadew.iesi.server.rest.connection;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoService;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
+import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoService;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,9 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 
 @RestController
 @Tag(name = "connections", description = "Everything about connections")
@@ -54,7 +49,7 @@ public class ConnectionsController {
     @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
     public PagedModel<ConnectionDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
         List<ConnectionFilter> connectionFilters = extractConnectionFilterOptions(name);
-        Page<ConnectionDto> connectionDtoPage  = connectionDtoService.getAll(pageable, connectionFilters);
+        Page<ConnectionDto> connectionDtoPage = connectionDtoService.getAll(pageable, connectionFilters);
 
         if (connectionDtoPage.hasContent()) {
             return connectionDtoPagedResourcesAssembler.toModel(connectionDtoPage, connectionDtoResourceAssembler::toModel);

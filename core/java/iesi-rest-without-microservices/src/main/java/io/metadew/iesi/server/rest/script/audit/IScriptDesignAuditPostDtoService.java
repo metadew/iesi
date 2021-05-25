@@ -1,10 +1,11 @@
 package io.metadew.iesi.server.rest.script.audit;
 
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;
+import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
 import io.metadew.iesi.metadata.definition.script.Script;
 
-public interface IScriptDesignAuditPostDto {
+public interface IScriptDesignAuditPostDtoService {
 
-    public ScriptDesignAudit convertToEntity(Script script);
+    public ScriptDesignAudit convertToScriptAudit(Script script, ScriptDesignAuditAction scriptDesignAuditAction);
 
 }

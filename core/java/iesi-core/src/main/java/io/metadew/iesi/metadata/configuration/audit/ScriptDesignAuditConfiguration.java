@@ -63,7 +63,7 @@ public class ScriptDesignAuditConfiguration extends Configuration<ScriptDesignAu
     }
 
     @Override
-    public List<ScriptDesignAudit> getAll() throws SQLException {
+    public List<ScriptDesignAudit> getAll(){
         try {
             List<ScriptDesignAudit> scriptDesignAudits = new ArrayList<>();
             String query = "SELECT ID, USERNAME, USER_ID, ACTION, SCRIPT_ID, SCRIPT_NAME, SCRIPT_VERSION, SECURITY_GROUP, TIMESTAMP FROM " +

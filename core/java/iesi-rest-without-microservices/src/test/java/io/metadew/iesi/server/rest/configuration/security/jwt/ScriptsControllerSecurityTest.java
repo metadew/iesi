@@ -1,14 +1,22 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;
+import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
+import io.metadew.iesi.metadata.definition.audit.key.ScriptDesignAuditKey;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.script.ScriptService;
 import io.metadew.iesi.server.rest.script.ScriptsController;
+import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditPostDtoService;
 import io.metadew.iesi.server.rest.script.dto.*;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
+import io.metadew.iesi.server.rest.user.UserDto;
+import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +34,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Log4j2
@@ -59,6 +70,15 @@ class ScriptsControllerSecurityTest {
 
     @MockBean
     private PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
+
+    @MockBean
+    private UserDtoRepository userDtoRepository;
+
+    @MockBean
+    private UserDto userDto;
+
+    @MockBean
+    private ScriptDesignAuditPostDtoService scriptDesignAuditPostDtoService;
 
     @Test
     void testGetAllNoUser() {

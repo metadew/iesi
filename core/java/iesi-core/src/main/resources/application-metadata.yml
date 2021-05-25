@@ -2577,6 +2577,7 @@ iesi:
             type: NUMBER
             length: 0
             nullable: false
+            primaryKey: true
             defaultTimestamp:
           ACTION_ID:
             description: Unique identifier for the action design

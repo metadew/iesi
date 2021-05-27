@@ -137,6 +137,8 @@ public class ExecutionRequestBuilder {
                 .version(new ScriptVersion(scriptName, scriptVersion, "description"))
                 .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                 .securityGroupName(scriptSecurityGroup)
+                .createdBy("username")
+                .createdAt(requestTimestamp.toString())
                 .build();
         info.put("script", script);
 

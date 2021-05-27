@@ -29,6 +29,8 @@ public class ScriptBuilder {
     private List<ScriptParameter> scriptParameters = new ArrayList<>();
     private List<ScriptLabel> scriptLabels = new ArrayList<>();
     private String name;
+    private String createdBy;
+    private String createdAt;
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;
@@ -76,6 +78,16 @@ public class ScriptBuilder {
         return this;
     }
 
+    public ScriptBuilder createdAt(String createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    public ScriptBuilder createdBy(String createdBy) {
+        this.createdBy = createdBy;
+        return this;
+    }
+
     public Script build() {
         scriptParameters.addAll(IntStream.range(0, numberOfParameters)
                 .boxed()
@@ -97,6 +109,7 @@ public class ScriptBuilder {
                     .map(SecurityGroup::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("Could not find Security Group with name" + securityGroupName));
         }
+
         return new Script(new ScriptKey(scriptId, versionNumber),
                 securityGroupKey,
                 securityGroupName,
@@ -104,7 +117,11 @@ public class ScriptBuilder {
                 "dummy",
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
-                actions, scriptLabels);
+                actions,
+                scriptLabels,
+                createdBy,
+                createdAt
+        );
     }
 
 }

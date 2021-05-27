@@ -16,7 +16,6 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.script.ScriptFilter;
@@ -37,6 +36,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
@@ -192,6 +192,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
@@ -268,6 +270,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -468,6 +472,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .scriptKey(new ScriptKey(script2Uuid.toString(), 1L))
@@ -544,6 +550,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -741,6 +749,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -817,6 +827,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -966,6 +978,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -1042,6 +1056,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -1236,6 +1252,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -1312,6 +1330,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -1506,6 +1526,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -1582,6 +1604,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -1779,6 +1803,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -1855,6 +1881,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -2053,6 +2081,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2129,6 +2159,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -2286,6 +2318,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2362,6 +2396,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2438,6 +2474,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script4 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2514,6 +2552,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value3")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -2725,6 +2765,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2801,6 +2843,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -2877,6 +2921,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -3119,6 +3165,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3195,6 +3243,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -3303,6 +3353,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3379,6 +3431,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3455,6 +3509,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -3656,6 +3712,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3732,6 +3790,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -3808,6 +3868,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);
@@ -4008,6 +4070,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script2 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -4084,6 +4148,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         Script script3 = Script.builder()
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -4160,6 +4226,8 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
         scriptConfiguration.insert(script1);
         scriptConfiguration.insert(script2);

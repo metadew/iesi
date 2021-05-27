@@ -142,7 +142,9 @@ public class ScriptJsonComponent {
                     scriptVersion,
                     scriptParameters,
                     scriptActions,
-                    scriptLabels);
+                    scriptLabels,
+                    "createdBy",
+                    "createdAt");
         }
     }
 

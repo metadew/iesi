@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,7 @@ class ScriptConfigurationTest {
         ScriptKey scriptKey1 = new ScriptKey(IdentifierTools.getScriptIdentifier("script1"), 1);
         ScriptKey scriptKey12 = new ScriptKey(IdentifierTools.getScriptIdentifier("script1"), 2);
         ScriptKey scriptKey2 = new ScriptKey(IdentifierTools.getScriptIdentifier("dummy"), 1);
+        LocalDateTime localDateTime = LocalDateTime.now();
 
         SecurityGroup securityGroup = SecurityGroup.builder()
                 .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
@@ -74,6 +76,8 @@ class ScriptConfigurationTest {
                 .name("script1")
                 .numberOfActions(2)
                 .numberOfParameters(2)
+                .createdBy("spring")
+                .createdAt(localDateTime.toString())
                 .build();
         script12 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 2)
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -81,12 +85,16 @@ class ScriptConfigurationTest {
                 .name("script1")
                 .numberOfActions(2)
                 .numberOfParameters(2)
+                .createdBy("spring")
+                .createdAt(localDateTime.toString())
                 .build();
         script2 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("dummy"), 1)
                 .securityGroupKey(securityGroup.getMetadataKey())
                 .securityGroupName(securityGroup.getName())
                 .numberOfActions(3)
                 .numberOfParameters(3)
+                .createdBy("spring")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
     }
 

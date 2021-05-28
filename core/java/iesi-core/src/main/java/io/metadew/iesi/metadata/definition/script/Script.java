@@ -26,10 +26,13 @@ public class Script extends SecuredObject<ScriptKey> {
     private List<ScriptParameter> parameters;
     private List<Action> actions;
     private List<ScriptLabel> labels;
+    private String lastModifiedBy;
+    private String lastModifiedAt;
+
 
     @Builder
     public Script(ScriptKey scriptKey, SecurityGroupKey securityGroupKey, String securityGroupName, String name, String description, ScriptVersion version,
-                  List<ScriptParameter> parameters, List<Action> actions, List<ScriptLabel> labels) {
+                  List<ScriptParameter> parameters, List<Action> actions, List<ScriptLabel> labels, String lastModifiedBy, String lastModifiedAt) {
         super(scriptKey, securityGroupKey, securityGroupName);
         this.name = name;
         this.description = description;
@@ -37,6 +40,8 @@ public class Script extends SecuredObject<ScriptKey> {
         this.parameters = parameters;
         this.actions = actions;
         this.labels = labels;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedAt = lastModifiedAt;
     }
 
 }

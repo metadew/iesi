@@ -32,16 +32,16 @@ import java.util.*;
 public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     private static final String FETCH_ALL_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, LAST_MODIFIED_BY, LAST_MODIFIED_AT " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " ;";
 
     private static final String FETCH_BY_NAME_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, LAST_MODIFIED_BY, LAST_MODIFIED_AT " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " WHERE SCRIPT_NM = %s;";
 
     private static final String FETCH_BY_ID_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, LAST_MODIFIED_BY, LAST_MODIFIED_AT " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " WHERE SCRIPT_ID = %s;";
 
@@ -57,12 +57,14 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     private static final String INSERT_QUERY = "INSERT INTO " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC) VALUES " +
+            " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC ) VALUES " +
             "(%s, %s, %s, %s, %s);";
 
     private static final String UPDATE_QUERY = "UPDATE " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
-            "SCRIPT_DSC = %s " +
+            "SCRIPT_DSC = %s, " +
+            "LAST_MODIFIED_BY = %s, " +
+            "LAST_MODIFIED_AT = %s " +
             "WHERE SCRIPT_ID = %s;";
 
     private static final String COUNT_QUERY = "SELECT COUNT(DISTINCT SCRIPT_VRS_NB) AS total_versions FROM " +
@@ -184,7 +186,9 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                     scriptVersion.get(),
                     scriptParameters,
                     actions,
-                    scriptLabels);
+                    scriptLabels,
+                    crsScript.getString("LAST_MODIFIED_BY"),
+                    crsScript.getString("LAST_MODIFIED_AT"));
             crsScript.close();
             return Optional.of(script);
         } catch (Exception e) {
@@ -344,6 +348,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         } else {
             return String.format(UPDATE_QUERY,
                     SQLTools.getStringForSQL(script.getDescription()),
+                    SQLTools.getStringForSQL(script.getLastModifiedBy()),
+                    SQLTools.getStringForSQL(script.getLastModifiedAt()),
                     SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()));
         }
     }

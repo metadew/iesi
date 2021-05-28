@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 import io.metadew.iesi.metadata.definition.action.Action;
@@ -24,6 +23,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,7 +142,9 @@ public class ScriptJsonComponent {
                     scriptVersion,
                     scriptParameters,
                     scriptActions,
-                    scriptLabels);
+                    scriptLabels,
+                    "username",
+                    LocalDateTime.now().toString());
         }
     }
 

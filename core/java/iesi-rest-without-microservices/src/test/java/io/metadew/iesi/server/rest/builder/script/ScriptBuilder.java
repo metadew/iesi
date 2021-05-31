@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.builder.action.ActionBuilder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ public class ScriptBuilder {
     private List<ScriptParameter> scriptParameters = new ArrayList<>();
     private List<ScriptLabel> scriptLabels = new ArrayList<>();
     private String name;
+    private String lastModifiedBy;
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;
@@ -75,6 +77,11 @@ public class ScriptBuilder {
         return this;
     }
 
+    public ScriptBuilder lastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+        return this;
+    }
+
     public Script build() {
         scriptParameters.addAll(IntStream.range(0, numberOfParameters)
                 .boxed()
@@ -103,7 +110,9 @@ public class ScriptBuilder {
                 "dummy",
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
-                actions, scriptLabels);
+                actions, scriptLabels,
+                lastModifiedBy,
+                LocalDateTime.now().toString());
     }
 
 }

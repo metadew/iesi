@@ -10,8 +10,10 @@ import io.metadew.iesi.server.rest.script.dto.label.IScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.IScriptParameterDtoService;
 import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +55,9 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                         .collect(Collectors.toList()),
                 scriptDto.getLabels().stream()
                         .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                SecurityContextHolder.getContext().getAuthentication().getName(),
+                LocalDateTime.now().toString());
     }
 
     public ScriptPostDto convertToDto(Script script) {

@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,7 +53,9 @@ public class ScriptDtoService implements IScriptDtoService {
                         .collect(Collectors.toList()),
                 scriptDto.getLabels().stream()
                         .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                SecurityContextHolder.getContext().getAuthentication().getName(),
+                LocalDateTime.now().toString());
     }
 
     @Override

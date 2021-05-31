@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -300,13 +301,14 @@ class ScriptConfigurationTest {
         assertEquals("dummy", scriptFetched.get().getDescription());
 
         script11.setDescription("new description");
+        script11.setLastModifiedBy("username");
+        script11.setLastModifiedAt(LocalDateTime.now().toString());
         ScriptConfiguration.getInstance().update(script11);
 
         scriptFetched = ScriptConfiguration.getInstance().get(script11.getMetadataKey());
         assertTrue(scriptFetched.isPresent());
         assertEquals("new description", scriptFetched.get().getDescription());
         assertEquals(script11, ScriptConfiguration.getInstance().get(script11.getMetadataKey()).get());
-        System.out.println(ScriptConfiguration.getInstance().get(script11.getMetadataKey()).get());
     }
 
     @Test
@@ -322,11 +324,13 @@ class ScriptConfigurationTest {
         assertEquals("dummy", script12Fetched.get().getDescription());
 
         script11.setDescription("new description");
+        script11.setLastModifiedBy("username");
+        script11.setLastModifiedAt(LocalDateTime.now().toString());
         ScriptConfiguration.getInstance().update(script11);
 
         script11Fetched = ScriptConfiguration.getInstance().get(script11.getMetadataKey());
         assertTrue(script11Fetched.isPresent());
-        assertEquals("new description", script11Fetched.get().getDescription());
+        assertEquals(script11, script11Fetched.get());
         script12Fetched = ScriptConfiguration.getInstance().get(script12.getMetadataKey());
         assertTrue(script12Fetched.isPresent());
         assertEquals("new description", script12Fetched.get().getDescription());

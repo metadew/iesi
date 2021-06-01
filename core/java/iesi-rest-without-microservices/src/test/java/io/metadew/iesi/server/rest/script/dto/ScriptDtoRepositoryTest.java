@@ -2756,7 +2756,6 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
-                .lastModifiedBy("username")
                 .lastModifiedAt(LocalDateTime.now().toString())
                 .lastModifiedBy("username")
                 .lastModifiedAt(LocalDateTime.now().toString())
@@ -4060,8 +4059,6 @@ class ScriptDtoRepositoryTest {
                                 .value("value2")
                                 .build())
                         .collect(Collectors.toList()))
-                .lastModifiedBy("username")
-                .lastModifiedAt(LocalDateTime.now().toString())
                 .lastModifiedBy("username")
                 .lastModifiedAt(LocalDateTime.now().toString())
                 .build();

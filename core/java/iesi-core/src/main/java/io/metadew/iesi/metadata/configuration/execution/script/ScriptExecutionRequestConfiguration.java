@@ -136,8 +136,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                             ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
                 } else if (cachedRowSet.getString("NAME_REQ") != null) {
                     scriptExecutionRequests.add(new ScriptNameExecutionRequest(
-                            new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
-                            ),
+                            new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                             new ExecutionRequestKey(cachedRowSet.getString("ID")),
                             cachedRowSet.getString("ENVIRONMENT"), SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")), ScriptExecutionRequestImpersonationConfiguration.getInstance()
                             .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestParameterConfiguration.getInstance()
@@ -328,13 +327,11 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                 "SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");
         if (scriptExecutionRequest instanceof ScriptFileExecutionRequest) {
             queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SET " +
-                    "ID=" + SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
                     "SCRPT_FILENAME=" + SQLTools.getStringForSQL(((ScriptFileExecutionRequest) scriptExecutionRequest).getFileName()) + " WHERE " +
                     "SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");
             return queries;
         } else if (scriptExecutionRequest instanceof ScriptNameExecutionRequest) {
             queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SET " +
-                    "ID=" + SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
                     "SCRPT_NAME=" + SQLTools.getStringForSQL(((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName()) + "," +
                     "SCRPT_VRS=" + SQLTools.getStringForSQL(((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(null)) + " WHERE " +
                     "SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");

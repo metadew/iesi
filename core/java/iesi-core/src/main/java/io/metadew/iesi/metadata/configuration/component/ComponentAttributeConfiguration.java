@@ -51,7 +51,7 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
             }
             crsComponentAttribute.next();
             ComponentAttribute componentAttribute = new ComponentAttribute(componentAttributeKey,
-                    crsComponentAttribute.getString("COMP_ATT_VAL"));
+                    SQLTools.getStringFromSQLClob(crsComponentAttribute, "COMP_ATT_VAL"));
             crsComponentAttribute.close();
             return Optional.of(componentAttribute);
         } catch (SQLException e) {
@@ -73,7 +73,7 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
                         cachedRowSet.getString("COMP_ATT_NM"));
                 componentBuilds.add(new ComponentAttribute(
                         componentAttributeKey,
-                        cachedRowSet.getString("COMP_ATT_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "COMP_ATT_VAL")));
             }
             return componentBuilds;
         } catch (SQLException e) {
@@ -117,7 +117,10 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
                 SQLTools.getStringForSQL(componentAttribute.getMetadataKey().getComponentKey().getVersionNumber()) + "," +
                 SQLTools.getStringForSQL(componentAttribute.getMetadataKey().getEnvironmentKey().getName()) + "," +
                 SQLTools.getStringForSQL(componentAttribute.getMetadataKey().getComponentAttributeName()) + "," +
-                SQLTools.getStringForSQL(componentAttribute.getValue()) + ");";
+                SQLTools.getStringForSQLClob(componentAttribute.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     public List<ComponentAttribute> getByComponent(ComponentKey componentKey) {
@@ -134,7 +137,7 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
                         cachedRowSet.getString("COMP_ATT_NM"));
                 componentBuilds.add(new ComponentAttribute(
                         componentAttributeKey,
-                        cachedRowSet.getString("COMP_ATT_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "COMP_ATT_VAL")));
             }
             return componentBuilds;
         } catch (SQLException e) {
@@ -157,7 +160,7 @@ public class ComponentAttributeConfiguration extends Configuration<ComponentAttr
                         cachedRowSet.getString("COMP_ATT_NM"));
                 componentBuilds.add(new ComponentAttribute(
                         componentAttributeKey,
-                        cachedRowSet.getString("COMP_ATT_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "COMP_ATT_VAL")));
             }
             return componentBuilds;
         } catch (SQLException e) {

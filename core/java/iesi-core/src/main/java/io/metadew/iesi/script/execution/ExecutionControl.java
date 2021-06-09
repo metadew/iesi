@@ -2,12 +2,11 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
+import io.metadew.iesi.metadata.configuration.environment.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
@@ -15,6 +14,7 @@ import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
+import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultElasticSearch;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
@@ -75,12 +75,13 @@ public class ExecutionControl {
     public void setEnvironment(ActionExecution actionExecution, String environmentName) {
         this.envName = environmentName;
 
-        // Set environment variables
-        executionRuntime.setRuntimeVariablesFromList(actionExecution, MetadataRepositoryConfiguration.getInstance()
-                .getConnectivityMetadataRepository()
-                .executeQuery("select env_par_nm, env_par_val from "
-                        + MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("EnvironmentParameters")
-                        + " where env_nm = " + SQLTools.getStringForSQL(this.envName) + " order by env_par_nm asc, env_par_val asc", "reader"));
+        EnvironmentParameterConfiguration.getInstance()
+                .getByEnvironment(new EnvironmentKey(environmentName))
+                .forEach(environmentParameter -> executionRuntime.setRuntimeVariable(
+                        actionExecution,
+                        environmentParameter.getMetadataKey().getParameterName(),
+                        environmentParameter.getValue()
+                ));
     }
 
     public void terminate() {

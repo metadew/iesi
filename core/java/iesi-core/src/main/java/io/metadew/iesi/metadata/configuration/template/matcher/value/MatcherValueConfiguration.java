@@ -71,11 +71,17 @@ public class MatcherValueConfiguration extends Configuration<MatcherValue, Match
     public void insert(MatcherValue matcherValue) {
         if (matcherValue instanceof MatcherAnyValue) {
             getMetadataRepository().executeUpdate(
-                    MessageFormat.format(insertMatcherAnyValueQuery, SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId())));
+                    MessageFormat.format(insertMatcherAnyValueQuery,
+                            SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId())));
         } else if (matcherValue instanceof MatcherFixedValue) {
+
             getMetadataRepository().executeUpdate(
-                    MessageFormat.format(insertMatcherFixedValueQuery, SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId()),
-                            SQLTools.getStringForSQL(((MatcherFixedValue) matcherValue).getValue())));
+                    MessageFormat.format(insertMatcherFixedValueQuery,
+                            SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId()),
+                            SQLTools.getStringForSQLClob(((MatcherFixedValue) matcherValue).getValue(),
+                                    getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                            .findFirst()
+                                            .orElseThrow(RuntimeException::new))));
         } else if (matcherValue instanceof MatcherTemplate) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertMatcherTemplateValueQuery,
@@ -85,7 +91,8 @@ public class MatcherValueConfiguration extends Configuration<MatcherValue, Match
         } else {
             throw new RuntimeException("Cannot insert MatcherValue of type " + matcherValue.getClass().getSimpleName());
         }
-        getMetadataRepository().executeUpdate(MessageFormat.format(insertMatcherValueQuery, SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId()),
+        getMetadataRepository().executeUpdate(MessageFormat.format(insertMatcherValueQuery,
+                SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId()),
                 SQLTools.getStringForSQL(matcherValue.getMatcherKey().getId())));
     }
 

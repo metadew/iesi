@@ -32,10 +32,26 @@ class CoalesceLookupTest {
                 .thenReturn("{{^null()}}");
         when(executionRuntime.resolveConceptLookup("{{^null()}}"))
                 .thenReturn(new LookupResult("{{^null()}}", null, null));
+
+        when(executionRuntime.resolveVariables("{{^text()}}"))
+                .thenReturn("{{^text()}}");
+        when(executionRuntime.resolveConceptLookup("{{^text()}}"))
+                .thenReturn(new LookupResult("{{^text()}}", null, null));
+
+        when(executionRuntime.resolveVariables("{{^text(test)}}"))
+                .thenReturn("{{^text(test)}}");
+        when(executionRuntime.resolveConceptLookup("{{^text(test)}}"))
+                .thenReturn(new LookupResult("{{^text(test)}}", null, null));
+
         when(executionRuntime.resolveVariables("test"))
                 .thenReturn("test");
         when(executionRuntime.resolveConceptLookup("test"))
                 .thenReturn(new LookupResult("test", null, null));
+
+        when(executionRuntime.resolveVariables(""))
+                .thenReturn("");
+        when(executionRuntime.resolveConceptLookup(""))
+                .thenReturn(new LookupResult("", null, null));
 
         CoalesceLookup coalesceLookup = new CoalesceLookup(executionRuntime);
         assertThat(coalesceLookup.generateOutput("test"))
@@ -44,7 +60,12 @@ class CoalesceLookupTest {
                 .isEqualTo("test");
         assertThat(coalesceLookup.generateOutput("{{^null()}},test"))
                 .isEqualTo("test");
-
-
+        assertThat(coalesceLookup.generateOutput("{{^null()}},{{^text()}}"))
+                .isEmpty();
+        assertThat(coalesceLookup.generateOutput("{{^null()}},{{^text()}},test"))
+                .isEmpty();
+        assertThat(coalesceLookup.generateOutput("{{^null()}},{{^text(test)}},{{^null()}}"))
+                .isEqualTo("test");
     }
+
 }

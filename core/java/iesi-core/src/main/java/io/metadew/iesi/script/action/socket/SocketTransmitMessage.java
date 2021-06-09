@@ -49,7 +49,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
         this.message = convertMessage(getParameterResolvedValue(MESSAGE_KEY));
         this.protocol = convertProtocol(getParameterResolvedValue(PROTOCOL_KEY));
         this.socket = convertSocket(getParameterResolvedValue(SOCKET_KEY));

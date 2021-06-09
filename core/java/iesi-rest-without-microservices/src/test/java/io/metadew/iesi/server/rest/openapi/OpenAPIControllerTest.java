@@ -41,10 +41,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,7 +60,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 class OpenAPIControllerTest {
 
-
     byte[] yamlFile;
     byte[] jsonFile;
     String title;
@@ -75,8 +71,6 @@ class OpenAPIControllerTest {
     private OpenAPIService openAPIService;
     @MockBean
     private TransformResultDtoResourceAssembler transformResultDtoResourceAssembler;
-
-
 
     @BeforeEach
     public void init() {
@@ -110,7 +104,6 @@ class OpenAPIControllerTest {
                 .andExpect(jsonPath("$.connections[0]").isMap())
                 .andExpect(jsonPath("$.components[0]").isMap());
     }
-
 
     @Test
     void transformFromJSON() throws Exception {
@@ -182,8 +175,9 @@ class OpenAPIControllerTest {
                 "updatePet",
                 "Update an existing pet by Id",
                 componentVersionDto,
-                Arrays.asList(endpoint, type, connectionParam),
-                new ArrayList<>()
+                Stream.of(endpoint, type, connectionParam)
+                        .collect(Collectors.toSet()),
+                new HashSet<>()
         );
 
         return new TransformResultDto(

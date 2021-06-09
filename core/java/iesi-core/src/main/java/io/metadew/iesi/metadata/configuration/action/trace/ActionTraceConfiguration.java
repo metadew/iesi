@@ -55,7 +55,7 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
                     cachedRowSet.getString("ACTION_DSC"),
                     cachedRowSet.getString("COMP_NM"),
                     cachedRowSet.getString("ITERATION_VAL"),
-                    cachedRowSet.getString("CONDITION_VAL"),
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "CONDITION_VAL"),
                     cachedRowSet.getInt("RETRIES_VAL"),
                     cachedRowSet.getString("EXP_ERR_FL"),
                     cachedRowSet.getString("STOP_ERR_FL")));
@@ -82,7 +82,7 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
                         cachedRowSet.getString("ACTION_DSC"),
                         cachedRowSet.getString("COMP_NM"),
                         cachedRowSet.getString("ITERATION_VAL"),
-                        cachedRowSet.getString("CONDITION_VAL"),
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "CONDITION_VAL"),
                         cachedRowSet.getInt("RETRIES_VAL"),
                         cachedRowSet.getString("EXP_ERR_FL"),
                         cachedRowSet.getString("STOP_ERR_FL")));
@@ -128,7 +128,10 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
                 SQLTools.getStringForSQL(actionTrace.getDescription()) + "," +
                 SQLTools.getStringForSQL(actionTrace.getComponent()) + "," +
                 SQLTools.getStringForSQL(actionTrace.getIteration()) + "," +
-                SQLTools.getStringForSQL(actionTrace.getCondition()) + "," +
+                SQLTools.getStringForSQLClob(actionTrace.getCondition(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + "," +
                 SQLTools.getStringForSQL(actionTrace.getRetries()) + "," +
                 SQLTools.getStringForSQL(actionTrace.getErrorExpected()) + "," +
                 SQLTools.getStringForSQL(actionTrace.getErrorStop()) + ");";
@@ -149,7 +152,11 @@ public class ActionTraceConfiguration extends Configuration<ActionTrace, ActionT
                 "ACTION_DSC = " + SQLTools.getStringForSQL(actionTrace.getDescription()) + "," +
                 "COMP_NM = " + SQLTools.getStringForSQL(actionTrace.getComponent()) + "," +
                 "ITERATION_VAL = " + SQLTools.getStringForSQL(actionTrace.getIteration()) + "," +
-                "CONDITION_VAL = " + SQLTools.getStringForSQL(actionTrace.getCondition()) + "," +
+                "CONDITION_VAL = " +
+                SQLTools.getStringForSQLClob(actionTrace.getCondition(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + "," +
                 "RETRIES_VAL = " + SQLTools.getStringForSQL(actionTrace.getRetries()) + "," +
                 "EXP_ERR_FL = " + SQLTools.getStringForSQL(actionTrace.getErrorExpected()) + "," +
                 "STOP_ERR_FL =" + SQLTools.getStringForSQL(actionTrace.getErrorStop()) +

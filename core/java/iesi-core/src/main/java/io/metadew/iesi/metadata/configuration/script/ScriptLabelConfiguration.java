@@ -50,7 +50,8 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
             return Optional.of(new ScriptLabel(scriptLabelKey,
                     new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                     cachedRowSet.getString("NAME"),
-                    cachedRowSet.getString("VALUE")));
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+            ));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -67,7 +68,8 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                         new ScriptLabelKey(cachedRowSet.getString("ID")),
                         new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                         cachedRowSet.getString("NAME"),
-                        cachedRowSet.getString("VALUE")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+                ));
 
             }
             cachedRowSet.close();
@@ -98,13 +100,16 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         if (exists(scriptLabel)) {
             throw new MetadataAlreadyExistsException(scriptLabel);
         }
-        getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
+        getMetadataRepository().executeUpdate("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
                 " (ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE) VALUES (" +
                 SQLTools.getStringForSQL(scriptLabel.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(scriptLabel.getScriptKey().getScriptId()) + "," +
                 SQLTools.getStringForSQL(scriptLabel.getScriptKey().getScriptVersion()) + "," +
                 SQLTools.getStringForSQL(scriptLabel.getName()) + "," +
-                SQLTools.getStringForSQL(scriptLabel.getValue()) + ");");
+                SQLTools.getStringForSQLClob(scriptLabel.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");");
 
     }
 
@@ -136,7 +141,8 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                         new ScriptLabelKey(cachedRowSet.getString("ID")),
                         new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                         cachedRowSet.getString("NAME"),
-                        cachedRowSet.getString("VALUE")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+                ));
 
             }
             cachedRowSet.close();

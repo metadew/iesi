@@ -229,7 +229,7 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
                     .metadataKey(MatcherValueKey.builder()
                             .id(UUID.fromString(cachedRowSet.getString("fixed_matcher_value_id")))
                             .build())
-                    .value(cachedRowSet.getString("fixed_matcher_value_value"))
+                    .value(SQLTools.getStringFromSQLClob(cachedRowSet, "fixed_matcher_value_value"))
                     .matcherKey(matcherKey)
                     .build();
         } else if (cachedRowSet.getString("templ_matcher_value_id") != null) {

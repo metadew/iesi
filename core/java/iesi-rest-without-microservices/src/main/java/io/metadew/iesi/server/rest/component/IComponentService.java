@@ -8,22 +8,22 @@ import java.util.Optional;
 
 public interface IComponentService {
 
-    public List<Component> getAll();
+    List<Component> getAll();
 
-    public List<Component> getByName(String name);
+    List<Component> getByName(String name);
 
-    public Optional<Component> getByNameAndVersion(String name, long version);
+    Optional<Component> getByNameAndVersion(String name, long version);
 
-    public void createComponent(ComponentDto componentDto);
+    void createComponent(ComponentDto componentDto);
 
-    public void updateComponent(ComponentDto componentDto);
+    void updateComponent(ComponentDto componentDto);
 
-    public void updateComponents(List<ComponentDto> componentDto);
+    void updateComponents(List<ComponentDto> componentDto);
 
-    public void deleteAll();
+    void deleteAll();
 
-    public void deleteByName(String name);
+    void deleteByName(String name);
 
-    public void deleteByNameAndVersion(String name, long version);
+    void deleteByNameAndVersion(String name, long version);
 
 }

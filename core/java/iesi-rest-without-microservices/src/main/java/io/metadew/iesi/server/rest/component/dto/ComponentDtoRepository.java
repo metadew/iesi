@@ -71,10 +71,10 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, componentDtoBuilders);
             }
-            List<ComponentDto> componentDtoList = componentDtoBuilders.values().stream()
+            List<ComponentDto> components = componentDtoBuilders.values().stream()
                     .map(ComponentDtoBuilder::build)
                     .collect(Collectors.toList());
-            return new PageImpl<>(componentDtoList, pageable, getRowSize(componentFilters));
+            return new PageImpl<>(components, pageable, getRowSize(componentFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

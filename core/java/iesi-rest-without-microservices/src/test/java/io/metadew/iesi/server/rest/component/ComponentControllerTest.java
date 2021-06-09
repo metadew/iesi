@@ -57,8 +57,8 @@ class ComponentControllerTest {
     @Test
     void getAllNoResult() throws Exception {
         Pageable pageable = PageRequest.of(0, 20);
-        List<ComponentDto> componentDtoList = new ArrayList<>();
-        Page<ComponentDto> page = new PageImpl<>(componentDtoList, pageable, 1);
+        List<ComponentDto> components = new ArrayList<>();
+        Page<ComponentDto> page = new PageImpl<>(components, pageable, 1);
         given(componentDtoService.getAll(eq(pageable), eq(new ArrayList<>())))
                 .willReturn(page);
 
@@ -66,9 +66,9 @@ class ComponentControllerTest {
                 .andExpect(status().isOk())
                 // Check Json format and data
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList").exists())
-                .andExpect(jsonPath("$._embedded.componentDtoList").isArray())
-                .andExpect(jsonPath("$._embedded.componentDtoList").isEmpty());
+                .andExpect(jsonPath("$._embedded.components").exists())
+                .andExpect(jsonPath("$._embedded.components").isArray())
+                .andExpect(jsonPath("$._embedded.components").isEmpty());
     }
 
     @Test
@@ -80,13 +80,13 @@ class ComponentControllerTest {
         Pageable pageable1 = PageRequest.of(0, size);
         Pageable pageable2 = PageRequest.of(1, size);
         Pageable pageable3 = PageRequest.of(2, size);
-        List<ComponentDto> componentDtoList1 = Stream.of(componentDto1).collect(Collectors.toList());
-        List<ComponentDto> componentDtoList2 = Stream.of(componentDto2).collect(Collectors.toList());
-        List<ComponentDto> componentDtoList3 = Stream.of(componentDto3).collect(Collectors.toList());
+        List<ComponentDto> components1 = Stream.of(componentDto1).collect(Collectors.toList());
+        List<ComponentDto> components2 = Stream.of(componentDto2).collect(Collectors.toList());
+        List<ComponentDto> components3 = Stream.of(componentDto3).collect(Collectors.toList());
         List<ComponentDto> componentDtoTotalList = Stream.of(componentDto1, componentDto2, componentDto3).collect(Collectors.toList());
-        Page<ComponentDto> page1 = new PageImpl<>(componentDtoList1, pageable1, 3);
-        Page<ComponentDto> page2 = new PageImpl<>(componentDtoList2, pageable2, 3);
-        Page<ComponentDto> page3 = new PageImpl<>(componentDtoList3, pageable3, 3);
+        Page<ComponentDto> page1 = new PageImpl<>(components1, pageable1, 3);
+        Page<ComponentDto> page2 = new PageImpl<>(components2, pageable2, 3);
+        Page<ComponentDto> page3 = new PageImpl<>(components3, pageable3, 3);
 
         given(componentDtoService.getAll(eq(pageable1), eq(new ArrayList<>())))
                 .willReturn(page1);
@@ -95,10 +95,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto1.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto1.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList1.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
         given(componentDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
@@ -107,10 +107,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto2.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto2.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList2.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
         given(componentDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
@@ -119,10 +119,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto3.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto3.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList3.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components3.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable3.getPageNumber())));
     }
 
@@ -136,13 +136,13 @@ class ComponentControllerTest {
         Pageable pageable1 = PageRequest.of(0, size, sortDefaultAsc);
         Pageable pageable2 = PageRequest.of(1, size, sortDefaultAsc);
         Pageable pageable3 = PageRequest.of(2, size, sortDefaultAsc);
-        List<ComponentDto> componentDtoList1 = Stream.of(componentDto1).collect(Collectors.toList());
-        List<ComponentDto> componentDtoList2 = Stream.of(componentDto2).collect(Collectors.toList());
-        List<ComponentDto> componentDtoList3 = Stream.of(componentDto3).collect(Collectors.toList());
+        List<ComponentDto> components1 = Stream.of(componentDto1).collect(Collectors.toList());
+        List<ComponentDto> components2 = Stream.of(componentDto2).collect(Collectors.toList());
+        List<ComponentDto> components3 = Stream.of(componentDto3).collect(Collectors.toList());
         List<ComponentDto> componentDtoTotalList = Stream.of(componentDto1, componentDto2, componentDto3).collect(Collectors.toList());
-        Page<ComponentDto> page1 = new PageImpl<>(componentDtoList1, pageable1, 3);
-        Page<ComponentDto> page2 = new PageImpl<>(componentDtoList2, pageable2, 3);
-        Page<ComponentDto> page3 = new PageImpl<>(componentDtoList3, pageable3, 3);
+        Page<ComponentDto> page1 = new PageImpl<>(components1, pageable1, 3);
+        Page<ComponentDto> page2 = new PageImpl<>(components2, pageable2, 3);
+        Page<ComponentDto> page3 = new PageImpl<>(components3, pageable3, 3);
 
         given(componentDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/components?page=0&size=1&sort=name").contentType(MediaType.APPLICATION_JSON))
@@ -150,10 +150,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto1.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto1.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList1.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
         given(componentDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
@@ -162,10 +162,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto2.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto2.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList2.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
         given(componentDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
@@ -174,10 +174,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto3.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto3.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList3.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components3.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable3.getPageNumber())));
 
     }
@@ -192,14 +192,14 @@ class ComponentControllerTest {
         Pageable pageable1 = PageRequest.of(0, size, sortDesc);
         Pageable pageable2 = PageRequest.of(1, size, sortDesc);
         Pageable pageable3 = PageRequest.of(2, size, sortDesc);
-        List<ComponentDto> componentDtoList1 = Stream.of(componentDto1).collect(Collectors.toList());
-        List<ComponentDto> componentDtoList2 = Stream.of(componentDto2).collect(Collectors.toList());
-        List<ComponentDto> componentDtoList3 = Stream.of(componentDto3).collect(Collectors.toList());
+        List<ComponentDto> components1 = Stream.of(componentDto1).collect(Collectors.toList());
+        List<ComponentDto> components2 = Stream.of(componentDto2).collect(Collectors.toList());
+        List<ComponentDto> components3 = Stream.of(componentDto3).collect(Collectors.toList());
         List<ComponentDto> componentDtoTotalList = Stream.of(componentDto1, componentDto2, componentDto3).collect(Collectors.toList());
         // Here Script are given in the Desc Order
-        Page<ComponentDto> page1 = new PageImpl<>(componentDtoList3, pageable1, 3);
-        Page<ComponentDto> page2 = new PageImpl<>(componentDtoList2, pageable2, 3);
-        Page<ComponentDto> page3 = new PageImpl<>(componentDtoList1, pageable3, 3);
+        Page<ComponentDto> page1 = new PageImpl<>(components3, pageable1, 3);
+        Page<ComponentDto> page2 = new PageImpl<>(components2, pageable2, 3);
+        Page<ComponentDto> page3 = new PageImpl<>(components1, pageable3, 3);
 
         given(componentDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/components?page=0&size=1&sort=name,desc").contentType(MediaType.APPLICATION_JSON))
@@ -207,10 +207,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto3.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto3.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList3.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components3.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
         given(componentDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
@@ -219,10 +219,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto2.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto2.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList2.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
         given(componentDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
@@ -231,10 +231,10 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto1.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto1.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList1.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable3.getPageNumber())));
     }
 
@@ -246,10 +246,10 @@ class ComponentControllerTest {
         int size = 3;
         Sort sortDefault = Sort.by(Sort.DEFAULT_DIRECTION, "name");
         Pageable pageable1 = PageRequest.of(0, size, sortDefault);
-        List<ComponentDto> componentDtoList1 = Stream.of(componentDto1, componentDto2, componentDto3).collect(Collectors.toList());
+        List<ComponentDto> components1 = Stream.of(componentDto1, componentDto2, componentDto3).collect(Collectors.toList());
         List<ComponentDto> componentDtoTotalList = Stream.of(componentDto1, componentDto2, componentDto3).collect(Collectors.toList());
         // Here Script are given in the Desc Order
-        Page<ComponentDto> page1 = new PageImpl<>(componentDtoList1, pageable1, 3);
+        Page<ComponentDto> page1 = new PageImpl<>(components1, pageable1, 3);
 
         given(componentDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/components?page=0&size=3&sort=name").contentType(MediaType.APPLICATION_JSON))
@@ -257,12 +257,12 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(componentDto1.getName())))
-                .andExpect(jsonPath("$._embedded.componentDtoList[1].name", is(componentDto2.getName())))
-                .andExpect(jsonPath("$._embedded.componentDtoList[2].name", is(componentDto3.getName())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(componentDto1.getName())))
+                .andExpect(jsonPath("$._embedded.components[1].name", is(componentDto2.getName())))
+                .andExpect(jsonPath("$._embedded.components[2].name", is(componentDto3.getName())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList1.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
     }
 
@@ -276,13 +276,13 @@ class ComponentControllerTest {
         Pageable pageable1 = PageRequest.of(0, size);
         Pageable pageable2 = PageRequest.of(1, size);
         Pageable pageable3 = PageRequest.of(2, size);
-        List<ComponentDto> componentDtoList1 = Stream.of(componentDto1).collect(Collectors.toList());
-        List<ComponentDto> componentDtoList2 = Stream.of(componentDto2).collect(Collectors.toList());
-        List<ComponentDto> componentDtoList3 = Stream.of(componentDto3).collect(Collectors.toList());
+        List<ComponentDto> components1 = Stream.of(componentDto1).collect(Collectors.toList());
+        List<ComponentDto> components2 = Stream.of(componentDto2).collect(Collectors.toList());
+        List<ComponentDto> components3 = Stream.of(componentDto3).collect(Collectors.toList());
         List<ComponentDto> componentDtoTotalList = Stream.of(componentDto1, componentDto2, componentDto3).collect(Collectors.toList());
-        Page<ComponentDto> page1 = new PageImpl<>(componentDtoList1, pageable1, 3);
-        Page<ComponentDto> page2 = new PageImpl<>(componentDtoList2, pageable2, 3);
-        Page<ComponentDto> page3 = new PageImpl<>(componentDtoList3, pageable3, 3);
+        Page<ComponentDto> page1 = new PageImpl<>(components1, pageable1, 3);
+        Page<ComponentDto> page2 = new PageImpl<>(components2, pageable2, 3);
+        Page<ComponentDto> page3 = new PageImpl<>(components3, pageable3, 3);
 
         given(componentDtoService.getByName(eq(pageable1), eq(name))).willReturn(page1);
         given(componentDtoService.getByName(eq(pageable2), eq(name))).willReturn(page2);
@@ -293,11 +293,11 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(name)))
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].version.number", is((int) componentDto1.getVersion().getNumber())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(name)))
+                .andExpect(jsonPath("$._embedded.components[0].version.number", is((int) componentDto1.getVersion().getNumber())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList1.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
         mvc.perform(get("/components/" + name + "?page=1&size=1").contentType(MediaType.APPLICATION_JSON))
@@ -305,11 +305,11 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(name)))
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].version.number", is((int) componentDto2.getVersion().getNumber())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(name)))
+                .andExpect(jsonPath("$._embedded.components[0].version.number", is((int) componentDto2.getVersion().getNumber())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList3.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components3.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
         mvc.perform(get("/components/" + name + "?page=2&size=1").contentType(MediaType.APPLICATION_JSON))
@@ -317,11 +317,11 @@ class ComponentControllerTest {
                 // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].name", is(name)))
-                .andExpect(jsonPath("$._embedded.componentDtoList[0].version.number", is((int) componentDto3.getVersion().getNumber())))
+                .andExpect(jsonPath("$._embedded.components[0].name", is(name)))
+                .andExpect(jsonPath("$._embedded.components[0].version.number", is((int) componentDto3.getVersion().getNumber())))
                 .andExpect(jsonPath("$.page.size", is(size)))
                 .andExpect(jsonPath("$.page.totalElements", is(componentDtoTotalList.size())))
-                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / componentDtoList3.size())))))
+                .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components3.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable3.getPageNumber())));
     }
 

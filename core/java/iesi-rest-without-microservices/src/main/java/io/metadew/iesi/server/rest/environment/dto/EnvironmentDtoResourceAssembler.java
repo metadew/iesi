@@ -29,9 +29,6 @@ public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssembl
         Link selfLink = linkTo(methodOn(EnvironmentsController.class).getByName(environmentDto.getName()))
                 .withSelfRel();
         environmentDto.add(selfLink);
-        Link connectionsLink = linkTo(methodOn(EnvironmentsController.class).getConnections(environmentDto.getName()))
-                .withRel("connections");
-        environmentDto.add(connectionsLink);
         return environmentDto;
     }
 

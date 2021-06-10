@@ -1,6 +1,8 @@
 package io.metadew.iesi.server.rest.connection;
 
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
@@ -38,11 +40,18 @@ public class ConnectionService implements IConnectionService {
     }
 
     public void createConnection(ConnectionDto connectionDto) {
-        connectionConfiguration.insert(connectionDto.convertToEntity());
+        if (connectionConfiguration.exists(connectionDto.getName())) {
+            throw new MetadataAlreadyExistsException(new ConnectionKey(connectionDto.getName(), ""));
+        }
+        for (Connection connection : connectionDto.convertToEntity()) {
+            connectionConfiguration.insert(connection);
+        }
     }
 
     public void updateConnection(ConnectionDto connectionDto) {
-        connectionConfiguration.update(connectionDto.convertToEntity());
+        for (Connection connection : connectionDto.convertToEntity()) {
+            connectionConfiguration.update(connection);
+        }
     }
 
     public void updateConnections(List<ConnectionDto> connectionDtos) {

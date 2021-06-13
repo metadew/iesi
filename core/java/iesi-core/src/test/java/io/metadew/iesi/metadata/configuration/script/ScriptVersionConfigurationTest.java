@@ -98,6 +98,7 @@ class ScriptVersionConfigurationTest {
         assertEquals(scriptVersion1, ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey()).get());
         assertTrue(ScriptVersionConfiguration.getInstance().get(scriptVersion2.getMetadataKey()).isPresent());
         assertEquals(scriptVersion2, ScriptVersionConfiguration.getInstance().get(scriptVersion2.getMetadataKey()).get());
+
     }
 
     @Test
@@ -129,6 +130,10 @@ class ScriptVersionConfigurationTest {
                         scriptVersion1.getNumber(),
                         LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))));
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
+
+        ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
+        assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
+
     }
 
     @Test

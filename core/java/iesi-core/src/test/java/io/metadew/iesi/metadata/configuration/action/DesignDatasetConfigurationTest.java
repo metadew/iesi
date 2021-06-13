@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -267,7 +268,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1));
+        ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1, LocalDateTime.now().toString()));
 
         assertEquals(0, ActionConfiguration.getInstance().getAll().size());
         assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
@@ -289,7 +290,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2, action).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1));
+        ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1, LocalDateTime.now().toString()));
 
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());

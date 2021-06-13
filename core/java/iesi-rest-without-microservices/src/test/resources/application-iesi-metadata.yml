@@ -598,7 +598,7 @@ iesi:
             type: STRING
             length: 255
             nullable: false
-            unique: true
+            primaryKey: true
             defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
@@ -606,7 +606,7 @@ iesi:
             type: NUMBER
             length: 0
             nullable: false
-            unique: true
+            primaryKey: true
             defaultTimestamp:
           NAME:
             description: Name of the script label
@@ -614,7 +614,6 @@ iesi:
             type: STRING
             length: 100
             nullable: false
-            unique: true
             defaultTimestamp:
           VALUE:
             description: value of the script label
@@ -630,6 +629,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_TEMPL
         label: Templates
         description: Design metadata for templates
@@ -1539,6 +1546,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_ACTION_PAR
         label: ActionParameters
         description: Design metadata for action parameters
@@ -1590,6 +1605,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_COMP
         label: Components
         description: Design metadata for components
@@ -1864,6 +1887,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_SCRIPT_VRS
         label: ScriptVersions
         description: Design metadata for script versions
@@ -2871,26 +2902,26 @@ iesi:
             nullable: false
             defaultTimestamp:
           ACTION_PAR_NM:
-              description: Name of the action parameter
-              order: 4
-              type: STRING
-              length: 255
-              nullable: false
-              defaultTimestamp:
+            description: Name of the action parameter
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
           COMP_TYP_NM:
-              description: Keyword for the component type
-              order: 5
-              type: STRING
-              length: 255
-              nullable: false
-              defaultTimestamp:
+            description: Keyword for the component type
+            order: 5
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
           COMP_NM:
-              description: Unique short name for the applicable component
-              order: 6
-              type: STRING
-              length: 255
-              nullable: true
-              defaultTimestamp:
+            description: Unique short name for the applicable component
+            order: 6
+            type: STRING
+            length: 255
+            nullable: true
+            defaultTimestamp:
           COMP_DSC:
             description: Description of the component
             order: 7
@@ -2899,12 +2930,12 @@ iesi:
             nullable: true
             defaultTimestamp:
           COMP_VRS_NB:
-              description: Unique identifier for the component version
-              order: 8
-              type: NUMBER
-              length: 0
-              nullable: false
-              defaultTimestamp: false
+            description: Unique identifier for the component version
+            order: 8
+            type: NUMBER
+            length: 0
+            nullable: false
+            defaultTimestamp: false
       - name: TRC_HTTP_COMP_DES
         label: TraceHttpComponentDesign
         description: to do

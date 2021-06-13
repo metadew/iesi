@@ -90,7 +90,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     private static final String SOFT_DELETE_BY_ID_QUERY = "UPDATE " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
             " DELETED_AT = %s " +
-            " WHERE SCRIPT_ID = %s;";
+            " WHERE SCRIPT_ID = %s" +
+            " and DELETED_AT = 'NA' ;";
 
     private static final String RESTORE_SOFT_DELETED_BY_ID_QUERY = "UPDATE " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
@@ -377,6 +378,9 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         scriptKey.setDeletedAt(deletedAt);
         ScriptVersionKey scriptVersionKey = new ScriptVersionKey(scriptKey);
         ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
+        ActionConfiguration.getInstance().deleteByScript(scriptKey);
+        ScriptParameterConfiguration.getInstance().deleteByScript(scriptKey);
+        ScriptLabelConfiguration.getInstance().deleteByScript(scriptKey);
         getDeleteStatement(scriptKey)
                 .ifPresent(getMetadataRepository()::executeUpdate);
     }

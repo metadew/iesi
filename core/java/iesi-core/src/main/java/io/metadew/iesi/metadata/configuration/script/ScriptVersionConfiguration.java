@@ -220,14 +220,16 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersions") + " SET " +
                 " DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) +
+                " AND DELETED_AT = 'NA' ;";
     }
 
     private String markActiveScriptVersion(ScriptVersionKey scriptVersionKey) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersions") + " SET " +
                 " DELETED_AT = 'NA' " +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) + ";";
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) +
+                " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) +";";
     }
 
     public boolean exists(ScriptVersionKey scriptVersionKey) {

@@ -461,6 +461,9 @@ class ScriptsControllerSecurityTest {
         when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
                 .thenReturn(Optional.of(scriptDto));
         scriptsController.delete("test", 1L);
+
+
+
     }
 
     void testDeleteByNameAndVersionWrongSecurityGroup() {

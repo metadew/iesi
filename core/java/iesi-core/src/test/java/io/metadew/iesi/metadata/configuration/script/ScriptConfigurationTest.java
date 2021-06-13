@@ -189,8 +189,8 @@ class ScriptConfigurationTest {
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
         assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
-        assertEquals(2, ScriptParameterConfiguration.getInstance().getAll().size());
-        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(0, ScriptParameterConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
         assertEquals(1, ScriptConfiguration.getInstance().getAllDeleted().size());
     }
 
@@ -207,8 +207,8 @@ class ScriptConfigurationTest {
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ScriptParameterConfiguration.getInstance().getAll().size());
-        assertEquals(4, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(2, ScriptParameterConfiguration.getInstance().getAll().size());
+        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
         assertEquals(0, ScriptConfiguration.getInstance().getAllDeleted().size());
         ScriptVersionConfiguration.getInstance().getDeleted(new ScriptVersionKey(script11.getMetadataKey())).ifPresent(versions::add);
         assertEquals(1, versions.size());
@@ -226,8 +226,8 @@ class ScriptConfigurationTest {
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
-        assertEquals(5, ScriptParameterConfiguration.getInstance().getAll().size());
-        assertEquals(5, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(3, ScriptParameterConfiguration.getInstance().getAll().size());
+        assertEquals(3, ActionConfiguration.getInstance().getAll().size());
         assertEquals(1, ScriptConfiguration.getInstance().getAllDeleted().size());
     }
 

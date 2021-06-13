@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
+import javax.swing.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
@@ -46,7 +47,8 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                     + " where SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
                     " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
                     + " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                    " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) + ";";
+                    " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) +
+                    " and DELETED_AT = 'NA';";
             CachedRowSet cachedRowSet = getMetadataRepository()
                     .executeQuery(queryActionParameter, "reader");
             if (cachedRowSet.size() == 0) {
@@ -64,7 +66,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     @Override
     public List<ActionParameter> getAll() {
         List<ActionParameter> actionParameters = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") + ";";
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") + " where DELETED_AT = 'NA' ;";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
@@ -110,12 +112,12 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
             throw new MetadataAlreadyExistsException(actionParameter);
         }
         String insertQuery = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL) VALUES (" +
+                " (SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL, DELETED_AT ) VALUES (" +
                 SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptId()) + "," +
                 SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptVersion()) + "," +
                 SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getActionId()) + "," +
                 SQLTools.getStringForSQL(actionParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.getStringForSQL(actionParameter.getValue()) + ");";
+                SQLTools.getStringForSQL(actionParameter.getValue()) + ", 'NA' );";
         getMetadataRepository().executeUpdate(insertQuery);
     }
 
@@ -125,7 +127,8 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
                 + " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) + ";";
+                " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) +
+                " and DELETED_AT = 'NA' ;";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -135,7 +138,8 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId());
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +
+                " AND DELETED_AT = 'NA'" ;
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
@@ -153,7 +157,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     public void deleteByAction(ActionKey actionKey) {
-        String query = "delete from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+        String query = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) + ";";
@@ -162,9 +166,11 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
 
     public void deleteByScript(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Deleting action parameters for script {0}", scriptKey.toString()));
-        String query = "delete from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+        String query = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+                " SET DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";";
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
+                " AND DELETED_AT = 'NA' ;";
         getMetadataRepository().executeUpdate(query);
     }
 

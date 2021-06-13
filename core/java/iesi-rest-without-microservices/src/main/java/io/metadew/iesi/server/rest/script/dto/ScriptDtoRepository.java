@@ -121,7 +121,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) ";
         }
         if (!fetchAllScript && !isOnlyInactive) {
-            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT = 'NA' ";
+            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT = 'NA' and versions.DELETED_AT = 'NA' ";
         }
         if(isOnlyInactive) {
             filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT != 'NA' ";

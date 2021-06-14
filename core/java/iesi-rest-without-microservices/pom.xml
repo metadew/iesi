@@ -152,11 +152,11 @@
             <artifactId>jackson-core</artifactId>
             <version>2.12.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.34.0</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.xerial</groupId>-->
+        <!--            <artifactId>sqlite-jdbc</artifactId>-->
+        <!--            <version>3.34.0</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
@@ -226,6 +226,20 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.2.6.RELEASE</version>
+                <configuration>
+                    <layout>ZIP</layout>
+                    <executable>true</executable>
+                    <mainClass>io.metadew.iesi.server.rest.Application</mainClass>
+                    <addResources>true</addResources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

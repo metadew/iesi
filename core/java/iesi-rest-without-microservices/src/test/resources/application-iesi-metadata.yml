@@ -598,7 +598,7 @@ iesi:
             type: STRING
             length: 255
             nullable: false
-            primaryKey: true
+            unique: true
             defaultTimestamp:
           SCRIPT_VRS_NB:
             description: Unique identifier for the script version
@@ -606,7 +606,7 @@ iesi:
             type: NUMBER
             length: 0
             nullable: false
-            primaryKey: true
+            unique: true
             defaultTimestamp:
           NAME:
             description: Name of the script label
@@ -614,6 +614,7 @@ iesi:
             type: STRING
             length: 100
             nullable: false
+            unique: true
             defaultTimestamp:
           VALUE:
             description: value of the script label
@@ -636,6 +637,7 @@ iesi:
             length: 255
             nullable: false
             primaryKey: true
+            unique: true
             defaultTimestamp:
       - name: DES_TEMPL
         label: Templates

@@ -4,6 +4,7 @@ repository.db3
 *.jardesc
 *.iml
 /src/main/resources/encryption.key
+/plugins
 
 /coverage/
 /run/

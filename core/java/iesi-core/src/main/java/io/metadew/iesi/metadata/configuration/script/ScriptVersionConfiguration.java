@@ -63,9 +63,10 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
 
     }
 
-    public Optional<ScriptVersion> getDeleted(ScriptVersionKey scriptVersionKey) {
+    /*public Optional<ScriptVersion> getDeleted(ScriptVersionKey scriptVersionKey) {
         String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, DELETED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where DELETED_AT != 'NA' and SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
+                + " where DELETED_AT != 'NA' " +
+                " and SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
@@ -85,8 +86,28 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             e.printStackTrace(new PrintWriter(StackTrace));
             return Optional.empty();
         }
+    }*/
 
-    }
+    /*public List<ScriptVersion> getDeleted(ScriptVersionKey scriptVersionKey) {
+        List<ScriptVersion> scriptVersions = new ArrayList<>();
+        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, DELETED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
+                + " where DELETED_AT != 'NA' and SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
+        CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
+        try {
+            while (crsScriptVersion.next()) {
+                ScriptVersion scriptVersion = new ScriptVersion(
+                        scriptVersionKey, crsScriptVersion.getString("SCRIPT_VRS_DSC"),
+                        crsScriptVersion.getString("DELETED_AT"));
+                scriptVersions.add(scriptVersion);
+            }
+            crsScriptVersion.close();
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+        }
+        return scriptVersions;
+    }*/
 
     @Override
     public List<ScriptVersion> getAll() {
@@ -98,7 +119,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             while (crs.next()) {
                 ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
                         new ScriptKey(crs.getString("SCRIPT_ID"),
-                        crs.getLong("SCRIPT_VRS_NB")));
+                                crs.getLong("SCRIPT_VRS_NB")));
                 scriptVersions.add(new ScriptVersion(
                         scriptVersionKey,
                         crs.getString("SCRIPT_VRS_DSC"),
@@ -164,7 +185,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         String queryScriptVersion = "select max(SCRIPT_VRS_NB) as \"MAX_VRS_NB\" from "
                 + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
                 " where script_id = " + SQLTools.getStringForSQL(scriptId) +
-                " and DELETED_AT = 'NA' " +" ;";
+                " and DELETED_AT = 'NA' " + " ;";
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
         try {
             if (crsScriptVersion.size() == 0) {
@@ -204,16 +225,15 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         getMetadataRepository().executeUpdate(getUpdateStatement(scriptVersion));
     }
 
-    public void restoreDeletedScriptVersion(ScriptVersionKey scriptVersionKey){
+    public void restoreDeletedScriptVersion(ScriptVersionKey scriptVersionKey) {
         LOGGER.trace(MessageFormat.format("Restoring deleted ScriptVersion {0}", scriptVersionKey.getScriptKey().getScriptId()));
-        if (exists(scriptVersionKey)){
+        if (exists(scriptVersionKey)) {
             throw new MetadataAlreadyExistsException(scriptVersionKey.getScriptKey());
-        }
-        else if(!existsDeleted(scriptVersionKey)){
+        } else if (!existsDeleted(scriptVersionKey)) {
             throw new MetadataDoesNotExistException(scriptVersionKey.getScriptKey());
         }
         getMetadataRepository().executeUpdate(markActiveScriptVersion(scriptVersionKey));
-        LOGGER.trace(MessageFormat.format("Successfully Restored deleted ScriptVersion {0}",scriptVersionKey.getScriptKey()));
+        LOGGER.trace(MessageFormat.format("Successfully Restored deleted ScriptVersion {0}", scriptVersionKey.getScriptKey()));
     }
 
     private String markInactiveScriptVersion(ScriptVersionKey scriptVersionKey) {
@@ -229,7 +249,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 " DELETED_AT = 'NA' " +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) +
-                " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) +";";
+                " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) + ";";
     }
 
     public boolean exists(ScriptVersionKey scriptVersionKey) {
@@ -245,7 +265,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         String query = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) +
-                " and DELETED_AT = "+ SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) + " ;";
+                " and DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) + " ;";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }

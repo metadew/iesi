@@ -47,7 +47,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                 + " where ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +
                 " AND SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                "AND DELETED_AT = 'NA' ;";
+                " AND DELETED_AT = 'NA' ;";
         CachedRowSet crsAction = getMetadataRepository().executeQuery(queryAction, "reader");
         try {
             if (crsAction.size() == 0) {

@@ -28,7 +28,7 @@ public class ScriptBuilder {
     private List<ScriptParameter> scriptParameters = new ArrayList<>();
     private List<ScriptLabel> scriptLabels = new ArrayList<>();
     private String name;
-    private String deleted_At;
+    private String deletedAt;
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;
@@ -76,8 +76,8 @@ public class ScriptBuilder {
         return this;
     }
 
-    public ScriptBuilder deleted_At(String deleted_At){
-        this.deleted_At = deleted_At;
+    public ScriptBuilder deletedAt(String deletedAt){
+        this.deletedAt = deletedAt;
         return this;
     }
 
@@ -110,7 +110,7 @@ public class ScriptBuilder {
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
                 actions, scriptLabels,
-                deleted_At);
+                deletedAt);
     }
 
 }

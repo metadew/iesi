@@ -235,9 +235,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    public Optional<Script> getDeleted(ScriptKey scriptKey) {
-        // had to change this to only get the script, because the script doesn't have version as id
-        // return get(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
+    /*public Optional<Script> getDeleted(ScriptKey scriptKey) {
+
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
                 String.format(FETCH_DELETED_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
                 "reader");
@@ -250,6 +249,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             crsScript.next();
 
             // Get the version
+
             Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().getDeleted(new ScriptVersionKey(
                     new ScriptKey(
                             scriptKey.getScriptId(),
@@ -290,7 +290,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
             return Optional.empty();
         }
-    }
+    }*/
 
     public boolean existsById(String scriptId) {
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
@@ -369,7 +369,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         return scripts;
     }
 
-    public List<Script> getAllDeleted() {
+    /*public List<Script> getAllDeleted() {
         List<Script> scripts = new ArrayList<>();
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
                 FETCH_ALL_DELETED_QUERY,
@@ -392,7 +392,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             log.debug(String.format("exception.stacktrace=%s", stackTrace));
         }
         return scripts;
-    }
+    }*/
 
     @Override
     public void delete(ScriptKey scriptKey) {

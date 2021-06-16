@@ -12,7 +12,7 @@ public class ScriptVersionBuilder {
     private final String scriptId;
     private final long versionNumber;
     private String description;
-    private String deleted_At;
+    private String deletedAt;
 
     public ScriptVersionBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;
@@ -24,8 +24,8 @@ public class ScriptVersionBuilder {
         return this;
     }
 
-    public ScriptVersionBuilder deleted_At(String deleted_At){
-        this.deleted_At = deleted_At;
+    public ScriptVersionBuilder deletedAt(String deletedAt){
+        this.deletedAt = deletedAt;
         return this;
     }
 
@@ -39,7 +39,7 @@ public class ScriptVersionBuilder {
     }
 
     public Optional<String> getDeletedAt() {
-        return Optional.ofNullable(deleted_At);
+        return Optional.ofNullable(deletedAt);
     }
 
 

@@ -21,6 +21,7 @@ import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
+import io.metadew.iesi.server.rest.connection.dto.ConnectionEnvironmentDto;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionParameterDto;
 import io.metadew.iesi.server.rest.openapi.dto.TransformResultDto;
 import io.metadew.iesi.server.rest.openapi.dto.TransformResultDtoResourceAssembler;
@@ -40,10 +41,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -60,7 +60,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 class OpenAPIControllerTest {
 
-
     byte[] yamlFile;
     byte[] jsonFile;
     String title;
@@ -72,8 +71,6 @@ class OpenAPIControllerTest {
     private OpenAPIService openAPIService;
     @MockBean
     private TransformResultDtoResourceAssembler transformResultDtoResourceAssembler;
-
-
 
     @BeforeEach
     public void init() {
@@ -107,7 +104,6 @@ class OpenAPIControllerTest {
                 .andExpect(jsonPath("$.connections[0]").isMap())
                 .andExpect(jsonPath("$.components[0]").isMap());
     }
-
 
     @Test
     void transformFromJSON() throws Exception {
@@ -162,8 +158,12 @@ class OpenAPIControllerTest {
         ConnectionDto connectionDto = new ConnectionDto(
                 "Swagger Petstore - OpenAPI 3.22",
                 "http", "small description",
-                "env0",
-                Arrays.asList(host, baseUrl, tls)
+                Stream.of(
+                        new ConnectionEnvironmentDto(
+                                "env0",
+                                Stream.of(host, baseUrl, tls).collect(Collectors.toSet())
+                        )
+                ).collect(Collectors.toSet())
         );
 
         ComponentParameterDto endpoint = new ComponentParameterDto("endpoint", "/pet");
@@ -175,8 +175,9 @@ class OpenAPIControllerTest {
                 "updatePet",
                 "Update an existing pet by Id",
                 componentVersionDto,
-                Arrays.asList(endpoint, type, connectionParam),
-                new ArrayList<>()
+                Stream.of(endpoint, type, connectionParam)
+                        .collect(Collectors.toSet()),
+                new HashSet<>()
         );
 
         return new TransformResultDto(

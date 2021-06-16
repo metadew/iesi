@@ -67,10 +67,15 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " WHERE SCRIPT_ID = %s AND DELETED_AT = 'NA' ;";
 
-    private static final String EXISTS_DELETED_BY_ID_QUERY = "SELECT " +
+    private static final String EXISTS_DELETED_BY_ID_AND_TIME_QUERY = "SELECT " +
             "SCRIPT_ID " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " WHERE SCRIPT_ID = %s AND DELETED_AT = %s ;";
+
+    private static final String EXISTS_DELETED_BY_ID_QUERY = "SELECT " +
+            "SCRIPT_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT != 'NA' ;";
 
 
     private static final String INSERT_QUERY = "INSERT INTO " +
@@ -93,10 +98,15 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             " WHERE SCRIPT_ID = %s" +
             " and DELETED_AT = 'NA' ;";
 
-    private static final String RESTORE_SOFT_DELETED_BY_ID_QUERY = "UPDATE " +
+    private static final String RESTORE_SOFT_DELETED_BY_ID_AND_TIME_QUERY = "UPDATE " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
             " DELETED_AT = 'NA' " +
             " WHERE SCRIPT_ID = %s AND DELETED_AT = %s;";
+
+    private static final String RESTORE_SOFT_DELETED_BY_ID_QUERY = "UPDATE " +
+            MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
+            " DELETED_AT = 'NA' " +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT != 'NA';";
 
 
     private static ScriptConfiguration instance;
@@ -311,6 +321,21 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
+    public boolean existsDeleted(ScriptKey scriptKey) {
+        try {
+            CachedRowSet crsScript = getMetadataRepository().executeQuery(
+                    String.format(EXISTS_DELETED_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
+                    "reader");
+            if (crsScript.size() == 0) {
+                return false;
+            }
+            crsScript.next();
+            return ScriptVersionConfiguration.getInstance().exists(new ScriptVersionKey(scriptKey));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public boolean exists(String scriptName) {
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
                 String.format(EXISTS_BY_NAME_QUERY, SQLTools.getStringForSQL(scriptName)),
@@ -439,6 +464,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
 
         getMetadataRepository().executeUpdate(getInsertStatement(script));
+
     }
 
     @Override
@@ -448,7 +474,10 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     }
 
     private String getInsertStatement(Script script) {
-        if (!existsById(script.getMetadataKey().getScriptId())) {
+        if (existsDeleted(script.getMetadataKey())) {
+            return String.format(RESTORE_SOFT_DELETED_BY_ID_QUERY,
+                    SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()));
+        } else if (!existsById(script.getMetadataKey().getScriptId())) {
             return String.format(INSERT_QUERY,
                     SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()),
                     SQLTools.getStringForSQL(script.getSecurityGroupKey().getUuid()),
@@ -509,12 +538,12 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     private Optional<String> getScriptRestoreStatement(ScriptKey scriptKey) {
         if (!existsById(scriptKey.getScriptId())){
             CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                    String.format(EXISTS_DELETED_BY_ID_QUERY,
+                    String.format(EXISTS_DELETED_BY_ID_AND_TIME_QUERY,
                             SQLTools.getStringForSQL(scriptKey.getScriptId()),
                             SQLTools.getStringForSQL(scriptKey.getDeletedAt())), "reader");
             if (crsScript.size() != 0){
                 return Optional.of(String.format(
-                        RESTORE_SOFT_DELETED_BY_ID_QUERY,
+                        RESTORE_SOFT_DELETED_BY_ID_AND_TIME_QUERY,
                         SQLTools.getStringForSQL(scriptKey.getScriptId()),
                         SQLTools.getStringForSQL(scriptKey.getDeletedAt())));
             }

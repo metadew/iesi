@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ConnectionDtoTest {
 
@@ -18,14 +18,23 @@ class ConnectionDtoTest {
         Connection connection = new Connection(new ConnectionKey("name", "tst"),
                 "type",
                 "description",
-                Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("name", "tst"), "name1"), "value1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("name", "tst"), "name2"), "value2"))
+                Stream.of(
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("name", "tst"), "name1"), "value1")
+                )
                         .collect(Collectors.toList()));
-        ConnectionDto connectionDto = new ConnectionDto("name", "type","description", "tst",
-                Stream.of(new ConnectionParameterDto( "name1", "value1"),
-                        new ConnectionParameterDto("name2", "value2"))
-                        .collect(Collectors.toList()));
-        assertEquals(connection, connectionDto.convertToEntity());
+        ConnectionDto connectionDto = new ConnectionDto(
+                "name",
+                "type",
+                "description",
+                Stream.of(
+                        new ConnectionEnvironmentDto(
+                                "tst",
+                                Stream.of(new ConnectionParameterDto("name1", "value1"))
+                                        .collect(Collectors.toSet())
+                        )
+                ).collect(Collectors.toSet())
+        );
+        assertThat(connectionDto.convertToEntity().get(0)).isEqualTo(connection);
     }
 
 }

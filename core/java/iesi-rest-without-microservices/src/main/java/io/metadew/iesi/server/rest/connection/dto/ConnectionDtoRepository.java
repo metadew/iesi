@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.connection.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.server.rest.connection.ConnectionFilter;
 import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
 import io.metadew.iesi.server.rest.dataset.FilterService;
@@ -179,7 +180,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
                         cachedRowSet.getString("CONN_PAR_NM"),
                         new ConnectionParameterDto(
                                 cachedRowSet.getString("CONN_PAR_NM"),
-                                cachedRowSet.getString("CONN_PAR_VAL")
+                                SQLTools.getStringFromSQLClob(cachedRowSet, "CONN_PAR_VAL")
                         )
                 );
             }

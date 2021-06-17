@@ -41,7 +41,7 @@ public class ScriptDesignAuditConfiguration extends Configuration<ScriptDesignAu
             String query = "SELECT USERNAME, USER_ID, ACTION, SCRIPT_ID, SCRIPT_NAME, SCRIPT_VERSION, SECURITY_GROUP, TIMESTAMP FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptAudit") +
                     " WHERE " +
-                    "ID = " + SQLTools.getStringForSQL(scriptDesignAuditKey.getID()) + ";";
+                    "ID = " + SQLTools.getStringForSQL(scriptDesignAuditKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -92,7 +92,7 @@ public class ScriptDesignAuditConfiguration extends Configuration<ScriptDesignAu
         LOGGER.trace(MessageFormat.format("Deleting ScriptDesignAudit {0}.", scriptDesignAuditKey.toString()));
         String query = "DELETE FROM "+getMetadataRepository().getTableNameByLabel("ScriptAudit") +
                 " WHERE " +
-                " ID = " + SQLTools.getStringForSQL(scriptDesignAuditKey.getID()) + ";";
+                " ID = " + SQLTools.getStringForSQL(scriptDesignAuditKey.getId()) + ";";
         getMetadataRepository().executeUpdate(query);
     }
 
@@ -101,7 +101,7 @@ public class ScriptDesignAuditConfiguration extends Configuration<ScriptDesignAu
         LOGGER.trace(MessageFormat.format("Inserting ScriptDesignParameterTrace {0}.", scriptDesignAudit.toString()));
         String query = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptAudit") +
                 " (ID, USERNAME, USER_ID, ACTION, SCRIPT_ID, SCRIPT_NAME, SCRIPT_VERSION, SECURITY_GROUP, TIMESTAMP) VALUES (" +
-                SQLTools.getStringForSQL(scriptDesignAudit.getMetadataKey().getID()) + "," +
+                SQLTools.getStringForSQL(scriptDesignAudit.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(scriptDesignAudit.getUsername()) + "," +
                 SQLTools.getStringForSQL(scriptDesignAudit.getUserId()) + "," +
                 SQLTools.getStringForSQL(scriptDesignAudit.getScriptDesignAuditAction().toString()) + "," +

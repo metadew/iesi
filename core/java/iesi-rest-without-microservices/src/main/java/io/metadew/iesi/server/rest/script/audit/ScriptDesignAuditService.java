@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-public class ScriptDesignAuditPostDtoService implements IScriptDesignAuditPostDtoService{
+public class ScriptDesignAuditService implements IScriptDesignAuditService {
 
     private final UserDtoRepository userDtoRepository;
 
     @Autowired
-    public ScriptDesignAuditPostDtoService(UserDtoRepository userDtoRepository) {
+    public ScriptDesignAuditService(UserDtoRepository userDtoRepository) {
         this.userDtoRepository = userDtoRepository;
     }
 

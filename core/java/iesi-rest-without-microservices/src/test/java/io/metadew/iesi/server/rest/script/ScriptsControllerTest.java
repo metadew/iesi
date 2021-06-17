@@ -8,7 +8,7 @@ import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
-import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditPostDtoService;
+import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditService;
 import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoModelAssembler;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoService;
@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {ScriptsController.class, CustomGlobalExceptionHandler.class, ScriptDtoModelAssembler.class,
         ScriptPostDtoService.class, ScriptParameterDtoService.class, ScriptLabelDtoService.class, ScriptActionDtoService.class,
         ScriptVersionDtoService.class, ScriptService.class, TestConfiguration.class, IesiConfiguration.class, IesiSecurityChecker.class,
-        ScriptDesignAuditPostDtoService.class, UserDtoRepository.class, ScriptDesignAuditConfiguration.class, FilterService.class})
+        ScriptDesignAuditService.class, UserDtoRepository.class, ScriptDesignAuditConfiguration.class, FilterService.class})
 @ActiveProfiles("test")
 @DirtiesContext
 class ScriptsControllerTest {

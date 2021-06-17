@@ -14,6 +14,6 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 public class ScriptDesignAuditKey extends MetadataKey {
 
-    private final UUID ID;
+    private final UUID id;
 
 }

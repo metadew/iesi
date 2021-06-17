@@ -1,41 +1,30 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.definition.component.Component;
-import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.metadata.definition.component.ComponentVersion;
-import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
-import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.component.ComponentService;
 import io.metadew.iesi.server.rest.component.ComponentsController;
-import io.metadew.iesi.server.rest.component.IComponentService;
-import io.metadew.iesi.server.rest.component.dto.ComponentDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentDtoResourceAssembler;
-import io.metadew.iesi.server.rest.component.dto.ComponentParameterDto;
-import io.metadew.iesi.server.rest.component.dto.ComponentVersionDto;
+import io.metadew.iesi.server.rest.component.dto.*;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,11 +49,21 @@ class ComponentsControllerSecurityTest {
     private ComponentService componentService;
 
     @MockBean
+    private ComponentDtoService componentDtoService;
+
+    @MockBean
     private ComponentDtoResourceAssembler componentDtoResourceAssembler;
+
+    @MockBean
+    private ComponentDtoRepository componentDtoRepository;
+
+    @MockBean
+    private PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler;
 
     @Test
     void testGetAllNoUser() throws Exception {
-        assertThatThrownBy(() -> componentsController.getAll())
+        Pageable pageable = Pageable.unpaged();
+        assertThatThrownBy(() -> componentsController.getAll(pageable, null))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -96,7 +95,8 @@ class ComponentsControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetAllNoComponentReadPrivilege() throws Exception {
-        assertThatThrownBy(() -> componentsController.getAll())
+        Pageable pageable = Pageable.unpaged();
+        assertThatThrownBy(() -> componentsController.getAll(pageable, null))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -104,7 +104,10 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetComponentReadPrivilege() throws Exception {
-        componentsController.getAll();
+        when(componentDtoService
+                .getAll(Pageable.unpaged(), new ArrayList<>()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
+        componentsController.getAll(Pageable.unpaged(), null);
     }
 
     @Test
@@ -135,7 +138,8 @@ class ComponentsControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetByNameNoComponentRead() throws Exception {
-        assertThatThrownBy(() -> componentsController.getByName("test"))
+        Pageable pageable = Pageable.unpaged();
+        assertThatThrownBy(() -> componentsController.getByName(pageable, "test"))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -143,7 +147,11 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetByNameComponentRead() throws Exception {
-        componentsController.getByName("test");
+        Pageable pageable = Pageable.unpaged();
+        when(componentDtoService
+                .getByName(Pageable.unpaged(), "test"))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
+        componentsController.getByName(pageable, "test");
     }
 
     @Test
@@ -182,18 +190,17 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetByNameAndVersionAdminComponentsReadPrivilege() throws Exception {
-        Component component = Component.builder()
-                .name("component")
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("test")
                 .type("type")
                 .description("description")
-                .attributes(new ArrayList<>())
-                .version(new ComponentVersion(new ComponentVersionKey("component", 1L), "description"))
-                .parameters(Stream.of(
-                        new ComponentParameter(new ComponentParameterKey("component", 1L, "param1"), "value1")
-                ).collect(Collectors.toList()))
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1L, "version description"))
+                .parameters(new HashSet<>())
+                .attributes(new HashSet<>())
                 .build();
-        when(componentService.getByNameAndVersion("test", 1L))
-                .thenReturn(Optional.of(component));
+        when(componentDtoService.getByNameAndVersion("test", 1L))
+                .thenReturn(Optional.of(componentDto));
         componentsController.get("test", 1L);
     }
 
@@ -230,9 +237,9 @@ class ComponentsControllerSecurityTest {
                 .name("component")
                 .type("type")
                 .description("description")
-                .attributes(new ArrayList<>())
+                .attributes(new HashSet<>())
                 .version(new ComponentVersionDto(1, "description"))
-                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toList()))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
                 .build();
         assertThatThrownBy(() -> componentsController.post(componentDto))
                 .isInstanceOf(AccessDeniedException.class);
@@ -246,9 +253,9 @@ class ComponentsControllerSecurityTest {
                 .name("component")
                 .type("type")
                 .description("description")
-                .attributes(new ArrayList<>())
+                .attributes(new HashSet<>())
                 .version(new ComponentVersionDto(1, "description"))
-                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toList()))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
                 .build();
         componentsController.post(componentDto);
     }
@@ -286,9 +293,9 @@ class ComponentsControllerSecurityTest {
                 .name("component")
                 .type("type")
                 .description("description")
-                .attributes(new ArrayList<>())
+                .attributes(new HashSet<>())
                 .version(new ComponentVersionDto(1, "description"))
-                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toList()))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
                 .build());
         assertThatThrownBy(() -> componentsController.putAll(componentDto))
                 .isInstanceOf(AccessDeniedException.class);
@@ -302,9 +309,9 @@ class ComponentsControllerSecurityTest {
                 .name("component")
                 .type("type")
                 .description("description")
-                .attributes(new ArrayList<>())
+                .attributes(new HashSet<>())
                 .version(new ComponentVersionDto(1, "description"))
-                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toList()))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
                 .build());
         componentsController.putAll(componentDto);
     }
@@ -342,9 +349,9 @@ class ComponentsControllerSecurityTest {
                 .name("component")
                 .type("type")
                 .description("description")
-                .attributes(new ArrayList<>())
+                .attributes(new HashSet<>())
                 .version(new ComponentVersionDto(1, "description"))
-                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toList()))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
                 .build();
         assertThatThrownBy(() -> componentsController.put("component", 1L, componentDto))
                 .isInstanceOf(AccessDeniedException.class);
@@ -358,9 +365,9 @@ class ComponentsControllerSecurityTest {
                 .name("component")
                 .type("type")
                 .description("description")
-                .attributes(new ArrayList<>())
+                .attributes(new HashSet<>())
                 .version(new ComponentVersionDto(1, "description"))
-                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toList()))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
                 .build();
         componentsController.put("component", 1L, componentDto);
     }

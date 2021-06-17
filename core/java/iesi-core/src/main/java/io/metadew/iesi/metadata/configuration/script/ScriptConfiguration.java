@@ -32,16 +32,16 @@ import java.util.*;
 public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     private static final String FETCH_ALL_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, CREATED_BY, CREATED_AT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " ;";
 
     private static final String FETCH_BY_NAME_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, CREATED_BY, CREATED_AT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " WHERE SCRIPT_NM = %s;";
 
     private static final String FETCH_BY_ID_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, CREATED_BY, CREATED_AT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
             " WHERE SCRIPT_ID = %s;";
 
@@ -57,8 +57,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     private static final String INSERT_QUERY = "INSERT INTO " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, CREATED_BY, CREATED_AT) VALUES " +
-            "(%s, %s, %s, %s, %s, %s, %s);";
+            " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC) VALUES " +
+            "(%s, %s, %s, %s, %s);";
 
     private static final String UPDATE_QUERY = "UPDATE " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
@@ -161,7 +161,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             crsScript.next();
 
             // Get the version
-            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
+            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(
+                    new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
             if (!scriptVersion.isPresent()) {
                 return Optional.empty();
             }
@@ -184,9 +185,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                     scriptVersion.get(),
                     scriptParameters,
                     actions,
-                    scriptLabels,
-                    crsScript.getString("CREATED_BY"),
-                    crsScript.getString("CREATED_AT"));
+                    scriptLabels);
             crsScript.close();
             return Optional.of(script);
         } catch (Exception e) {
@@ -342,9 +341,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                     SQLTools.getStringForSQL(script.getSecurityGroupKey().getUuid()),
                     SQLTools.getStringForSQL(script.getSecurityGroupName()),
                     SQLTools.getStringForSQL(script.getName()),
-                    SQLTools.getStringForSQL(script.getDescription()),
-                    SQLTools.getStringForSQL(script.getCreatedBy()),
-                    SQLTools.getStringForSQL(script.getCreatedAt()));
+                    SQLTools.getStringForSQL(script.getDescription()));
         } else {
             return String.format(UPDATE_QUERY,
                     SQLTools.getStringForSQL(script.getDescription()),

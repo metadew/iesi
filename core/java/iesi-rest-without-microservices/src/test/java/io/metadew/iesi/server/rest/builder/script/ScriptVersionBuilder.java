@@ -3,7 +3,9 @@ package io.metadew.iesi.server.rest.builder.script;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -24,7 +26,11 @@ public class ScriptVersionBuilder {
     }
 
     public ScriptVersion build() {
-        return new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)), getDescription().orElse("dummy"));
+        return new ScriptVersion(
+                new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
+                getDescription().orElse("dummy"),
+                "username",
+                LocalDateTime.now().toString());
     }
 
     public Optional<String> getDescription() {

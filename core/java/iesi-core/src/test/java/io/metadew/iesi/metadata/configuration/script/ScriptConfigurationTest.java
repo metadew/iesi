@@ -76,8 +76,6 @@ class ScriptConfigurationTest {
                 .name("script1")
                 .numberOfActions(2)
                 .numberOfParameters(2)
-                .createdBy("spring")
-                .createdAt(localDateTime.toString())
                 .build();
         script12 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script1"), 2)
                 .securityGroupKey(securityGroup.getMetadataKey())
@@ -85,16 +83,12 @@ class ScriptConfigurationTest {
                 .name("script1")
                 .numberOfActions(2)
                 .numberOfParameters(2)
-                .createdBy("spring")
-                .createdAt(localDateTime.toString())
                 .build();
         script2 = new ScriptBuilder(IdentifierTools.getScriptIdentifier("dummy"), 1)
                 .securityGroupKey(securityGroup.getMetadataKey())
                 .securityGroupName(securityGroup.getName())
                 .numberOfActions(3)
                 .numberOfParameters(3)
-                .createdBy("spring")
-                .createdAt(LocalDateTime.now().toString())
                 .build();
     }
 

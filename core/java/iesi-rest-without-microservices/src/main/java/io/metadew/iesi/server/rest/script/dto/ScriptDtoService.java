@@ -53,9 +53,7 @@ public class ScriptDtoService implements IScriptDtoService {
                         .collect(Collectors.toList()),
                 scriptDto.getLabels().stream()
                         .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
-                        .collect(Collectors.toList()),
-                SecurityContextHolder.getContext().getAuthentication().getName(),
-                LocalDateTime.now().toString());
+                        .collect(Collectors.toList()));
     }
 
     @Override

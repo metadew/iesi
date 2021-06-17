@@ -29,7 +29,6 @@ public class ScriptBuilder {
     private List<ScriptParameter> scriptParameters = new ArrayList<>();
     private List<ScriptLabel> scriptLabels = new ArrayList<>();
     private String name;
-    private String createdBy;
 
     public ScriptBuilder(String scriptId, long versionNumber) {
         this.scriptId = scriptId;
@@ -77,11 +76,6 @@ public class ScriptBuilder {
         return this;
     }
 
-    public ScriptBuilder createdBy(String createdBy) {
-        this.createdBy = createdBy;
-        return this;
-    }
-
     public Script build() {
         scriptParameters.addAll(IntStream.range(0, numberOfParameters)
                 .boxed()
@@ -110,9 +104,7 @@ public class ScriptBuilder {
                 "dummy",
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
-                actions, scriptLabels,
-                createdBy,
-                LocalDateTime.now().toString());
+                actions, scriptLabels);
     }
 
 }

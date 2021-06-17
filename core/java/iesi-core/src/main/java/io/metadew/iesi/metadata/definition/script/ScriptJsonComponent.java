@@ -24,6 +24,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,8 +144,8 @@ public class ScriptJsonComponent {
                     scriptParameters,
                     scriptActions,
                     scriptLabels,
-                    "createdBy",
-                    "createdAt");
+                    "username",
+                    LocalDateTime.now().toString());
         }
     }
 

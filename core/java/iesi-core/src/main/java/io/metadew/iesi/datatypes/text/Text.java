@@ -14,7 +14,7 @@ public class Text implements DataType {
 
     @Override
     public String toString() {
-        return string;
+        return string.isEmpty() ? "{{^text()}}" : string;
     }
 
 }

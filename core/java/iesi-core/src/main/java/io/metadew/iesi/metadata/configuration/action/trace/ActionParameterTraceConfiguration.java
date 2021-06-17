@@ -51,7 +51,8 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
                 LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameterTrace {0}. Returning first implementation", actionParameterTraceKey.toString()));
             }
             cachedRowSet.next();
-            return Optional.of(new ActionParameterTrace(actionParameterTraceKey, cachedRowSet.getString("ACTION_PAR_VAL")));
+            return Optional.of(new ActionParameterTrace(actionParameterTraceKey,
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -70,7 +71,7 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
                         cachedRowSet.getLong("PRC_ID"),
                         cachedRowSet.getString("ACTION_ID"),
                         cachedRowSet.getString("ACTION_PAR_NM")),
-                        cachedRowSet.getString("ACTION_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL")));
             }
             return actionParameterTraces;
         } catch (SQLException e) {
@@ -118,7 +119,10 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
                 SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getActionId()) + "," +
                 SQLTools.getStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ActionParameterTraces", "ACTION_PAR_NM", actionParameterTrace.getMetadataKey().getName())) + "," +
-                SQLTools.getStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ActionParameterTraces", "ACTION_PAR_VAL", actionParameterTrace.getValue())) + ");";
+                SQLTools.getStringForSQLClob(actionParameterTrace.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     @Override
@@ -130,7 +134,10 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
 
     private String updateStatement(ActionParameterTrace actionParameterTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameterTraces") +
-                " SET ACTION_PAR_VAL = " + SQLTools.getStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ActionParameterTraces", "ACTION_PAR_VAL", actionParameterTrace.getValue())) +
+                " SET ACTION_PAR_VAL = " + SQLTools.getStringForSQLClob(actionParameterTrace.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getProcessId()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getActionId()) +

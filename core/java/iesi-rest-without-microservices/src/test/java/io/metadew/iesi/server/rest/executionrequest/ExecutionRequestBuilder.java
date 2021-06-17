@@ -50,9 +50,6 @@ public class ExecutionRequestBuilder {
                 .requestTimestamp(requestTimestamp)
                 .context("context")
                 .email("email")
-                .password("password")
-                .user("user")
-                .space("space")
                 .scope("scope")
                 .name("name")
                 .description("description")
@@ -118,6 +115,8 @@ public class ExecutionRequestBuilder {
                                     info.put(String.format("scriptExecutionRequest%d%d", executionRequestIndex, scriptExecutionRequestIndex), scriptNameExecutionRequest);
                                     return scriptNameExecutionRequest;
                                 }).collect(Collectors.toList()))
+                .userID("userId")
+                .username("username")
                 .build();
         info.put("executionRequest", executionRequest);
 
@@ -150,6 +149,8 @@ public class ExecutionRequestBuilder {
                 .description("description")
                 .email("email")
                 .name("name")
+                .userId("userId")
+                .username("username")
                 .executionRequestLabels(IntStream.range(0, labelCount).boxed()
                         .map(labelIndex -> {
                                     ExecutionRequestLabelDto executionRequestLabelDto = ExecutionRequestLabelDto.builder()

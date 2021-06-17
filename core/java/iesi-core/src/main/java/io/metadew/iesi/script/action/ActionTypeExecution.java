@@ -27,6 +27,9 @@ public abstract class ActionTypeExecution {
         this.executionControl = executionControl;
         this.scriptExecution = scriptExecution;
         this.actionExecution = actionExecution;
+    }
+
+    public void resolveParameters() {
         for (Map.Entry<String, ActionTypeParameter> actionTypeParameter : ActionTypeParameterConfiguration.getInstance().getActionTypeParameters(getKeyword()).entrySet()) {
             Optional<ActionParameter> actionParameter = getActionExecution().getAction().getParameters().stream()
                     // TODO: go to equals instead of equals ignore case
@@ -45,7 +48,12 @@ public abstract class ActionTypeExecution {
         }
     }
 
-    public abstract void prepare() throws Exception;
+    public void prepare() throws Exception {
+        resolveParameters();
+        prepareAction();
+    }
+
+    public abstract void prepareAction() throws Exception;
 
     public boolean execute() throws InterruptedException {
         try {

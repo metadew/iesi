@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
+import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,15 +40,24 @@ class ArrayServiceTest {
     @Test
     void resolveInputTest() {
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-        when(executionRuntime.resolveVariables(anyString()))
-                .thenReturn("testing1, testing2, testing3")
-                .thenReturn("testing1")
-                .thenReturn("testing2")
+        when(executionRuntime.resolveVariables("testing1"))
+                .thenReturn("testing1");
+        when(executionRuntime.resolveConceptLookup("testing1"))
+                .thenReturn(new LookupResult("testing1", null, null));
+
+        when(executionRuntime.resolveVariables("testing2"))
+                .thenReturn("testing2");
+        when(executionRuntime.resolveConceptLookup("testing2"))
+                .thenReturn(new LookupResult("testing2", null, null));
+
+        when(executionRuntime.resolveVariables("testing3"))
                 .thenReturn("testing3");
+        when(executionRuntime.resolveConceptLookup("testing3"))
+                .thenReturn(new LookupResult("testing3", null, null));
 
         assertEquals(new Array(Stream.of(new Text("testing1"), new Text("testing2"), new Text("testing3"))
                         .collect(Collectors.toList())),
-                ArrayService.getInstance().resolve("testing", executionRuntime));
+                ArrayService.getInstance().resolve("testing1, testing2, testing3", executionRuntime));
     }
 
     @Test

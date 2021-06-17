@@ -28,7 +28,7 @@ public class ModSoapui extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
     }
 
     private String convertProject(DataType project) {

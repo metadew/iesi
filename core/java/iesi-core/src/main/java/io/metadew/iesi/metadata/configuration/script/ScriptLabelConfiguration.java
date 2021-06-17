@@ -53,7 +53,8 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
             return Optional.of(new ScriptLabel(scriptLabelKey,
                     new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                     cachedRowSet.getString("NAME"),
-                    cachedRowSet.getString("VALUE")));
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+            ));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -71,7 +72,8 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                         new ScriptLabelKey(cachedRowSet.getString("ID")),
                         new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                         cachedRowSet.getString("NAME"),
-                        cachedRowSet.getString("VALUE")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+                ));
 
             }
             cachedRowSet.close();
@@ -108,9 +110,10 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                 SQLTools.getStringForSQL(scriptLabel.getScriptKey().getScriptId()) + "," +
                 SQLTools.getStringForSQL(scriptLabel.getScriptKey().getScriptVersion()) + "," +
                 SQLTools.getStringForSQL(scriptLabel.getName()) + "," +
-                SQLTools.getStringForSQL(scriptLabel.getValue()) + "," +
-                " 'NA' );");
-
+                SQLTools.getStringForSQLClob(scriptLabel.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + " 'NA' );");
     }
 
     public boolean exists(ScriptLabelKey scriptLabelKey) {
@@ -145,7 +148,8 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                         new ScriptLabelKey(cachedRowSet.getString("ID")),
                         new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                         cachedRowSet.getString("NAME"),
-                        cachedRowSet.getString("VALUE")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+                ));
 
             }
             cachedRowSet.close();

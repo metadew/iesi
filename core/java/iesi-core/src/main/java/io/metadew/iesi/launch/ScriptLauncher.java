@@ -151,17 +151,6 @@ public class ScriptLauncher {
             }
         }
 
-        // Get the user name
-        if (line.hasOption("user")) {
-            System.out.println("Option -user (user) value = " + line.getOptionValue("user"));
-            executionRequestBuilder.user(line.getOptionValue("user"));
-        }
-
-        // Get the user password
-        if (line.hasOption("password")) {
-            System.out.println("Option -password (password) value = " + "*****");
-            executionRequestBuilder.password(line.getOptionValue("password"));
-        }
         // Get the labels
         if (line.hasOption("labels")) {
             System.out.println("Option -labels (labels) value = " + Arrays.toString(line.getOptionValues("labels")));

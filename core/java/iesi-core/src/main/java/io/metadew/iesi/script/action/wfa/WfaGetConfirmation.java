@@ -27,7 +27,7 @@ public class WfaGetConfirmation extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
     }
 
 

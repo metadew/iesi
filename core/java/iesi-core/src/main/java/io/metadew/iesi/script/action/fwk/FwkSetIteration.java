@@ -31,7 +31,7 @@ public class FwkSetIteration extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
         // TODO: based on type a different class should be defined? e.g. fwk.setIteration.list or fwk.setIteration.range or fwk.setIteration.values
     }
 

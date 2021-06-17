@@ -57,7 +57,8 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                 LOGGER.info(MessageFormat.format("Found multiple implementations for ActionParameter {0}. Returning first implementation", actionParameterKey.toString()));
             }
             cachedRowSet.next();
-            return Optional.of(new ActionParameter(actionParameterKey, cachedRowSet.getString("ACTION_PAR_VAL")));
+            return Optional.of(new ActionParameter(actionParameterKey,
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +76,8 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                         crs.getLong("SCRIPT_VRS_NB"),
                         crs.getString("ACTION_ID"),
                         crs.getString("ACTION_PAR_NM"));
-                actionParameters.add(new ActionParameter(actionParameterKey, crs.getString("ACTION_PAR_VAL")));
+                actionParameters.add(new ActionParameter(actionParameterKey,
+                        SQLTools.getStringFromSQLClob(crs, "ACTION_PAR_VAL")));
             }
             crs.close();
         } catch (SQLException e) {
@@ -117,7 +119,10 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                 SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptVersion()) + "," +
                 SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getActionId()) + "," +
                 SQLTools.getStringForSQL(actionParameter.getMetadataKey().getParameterName()) + "," +
-                SQLTools.getStringForSQL(actionParameter.getValue()) + ", 'NA' );";
+                SQLTools.getStringForSQLClob(actionParameter.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ", 'NA' );";
         getMetadataRepository().executeUpdate(insertQuery);
     }
 
@@ -143,8 +148,9 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
-                actionParameters.add(new ActionParameter(new ActionParameterKey(actionKey, crs.getString("ACTION_PAR_NM")),
-                        crs.getString("ACTION_PAR_VAL")));
+                actionParameters.add(new ActionParameter(new ActionParameterKey(actionKey,
+                        crs.getString("ACTION_PAR_NM")),
+                        SQLTools.getStringFromSQLClob(crs, "ACTION_PAR_VAL")));
             }
             crs.close();
         } catch (SQLException e) {

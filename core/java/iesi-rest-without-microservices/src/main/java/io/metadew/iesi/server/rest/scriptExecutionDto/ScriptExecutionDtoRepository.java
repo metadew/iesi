@@ -130,7 +130,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         String outputName = cachedRowSet.getString("SCRIPT_OUTPUT_NM");
         if (outputName != null && scriptExecutionDtoBuildHelper.getOutput().get(outputName) == null) {
             scriptExecutionDtoBuildHelper.getOutput()
-                    .put(outputName, new OutputDto(outputName, cachedRowSet.getString("SCRIPT_OUTPUT_VAL")));
+                    .put(outputName, new OutputDto(outputName,
+                            SQLTools.getStringFromSQLClob(cachedRowSet, "SCRIPT_OUTPUT_VAL")));
         }
         // Infotype 3: rows are present only if containing Execution Labels
         String executionLabelName = cachedRowSet.getString("SCRIPT_EXE_LBL_NM");
@@ -158,8 +159,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
             if (actionParameterName != null && actionExecutionDtoBuildHelper.getInputParameters().get(actionParameterName) == null) {
                 actionExecutionDtoBuildHelper.getInputParameters()
                         .put(actionParameterName, new ActionInputParametersDto(actionParameterName,
-                                cachedRowSet.getString("ACTION_PAR_VAL_RAW"),
-                                cachedRowSet.getString("ACTION_PAR_VAL_RESOLVED")));
+                                SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL_RAW"),
+                                SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL_RESOLVED")));
             }
             // Infotype 5: could not be present if the action doesn't contain any action
             // script + script action + action output
@@ -167,7 +168,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
             if (actionOutput != null && actionExecutionDtoBuildHelper.getOutput().get(actionOutput) == null) {
                 actionExecutionDtoBuildHelper.getOutput()
                         .put(actionOutput, new OutputDto(actionOutput,
-                                cachedRowSet.getString("ACTION_OUTPUT_VAL")));
+                                SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_OUTPUT_VAL")));
             }
         }
 
@@ -190,6 +191,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 cachedRowSet.getLong("SCRIPT_VRS_NB"),
                 cachedRowSet.getString("SCRIPT_SECURITY_GROUP_NAME"),
                 cachedRowSet.getString("ENV_NM"),
+                cachedRowSet.getString("USER_ID"),
+                cachedRowSet.getString("USERNAME"),
                 ScriptRunStatus.valueOf(cachedRowSet.getString("SCRIPT_ST_NM")),
                 SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_STRT_TMS")),
                 SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("SCRIPT_END_TMS")),
@@ -213,7 +216,7 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 cachedRowSet.getString("ACTION_TYP_NM"),
                 cachedRowSet.getString("ACTION_NM"),
                 cachedRowSet.getString("ACTION_DSC"),
-                cachedRowSet.getString("ACTION_CONDITION_VAL"),
+                SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_CONDITION_VAL"),
                 cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("y") ||
                         cachedRowSet.getString("ACTION_STOP_ERR_FL").equalsIgnoreCase("yes"),
                 cachedRowSet.getString("ACTION_EXP_ERR_FL").equalsIgnoreCase("y") ||
@@ -271,7 +274,9 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "action_des_trc_par.ACTION_PAR_VAL ACTION_PAR_VAL_RAW, " +
                 "action_trc_par.ACTION_PAR_VAL ACTION_PAR_VAL_RESOLVED, " +
                 "action_res_output.OUT_NM ACTION_OUTPUT_NM, " +
-                "action_res_output.OUT_VAL ACTION_OUTPUT_VAL " +
+                "action_res_output.OUT_VAL ACTION_OUTPUT_VAL, " +
+                "auth_execution_requests.USER_ID USER_ID, " +
+                "auth_execution_requests.USERNAME USERNAME " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_exec " +
                 "on results.RUN_ID = script_exec.RUN_ID AND results.PRC_ID = -1 " +
@@ -285,6 +290,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "on script_exec.SCRPT_REQUEST_ID = IESER.SCRPT_REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " IER " +
                 "on IESER.ID = IER.REQUEST_ID " +
+                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
+                "on IER.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " script_exec_lbl " +
                 "on IER.REQUEST_ID = script_exec_lbl.REQUEST_ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +
@@ -313,7 +320,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         List<String> conditions = new ArrayList<>();
         if (runId != null) conditions.add(" results.RUN_ID = " + SQLTools.getStringForSQL(runId));
         if (processId != null) conditions.add(" results.prc_id = " + SQLTools.getStringForSQL(processId));
-        if (conditions.isEmpty()) return Optional.empty();        // Only filter on authentication if explicitly mentioned
+        if (conditions.isEmpty())
+            return Optional.empty();        // Only filter on authentication if explicitly mentioned
         if (authentication != null) {
             Set<String> securityGroups = authentication.getAuthorities().stream()
                     .filter(authority -> authority instanceof IESIGrantedAuthority)
@@ -346,6 +354,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
         private final Long scriptVersion;
         private final String securityGroupName;
         private final String environment;
+        private final String userId;
+        private final String username;
         private final ScriptRunStatus status;
         private final LocalDateTime startTimestamp;
         private final LocalDateTime endTimestamp;
@@ -364,6 +374,8 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                     scriptVersion,
                     securityGroupName,
                     environment,
+                    userId,
+                    username,
                     status,
                     startTimestamp,
                     endTimestamp,

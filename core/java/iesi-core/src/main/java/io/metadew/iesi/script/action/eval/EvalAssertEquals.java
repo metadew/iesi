@@ -24,7 +24,7 @@ public class EvalAssertEquals extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
         expectedValue = getParameterResolvedValue(EXPECTED_KEY);
         actualValue = getParameterResolvedValue(ACTUAL_KEY);
 

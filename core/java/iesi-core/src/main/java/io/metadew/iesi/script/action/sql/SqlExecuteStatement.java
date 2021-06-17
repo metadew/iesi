@@ -27,7 +27,7 @@ public class SqlExecuteStatement extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     protected boolean executeAction() throws InterruptedException {
         String sqlStatement = convertSqlStatement(getParameterResolvedValue(SQL_STATEMENT_KEY));

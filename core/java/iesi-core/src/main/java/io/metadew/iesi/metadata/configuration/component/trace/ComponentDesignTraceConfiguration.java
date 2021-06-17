@@ -150,7 +150,10 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                                 SQLTools.getStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
                                 SQLTools.getStringForSQL(httpComponentHeaderTrace.getHttpComponentDesignID().getUuid().toString()) + ", " +
                                 SQLTools.getStringForSQL(httpComponentHeaderTrace.getName()) + ", " +
-                                SQLTools.getStringForSQL(httpComponentHeaderTrace.getValue()) + ") ")
+                                SQLTools.getStringForSQLClob(httpComponentHeaderTrace.getValue(),
+                                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                                .findFirst()
+                                                .orElseThrow(RuntimeException::new)) + ") ")
         );
 
         metadata.getHttpComponentQueryDesigns().forEach(httpComponentQueryTrace ->
@@ -161,7 +164,10 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                                 SQLTools.getStringForSQL(httpComponentQueryTrace.getMetadataKey().getUuid().toString()) + ", " +
                                 SQLTools.getStringForSQL(httpComponentQueryTrace.getHttpComponentQueryDesignID().getUuid().toString()) + ", " +
                                 SQLTools.getStringForSQL(httpComponentQueryTrace.getName()) + ", " +
-                                SQLTools.getStringForSQL(httpComponentQueryTrace.getValue()) + ") "));
+                                SQLTools.getStringForSQLClob(httpComponentQueryTrace.getValue(),
+                                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                                .findFirst()
+                                                .orElseThrow(RuntimeException::new)) + ") "));
     }
 
     private ComponentHttpDesignTraceBuilder mapHttpComponentDesignTraces(CachedRowSet cachedRowSet) throws SQLException {
@@ -201,7 +207,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                             new HttpComponentHeaderDesignTraceKey(UUID.fromString(mapHttpComponentHeaderDesignsId)),
                             new ComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentHeaderDesign_HTTP_COMP_DES_ID"))),
                             cachedRowSet.getString("TraceHttpComponentHeaderDesign_NAME"),
-                            cachedRowSet.getString("TraceHttpComponentHeaderDesign_VALUE")
+                            SQLTools.getStringFromSQLClob(cachedRowSet, "TraceHttpComponentHeaderDesign_VALUE")
                     )
             );
         }
@@ -216,7 +222,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
                         new HttpComponentQueryParameterDesignTraceKey(UUID.fromString(httpComponentDesignQueryId)),
                             new ComponentDesignTraceKey(UUID.fromString(cachedRowSet.getString("TraceHttpComponentQueryDesign_HTTP_COMP_DES_ID"))),
                             cachedRowSet.getString("TraceHttpComponentQueryDesign_NAME"),
-                            cachedRowSet.getString("TraceHttpComponentQueryDesign_VALUE")
+                            SQLTools.getStringFromSQLClob(cachedRowSet, "TraceHttpComponentQueryDesign_VALUE")
                     )
             );
         }

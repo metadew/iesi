@@ -126,6 +126,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -202,6 +204,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -402,6 +406,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -478,6 +484,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -675,6 +683,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -751,6 +761,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -900,6 +912,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -976,6 +990,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1170,6 +1186,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1246,6 +1264,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1440,6 +1460,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1516,6 +1538,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1713,6 +1737,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1789,6 +1815,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -1987,6 +2015,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2063,6 +2093,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 2L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2220,6 +2252,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2296,6 +2330,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 2L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2372,6 +2408,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script3Uuid.toString(), 2L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2448,6 +2486,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script4Uuid.toString(), 3L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2659,6 +2699,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2735,6 +2777,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -2811,6 +2855,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 2L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3053,6 +3099,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3129,6 +3177,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3237,6 +3287,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3313,6 +3365,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3389,6 +3443,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 2L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3590,6 +3646,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3666,6 +3724,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3742,6 +3802,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 2L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -3942,6 +4004,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script1Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -4018,6 +4082,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 1L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(
@@ -4094,6 +4160,8 @@ class ScriptDtoRepositoryTest {
                 .version(ScriptVersion.builder()
                         .scriptVersionKey(new ScriptVersionKey(new ScriptKey(script2Uuid.toString(), 2L)))
                         .description("version description")
+                        .createdBy("username")
+                        .createdAt(LocalDateTime.now().toString())
                         .build())
                 .parameters(new ArrayList<>())
                 .actions(Stream.of(

@@ -113,7 +113,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                 SQLTools.getStringForSQLClob(scriptLabel.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
-                                .orElseThrow(RuntimeException::new)) + " 'NA' );");
+                                .orElseThrow(RuntimeException::new)) + ", 'NA' );");
     }
 
     public boolean exists(ScriptLabelKey scriptLabelKey) {

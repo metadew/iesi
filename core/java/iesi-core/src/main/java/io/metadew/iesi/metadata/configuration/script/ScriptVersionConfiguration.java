@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
@@ -38,7 +39,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
 
     @Override
     public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) {
-        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
+        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, LAST_MODIFIED_BY, LAST_MODIFIED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
@@ -49,7 +50,11 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 LOGGER.warn(MessageFormat.format("Found multiple implementations for script version {0}. Returning first implementation", scriptVersionKey.toString()));
             }
             crsScriptVersion.next();
-            ScriptVersion scriptVersion = new ScriptVersion(scriptVersionKey, crsScriptVersion.getString("SCRIPT_VRS_DSC"));
+            ScriptVersion scriptVersion = new ScriptVersion(
+                    scriptVersionKey,
+                    crsScriptVersion.getString("SCRIPT_VRS_DSC"),
+                    crsScriptVersion.getString("LAST_MODIFIED_BY"),
+                    crsScriptVersion.getString("LAST_MODIFIED_AT"));
             crsScriptVersion.close();
             return Optional.of(scriptVersion);
         } catch (Exception e) {
@@ -73,7 +78,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                         crs.getLong("SCRIPT_VRS_NB")));
                 scriptVersions.add(new ScriptVersion(
                         scriptVersionKey,
-                        crs.getString("SCRIPT_VRS_DSC")));
+                        crs.getString("SCRIPT_VRS_DSC"),
+                        crs.getString("LAST_MODIFIED_BY"),
+                        crs.getString("LAST_MODIFIED_AT")));
             }
             crs.close();
         } catch (SQLException e) {
@@ -102,7 +109,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 scriptVersions.add(new ScriptVersion(
                         crsVersionScript.getString("SCRIPT_ID"),
                         crsVersionScript.getLong("SCRIPT_VRS_NB"),
-                        crsVersionScript.getString("SCRIPT_VRS_DSC")));
+                        crsVersionScript.getString("SCRIPT_VRS_DSC"),
+                        crsVersionScript.getString("LAST_MODIFIED_BY"),
+                        crsVersionScript.getString("LAST_MODIFIED_AT")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -143,6 +152,25 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             throw new MetadataAlreadyExistsException(scriptVersion);
         }
         getMetadataRepository().executeUpdate(getInsertStatement(scriptVersion));
+    }
+
+
+    @Override
+    public void update(ScriptVersion scriptVersion){
+        LOGGER.trace(MessageFormat.format("Updating ScriptVersion {0}-{1}.", scriptVersion.getScriptId(), scriptVersion.getNumber()));
+        if (!exists(scriptVersion)) {
+            throw new MetadataDoesNotExistException(scriptVersion);
+        }
+        getMetadataRepository().executeUpdate(updateStatement(scriptVersion));
+    }
+
+    private String updateStatement(ScriptVersion scriptVersion){
+        return "UPDATE "+ getMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " SET LAST_MODIFIED_BY = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedBy()) + ", " +
+                " LAST_MODIFIED_AT = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedAt()) + ", " +
+                " SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) +
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptVersion()) + ";";
     }
 
     private String deleteStatement(ScriptVersionKey scriptVersionKey) {

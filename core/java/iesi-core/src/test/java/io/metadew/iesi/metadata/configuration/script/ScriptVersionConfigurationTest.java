@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -142,17 +143,22 @@ class ScriptVersionConfigurationTest {
 
     @Test
     void scriptUpdateTest() {
+        String localDateTime = LocalDateTime.now().toString();
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         Optional<ScriptVersion> fetchedScriptVersion = ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey());
         assertTrue(fetchedScriptVersion.isPresent());
         assertEquals("version of script", fetchedScriptVersion.get().getDescription());
 
         scriptVersion1.setDescription("new description");
+        scriptVersion1.setLastModifiedBy("username");
+        scriptVersion1.setLastModifiedAt(localDateTime);
         ScriptVersionConfiguration.getInstance().update(scriptVersion1);
 
         fetchedScriptVersion = ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey());
         assertTrue(fetchedScriptVersion.isPresent());
         assertEquals("new description", fetchedScriptVersion.get().getDescription());
+        assertEquals("username", fetchedScriptVersion.get().getLastModifiedBy());
+        assertEquals(localDateTime, fetchedScriptVersion.get().getLastModifiedAt());
     }
 
     @Test
@@ -175,5 +181,7 @@ class ScriptVersionConfigurationTest {
 
         assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
     }
+
+
 
 }

@@ -301,8 +301,6 @@ class ScriptConfigurationTest {
         assertEquals("dummy", scriptFetched.get().getDescription());
 
         script11.setDescription("new description");
-        script11.setLastModifiedBy("username");
-        script11.setLastModifiedAt(LocalDateTime.now().toString());
         ScriptConfiguration.getInstance().update(script11);
 
         scriptFetched = ScriptConfiguration.getInstance().get(script11.getMetadataKey());
@@ -324,8 +322,6 @@ class ScriptConfigurationTest {
         assertEquals("dummy", script12Fetched.get().getDescription());
 
         script11.setDescription("new description");
-        script11.setLastModifiedBy("username");
-        script11.setLastModifiedAt(LocalDateTime.now().toString());
         ScriptConfiguration.getInstance().update(script11);
 
         script11Fetched = ScriptConfiguration.getInstance().get(script11.getMetadataKey());

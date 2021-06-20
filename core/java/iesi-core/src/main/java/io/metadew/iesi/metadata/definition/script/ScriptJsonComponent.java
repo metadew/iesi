@@ -75,11 +75,17 @@ public class ScriptJsonComponent {
                 versionNumber = versionNode.get(ScriptVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
                 scriptVersion = new ScriptVersion(
                         new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
-                        versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText()
+                        versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText(),
+                        "username",
+                        LocalDateTime.now().toString()
                 );
             } else {
                 versionNumber = 0L;
-                scriptVersion = new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)), "default version");
+                scriptVersion = new ScriptVersion(new ScriptVersionKey(
+                        new ScriptKey(scriptId, versionNumber)),
+                        "default version",
+                        "username",
+                        LocalDateTime.now().toString());
             }
             ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
 
@@ -142,9 +148,7 @@ public class ScriptJsonComponent {
                     scriptVersion,
                     scriptParameters,
                     scriptActions,
-                    scriptLabels,
-                    "username",
-                    LocalDateTime.now().toString());
+                    scriptLabels);
         }
     }
 

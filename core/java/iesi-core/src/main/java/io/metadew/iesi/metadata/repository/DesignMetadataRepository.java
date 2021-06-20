@@ -66,7 +66,6 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
         try {
             // if a script does not have a security group, it is linked to the PUBLIC security group
-            String dataTimeStamp  = LocalDateTime.now().toString();
             if (script.getSecurityGroupKey() == null) {
                 log.warn("{0} not linked to a security group, linking it to the public security group");
                 SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
@@ -74,11 +73,11 @@ public class DesignMetadataRepository extends MetadataRepository {
                 script.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
                 script.setSecurityGroupName(publicSecurityGroup.getName());
             }
-            script.setLastModifiedBy("admin");
-            script.setLastModifiedAt(dataTimeStamp);
             ScriptConfiguration.getInstance().insert(script);
         } catch (MetadataAlreadyExistsException e) {
             log.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
+            script.getVersion().setLastModifiedBy("admin");
+            script.getVersion().setLastModifiedAt(LocalDateTime.now().toString());
             ScriptConfiguration.getInstance().update(script);
         }
     }

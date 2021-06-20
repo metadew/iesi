@@ -134,11 +134,9 @@ public class ExecutionRequestBuilder {
                 ).collect(Collectors.toList()))
                 .parameters(new ArrayList<>())
                 .name(scriptName)
-                .version(new ScriptVersion(scriptName, scriptVersion, "description"))
+                .version(new ScriptVersion(scriptName, scriptVersion, "description",null, null))
                 .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                 .securityGroupName(scriptSecurityGroup)
-                .lastModifiedBy("username")
-                .lastModifiedAt(requestTimestamp.toString())
                 .build();
         info.put("script", script);
 

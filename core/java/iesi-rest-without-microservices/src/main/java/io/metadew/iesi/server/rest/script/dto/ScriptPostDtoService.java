@@ -55,9 +55,7 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                         .collect(Collectors.toList()),
                 scriptDto.getLabels().stream()
                         .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
-                        .collect(Collectors.toList()),
-                SecurityContextHolder.getContext().getAuthentication().getName(),
-                LocalDateTime.now().toString());
+                        .collect(Collectors.toList()));
     }
 
     public ScriptPostDto convertToDto(Script script) {

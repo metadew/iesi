@@ -133,7 +133,6 @@ class ScriptConfigurationTest {
 
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
         assertTrue(ScriptConfiguration.getInstance().get(script11.getMetadataKey()).isPresent());
-        System.out.println(ScriptConfiguration.getInstance().get(script11.getMetadataKey()).get());
         assertEquals(script11, ScriptConfiguration.getInstance().get(script11.getMetadataKey()).get());
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
         assertEquals(2, ScriptParameterConfiguration.getInstance().getAll().size());

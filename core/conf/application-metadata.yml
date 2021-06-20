@@ -1785,7 +1785,7 @@ iesi:
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 7
+            order: 5
             type: TIMESTAMP
             length: 0
             nullable: false
@@ -1863,21 +1863,21 @@ iesi:
             defaultTimestamp:
           LAST_MODIFIED_BY:
             description: Username of the user that Modified the script
-            order: 5
+            order: 4
             type: STRING
             length: 255
             nullable: true
             defaultTimestamp:
           LAST_MODIFIED_AT:
             description: the timestamp of modification
-            order: 6
+            order: 5
             type: STRING
             length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 4
+            order: 6
             type: TIMESTAMP
             length: 0
             nullable: false

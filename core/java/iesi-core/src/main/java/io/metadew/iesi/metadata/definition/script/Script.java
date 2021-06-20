@@ -27,7 +27,6 @@ public class Script extends SecuredObject<ScriptKey> {
     private List<Action> actions;
     private List<ScriptLabel> labels;
 
-
     @Builder
     public Script(ScriptKey scriptKey, SecurityGroupKey securityGroupKey, String securityGroupName, String name, String description, ScriptVersion version,
                   List<ScriptParameter> parameters, List<Action> actions, List<ScriptLabel> labels) {

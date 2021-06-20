@@ -182,6 +182,4 @@ class ScriptVersionConfigurationTest {
         assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
     }
 
-
-
 }

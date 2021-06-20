@@ -57,7 +57,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     private static final String INSERT_QUERY = "INSERT INTO " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC ) VALUES " +
+            " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC) VALUES " +
             "(%s, %s, %s, %s, %s);";
 
     private static final String UPDATE_QUERY = "UPDATE " +

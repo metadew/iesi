@@ -75,7 +75,6 @@ public class ScriptBuilder {
         return this;
     }
 
-
     public Script build() {
         scriptParameters.addAll(IntStream.range(0, numberOfParameters)
                 .boxed()

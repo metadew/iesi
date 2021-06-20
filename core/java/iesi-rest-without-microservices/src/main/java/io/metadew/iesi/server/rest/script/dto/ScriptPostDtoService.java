@@ -10,10 +10,8 @@ import io.metadew.iesi.server.rest.script.dto.label.IScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.IScriptParameterDtoService;
 import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Service

@@ -1783,20 +1783,6 @@ iesi:
             length: 2000
             nullable: true
             defaultTimestamp:
-          CREATED_BY:
-            description: Username of the user that created the script
-            order: 5
-            type: STRING
-            length: 255
-            nullable: false
-            defaultTimestamp:
-          CREATED_AT:
-            description: the timestamp of creation
-            order: 6
-            type: STRING
-            length: 255
-            nullable: false
-            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 7
@@ -1875,9 +1861,23 @@ iesi:
             length: 2000
             nullable: true
             defaultTimestamp:
+          CREATED_BY:
+            description: Username of the user that created the script
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          CREATED_AT:
+            description: the timestamp of creation
+            order: 5
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 4
+            order: 6
             type: TIMESTAMP
             length: 0
             nullable: false

@@ -13,7 +13,6 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.*;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +60,6 @@ class ScriptConfigurationTest {
         ScriptKey scriptKey1 = new ScriptKey(IdentifierTools.getScriptIdentifier("script1"), 1);
         ScriptKey scriptKey12 = new ScriptKey(IdentifierTools.getScriptIdentifier("script1"), 2);
         ScriptKey scriptKey2 = new ScriptKey(IdentifierTools.getScriptIdentifier("dummy"), 1);
-        LocalDateTime localDateTime = LocalDateTime.now();
 
         SecurityGroup securityGroup = SecurityGroup.builder()
                 .metadataKey(new SecurityGroupKey(UUID.randomUUID()))

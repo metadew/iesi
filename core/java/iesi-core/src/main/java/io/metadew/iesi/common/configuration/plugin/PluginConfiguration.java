@@ -5,8 +5,17 @@ import io.metadew.iesi.common.configuration.Configuration;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Getter
@@ -35,7 +44,7 @@ public class PluginConfiguration {
                 frameworkPluginMap.put(entry.getKey(), objectMapper.convertValue(entry.getValue(), FrameworkPlugin.class));
             }
         } else {
-            log.warn("no metadata configuration found on system variable, classpath or filesystem");
+            log.warn("no plugin configuration found on system variable, classpath or filesystem");
         }
     }
 

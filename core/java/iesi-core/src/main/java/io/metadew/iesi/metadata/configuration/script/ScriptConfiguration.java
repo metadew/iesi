@@ -235,63 +235,6 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
-    /*public Optional<Script> getDeleted(ScriptKey scriptKey) {
-
-        CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                String.format(FETCH_DELETED_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
-                "reader");
-        try {
-            if (crsScript.size() == 0) {
-                return Optional.empty();
-            } else if (crsScript.size() > 1) {
-                log.warn(MessageFormat.format("Found multiple implementations for script {0}-{1}. Returning first implementation", scriptKey.getScriptId(), scriptKey.getScriptVersion()));
-            }
-            crsScript.next();
-
-            // Get the version
-
-            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().getDeleted(new ScriptVersionKey(
-                    new ScriptKey(
-                            scriptKey.getScriptId(),
-                            scriptKey.getScriptVersion())));
-
-            if (!scriptVersion.isPresent()) {
-                return Optional.empty();
-            }
-
-            // Get the actions
-            List<Action> actions = ActionConfiguration.getInstance().getByScript(scriptKey);
-
-            // Get parameters
-            List<ScriptParameter> scriptParameters = ScriptParameterConfiguration.getInstance().getByScript(scriptKey);
-
-            // Get labels
-            List<ScriptLabel> scriptLabels = ScriptLabelConfiguration.getInstance().getByScript(scriptKey);
-
-            Script script = new Script(
-                    scriptKey,
-                    new SecurityGroupKey(UUID.fromString(crsScript.getString("SECURITY_GROUP_ID"))),
-                    crsScript.getString("SECURITY_GROUP_NAME"),
-                    crsScript.getString("SCRIPT_NM"),
-                    crsScript.getString("SCRIPT_DSC"),
-                    scriptVersion.get(),
-                    scriptParameters,
-                    actions,
-                    scriptLabels,
-                    crsScript.getString("DELETED_AT"));
-            crsScript.close();
-            return Optional.of(script);
-        } catch (Exception e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-
-            log.info(String.format("exception=%s", e));
-            log.debug(String.format("exception.stacktrace=%s", stackTrace));
-
-            return Optional.empty();
-        }
-    }*/
-
     public boolean existsById(String scriptId) {
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
                 String.format(EXISTS_BY_ID_QUERY, SQLTools.getStringForSQL(scriptId)),
@@ -368,31 +311,6 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
         return scripts;
     }
-
-    /*public List<Script> getAllDeleted() {
-        List<Script> scripts = new ArrayList<>();
-        CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                FETCH_ALL_DELETED_QUERY,
-                "reader");
-
-        try {
-            while (crsScript.next()) {
-                String scriptId = crsScript.getString("SCRIPT_ID");
-                List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getDeletedByScriptId(scriptId);
-                for (ScriptVersion scriptVersion : scriptVersions) {
-                    getDeleted(new ScriptKey(scriptId, scriptVersion.getNumber())).ifPresent(scripts::add);
-                }
-            }
-
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-
-            log.info(String.format("exception=%s", e));
-            log.debug(String.format("exception.stacktrace=%s", stackTrace));
-        }
-        return scripts;
-    }*/
 
     @Override
     public void delete(ScriptKey scriptKey) {

@@ -63,52 +63,6 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
 
     }
 
-    /*public Optional<ScriptVersion> getDeleted(ScriptVersionKey scriptVersionKey) {
-        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, DELETED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where DELETED_AT != 'NA' " +
-                " and SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
-        CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
-        try {
-            if (crsScriptVersion.size() == 0) {
-                return Optional.empty();
-            } else if (crsScriptVersion.size() > 1) {
-                LOGGER.warn(MessageFormat.format("Found multiple implementations for script version {0}. Returning first implementation", scriptVersionKey.toString()));
-            }
-            crsScriptVersion.next();
-            ScriptVersion scriptVersion = new ScriptVersion(
-                    scriptVersionKey, crsScriptVersion.getString("SCRIPT_VRS_DSC"),
-                    crsScriptVersion.getString("DELETED_AT"));
-            crsScriptVersion.close();
-            return Optional.of(scriptVersion);
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-            return Optional.empty();
-        }
-    }*/
-
-    /*public List<ScriptVersion> getDeleted(ScriptVersionKey scriptVersionKey) {
-        List<ScriptVersion> scriptVersions = new ArrayList<>();
-        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, DELETED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
-                + " where DELETED_AT != 'NA' and SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
-                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
-        CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
-        try {
-            while (crsScriptVersion.next()) {
-                ScriptVersion scriptVersion = new ScriptVersion(
-                        scriptVersionKey, crsScriptVersion.getString("SCRIPT_VRS_DSC"),
-                        crsScriptVersion.getString("DELETED_AT"));
-                scriptVersions.add(scriptVersion);
-            }
-            crsScriptVersion.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-        return scriptVersions;
-    }*/
-
     @Override
     public List<ScriptVersion> getAll() {
         List<ScriptVersion> scriptVersions = new ArrayList<>();
@@ -285,6 +239,5 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) +
                 " AND DELETED_AT = 'NA' ;";
     }
-
 
 }

@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.metadata.configuration.action.ActionBuilder;
-import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;

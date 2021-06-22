@@ -374,6 +374,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
+    @Override
+    public void update(Script script) {
+        ScriptVersionConfiguration.getInstance().update(script.getVersion());
+        getMetadataRepository().executeUpdate(getInsertStatement(script));
+    }
 
     public Optional<Script> getLatestVersion(String scriptName) {
         Optional<ScriptVersion> latestVersion = ScriptVersionConfiguration.getInstance().getLatestVersionNumber(IdentifierTools.getScriptIdentifier(scriptName));

@@ -134,7 +134,7 @@ public class ExecutionRequestBuilder {
                 ).collect(Collectors.toList()))
                 .parameters(new ArrayList<>())
                 .name(scriptName)
-                .version(new ScriptVersion(scriptName, scriptVersion, "description", "NA"))
+                .version(new ScriptVersion(scriptName, scriptVersion, "description", "NA", null, null))
                 .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                 .securityGroupName(scriptSecurityGroup)
                 .deletedAt("NA")

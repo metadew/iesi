@@ -38,8 +38,8 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     }
 
     @Override
-    public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) {
-        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, DELETED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
+    public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) 
+        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, DELETED_AT, LAST_MODIFIED_BY, LAST_MODIFIED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where DELETED_AT = 'NA' and SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
@@ -51,8 +51,11 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             }
             crsScriptVersion.next();
             ScriptVersion scriptVersion = new ScriptVersion(
-                    scriptVersionKey, crsScriptVersion.getString("SCRIPT_VRS_DSC"),
-                    crsScriptVersion.getString("DELETED_AT"));
+                    scriptVersionKey,
+                    crsScriptVersion.getString("SCRIPT_VRS_DSC"),
+                    crsScriptVersion.getString("DELETED_AT"),
+                    crsScriptVersion.getString("LAST_MODIFIED_BY"),
+                    crsScriptVersion.getString("LAST_MODIFIED_AT"));
             crsScriptVersion.close();
             return Optional.of(scriptVersion);
         } catch (Exception e) {
@@ -77,7 +80,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 scriptVersions.add(new ScriptVersion(
                         scriptVersionKey,
                         crs.getString("SCRIPT_VRS_DSC"),
-                        crs.getString("DELETED_AT")));
+                        crs.getString("DELETED_AT"),
+                        crs.getString("LAST_MODIFIED_BY"),
+                        crs.getString("LAST_MODIFIED_AT")));
             }
             crs.close();
         } catch (SQLException e) {
@@ -107,7 +112,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                         crsVersionScript.getString("SCRIPT_ID"),
                         crsVersionScript.getLong("SCRIPT_VRS_NB"),
                         crsVersionScript.getString("SCRIPT_VRS_DSC"),
-                        crsVersionScript.getString("DELETED_AT")));
+                        crsVersionScript.getString("DELETED_AT"),
+                        crsVersionScript.getString("LAST_MODIFIED_BY"),
+                        crsVersionScript.getString("LAST_MODIFIED_AT")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -126,7 +133,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                         crsVersionScript.getString("SCRIPT_ID"),
                         crsVersionScript.getLong("SCRIPT_VRS_NB"),
                         crsVersionScript.getString("SCRIPT_VRS_DSC"),
-                        crsVersionScript.getString("DELETED_AT")));
+                        crsVersionScript.getString("DELETED_AT"),
+                        crsVersionScript.getString("LAST_MODIFIED_BY"),
+                        crsVersionScript.getString("LAST_MODIFIED_AT")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -171,7 +180,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     }
 
     @Override
-    public void update(ScriptVersion scriptVersion) {
+    public void update(ScriptVersion scriptVersion){
         LOGGER.trace(MessageFormat.format("Updating ScriptVersion {0}-{1}.", scriptVersion.getScriptId(), scriptVersion.getNumber()));
         if (!exists(scriptVersion)) {
             throw new MetadataDoesNotExistException(scriptVersion);
@@ -204,6 +213,15 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) +
                 " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) + ";";
+    }
+
+    private String updateStatement(ScriptVersion scriptVersion){
+        return "UPDATE "+ getMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " SET LAST_MODIFIED_BY = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedBy()) + ", " +
+                " LAST_MODIFIED_AT = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedAt()) + ", " +
+                " SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) +
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptVersion()) + ";";
     }
 
     public boolean exists(ScriptVersionKey scriptVersionKey) {

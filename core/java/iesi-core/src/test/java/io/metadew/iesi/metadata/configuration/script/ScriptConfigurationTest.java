@@ -17,6 +17,9 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.*;
 import java.util.*;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;

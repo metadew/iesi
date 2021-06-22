@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.relational.core.sql.SQL;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -38,7 +39,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     }
 
     @Override
-    public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) 
+    public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) {
         String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, DELETED_AT, LAST_MODIFIED_BY, LAST_MODIFIED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where DELETED_AT = 'NA' and SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
@@ -253,7 +254,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
 
     public String getUpdateStatement(ScriptVersion scriptVersion) {
         return " UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersions") + " SET " +
-                " SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) +
+                " SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) + ", " +
+                " LAST_MODIFIED_BY = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedBy()) + ", " +
+                " LAST_MODIFIED_AT = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedAt()) +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) +
                 " AND DELETED_AT = 'NA' ;";
     }

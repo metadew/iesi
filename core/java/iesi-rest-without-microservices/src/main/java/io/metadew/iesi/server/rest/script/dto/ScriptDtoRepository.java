@@ -60,9 +60,10 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
                 "on base_scripts.SCRIPT_ID = script_labels.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = script_labels.SCRIPT_VRS_NB " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions").getName() + " actions " +
-                "on base_scripts.SCRIPT_ID = actions.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = actions.SCRIPT_VRS_NB " +
+                "on base_scripts.SCRIPT_ID = actions.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = actions.SCRIPT_VRS_NB and actions.DELETED_AT = 'NA' " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() + " action_parameters " +
-                "on base_scripts.SCRIPT_ID = action_parameters.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = action_parameters.SCRIPT_VRS_NB and actions.ACTION_ID = action_parameters.ACTION_ID" +
+                "on base_scripts.SCRIPT_ID = action_parameters.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = action_parameters.SCRIPT_VRS_NB and actions.ACTION_ID = action_parameters.ACTION_ID " +
+                " and action_parameters.DELETED_AT = 'NA' " +
                 getOrderByClause(pageable) + ";";
     }
 
@@ -121,10 +122,12 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) ";
         }
         if (!fetchAllScript && !isOnlyInactive) {
-            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT = 'NA' and versions.DELETED_AT = 'NA' ";
+            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT = 'NA' and versions.DELETED_AT = 'NA' " +
+                    " and script_labels.DELETED_AT = 'NA' ";
         }
         if(isOnlyInactive) {
-            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT != 'NA' ";
+            filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") + " script_designs.DELETED_AT != 'NA' and versions.DELETED_AT != 'NA' " +
+                    " and script_labels.DELETED_AT != 'NA' ";
         }
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }

@@ -80,7 +80,6 @@ public class ScriptJsonComponent {
                         LocalDateTime.now().toString(),
                         "username",
                         LocalDateTime.now().toString());
-                );
             } else {
                 versionNumber = 0L;
                 scriptVersion = new ScriptVersion(new ScriptVersionKey(

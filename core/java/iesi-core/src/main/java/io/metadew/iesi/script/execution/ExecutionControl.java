@@ -120,7 +120,8 @@ public class ExecutionControl {
                 envName,
                 ScriptRunStatus.RUNNING,
                 LocalDateTime.now(),
-                null
+                null,
+                actionExecution.getAction().getType()
         );
         ActionResultConfiguration.getInstance().insert(actionResult);
     }
@@ -135,7 +136,8 @@ public class ExecutionControl {
                 envName,
                 ScriptRunStatus.SKIPPED,
                 null,
-                null
+                null,
+                actionExecution.getAction().getType()
         );
         ActionResultConfiguration.getInstance().insert(actionResult);
 

@@ -54,7 +54,8 @@ public class ScriptExecutionBuilder {
                                                                String environment, int scriptExecutionRequestImpersonationCount,
                                                                int scriptExecutionRequestParameterCount,
                                                                Long processId, Long parentProcessId,
-                                                               int scriptResultOutputCount, int actionResultCount) {
+                                                               int scriptResultOutputCount, int actionResultCount,
+                                                               String actionTypeName) {
         LocalDateTime startTimestamp = LocalDateTime.now();
         Map<String, Object> infoMap = new HashMap<>(ExecutionRequestBuilder.generateExecutionRequest(
                 executionRequestIndex,
@@ -117,6 +118,7 @@ public class ScriptExecutionBuilder {
                             .status(ScriptRunStatus.RUNNING)
                             .scriptProcessId(processId)
                             .actionName(String.format("action%d", 1))
+                            .actionTypeName(actionTypeName)
                             .build();
                     infoMap.put(String.format("actionResult%d", actionResultIndex), actionResult);
                 });

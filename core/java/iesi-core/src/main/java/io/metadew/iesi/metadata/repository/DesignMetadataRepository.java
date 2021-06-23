@@ -79,6 +79,8 @@ public class DesignMetadataRepository extends MetadataRepository {
             ScriptConfiguration.getInstance().insert(script);
         } catch (MetadataAlreadyExistsException e) {
             log.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
+            script.getVersion().setLastModifiedBy("admin");
+            script.getVersion().setLastModifiedAt(LocalDateTime.now().toString());
             ScriptConfiguration.getInstance().update(script);
         }
     }

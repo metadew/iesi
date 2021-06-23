@@ -40,7 +40,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
 
     @Override
     public Optional<ScriptVersion> get(ScriptVersionKey scriptVersionKey) {
-        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, CREATED_BY, CREATED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
+        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, CREATED_BY, CREATED_AT, LAST_MODIFIED_BY, LAST_MODIFIED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
         CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
@@ -54,7 +54,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             ScriptVersion scriptVersion = new ScriptVersion(scriptVersionKey,
                     crsScriptVersion.getString("SCRIPT_VRS_DSC"),
                     crsScriptVersion.getString("CREATED_BY"),
-                    crsScriptVersion.getString("CREATED_AT"));
+                    crsScriptVersion.getString("CREATED_AT"),
+                    crsScriptVersion.getString("LAST_MODIFIED_BY"),
+                    crsScriptVersion.getString("LAST_MODIFIED_AT"));
             crsScriptVersion.close();
             return Optional.of(scriptVersion);
         } catch (Exception e) {
@@ -80,7 +82,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                         scriptVersionKey,
                         crs.getString("SCRIPT_VRS_DSC"),
                         crs.getString("CREATED_BY"),
-                        crs.getString("CREATED_AT")));
+                        crs.getString("CREATED_AT"),
+                        crs.getString("LAST_MODIFIED_BY"),
+                        crs.getString("LAST_MODIFIED_AT")));
             }
             crs.close();
         } catch (SQLException e) {
@@ -111,7 +115,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                         crsVersionScript.getLong("SCRIPT_VRS_NB"),
                         crsVersionScript.getString("SCRIPT_VRS_DSC"),
                         crsVersionScript.getString("CREATED_BY"),
-                        crsVersionScript.getString("CREATED_AT")));
+                        crsVersionScript.getString("CREATED_AT"),
+                        crsVersionScript.getString("LAST_MODIFIED_BY"),
+                        crsVersionScript.getString("LAST_MODIFIED_AT")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -160,12 +166,14 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         if (!exists(scriptVersion)) {
             throw new MetadataDoesNotExistException(scriptVersion);
         }
-        getMetadataRepository().executeUpdate(getUpdateStatement(scriptVersion));
+        getMetadataRepository().executeUpdate(updateStatement(scriptVersion));
     }
 
-    private String getUpdateStatement(ScriptVersion scriptVersion){
+    private String updateStatement(ScriptVersion scriptVersion){
         return "UPDATE "+ getMetadataRepository().getTableNameByLabel("ScriptVersions") +
-                " SET SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) +
+                " SET LAST_MODIFIED_BY = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedBy()) + ", " +
+                " LAST_MODIFIED_AT = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedAt()) + ", " +
+                " SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptVersion()) + ";";
     }

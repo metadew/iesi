@@ -1861,9 +1861,23 @@ iesi:
             length: 2000
             nullable: true
             defaultTimestamp:
+          LAST_MODIFIED_BY:
+            description: Username of the user that Modified the script
+            order: 4
+            type: STRING
+            length: 255
+            nullable: true
+            defaultTimestamp:
+          LAST_MODIFIED_AT:
+            description: the timestamp of modification
+            order: 5
+            type: STRING
+            length: 255
+            nullable: true
+            defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 4
+            order: 6
             type: TIMESTAMP
             length: 0
             nullable: false
@@ -2571,6 +2585,13 @@ iesi:
             type: TIMESTAMP
             length: 0
             nullable: true
+            defaultTimestamp:
+          ACTION_TYP_NM:
+            description: the action type of the action that was performed
+            order: 10
+            type: STRING
+            length: 255
+            nullable: false
             defaultTimestamp:
       - name: RES_ACTION_OUT
         label: ActionResultOutputs

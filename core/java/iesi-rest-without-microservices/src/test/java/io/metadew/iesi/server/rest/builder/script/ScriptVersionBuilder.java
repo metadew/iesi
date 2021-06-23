@@ -29,13 +29,11 @@ public class ScriptVersionBuilder {
                 new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
                 getDescription().orElse("dummy"),
                 "username",
-                LocalDateTime.now().toString());
+                LocalDateTime.now().toString(),
+                null, null);
     }
 
     public Optional<String> getDescription() {
         return Optional.ofNullable(description);
     }
-
-
-
 }

@@ -122,7 +122,8 @@ class ScriptExecutionDtoRepositoryTest {
                         -1L,
                         -1L,
                         1,
-                        2);
+                        2,
+                        "Create");
 
         executionRequestConfiguration.insert((ExecutionRequest) scriptExecutionMap.get("executionRequest"));
         scriptConfiguration.insert((Script) scriptExecutionMap.get("script"));

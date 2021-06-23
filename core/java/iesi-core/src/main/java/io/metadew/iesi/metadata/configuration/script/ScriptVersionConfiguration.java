@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
@@ -151,6 +152,22 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             throw new MetadataAlreadyExistsException(scriptVersion);
         }
         getMetadataRepository().executeUpdate(getInsertStatement(scriptVersion));
+    }
+
+    @Override
+    public void update(ScriptVersion scriptVersion){
+        LOGGER.trace(MessageFormat.format("Updating ScriptVersion {0}-{1}.", scriptVersion.getScriptId(), scriptVersion.getNumber()));
+        if (!exists(scriptVersion)) {
+            throw new MetadataDoesNotExistException(scriptVersion);
+        }
+        getMetadataRepository().executeUpdate(getUpdateStatement(scriptVersion));
+    }
+
+    private String getUpdateStatement(ScriptVersion scriptVersion){
+        return "UPDATE "+ getMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " SET SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) +
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptVersion()) + ";";
     }
 
     private String deleteStatement(ScriptVersionKey scriptVersionKey) {

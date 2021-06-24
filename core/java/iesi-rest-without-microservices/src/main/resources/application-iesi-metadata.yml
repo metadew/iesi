@@ -2572,7 +2572,7 @@ iesi:
             length: 0
             nullable: true
             defaultTimestamp:
-           ACTION_TYP_NM:
+          ACTION_TYP_NM:
             description: the action type of the action that was performed
             order: 10
             type: STRING

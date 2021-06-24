@@ -40,7 +40,6 @@ public class ArrayService implements IDataTypeService<Array> {
 
     public Array resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Array", arguments));
-        arguments = executionRuntime.resolveVariables(arguments);
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
         List<DataType> resolvedArguments = splittedArguments.stream()
                 .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))

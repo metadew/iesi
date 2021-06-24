@@ -22,13 +22,13 @@ public class FwkSetParameterList extends ActionTypeExecution {
 
     private static final String PARAMETER_LIST_KEY = "list";
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
+    private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.*)\\s*");
 
     public FwkSetParameterList(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     protected boolean executeAction() throws InterruptedException {
         Map<String, String> list = convertList(getParameterResolvedValue(PARAMETER_LIST_KEY));

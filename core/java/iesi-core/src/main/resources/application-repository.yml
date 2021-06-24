@@ -10,24 +10,15 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
-          connection: jdbc:mysql://35.205.247.85:3306/IESI?useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
-          type: mysql
-#          host: localhost
-#          name: IESI
-#          port: 3306
-          schema: IESI
-          owner:
-            user: root
-            password: iesi_root
-#          reader:
-#            user:
-#            password:
-#          writer:
-#            user:
-#            password:
+          #          connection: jdbc:mysql://ip/IESI?useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
+          #          type: mysql
+          #          schema: IESI
+          #          owner:
+          #            user: user
+          #            password: user
 
-#          type: sqlite
-#          file: /home/robbe/IESISandbox/0.6.0/security/repository.db3
+          type: sqlite
+          file: ./repository.db3
 
 #          type: h2
 #          mode: memory

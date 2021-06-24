@@ -38,14 +38,14 @@ public class FwkExecuteScript extends ActionTypeExecution {
     private static final String PARAM_LIST_KEY = "paramList";
     private static final String PARAM_FILE_KEY = "paramFile";
 
-    private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.+)\\s*");
+    private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.*)\\s*");
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() { }
+    public void prepareAction() { }
 
     private Optional<String> convertParameterList2(DataType parameterList) {
         if (parameterList == null) {

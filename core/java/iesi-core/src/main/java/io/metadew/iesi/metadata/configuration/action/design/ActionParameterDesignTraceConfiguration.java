@@ -50,7 +50,8 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
                 LOGGER.warn(MessageFormat.format("Found multiple implementations for ActionParameterDesignTrace {0}. Returning first implementation", actionParameterDesignTraceKey.toString()));
             }
             cachedRowSet.next();
-            return Optional.of(new ActionParameterDesignTrace(actionParameterDesignTraceKey, cachedRowSet.getString("ACTION_PAR_VAL")));
+            return Optional.of(new ActionParameterDesignTrace(actionParameterDesignTraceKey,
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +70,7 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
                         cachedRowSet.getLong("PRC_ID"),
                         cachedRowSet.getString("ACTION_ID"),
                         cachedRowSet.getString("ACTION_PAR_NM")),
-                        cachedRowSet.getString("ACTION_PAR_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "ACTION_PAR_VAL")));
             }
             return actionParameterTraces;
         } catch (SQLException e) {
@@ -117,7 +118,10 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
                 SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getActionId()) + "," +
                 SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getName()) + "," +
-                SQLTools.getStringForSQL(actionParameterDesignTrace.getValue()) + ");";
+                SQLTools.getStringForSQLClob(actionParameterDesignTrace.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     @Override
@@ -129,7 +133,11 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
 
     private String updateStatement(ActionParameterDesignTrace actionParameterDesignTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameterDesignTraces") +
-                " SET ACTION_PAR_VAL = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getValue()) +
+                " SET ACTION_PAR_VAL = " +
+                SQLTools.getStringForSQLClob(actionParameterDesignTrace.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getProcessId()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterDesignTrace.getMetadataKey().getActionId()) +

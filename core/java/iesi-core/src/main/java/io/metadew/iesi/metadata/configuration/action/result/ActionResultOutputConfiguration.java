@@ -53,7 +53,7 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
             }
             cachedRowSet.next();
             return Optional.of(new ActionResultOutput(actionResultOutputKey,
-                    cachedRowSet.getString("OUT_VAL")));
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "OUT_VAL")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -72,7 +72,7 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
                         cachedRowSet.getLong("SCRIPT_PRC_ID"),
                         cachedRowSet.getString("ACTION_ID"),
                         cachedRowSet.getString("OUT_NM")),
-                        cachedRowSet.getString("OUT_VAL")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "OUT_VAL")));
             }
             return actionResultOutputs;
         } catch (SQLException e) {
@@ -111,8 +111,10 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
                 SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + "," +
                 SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + "," +
-                SQLTools.getStringForSQL(MetadataFieldService.getInstance()
-                        .truncateAccordingToConfiguration("ActionResultOutputs", "OUT_VAL", actionResultOutput.getValue())) + ");";
+                SQLTools.getStringForSQLClob(actionResultOutput.getValue(),
+                        getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                .findFirst()
+                                .orElseThrow(RuntimeException::new)) + ");";
     }
 
     @Override
@@ -125,8 +127,10 @@ public class ActionResultOutputConfiguration extends Configuration<ActionResultO
     private String updateStatement(ActionResultOutput actionResultOutput) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionResultOutputs") +
                 " SET ACTION_ID = " + SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getActionId()) + ", " +
-                "OUT_VAL = " + SQLTools.getStringForSQL(MetadataFieldService.getInstance()
-                    .truncateAccordingToConfiguration("ActionResultOutputs", "OUT_VAL", actionResultOutput.getValue())) +
+                "OUT_VAL = " + SQLTools.getStringForSQLClob(actionResultOutput.getValue(),
+                getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                        .findFirst()
+                        .orElseThrow(RuntimeException::new)) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getProcessId()) +
                 " AND OUT_NM = " + SQLTools.getStringForSQL(actionResultOutput.getMetadataKey().getOutputName()) + ";";

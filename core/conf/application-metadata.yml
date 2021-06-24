@@ -129,10 +129,10 @@ iesi:
             nullable: false
             unique: true
           KEY:
-            description: label value
+            description: label key
             order: 2
             type: STRING
-            length: 255
+            length: 2000
             nullable: false
             unique: true
           VALUE:
@@ -157,7 +157,7 @@ iesi:
             description: Unique short name for the connection
             order: 1
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -165,7 +165,7 @@ iesi:
             description: Keyword for the connection type
             order: 2
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           CONN_DSC:
@@ -192,7 +192,7 @@ iesi:
             description: Unique short name for the impersonation
             order: 1
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -476,7 +476,7 @@ iesi:
             description: Unique short name for the impersonation
             order: 1
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -484,7 +484,7 @@ iesi:
             description: Unique short name for the connection
             order: 2
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -492,7 +492,7 @@ iesi:
             description: Unique short name for the connection that is impersonated
             order: 3
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           CONN_IMP_DSC:
@@ -518,7 +518,7 @@ iesi:
             description: Unique short name for the connection
             order: 1
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -526,7 +526,7 @@ iesi:
             description: Short name for the envioronment
             order: 2
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -534,15 +534,15 @@ iesi:
             description: Name of the connection parameter
             order: 3
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
           CONN_PAR_VAL:
             description: String type parameter value
             order: 4
-            type: STRING
-            length: 2000
+            type: CLOB
+            length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
@@ -558,10 +558,10 @@ iesi:
         category: connectivity
         fields:
           ENV_NM:
-            description: Unique short name for the envioronment
+            description: Unique short name for the environment
             order: 1
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -612,7 +612,7 @@ iesi:
             description: Name of the script label
             order: 3
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             unique: true
             defaultTimestamp:
@@ -660,7 +660,7 @@ iesi:
             description: description of the template
             order: 1
             type: STRING
-            length: 4000
+            length: 2000
             nullable: false
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
@@ -685,7 +685,7 @@ iesi:
             description: key to match the matcher against
             order: 1
             type: STRING
-            length: 255
+            length: 2000
             unique: true
             nullable: false
           TEMPLATE_ID:
@@ -761,7 +761,7 @@ iesi:
           VALUE:
             description: Unique identifier for the matcher
             order: 1
-            type: STRING
+            type: CLOB
             length: 255
             nullable: false
           LOAD_TMS:
@@ -914,7 +914,7 @@ iesi:
             description: Name of the script label
             order: 3
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           VALUE:
@@ -955,7 +955,7 @@ iesi:
             description: Name of the script label
             order: 3
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           VALUE:
@@ -981,7 +981,7 @@ iesi:
             description: Unique short name for the envioronment
             order: 1
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -989,15 +989,15 @@ iesi:
             description: Name of the environment parameter
             order: 2
             type: STRING
-            length: 100
+            length: 255
             primaryKey: true
             nullable: false
             defaultTimestamp:
           ENV_PAR_VAL:
             description: Environment parameter value
             order: 3
-            type: STRING
-            length: 2000
+            type: CLOB
+            length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
@@ -1031,7 +1031,7 @@ iesi:
             description: Request name
             order: 5
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           REQUEST_DSC:
@@ -1052,21 +1052,21 @@ iesi:
             description: Scope of the request
             order: 9
             type: STRING
-            length: 100
+            length: 255
             nullable: true
             defaultTimestamp:
           CONTEXT_NM:
             description: Context of the request
             order: 10
             type: STRING
-            length: 100
+            length: 255
             nullable: true
             defaultTimestamp:
           ST_NM:
             description: Status
             order: 10
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           LOAD_TMS:
@@ -1147,22 +1147,22 @@ iesi:
             description: Keyword for the request parameter type
             order: 2
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           REQUEST_PAR_NM:
             description: Parameter name
             order: 3
             type: STRING
-            length: 100
+            length: 2000
             nullable: false
             primaryKey: true
             defaultTimestamp:
           REQUEST_PAR_VAL:
             description: Parameter value
             order: 4
-            type: STRING
-            length: 2000
+            type: CLOB
+            length: 255
             nullable: false
             defaultTimestamp:
           LOAD_TMS:
@@ -1203,7 +1203,7 @@ iesi:
             description: Status
             order: 10
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           STRT_TMS:
@@ -1265,7 +1265,7 @@ iesi:
             description: Status
             order: 10
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           LOAD_TMS:
@@ -1355,14 +1355,6 @@ iesi:
         description: In-process runtime script requests for execution
         category: execution
         fields:
-          ID:
-            description: Unique identifier for the script request item
-            order: 1
-            type: STRING
-            length: 255
-            nullable: false
-            defaultTimestamp:
-            primaryKey: true
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
             order: 1
@@ -1389,14 +1381,6 @@ iesi:
         description: In-process runtime script requests for execution
         category: execution
         fields:
-          ID:
-            description: Unique identifier for the script request item
-            order: 1
-            type: STRING
-            length: 255
-            nullable: false
-            defaultTimestamp:
-            primaryKey: true
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
             order: 1
@@ -1465,14 +1449,14 @@ iesi:
             description: Keyword for the action type
             order: 5
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           ACTION_NM:
             description: Unique short name for the action
             order: 6
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           ACTION_DSC:
@@ -1486,20 +1470,20 @@ iesi:
             description: Unique short name for the applicable component
             order: 8
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           ITERATION_VAL:
             description: Value for the applicable iteration
             order: 9
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           CONDITION_VAL:
             description: Value for the applicable condition
             order: 10
-            type: STRING
+            type: CLOB
             length: 2000
             nullable: true
             defaultTimestamp:
@@ -1507,7 +1491,7 @@ iesi:
             description: Value for the number of retries on error
             order: 11
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           EXP_ERR_FL:
@@ -1565,14 +1549,14 @@ iesi:
             description: Name of the action parameter
             order: 4
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
           ACTION_PAR_VAL:
             description: String type parameter value
             order: 5
-            type: STRING
+            type: CLOB
             length: 4000
             nullable: true
             defaultTimestamp:
@@ -1600,14 +1584,14 @@ iesi:
             description: Keyword for the component type
             order: 2
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           COMP_NM:
             description: Unique short name for the component
             order: 3
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           COMP_DSC:
@@ -1649,7 +1633,7 @@ iesi:
             description: Short name for the envioronment
             order: 3
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
@@ -1657,14 +1641,14 @@ iesi:
             description: Name of the attribute
             order: 4
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
           COMP_ATT_VAL:
             description: String type attribute value
             order: 5
-            type: STRING
+            type: CLOB
             length: 2000
             nullable: true
             defaultTimestamp:
@@ -1700,14 +1684,14 @@ iesi:
             description: Name of the component parameter
             order: 3
             type: STRING
-            length: 100
+            length: 255
             primaryKey: true
             nullable: false
             defaultTimestamp:
           COMP_PAR_VAL:
             description: String type parameter value
             order: 4
-            type: STRING
+            type: CLOB
             length: 2000
             nullable: true
             defaultTimestamp:
@@ -1789,7 +1773,7 @@ iesi:
             description: Unique short name for the script
             order: 3
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           SCRIPT_DSC:
@@ -1831,14 +1815,14 @@ iesi:
             description: Name of the script parameter
             order: 3
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             primaryKey: true
             defaultTimestamp:
           SCRIPT_PAR_VAL:
             description: String type parameter value
             order: 4
-            type: STRING
+            type: CLOB
             length: 2000
             nullable: true
             defaultTimestamp:
@@ -1923,14 +1907,14 @@ iesi:
             description: Keyword for the action type
             order: 5
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           ACTION_NM:
             description: Unique short name for the action
             order: 6
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           ACTION_DSC:
@@ -1944,20 +1928,20 @@ iesi:
             description: Unique short name for the applicable component
             order: 8
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           ITERATION_VAL:
             description: Value for the applicable iteration
             order: 9
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           CONDITION_VAL:
             description: Value for the applicable condition
             order: 10
-            type: STRING
+            type: CLOB
             length: 2000
             nullable: true
             defaultTimestamp:
@@ -1965,7 +1949,7 @@ iesi:
             description: Value for the number of retries on error
             order: 11
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           EXP_ERR_FL:
@@ -2022,15 +2006,15 @@ iesi:
             description: Name of the action parameter
             order: 4
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
             primaryKey: true
           ACTION_PAR_VAL:
             description: String type parameter value
             order: 5
-            type: STRING
-            length: 4000
+            type: CLOB
+            length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
@@ -2079,14 +2063,14 @@ iesi:
             description: Keyword for the action type
             order: 7
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           ACTION_NM:
             description: Unique short name for the action
             order: 8
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           ACTION_DSC:
@@ -2100,20 +2084,20 @@ iesi:
             description: Unique short name for the applicable component
             order: 10
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           ITERATION_VAL:
             description: Value for the applicable iteration
             order: 11
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           CONDITION_VAL:
             description: Value for the applicable condition
             order: 12
-            type: STRING
+            type: CLOB
             length: 2000
             nullable: true
             defaultTimestamp:
@@ -2121,7 +2105,7 @@ iesi:
             description: Value for the number of retries on error
             order: 13
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
           EXP_ERR_FL:
@@ -2178,15 +2162,15 @@ iesi:
             description: Name of the action parameter
             order: 6
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
             primaryKey: true
           ACTION_PAR_VAL:
             description: String type parameter value
             order: 7
-            type: STRING
-            length: 4000
+            type: CLOB
+            length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
@@ -2235,14 +2219,14 @@ iesi:
             description: Keyword for the script type
             order: 5
             type: STRING
-            length: 100
+            length: 255
             nullable: true
             defaultTimestamp:
           SCRIPT_NM:
             description: Unique short name for the script
             order: 6
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           SCRIPT_DSC:
@@ -2290,15 +2274,15 @@ iesi:
             description: Name of the script parameter
             order: 5
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
             primaryKey: true
           SCRIPT_PAR_VAL:
             description: String type parameter value
             order: 6
-            type: STRING
-            length: 2000
+            type: CLOB
+            length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
@@ -2389,14 +2373,14 @@ iesi:
             description: Unique short name for the script
             order: 5
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           SCRIPT_TYP_NM:
             description: Keyword for the script type
             order: 7
             type: STRING
-            length: 100
+            length: 255
             nullable: true
             defaultTimestamp:
           SCRIPT_DSC:
@@ -2444,15 +2428,15 @@ iesi:
             description: Name of the script parameter
             order: 4
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
             primaryKey: true
           SCRIPT_PAR_VAL:
             description: String type parameter value
             order: 5
-            type: STRING
-            length: 2000
+            type: CLOB
+            length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
@@ -2543,21 +2527,21 @@ iesi:
             description: Unique short name for the action
             order: 5
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           ENV_NM:
             description: Environment name on which the action was executed
             order: 6
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           ST_NM:
             description: Status result of the action execution
             order: 7
             type: STRING
-            length: 30
+            length: 255
             nullable: false
             defaultTimestamp:
           STRT_TMS:
@@ -2606,15 +2590,15 @@ iesi:
             description: Keyword for the output generated by the action execution
             order: 4
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
             primaryKey: true
           OUT_VAL:
             description: String type output value
             order: 5
-            type: STRING
-            length: 2000
+            type: CLOB
+            length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
@@ -2656,14 +2640,14 @@ iesi:
             description: Context name for the performance entry
             order: 4
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           SCOPE_NM:
             description: Scope name for the performance entry
             order: 5
             type: STRING
-            length: 200
+            length: 255
             nullable: true
             defaultTimestamp:
             primaryKey: true
@@ -2727,7 +2711,7 @@ iesi:
             description: Unique short name for the script
             order: 4
             type: STRING
-            length: 200
+            length: 255
             nullable: false
             defaultTimestamp:
           SCRIPT_VRS_NB:
@@ -2747,14 +2731,14 @@ iesi:
             description: Environment name on which the script was executed
             order: 6
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
           ST_NM:
             description: Status result of the script execution
             order: 7
             type: STRING
-            length: 30
+            length: 255
             nullable: false
             defaultTimestamp:
           STRT_TMS:
@@ -2803,15 +2787,15 @@ iesi:
             description: Keyword for the output generated by the script execution
             order: 4
             type: STRING
-            length: 100
+            length: 255
             nullable: false
             defaultTimestamp:
             primaryKey: true
           OUT_VAL:
             description: String type output value
             order: 5
-            type: STRING
-            length: 2000
+            type: CLOB
+            length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
@@ -2912,7 +2896,7 @@ iesi:
             description: Endpoint of the TraceHttpComponentDesign
             order: 4
             type: STRING
-            length: 255
+            length: 2000
             nullable: false
             defaultTimestamp:
       - name: TRC_HTTP_COMP_HEAD_DES
@@ -2944,7 +2928,7 @@ iesi:
           VALUE:
             description: Value of the TraceHttpComponentDesign
             order: 4
-            type: STRING
+            type: CLOB
             length: 255
             nullable: false
             defaultTimestamp:
@@ -2977,7 +2961,7 @@ iesi:
           VALUE:
             description: Value of the TraceHttpComponentQueryDesign
             order: 4
-            type: STRING
+            type: CLOB
             length: 255
             nullable: false
             defaultTimestamp:
@@ -3073,7 +3057,7 @@ iesi:
             description: Endpoint of the TraceHttpComponent
             order: 4
             type: STRING
-            length: 255
+            length: 2000
             nullable: false
             defaultTimestamp:
       - name: TRC_HTTP_COMP_HEAD
@@ -3105,7 +3089,7 @@ iesi:
           VALUE:
             description: VALUE of the TraceHttpComponentHeader
             order: 4
-            type: STRING
+            type: CLOB
             length: 255
             nullable: false
             defaultTimestamp:
@@ -3138,7 +3122,7 @@ iesi:
           VALUE:
             description: Value of the TraceHttpComponentQuery
             order: 4
-            type: STRING
+            type: CLOB
             length: 255
             nullable: false
             defaultTimestamp:
@@ -3208,7 +3192,7 @@ iesi:
           HOST:
             description: hostname of the http connection
             order: 2
-            type: STRING
+            type: CLOB
             length: 255
             nullable: false
           PORT:
@@ -3220,7 +3204,7 @@ iesi:
           BASE_URL:
             description: base url of the http connection
             order: 4
-            type: STRING
+            type: CLOB
             length: 255
             nullable: true
           TLS:

@@ -54,9 +54,9 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                     "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME_REQ " +
                     "FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
                     "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
-                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.ID = SCRIPT_FILE_EXEC_REQ.ID " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID " +
                     "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
-                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.ID = SCRIPT_NAME_EXEC_REQ.ID " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID " +
                     "WHERE SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequestKey.getId()) + ";";
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
@@ -116,9 +116,9 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                     "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME_REQ " +
                     "FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
                     "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
-                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.ID = SCRIPT_FILE_EXEC_REQ.ID " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID " +
                     "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
-                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.ID = SCRIPT_NAME_EXEC_REQ.ID " + ";";
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID " + ";";
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -136,8 +136,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                             ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM"))));
                 } else if (cachedRowSet.getString("NAME_REQ") != null) {
                     scriptExecutionRequests.add(new ScriptNameExecutionRequest(
-                            new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")
-                            ),
+                            new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                             new ExecutionRequestKey(cachedRowSet.getString("ID")),
                             cachedRowSet.getString("ENVIRONMENT"), SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")), ScriptExecutionRequestImpersonationConfiguration.getInstance()
                             .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestParameterConfiguration.getInstance()
@@ -206,16 +205,14 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                 SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestStatus().value()) + ");");
         if (scriptExecutionRequest instanceof ScriptFileExecutionRequest) {
             queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") +
-                    " (SCRPT_REQUEST_ID, ID, SCRPT_FILENAME) VALUES (" +
+                    " (SCRPT_REQUEST_ID, SCRPT_FILENAME) VALUES (" +
                     SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
-                    SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
                     SQLTools.getStringForSQL(((ScriptFileExecutionRequest) scriptExecutionRequest).getFileName()) + ");");
             return queries;
         } else if (scriptExecutionRequest instanceof ScriptNameExecutionRequest) {
             queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") +
-                    " (SCRPT_REQUEST_ID, ID, SCRPT_NAME, SCRPT_VRS) VALUES (" +
+                    " (SCRPT_REQUEST_ID, SCRPT_NAME, SCRPT_VRS) VALUES (" +
                     SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
-                    SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
                     SQLTools.getStringForSQL(((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName()) + ", " +
                     SQLTools.getStringForSQL(((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(null)) + ");");
             return queries;
@@ -241,9 +238,9 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                     "SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AS NAME_REQ " +
                     "FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SCRIPT_EXEC_REQ " +
                     "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SCRIPT_FILE_EXEC_REQ " +
-                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.ID = SCRIPT_FILE_EXEC_REQ.ID " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_FILE_EXEC_REQ.SCRPT_REQUEST_ID " +
                     "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SCRIPT_NAME_EXEC_REQ " +
-                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID AND SCRIPT_EXEC_REQ.ID = SCRIPT_NAME_EXEC_REQ.ID " +
+                    "ON SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID = SCRIPT_NAME_EXEC_REQ.SCRPT_REQUEST_ID " +
                     "WHERE SCRIPT_EXEC_REQ.ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
@@ -289,15 +286,20 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
 
     private List<String> deleteStatement(ExecutionRequestKey executionRequestKey) {
         List<String> queries = new ArrayList<>();
+        String subQuery = String.format(
+                "SELECT SCRPT_REQUEST_ID FROM %s WHERE ID=%s",
+                getMetadataRepository().getTableNameByLabel("ScriptExecutionRequests"),
+                SQLTools.getStringForSQL(executionRequestKey.getId()));
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") +
+                " WHERE " +
+                " SCRPT_REQUEST_ID in (" + subQuery + ");");
+        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") +
+                " WHERE " +
+                " SCRPT_REQUEST_ID in (" + subQuery + ");");
         queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") +
                 " WHERE " +
                 " ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";");
-        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") +
-                " WHERE " +
-                " ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";");
-        queries.add("DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") +
-                " WHERE " +
-                " ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";");
+
         return queries;
     }
 
@@ -325,13 +327,11 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                 "SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");
         if (scriptExecutionRequest instanceof ScriptFileExecutionRequest) {
             queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptFileExecutionRequests") + " SET " +
-                    "ID=" + SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
                     "SCRPT_FILENAME=" + SQLTools.getStringForSQL(((ScriptFileExecutionRequest) scriptExecutionRequest).getFileName()) + " WHERE " +
                     "SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");
             return queries;
         } else if (scriptExecutionRequest instanceof ScriptNameExecutionRequest) {
             queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptNameExecutionRequests") + " SET " +
-                    "ID=" + SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
                     "SCRPT_NAME=" + SQLTools.getStringForSQL(((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptName()) + "," +
                     "SCRPT_VRS=" + SQLTools.getStringForSQL(((ScriptNameExecutionRequest) scriptExecutionRequest).getScriptVersion().orElse(null)) + " WHERE " +
                     "SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");

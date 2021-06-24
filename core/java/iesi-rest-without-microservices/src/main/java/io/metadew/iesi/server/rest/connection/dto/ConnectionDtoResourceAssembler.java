@@ -26,28 +26,14 @@ public class ConnectionDtoResourceAssembler extends RepresentationModelAssembler
 
     @Override
     public ConnectionDto toModel(Connection connection) {
-        ConnectionDto connectionDto = convertToDto(connection);
-        Link selfLink = linkTo(methodOn(ConnectionsController.class)
-                .get(connection.getMetadataKey().getName(), connection.getMetadataKey().getEnvironmentKey().getName()))
-                .withSelfRel();
-        connectionDto.add(selfLink);
-        Link environmentLink = linkTo(methodOn(EnvironmentsController.class)
-                .getByName(connection.getMetadataKey().getEnvironmentKey().getName()))
-                .withRel("environment");
-        connectionDto.add(environmentLink);
+        throw new RuntimeException("Unsupported operation");
+    }
+
+    public ConnectionDto convertToDto(ConnectionDto connectionDto) {
         return connectionDto;
     }
 
-    private ConnectionDto convertToDto(Connection connection) {
-        return new ConnectionDto(connection.getMetadataKey().getName(),
-                connection.getType(),
-                connection.getDescription(),
-                connection.getMetadataKey().getEnvironmentKey().getName(),
-                connection.getParameters().stream().map(this::convertToDto).collect(Collectors.toList()));
+    public ConnectionDto toModel(ConnectionDto componentDto) {
+        return componentDto;
     }
-
-    private ConnectionParameterDto convertToDto(ConnectionParameter connectionParameter) {
-        return new ConnectionParameterDto(connectionParameter.getName(), connectionParameter.getValue());
-    }
-
 }

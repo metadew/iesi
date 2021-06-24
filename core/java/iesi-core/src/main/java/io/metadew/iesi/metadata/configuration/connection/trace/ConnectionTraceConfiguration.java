@@ -131,9 +131,15 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertHttpQuery,
                             SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
-                            SQLTools.getStringForSQL(((HttpConnectionTrace) metadata).getHost()),
+                            SQLTools.getStringForSQLClob(((HttpConnectionTrace) metadata).getHost(),
+                                    getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                            .findFirst()
+                                            .orElseThrow(RuntimeException::new)),
                             SQLTools.getStringForSQL(((HttpConnectionTrace) metadata).getPort()),
-                            SQLTools.getStringForSQL(((HttpConnectionTrace) metadata).getBaseUrl()),
+                            SQLTools.getStringForSQLClob(((HttpConnectionTrace) metadata).getBaseUrl(),
+                                    getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
+                                            .findFirst()
+                                            .orElseThrow(RuntimeException::new)),
                             SQLTools.getStringForSQL(((HttpConnectionTrace) metadata).isTls())
                     ));
         }
@@ -155,9 +161,9 @@ public class ConnectionTraceConfiguration extends Configuration<ConnectionTrace,
                     .name(cachedRowSet.getString("connection_traces_conn_nm"))
                     .type(cachedRowSet.getString("connection_traces_conn_type_nm"))
                     .description(cachedRowSet.getString("connection_traces_conn_desc"))
-                    .host(cachedRowSet.getString("http_connection_traces_host"))
+                    .host(SQLTools.getStringFromSQLClob(cachedRowSet, "http_connection_traces_host"))
                     .port(cachedRowSet.getInt("http_connection_traces_port"))
-                    .baseUrl(cachedRowSet.getString("http_connection_traces_base_url"))
+                    .baseUrl(SQLTools.getStringFromSQLClob(cachedRowSet, "http_connection_traces_base_url"))
                     .tls(SQLTools.getBooleanFromSql(cachedRowSet.getString("http_connection_traces_tls")))
                     .build();
         } else {

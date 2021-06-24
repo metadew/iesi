@@ -174,8 +174,7 @@ public class InMemoryDatasetImplementationKeyValueConfiguration extends Configur
                 SQLTools.getStringForSQLClob(inMemoryDatasetImplementationKeyValue.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
-                                .orElseThrow(RuntimeException::new)
-                )));
+                                .orElseThrow(RuntimeException::new))));
     }
 
     @Override
@@ -186,18 +185,18 @@ public class InMemoryDatasetImplementationKeyValueConfiguration extends Configur
                 SQLTools.getStringForSQLClob(inMemoryDatasetImplementationKeyValue.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
-                                .orElseThrow(RuntimeException::new)
-                ),
+                                .orElseThrow(RuntimeException::new)),
                 SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid())));
     }
 
     public InMemoryDatasetImplementationKeyValue mapRow(CachedRowSet cachedRowSet) throws SQLException {
         String inMemoryKeyValueId = cachedRowSet.getString("dataset_in_mem_impl_kv_id");
+        String key = cachedRowSet.getString("dataset_in_mem_impl_kvs_key");
         String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
         return new InMemoryDatasetImplementationKeyValue(
                 new InMemoryDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                 new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
-                cachedRowSet.getString("dataset_in_mem_impl_kvs_key"),
+                key,
                 clobValue);
     }
 }

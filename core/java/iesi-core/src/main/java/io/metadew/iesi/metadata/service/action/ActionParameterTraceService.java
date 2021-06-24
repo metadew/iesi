@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.service.action;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
@@ -65,7 +66,7 @@ public class ActionParameterTraceService {
 
     private List<ActionParameterTrace> getActionParameterTraces(ActionExecution actionExecution, String key, DataType value) {
         List<ActionParameterTrace> actionParameterTraces = new ArrayList<>();
-        if (value == null) {
+        if (value == null || value instanceof Null) {
             actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), "null"));
         } else if (value instanceof Text) {
             actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), ((Text) value).getString()));

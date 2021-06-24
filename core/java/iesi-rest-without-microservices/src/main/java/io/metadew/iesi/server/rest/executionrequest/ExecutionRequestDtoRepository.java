@@ -45,8 +45,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
                 "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
                 "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
-                "file_script_execution_requests.ID as script_exe_req_file_id, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                "name_script_execution_requests.ID as script_exe_req_name_id, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
+                "file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
+                "name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
                 "scripts.SECURITY_GROUP_NAME as script_security_group_name, " +
                 "script_execution_request_imps.ID as script_exe_req_imp_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
                 "script_execution_request_pars.ID as script_exe_req_par_id, script_execution_request_pars.NAME as script_exe_req_par_name, script_execution_request_pars.VALUE as script_exe_req_par_val, " +
@@ -306,7 +306,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         if (scriptExecutionRequestParameterDto == null) {
             scriptExecutionRequestParameterDto = new ScriptExecutionRequestParameterDto(
                     cachedRowSet.getString("script_exe_req_par_name"),
-                    cachedRowSet.getString("script_exe_req_par_val")
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "script_exe_req_par_val")
             );
             scriptExecutionRequestBuilder.getParameters().put(scriptExecutionRequestParameterId, scriptExecutionRequestParameterDto);
         }
@@ -337,7 +337,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
             return;
         }
         ExecutionRequestLabelDto executionRequestLabelDto = executionRequestBuilder.getExecutionRequestLabels().get(executionRequestLabelId);
-
         if (executionRequestLabelDto == null) {
             executionRequestLabelDto = new ExecutionRequestLabelDto(
                     cachedRowSet.getString("exe_req_label_name"),

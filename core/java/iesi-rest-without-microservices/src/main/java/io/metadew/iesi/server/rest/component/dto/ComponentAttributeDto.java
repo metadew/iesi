@@ -19,5 +19,4 @@ public class ComponentAttributeDto extends RepresentationModel<ComponentAttribut
     public ComponentAttribute convertToEntity(String componentId, long versionNumber) {
         return new ComponentAttribute(new ComponentAttributeKey(new ComponentKey(componentId, versionNumber), new EnvironmentKey(environment), name), value);
     }
-
 }

@@ -76,15 +76,17 @@ public class ScriptJsonComponent {
                 scriptVersion = new ScriptVersion(
                         new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
                         versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText(),
-                        "username",
-                        LocalDateTime.now().toString()
-                );
+                        "admin",
+                        LocalDateTime.now().toString(),
+                        "admin",
+                        LocalDateTime.now().toString());
             } else {
                 versionNumber = 0L;
                 scriptVersion = new ScriptVersion(new ScriptVersionKey(
-                        new ScriptKey(scriptId, versionNumber)),
-                        "default version",
-                        "username",
+                        new ScriptKey(scriptId, versionNumber)), "default version",
+                        "admin",
+                        LocalDateTime.now().toString(),
+                        "admin",
                         LocalDateTime.now().toString());
             }
             ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);

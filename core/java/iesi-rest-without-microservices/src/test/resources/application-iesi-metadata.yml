@@ -1882,6 +1882,20 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          CREATED_BY:
+            description: Username of the user that created the script
+            order: 5
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          CREATED_AT:
+            description: the timestamp of creation
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
       - name: TRC_ACTION
         label: ActionTraces
         description: Trace metadata for actions

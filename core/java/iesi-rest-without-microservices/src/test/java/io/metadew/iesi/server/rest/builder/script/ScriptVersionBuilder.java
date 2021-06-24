@@ -25,16 +25,15 @@ public class ScriptVersionBuilder {
     }
 
     public ScriptVersion build() {
-        return new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
+        return new ScriptVersion(
+                new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
                 getDescription().orElse("dummy"),
-                null,
-                null);
+                "username",
+                LocalDateTime.now().toString(),
+                null, null);
     }
 
     public Optional<String> getDescription() {
         return Optional.ofNullable(description);
     }
-
-
-
 }

@@ -37,6 +37,7 @@ public class Script extends SecuredObject<ScriptKey> {
         this.parameters = parameters;
         this.actions = actions;
         this.labels = labels;
+
     }
 
 }

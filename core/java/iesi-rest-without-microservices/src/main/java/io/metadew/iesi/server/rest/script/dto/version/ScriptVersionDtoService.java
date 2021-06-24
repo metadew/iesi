@@ -13,13 +13,15 @@ public class ScriptVersionDtoService implements IScriptVersionDtoService {
         return new ScriptVersion(scriptId,
                 scriptVersionDto.getNumber(),
                 scriptVersionDto.getDescription(),
-                scriptVersionDto.getDeletedAt(),
                 SecurityContextHolder.getContext().getAuthentication().getName(),
-                LocalDateTime.now().toString());
+                LocalDateTime.now().toString(),
+                scriptVersionDto.getDeletedAt());
     }
 
     public ScriptVersionDto convertToDto(ScriptVersion scriptVersion) {
-        return new ScriptVersionDto(scriptVersion.getNumber(), scriptVersion.getDescription(), scriptVersion.getDeletedAt());
+        return new ScriptVersionDto(scriptVersion.getNumber(),
+                scriptVersion.getDescription(),
+                scriptVersion.getMetadataKey().getScriptKey().getDeletedAt());
     }
 
 }

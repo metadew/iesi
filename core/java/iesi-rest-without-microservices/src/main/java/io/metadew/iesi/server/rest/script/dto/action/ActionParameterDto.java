@@ -23,7 +23,7 @@ public class ActionParameterDto extends NoEmptyLinksRepresentationModel<ActionPa
     private String value;
 
     public ActionParameter convertToEntity(String scriptName, long version, String actionId){
-        return new ActionParameter(new ActionParameterKey(scriptName, version, actionId, name), value);
+        return new ActionParameter(new ActionParameterKey(scriptName, version, actionId, name, "NA"), value);
 
     }
 

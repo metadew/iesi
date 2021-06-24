@@ -73,7 +73,8 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                         crs.getString("SCRIPT_ID"),
                         crs.getLong("SCRIPT_VRS_NB"),
                         crs.getString("ACTION_ID"),
-                        crs.getString("ACTION_PAR_NM"));
+                        crs.getString("ACTION_PAR_NM"),
+                        crs.getString("DELETED_AT"));
                 actionParameters.add(new ActionParameter(actionParameterKey,
                         SQLTools.getStringFromSQLClob(crs, "ACTION_PAR_VAL")));
             }

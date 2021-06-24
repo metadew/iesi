@@ -75,7 +75,6 @@ public class ScriptDtoBuilder {
                                 ).collect(Collectors.toList())
                         )
                 )
-                .deletedAt("NA")
                 .build();
     }
 }

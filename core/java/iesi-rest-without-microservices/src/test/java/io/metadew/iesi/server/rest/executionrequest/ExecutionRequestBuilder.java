@@ -121,7 +121,7 @@ public class ExecutionRequestBuilder {
         info.put("executionRequest", executionRequest);
 
         Script script = Script.builder()
-                .scriptKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion))
+                .scriptKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion, "NA"))
                 .description("description")
                 .actions(new ArrayList<>())
                 .labels(Stream.of(
@@ -134,10 +134,9 @@ public class ExecutionRequestBuilder {
                 ).collect(Collectors.toList()))
                 .parameters(new ArrayList<>())
                 .name(scriptName)
-                .version(new ScriptVersion(scriptName, scriptVersion, "description", "NA", null, null))
+                .version(new ScriptVersion(scriptName, scriptVersion, "description", null, null, "NA"))
                 .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                 .securityGroupName(scriptSecurityGroup)
-                .deletedAt("NA")
                 .build();
         info.put("script", script);
 

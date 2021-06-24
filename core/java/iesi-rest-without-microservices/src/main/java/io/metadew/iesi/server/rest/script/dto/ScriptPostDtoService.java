@@ -39,7 +39,8 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                 .orElseThrow(() -> new RuntimeException("could not find Security Group with name " + scriptDto.getSecurityGroupName()));
         return new Script(
                 new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()),
-                        scriptVersionDtoService.convertToEntity(scriptDto.getVersion(), IdentifierTools.getScriptIdentifier(scriptDto.getName())).getNumber()),
+                                scriptVersionDtoService.convertToEntity(scriptDto.getVersion(),
+                                IdentifierTools.getScriptIdentifier(scriptDto.getName())).getNumber()),
                 securityGroup.getMetadataKey(),
                 scriptDto.getSecurityGroupName(),
                 scriptDto.getName(),
@@ -53,8 +54,7 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                         .collect(Collectors.toList()),
                 scriptDto.getLabels().stream()
                         .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
-                        .collect(Collectors.toList()),
-                "NA");
+                        .collect(Collectors.toList()));
     }
 
     public ScriptPostDto convertToDto(Script script) {

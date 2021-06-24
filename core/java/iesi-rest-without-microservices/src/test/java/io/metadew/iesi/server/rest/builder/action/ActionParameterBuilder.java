@@ -26,7 +26,7 @@ public class ActionParameterBuilder {
     }
 
     public ActionParameter build() {
-        return new ActionParameter(new ActionParameterKey(scriptId, scriptVersionNumber, actionId, actionParameterName), getValue().orElse("dummy"));
+        return new ActionParameter(new ActionParameterKey(scriptId, scriptVersionNumber, actionId, actionParameterName, "NA"), getValue().orElse("dummy"));
     }
 
     public Optional<String> getValue() {

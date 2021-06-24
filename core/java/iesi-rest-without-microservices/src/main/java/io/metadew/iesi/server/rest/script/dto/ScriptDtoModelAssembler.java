@@ -41,8 +41,7 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
                 script.getActions().stream().map(scriptActionDtoService::convertToDto).collect(Collectors.toSet()),
                 script.getLabels().stream().map(scriptLabelDtoService::convertToDto).collect(Collectors.toSet()),
                 null,
-                null,
-                script.getDeletedAt());
+                null);
     }
 
     @Override

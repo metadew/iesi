@@ -54,13 +54,13 @@ class ScriptVersionConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-        scriptVersion1 = new ScriptVersionBuilder("1", 1,"NA")
+        scriptVersion1 = new ScriptVersionBuilder("1", 1)
                 .description("version of script")
                 .build();
-        scriptVersion2 = new ScriptVersionBuilder("1", 2, "NA")
+        scriptVersion2 = new ScriptVersionBuilder("1", 2)
                 .description("version of script")
                 .build();
-        scriptVersion3 = new ScriptVersionBuilder("2", 2, "NA")
+        scriptVersion3 = new ScriptVersionBuilder("2", 2)
                 .description("version of script")
                 .build();
     }

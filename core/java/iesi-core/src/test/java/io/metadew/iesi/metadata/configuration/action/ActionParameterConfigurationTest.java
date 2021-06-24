@@ -153,7 +153,7 @@ class ActionParameterConfigurationTest {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         ActionParameterConfiguration.getInstance().insert(actionParameter2);
 
-        ActionParameterKey newActionParameterKey = new ActionParameterKey("3", 4, "not exist", "test parameter");
+        ActionParameterKey newActionParameterKey = new ActionParameterKey("3", 4, "not exist", "test parameter", "NA");
         assertFalse(ActionParameterConfiguration.getInstance().get(newActionParameterKey).isPresent());
     }
 

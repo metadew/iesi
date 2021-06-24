@@ -51,10 +51,10 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 LOGGER.warn(MessageFormat.format("Found multiple implementations for script version {0}. Returning first implementation", scriptVersionKey.toString()));
             }
             crsScriptVersion.next();
+            scriptVersionKey.getScriptKey().setDeletedAt(crsScriptVersion.getString("DELETED_AT"));
             ScriptVersion scriptVersion = new ScriptVersion(
                     scriptVersionKey,
                     crsScriptVersion.getString("SCRIPT_VRS_DSC"),
-                    crsScriptVersion.getString("DELETED_AT"),
                     crsScriptVersion.getString("LAST_MODIFIED_BY"),
                     crsScriptVersion.getString("LAST_MODIFIED_AT"));
             crsScriptVersion.close();
@@ -64,7 +64,6 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             e.printStackTrace(new PrintWriter(StackTrace));
             return Optional.empty();
         }
-
     }
 
     @Override
@@ -77,11 +76,11 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
             while (crs.next()) {
                 ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
                         new ScriptKey(crs.getString("SCRIPT_ID"),
-                                crs.getLong("SCRIPT_VRS_NB")));
+                                crs.getLong("SCRIPT_VRS_NB"),
+                                crs.getString("DELETED_AT")));
                 scriptVersions.add(new ScriptVersion(
                         scriptVersionKey,
                         crs.getString("SCRIPT_VRS_DSC"),
-                        crs.getString("DELETED_AT"),
                         crs.getString("LAST_MODIFIED_BY"),
                         crs.getString("LAST_MODIFIED_AT")));
             }
@@ -113,9 +112,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                         crsVersionScript.getString("SCRIPT_ID"),
                         crsVersionScript.getLong("SCRIPT_VRS_NB"),
                         crsVersionScript.getString("SCRIPT_VRS_DSC"),
-                        crsVersionScript.getString("DELETED_AT"),
                         crsVersionScript.getString("LAST_MODIFIED_BY"),
-                        crsVersionScript.getString("LAST_MODIFIED_AT")));
+                        crsVersionScript.getString("LAST_MODIFIED_AT"),
+                        crsVersionScript.getString("DELETED_AT")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -134,9 +133,9 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                         crsVersionScript.getString("SCRIPT_ID"),
                         crsVersionScript.getLong("SCRIPT_VRS_NB"),
                         crsVersionScript.getString("SCRIPT_VRS_DSC"),
-                        crsVersionScript.getString("DELETED_AT"),
                         crsVersionScript.getString("LAST_MODIFIED_BY"),
-                        crsVersionScript.getString("LAST_MODIFIED_AT")));
+                        crsVersionScript.getString("LAST_MODIFIED_AT"),
+                        crsVersionScript.getString("DELETED_AT")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -186,7 +185,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         if (!exists(scriptVersion)) {
             throw new MetadataDoesNotExistException(scriptVersion);
         }
-        getMetadataRepository().executeUpdate(getUpdateStatement(scriptVersion));
+        getMetadataRepository().executeUpdate(updateStatement(scriptVersion));
     }
 
     public void restoreDeletedScriptVersion(ScriptVersionKey scriptVersionKey) {
@@ -252,13 +251,13 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 " 'NA' );";
     }
 
-    public String getUpdateStatement(ScriptVersion scriptVersion) {
+    /*public String getUpdateStatement(ScriptVersion scriptVersion) {
         return " UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersions") + " SET " +
                 " SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) + ", " +
                 " LAST_MODIFIED_BY = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedBy()) + ", " +
                 " LAST_MODIFIED_AT = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedAt()) +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersion.getMetadataKey().getScriptKey().getScriptId()) +
                 " AND DELETED_AT = 'NA' ;";
-    }
+    }*/
 
 }

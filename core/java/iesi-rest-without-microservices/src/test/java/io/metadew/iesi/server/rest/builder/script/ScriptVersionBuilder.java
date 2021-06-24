@@ -4,7 +4,6 @@ import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -31,9 +30,8 @@ public class ScriptVersionBuilder {
     }
 
     public ScriptVersion build() {
-        return new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
+        return new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber, getDeletedAt().orElse("NA"))),
                 getDescription().orElse("dummy"),
-                getDeletedAt().orElse("NA"),
                 null, null);
     }
 
@@ -44,6 +42,5 @@ public class ScriptVersionBuilder {
     public Optional<String> getDeletedAt() {
         return Optional.ofNullable(deletedAt);
     }
-
 
 }

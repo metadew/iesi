@@ -211,6 +211,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             // Get labels
             List<ScriptLabel> scriptLabels = ScriptLabelConfiguration.getInstance().getByScript(scriptKey);
 
+            scriptKey.setDeletedAt(crsScript.getString("DELETED_AT"));
             Script script = new Script(
                     scriptKey,
                     new SecurityGroupKey(UUID.fromString(crsScript.getString("SECURITY_GROUP_ID"))),
@@ -220,8 +221,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                     scriptVersion.get(),
                     scriptParameters,
                     actions,
-                    scriptLabels,
-                    crsScript.getString("DELETED_AT"));
+                    scriptLabels);
             crsScript.close();
             return Optional.of(script);
         } catch (Exception e) {
@@ -402,7 +402,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                     SQLTools.getStringForSQL(script.getSecurityGroupName()),
                     SQLTools.getStringForSQL(script.getName()),
                     SQLTools.getStringForSQL(script.getDescription()),
-                    SQLTools.getStringForSQL(script.getDeletedAt()));
+                    SQLTools.getStringForSQL(script.getMetadataKey().getDeletedAt()));
         } else {
             return String.format(UPDATE_QUERY,
                     SQLTools.getStringForSQL(script.getDescription()),

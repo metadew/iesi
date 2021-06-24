@@ -102,15 +102,14 @@ public class ScriptBuilder {
                     .map(SecurityGroup::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("Could not find Security Group with name" + securityGroupName));
         }
-        return new Script(new ScriptKey(scriptId, versionNumber),
+        return new Script(new ScriptKey(scriptId, versionNumber, "NA"),
                 securityGroupKey,
                 securityGroupName,
                 name == null ? "dummy" : name,
                 "dummy",
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
-                actions, scriptLabels,
-                deletedAt);
+                actions, scriptLabels);
     }
 
 }

@@ -32,7 +32,7 @@ public class ActionBuilder {
                 .boxed()
                 .map(i -> new ActionParameterBuilder(scriptId, scriptVersionNumber, actionId, "parameter" + i).build())
                 .collect(Collectors.toList());
-        return new Action(new ActionKey(new ScriptKey(scriptId, scriptVersionNumber), actionId), 1, "fwk.dummy",
+        return new Action(new ActionKey(new ScriptKey(scriptId, scriptVersionNumber, "NA"), actionId), 1, "fwk.dummy",
                 "dummy", "dummy", "", "", "", "", "",
                 "0", actionParameters);
     }

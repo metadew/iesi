@@ -60,7 +60,6 @@ class ScriptConfigurationTest {
         ScriptKey scriptKey1 = new ScriptKey(IdentifierTools.getScriptIdentifier("script1"), 1);
         ScriptKey scriptKey12 = new ScriptKey(IdentifierTools.getScriptIdentifier("script1"), 2);
         ScriptKey scriptKey2 = new ScriptKey(IdentifierTools.getScriptIdentifier("dummy"), 1);
-
         SecurityGroup securityGroup = SecurityGroup.builder()
                 .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
                 .name("DEFAULT")
@@ -203,7 +202,7 @@ class ScriptConfigurationTest {
         assertThrows(MetadataAlreadyExistsException.class, () -> ScriptConfiguration.getInstance().restoreDeletedScript(
                 new ScriptKey(script11.getMetadataKey().getScriptId(),
                 script11.getVersion().getNumber(),
-                script11.getDeletedAt())));
+                script11.getMetadataKey().getDeletedAt())));
     }
 
     @Test
@@ -212,8 +211,7 @@ class ScriptConfigurationTest {
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
         assertThrows(MetadataDoesNotExistException.class, () -> ScriptConfiguration.getInstance().restoreDeletedScript(
                 new ScriptKey(script11.getMetadataKey().getScriptId(),
-                        script11.getVersion().getNumber(),
-                        script11.getDeletedAt())));
+                        script11.getVersion().getNumber(), "NA")));
     }
 
 

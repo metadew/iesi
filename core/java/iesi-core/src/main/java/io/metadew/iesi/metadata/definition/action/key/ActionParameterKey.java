@@ -15,8 +15,8 @@ public class ActionParameterKey extends MetadataKey {
     private final ActionKey actionKey;
     private final String parameterName;
 
-    public ActionParameterKey(String scriptId, long scriptVersionNumber, String actionId, String parameterName) {
-        this.actionKey = new ActionKey(new ScriptKey(scriptId, scriptVersionNumber), actionId);
+    public ActionParameterKey(String scriptId, long scriptVersionNumber, String actionId, String parameterName, String deletedAt) {
+        this.actionKey = new ActionKey(new ScriptKey(scriptId, scriptVersionNumber, deletedAt), actionId);
         this.parameterName = parameterName;
     }
 

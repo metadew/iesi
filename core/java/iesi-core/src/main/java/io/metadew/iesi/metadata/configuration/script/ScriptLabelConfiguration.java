@@ -51,7 +51,9 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
             }
             cachedRowSet.next();
             return Optional.of(new ScriptLabel(scriptLabelKey,
-                    new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
+                    new ScriptKey(cachedRowSet.getString("SCRIPT_ID"),
+                            cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                            cachedRowSet.getString("DELETED_AT")),
                     cachedRowSet.getString("NAME"),
                     SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
             ));
@@ -70,7 +72,9 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
             while (cachedRowSet.next()) {
                 scriptLabels.add(new ScriptLabel(
                         new ScriptLabelKey(cachedRowSet.getString("ID")),
-                        new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
+                        new ScriptKey(cachedRowSet.getString("SCRIPT_ID"),
+                                cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                                cachedRowSet.getString("DELETED_AT")),
                         cachedRowSet.getString("NAME"),
                         SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
                 ));
@@ -146,7 +150,9 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
             while (cachedRowSet.next()) {
                 scriptLabels.add(new ScriptLabel(
                         new ScriptLabelKey(cachedRowSet.getString("ID")),
-                        new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
+                        new ScriptKey(cachedRowSet.getString("SCRIPT_ID"),
+                                cachedRowSet.getLong("SCRIPT_VRS_NB"),
+                                cachedRowSet.getString("DELETED_AT")),
                         cachedRowSet.getString("NAME"),
                         SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
                 ));

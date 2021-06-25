@@ -116,6 +116,8 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                         crsVersionScript.getString("SCRIPT_ID"),
                         crsVersionScript.getLong("SCRIPT_VRS_NB"),
                         crsVersionScript.getString("SCRIPT_VRS_DSC"),
+                        crsVersionScript.getString("CREATED_BY"),
+                        crsVersionScript.getString("CREATED_AT"),
                         crsVersionScript.getString("LAST_MODIFIED_BY"),
                         crsVersionScript.getString("LAST_MODIFIED_AT"),
                         crsVersionScript.getString("DELETED_AT")));

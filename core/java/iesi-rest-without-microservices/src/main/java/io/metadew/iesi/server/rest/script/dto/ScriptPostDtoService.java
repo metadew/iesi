@@ -40,20 +40,20 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
         return new Script(
                 new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()),
                                 scriptVersionDtoService.convertToEntity(scriptDto.getVersion(),
-                                IdentifierTools.getScriptIdentifier(scriptDto.getName())).getNumber()),
+                                IdentifierTools.getScriptIdentifier(scriptDto.getName())).getNumber(),"NA"),
                 securityGroup.getMetadataKey(),
                 scriptDto.getSecurityGroupName(),
                 scriptDto.getName(),
                 scriptDto.getDescription(),
                 scriptVersionDtoService.convertToEntity(scriptDto.getVersion(), IdentifierTools.getScriptIdentifier(scriptDto.getName())),
                 scriptDto.getParameters().stream()
-                        .map(parameter -> parameter.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
+                        .map(parameter -> parameter.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber(),"NA")))
                         .collect(Collectors.toList()),
                 scriptDto.getActions().stream()
                         .map(action -> action.convertToEntity(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber()))
                         .collect(Collectors.toList()),
                 scriptDto.getLabels().stream()
-                        .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
+                        .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber(), "NA")))
                         .collect(Collectors.toList()));
     }
 

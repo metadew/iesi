@@ -16,8 +16,7 @@ public class ScriptVersionDtoService implements IScriptVersionDtoService {
                 SecurityContextHolder.getContext().getAuthentication().getName(),
                 LocalDateTime.now().toString(),
                 SecurityContextHolder.getContext().getAuthentication().getName(),
-                LocalDateTime.now().toString(),
-                scriptVersionDto.getDeletedAt());
+                LocalDateTime.now().toString(), "NA");
     }
 
     public ScriptVersionDto convertToDto(ScriptVersion scriptVersion) {

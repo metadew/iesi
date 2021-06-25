@@ -1,11 +1,14 @@
 package io.metadew.iesi.server.rest.script;
 
+import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
 import io.metadew.iesi.server.rest.builder.script.ScriptDtoBuilder;
 import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
+import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
+import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditService;
 import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoModelAssembler;
 import io.metadew.iesi.server.rest.script.dto.ScriptDtoService;
@@ -14,6 +17,7 @@ import io.metadew.iesi.server.rest.script.dto.action.ScriptActionDtoService;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDtoService;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDtoService;
+import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {ScriptsController.class, CustomGlobalExceptionHandler.class, ScriptDtoModelAssembler.class,
         ScriptPostDtoService.class, ScriptParameterDtoService.class, ScriptLabelDtoService.class, ScriptActionDtoService.class,
-        ScriptVersionDtoService.class, ScriptService.class, TestConfiguration.class, IesiConfiguration.class, IesiSecurityChecker.class})
+        ScriptVersionDtoService.class, ScriptService.class, TestConfiguration.class, IesiConfiguration.class, IesiSecurityChecker.class,
+        ScriptDesignAuditService.class, UserDtoRepository.class, ScriptDesignAuditConfiguration.class, FilterService.class})
 @ActiveProfiles("test")
 @DirtiesContext
 class ScriptsControllerTest {

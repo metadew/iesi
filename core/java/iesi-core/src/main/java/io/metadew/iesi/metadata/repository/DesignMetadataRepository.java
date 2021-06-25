@@ -73,6 +73,9 @@ public class DesignMetadataRepository extends MetadataRepository {
                 script.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
                 script.setSecurityGroupName(publicSecurityGroup.getName());
             }
+
+            script.getVersion().setCreatedBy("admin");
+            script.getVersion().setCreatedAt(LocalDateTime.now().toString());
             ScriptConfiguration.getInstance().insert(script);
         } catch (MetadataAlreadyExistsException e) {
             log.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));

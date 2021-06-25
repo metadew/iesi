@@ -32,6 +32,8 @@ public class ScriptVersionBuilder {
     public ScriptVersion build() {
         return new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber, getDeletedAt().orElse("NA"))),
                 getDescription().orElse("dummy"),
+                "username",
+                LocalDateTime.now().toString(),
                 null, null);
     }
 

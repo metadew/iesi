@@ -1,0 +1,22 @@
+ALTER TABLE IESI_RES_ACTION ADD ACTION_TYP_NM VARCHAR(255);
+
+UPDATE IESI_RES_ACTION
+SET ACTION_TYP_NM =
+                 (SELECT ACTION_TYP_NM
+                  FROM IESI_TRC_ACTION
+                  WHERE (
+				  IESI_TRC_ACTION.RUN_ID=IESI_TRC_ACTION.RUN_ID and IESI_RES_ACTION.PRC_ID=IESI_RES_ACTION.PRC_ID)
+		          );
+				  
+
+ALTER TABLE IESI_RES_ACTION 
+MODIFY ( action_typ_nm NOT NULL);			
+			
+
+				  
+				  
+				  
+				 
+
+
+

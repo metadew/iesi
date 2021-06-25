@@ -109,7 +109,9 @@ public class ScriptBuilder {
                 "dummy",
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
-                actions, scriptLabels);
+                actions,
+                scriptLabels
+        );
     }
 
 }

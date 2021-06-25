@@ -27,7 +27,10 @@ public class ScriptVersionBuilder {
         return new ScriptVersion(new ScriptVersionKey(
                 new ScriptKey(scriptId, versionNumber)),
                 getDescription().orElse("dummy"),
-                null, null);
+                "username",
+                LocalDateTime.now().toString(),
+                null,
+                null);
     }
 
     public Optional<String> getDescription() {

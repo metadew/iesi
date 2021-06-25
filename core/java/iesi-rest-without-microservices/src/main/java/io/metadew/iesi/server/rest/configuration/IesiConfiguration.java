@@ -13,6 +13,7 @@ import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesig
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
@@ -223,5 +224,11 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public OpenAPIGenerator openAPIGenerator() {
         return OpenAPIGenerator.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ScriptDesignAuditConfiguration scriptDesignAuditConfiguration(){
+        return ScriptDesignAuditConfiguration.getInstance();
     }
 }

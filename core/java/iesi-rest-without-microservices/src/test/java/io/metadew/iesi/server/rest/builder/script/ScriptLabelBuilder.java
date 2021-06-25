@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class ScriptLabelBuilder {
 
@@ -26,7 +27,7 @@ public class ScriptLabelBuilder {
     }
 
     public ScriptLabel build() {
-        return new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId+ scriptVersionNumber +name)), new ScriptKey(scriptId, scriptVersionNumber) , name, getValue().orElse("dummy"));
+        return new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), new ScriptKey(scriptId, scriptVersionNumber) , name, getValue().orElse("dummy"));
     }
 
     private Optional<String> getValue() {

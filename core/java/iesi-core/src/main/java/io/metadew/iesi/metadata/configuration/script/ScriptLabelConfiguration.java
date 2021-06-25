@@ -42,7 +42,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         try {
             String queryScriptLabel = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
                     + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) +
-                    " and DELETED_AT = 'NA' ;";
+                    " AND DELETED_AT = 'NA' ;" ;
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptLabel, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -65,8 +65,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
     @Override
     public List<ScriptLabel> getAll() {
         List<ScriptLabel> scriptLabels = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
-                " where DELETED_AT = 'NA' ";
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptLabels") + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (cachedRowSet.next()) {
@@ -117,13 +116,14 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                 SQLTools.getStringForSQLClob(scriptLabel.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
-                                .orElseThrow(RuntimeException::new)) + ", 'NA' );");
+                                .orElseThrow(RuntimeException::new)) + "," +
+                SQLTools.getStringForSQL(scriptLabel.getScriptKey().getDeletedAt()) + ");");
     }
 
     public boolean exists(ScriptLabelKey scriptLabelKey) {
         String queryScriptParameter = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) + " AND " +
-                " DELETED_AT = 'NA' ;";
+                + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) +
+                " AND DELETED_AT = 'NA';";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -144,7 +144,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
-                " and DELETED_AT = 'NA' ;";
+                " and DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (cachedRowSet.next()) {

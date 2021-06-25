@@ -41,12 +41,12 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     public Optional<ActionParameter> get(ActionParameterKey actionParameterKey) {
         try {
             String queryActionParameter = "select SCRIPT_ID, SCRIPT_VRS_NB, ACTION_ID, ACTION_PAR_NM, ACTION_PAR_VAL from "
-                    + getMetadataRepository().getTableNameByLabel("ActionParameters")
-                    + " where SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
-                    " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
-                    + " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
+                    + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+                    " where SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
+                    " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion()) +
+                    " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
                     " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) +
-                    " and DELETED_AT = 'NA';";
+                    " and DELETED_AT = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getDeletedAt()) ;
             CachedRowSet cachedRowSet = getMetadataRepository()
                     .executeQuery(queryActionParameter, "reader");
             if (cachedRowSet.size() == 0) {
@@ -65,7 +65,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     @Override
     public List<ActionParameter> getAll() {
         List<ActionParameter> actionParameters = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") + " where DELETED_AT = 'NA' ;";
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") ;
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
@@ -121,7 +121,8 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                 SQLTools.getStringForSQLClob(actionParameter.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
-                                .orElseThrow(RuntimeException::new)) + ", 'NA' );";
+                                .orElseThrow(RuntimeException::new)) + "," +
+                SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getDeletedAt()) + " );";
         getMetadataRepository().executeUpdate(insertQuery);
     }
 
@@ -132,7 +133,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
                 + " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
                 " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) +
-                " and DELETED_AT = 'NA' ;";
+                " and DELETED_AT = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getDeletedAt());
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
@@ -143,7 +144,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +
-                " AND DELETED_AT = 'NA'" ;
+                " AND DELETED_AT = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getDeletedAt());
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {

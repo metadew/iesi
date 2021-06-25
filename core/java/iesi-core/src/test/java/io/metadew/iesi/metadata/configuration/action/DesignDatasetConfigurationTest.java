@@ -270,8 +270,8 @@ class DesignDatasetConfigurationTest {
 
         ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1, LocalDateTime.now().toString()));
 
-        assertEquals(0, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(2, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -292,8 +292,8 @@ class DesignDatasetConfigurationTest {
 
         ActionConfiguration.getInstance().deleteByScript(new ScriptKey("1", 1, LocalDateTime.now().toString()));
 
-        assertEquals(1, ActionConfiguration.getInstance().getAll().size());
-        assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(3, ActionConfiguration.getInstance().getAll().size());
+        assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
 }

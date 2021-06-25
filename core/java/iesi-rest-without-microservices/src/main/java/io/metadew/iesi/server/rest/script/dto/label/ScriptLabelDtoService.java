@@ -6,11 +6,13 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class ScriptLabelDtoService implements IScriptLabelDtoService {
 
     public ScriptLabel convertToEntity(ScriptLabelDto scriptLabelDto, ScriptKey scriptKey) {
-        return new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptKey.getScriptId() + scriptKey.getScriptVersion() + scriptLabelDto.getName())),
+        return new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()),
                 scriptKey, scriptLabelDto.getName(), scriptLabelDto.getValue());
     }
 

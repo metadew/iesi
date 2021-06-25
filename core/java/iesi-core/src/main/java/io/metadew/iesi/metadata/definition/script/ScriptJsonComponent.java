@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ScriptJsonComponent {
 
@@ -135,7 +136,7 @@ public class ScriptJsonComponent {
                 for (JsonNode scriptLabelNode : node.get(Field.LABELS_KEY.value())) {
                     String name = scriptLabelNode.get(ScriptLabelJsonComponent.Field.NAME_KEY.value()).asText();
                     // needs to be a predictable key (hash) to ensure they can be loaded from filesystem
-                    scriptLabels.add(new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId + versionNumber + name)), scriptKey, name,
+                    scriptLabels.add(new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), scriptKey, name,
                             scriptLabelNode.get(ScriptLabelJsonComponent.Field.VALUE.value()).asText()));
                 }
             }

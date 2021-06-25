@@ -6,6 +6,8 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import lombok.Data;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.util.UUID;
+
 @Data
 public class ScriptLabelDto {
 
@@ -13,7 +15,7 @@ public class ScriptLabelDto {
     private final String value;
 
     public ScriptLabel convertToEntity(ScriptKey scriptKey) {
-        return new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptKey.getScriptId()+scriptKey.getScriptVersion()+name)), scriptKey, name, value);
+        return new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), scriptKey, name, value);
     }
 
 }

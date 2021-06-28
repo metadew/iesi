@@ -65,7 +65,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     @Override
     public List<ActionParameter> getAll() {
         List<ActionParameter> actionParameters = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") ;
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") + ";";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
@@ -170,7 +170,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
         getMetadataRepository().executeUpdate(query);
     }
 
-    public void deleteByScript(ScriptKey scriptKey) {
+    public void softDeleteByScript(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Deleting action parameters for script {0}", scriptKey.toString()));
         String query = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " SET DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) +

@@ -297,7 +297,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         try {
             while (crsScript.next()) {
                 String scriptId = crsScript.getString("SCRIPT_ID");
-                List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptId(scriptId);
+                List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getActiveByScriptId(scriptId);
                 for (ScriptVersion scriptVersion : scriptVersions) {
                     get(new ScriptKey(scriptId, scriptVersion.getNumber())).ifPresent(scripts::add);
                 }
@@ -323,8 +323,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         ScriptVersionKey scriptVersionKey = new ScriptVersionKey(scriptKey);
         ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
         ActionConfiguration.getInstance().deleteByScript(scriptKey);
-        ScriptParameterConfiguration.getInstance().deleteByScript(scriptKey);
-        ScriptLabelConfiguration.getInstance().deleteByScript(scriptKey);
+        ScriptParameterConfiguration.getInstance().softDeleteByScript(scriptKey);
+        ScriptLabelConfiguration.getInstance().softDeleteByScript(scriptKey);
         getDeleteStatement(scriptKey)
                 .ifPresent(getMetadataRepository()::executeUpdate);
     }
@@ -342,7 +342,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                 log.warn(MessageFormat.format("Found multiple implementations for Script {0}. Returning first implementation", scriptName));
             }
             crsScript.next();
-            List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptId(crsScript.getString("SCRIPT_ID"));
+            List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getActiveByScriptId(crsScript.getString("SCRIPT_ID"));
 
             for (ScriptVersion scriptVersion : scriptVersions) {
                 get(new ScriptKey(crsScript.getString("SCRIPT_ID"), scriptVersion.getNumber())).ifPresent(scripts::add);
@@ -438,7 +438,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     }
 
     public Optional<Script> getLatestVersion(String scriptName) {
-        Optional<ScriptVersion> latestVersion = ScriptVersionConfiguration.getInstance().getLatestVersionNumber(IdentifierTools.getScriptIdentifier(scriptName));
+        Optional<ScriptVersion> latestVersion = ScriptVersionConfiguration.getInstance().getLatestVersionByScriptIdAndActive(IdentifierTools.getScriptIdentifier(scriptName));
         if (latestVersion.isPresent()) {
             return get(new ScriptKey(latestVersion.get().getScriptId(), latestVersion.get().getNumber()));
         } else {

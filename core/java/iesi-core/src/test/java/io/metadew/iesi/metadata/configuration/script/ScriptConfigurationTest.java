@@ -189,20 +189,11 @@ class ScriptConfigurationTest {
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
 
         assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
-        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
 
         ScriptVersionConfiguration.getInstance().restoreDeletedScriptVersion(new ScriptVersionKey(script11.getMetadataKey()));
         assertEquals(2, ScriptConfiguration.getInstance().getAll().size());
 
-    }
-
-    @Test
-    void scriptRestoreAlreadyExistsTest() {
-        ScriptConfiguration.getInstance().insert(script11);
-        assertThrows(MetadataAlreadyExistsException.class, () -> ScriptConfiguration.getInstance().restoreDeletedScript(
-                new ScriptKey(script11.getMetadataKey().getScriptId(),
-                script11.getVersion().getNumber(),
-                script11.getMetadataKey().getDeletedAt())));
     }
 
     @Test

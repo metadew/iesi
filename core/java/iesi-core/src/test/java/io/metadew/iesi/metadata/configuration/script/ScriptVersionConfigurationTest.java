@@ -115,7 +115,7 @@ class ScriptVersionConfigurationTest {
                 new ScriptKey(scriptVersion1.getScriptId(),
                         scriptVersion1.getNumber(),
                         LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))));
-        assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -128,10 +128,10 @@ class ScriptVersionConfigurationTest {
                 new ScriptKey(scriptVersion1.getScriptId(),
                         scriptVersion1.getNumber(),
                         LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))));
-        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
 
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
-        assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(3, ScriptVersionConfiguration.getInstance().getAll().size());
 
     }
 
@@ -179,7 +179,7 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
-        List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptId(scriptVersion1.getScriptId());
+        List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getActiveByScriptId(scriptVersion1.getScriptId());
 
         assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
     }
@@ -190,7 +190,7 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion3);
 
-        List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptId(scriptVersion1.getScriptId());
+        List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getActiveByScriptId(scriptVersion1.getScriptId());
 
         assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
     }

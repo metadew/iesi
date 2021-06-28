@@ -214,7 +214,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
 
     public void deleteByScript(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Deleting actions for script {0}", scriptKey.toString()));
-        ActionParameterConfiguration.getInstance().deleteByScript(scriptKey);
+        ActionParameterConfiguration.getInstance().softDeleteByScript(scriptKey);
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Actions") +
                 " SET DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) +
                 " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +

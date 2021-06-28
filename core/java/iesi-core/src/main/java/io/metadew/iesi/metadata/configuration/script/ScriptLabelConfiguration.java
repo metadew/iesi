@@ -128,7 +128,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
         return cachedRowSet.size() >= 1;
     }
 
-    public void deleteByScript(ScriptKey scriptKey) {
+    public void softDeleteByScript(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("deleting script labels for script {0}", scriptKey.toString()));
         String deleteStatement = "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
                 " SET DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) +

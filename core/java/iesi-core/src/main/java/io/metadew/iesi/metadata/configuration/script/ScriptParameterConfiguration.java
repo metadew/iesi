@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.relational.core.sql.SQL;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -44,7 +45,7 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
                     + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) +
                     " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) +
                     " and SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterKey.getParameterName()) +
-                    " and DELETED_AT = 'NA' ;";
+                    " and DELETED_AT = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getDeletedAt()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -63,7 +64,6 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
     public List<ScriptParameter> getAll() {
         List<ScriptParameter> scriptParameters = new ArrayList<>();
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
-                " WHERE DELETED_AT = 'NA' "+
                 " order by SCRIPT_ID ASC";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
@@ -119,7 +119,8 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
                 SQLTools.getStringForSQLClob(scriptParameter.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
-                                .orElseThrow(RuntimeException::new)) + ", 'NA' " + ");");
+                                .orElseThrow(RuntimeException::new)) + "," +
+                SQLTools.getStringForSQL(scriptParameter.getMetadataKey().getScriptKey().getDeletedAt()) + ");");
 
     }
 
@@ -128,12 +129,12 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getScriptVersion()) +
                 " and SCRIPT_PAR_NM = " + SQLTools.getStringForSQL(scriptParameterKey.getParameterName()) +
-                " and DELETED_AT = 'NA' ;";
+                " and DELETED_AT = " + SQLTools.getStringForSQL(scriptParameterKey.getScriptKey().getDeletedAt()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
     }
 
-    public void deleteByScript(ScriptKey scriptKey) {
+    public void softDeleteByScript(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Deleting script parameters for script {0}", scriptKey.toString()));
         String deleteStatement = "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
                 " SET DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) +
@@ -149,7 +150,7 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
-                " and DELETED_AT = 'NA' ;";
+                " and DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) + ";";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {

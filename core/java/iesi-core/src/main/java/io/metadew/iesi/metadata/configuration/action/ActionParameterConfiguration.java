@@ -133,7 +133,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion())
                 + " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
                 " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) +
-                " and DELETED_AT = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getDeletedAt());
+                " and DELETED_AT = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getDeletedAt()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }

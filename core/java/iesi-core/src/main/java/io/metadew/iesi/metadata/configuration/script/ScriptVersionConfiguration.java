@@ -72,7 +72,8 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     @Override
     public List<ScriptVersion> getAll() {
         List<ScriptVersion> scriptVersions = new ArrayList<>();
-        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions") + ";";
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " order by SCRIPT_ID;";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
@@ -188,7 +189,7 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
     }
 
     @Override
-    public void update(ScriptVersion scriptVersion){
+    public void update(ScriptVersion scriptVersion) {
         LOGGER.trace(MessageFormat.format("Updating ScriptVersion {0}-{1}.", scriptVersion.getScriptId(), scriptVersion.getNumber()));
         if (!exists(scriptVersion)) {
             throw new MetadataDoesNotExistException(scriptVersion);
@@ -221,8 +222,8 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
                 " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) + ";";
     }
 
-    private String updateStatement(ScriptVersion scriptVersion){
-        return "UPDATE "+ getMetadataRepository().getTableNameByLabel("ScriptVersions") +
+    private String updateStatement(ScriptVersion scriptVersion) {
+        return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
                 " SET LAST_MODIFIED_BY = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedBy()) + ", " +
                 " LAST_MODIFIED_AT = " + SQLTools.getStringForSQL(scriptVersion.getLastModifiedAt()) + ", " +
                 " SCRIPT_VRS_DSC = " + SQLTools.getStringForSQL(scriptVersion.getDescription()) +

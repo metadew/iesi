@@ -88,6 +88,32 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
         return actionParameters;
     }
 
+    public List<ActionParameter> getAllActive() {
+        List<ActionParameter> actionParameters = new ArrayList<>();
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+                " Where DELETED_AT = 'NA' ;";
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
+        try {
+            while (crs.next()) {
+                ActionParameterKey actionParameterKey = new ActionParameterKey(
+                        crs.getString("SCRIPT_ID"),
+                        crs.getLong("SCRIPT_VRS_NB"),
+                        crs.getString("ACTION_ID"),
+                        crs.getString("ACTION_PAR_NM"),
+                        crs.getString("DELETED_AT"));
+                actionParameters.add(new ActionParameter(actionParameterKey,
+                        SQLTools.getStringFromSQLClob(crs, "ACTION_PAR_VAL")));
+            }
+            crs.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return actionParameters;
+    }
+
     @Override
     public void delete(ActionParameterKey metadataKey) {
         LOGGER.trace(MessageFormat.format("Deleting ActionParameter {0}.", metadataKey.toString()));
@@ -98,12 +124,23 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
+    public void softDeleteByScript(ScriptKey scriptKey) {
+        LOGGER.trace(MessageFormat.format("Deleting action parameters for script {0}", scriptKey.toString()));
+        String query = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+                " SET DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) +
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
+                " AND DELETED_AT = 'NA' ;";
+        getMetadataRepository().executeUpdate(query);
+    }
+
     public String deleteStatement(ActionParameterKey actionParameterKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+        return "DELETE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
-                " AND ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) + ";";
+                " AND ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameterKey.getParameterName()) +
+                " AND DELETED_AT = 'NA' " +   ";";
     }
 
     @Override
@@ -124,6 +161,18 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
                                 .orElseThrow(RuntimeException::new)) + "," +
                 SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getDeletedAt()) + " );";
         getMetadataRepository().executeUpdate(insertQuery);
+    }
+
+    @Override
+    public void update(ActionParameter actionParameter) {
+        String updateQuery = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+                " SET ACTION_PAR_VAL = " + SQLTools.getStringForSQL(actionParameter.getValue()) +
+                " where SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getScriptVersion()) +
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getActionId()) +
+                " and ACTION_PAR_NM = " + SQLTools.getStringForSQL(actionParameter.getMetadataKey().getParameterName()) +
+                " and DELETED_AT = " + SQLTools.getStringForSQL(actionParameter.getMetadataKey().getActionKey().getScriptKey().getDeletedAt()) + ";";
+        getMetadataRepository().executeUpdate(updateQuery);
     }
 
     public boolean exists(ActionParameterKey actionParameterKey) {
@@ -163,20 +212,11 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     public void deleteByAction(ActionKey actionKey) {
-        String query = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+        String query = "DELETE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) + ";";
-        getMetadataRepository().executeUpdate(query);
-    }
-
-    public void softDeleteByScript(ScriptKey scriptKey) {
-        LOGGER.trace(MessageFormat.format("Deleting action parameters for script {0}", scriptKey.toString()));
-        String query = "UPDATE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
-                " SET DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) +
-                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
-                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
-                " AND DELETED_AT = 'NA' ;";
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +
+                " AND DELETED_AT = 'NA' " + ";";
         getMetadataRepository().executeUpdate(query);
     }
 

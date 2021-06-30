@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
@@ -115,7 +116,16 @@ class ActionParameterConfigurationTest {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
         ActionParameterConfiguration.getInstance().delete(actionParameter1.getMetadataKey());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAllActive().size());
+    }
+
+    @Test
+    void actionSoftDeleteTest() {
+        ActionParameterConfiguration.getInstance().insert(actionParameter1);
+        assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
+        actionParameter1.getMetadataKey().getActionKey().getScriptKey().setDeletedAt(LocalDateTime.now().toString());
+        ActionParameterConfiguration.getInstance().softDeleteByScript(actionParameter1.getMetadataKey().getActionKey().getScriptKey());
+        assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test

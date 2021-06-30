@@ -67,12 +67,13 @@ public class ScriptsController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('SCRIPTS_READ')")
-    public PagedModel<ScriptDto> getAll(Pageable pageable,
+    public PagedModel<ScriptDto>  getAll(Pageable pageable,
                                         @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
                                         @RequestParam(required = false, name = "version") String version,
                                         @RequestParam(required = false, name = "name") String name,
-                                        @RequestParam(required = false, name = "label") String labelKeyCombination) {
-        List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination);
+                                        @RequestParam(required = false, name = "label") String labelKeyCombination,
+                                        @RequestParam(required = false, name = "includeInActive") String includeInActive ) {
+        List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination, includeInActive);
         boolean lastVersion = extractLastVersion(version);
         Page<ScriptDto> scriptDtoPage = scriptDtoService
                 .getAllActive(SecurityContextHolder.getContext().getAuthentication(),
@@ -90,7 +91,8 @@ public class ScriptsController {
         return version != null && version.equalsIgnoreCase("latest");
     }
 
-    private List<ScriptFilter> extractScriptFilterOptions(String name, String labelKeyCombination) {
+    private List<ScriptFilter> extractScriptFilterOptions(String name, String labelKeyCombination, String includeInActive) {
+
         List<ScriptFilter> scriptFilters = new ArrayList<>();
         if (name != null) {
             scriptFilters.add(new ScriptFilter(ScriptFilterOption.NAME, name, false));
@@ -98,6 +100,11 @@ public class ScriptsController {
         if (labelKeyCombination != null) {
             scriptFilters.add(new ScriptFilter(ScriptFilterOption.LABEL, labelKeyCombination, false));
         }
+
+        if (includeInActive == null || !includeInActive.equalsIgnoreCase("true")) {
+            includeInActive = "false";
+        }
+        scriptFilters.add(new ScriptFilter(ScriptFilterOption.INCLUDE_INACTIVE, includeInActive, false));
         return scriptFilters;
     }
 
@@ -191,7 +198,7 @@ public class ScriptsController {
         }
         halMultipleEmbeddedResource.add(
                 linkTo(methodOn(ScriptsController.class)
-                        .getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null))
+                        .getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null, null))
                         .withRel("scripts"));
         return halMultipleEmbeddedResource;
     }

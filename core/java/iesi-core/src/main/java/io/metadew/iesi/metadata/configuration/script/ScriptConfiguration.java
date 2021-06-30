@@ -322,7 +322,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         scriptKey.setDeletedAt(deletedAt);
         ScriptVersionKey scriptVersionKey = new ScriptVersionKey(scriptKey);
         ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
-        ActionConfiguration.getInstance().deleteByScript(scriptKey);
+        ActionConfiguration.getInstance().softDeleteByScript(scriptKey);
         ScriptParameterConfiguration.getInstance().softDeleteByScript(scriptKey);
         ScriptLabelConfiguration.getInstance().softDeleteByScript(scriptKey);
         getDeleteStatement(scriptKey)
@@ -389,6 +389,18 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     @Override
     public void update(Script script) {
         ScriptVersionConfiguration.getInstance().update(script.getVersion());
+
+        for (ScriptParameter scriptParameter : script.getParameters()) {
+            ScriptParameterConfiguration.getInstance().update(scriptParameter);
+        }
+
+        for (ScriptLabel scriptLabel : script.getLabels()) {
+            ScriptLabelConfiguration.getInstance().update(scriptLabel);
+        }
+
+        for (Action action : script.getActions()) {
+            ActionConfiguration.getInstance().update(action);
+        }
         getMetadataRepository().executeUpdate(getInsertStatement(script));
     }
 

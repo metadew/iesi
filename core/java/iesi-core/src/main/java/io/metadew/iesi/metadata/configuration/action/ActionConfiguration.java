@@ -116,6 +116,39 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         return actions;
     }
 
+    public List<Action> getAllActive() {
+        List<Action> actions = new ArrayList<>();
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("Actions") + " where DELETED_AT = 'NA'";
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
+        try {
+            while (crs.next()) {
+                ActionKey actionKey = new ActionKey(new ScriptKey(crs.getString("SCRIPT_ID"), crs.getLong("SCRIPT_VRS_NB")),
+                        crs.getString("ACTION_ID"));
+                List<ActionParameter> actionParameters = ActionParameterConfiguration.getInstance().getByAction(actionKey);
+                actions.add(new Action(actionKey,
+                        crs.getLong("ACTION_NB"),
+                        crs.getString("ACTION_TYP_NM"),
+                        crs.getString("ACTION_NM"),
+                        crs.getString("ACTION_DSC"),
+                        crs.getString("COMP_NM"),
+                        SQLTools.getStringFromSQLClob(crs, "CONDITION_VAL"),
+                        crs.getString("ITERATION_VAL"),
+                        crs.getString("EXP_ERR_FL"),
+                        crs.getString("STOP_ERR_FL"),
+                        crs.getString("RETRIES_VAL"),
+                        actionParameters
+                ));
+            }
+            crs.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exception=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return actions;
+    }
+
     @Override
     public void delete(ActionKey actionKey) {
         LOGGER.trace(MessageFormat.format("Deleting Action {0}.", actionKey.toString()));
@@ -164,16 +197,17 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                 + " WHERE ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +
                 " AND SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND DELETED_AT = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getDeletedAt()) + ";";
+                " AND DELETED_AT = 'NA' ;";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
         return cachedRowSet.size() >= 1;
     }
 
     private String deleteStatement(ActionKey actionKey) {
-        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("Actions") +
+        return "DELETE " + getMetadataRepository().getTableNameByLabel("Actions") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
-                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) + ";";
+                " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +
+                " AND DELETED_AT = 'NA' ;";
     }
 
     public List<Action> getByScript(ScriptKey scriptKey) {
@@ -212,7 +246,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         return actions;
     }
 
-    public void deleteByScript(ScriptKey scriptKey) {
+    public void softDeleteByScript(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Deleting actions for script {0}", scriptKey.toString()));
         ActionParameterConfiguration.getInstance().softDeleteByScript(scriptKey);
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Actions") +

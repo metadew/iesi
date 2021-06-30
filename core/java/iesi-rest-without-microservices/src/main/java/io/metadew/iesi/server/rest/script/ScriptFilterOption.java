@@ -4,7 +4,8 @@ public enum ScriptFilterOption {
 
     NAME("name"),
     VERSION("version"),
-    LABEL("label");
+    LABEL("label"),
+    INCLUDE_INACTIVE("includeInActive");
 
     private final String keyword;
 

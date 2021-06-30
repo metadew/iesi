@@ -9,7 +9,6 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -203,7 +202,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
     }
 
     private String deleteStatement(ActionKey actionKey) {
-        return "DELETE " + getMetadataRepository().getTableNameByLabel("Actions") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("Actions") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +

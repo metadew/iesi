@@ -135,7 +135,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     public String deleteStatement(ActionParameterKey actionParameterKey) {
-        return "DELETE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getScriptKey().getScriptVersion()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterKey.getActionKey().getActionId()) +
@@ -212,7 +212,7 @@ public class ActionParameterConfiguration extends Configuration<ActionParameter,
     }
 
     public void deleteByAction(ActionKey actionKey) {
-        String query = "DELETE " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
+        String query = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ActionParameters") +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(actionKey.getScriptKey().getScriptVersion()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionKey.getActionId()) +

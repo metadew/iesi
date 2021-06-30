@@ -38,9 +38,6 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
 
-    //1. we want active and inActive
-    //2. We want only active (Default)
-
     @Autowired
     public ScriptDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
@@ -90,8 +87,6 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     }
 
     private String getWhereClause(Authentication authentication, List<ScriptFilter> scriptFilters, boolean onlyLatestVersions) {
-        boolean fetchAllScript = false;
-        /*boolean isOnlyInactive = false;*/
         String filterStatements = scriptFilters.stream()
                 .map(scriptFilter -> {
                     if (scriptFilter.getFilterOption().equals(ScriptFilterOption.NAME)) {

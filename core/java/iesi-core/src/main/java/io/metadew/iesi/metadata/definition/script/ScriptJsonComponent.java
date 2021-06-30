@@ -20,7 +20,6 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupJsonComponent;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

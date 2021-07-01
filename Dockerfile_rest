@@ -1,0 +1,4 @@
+FROM iesi-base:latest
+
+WORKDIR /opt/iesi/rest
+CMD java -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest.jar

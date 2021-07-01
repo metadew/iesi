@@ -1,0 +1,4 @@
+FROM iesi-base:latest
+
+WORKDIR /opt/iesi/lib
+CMD java -Dlog4j.configurationFile=log4j2.xml -cp iesi-core-0.7.0-jar-with-dependencies.jar io.metadew.iesi.launch.ServerLauncher

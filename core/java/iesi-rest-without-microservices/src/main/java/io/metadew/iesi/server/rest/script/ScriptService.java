@@ -35,7 +35,7 @@ public class ScriptService implements IScriptService {
     }
 
     public List<Script> getByName(String name) {
-        return scriptConfiguration.getByName(name);
+        return scriptConfiguration.getActiveByName(name);
     }
 
     public Optional<Script> getByNameAndVersion(String name, long version) {

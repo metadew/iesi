@@ -38,8 +38,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
     public Optional<ScriptLabel> get(ScriptLabelKey scriptLabelKey) {
         try {
             String queryScriptLabel = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                    + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) +
-                    " AND DELETED_AT = 'NA' ;" ;
+                    + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptLabel, "reader");
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
@@ -119,8 +118,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
 
     public boolean exists(ScriptLabelKey scriptLabelKey) {
         String queryScriptParameter = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
-                + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) +
-                " AND DELETED_AT = 'NA';";
+                + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
     }

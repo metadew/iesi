@@ -126,11 +126,10 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
     }
 
     public String getDeletedAtCondition(String includeInActive){
-        String whereClause = " ";
         if (includeInActive.equalsIgnoreCase("false")){
-            whereClause = " script_designs.DELETED_AT = 'NA' and versions.DELETED_AT = 'NA'";
+           return " script_designs.DELETED_AT = 'NA' and versions.DELETED_AT = 'NA'";
         }
-        return whereClause;
+        return null;
     }
 
     /**

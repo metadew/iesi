@@ -157,8 +157,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
         assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
 
-        action1.getMetadataKey().getScriptKey().setDeletedAt(LocalDateTime.now().toString());
-        ActionConfiguration.getInstance().softDeleteByScript(action1.getMetadataKey().getScriptKey());
+        ActionConfiguration.getInstance().softDeleteByScript(action1.getMetadataKey().getScriptKey(), LocalDateTime.now().toString());
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
         assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(0, ActionConfiguration.getInstance().getAllActive().size());
@@ -286,7 +285,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().softDeleteByScript(new ScriptKey("1", 1,"NA"));
+        ActionConfiguration.getInstance().softDeleteByScript(new ScriptKey("1", 1,"NA"), LocalDateTime.now().toString());
 
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
@@ -303,7 +302,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().softDeleteByScript(new ScriptKey("1", 1, "NA"));
+        ActionConfiguration.getInstance().softDeleteByScript(new ScriptKey("1", 1, "NA"), LocalDateTime.now().toString());
 
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
@@ -325,7 +324,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2, action).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().softDeleteByScript((new ScriptKey("1", 1, LocalDateTime.now().toString())));
+        ActionConfiguration.getInstance().softDeleteByScript((new ScriptKey("1", 1, LocalDateTime.now().toString())), LocalDateTime.now().toString());
 
         assertEquals(3, ActionConfiguration.getInstance().getAll().size());
         assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());

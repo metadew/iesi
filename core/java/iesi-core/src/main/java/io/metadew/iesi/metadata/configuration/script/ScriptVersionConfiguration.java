@@ -69,6 +69,35 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         }
     }
 
+    public Optional<ScriptVersion> getActiveAndInactive(ScriptVersionKey scriptVersionKey) {
+        String queryScriptVersion = "select SCRIPT_ID, SCRIPT_VRS_NB, SCRIPT_VRS_DSC, CREATED_BY, CREATED_AT, LAST_MODIFIED_BY, LAST_MODIFIED_AT, DELETED_AT from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion());
+        CachedRowSet crsScriptVersion = getMetadataRepository().executeQuery(queryScriptVersion, "reader");
+        try {
+            if (crsScriptVersion.size() == 0) {
+                return Optional.empty();
+            } else if (crsScriptVersion.size() > 1) {
+                LOGGER.warn(MessageFormat.format("Found multiple implementations for script version {0}. Returning first implementation", scriptVersionKey.toString()));
+            }
+            crsScriptVersion.next();
+            scriptVersionKey.getScriptKey().setDeletedAt(crsScriptVersion.getString("DELETED_AT"));
+            ScriptVersion scriptVersion = new ScriptVersion(
+                    scriptVersionKey,
+                    crsScriptVersion.getString("SCRIPT_VRS_DSC"),
+                    crsScriptVersion.getString("CREATED_BY"),
+                    crsScriptVersion.getString("CREATED_AT"),
+                    crsScriptVersion.getString("LAST_MODIFIED_BY"),
+                    crsScriptVersion.getString("LAST_MODIFIED_AT"));
+            crsScriptVersion.close();
+            return Optional.of(scriptVersion);
+        } catch (Exception e) {
+            StringWriter StackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(StackTrace));
+            return Optional.empty();
+        }
+    }
+
     @Override
     public List<ScriptVersion> getAll() {
         List<ScriptVersion> scriptVersions = new ArrayList<>();
@@ -99,11 +128,69 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         return scriptVersions;
     }
 
+    public List<ScriptVersion> getAllActive() {
+        List<ScriptVersion> scriptVersions = new ArrayList<>();
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " Where DELETED_AT = 'NA' order by SCRIPT_ID;";
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
+        try {
+            while (crs.next()) {
+                ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
+                        new ScriptKey(crs.getString("SCRIPT_ID"),
+                                crs.getLong("SCRIPT_VRS_NB"),
+                                crs.getString("DELETED_AT")));
+                scriptVersions.add(new ScriptVersion(
+                        scriptVersionKey,
+                        crs.getString("SCRIPT_VRS_DSC"),
+                        crs.getString("CREATED_BY"),
+                        crs.getString("CREATED_AT"),
+                        crs.getString("LAST_MODIFIED_BY"),
+                        crs.getString("LAST_MODIFIED_AT")));
+            }
+            crs.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return scriptVersions;
+    }
+
     @Override
     public void delete(ScriptVersionKey scriptVersionKey) {
         LOGGER.trace(MessageFormat.format("deleting ScriptVersion {0}", scriptVersionKey.toString()));
-        String deleteStatement = markInactiveScriptVersion(scriptVersionKey);
+        String deleteStatement = getDeleteStatement(scriptVersionKey);
         getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    public void softDelete(ScriptVersionKey scriptVersionKey, String timeStamp) {
+        LOGGER.trace(MessageFormat.format("deleting ScriptVersion {0}", scriptVersionKey.toString()));
+        String deleteStatement = markInactiveScriptVersion(scriptVersionKey, timeStamp);
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    public List<ScriptVersion> getByScriptId(String scriptId) {
+        List<ScriptVersion> scriptVersions = new ArrayList<>();
+        String queryVersionScript = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptVersions")
+                + " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptId);
+        CachedRowSet crsVersionScript = getMetadataRepository().executeQuery(queryVersionScript, "reader");
+        try {
+            while (crsVersionScript.next()) {
+                scriptVersions.add(new ScriptVersion(
+                        crsVersionScript.getString("SCRIPT_ID"),
+                        crsVersionScript.getLong("SCRIPT_VRS_NB"),
+                        crsVersionScript.getString("SCRIPT_VRS_DSC"),
+                        crsVersionScript.getString("CREATED_BY"),
+                        crsVersionScript.getString("CREATED_AT"),
+                        crsVersionScript.getString("LAST_MODIFIED_BY"),
+                        crsVersionScript.getString("LAST_MODIFIED_AT"),
+                        crsVersionScript.getString("DELETED_AT")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return scriptVersions;
     }
 
     public List<ScriptVersion> getActiveByScriptId(String scriptId) {
@@ -206,12 +293,19 @@ public class ScriptVersionConfiguration extends Configuration<ScriptVersion, Scr
         LOGGER.trace(MessageFormat.format("Successfully Restored deleted ScriptVersion {0}", scriptVersionKey.getScriptKey()));
     }
 
-    private String markInactiveScriptVersion(ScriptVersionKey scriptVersionKey) {
+    private String markInactiveScriptVersion(ScriptVersionKey scriptVersionKey, String timeStamp) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptVersions") + " SET " +
-                " DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) +
+                " DELETED_AT = " + SQLTools.getStringForSQL(timeStamp) +
                 " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
                 " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) +
-                " AND DELETED_AT = 'NA' ;";
+                " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) + ";";
+    }
+
+    private String getDeleteStatement(ScriptVersionKey scriptVersionKey) {
+        return "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptVersions") +
+                " WHERE SCRIPT_ID = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptId()) +
+                " AND SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getScriptVersion()) +
+                " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptVersionKey.getScriptKey().getDeletedAt()) + ";";
     }
 
     private String markActiveScriptVersion(ScriptVersionKey scriptVersionKey) {

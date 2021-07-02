@@ -6,9 +6,7 @@ import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
-import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
@@ -177,25 +175,6 @@ class ScriptConfigurationTest {
     }
 
     @Test
-    void multipleScriptRestoreAfterDeletion() {
-        List<ScriptVersion> versions = new ArrayList<>();
-        assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
-        ScriptConfiguration.getInstance().insert(script11);
-        ScriptConfiguration.getInstance().insert(script12);
-
-        assertEquals(2, ScriptConfiguration.getInstance().getAll().size());
-
-        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
-
-        assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
-        assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
-
-        ScriptVersionConfiguration.getInstance().restoreDeletedScriptVersion(new ScriptVersionKey(script11.getMetadataKey()));
-        assertEquals(2, ScriptConfiguration.getInstance().getAll().size());
-
-    }
-
-    @Test
     void scriptDeletedNotExistsTest() {
         ScriptConfiguration.getInstance().insert(script11);
         ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
@@ -204,6 +183,35 @@ class ScriptConfigurationTest {
                         script11.getVersion().getNumber(), "NA")));
     }
 
+    @Test
+    void scriptDeletedTest() {
+        assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
+        ScriptConfiguration.getInstance().insert(script11);
+        assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
+        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
+        assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
+    }
+
+    @Test
+    void scriptMultipleVersionDeletedTest() {
+        assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
+        ScriptConfiguration.getInstance().insert(script11);
+        ScriptConfiguration.getInstance().insert(script12);
+        assertEquals(2, ScriptConfiguration.getInstance().getAll().size());
+        ScriptConfiguration.getInstance().delete(script11.getMetadataKey());
+        assertEquals(1, ScriptConfiguration.getInstance().getAll().size());
+    }
+
+    @Test
+    void scriptSoftDeletedTest() {
+        assertEquals(0, ScriptConfiguration.getInstance().getAll().size());
+        ScriptConfiguration.getInstance().insert(script11);
+        ScriptConfiguration.getInstance().insert(script12);
+        assertEquals(2, ScriptConfiguration.getInstance().getAll().size());
+        ScriptConfiguration.getInstance().softDelete(script12.getMetadataKey());
+        assertEquals(2, ScriptConfiguration.getInstance().getAll().size());
+        assertEquals(1, ScriptConfiguration.getInstance().getAllActive().size());
+    }
 
     @Test
     void scriptDeleteDoesNotExistTest() {
@@ -250,7 +258,7 @@ class ScriptConfigurationTest {
         ScriptConfiguration.getInstance().insert(script11);
         ScriptConfiguration.getInstance().insert(script12);
 
-        List<Script> scriptFetched = ScriptConfiguration.getInstance().getByName("script1");
+        List<Script> scriptFetched = ScriptConfiguration.getInstance().getActiveByName("script1");
         assertEquals(Stream.of(script11, script12).collect(Collectors.toList()), scriptFetched);
     }
 

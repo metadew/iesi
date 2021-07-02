@@ -69,7 +69,7 @@ public class ScriptService implements IScriptService {
     public void deleteByNameAndVersion(String name, long version) {
         ScriptKey scriptKey = new ScriptKey(IdentifierTools.getScriptIdentifier(name), version);
         scriptDesignAuditConfiguration.insert(scriptDesignAuditPostDtoService.convertToScriptAudit(scriptConfiguration.get(scriptKey).get(), ScriptDesignAuditAction.DELETE));
-        scriptConfiguration.delete(scriptKey);
+        scriptConfiguration.softDelete(scriptKey);
 
     }
 

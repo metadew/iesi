@@ -132,14 +132,22 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
         return cachedRowSet.size() >= 1;
     }
 
-    public void softDeleteByScript(ScriptKey scriptKey) {
+    public void softDeleteByScript(ScriptKey scriptKey, String timeStamp) {
         LOGGER.trace(MessageFormat.format("Deleting script parameters for script {0}", scriptKey.toString()));
         String deleteStatement = "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptParameters") +
-                " SET DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) +
-                " WHERE " +
+                " SET DELETED_AT = " + SQLTools.getStringForSQL(timeStamp) + " WHERE " +
                 " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) + " AND " +
                 " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
-                " AND DELETED_AT = 'NA' ;";
+                " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) + ";";
+        getMetadataRepository().executeUpdate(deleteStatement);
+    }
+
+    public void deleteByScript(ScriptKey scriptKey) {
+        LOGGER.trace(MessageFormat.format("Deleting script parameters for script {0}", scriptKey.toString()));
+        String deleteStatement = "DELETE FROM " + getMetadataRepository().getTableNameByLabel("ScriptParameters") + " WHERE " +
+                " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) + " AND " +
+                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
+                " AND DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) + ";";
         getMetadataRepository().executeUpdate(deleteStatement);
     }
 
@@ -149,6 +157,34 @@ public class ScriptParameterConfiguration extends Configuration<ScriptParameter,
                 + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) +
                 " and DELETED_AT = " + SQLTools.getStringForSQL(scriptKey.getDeletedAt()) + ";";
+        CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
+        try {
+            while (crs.next()) {
+                ScriptParameterKey scriptParameterKey = new ScriptParameterKey(
+                        new ScriptKey(crs.getString("SCRIPT_ID"),
+                                crs.getLong("SCRIPT_VRS_NB"),
+                                crs.getString("DELETED_AT")),
+                        crs.getString("SCRIPT_PAR_NM"));
+                scriptParameters.add(new ScriptParameter(
+                        scriptParameterKey,
+                        SQLTools.getStringFromSQLClob(crs, "SCRIPT_PAR_VAL")));
+
+            }
+            crs.close();
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            LOGGER.warn("exeption=" + e.getMessage());
+            LOGGER.info("exception.stacktrace=" + stackTrace.toString());
+        }
+        return scriptParameters;
+    }
+
+    public List<ScriptParameter> getActiveAndInactiveByScript(ScriptKey scriptKey) {
+        List<ScriptParameter> scriptParameters = new ArrayList<>();
+        String query = "select * from " + getMetadataRepository().getTableNameByLabel("ScriptParameters")
+                + " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
+                " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {

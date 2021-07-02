@@ -124,14 +124,15 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
         assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
-        ScriptVersionConfiguration.getInstance().delete(new ScriptVersionKey(
+        ScriptVersionConfiguration.getInstance().softDelete(new ScriptVersionKey(
                 new ScriptKey(scriptVersion1.getScriptId(),
-                        scriptVersion1.getNumber(),
-                        LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))));
+                        scriptVersion1.getNumber(), "NA")), LocalDateTime.now().toString());
         assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(1, ScriptVersionConfiguration.getInstance().getAllActive().size());
 
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         assertEquals(3, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(2, ScriptVersionConfiguration.getInstance().getAllActive().size());
 
     }
 

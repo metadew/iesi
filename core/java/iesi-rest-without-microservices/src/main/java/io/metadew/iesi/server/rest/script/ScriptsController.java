@@ -72,8 +72,8 @@ public class ScriptsController {
                                         @RequestParam(required = false, name = "version") String version,
                                         @RequestParam(required = false, name = "name") String name,
                                         @RequestParam(required = false, name = "label") String labelKeyCombination,
-                                        @RequestParam(required = false, name = "includeInActive") String includeInActive ) {
-        List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination, includeInActive);
+                                        @RequestParam(required = false, name = "includeInActive") String includeInactive ) {
+        List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination, includeInactive);
         boolean lastVersion = extractLastVersion(version);
         Page<ScriptDto> scriptDtoPage = scriptDtoService
                 .getAllActive(SecurityContextHolder.getContext().getAuthentication(),

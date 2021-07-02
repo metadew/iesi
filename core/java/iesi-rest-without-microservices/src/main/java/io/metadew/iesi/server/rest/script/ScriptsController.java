@@ -72,7 +72,7 @@ public class ScriptsController {
                                         @RequestParam(required = false, name = "version") String version,
                                         @RequestParam(required = false, name = "name") String name,
                                         @RequestParam(required = false, name = "label") String labelKeyCombination,
-gi                                        @RequestParam(required = false, name = "includeInactive") String includeInactive ) {
+                                        @RequestParam(required = false, name = "includeInactive") String includeInactive ) {
         List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination, includeInactive);
         boolean lastVersion = extractLastVersion(version);
         Page<ScriptDto> scriptDtoPage = scriptDtoService

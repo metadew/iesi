@@ -47,7 +47,7 @@ public class ScriptLogOutput extends ActionTypeExecution {
         log.info("action.output=" + name + ":" + value, Level.INFO);
         ScriptResultOutput scriptResultOutput = new ScriptResultOutput(
                 new ScriptResultOutputKey(getExecutionControl().getRunId(), getExecutionControl().getProcessId(), name),
-                getScriptExecution().getScript().getMetadataKey().getScriptId(),
+                getScriptExecution().getScriptVersion().getMetadataKey().getScriptKey().getScriptId(),
                 value);
         ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
 

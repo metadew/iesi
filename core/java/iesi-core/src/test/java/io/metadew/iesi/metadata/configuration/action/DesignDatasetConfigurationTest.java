@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
@@ -74,7 +75,7 @@ class DesignDatasetConfigurationTest {
 
     @Test
     void actionNotExistsTest() {
-        ActionKey nonExistActionKey = new ActionKey(new ScriptKey("non_exist", 2L), "non");
+        ActionKey nonExistActionKey = new ActionKey(new ScriptVersionKey(new ScriptKey("non_exist"), 2L, "NA"), "non");
         assertFalse(ActionConfiguration.getInstance().exists(nonExistActionKey));
     }
 
@@ -157,7 +158,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
         assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
 
-        ActionConfiguration.getInstance().softDeleteByScript(action1.getMetadataKey().getScriptKey(), LocalDateTime.now().toString());
+        ActionConfiguration.getInstance().softDeleteByScriptVersion(action1.getMetadataKey().getScriptVersionKey(), LocalDateTime.now().toString());
         assertEquals(1, ActionConfiguration.getInstance().getAll().size());
         assertEquals(2, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(0, ActionConfiguration.getInstance().getAllActive().size());
@@ -285,7 +286,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().softDeleteByScript(new ScriptKey("1", 1,"NA"), LocalDateTime.now().toString());
+        ActionConfiguration.getInstance().softDeleteByScriptVersion(new ScriptVersionKey(new ScriptKey("1"), 1,"NA"), LocalDateTime.now().toString());
 
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
@@ -302,7 +303,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().softDeleteByScript(new ScriptKey("1", 1, "NA"), LocalDateTime.now().toString());
+        ActionConfiguration.getInstance().softDeleteByScriptVersion(new ScriptVersionKey(new ScriptKey("1"), 1, "NA"), LocalDateTime.now().toString());
 
         assertEquals(2, ActionConfiguration.getInstance().getAll().size());
         assertEquals(4, ActionParameterConfiguration.getInstance().getAll().size());
@@ -324,7 +325,7 @@ class DesignDatasetConfigurationTest {
         assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());
         assertEquals(Stream.of(action1, action2, action).collect(Collectors.toList()), ActionConfiguration.getInstance().getAll());
 
-        ActionConfiguration.getInstance().softDeleteByScript((new ScriptKey("1", 1, LocalDateTime.now().toString())), LocalDateTime.now().toString());
+        ActionConfiguration.getInstance().softDeleteByScriptVersion((new ScriptVersionKey(new ScriptKey("1"), 1, LocalDateTime.now().toString())), LocalDateTime.now().toString());
 
         assertEquals(3, ActionConfiguration.getInstance().getAll().size());
         assertEquals(5, ActionParameterConfiguration.getInstance().getAll().size());

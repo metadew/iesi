@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.configuration.script.design.ScriptVersionDesignT
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.ScriptLabelDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.ScriptParameterDesignTrace;
@@ -31,17 +32,17 @@ public class ScriptDesignTraceService {
             long parentProcessId = scriptExecution.getParentScriptExecution()
                     .map(ScriptExecution::getProcessId)
                     .orElse(-1L);
-            Script script = scriptExecution.getScript();
+            ScriptVersion scriptVersion = scriptExecution.getScriptVersion();
 
-            ScriptDesignTraceConfiguration.getInstance().insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));
-            ScriptVersionDesignTraceConfiguration.getInstance().insert(new ScriptVersionDesignTrace(runId, processId, script.getVersion()));
+            ScriptDesignTraceConfiguration.getInstance().insert(new ScriptDesignTrace(runId, processId, parentProcessId, scriptVersion.getScript()));
+            ScriptVersionDesignTraceConfiguration.getInstance().insert(new ScriptVersionDesignTrace(runId, processId, scriptVersion));
 
-            for (ScriptParameter scriptParameter : script.getParameters()) {
+            for (ScriptParameter scriptParameter : scriptVersion.getParameters()) {
                 ScriptParameterDesignTraceConfiguration.getInstance().insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
             }
-            for (ScriptLabel scriptLabel : script.getLabels()) {
+            for (ScriptLabel scriptLabel : scriptVersion.getLabels()) {
                 ScriptLabelDesignTraceConfiguration.getInstance().insert(new ScriptLabelDesignTrace(
-                        new ScriptLabelDesignTraceKey(runId, processId, scriptLabel.getMetadataKey()), scriptLabel.getScriptKey(),
+                        new ScriptLabelDesignTraceKey(runId, processId, scriptLabel.getMetadataKey()), scriptLabel.getScriptVersionKey(),
                         scriptLabel.getName(), scriptLabel.getValue()));
             }
         } catch (Exception e) {

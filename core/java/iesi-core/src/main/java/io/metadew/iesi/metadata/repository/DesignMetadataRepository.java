@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptVersionConfiguration;
 import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.subroutine.Subroutine;
 import io.metadew.iesi.metadata.definition.template.Template;
@@ -42,7 +44,7 @@ public class DesignMetadataRepository extends MetadataRepository {
         // TODO: insert should be handled on database level as insert can differ from database type/dialect? JDBC Dialect/Spring
         ObjectMapper objectMapper = new ObjectMapper();
         if (dataObject.getType().equalsIgnoreCase("script")) {
-            Script script = (Script) objectMapper.convertValue(dataObject, Metadata.class);
+            ScriptVersion script = (ScriptVersion) objectMapper.convertValue(dataObject, Metadata.class);
             save(script);
         } else if (dataObject.getType().equalsIgnoreCase("component")) {
             Component component = (Component) objectMapper.convertValue(dataObject, Metadata.class);
@@ -58,30 +60,30 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
     }
 
-    public void save(Script script) {
-        log.info(MessageFormat.format("Saving {0} into design repository", script));
-        if (!verifyScript(script)) {
-            log.error(MessageFormat.format("Script {0} cannot be saved as it contains errors", script));
+    public void save(ScriptVersion scriptVersion) {
+        log.info(MessageFormat.format("Saving {0} into design repository", scriptVersion));
+        if (!verifyScript(scriptVersion)) {
+            log.error(MessageFormat.format("Script {0} cannot be saved as it contains errors", scriptVersion));
             return;
         }
         try {
             // if a script does not have a security group, it is linked to the PUBLIC security group
-            if (script.getSecurityGroupKey() == null) {
+            if (scriptVersion.getScript().getSecurityGroupKey() == null) {
                 log.warn("{0} not linked to a security group, linking it to the public security group");
                 SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
                         .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
-                script.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
-                script.setSecurityGroupName(publicSecurityGroup.getName());
+                scriptVersion.getScript().setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
+                scriptVersion.getScript().setSecurityGroupName(publicSecurityGroup.getName());
             }
 
-            script.getVersion().setCreatedBy("admin");
-            script.getVersion().setCreatedAt(LocalDateTime.now().toString());
-            ScriptConfiguration.getInstance().insert(script);
+            scriptVersion.setCreatedBy("admin");
+            scriptVersion.setCreatedAt(LocalDateTime.now().toString());
+            ScriptVersionConfiguration.getInstance().insert(scriptVersion);
         } catch (MetadataAlreadyExistsException e) {
-            log.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
-            script.getVersion().setLastModifiedBy("admin");
-            script.getVersion().setLastModifiedAt(LocalDateTime.now().toString());
-            ScriptConfiguration.getInstance().update(script);
+            log.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", scriptVersion.getScript().getName(), scriptVersion.getNumber()));
+            scriptVersion.setLastModifiedBy("admin");
+            scriptVersion.setLastModifiedAt(LocalDateTime.now().toString());
+            ScriptVersionConfiguration.getInstance().update(scriptVersion);
         }
     }
 
@@ -106,20 +108,20 @@ public class DesignMetadataRepository extends MetadataRepository {
         }
     }
 
-    private boolean verifyScript(Script script) {
-        List<String> parameterNames = script.getParameters().stream()
+    private boolean verifyScript(ScriptVersion scriptVersion) {
+        List<String> parameterNames = scriptVersion.getParameters().stream()
                 .map(parameter -> parameter.getMetadataKey().getParameterName())
                 .collect(Collectors.toList());
         List<String> duplicateParameters = parameterNames.stream()
                 .filter(parameter -> Collections.frequency(parameterNames, parameter) > 1)
                 .collect(Collectors.toList());
         if (duplicateParameters.size() > 1) {
-            log.error(MessageFormat.format("Script {0}-{1} has duplicate parameters: {2}", script.getName(), script.getVersion().getNumber(), duplicateParameters));
+            log.error(MessageFormat.format("Script {0}-{1} has duplicate parameters: {2}", scriptVersion.getScript().getName(), scriptVersion.getNumber(), duplicateParameters));
         }
-        List<String> actionNames = script.getActions().stream().map(Action::getName).collect(Collectors.toList());
+        List<String> actionNames = scriptVersion.getActions().stream().map(Action::getName).collect(Collectors.toList());
         List<String> duplicateActions = actionNames.stream().filter(i -> Collections.frequency(actionNames, i) > 1).collect(Collectors.toList());
         if (duplicateActions.size() > 1) {
-            log.error(MessageFormat.format("Script {0}-{1} has duplicate actions: {2}", script.getName(), script.getVersion().getNumber(), duplicateActions));
+            log.error(MessageFormat.format("Script {0}-{1} has duplicate actions: {2}", scriptVersion.getScript().getName(), scriptVersion.getNumber(), duplicateActions));
         }
         return duplicateParameters.isEmpty() && duplicateActions.isEmpty();
 

@@ -123,7 +123,7 @@ class ActionParameterConfigurationTest {
     void actionSoftDeleteTest() {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
-        ActionParameterConfiguration.getInstance().softDeleteByScript(actionParameter1.getMetadataKey().getActionKey().getScriptKey(), LocalDateTime.now().toString());
+        ActionParameterConfiguration.getInstance().softDeleteByScript(actionParameter1.getMetadataKey().getActionKey().getScriptVersionKey(), LocalDateTime.now().toString());
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
     }
 

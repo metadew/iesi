@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition.script.trace;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptTraceKey;
 import lombok.Builder;
 import lombok.Data;
@@ -30,8 +31,8 @@ public class ScriptTrace extends Metadata<ScriptTraceKey> {
         this.securityGroupName = securityGroupName;
     }
 
-    public ScriptTrace(String runId, Long processId, Long parentProcessId, Script script) {
-        this(new ScriptTraceKey(runId, processId), script.getMetadataKey().getScriptId(), parentProcessId, script.getName(), script.getDescription(), script.getSecurityGroupName());
+    public ScriptTrace(String runId, Long processId, Long parentProcessId, ScriptVersion scriptVersion) {
+        this(new ScriptTraceKey(runId, processId), scriptVersion.getMetadataKey().getScriptKey().getScriptId(), parentProcessId, scriptVersion.getScript().getName(), scriptVersion.getDescription(), scriptVersion.getScript().getSecurityGroupName());
     }
 
 }

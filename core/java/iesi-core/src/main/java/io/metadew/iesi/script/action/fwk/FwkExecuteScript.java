@@ -5,9 +5,10 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
-import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.configuration.script.ScriptVersionConfiguration;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.action.ActionTypeExecution;
@@ -63,21 +64,21 @@ public class FwkExecuteScript extends ActionTypeExecution {
     protected boolean executeAction() throws ScriptExecutionBuildException, InterruptedException {
         // Check on Running a script in a loop
         String scriptName = convertScriptName(getParameterResolvedValue(SCRIPT_NAME_KEY));
-        Optional<Long> scriptVersion = convertScriptVersion(getParameterResolvedValue(SCRIPT_VERSION_KEY));
+        Optional<Long> scriptVersionNumber = convertScriptVersion(getParameterResolvedValue(SCRIPT_VERSION_KEY));
         Optional<String> environmentName = convertEnvironmentName(getParameterResolvedValue(ENVIRONMENT_KEY));
         // TODO: see setParameterList for nicer version
         Optional<String> parameterList = convertParameterList2(getParameterResolvedValue(PARAM_LIST_KEY));
         Optional<String> parameterFileName = convertParameterFileName(getParameterResolvedValue(PARAM_FILE_KEY));
-        if (getScriptExecution().getScript().getName().equals(scriptName)) {
-            throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, getScriptExecution().getScript().getName()));
+        if (getScriptExecution().getScriptVersion().getScript().getName().equals(scriptName)) {
+            throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, getScriptExecution().getScriptVersion().getScript().getName()));
         }
 
         // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
-        Script script = scriptVersion
-                .map(version -> ScriptConfiguration.getInstance()
-                        .get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version))
+        ScriptVersion scriptVersion = scriptVersionNumber
+                .map(version -> ScriptVersionConfiguration.getInstance()
+                        .get(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName)), version, "NA"))
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
-                .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)
+                .orElse(ScriptVersionConfiguration.getInstance().getLatestVersionByScriptIdAndActive(IdentifierTools.getScriptIdentifier(scriptName))
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));
 
         Map<String, String> parameters = new HashMap<>();
@@ -86,7 +87,7 @@ public class FwkExecuteScript extends ActionTypeExecution {
 
         // TODO: impersonations?
         ScriptExecution subScriptScriptExecution = new ScriptExecutionBuilder(false, false)
-                .script(script)
+                .scriptVersion(scriptVersion)
                 .executionControl(getExecutionControl())
                 .processId(getExecutionControl().getLastProcessId())
                 .parentScriptExecution(getScriptExecution())
@@ -103,10 +104,10 @@ public class FwkExecuteScript extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseWarningCount();
         } else if (subScriptScriptExecution.getResult()
                 .equalsIgnoreCase(ScriptRunStatus.ERROR.value())) {
-            getActionExecution().getActionControl().logOutput("action.error", "script " + script.getName() + "-" + script.getVersion().getNumber() + " ended in " + subScriptScriptExecution.getResult());
+            getActionExecution().getActionControl().logOutput("action.error", "script " + scriptVersion.getScript().getName() + "-" + scriptVersion.getNumber() + " ended in " + subScriptScriptExecution.getResult());
             getActionExecution().getActionControl().increaseErrorCount();
         } else {
-            getActionExecution().getActionControl().logOutput("action.error", "script " + script.getName() + "-" + script.getVersion().getNumber() + " ended in " + subScriptScriptExecution.getResult());
+            getActionExecution().getActionControl().logOutput("action.error", "script " + scriptVersion.getScript().getName() + "-" + scriptVersion.getNumber() + " ended in " + subScriptScriptExecution.getResult());
             getActionExecution().getActionControl().increaseErrorCount();
         }
 

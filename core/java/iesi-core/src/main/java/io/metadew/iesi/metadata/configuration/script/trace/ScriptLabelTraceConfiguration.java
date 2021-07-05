@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptLabelTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptLabelTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -51,7 +52,7 @@ public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrac
             }
             cachedRowSet.next();
             return Optional.of(new ScriptLabelTrace(scriptLabelTraceKey,
-                    new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
+                    new ScriptVersionKey(new ScriptKey(cachedRowSet.getString("SCRIPT_ID")), cachedRowSet.getLong("SCRIPT_VRS_NB"), "NA"),
                     cachedRowSet.getString("NAME"),
                     cachedRowSet.getString("VALUE")));
         } catch (SQLException e) {
@@ -69,7 +70,7 @@ public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrac
             while (cachedRowSet.next()) {
                 scriptLabelDesignTraces.add(new ScriptLabelTrace(
                         new ScriptLabelTraceKey(cachedRowSet.getString("RUN_ID"),cachedRowSet.getLong("PRC_ID"),new ScriptLabelKey(cachedRowSet.getString("SCRIPT_LBL_ID"))),
-                        new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
+                        new ScriptVersionKey(new ScriptKey(cachedRowSet.getString("SCRIPT_ID")), cachedRowSet.getLong("SCRIPT_VRS_NB"), "NA"),
                         cachedRowSet.getString("NAME"),
                         cachedRowSet.getString("VALUE")));
             }
@@ -118,8 +119,8 @@ public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrac
                 SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getScriptLabelKey().getId()) + "," +
-                SQLTools.getStringForSQL(scriptLabelTrace.getScriptKey().getScriptId()) + ", " +
-                SQLTools.getStringForSQL(scriptLabelTrace.getScriptKey().getScriptVersion()) + ", " +
+                SQLTools.getStringForSQL(scriptLabelTrace.getScriptVersionKey().getScriptKey().getScriptId()) + ", " +
+                SQLTools.getStringForSQL(scriptLabelTrace.getScriptVersionKey().getScriptVersion()) + ", " +
                 SQLTools.getStringForSQL(scriptLabelTrace.getName()) + ", " +
                 SQLTools.getStringForSQL(scriptLabelTrace.getValue()) + ");";
     }
@@ -134,8 +135,8 @@ public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrac
     private String updateStatement(ScriptLabelTrace scriptLabelTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptLabelTraces") +
                 " SET " +
-                " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptLabelTrace.getScriptKey().getScriptId()) + ", " +
-                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptLabelTrace.getScriptKey().getScriptVersion()) + ", " +
+                " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptLabelTrace.getScriptVersionKey().getScriptKey().getScriptId()) + ", " +
+                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptLabelTrace.getScriptVersionKey().getScriptVersion()) + ", " +
                 " NAME = " + SQLTools.getStringForSQL(scriptLabelTrace.getName()) + ", " +
                 " VALUE = " + SQLTools.getStringForSQL(scriptLabelTrace.getValue()) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getRunId()) +

@@ -11,19 +11,16 @@ import lombok.EqualsAndHashCode;
 public class ScriptKey extends MetadataKey {
 
     private final String scriptId;
-    private final long scriptVersion;
-    private String deletedAt;
+    // private String deletedAt;
 
-    public ScriptKey(String scriptId, long scriptVersion) {
+    public ScriptKey(String scriptId) {
         this.scriptId = scriptId;
-        this.scriptVersion = scriptVersion;
-        this.deletedAt = "NA";
+        // this.deletedAt = "NA";
     }
 
-    public ScriptKey(String scriptId, long scriptVersion, String deletedAt) {
-        this.scriptId = scriptId;
-        this.scriptVersion = scriptVersion;
-        this.deletedAt = deletedAt;
-    }
+//    public ScriptKey(String scriptId, String deletedAt) {
+//        this.scriptId = scriptId;
+//        // this.deletedAt = deletedAt;
+//    }
 
 }

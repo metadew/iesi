@@ -11,6 +11,6 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ScriptParameterKey extends MetadataKey {
-    private final ScriptKey scriptKey;
+    private final ScriptVersionKey scriptVersionKey;
     private final String parameterName;
 }

@@ -4,13 +4,14 @@ import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
-import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptVersionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
-import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
@@ -46,10 +47,10 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
     @Override
     public void execute(ScriptNameExecutionRequest scriptExecutionRequest) {
 
-        Script script = scriptExecutionRequest.getScriptVersion()
-                .map(scriptVersion -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()), scriptVersion)))
-                .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptExecutionRequest.getScriptName()))
-                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()), scriptExecutionRequest.getScriptVersion().orElse(-1L))));
+        ScriptVersion scriptVersion = scriptExecutionRequest.getScriptVersion()
+                .map(scriptVersionNumber -> ScriptVersionConfiguration.getInstance().get(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName())), scriptVersionNumber, "NA")))
+                .orElse(ScriptVersionConfiguration.getInstance().getLatestVersionByScriptIdAndActive((IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()))))
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName())), scriptExecutionRequest.getScriptVersion().orElse(-1L), "NA")));
 
         Map<String, String> impersonations = new HashMap<>();
         scriptExecutionRequest.getImpersonations()
@@ -58,7 +59,7 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
                                 .forEach(impersonationParameter -> impersonations.put(impersonationParameter.getMetadataKey().getParameterName(), impersonationParameter.getImpersonatedConnection()))));
 
         ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
-                .script(script)
+                .scriptVersion(scriptVersion)
                 .exitOnCompletion(scriptExecutionRequest.isExit())
                 .parameters(scriptExecutionRequest.getParameters().stream()
                         .collect(Collectors.toMap(ScriptExecutionRequestParameter::getName, ScriptExecutionRequestParameter::getValue)))

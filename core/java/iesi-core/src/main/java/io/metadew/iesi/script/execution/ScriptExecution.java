@@ -2,18 +2,20 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
+import lombok.Getter;
 import lombok.ToString;
 import org.apache.logging.log4j.Level;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @ToString
+@Getter
 public abstract class ScriptExecution {
 	private RootingStrategy rootingStrategy;
-	private Script script;
+	private ScriptVersion scriptVersion;
 	private ExecutionControl executionControl;
 	private ExecutionMetrics executionMetrics;
 	private Long processId;
@@ -25,11 +27,11 @@ public abstract class ScriptExecution {
 	private ActionSelectOperation actionSelectOperation;
 	private String environment;
 
-	public ScriptExecution(Script script, String environment, ExecutionControl executionControl,
+	public ScriptExecution(ScriptVersion scriptVersion, String environment, ExecutionControl executionControl,
 						   ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion,
 						   ScriptExecution parentScriptExecution, Map<String, String> parameters, Map<String, String> impersonations,
 						   ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
-		this.script = script;
+		this.scriptVersion = scriptVersion;
 		this.environment = environment;
 		this.executionControl = executionControl;
 		this.executionMetrics = executionMetrics;
@@ -49,7 +51,9 @@ public abstract class ScriptExecution {
 		rootingStrategy.prepareExecution(this);
 		prepareExecution();
 
-		List<Action> actionsToExecute = script.getActions();
+		List<Action> actionsToExecute = scriptVersion.getActions().stream()
+				.sorted(Comparator.comparing(Action::getNumber))
+				.collect(Collectors.toList());
 		int actionIndex = 0;
 
 		while (actionIndex < actionsToExecute.size()) {
@@ -182,41 +186,12 @@ public abstract class ScriptExecution {
 		ExecutionTrace.getInstance().setExecution(this);
 	}
 
-	public ExecutionControl getExecutionControl() {
-		return executionControl;
-	}
-
-	public Long getProcessId() {
-		return processId;
-	}
-
-
-	public ExecutionMetrics getExecutionMetrics() {
-		return executionMetrics;
-	}
-
 	public Optional<ScriptExecution> getParentScriptExecution() {
 		return Optional.ofNullable(parentScriptExecution);
 	}
 
-	public String getResult() {
-		return result;
-	}
-
 	public void setResult(String result) {
 		this.result = result;
-	}
-
-	public boolean isExitOnCompletion() {
-		return exitOnCompletion;
-	}
-
-    public Script getScript() {
-        return script;
-    }
-
-	public String getEnvironment() {
-		return environment;
 	}
 
 }

@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration.script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import org.apache.commons.codec.cli.Digest;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -29,7 +30,7 @@ public class ScriptLabelBuilder {
 
     public ScriptLabel build() {
         // needs to be a predictable key (hash) to ensure they can be loaded from filesystem
-        return new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId+ scriptVersionNumber +name)), new ScriptKey(scriptId, scriptVersionNumber) , name, getValue().orElse("dummy"));
+        return new ScriptLabel(new ScriptLabelKey(DigestUtils.sha256Hex(scriptId+ scriptVersionNumber +name)), new ScriptVersionKey(new ScriptKey(scriptId), scriptVersionNumber, "NA") , name, getValue().orElse("dummy"));
     }
 
     private Optional<String> getValue() {

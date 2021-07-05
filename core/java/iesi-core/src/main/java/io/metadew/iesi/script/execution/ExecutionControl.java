@@ -93,10 +93,10 @@ public class ExecutionControl {
         Long parentProcessId = scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(-1L);
         ScriptResult scriptResult = new ScriptResult(new ScriptResultKey(runId, scriptExecution.getProcessId()),
                 parentProcessId,
-                scriptExecution.getScript().getMetadataKey().getScriptId(),
-                scriptExecution.getScript().getName(),
-                scriptExecution.getScript().getVersion().getNumber(),
-                scriptExecution.getScript().getSecurityGroupName(),
+                scriptExecution.getScriptVersion().getMetadataKey().getScriptKey().getScriptId(),
+                scriptExecution.getScriptVersion().getScript().getName(),
+                scriptExecution.getScriptVersion().getNumber(),
+                scriptExecution.getScriptVersion().getScript().getSecurityGroupName(),
                 envName,
                 ScriptRunStatus.RUNNING,
                 LocalDateTime.now(),
@@ -250,7 +250,7 @@ public class ExecutionControl {
     public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, String outputValue) {
         // Redact any encrypted values
         outputValue = FrameworkCrypto.getInstance().redact(outputValue);
-        ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getMetadataKey().getScriptId(), outputValue);
+        ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScriptVersion().getMetadataKey().getScriptKey().getScriptId(), outputValue);
         ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
     }
 

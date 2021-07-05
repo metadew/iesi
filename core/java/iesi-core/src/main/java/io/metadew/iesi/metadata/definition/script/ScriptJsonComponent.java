@@ -23,9 +23,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ScriptJsonComponent {
 
@@ -38,7 +36,9 @@ public class ScriptJsonComponent {
         VERSION_KEY("version"),
         PARAMETERS_KEY("parameters"),
         ACTIONS_KEY("actions"),
-        LABELS_KEY("labels");
+        LABELS_KEY("labels"),
+        VERSION_NUMBER_KEY("number"),
+        VERSION_DESCRIPTION_KEY("description");
 
 
         private final String label;
@@ -52,9 +52,9 @@ public class ScriptJsonComponent {
         }
     }
 
-    public static class Deserializer extends JsonDeserializer<Script> {
+    public static class Deserializer extends JsonDeserializer<ScriptVersion> {
         @Override
-        public Script deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public ScriptVersion deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             // needs to be a predictable key (hash) to ensure they can be loaded from filesystem
             String scriptId = IdentifierTools.getScriptIdentifier(node.get(Field.NAME_KEY.value()).asText());
@@ -72,39 +72,25 @@ public class ScriptJsonComponent {
             JsonNode versionNode = node.get(Field.VERSION_KEY.value());
             long versionNumber;
             if (versionNode != null) {
-                versionNumber = versionNode.get(ScriptVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
-                scriptVersion = new ScriptVersion(
-                        new ScriptVersionKey(new ScriptKey(scriptId, versionNumber, "NA")),
-                        versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText(),
-                        "admin",
-                        LocalDateTime.now().toString(),
-                        "admin",
-                        LocalDateTime.now().toString());
+                versionNumber = versionNode.get(Field.VERSION_NUMBER_KEY.value()).asLong();
             } else {
                 versionNumber = 0L;
-                scriptVersion = new ScriptVersion(new ScriptVersionKey(
-                        new ScriptKey(scriptId, versionNumber, "NA")),
-                        "default version",
-                        "admin",
-                        LocalDateTime.now().toString(),
-                        "admin",
-                        LocalDateTime.now().toString());
             }
-            ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber, "NA");
+            ScriptVersionKey scriptVersionKey = new ScriptVersionKey(new ScriptKey(scriptId), versionNumber, "NA");
 
 
             //script parameters
-            List<ScriptParameter> scriptParameters = new ArrayList<>();
+            Set<ScriptParameter> scriptParameters = new HashSet<>();
             if (node.hasNonNull(ScriptJsonComponent.Field.PARAMETERS_KEY.value())) {
                 for (JsonNode scriptParameterNode : node.get(ScriptJsonComponent.Field.PARAMETERS_KEY.value())) {
-                    scriptParameters.add(new ScriptParameter(new ScriptParameterKey(scriptKey,
+                    scriptParameters.add(new ScriptParameter(new ScriptParameterKey(scriptVersionKey,
                             scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()),
                             scriptParameterNode.get(ScriptParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value()).asText()));
                 }
             }
 
             //script actions
-            List<Action> scriptActions = new ArrayList<>();
+            Set<Action> scriptActions = new HashSet<>();
             for (JsonNode scriptActionNode : node.get(Field.ACTIONS_KEY.value())) {
                 String actionId = IdentifierTools.getActionIdentifier(scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText());
 
@@ -112,14 +98,14 @@ public class ScriptJsonComponent {
                 List<ActionParameter> actionParameters = new ArrayList<>();
                 for (JsonNode scriptActionParNode : scriptActionNode.get(ActionJsonComponent.Field.PARAMETERS_KEY.value())) {
                     actionParameters.add(new ActionParameter(
-                            new ActionParameterKey(new ActionKey(scriptKey, actionId),
+                            new ActionParameterKey(new ActionKey(scriptVersionKey, actionId),
                                     scriptActionParNode.get(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value()).asText()
                             ),
                             scriptActionParNode.get(ActionParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value()).asText()
                     ));
                 }
 
-                scriptActions.add(new Action(new ActionKey(scriptKey, actionId),
+                scriptActions.add(new Action(new ActionKey(scriptVersionKey, actionId),
                         scriptActionNode.get(ActionJsonComponent.Field.NUMBER_KEY.value()).asLong(),
                         scriptActionNode.get(ActionJsonComponent.Field.TYPE_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText(),
@@ -133,29 +119,39 @@ public class ScriptJsonComponent {
                         actionParameters));
             }
 
-            List<ScriptLabel> scriptLabels = new ArrayList<>();
+            Set<ScriptLabel> scriptLabels = new HashSet<>();
             if (node.hasNonNull(Field.LABELS_KEY.value())) {
                 for (JsonNode scriptLabelNode : node.get(Field.LABELS_KEY.value())) {
                     String name = scriptLabelNode.get(ScriptLabelJsonComponent.Field.NAME_KEY.value()).asText();
                     // needs to be a predictable key (hash) to ensure they can be loaded from filesystem
-                    scriptLabels.add(new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), scriptKey, name,
+                    scriptLabels.add(new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), scriptVersionKey, name,
                             scriptLabelNode.get(ScriptLabelJsonComponent.Field.VALUE.value()).asText()));
                 }
             }
 
-            return new Script(scriptKey,
+            Script script = new Script(new ScriptKey(scriptId),
                     securityGroupKey,
                     securityGroupName,
                     node.get(Field.NAME_KEY.value()).asText(),
                     node.get(Field.DESCRIPTION_KEY.value()).asText(),
-                    scriptVersion,
+                    "NA");
+
+            return  new ScriptVersion(
+                    new ScriptVersionKey(new ScriptKey(scriptId), versionNumber, "NA"),
+                    script,
+                    versionNode.get(Field.VERSION_DESCRIPTION_KEY.value()).asText(),
                     scriptParameters,
                     scriptActions,
-                    scriptLabels);
+                    scriptLabels,
+                    "admin",
+                    LocalDateTime.now().toString(),
+                    "admin",
+                    LocalDateTime.now().toString());
+
         }
     }
 
-    public static class Serializer extends JsonSerializer<Script> {
+/*    public static class Serializer extends JsonSerializer<ScriptVersion> {
         @Override
         public void serialize(Script script, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();
@@ -222,5 +218,5 @@ public class ScriptJsonComponent {
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
-    }
+    }*/
 }

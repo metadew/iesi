@@ -3,7 +3,9 @@ package io.metadew.iesi.server.rest.script.dto.action;
 
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
 import lombok.*;
@@ -33,11 +35,11 @@ public class ActionDto extends NoEmptyLinksRepresentationModel<ActionDto> {
     private int retries;
     private Set<ActionParameterDto> parameters = new HashSet<>();
 
-    public Action convertToEntity(String scriptId, long version) {
-        return new Action(new ActionKey(new ScriptKey(scriptId, version), IdentifierTools.getActionIdentifier(name)),
+    public Action convertToEntity(ScriptVersionKey scriptVersionKey) {
+        return new Action(new ActionKey(scriptVersionKey, IdentifierTools.getActionIdentifier(name)),
                 number, type, this.name, description, component, condition, iteration, errorExpected ? "y" : "n",
                 errorStop ? "y" : "n", Integer.toString(retries), parameters.stream()
-                .map(parameter -> parameter.convertToEntity(scriptId, version, IdentifierTools.getActionIdentifier(name)))
+                .map(parameter -> parameter.convertToEntity(new ActionKey(scriptVersionKey, IdentifierTools.getActionIdentifier(name))))
                 .collect(Collectors.toList()));
 
     }

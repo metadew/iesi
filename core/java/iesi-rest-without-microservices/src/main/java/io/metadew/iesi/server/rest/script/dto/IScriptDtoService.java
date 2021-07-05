@@ -1,6 +1,6 @@
 package io.metadew.iesi.server.rest.script.dto;
 
-import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.server.rest.script.ScriptFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface IScriptDtoService {
 
-    Script convertToEntity(ScriptDto scriptDto);
+    ScriptVersion convertToEntity(ScriptDto scriptDto);
 
     Page<ScriptDto> getAll(Authentication authentication, Pageable pageable, List<String> expansions, boolean isLatestVersionOnly, List<ScriptFilter> scriptFilters);
 

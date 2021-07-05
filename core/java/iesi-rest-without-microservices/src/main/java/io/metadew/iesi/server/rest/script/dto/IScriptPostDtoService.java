@@ -1,11 +1,10 @@
 package io.metadew.iesi.server.rest.script.dto;
 
-import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 
 public interface IScriptPostDtoService {
 
-    public Script convertToEntity(ScriptPostDto scriptPostDto);
+    public ScriptVersion convertToEntity(ScriptPostDto scriptPostDto);
 
-    public ScriptPostDto convertToDto(Script script);
 
 }

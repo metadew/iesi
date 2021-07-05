@@ -16,7 +16,6 @@ import io.metadew.iesi.server.rest.script.dto.ScriptPostDtoService;
 import io.metadew.iesi.server.rest.script.dto.action.ScriptActionDtoService;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDtoService;
-import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDtoService;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {ScriptsController.class, CustomGlobalExceptionHandler.class, ScriptDtoModelAssembler.class,
         ScriptPostDtoService.class, ScriptParameterDtoService.class, ScriptLabelDtoService.class, ScriptActionDtoService.class,
-        ScriptVersionDtoService.class, ScriptService.class, TestConfiguration.class, IesiConfiguration.class, IesiSecurityChecker.class,
+        ScriptService.class, TestConfiguration.class, IesiConfiguration.class, IesiSecurityChecker.class,
         ScriptDesignAuditService.class, UserDtoRepository.class, ScriptDesignAuditConfiguration.class, FilterService.class})
 @ActiveProfiles("test")
 @DirtiesContext

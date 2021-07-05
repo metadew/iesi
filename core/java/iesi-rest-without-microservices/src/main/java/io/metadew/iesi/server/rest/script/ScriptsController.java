@@ -4,6 +4,7 @@ package io.metadew.iesi.server.rest.script;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
@@ -148,7 +149,7 @@ public class ScriptsController {
                         name,
                         version,
                         expansions)
-                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(name)), version, "NA")));
     }
 
     @GetMapping("/{name}/{version}/download")
@@ -157,7 +158,7 @@ public class ScriptsController {
                                             @PathVariable Long version) throws IOException {
 
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(null, name, version, new ArrayList<>())
-                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(name)), version, "NA")));
 
         if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(),
                 IESIPrivilege.SCRIPTS_READ.getPrivilege(),
@@ -223,7 +224,7 @@ public class ScriptsController {
                         name,
                         version,
                         new ArrayList<>())
-                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(name)), version, "NA")));
 
         if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(),
                 IESIPrivilege.SCRIPTS_MODIFY.getPrivilege(),

@@ -27,10 +27,10 @@ RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/u
 RUN apt-get -y install openjdk-8-jdk
 COPY --from=staging /app/sandbox/0.7.0/assembly /opt/iesi
 COPY --from=staging /app/docker/application-repository.yml.template /opt/iesi/conf/application-repository.yml.template
-ENV DATABASE_CONNECTION_URL jdbc:mysql://iesi-dbsmysql.mysql.database.azure.com:3306/iesidb?useSSL=true&requireSSL=false&useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
-ENV DATABASE_TYPE mysql
-ENV DATABASE_USER 'iesi-db-admin@iesi-dbsmysql'
-ENV DATABASE_PASSWORD 'nhq3CP;LN"&J'
+ENV DATABASE_CONNECTION_URL jdbc:sqlite:../repository.db3
+ENV DATABASE_TYPE sqlite
+ENV DATABASE_USER ''
+ENV DATABASE_PASSWORD ''
 ENV PORT 8080
 ENV HOST 0.0.0.0
 CMD sh -c "envsubst '\$DATABASE_CONNECTION_URL:\$DATABASE_CONNECTION_URL,\$DATABASE_TYPE:\$DATABASE_TYPE,\$DATABASE_USER:\$DATABASE_USER,\$DATABASE_PASSWORD:\$DATABASE_PASSWORD' < /opt/iesi/conf/application-repository.yml.template > /opt/iesi/conf/application-repository.yml && /opt/iesi/bin/iesi-backend.sh"

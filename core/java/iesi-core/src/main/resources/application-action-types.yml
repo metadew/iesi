@@ -808,14 +808,14 @@ iesi:
             subroutine:
             impersonate: false
           headers:
-            description: headers
+            description: Additional header as key=value pair or dataset
             type: string
             mandatory: false
             encrypted: false
             subroutine:
             impersonate: false
           queryParameters:
-            description: queryParams
+            description: Additional query parameters as key=value pair or dataset
             type: string
             mandatory: false
             encrypted: false

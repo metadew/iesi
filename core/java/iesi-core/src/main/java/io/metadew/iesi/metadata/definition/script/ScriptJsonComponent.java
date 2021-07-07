@@ -71,10 +71,13 @@ public class ScriptJsonComponent {
 
             JsonNode versionNode = node.get(Field.VERSION_KEY.value());
             long versionNumber;
+            String versionDescription;
             if (versionNode != null) {
                 versionNumber = versionNode.get(Field.VERSION_NUMBER_KEY.value()).asLong();
+                versionDescription = versionNode.get(Field.VERSION_DESCRIPTION_KEY.value()).asText();
             } else {
                 versionNumber = 0L;
+                versionDescription = "default description";
             }
             ScriptVersionKey scriptVersionKey = new ScriptVersionKey(new ScriptKey(scriptId), versionNumber, "NA");
 
@@ -139,7 +142,7 @@ public class ScriptJsonComponent {
             return  new ScriptVersion(
                     new ScriptVersionKey(new ScriptKey(scriptId), versionNumber, "NA"),
                     script,
-                    versionNode.get(Field.VERSION_DESCRIPTION_KEY.value()).asText(),
+                    versionDescription,
                     scriptParameters,
                     scriptActions,
                     scriptLabels,

@@ -19,6 +19,7 @@ import io.metadew.iesi.metadata.definition.script.design.ScriptLabelDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptLabelDesignTraceKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
@@ -188,7 +189,7 @@ public class ScriptExecutionBuilder {
                         runId.toString(),
                         processId,
                         new ScriptLabelKey(UUID.randomUUID().toString())))
-                .scriptKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion))
+                .scriptVersionKey(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName)), scriptVersion, "NA"))
                 .name("label")
                 .value("value")
                 .build();

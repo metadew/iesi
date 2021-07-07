@@ -5,11 +5,13 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptVersionConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
@@ -63,6 +65,9 @@ class ExecutionRequestRepositoryDtoTest {
     @Autowired
     private ScriptConfiguration scriptConfiguration;
 
+    @Autowired
+    private ScriptVersionConfiguration scriptVersionConfiguration;
+
     @BeforeAll
     static void initialize() {
         //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
@@ -93,7 +98,7 @@ class ExecutionRequestRepositoryDtoTest {
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
 
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
@@ -117,9 +122,9 @@ class ExecutionRequestRepositoryDtoTest {
                         "test", 1, 1);
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
                 .containsOnly((ExecutionRequestDto) executionRequest2Map.get("executionRequestDto"));
@@ -135,7 +140,7 @@ class ExecutionRequestRepositoryDtoTest {
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
 
         UUID runId = UUID.randomUUID();
 
@@ -169,7 +174,7 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
                 .containsOnly(
@@ -190,7 +195,7 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 1), new ArrayList<>()))
                 .hasSize(1);
@@ -210,7 +215,7 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "REQUEST_TIMESTAMP")), new ArrayList<>()))
                 .containsExactly(
@@ -238,8 +243,8 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "SCRIPT")), new ArrayList<>()))
                 .containsExactly(
@@ -267,8 +272,8 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "VERSION")), new ArrayList<>()))
@@ -297,8 +302,8 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, "ript", false)).collect(Collectors.toList())))
                 .containsOnly(
@@ -329,8 +334,8 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, "1", true)).collect(Collectors.toList())))
                 .containsOnly(
@@ -356,8 +361,8 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.ENVIRONMENT, "es", false)).collect(Collectors.toList())))
                 .containsOnly(
@@ -383,8 +388,8 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2), Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.LABEL, "label1:lue1", false)).collect(Collectors.toList())))
                 .containsOnly(
@@ -420,8 +425,8 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getById(SecurityContextHolder.getContext().getAuthentication(), (UUID) executionRequest1Map.get("executionRequestUUID")))
                 .hasValue((ExecutionRequestDto) executionRequest1Map.get("executionRequestDto"));
@@ -447,8 +452,8 @@ class ExecutionRequestRepositoryDtoTest {
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
-        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
-        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest1Map.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) executionRequest2Map.get("script"));
 
         assertThat(executionRequestDtoRepository.getById(SecurityContextHolder.getContext().getAuthentication(), (UUID) executionRequest1Map.get("executionRequestUUID")))
                 .hasValue((ExecutionRequestDto) executionRequest1Map.get("executionRequestDto"));

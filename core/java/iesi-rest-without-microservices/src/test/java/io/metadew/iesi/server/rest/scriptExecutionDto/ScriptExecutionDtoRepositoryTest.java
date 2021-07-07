@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceC
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptVersionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptLabelDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
@@ -20,6 +21,7 @@ import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.design.ScriptLabelDesignTrace;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
@@ -65,6 +67,9 @@ class ScriptExecutionDtoRepositoryTest {
 
     @Autowired
     private ScriptConfiguration scriptConfiguration;
+
+    @Autowired
+    private ScriptVersionConfiguration scriptVersionConfiguration;
 
     @Autowired
     private ScriptResultConfiguration scriptResultConfiguration;
@@ -126,7 +131,7 @@ class ScriptExecutionDtoRepositoryTest {
                         "Create");
 
         executionRequestConfiguration.insert((ExecutionRequest) scriptExecutionMap.get("executionRequest"));
-        scriptConfiguration.insert((Script) scriptExecutionMap.get("script"));
+        scriptVersionConfiguration.insert((ScriptVersion) scriptExecutionMap.get("script"));
         scriptExecutionConfiguration.insert((ScriptExecution) scriptExecutionMap.get("scriptExecution"));
         scriptResultConfiguration.insert((ScriptResult) scriptExecutionMap.get("scriptResult"));
 

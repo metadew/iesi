@@ -22,6 +22,7 @@ import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionCo
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptVersionConfiguration;
 import io.metadew.iesi.metadata.configuration.script.design.ScriptLabelDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
@@ -80,6 +81,12 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ScriptConfiguration scriptConfiguration() {
         return ScriptConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ScriptVersionConfiguration scriptVersionConfiguration() {
+        return ScriptVersionConfiguration.getInstance();
     }
 
     @Bean

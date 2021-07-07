@@ -532,7 +532,7 @@ iesi:
       fwk.dummy:
         className: io.metadew.iesi.script.action.fwk.FwkDummy
         description: Dummy for adding a placeholder step
-        parameters: {}
+        parameters: { }
         status: stable
       fwk.executeScript:
         className: io.metadew.iesi.script.action.fwk.FwkExecuteScript
@@ -754,12 +754,12 @@ iesi:
       fwk.startIteration:
         className: io.metadew.iesi.script.action.fwk.FwkStartIteration
         description: Start an iteration block for the steps
-        parameters: {}
+        parameters: { }
         status: experimental
       fwk.stopIteration:
         className: io.metadew.iesi.script.action.fwk.FwkStopIteration
         description: Stop the iteration block
-        parameters: {}
+        parameters: { }
         status: experimental
       http.executeRequest:
         className: io.metadew.iesi.script.action.http.HttpExecuteRequest
@@ -808,14 +808,14 @@ iesi:
             subroutine:
             impersonate: false
           headers:
-            description: headers
+            description: Additional header as key=value pair or dataset
             type: string
             mandatory: false
             encrypted: false
             subroutine:
             impersonate: false
           queryParameters:
-            description: queryParams
+            description: Additional query parameters as key=value pair or dataset
             type: string
             mandatory: false
             encrypted: false

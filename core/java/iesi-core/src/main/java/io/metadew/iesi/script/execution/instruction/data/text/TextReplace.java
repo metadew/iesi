@@ -9,19 +9,25 @@ public class TextReplace implements DataInstruction {
     @Override
     public String generateOutput(String parameters) {
 
-        String [] args = parameters.split(",");
-        if(args.length == 3){
+        String [] args = parameters.split(",\\s+");
+
+        if (args.length == 3){
             String text = args[0];
             String first = args[1];
             String end = args[2];
-            text = text.replaceAll(first,end);
+            text = text.replace(first,end);
             return text;
-        }else if (args.length==2) {
+        } else if (args.length == 2) {
             String text = args[0];
             String first = args[1];
-            text = text.replaceAll(first, "");
+            text = text.replace(first, "");
             return text;
-        } else {
+        } else if(args.length == 1) {
+            String text = args[0];
+            text = text.replaceAll("\\s","");
+            return text;
+        }
+        else {
             throw new IllegalArgumentException(MessageFormat.format("Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         }
     }

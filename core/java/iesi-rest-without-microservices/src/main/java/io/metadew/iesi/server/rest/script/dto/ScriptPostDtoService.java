@@ -41,7 +41,7 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                 .orElseThrow(() -> new RuntimeException("could not find Security Group with name " + scriptPostDto.getSecurityGroupName()));
         return new ScriptVersion(
                 new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptPostDto.getName())),
-                        scriptPostDto.getVersion().getNumber(), scriptPostDto.getVersion().getDeletedAt()),
+                        scriptPostDto.getVersion().getNumber(), "NA"),
                 new Script(
                         new ScriptKey(IdentifierTools.getScriptIdentifier(scriptPostDto.getName())),
                         securityGroup.getMetadataKey(),

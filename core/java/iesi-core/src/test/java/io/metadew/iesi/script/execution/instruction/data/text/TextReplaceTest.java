@@ -61,4 +61,10 @@ class TextReplaceTest {
         assertEquals("1234.567.8", textReplace.generateOutput("\"1234,567,8\", \",\", \".\""));
     }
 
+    @Test
+    void textReplaceByQuote() {
+        TextReplace textReplace = new TextReplace();
+        assertEquals("source text" , textReplace.generateOutput("\"sour\"e text\", \"\"\", \"c\""));
+    }
+
 }

@@ -128,7 +128,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
                 "on component_designs.COMP_ID = versions.COMP_ID " +
                 getWhereClause(componentFilters) +
-                ");";
+                ") filtered_components;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

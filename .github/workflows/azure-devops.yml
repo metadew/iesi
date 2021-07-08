@@ -18,5 +18,5 @@ jobs:
         uses: Azure/pipelines@v1
         with:
           azure-devops-project-url: https://dev.azure.com/IESI/IESI
-          azure-pipeline-name: 'Build IESI Core & REST'
+          azure-pipeline-name: 'Build Backend'
           azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}

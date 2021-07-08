@@ -11,10 +11,10 @@ public class TextReplace implements DataInstruction {
     private final static String FIRST_OPERATOR = "text";
     private final static String SECOND_OPERATOR = "start";
     private final static String THIRD_OPERATOR = "end";
-    private final static Pattern THREE_ARGUMENTS_PATTERN = Pattern.compile("\"(?<" +FIRST_OPERATOR + ">.+)\"," + "\"\\s*(?<" + SECOND_OPERATOR + ">.+)\"," +
-            "\"\\s*(?<" + THIRD_OPERATOR + ">.+)\"");
+    private final static Pattern THREE_ARGUMENTS_PATTERN = Pattern.compile("\"(?<" +FIRST_OPERATOR + ">.+)\"," + "\\s\"\\s*(?<" + SECOND_OPERATOR + ">.+)\"," +
+            "\\s\"\\s*(?<" + THIRD_OPERATOR + ">.+)\"");
 
-    private final static Pattern TWO_ARGUMENTS_PATTERN = Pattern.compile("\"(?<" +FIRST_OPERATOR + ">.+)\"," + "\"\\s*(?<" +
+    private final static Pattern TWO_ARGUMENTS_PATTERN = Pattern.compile("\"(?<" +FIRST_OPERATOR + ">.+)\"," + "\\s\"\\s*(?<" +
             SECOND_OPERATOR + ">.+)\"");
 
     @Override

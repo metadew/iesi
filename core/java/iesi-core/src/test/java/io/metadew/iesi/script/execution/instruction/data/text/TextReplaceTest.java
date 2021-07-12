@@ -67,4 +67,16 @@ class TextReplaceTest {
         assertEquals("source text" , textReplace.generateOutput("\"sour\"e text\", \"\"\", \"c\""));
     }
 
+    @Test
+    void textReplaceInstruction() {
+        TextReplace textReplace = new TextReplace();
+        assertEquals("source cexc" , textReplace.generateOutput("     \"source text\"    , \"t\",    \"c\"  "));
+    }
+
+    @Test
+    void textReplaceBySpace() {
+        TextReplace textReplace = new TextReplace();
+        assertEquals("12345678", textReplace.generateOutput("\"         12345678\", \" \""));
+    }
+
 }

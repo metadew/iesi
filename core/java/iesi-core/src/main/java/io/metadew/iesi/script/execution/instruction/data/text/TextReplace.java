@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 public class TextReplace implements DataInstruction {
 
     private final static String FIRST_OPERATOR = "text";
-    private final static String SECOND_OPERATOR = "start";
-    private final static String THIRD_OPERATOR = "end";
+    private final static String SECOND_OPERATOR = "characterToBeReplaced";
+    private final static String THIRD_OPERATOR = "replacementChar";
 
     private final static Pattern THREE_ARGUMENTS_PATTERN = Pattern.compile("\\s*\"(?<" + FIRST_OPERATOR + ">.+)\"\\s*,\\s*\"(?<" + SECOND_OPERATOR + ">.+)\"\\s*,\\s*\"(?<" + THIRD_OPERATOR + ">.+)\"\\s*");
 
@@ -24,17 +24,17 @@ public class TextReplace implements DataInstruction {
 
         if (inputParameterMatcher.find()) {
             String text = inputParameterMatcher.group(FIRST_OPERATOR);
-            String start = inputParameterMatcher.group(SECOND_OPERATOR);
-            String end = inputParameterMatcher.group(THIRD_OPERATOR);
-            text = text.replace(start, end);
+            String characterToBeReplaced = inputParameterMatcher.group(SECOND_OPERATOR);
+            String replacementChar = inputParameterMatcher.group(THIRD_OPERATOR);
+            text = text.replace(characterToBeReplaced, replacementChar);
             return text;
         } else if(inputParameterMatcherTwoArguments.matches()) {
             String text = inputParameterMatcherTwoArguments.group(FIRST_OPERATOR);
-            String start = inputParameterMatcherTwoArguments.group(SECOND_OPERATOR);
-            text = text.replace(start, "");
+            String characterToBeReplaced = inputParameterMatcherTwoArguments.group(SECOND_OPERATOR);
+            text = text.replace(characterToBeReplaced, "");
             return text;
         }else {
-            throw new IllegalArgumentException(MessageFormat.format(
+            throw new IllegalArgumentException(String.format(
                     "Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
         }
     }

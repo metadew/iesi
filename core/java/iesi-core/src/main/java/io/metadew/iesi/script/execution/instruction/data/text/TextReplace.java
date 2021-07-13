@@ -34,8 +34,8 @@ public class TextReplace implements DataInstruction {
             text = text.replace(characterToBeReplaced, "");
             return text;
         }else {
-            throw new IllegalArgumentException(MessageFormat.format(
-                    String.format(" Illegal arguments provided to " + this.getKeyword() + " : {0} "), parameters));
+            throw new IllegalArgumentException(
+                    String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
         }
     }
     @Override

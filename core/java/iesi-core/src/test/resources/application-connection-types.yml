@@ -17,7 +17,7 @@ iesi:
           baseUrl:
             description: all endpoints hosted at the host start with this specific endpoint
             type: string
-            mandatory: true
+            mandatory: false
             encrypted: false
           tls:
             description: Whether or not the connection to the host is encrypted using TLS

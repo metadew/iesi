@@ -39,9 +39,11 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
     public ScriptVersion convertToEntity(ScriptPostDto scriptPostDto) {
         SecurityGroup securityGroup = securityGroupConfiguration.getByName(scriptPostDto.getSecurityGroupName())
                 .orElseThrow(() -> new RuntimeException("could not find Security Group with name " + scriptPostDto.getSecurityGroupName()));
+        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptPostDto.getName())),
+                scriptPostDto.getVersion().getNumber(), "NA");
+
         return new ScriptVersion(
-                new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptPostDto.getName())),
-                        scriptPostDto.getVersion().getNumber(), "NA"),
+                scriptVersionKey,
                 new Script(
                         new ScriptKey(IdentifierTools.getScriptIdentifier(scriptPostDto.getName())),
                         securityGroup.getMetadataKey(),
@@ -51,16 +53,13 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                         "NA"),
                 scriptPostDto.getVersion().getDescription(),
                 scriptPostDto.getParameters().stream()
-                        .map(parameter -> parameter.convertToEntity(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptPostDto.getName())),
-                                scriptPostDto.getVersion().getNumber(), scriptPostDto.getVersion().getDeletedAt())))
+                        .map(parameter -> parameter.convertToEntity(scriptVersionKey))
                         .collect(Collectors.toSet()),
                 scriptPostDto.getActions().stream()
-                        .map(action -> action.convertToEntity(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptPostDto.getName())),
-                                scriptPostDto.getVersion().getNumber(), scriptPostDto.getVersion().getDeletedAt())))
+                        .map(action -> action.convertToEntity(scriptVersionKey))
                         .collect(Collectors.toSet()),
                 scriptPostDto.getLabels().stream()
-                        .map(label -> label.convertToEntity(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptPostDto.getName())),
-                                scriptPostDto.getVersion().getNumber(), scriptPostDto.getVersion().getDeletedAt())))
+                        .map(label -> label.convertToEntity(scriptVersionKey))
                         .collect(Collectors.toSet()),
                 SecurityContextHolder.getContext().getAuthentication().getName(),
                 LocalDateTime.now().toString(),

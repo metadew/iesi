@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.script;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
@@ -185,6 +186,11 @@ public class ScriptsController {
     @PostMapping("")
     @PreAuthorize("hasPrivilege('SCRIPTS_WRITE', #scriptPostDto.securityGroupName)")
     public ScriptDto post(@Valid @RequestBody ScriptPostDto scriptPostDto) {
+        if (scriptService.existsByNameAndVersion(scriptPostDto.getName(), scriptPostDto.getVersion().getNumber())) {
+            throw new MetadataAlreadyExistsException(new ScriptVersionKey(new ScriptKey(scriptPostDto.getName()), scriptPostDto.getVersion().getNumber(), "NA"));
+        } else if (scriptService.existsDeleted(scriptPostDto.getName())) {
+            throw new MetadataAlreadyExistsException(new ScriptVersionKey(new ScriptKey(scriptPostDto.getName()), scriptPostDto.getVersion().getNumber(), "NA"));
+        }
         scriptService.createScript(scriptPostDto);
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
     }

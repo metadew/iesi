@@ -86,4 +86,20 @@ public class ScriptService implements IScriptService {
 
     }
 
+    @Override
+    public boolean existsByNameAndVersion(String name, long version) {
+        return scriptVersionConfiguration.exists(new ScriptVersionKey(
+                new ScriptKey(IdentifierTools.getScriptIdentifier(name)), version, "NA"));
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return scriptConfiguration.exists(new ScriptKey(IdentifierTools.getScriptIdentifier(name)));
+    }
+
+    @Override
+    public boolean existsDeleted(String name) {
+        return scriptConfiguration.existsDeleted(new ScriptKey(IdentifierTools.getScriptIdentifier(name)));
+    }
+
 }

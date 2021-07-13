@@ -374,7 +374,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             }
             crsScript.next();
             return Optional.of(new Script(
-                    new ScriptKey("SCRIPT_ID"),
+                    new ScriptKey(crsScript.getString("SCRIPT_ID")),
                     new SecurityGroupKey(UUID.fromString(crsScript.getString("SECURITY_GROUP_ID"))),
                     crsScript.getString("SECURITY_GROUP_NAME"),
                     crsScript.getString("SCRIPT_NM"),

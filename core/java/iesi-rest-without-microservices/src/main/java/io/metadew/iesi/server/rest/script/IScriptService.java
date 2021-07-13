@@ -27,4 +27,10 @@ public interface IScriptService {
 
     void deleteByNameAndVersion(String name, long version);
 
+    boolean existsByNameAndVersion(String name, long version);
+
+    boolean existsByName(String name);
+
+    boolean existsDeleted(String name);
+
 }

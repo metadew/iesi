@@ -10,7 +10,7 @@ public class TextReplace implements DataInstruction {
 
     private final static String FIRST_OPERATOR = "text";
     private final static String SECOND_OPERATOR = "characterToBeReplaced";
-    private final static String THIRD_OPERATOR = "replacementChar";
+    private final static String THIRD_OPERATOR = "replacementCharacter";
 
     private final static Pattern THREE_ARGUMENTS_PATTERN = Pattern.compile("\\s*\"(?<" + FIRST_OPERATOR + ">.+)\"\\s*,\\s*\"(?<" + SECOND_OPERATOR + ">.+)\"\\s*,\\s*\"(?<" + THIRD_OPERATOR + ">.+)\"\\s*");
 
@@ -25,8 +25,8 @@ public class TextReplace implements DataInstruction {
         if (inputParameterMatcher.find()) {
             String text = inputParameterMatcher.group(FIRST_OPERATOR);
             String characterToBeReplaced = inputParameterMatcher.group(SECOND_OPERATOR);
-            String replacementChar = inputParameterMatcher.group(THIRD_OPERATOR);
-            text = text.replace(characterToBeReplaced, replacementChar);
+            String replacementCharacter = inputParameterMatcher.group(THIRD_OPERATOR);
+            text = text.replace(characterToBeReplaced, replacementCharacter);
             return text;
         } else if(inputParameterMatcherTwoArguments.matches()) {
             String text = inputParameterMatcherTwoArguments.group(FIRST_OPERATOR);
@@ -34,8 +34,8 @@ public class TextReplace implements DataInstruction {
             text = text.replace(characterToBeReplaced, "");
             return text;
         }else {
-            throw new IllegalArgumentException(String.format(
-                    "Illegal arguments provided to " + this.getKeyword() + ": {0}", parameters));
+            throw new IllegalArgumentException(MessageFormat.format(
+                    String.format(" Illegal arguments provided to " + this.getKeyword() + " : {0} "), parameters));
         }
     }
     @Override

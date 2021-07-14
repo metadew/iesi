@@ -585,7 +585,7 @@ iesi:
         category: design
         fields:
           ID:
-            description: Unique identifier for the script label
+            description: UUID for the script label
             order: 1
             type: STRING
             length: 255
@@ -630,6 +630,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            unique: true
+            defaultTimestamp:
       - name: DES_TEMPL
         label: Templates
         description: Design metadata for templates
@@ -1516,6 +1524,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_ACTION_PAR
         label: ActionParameters
         description: Design metadata for action parameters
@@ -1567,6 +1583,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_COMP
         label: Components
         description: Design metadata for components
@@ -1790,6 +1814,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_SCRIPT_PAR
         label: ScriptParameters
         description: Design metadata for script parameters
@@ -1833,6 +1865,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: DES_SCRIPT_VRS
         label: ScriptVersions
         description: Design metadata for script versions
@@ -1896,6 +1936,14 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+          DELETED_AT:
+            description: Load timestamp indicating when the record was soft deleted in the table
+            order: 5
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+            defaultTimestamp:
       - name: TRC_ACTION
         label: ActionTraces
         description: Trace metadata for actions

@@ -1,29 +1,36 @@
 package io.metadew.iesi.server.rest.script;
 
-import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface IScriptService {
 
-    public List<Script> getAll();
+    Set<ScriptVersion> getAll();
 
-    public List<Script> getByName(String name);
+    Set<ScriptVersion> getByName(String name);
 
-    public Optional<Script> getByNameAndVersion(String name, long version);
+    Optional<ScriptVersion> getByNameAndVersion(String name, long version);
 
-    public void createScript(ScriptPostDto scriptDto);
+    void createScript(ScriptPostDto scriptDto);
 
-    public void updateScript(ScriptPostDto scriptPostDto);
+    void updateScript(ScriptPostDto scriptPostDto);
 
-    public void updateScripts(List<ScriptPostDto> scriptPostDtos);
+    void updateScripts(List<ScriptPostDto> scriptPostDtos);
 
-    public void deleteAll();
+    void deleteAll();
 
-    public void deleteByName(String name);
+    void deleteByName(String name);
 
-    public void deleteByNameAndVersion(String name, long version);
+    void deleteByNameAndVersion(String name, long version);
+
+    boolean existsByNameAndVersion(String name, long version);
+
+    boolean existsByName(String name);
+
+    boolean existsDeleted(String name);
 
 }

@@ -3,6 +3,7 @@ package io.metadew.iesi.script.operation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.util.Optional;
@@ -23,12 +24,12 @@ public class YamlInputOperation {
         this.setDataObjectOperation(new DataObjectOperation(this.getFileName()));
     }
 
-    public Optional<Script> getScript() {
+    public Optional<ScriptVersion> getScriptVersion() {
         ObjectMapper objectMapper = new ObjectMapper();
         for (DataObject dataObject : this.getDataObjectOperation().getDataObjectConfiguration().getDataObjects()) {
             // Scripts
             if (dataObject.getType().equalsIgnoreCase("script")) {
-                return Optional.of(objectMapper.convertValue(dataObject.getData(), Script.class));
+                return Optional.of(objectMapper.convertValue(dataObject.getData(), ScriptVersion.class));
             }
         }
         return Optional.empty();

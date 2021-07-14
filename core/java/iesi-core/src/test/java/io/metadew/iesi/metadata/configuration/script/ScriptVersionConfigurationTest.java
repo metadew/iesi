@@ -3,21 +3,25 @@ package io.metadew.iesi.metadata.configuration.script;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ScriptVersionConfigurationTest {
 
@@ -52,14 +56,35 @@ class ScriptVersionConfigurationTest {
     @BeforeEach
     void setup() {
         designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
-        scriptVersion1 = new ScriptVersionBuilder("1", 1)
-                .description("version of script")
+        ScriptVersionKey scriptKey1 = new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier("script1")), 1, "NA");
+        ScriptVersionKey scriptKey12 = new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier("script1")), 2, "NA");
+        ScriptVersionKey scriptKey2 = new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier("dummy")), 1, "NA");
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
+                .name("DEFAULT")
+                .teamKeys(new HashSet<>())
+                .securedObjects(Stream.of(scriptKey1, scriptKey12, scriptKey2).collect(Collectors.toSet()))
                 .build();
-        scriptVersion2 = new ScriptVersionBuilder("1", 2)
-                .description("version of script")
+
+        scriptVersion1 = new ScriptVersionBuilder(IdentifierTools.getScriptIdentifier("1"), 1)
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
+                .name("script1")
+                .numberOfActions(2)
+                .numberOfParameters(2)
                 .build();
-        scriptVersion3 = new ScriptVersionBuilder("2", 2)
-                .description("version of script")
+        scriptVersion2 = new ScriptVersionBuilder(IdentifierTools.getScriptIdentifier("1"), 2)
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
+                .name("script1")
+                .numberOfActions(2)
+                .numberOfParameters(2)
+                .build();
+        scriptVersion3 = new ScriptVersionBuilder(IdentifierTools.getScriptIdentifier("2"), 1)
+                .securityGroupKey(securityGroup.getMetadataKey())
+                .securityGroupName(securityGroup.getName())
+                .numberOfActions(3)
+                .numberOfParameters(3)
                 .build();
     }
 
@@ -95,6 +120,7 @@ class ScriptVersionConfigurationTest {
         assertEquals(scriptVersion1, ScriptVersionConfiguration.getInstance().get(scriptVersion1.getMetadataKey()).get());
         assertTrue(ScriptVersionConfiguration.getInstance().get(scriptVersion2.getMetadataKey()).isPresent());
         assertEquals(scriptVersion2, ScriptVersionConfiguration.getInstance().get(scriptVersion2.getMetadataKey()).get());
+
     }
 
     @Test
@@ -108,8 +134,11 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
 
         assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
-        ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey());
-        assertEquals(0, ScriptVersionConfiguration.getInstance().getAll().size());
+        ScriptVersionConfiguration.getInstance().delete(
+                new ScriptVersionKey(new ScriptKey(scriptVersion1.getScriptId()),
+                        scriptVersion1.getNumber(),
+                        LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)));
+        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -118,8 +147,16 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
         assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
-        ScriptVersionConfiguration.getInstance().delete(scriptVersion1.getMetadataKey());
-        assertEquals(1, ScriptVersionConfiguration.getInstance().getAll().size());
+        ScriptVersionConfiguration.getInstance().softDelete(new ScriptVersionKey(
+                new ScriptKey(scriptVersion1.getScriptId()),
+                        scriptVersion1.getNumber(), "NA"), LocalDateTime.now().toString());
+        assertEquals(2, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(1, ScriptVersionConfiguration.getInstance().getAllActive().size());
+
+        ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
+        assertEquals(3, ScriptVersionConfiguration.getInstance().getAll().size());
+        assertEquals(2, ScriptVersionConfiguration.getInstance().getAllActive().size());
+
     }
 
     @Test
@@ -166,9 +203,9 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion1);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
 
-        List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptId(scriptVersion1.getScriptId());
+        Set<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptKey(new ScriptKey(scriptVersion1.getScriptId()));
 
-        assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
+        assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toSet()), scriptVersions);
     }
 
     @Test
@@ -177,9 +214,9 @@ class ScriptVersionConfigurationTest {
         ScriptVersionConfiguration.getInstance().insert(scriptVersion2);
         ScriptVersionConfiguration.getInstance().insert(scriptVersion3);
 
-        List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptId(scriptVersion1.getScriptId());
+        Set<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptKey(new ScriptKey(scriptVersion1.getScriptId()));
 
-        assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toList()), scriptVersions);
+        assertEquals(Stream.of(scriptVersion1, scriptVersion2).collect(Collectors.toSet()), scriptVersions);
     }
 
 }

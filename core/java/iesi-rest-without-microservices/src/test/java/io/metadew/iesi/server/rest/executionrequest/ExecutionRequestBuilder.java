@@ -19,6 +19,7 @@ import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
@@ -30,7 +31,10 @@ import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -120,25 +124,35 @@ public class ExecutionRequestBuilder {
                 .build();
         info.put("executionRequest", executionRequest);
 
-        Script script = Script.builder()
-                .scriptKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion))
-                .description("description")
-                .actions(new ArrayList<>())
+        UUID script1Uuid = UUID.randomUUID();
+        UUID script1Label1Uuid = UUID.randomUUID();
+
+        ScriptVersion scriptVersion1 = ScriptVersion.builder()
+                .scriptVersionKey(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName)), scriptVersion, "NA"))
+                .description("version description")
+                .createdBy("username")
+                .createdAt(LocalDateTime.now().toString())
+                .script(Script.builder()
+                        .scriptKey(new ScriptKey(script1Uuid.toString()))
+                        .deletedAt("NA")
+                        .name(scriptName)
+                        .description("script description")
+                        .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
+                        .securityGroupName(scriptSecurityGroup)
+                        .build())
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
                 .labels(Stream.of(
                         ScriptLabel.builder()
-                                .scriptKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), scriptVersion))
-                                .scriptLabelKey(new ScriptLabelKey(UUID.randomUUID().toString()))
+                                .scriptVersionKey(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName)), scriptVersion, "NA"))
+                                .scriptLabelKey(new ScriptLabelKey(script1Label1Uuid.toString()))
                                 .name("label1")
                                 .value("value1")
-                                .build()
-                ).collect(Collectors.toList()))
-                .parameters(new ArrayList<>())
-                .name(scriptName)
-                .version(new ScriptVersion(scriptName, scriptVersion, "description", "username", LocalDateTime.now().toString(), null, null))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName(scriptSecurityGroup)
+                                .build())
+                        .collect(Collectors.toSet()))
                 .build();
-        info.put("script", script);
+
+        info.put("script", scriptVersion1);
 
         ExecutionRequestDto executionRequestDto = ExecutionRequestDto.builder()
                 .requestTimestamp(requestTimestamp)
@@ -210,7 +224,7 @@ public class ExecutionRequestBuilder {
                 .labels(new HashSet<>())
                 .parameters(new HashSet<>())
                 .name(scriptName)
-                .version(new ScriptVersionDto(scriptVersion, "description"))
+                .version(new ScriptVersionDto(scriptVersion, "description", "NA"))
                 .securityGroupName(scriptSecurityGroup)
                 .build();
         info.put("scriptDto", scriptDto);

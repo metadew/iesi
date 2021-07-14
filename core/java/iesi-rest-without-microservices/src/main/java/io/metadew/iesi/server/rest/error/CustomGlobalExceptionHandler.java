@@ -21,12 +21,24 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(MetadataDoesNotExistException.class)
-    public void handleMetadataDoesNotExistException(HttpServletResponse response) {
+    @ResponseBody
+    public Map<String, String> handleMetadataDoesNotExistException(MetadataDoesNotExistException metadataDoesNotExistException) {
+        Map<String, String> errMessages = new HashMap<>();
+        errMessages.put("error", "We could not find the requested resource");
+        errMessages.put("errorCode", "404");
+        errMessages.put("message", metadataDoesNotExistException.getMessage());
+        return errMessages;
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MetadataAlreadyExistsException.class)
-    public void handleMetadataAlreadyExistsException(HttpServletResponse response) {
+    @ResponseBody
+    public Map<String, String> handleMetadataAlreadyExistsException(MetadataAlreadyExistsException metadataAlreadyExistsException) {
+        Map<String, String> errMessages = new HashMap<>();
+        errMessages.put("error", "The requested resource already exists");
+        errMessages.put("errorCode", "400");
+        errMessages.put("message", metadataAlreadyExistsException.getMessage());
+        return errMessages;
     }
 
     @ExceptionHandler(DataBadRequestException.class)

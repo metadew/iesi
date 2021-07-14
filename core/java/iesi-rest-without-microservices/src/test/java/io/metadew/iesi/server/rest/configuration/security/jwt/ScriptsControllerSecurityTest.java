@@ -8,6 +8,8 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
+import io.metadew.iesi.server.rest.script.ScriptFilter;
+import io.metadew.iesi.server.rest.script.ScriptFilterOption;
 import io.metadew.iesi.server.rest.script.ScriptService;
 import io.metadew.iesi.server.rest.script.ScriptsController;
 import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditService;
@@ -33,8 +35,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.STREAM;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -80,7 +85,7 @@ class ScriptsControllerSecurityTest {
     void testGetAllNoUser() {
         Pageable pageable = Pageable.unpaged();
         List<String> expansions = new ArrayList<>();
-        assertThatThrownBy(() -> scriptsController.getAll(pageable, expansions, null, null, null))
+        assertThatThrownBy(() -> scriptsController.getAll(pageable, expansions, null, null, null, null))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -114,7 +119,7 @@ class ScriptsControllerSecurityTest {
     void testGetAllNoScriptReadPrivilege() {
         Pageable pageable = Pageable.unpaged();
         List<String> expansions = new ArrayList<>();
-        assertThatThrownBy(() -> scriptsController.getAll(pageable, expansions, null, null, null))
+        assertThatThrownBy(() -> scriptsController.getAll(pageable, expansions, null, null, null, null))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -122,10 +127,12 @@ class ScriptsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_READ@PUBLIC"})
     void testGetScriptReadPrivilege() {
+        List<ScriptFilter> scriptFilters = Stream.of(
+                new ScriptFilter(ScriptFilterOption.INCLUDE_INACTIVE, "false", false)).collect(Collectors.toList());
         when(scriptDtoService
-                .getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>(), false, new ArrayList<>()))
+                .getAllActive(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>(), false, scriptFilters))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
-        scriptsController.getAll(Pageable.unpaged(), new ArrayList<>(), null, null, null);
+        scriptsController.getAll(Pageable.unpaged(), new ArrayList<>(), null, null, null, "false");
     }
 
     @Test
@@ -212,7 +219,7 @@ class ScriptsControllerSecurityTest {
                 .name("scriptDto")
                 .securityGroupName("PUBLIC")
                 .description("description")
-                .version(new ScriptVersionDto(1L, "description"))
+                .version(new ScriptVersionDto(1L, "version description", "NA"))
                 .parameters(new HashSet<>())
                 .actions(new HashSet<>())
                 .labels(new HashSet<>())
@@ -232,7 +239,7 @@ class ScriptsControllerSecurityTest {
                 .name("scriptDto")
                 .securityGroupName("PRIVATE")
                 .description("description")
-                .version(new ScriptVersionDto(1L, "description"))
+                .version(new ScriptVersionDto(1L, "version description", "NA"))
                 .parameters(new HashSet<>())
                 .actions(new HashSet<>())
                 .labels(new HashSet<>())
@@ -279,7 +286,7 @@ class ScriptsControllerSecurityTest {
                 .name("scriptDto")
                 .securityGroupName("PUBLIC")
                 .description("description")
-                .version(new ScriptVersionDto(1L, "description"))
+                .version(new ScriptVersionDto(1L, "version description", "NA"))
                 .parameters(new HashSet<>())
                 .actions(new HashSet<>())
                 .labels(new HashSet<>())
@@ -296,7 +303,7 @@ class ScriptsControllerSecurityTest {
                 .name("scriptDto")
                 .securityGroupName("PUBLIC")
                 .description("description")
-                .version(new ScriptVersionDto(1L, "description"))
+                .version(new ScriptVersionDto(1L, "version description", "NA"))
                 .parameters(new HashSet<>())
                 .actions(new HashSet<>())
                 .labels(new HashSet<>())
@@ -339,7 +346,7 @@ class ScriptsControllerSecurityTest {
                         .name("scriptDto")
                         .securityGroupName("PUBLIC")
                         .description("description")
-                        .version(new ScriptVersionDto(1L, "description"))
+                        .version(new ScriptVersionDto(1L, "version description", "NA"))
                         .parameters(new HashSet<>())
                         .actions(new HashSet<>())
                         .labels(new HashSet<>())
@@ -357,7 +364,7 @@ class ScriptsControllerSecurityTest {
                         .name("scriptDto")
                         .securityGroupName("PUBLIC")
                         .description("description")
-                        .version(new ScriptVersionDto(1L, "description"))
+                        .version(new ScriptVersionDto(1L, "version description", "NA"))
                         .parameters(new HashSet<>())
                         .actions(new HashSet<>())
                         .labels(new HashSet<>())
@@ -399,7 +406,7 @@ class ScriptsControllerSecurityTest {
                 .name("scriptDto")
                 .securityGroupName("securityGroup")
                 .description("description")
-                .version(new ScriptVersionDto(1L, "description"))
+                .version(new ScriptVersionDto(1L, "version description", "NA"))
                 .parameters(new HashSet<>())
                 .actions(new HashSet<>())
                 .labels(new HashSet<>())
@@ -416,7 +423,7 @@ class ScriptsControllerSecurityTest {
                 .name("scriptDto")
                 .securityGroupName("PUBLIC")
                 .description("description")
-                .version(new ScriptVersionDto(1L, "description"))
+                .version(new ScriptVersionDto(1L, "version description", "NA"))
                 .parameters(new HashSet<>())
                 .actions(new HashSet<>())
                 .labels(new HashSet<>())
@@ -467,7 +474,7 @@ class ScriptsControllerSecurityTest {
                 .name("scriptDto")
                 .securityGroupName("PUBLIC")
                 .description("description")
-                .version(new ScriptVersionDto(1L, "description"))
+                .version(new ScriptVersionDto(1L, "version description", "NA"))
                 .parameters(new HashSet<>())
                 .actions(new HashSet<>())
                 .labels(new HashSet<>())
@@ -477,6 +484,9 @@ class ScriptsControllerSecurityTest {
         when(scriptDtoService.getByNameAndVersion(null, "test", 1L, new ArrayList<>()))
                 .thenReturn(Optional.of(scriptDto));
         scriptsController.delete("test", 1L);
+
+
+
     }
 
     void testDeleteByNameAndVersionWrongSecurityGroup() {
@@ -484,7 +494,7 @@ class ScriptsControllerSecurityTest {
                 .name("scriptDto")
                 .securityGroupName("PRIVATE")
                 .description("description")
-                .version(new ScriptVersionDto(1L, "description"))
+                .version(new ScriptVersionDto(1L, "version description", "NA"))
                 .parameters(new HashSet<>())
                 .actions(new HashSet<>())
                 .labels(new HashSet<>())

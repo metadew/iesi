@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.execution.script.ScriptFileExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
@@ -46,14 +47,14 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
     @Override
     public void execute(ScriptFileExecutionRequest scriptExecutionRequest) {
         File file = new File(scriptExecutionRequest.getFileName());
-        Script script = null;
+        ScriptVersion scriptVersion = null;
         if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
             JsonInputOperation jsonInputOperation = new JsonInputOperation(scriptExecutionRequest.getFileName());
-            script = jsonInputOperation.getScript()
+            scriptVersion = jsonInputOperation.getScriptVersion()
                     .orElseThrow(() -> new RuntimeException(jsonInputOperation.getFileName()));
         } else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
             YamlInputOperation yamlInputOperation = new YamlInputOperation(scriptExecutionRequest.getFileName());
-            script = yamlInputOperation.getScript()
+            scriptVersion = yamlInputOperation.getScriptVersion()
                     .orElseThrow(() -> new RuntimeException(yamlInputOperation.getFileName()));
         }
 
@@ -64,7 +65,7 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
                                 .forEach(impersonationParameter -> impersonations.put(impersonationParameter.getMetadataKey().getParameterName(), impersonationParameter.getImpersonatedConnection()))));
 
         ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
-                .script(script)
+                .scriptVersion(scriptVersion)
                 .exitOnCompletion(scriptExecutionRequest.isExit())
                 .parameters(scriptExecutionRequest.getParameters().stream()
                         .collect(Collectors.toMap(ScriptExecutionRequestParameter::getName, ScriptExecutionRequestParameter::getValue)))

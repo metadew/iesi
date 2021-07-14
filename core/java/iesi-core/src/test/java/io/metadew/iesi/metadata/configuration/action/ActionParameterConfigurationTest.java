@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
@@ -115,7 +116,15 @@ class ActionParameterConfigurationTest {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
         ActionParameterConfiguration.getInstance().delete(actionParameter1.getMetadataKey());
-        assertEquals(0, ActionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(0, ActionParameterConfiguration.getInstance().getAllActive().size());
+    }
+
+    @Test
+    void actionSoftDeleteTest() {
+        ActionParameterConfiguration.getInstance().insert(actionParameter1);
+        assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
+        ActionParameterConfiguration.getInstance().softDeleteByScript(actionParameter1.getMetadataKey().getActionKey().getScriptVersionKey(), LocalDateTime.now().toString());
+        assertEquals(1, ActionParameterConfiguration.getInstance().getAll().size());
     }
 
     @Test
@@ -153,7 +162,7 @@ class ActionParameterConfigurationTest {
         ActionParameterConfiguration.getInstance().insert(actionParameter1);
         ActionParameterConfiguration.getInstance().insert(actionParameter2);
 
-        ActionParameterKey newActionParameterKey = new ActionParameterKey("3", 4, "not exist", "test parameter");
+        ActionParameterKey newActionParameterKey = new ActionParameterKey("3", 4, "not exist", "test parameter", "NA");
         assertFalse(ActionParameterConfiguration.getInstance().get(newActionParameterKey).isPresent());
     }
 

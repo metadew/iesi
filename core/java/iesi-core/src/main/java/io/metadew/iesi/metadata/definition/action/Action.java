@@ -15,7 +15,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class Action extends Metadata<ActionKey> {
 
-    private long number;
+    private Long number;
     private String type;
     private String name;
     private String description;

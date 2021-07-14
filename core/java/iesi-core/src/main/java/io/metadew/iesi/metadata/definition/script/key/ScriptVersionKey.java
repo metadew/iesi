@@ -13,5 +13,7 @@ import lombok.EqualsAndHashCode;
 public class ScriptVersionKey extends MetadataKey {
 
     private final ScriptKey scriptKey;
+    private final long scriptVersion;
+    private final String deletedAt;
 
 }

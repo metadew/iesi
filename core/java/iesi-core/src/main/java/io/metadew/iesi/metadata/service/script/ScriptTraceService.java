@@ -38,15 +38,15 @@ public class ScriptTraceService {
             Long processId = scriptExecution.getProcessId();
             ScriptTraceConfiguration.getInstance().insert(new ScriptTrace(runId, processId,
                     scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(0L),
-                    scriptExecution.getScript()));
-            ScriptVersionTraceConfiguration.getInstance().insert(new ScriptVersionTrace(runId, processId, scriptExecution.getScript().getVersion()));
-            for (ScriptParameter scriptParameter : scriptExecution.getScript().getParameters()) {
+                    scriptExecution.getScriptVersion()));
+            ScriptVersionTraceConfiguration.getInstance().insert(new ScriptVersionTrace(runId, processId, scriptExecution.getScriptVersion()));
+            for (ScriptParameter scriptParameter : scriptExecution.getScriptVersion().getParameters()) {
                 ScriptParameterTraceConfiguration.getInstance().insert(new ScriptParameterTrace(runId, processId, scriptParameter));
             }
-            for (ScriptLabel scriptLabel : scriptExecution.getScript().getLabels()) {
+            for (ScriptLabel scriptLabel : scriptExecution.getScriptVersion().getLabels()) {
                 ScriptLabelTraceConfiguration.getInstance().insert(new ScriptLabelTrace(
                         new ScriptLabelTraceKey(runId, processId, scriptLabel.getMetadataKey()),
-                        scriptLabel.getScriptKey(), scriptLabel.getName(), scriptLabel.getValue()));
+                        scriptLabel.getScriptVersionKey(), scriptLabel.getName(), scriptLabel.getValue()));
             }
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();

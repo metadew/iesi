@@ -16,6 +16,7 @@ import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentJsonComponent;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptJsonComponent;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -47,7 +48,7 @@ public class MetadataJsonComponent {
             if (type.equalsIgnoreCase(ConnectionJsonComponent.Field.TYPE.value())) {
                 return jsonParser.getCodec().treeToValue(data, Connection.class);
             } else if (type.equalsIgnoreCase(ScriptJsonComponent.Field.TYPE.value())) {
-                return jsonParser.getCodec().treeToValue(data, Script.class);
+                return jsonParser.getCodec().treeToValue(data, ScriptVersion.class);
             } else if (type.equalsIgnoreCase(ComponentJsonComponent.Field.TYPE.value())) {
                 return jsonParser.getCodec().treeToValue(data, Component.class);
             } else if (type.equalsIgnoreCase(EnvironmentJsonComponent.Field.TYPE.value())) {

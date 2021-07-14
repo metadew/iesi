@@ -18,60 +18,114 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Log4j2
 public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
-    private static final String FETCH_ALL_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " ;";
-
-    private static final String FETCH_BY_NAME_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
+    private static final String FETCH_ALL_ACTIVE_QUERY = "SELECT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_NM = %s;";
+            " WHERE DELETED_AT = 'NA' ;";
+
+    private static final String FETCH_ALL_QUERY = "SELECT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + ";";
+
+
+    private static final String FETCH_ALL_DELETED_QUERY = "SELECT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE DELETED_AT != 'NA' ;";
+
+    private static final String FETCH_BY_NAME_AND_ACTIVE_QUERY = "SELECT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_NM = %s AND DELETED_AT = 'NA' ;";
+
+    private static final String FETCH_BY_ID_AND_ACTIVE_QUERY = "SELECT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT = 'NA' ;";
+
+    private static final String FETCH_BY_ID_AND_DELETED_AT_QUERY = "SELECT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT = %s' ;";
 
     private static final String FETCH_BY_ID_QUERY = "SELECT " +
-            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_ID = %s;";
+            " WHERE SCRIPT_ID = %s ;";
 
-    private static final String EXISTS_BY_NAME_QUERY = "SELECT " +
+    private static final String FETCH_DELETED_BY_ID_QUERY = "SELECT " +
+            "SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT != 'NA' ;";
+
+    private static final String EXISTS_BY_NAME_AND_ACTIVE_QUERY = "SELECT " +
             "SCRIPT_ID " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_NM = %s;";
+            " WHERE SCRIPT_NM = %s AND DELETED_AT = 'NA' ;";
 
-    private static final String EXISTS_BY_ID_QUERY = "SELECT " +
+    private static final String EXISTS_BY_ID_AND_ACTIVE_QUERY = "SELECT " +
             "SCRIPT_ID " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_ID = %s;";
+            " WHERE SCRIPT_ID = %s AND DELETED_AT = 'NA' ;";
+
+    private static final String EXISTS_BY_ID = "SELECT " +
+            "SCRIPT_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_ID = %s ;";
+
+    private static final String EXISTS_DELETED_BY_ID_AND_TIME_QUERY = "SELECT " +
+            "SCRIPT_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT = %s ;";
+
+    private static final String EXISTS_DELETED_BY_ID_QUERY = "SELECT " +
+            "SCRIPT_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT != 'NA' ;";
+
 
     private static final String INSERT_QUERY = "INSERT INTO " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC) VALUES " +
-            "(%s, %s, %s, %s, %s);";
+            " (SCRIPT_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NAME, SCRIPT_NM, SCRIPT_DSC, DELETED_AT) VALUES " +
+            "(%s, %s, %s, %s, %s, %s);";
 
     private static final String UPDATE_QUERY = "UPDATE " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
             "SCRIPT_DSC = %s " +
             "WHERE SCRIPT_ID = %s;";
 
-    private static final String COUNT_QUERY = "SELECT COUNT(DISTINCT SCRIPT_VRS_NB) AS total_versions FROM " +
-            MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() +
-            " WHERE SCRIPT_ID = %s AND SCRIPT_VRS_NB != %s;";
+    private static final String SOFT_DELETE_BY_ID_QUERY = "UPDATE " +
+            MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
+            " DELETED_AT = %s " +
+            " WHERE SCRIPT_ID = %s;";
 
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM " +
             MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() +
-            " WHERE SCRIPT_ID = %s;";
+            " WHERE SCRIPT_ID = %s ;";
+
+    private static final String RESTORE_SOFT_DELETED_BY_ID_AND_TIME_QUERY = "UPDATE " +
+            MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
+            " DELETED_AT = 'NA' " +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT = %s;";
+
+    private static final String RESTORE_SOFT_DELETED_BY_ID_QUERY = "UPDATE " +
+            MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " SET " +
+            " DELETED_AT = 'NA' " +
+            " WHERE SCRIPT_ID = %s AND DELETED_AT != 'NA';";
+
 
     private static ScriptConfiguration instance;
 
@@ -89,9 +143,15 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     public void init(MetadataRepository metadataRepository) {
     }
 
+    /**
+     * retrieve security group of script with provided {@code name}
+     *
+     * @param name: name of the script
+     * @return security group of script
+     */
     public Optional<SecurityGroup> getSecurityGroup(String name) {
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                String.format(FETCH_BY_NAME_QUERY, SQLTools.getStringForSQL(name)),
+                String.format(FETCH_BY_NAME_AND_ACTIVE_QUERY, SQLTools.getStringForSQL(name)),
                 "reader");
         try {
             if (crsScript.size() == 0) {
@@ -117,9 +177,15 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
+    /**
+     * retrieve security group of script with provided {@code scriptKey}
+     *
+     * @param scriptKey: scriptKey of the script
+     * @return security group of script
+     */
     public Optional<SecurityGroup> getSecurityGroup(ScriptKey scriptKey) {
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                String.format(FETCH_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
+                String.format(FETCH_BY_ID_AND_ACTIVE_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
                 "reader");
         try {
             if (crsScript.size() == 0) {
@@ -150,31 +216,17 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         // had to change this to only get the script, because the script doesn't have version as id
         // return get(metadataKey.getScriptId(), metadataKey.getScriptVersionNumber());
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                String.format(FETCH_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
+                String.format(FETCH_BY_ID_QUERY,
+                        SQLTools.getStringForSQL(scriptKey.getScriptId())),
                 "reader");
         try {
             if (crsScript.size() == 0) {
                 return Optional.empty();
             } else if (crsScript.size() > 1) {
-                log.warn(MessageFormat.format("Found multiple implementations for script {0}-{1}. Returning first implementation", scriptKey.getScriptId(), scriptKey.getScriptVersion()));
+                log.warn(MessageFormat.format("Found multiple implementations for script {0}. Returning first implementation", scriptKey.getScriptId()));
             }
             crsScript.next();
 
-            // Get the version
-            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(
-                    new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
-            if (!scriptVersion.isPresent()) {
-                return Optional.empty();
-            }
-
-            // Get the actions
-            List<Action> actions = ActionConfiguration.getInstance().getByScript(scriptKey);
-
-            // Get parameters
-            List<ScriptParameter> scriptParameters = ScriptParameterConfiguration.getInstance().getByScript(scriptKey);
-
-            // Get labels
-            List<ScriptLabel> scriptLabels = ScriptLabelConfiguration.getInstance().getByScript(scriptKey);
 
             Script script = new Script(
                     scriptKey,
@@ -182,10 +234,7 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
                     crsScript.getString("SECURITY_GROUP_NAME"),
                     crsScript.getString("SCRIPT_NM"),
                     crsScript.getString("SCRIPT_DSC"),
-                    scriptVersion.get(),
-                    scriptParameters,
-                    actions,
-                    scriptLabels);
+                    crsScript.getString("DELETED_AT"));
             crsScript.close();
             return Optional.of(script);
         } catch (Exception e) {
@@ -201,36 +250,36 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     public boolean existsById(String scriptId) {
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                String.format(EXISTS_BY_ID_QUERY, SQLTools.getStringForSQL(scriptId)),
+                String.format(EXISTS_BY_ID_AND_ACTIVE_QUERY, SQLTools.getStringForSQL(scriptId)),
                 "reader");
         return crsScript.size() >= 1;
     }
 
     public boolean existsByName(String scriptName) {
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                String.format(EXISTS_BY_NAME_QUERY, SQLTools.getStringForSQL(scriptName)),
+                String.format(EXISTS_BY_NAME_AND_ACTIVE_QUERY, SQLTools.getStringForSQL(scriptName)),
                 "reader");
         return crsScript.size() >= 0;
     }
 
     public boolean exists(ScriptKey scriptKey) {
-        try {
-            CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                    String.format(EXISTS_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
-                    "reader");
-            if (crsScript.size() == 0) {
-                return false;
-            }
-            crsScript.next();
-            return ScriptVersionConfiguration.getInstance().exists(new ScriptVersionKey(scriptKey));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        CachedRowSet crsScript = getMetadataRepository().executeQuery(
+                String.format(EXISTS_BY_ID, SQLTools.getStringForSQL(scriptKey.getScriptId())),
+                "reader");
+        return crsScript.size() > 0;
+
+    }
+
+    public boolean existsDeleted(ScriptKey scriptKey) {
+        CachedRowSet crsScript = getMetadataRepository().executeQuery(
+                String.format(EXISTS_DELETED_BY_ID_QUERY, SQLTools.getStringForSQL(scriptKey.getScriptId())),
+                "reader");
+        return crsScript.size() > 0;
     }
 
     public boolean exists(String scriptName) {
         CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                String.format(EXISTS_BY_NAME_QUERY, SQLTools.getStringForSQL(scriptName)),
+                String.format(EXISTS_BY_NAME_AND_ACTIVE_QUERY, SQLTools.getStringForSQL(scriptName)),
                 "reader");
         return crsScript.size() > 0;
     }
@@ -244,11 +293,42 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
         try {
             while (crsScript.next()) {
-                String scriptId = crsScript.getString("SCRIPT_ID");
-                List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptId(scriptId);
-                for (ScriptVersion scriptVersion : scriptVersions) {
-                    get(new ScriptKey(scriptId, scriptVersion.getNumber())).ifPresent(scripts::add);
-                }
+                scripts.add(new Script(
+                        new ScriptKey("SCRIPT_ID"),
+                        new SecurityGroupKey(UUID.fromString(crsScript.getString("SECURITY_GROUP_ID"))),
+                        crsScript.getString("SECURITY_GROUP_NAME"),
+                        crsScript.getString("SCRIPT_NM"),
+                        crsScript.getString("SCRIPT_DSC"),
+                        crsScript.getString("DELETED_AT"))
+                );
+            }
+
+        } catch (SQLException e) {
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+
+            log.info(String.format("exception=%s", e));
+            log.debug(String.format("exception.stacktrace=%s", stackTrace));
+        }
+        return scripts;
+    }
+
+    public List<Script> getAllActive() {
+        List<Script> scripts = new ArrayList<>();
+        CachedRowSet crsScript = getMetadataRepository().executeQuery(
+                FETCH_ALL_ACTIVE_QUERY,
+                "reader");
+
+        try {
+            while (crsScript.next()) {
+                scripts.add(new Script(
+                        new ScriptKey("SCRIPT_ID"),
+                        new SecurityGroupKey(UUID.fromString(crsScript.getString("SECURITY_GROUP_ID"))),
+                        crsScript.getString("SECURITY_GROUP_NAME"),
+                        crsScript.getString("SCRIPT_NM"),
+                        crsScript.getString("SCRIPT_DSC"),
+                        crsScript.getString("DELETED_AT"))
+                );
             }
 
         } catch (SQLException e) {
@@ -263,131 +343,140 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
 
     @Override
     public void delete(ScriptKey scriptKey) {
-        log.trace(MessageFormat.format("Deleting script {0}", scriptKey.toString()));
-        ScriptVersionKey scriptVersionKey = new ScriptVersionKey(
-                new ScriptKey(
-                        scriptKey.getScriptId(),
-                        scriptKey.getScriptVersion()
-                ));
-        ScriptVersionConfiguration.getInstance().delete(scriptVersionKey);
-        ActionConfiguration.getInstance().deleteByScript(scriptKey);
-        ScriptParameterConfiguration.getInstance().deleteByScript(scriptKey);
-        ScriptLabelConfiguration.getInstance().deleteByScript(scriptKey);
-        getDeleteStatement(scriptKey)
-                .ifPresent(getMetadataRepository()::executeUpdate);
+        log.trace(MessageFormat.format("Marking Delete script {0}", scriptKey.toString()));
+        ScriptVersionConfiguration.getInstance().deleteByScriptKey(scriptKey);
+        getMetadataRepository().executeUpdate(String.format(
+                DELETE_BY_ID_QUERY,
+                SQLTools.getStringForSQL(scriptKey.getScriptId())));
     }
 
-    public List<Script> getByName(String scriptName) {
+    public void softDelete(ScriptKey scriptKey) {
+        log.trace(MessageFormat.format("Marking Soft Delete script {0}", scriptKey.toString()));
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        String deletedAt = localDateTime.format(formatter);
+        ScriptVersionConfiguration.getInstance().softDeleteByScriptKey(scriptKey, deletedAt);
+        getMetadataRepository().executeUpdate(String.format(
+                SOFT_DELETE_BY_ID_QUERY,
+                SQLTools.getStringForSQL(deletedAt),
+                SQLTools.getStringForSQL(scriptKey.getScriptId())));
+    }
+
+    public Optional<Script> getActiveByName(String scriptName) {
         try {
             log.trace(MessageFormat.format("Fetching scripts by name ''{0}''", scriptName));
             List<Script> scripts = new ArrayList<>();
             CachedRowSet crsScript = getMetadataRepository().executeQuery(
-                    String.format(FETCH_BY_NAME_QUERY, SQLTools.getStringForSQL(scriptName)),
+                    String.format(FETCH_BY_NAME_AND_ACTIVE_QUERY, SQLTools.getStringForSQL(scriptName)),
                     "reader");
             if (crsScript.size() == 0) {
-                return scripts;
-            } else if (crsScript.size() > 1) {
-                log.warn(MessageFormat.format("Found multiple implementations for Script {0}. Returning first implementation", scriptName));
+                return Optional.empty();
             }
             crsScript.next();
-            List<ScriptVersion> scriptVersions = ScriptVersionConfiguration.getInstance().getByScriptId(crsScript.getString("SCRIPT_ID"));
-
-            for (ScriptVersion scriptVersion : scriptVersions) {
-                get(new ScriptKey(crsScript.getString("SCRIPT_ID"), scriptVersion.getNumber())).ifPresent(scripts::add);
-            }
-            crsScript.close();
-            return scripts;
+            return Optional.of(new Script(
+                    new ScriptKey(crsScript.getString("SCRIPT_ID")),
+                    new SecurityGroupKey(UUID.fromString(crsScript.getString("SECURITY_GROUP_ID"))),
+                    crsScript.getString("SECURITY_GROUP_NAME"),
+                    crsScript.getString("SCRIPT_NM"),
+                    crsScript.getString("SCRIPT_DSC"),
+                    crsScript.getString("DELETED_AT"))
+            );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void deleteByName(String scriptName) {
-        for (Script script : getByName(scriptName)) {
-            delete(script.getMetadataKey());
-        }
+        getActiveByName(scriptName)
+                .ifPresent(script -> delete(script.getMetadataKey()));
     }
 
     public void insert(Script script) {
-        log.trace(MessageFormat.format("Inserting script {0}-{1}.", script.getName(), script.getVersion().getNumber()));
+        log.trace(MessageFormat.format("Inserting script {0}-{1}.", script.getName()));
         if (exists(script)) {
             throw new MetadataAlreadyExistsException(script);
         }
 
-        // add Parameters
-        for (ScriptParameter scriptParameter : script.getParameters()) {
-            ScriptParameterConfiguration.getInstance().insert(scriptParameter);
-        }
-
-        // add Parameters
-        for (ScriptLabel scriptLabel : script.getLabels()) {
-            ScriptLabelConfiguration.getInstance().insert(scriptLabel);
-        }
-
-        // add version
-        ScriptVersionConfiguration.getInstance().insert(script.getVersion());
-        // add actions
-        for (Action action : script.getActions()) {
-            ActionConfiguration.getInstance().insert(action);
-        }
-
         getMetadataRepository().executeUpdate(getInsertStatement(script));
+
+    }
+
+    @Override
+    public void update(Script script) {
+        getMetadataRepository().executeUpdate(getUpdateQuery(script));
     }
 
     private String getInsertStatement(Script script) {
-        if (!existsById(script.getMetadataKey().getScriptId())) {
+//        if (existsDeleted(script.getMetadataKey())) {
+//            return String.format(RESTORE_SOFT_DELETED_BY_ID_QUERY,
+//                    SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()));
+//        } else if (!existsById(script.getMetadataKey().getScriptId())) {
             return String.format(INSERT_QUERY,
                     SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()),
                     SQLTools.getStringForSQL(script.getSecurityGroupKey().getUuid()),
                     SQLTools.getStringForSQL(script.getSecurityGroupName()),
                     SQLTools.getStringForSQL(script.getName()),
-                    SQLTools.getStringForSQL(script.getDescription()));
-        } else {
-            return String.format(UPDATE_QUERY,
                     SQLTools.getStringForSQL(script.getDescription()),
-                    SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()));
-        }
+                    SQLTools.getStringForSQL(script.getDeletedAt()));
+
     }
 
-    private Optional<String> getDeleteStatement(ScriptKey scriptVersionKey) {
-        CachedRowSet crs = getMetadataRepository().executeQuery(
-                String.format(COUNT_QUERY,
-                        SQLTools.getStringForSQL(scriptVersionKey.getScriptId()),
-                        SQLTools.getStringForSQL(scriptVersionKey.getScriptVersion())),
-                "reader");
-
-        try {
-            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
-                return Optional.of(String.format(
-                        DELETE_BY_ID_QUERY,
-                        SQLTools.getStringForSQL(scriptVersionKey.getScriptId())));
-
-            } else {
-                return Optional.empty();
-            }
-        } catch (SQLException e) {
-            StringWriter stackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(stackTrace));
-
-            log.info(String.format("exception=%s", e));
-            log.debug(String.format("exception.stacktrace=%s", stackTrace));
-            return Optional.empty();
-        }
+    private String getUpdateQuery(Script script) {
+        return String.format(UPDATE_QUERY,
+                SQLTools.getStringForSQL(script.getDescription()),
+                SQLTools.getStringForSQL(script.getMetadataKey().getScriptId()));
     }
 
-    @Override
-    public void update(Script script) {
-        ScriptVersionConfiguration.getInstance().update(script.getVersion());
-        getMetadataRepository().executeUpdate(getInsertStatement(script));
-    }
+//    private Optional<String> getDeleteStatement(ScriptKey scriptKey) {
+//        CachedRowSet crs = getMetadataRepository().executeQuery(
+//                String.format(COUNT_QUERY,
+//                        SQLTools.getStringForSQL(scriptKey.getScriptId()),
+//                        SQLTools.getStringForSQL(scriptKey.getScriptVersion())),
+//                "reader");
+//
+//        try {
+//            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
+//                return Optional.of(String.format(
+//                        DELETE_BY_ID_QUERY,
+//                        SQLTools.getStringForSQL(scriptKey.getScriptId())));
+//
+//            } else {
+//                return Optional.empty();
+//            }
+//        } catch (SQLException e) {
+//            StringWriter stackTrace = new StringWriter();
+//            e.printStackTrace(new PrintWriter(stackTrace));
+//            log.info(String.format("exception=%s", e));
+//            log.debug(String.format("exception.stacktrace=%s", stackTrace));
+//            return Optional.empty();
+//        }
+//    }
 
-    public Optional<Script> getLatestVersion(String scriptName) {
-        Optional<ScriptVersion> latestVersion = ScriptVersionConfiguration.getInstance().getLatestVersionNumber(IdentifierTools.getScriptIdentifier(scriptName));
-        if (latestVersion.isPresent()) {
-            return get(new ScriptKey(latestVersion.get().getScriptId(), latestVersion.get().getNumber()));
-        } else {
-            return Optional.empty();
-        }
-    }
+//    private Optional<String> getSoftDeleteStatement(ScriptKey scriptKey, String timeStamp) {
+//        CachedRowSet crs = getMetadataRepository().executeQuery(
+//                String.format(COUNT_ACTIVE_QUERY,
+//                        SQLTools.getStringForSQL(scriptKey.getScriptId()),
+//                        SQLTools.getStringForSQL(scriptKey.getScriptVersion())),
+//                "reader");
+//
+//        try {
+//            if (crs.next() && Integer.parseInt(crs.getString("total_versions")) == 0) {
+//                return Optional.of(String.format(
+//                        SOFT_DELETE_BY_ID_QUERY,
+//                        SQLTools.getStringForSQL(timeStamp),
+//                        SQLTools.getStringForSQL(scriptKey.getScriptId()),
+//                        SQLTools.getStringForSQL(scriptKey.getDeletedAt())));
+//            } else {
+//                return Optional.empty();
+//            }
+//        } catch (SQLException e) {
+//            StringWriter stackTrace = new StringWriter();
+//            e.printStackTrace(new PrintWriter(stackTrace));
+//
+//            log.info(String.format("exception=%s", e));
+//            log.debug(String.format("exception.stacktrace=%s", stackTrace));
+//            return Optional.empty();
+//        }
+//    }
 
 }

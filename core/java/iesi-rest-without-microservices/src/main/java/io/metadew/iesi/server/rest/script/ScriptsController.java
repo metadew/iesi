@@ -2,8 +2,10 @@ package io.metadew.iesi.server.rest.script;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
@@ -67,15 +69,16 @@ public class ScriptsController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('SCRIPTS_READ')")
-    public PagedModel<ScriptDto> getAll(Pageable pageable,
+    public PagedModel<ScriptDto>  getAll(Pageable pageable,
                                         @RequestParam(required = false, name = "expand", defaultValue = "") List<String> expansions,
                                         @RequestParam(required = false, name = "version") String version,
                                         @RequestParam(required = false, name = "name") String name,
-                                        @RequestParam(required = false, name = "label") String labelKeyCombination) {
-        List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination);
+                                        @RequestParam(required = false, name = "label") String labelKeyCombination,
+                                        @RequestParam(required = false, name = "includeInactive") String includeInactive ) {
+        List<ScriptFilter> scriptFilters = extractScriptFilterOptions(name, labelKeyCombination, includeInactive);
         boolean lastVersion = extractLastVersion(version);
         Page<ScriptDto> scriptDtoPage = scriptDtoService
-                .getAll(SecurityContextHolder.getContext().getAuthentication(),
+                .getAllActive(SecurityContextHolder.getContext().getAuthentication(),
                         pageable,
                         expansions,
                         lastVersion,
@@ -90,7 +93,8 @@ public class ScriptsController {
         return version != null && version.equalsIgnoreCase("latest");
     }
 
-    private List<ScriptFilter> extractScriptFilterOptions(String name, String labelKeyCombination) {
+    private List<ScriptFilter> extractScriptFilterOptions(String name, String labelKeyCombination, String includeInActive) {
+
         List<ScriptFilter> scriptFilters = new ArrayList<>();
         if (name != null) {
             scriptFilters.add(new ScriptFilter(ScriptFilterOption.NAME, name, false));
@@ -98,6 +102,11 @@ public class ScriptsController {
         if (labelKeyCombination != null) {
             scriptFilters.add(new ScriptFilter(ScriptFilterOption.LABEL, labelKeyCombination, false));
         }
+
+        if (includeInActive == null || !includeInActive.equalsIgnoreCase("true")) {
+            includeInActive = "false";
+        }
+        scriptFilters.add(new ScriptFilter(ScriptFilterOption.INCLUDE_INACTIVE, includeInActive, false));
         return scriptFilters;
     }
 
@@ -141,7 +150,7 @@ public class ScriptsController {
                         name,
                         version,
                         expansions)
-                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(name)), version, "NA")));
     }
 
     @GetMapping("/{name}/{version}/download")
@@ -150,7 +159,7 @@ public class ScriptsController {
                                             @PathVariable Long version) throws IOException {
 
         ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(null, name, version, new ArrayList<>())
-                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(name)), version, "NA")));
 
         if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(),
                 IESIPrivilege.SCRIPTS_READ.getPrivilege(),
@@ -177,6 +186,11 @@ public class ScriptsController {
     @PostMapping("")
     @PreAuthorize("hasPrivilege('SCRIPTS_WRITE', #scriptPostDto.securityGroupName)")
     public ScriptDto post(@Valid @RequestBody ScriptPostDto scriptPostDto) {
+        if (scriptService.existsByNameAndVersion(scriptPostDto.getName(), scriptPostDto.getVersion().getNumber())) {
+            throw new MetadataAlreadyExistsException(new ScriptVersionKey(new ScriptKey(scriptPostDto.getName()), scriptPostDto.getVersion().getNumber(), "NA"));
+        } else if (scriptService.existsDeleted(scriptPostDto.getName())) {
+            throw new MetadataAlreadyExistsException(new ScriptVersionKey(new ScriptKey(scriptPostDto.getName()), scriptPostDto.getVersion().getNumber(), "NA"));
+        }
         scriptService.createScript(scriptPostDto);
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
     }
@@ -191,7 +205,7 @@ public class ScriptsController {
         }
         halMultipleEmbeddedResource.add(
                 linkTo(methodOn(ScriptsController.class)
-                        .getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null))
+                        .getAll(PageRequest.of(0, 20), new ArrayList<>(), "", null, null, null))
                         .withRel("scripts"));
         return halMultipleEmbeddedResource;
     }
@@ -216,7 +230,7 @@ public class ScriptsController {
                         name,
                         version,
                         new ArrayList<>())
-                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
+                .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptVersionKey(new ScriptKey(IdentifierTools.getScriptIdentifier(name)), version, "NA")));
 
         if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(),
                 IESIPrivilege.SCRIPTS_MODIFY.getPrivilege(),
@@ -224,8 +238,8 @@ public class ScriptsController {
         ) {
             throw new AccessDeniedException("User is not allowed to delete this script");
         }
-
         scriptService.deleteByNameAndVersion(name, version);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
 }

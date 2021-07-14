@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
 import io.metadew.iesi.metadata.definition.audit.key.ScriptDesignAuditKey;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class ScriptDesignAuditService implements IScriptDesignAuditService {
     }
 
     @Override
-    public ScriptDesignAudit convertToScriptAudit(Script script, ScriptDesignAuditAction scriptDesignAuditAction) {
+    public ScriptDesignAudit convertToScriptAudit(ScriptVersion scriptVersion, ScriptDesignAuditAction scriptDesignAuditAction) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDto userDto = userDtoRepository.get(username)
                 .orElseThrow(() -> new RuntimeException("Cannot find user :" + username));
@@ -32,10 +33,10 @@ public class ScriptDesignAuditService implements IScriptDesignAuditService {
                 username,
                 userDto.getId().toString(),
                 scriptDesignAuditAction,
-                script.getMetadataKey().getScriptId(),
-                script.getName(),
-                script.getVersion().getNumber(),
-                script.getSecurityGroupName(),
+                scriptVersion.getMetadataKey().getScriptKey().getScriptId(),
+                scriptVersion.getScript().getName(),
+                scriptVersion.getNumber(),
+                scriptVersion.getScript().getSecurityGroupName(),
                 LocalDateTime.now().toString());
     }
 }

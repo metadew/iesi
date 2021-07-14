@@ -1,12 +1,19 @@
 package io.metadew.iesi.metadata.definition.script;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
+import java.util.List;
+import java.util.Set;
+
+@JsonDeserialize(using = ScriptJsonComponent.Deserializer.class)
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Getter
+@Setter
 public class ScriptVersion extends Metadata<ScriptVersionKey> {
 
     private String description = "Default version";
@@ -14,73 +21,34 @@ public class ScriptVersion extends Metadata<ScriptVersionKey> {
     private String createdAt;
     private String lastModifiedBy;
     private String lastModifiedAt;
-
+    private Script script;
+    private Set<ScriptParameter> parameters;
+    private Set<Action> actions;
+    private Set<ScriptLabel> labels;
 
     @Builder
-    public ScriptVersion(ScriptVersionKey scriptVersionKey, String description, String createdBy, String createdAt, String lastModifiedBy, String lastModifiedAt) {
+    public ScriptVersion(ScriptVersionKey scriptVersionKey, Script script, String description, Set<ScriptParameter> parameters,
+                         Set<Action> actions, Set<ScriptLabel> labels, String createdBy, String createdAt,
+                         String lastModifiedBy, String lastModifiedAt) {
         super(scriptVersionKey);
         this.description = description;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
         this.lastModifiedBy = lastModifiedBy;
         this.lastModifiedAt = lastModifiedAt;
+        this.script = script;
+        this.parameters = parameters;
+        this.actions = actions;
+        this.labels = labels;
     }
 
-    public ScriptVersion(String scriptId, long number, String description, String createdBy, String createdAt, String lastModifiedBy, String lastModifiedAt) {
-        super(new ScriptVersionKey(new ScriptKey(scriptId, number)));
-        this.description = description;
-        this.createdBy = createdBy;
-        this.createdAt = createdAt;
-        this.lastModifiedBy = lastModifiedBy;
-        this.lastModifiedAt = lastModifiedAt;
-    }
-
-    // Getters and Setters
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public long getNumber() {
-        return getMetadataKey().getScriptKey().getScriptVersion();
+        return getMetadataKey().getScriptVersion();
     }
 
     public String getScriptId() {
         return getMetadataKey().getScriptKey().getScriptId();
     }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-  
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
-
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public String getLastModifiedAt() {
-        return lastModifiedAt;
-    }
-
-    public void setLastModifiedAt(String lastModifiedAt) {
-        this.lastModifiedAt = lastModifiedAt;
-    }
 }

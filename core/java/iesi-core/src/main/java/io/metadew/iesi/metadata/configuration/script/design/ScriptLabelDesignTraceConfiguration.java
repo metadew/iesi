@@ -7,7 +7,7 @@ import io.metadew.iesi.metadata.definition.script.design.ScriptLabelDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptLabelDesignTraceKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +51,7 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
             }
             cachedRowSet.next();
             return Optional.of(new ScriptLabelDesignTrace(scriptLabelDesignTraceKey,
-                    new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
+                    new ScriptVersionKey(new ScriptKey(cachedRowSet.getString("SCRIPT_ID")), cachedRowSet.getLong("SCRIPT_VRS_NB"), "NA"),
                     cachedRowSet.getString("NAME"),
                     cachedRowSet.getString("VALUE")));
         } catch (SQLException e) {
@@ -69,7 +69,7 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
             while (cachedRowSet.next()) {
                 scriptLabelDesignTraces.add(new ScriptLabelDesignTrace(
                         new ScriptLabelDesignTraceKey(cachedRowSet.getString("RUN_ID"),cachedRowSet.getLong("PRC_ID"),new ScriptLabelKey(cachedRowSet.getString("SCRIPT_LBL_ID"))),
-                        new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
+                        new ScriptVersionKey(new ScriptKey(cachedRowSet.getString("SCRIPT_ID")), cachedRowSet.getLong("SCRIPT_VRS_NB"), "NA"),
                         cachedRowSet.getString("NAME"),
                         cachedRowSet.getString("VALUE")));
             }
@@ -118,8 +118,8 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
                 SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getScriptLabelKey().getId()) + "," +
-                SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptId()) + ", " +
-                SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptVersion()) + ", " +
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptVersionKey().getScriptKey().getScriptId()) + ", " +
+                SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptVersionKey().getScriptVersion()) + ", " +
                 SQLTools.getStringForSQL(scriptLabelDesignTrace.getName()) + ", " +
                 SQLTools.getStringForSQL(scriptLabelDesignTrace.getValue()) + ");";
     }
@@ -134,8 +134,8 @@ public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLab
     private String updateStatement(ScriptLabelDesignTrace scriptLabelDesignTrace) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptLabelDesignTraces") +
                 " SET " +
-                " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptId()) + ", " +
-                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptKey().getScriptVersion()) + ", " +
+                " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptVersionKey().getScriptKey().getScriptId()) + ", " +
+                " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getScriptVersionKey().getScriptVersion()) + ", " +
                 " NAME = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getName()) + ", " +
                 " VALUE = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getValue()) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptLabelDesignTrace.getMetadataKey().getRunId()) +

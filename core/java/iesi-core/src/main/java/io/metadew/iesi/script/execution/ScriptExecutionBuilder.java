@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 
@@ -13,7 +13,7 @@ public class ScriptExecutionBuilder {
 
     private final boolean root;
     private final boolean route;
-    private Script script;
+    private ScriptVersion scriptVersion;
     private ExecutionControl executionControl;
     private ExecutionMetrics executionMetrics;
     private Long processId;
@@ -29,8 +29,8 @@ public class ScriptExecutionBuilder {
         this.route = route;
     }
 
-    public ScriptExecutionBuilder script(Script script) {
-        this.script = script;
+    public ScriptExecutionBuilder scriptVersion(ScriptVersion scriptVersion) {
+        this.scriptVersion = scriptVersion;
         return this;
     }
     
@@ -101,7 +101,7 @@ public class ScriptExecutionBuilder {
             try {
                 ExecutionControl executionControl = new ExecutionControl();
                 return new NonRouteScriptExecution(
-                        getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
+                        getScriptVersion().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
                         getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                         executionControl,
                         new ExecutionMetrics(),
@@ -120,7 +120,7 @@ public class ScriptExecutionBuilder {
         } else {
             ActionSelectOperation actionSelectOperation = new ActionSelectOperation("");
             return new NonRouteScriptExecution(
-                    getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
+                    getScriptVersion().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
                     getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                     executionControl,
                     new ExecutionMetrics(),
@@ -139,7 +139,7 @@ public class ScriptExecutionBuilder {
         try {
             ExecutionControl executionControl = root ? new ExecutionControl() : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
             return new RouteScriptExecution (
-                    getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to route script execution builder")),
+                    getScriptVersion().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to route script execution builder")),
                     getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
                     executionControl,
                     getExecutionMetrics().orElseThrow(() -> new ScriptExecutionBuildException("No execution metrics supplied to route script execution builder")),
@@ -157,8 +157,8 @@ public class ScriptExecutionBuilder {
         }
     }
 
-    public Optional<Script> getScript() {
-        return  Optional.ofNullable(script);
+    public Optional<ScriptVersion> getScriptVersion() {
+        return  Optional.ofNullable(scriptVersion);
     }
 
     public Optional<ExecutionControl> getExecutionControl() {

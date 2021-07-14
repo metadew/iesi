@@ -25,5 +25,4 @@ public class ScriptPostDto extends RepresentationModel<ScriptPostDto> {
     private Set<ActionDto> actions;
     private Set<ScriptLabelDto> labels;
 
-
 }

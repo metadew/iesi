@@ -2,7 +2,6 @@ package io.metadew.iesi.script.execution.instruction.data.text;
 
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 
-import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,8 +33,7 @@ public class TextReplace implements DataInstruction {
             text = text.replace(characterToBeReplaced, "");
             return text;
         } else {
-            throw new IllegalArgumentException(
-                    String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
+            throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
         }
     }
 

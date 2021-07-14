@@ -323,7 +323,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 cachedRowSet.getString("SECURITY_GROUP_NAME"),
                 cachedRowSet.getString("SCRIPT_DSC"),
                 new ScriptVersionDto(cachedRowSet.getLong("SCRIPT_VRS_NB"),
-                        cachedRowSet.getString("SCRIPT_VRS_DSC"), "NA"),
+                        cachedRowSet.getString("SCRIPT_VRS_DSC"), cachedRowSet.getString("DELETED_AT")),
                 new HashMap<>(),
                 new HashMap<>());
     }

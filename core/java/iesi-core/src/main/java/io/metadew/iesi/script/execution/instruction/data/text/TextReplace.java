@@ -28,17 +28,20 @@ public class TextReplace implements DataInstruction {
             String replacementCharacter = inputParameterMatcher.group(THIRD_OPERATOR);
             text = text.replace(characterToBeReplaced, replacementCharacter);
             return text;
-        } else if(inputParameterMatcherTwoArguments.matches()) {
+        } else if (inputParameterMatcherTwoArguments.matches()) {
             String text = inputParameterMatcherTwoArguments.group(FIRST_OPERATOR);
             String characterToBeReplaced = inputParameterMatcherTwoArguments.group(SECOND_OPERATOR);
             text = text.replace(characterToBeReplaced, "");
             return text;
-        }else {
+        } else {
             throw new IllegalArgumentException(
                     String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
         }
     }
+
     @Override
-    public String getKeyword() { return "text.replace"; }
+    public String getKeyword() {
+        return "text.replace";
+    }
 
 }

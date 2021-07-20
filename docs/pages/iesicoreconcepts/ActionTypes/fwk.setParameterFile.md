@@ -9,6 +9,7 @@ This actiontype loads a file of parameters into the framework's runtime variable
 * Use a subroutine instruction for getting a specific value
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |filePath|Path where the file(s) need to be located|string|Y|N|

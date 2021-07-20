@@ -8,6 +8,7 @@ This type connects to a Sqlite database ([https://www.sqlite.org](https://www.sq
 * Use a Sqlite database for storing data locally
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |filePath|The file path where the database is stored|string|Y|N|

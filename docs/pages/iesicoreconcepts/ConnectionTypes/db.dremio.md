@@ -8,6 +8,7 @@ This connection is for Dremio Data-as-a-Service platform (https://www.dremio.com
 * Big data testing
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |host|The host name of the server where the database is located|string|Y|N|

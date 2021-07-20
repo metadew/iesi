@@ -9,6 +9,7 @@ This connection is for Apache Drill schema free sql query engine (https://drill.
 * Big data testing
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |mode|The connection mode to use: drillbit, zookeeper|string|Y|N|

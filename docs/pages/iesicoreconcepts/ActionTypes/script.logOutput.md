@@ -8,6 +8,7 @@ This actiontype stores an output value as part of the script results. It allows 
 * Log metrics regarding the testing process for reporting purposes later onwards (across different actions)
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |name|Name of the output|string|Y|N|

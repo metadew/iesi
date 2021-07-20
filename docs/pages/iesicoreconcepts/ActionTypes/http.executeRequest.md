@@ -8,6 +8,7 @@ This actiontype executes a http request
 * Cross-channel use cases
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |request|Name of the request to use|string|Y|N|

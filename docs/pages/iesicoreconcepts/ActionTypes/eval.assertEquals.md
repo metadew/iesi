@@ -8,6 +8,7 @@ This actiontype evaluates if two values are equal
 * Validate expected outcome of calls/executions
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |expected|Expected value to evaluate|string|Y|N|

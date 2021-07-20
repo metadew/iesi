@@ -8,6 +8,7 @@ This connection is for windows based host systems. Remote connections are not po
 
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |host|The host name of the server where the database is running|string|Y|N|

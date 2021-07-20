@@ -7,6 +7,7 @@ This actiontype verifies if a folder exists
 * Verify if a folder exists or has been successfully created 
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |path|Path where the folder is located|string|N|N|

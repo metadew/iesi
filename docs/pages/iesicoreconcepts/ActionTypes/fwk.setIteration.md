@@ -9,6 +9,7 @@ This actiontype defines an interation that can be used in any next action. It re
 * Iterate over a pre-defined or statically defined list
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |name|Name of the iteration to define|string|N|N|

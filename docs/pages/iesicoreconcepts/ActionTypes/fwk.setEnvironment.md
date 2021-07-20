@@ -8,6 +8,7 @@ This actiontype changes the environment on which the script execution has been i
 * Compare two environmments
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |environment|Environment name where the next action will be executed on|string|N|N|

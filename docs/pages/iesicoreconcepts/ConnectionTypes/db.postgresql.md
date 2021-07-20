@@ -7,6 +7,7 @@ This type connects to a Postgresql database ([https://www.postgresql.org/](https
 * Connect to database
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |host|The host name of the server where the database is running|string|Y|N|

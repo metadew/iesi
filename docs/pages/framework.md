@@ -32,8 +32,8 @@ The core features of the framework can be visualized with the illustration below
 Our approach positions itself as a configuration-driven framework where automation scripts are configured rather than coded. Common actions and components are managed in libraries that are maintained centrally and that are reused to design scripts. In that way, the framework is designed to _configure once, run many times_.
 
 It is a toolbelt rather than a one-stop solution:
-- [x] Quick to extend with new functions
-- [x] Effective in growing the coverage of automation
+[x] Quick to extend with new functions
+[x] Effective in growing the coverage of automation
 
 ![iesi_concepts](/{{site.repository}}/images/introduction/iesi_concepts.png)
 

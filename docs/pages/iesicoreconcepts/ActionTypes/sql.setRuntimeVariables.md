@@ -7,6 +7,7 @@ This actiontype executes a sql statement on a relational database and stores the
 * Store dynamic data as variables for use in other actions: run identifiers - row counts - ...
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |query|SQL Stored Procedure to run|string|Y|N|

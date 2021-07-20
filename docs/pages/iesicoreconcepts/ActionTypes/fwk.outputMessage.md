@@ -9,6 +9,7 @@ This actiontype prints a message that can be used for logging or debugging purpo
 * Can be combined with the conditional construct to increase logging based on decisions
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |message|Message to be printed|string|N|N|

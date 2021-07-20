@@ -7,6 +7,7 @@ This actiontype is a dummy for adding a placeholder step
 * Placeholder for script design reflections, waiting for the appropriate configuration
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 None

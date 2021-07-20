@@ -7,6 +7,7 @@ This type connects to a Teradata database ([https://www.teradata.com/](https://w
 * Connect to database
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |host|The host name of the server where the database is running|string|Y|N|

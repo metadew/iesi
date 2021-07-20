@@ -9,6 +9,7 @@ This type connects to a H2 database (https://www.h2database.com).
 * Share data across local installation using H2's server mode
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |host|The host name of the server where the database file is located|string|N|N|

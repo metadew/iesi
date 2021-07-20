@@ -7,6 +7,7 @@ This actiontype verifies if a file exists
 * Verify if a file exists or has been successfully created 
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |path|Path where the file is located|string|N|N|

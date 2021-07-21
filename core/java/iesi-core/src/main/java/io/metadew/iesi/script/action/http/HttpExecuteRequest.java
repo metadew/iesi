@@ -237,6 +237,9 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (connectionName == null) {
             return null;
         } else if (connectionName instanceof Text) {
+            if(((Text) connectionName).getString().isEmpty()){
+                return null;
+            }
             return ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(((Text) connectionName).getString(), getExecutionControl().getEnvName()))
                     .map(ProxyConnection::from)

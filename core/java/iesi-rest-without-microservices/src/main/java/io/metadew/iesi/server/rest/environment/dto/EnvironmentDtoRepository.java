@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class EnvironmentDtoRepository extends PaginatedRepository implements IEnvironmentDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-    private final String ENVIRONMENT_TABLE_LABEL = "Environment";
+    private final String ENVIRONMENT_TABLE_LABEL = "Environments";
     private final String ENVIRONMENT_PARAMETER_TABLE_LABEL = "EnvironmentParameters";
 
 

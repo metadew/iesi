@@ -7,6 +7,7 @@ This connection is for artifactory repository connections ([https://jfrog.com/ar
 
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |url|The connection URL for the instance|string|Y|N|        

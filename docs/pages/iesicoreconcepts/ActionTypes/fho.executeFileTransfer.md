@@ -8,6 +8,7 @@ This action transfers one or more files from the localhost to a remote host or v
 * Copy configuration files from the framework to any location
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |sourceFilePath|Path where file(s) to transfer are located|string|Y|N|

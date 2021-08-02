@@ -13,6 +13,7 @@ If a result is found (count > 0) then the evaluation is successful, otherwise it
   * files can be organized allowing reuse via parametersr
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |query|SQL query to run|string|Y|N|

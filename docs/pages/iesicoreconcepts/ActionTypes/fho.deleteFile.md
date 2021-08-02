@@ -7,6 +7,7 @@ This actiontype deletes one or more files in a folder.
 * Cleanup of files in specific folder(s)
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |path|Path where the file is located|string|N|N|

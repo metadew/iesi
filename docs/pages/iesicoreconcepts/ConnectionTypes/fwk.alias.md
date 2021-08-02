@@ -10,6 +10,7 @@ In this case the alias is substituted at runtime with the connection that impers
 
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |type|Connection alias only to be used for impersonation|string|Y|N|

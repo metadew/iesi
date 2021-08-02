@@ -17,6 +17,7 @@ It allows to reuse other scripts to create a modular, scalable and maintainable 
 * Separate actions that are sensitive for updates and create separate versions
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |script|Script name to execute|string|Y|N|

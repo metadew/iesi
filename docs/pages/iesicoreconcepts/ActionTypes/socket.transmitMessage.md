@@ -7,6 +7,7 @@ This actiontype executes a socket message
 * Use cases where messages are communicated over a socket connection
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |socket|Name of socket connection|string|Y|N|

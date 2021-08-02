@@ -8,6 +8,7 @@ This actiontype creates a folder
 * Store output in new/unique folder
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |path|Path where the folder will be located|string|N|N|

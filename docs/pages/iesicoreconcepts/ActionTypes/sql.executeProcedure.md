@@ -7,6 +7,7 @@ This actiontype executes a sql stored procedure on a relational database. The in
 * Execute a sql stored procedure that is defined as api to the solution
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |procedure|SQL Stored Procedure to run|string|Y|N|

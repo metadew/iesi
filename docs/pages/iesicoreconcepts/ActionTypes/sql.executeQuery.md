@@ -14,6 +14,7 @@ By using scripts:
 * files can be organized allowing reuse via parameters
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |query|SQL query to run|string|Y|N|

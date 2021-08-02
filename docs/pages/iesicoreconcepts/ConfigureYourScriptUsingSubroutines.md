@@ -21,6 +21,7 @@ The syntax of a subroutine contains out of the following elements: `{{<instructi
 Subroutines can also be **nested**, containing subroutines in subroutines (e.g. for date formatting)
 
 **Instruction items** (`<instruction>`)
+
 |Syntax|Function|Description|
 |------|--------|-----------|
 |=|Look-up|Lookup relevant information|
@@ -29,7 +30,8 @@ Subroutines can also be **nested**, containing subroutines in subroutines (e.g. 
 
 
 **Subroutine items** (`<subroutine><args>`)
-|Function|Instruction syntax|Subroutine|Description       |Subroutine syntax|Example|Output|
+
+|Function|Instruction Syntax|Subroutine|Description|Subroutine Syntax|Example|Output|
 |--------|------------------|----------|-----------|-----------------|-------|------|
 |**Look-up**|
 |        |=                 |connection|Lookup connection parameter value|{{=connection(X,Y)}}|{{=connection(petsTutorial,port)}}|8800|

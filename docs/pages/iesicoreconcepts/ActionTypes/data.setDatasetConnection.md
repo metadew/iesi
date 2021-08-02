@@ -9,6 +9,7 @@ This actiontype defines a dataset connection that can be used in any next action
 * Define a dataset to store environment specific input
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |name|Reference name for the dataset definition|string|Y|N|

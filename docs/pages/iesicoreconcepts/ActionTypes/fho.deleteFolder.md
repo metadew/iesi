@@ -8,6 +8,7 @@ This action deletes a folder and all its contents. All subfolders and contents a
 * Reset the initial state before starting a test
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |path|Path where the folder is located|string|N|N|

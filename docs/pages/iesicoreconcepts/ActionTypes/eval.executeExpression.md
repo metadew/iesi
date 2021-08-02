@@ -8,6 +8,7 @@ This actiontype evaluates an expression using scripted syntax
 
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |expression|Expression to evaluate|string|Y|N|

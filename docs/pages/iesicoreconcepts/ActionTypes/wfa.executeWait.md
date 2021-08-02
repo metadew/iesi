@@ -9,6 +9,7 @@ This actiontype waits (sleeps) for a while and then ends successfully.
 * Make use of settings, variables and instructions to make the wait interval random or based on context
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |wait|Number of seconds to wait|number|N|N|

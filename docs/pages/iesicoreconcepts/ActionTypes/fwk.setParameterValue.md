@@ -10,6 +10,7 @@ This actiontype adds a parameter into the framework's runtime variables. It is i
 * Define a parameter at runtime
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |name|Name of the parameter to set as runtime variable|string|Y|N|

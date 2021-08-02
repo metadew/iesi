@@ -7,6 +7,7 @@ Socket Connection
 * Connect to socket
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |hostname|The host name|string|Y|N|

@@ -8,6 +8,7 @@ This connection is for unix based host systems. Remote connections require ssh t
 
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |host|The host name of the server where the database is running|string|Y|N|

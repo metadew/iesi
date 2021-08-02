@@ -8,6 +8,7 @@ This actiontype evaluates if value exists in list
 * Validate expected outcome of calls/executions retrieved in list
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |list|Expected value to evaluate|string|Y|N|

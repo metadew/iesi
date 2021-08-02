@@ -10,6 +10,7 @@ This actiontype adds a list of parameters into the framework's runtime variables
 * Set a manual configuration value in a script
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |list|List of parameters and values to set as runtime variables|string|Y|N|

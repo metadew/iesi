@@ -10,6 +10,7 @@ This actiontype runs a sql query on a relational database waiting for returning 
 * Design a triggering mechanism for engineers to add requests to a table (via simple UI or just plain insert statements)
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |query|SQL query to run|string|Y|N|

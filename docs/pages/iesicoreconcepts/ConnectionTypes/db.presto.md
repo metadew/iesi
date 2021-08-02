@@ -4,6 +4,7 @@
 This connection is for Presto Distributed SQL Query Engine ([http://prestodb.github.io](http://prestodb.github.io)).
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |host|The host name of the server where the database file is located|string|Y|N|

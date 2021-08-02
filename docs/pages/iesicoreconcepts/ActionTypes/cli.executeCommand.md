@@ -12,6 +12,7 @@ This action executes a command on a host.
 
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |path|Path where to run the command from|string|N|N|

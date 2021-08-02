@@ -4,6 +4,7 @@
 This actiontype waits until a file statement returns a result or not
 
 ## Fields
+
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
 |filePath|Path where the file(s) need to be located|string|Y|N|

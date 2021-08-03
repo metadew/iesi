@@ -24,7 +24,7 @@ The core features of the framework can be visualized with the illustration below
 * **Monitor** the activity and current status of the framework and systems under test
 * **Alert** on important or unusual events and detect potential issues sooner
 
-![automation-approach](https://github.com/metadew/iesi/blob/5942732f9e0f99c389cc53331dd56ad31a33e8b7/docs/images/introduction/automation-approach.png)
+![automation-approach](/{{site.repository}}/images/introduction/automation-approach.png)
 
 ## Configuration-driven
 > "Putting reusable configuration central
@@ -32,10 +32,10 @@ The core features of the framework can be visualized with the illustration below
 Our approach positions itself as a configuration-driven framework where automation scripts are configured rather than coded. Common actions and components are managed in libraries that are maintained centrally and that are reused to design scripts. In that way, the framework is designed to _configure once, run many times_.
 
 It is a toolbelt rather than a one-stop solution:
-- [x] Quick to extend with new functions
-- [x] Effective in growing the coverage of automation
+[x] Quick to extend with new functions
+[x] Effective in growing the coverage of automation
 
-![iesi_concepts](https://github.com/metadew/iesi/blob/5942732f9e0f99c389cc53331dd56ad31a33e8b7/docs/images/introduction/iesi_concepts.png)
+![iesi_concepts](/{{site.repository}}/images/introduction/iesi_concepts.png)
 
 The framework decouples the configuration from the data aspects and manages it in a distributed manner. It is distributed by design allowing to be used on any size of project: low entry installation and onboarding. <br>
 

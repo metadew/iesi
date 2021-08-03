@@ -4,19 +4,17 @@ import io.metadew.iesi.connection.r.RCommandResult;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 
 import java.text.MessageFormat;
 
 public class RExecuteScript extends ActionTypeExecution {
 
-    private static  final String scriptKey = "script";
-    private static final String workspaceReferenceNameKey = "workspace";
+    private static final String SCRIPT_KEY = "script";
+    private static final String WORKSPACE_REFERENCE_NAME_KEY = "workspace";
     private String workspaceReferenceName;
     private String script;
 
@@ -25,25 +23,9 @@ public class RExecuteScript extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        ActionParameterOperation scriptActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), scriptKey);
-        ActionParameterOperation workspaceReferenceNameActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), workspaceReferenceNameKey);
-
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(workspaceReferenceNameKey)) {
-                workspaceReferenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(scriptKey)) {
-                scriptActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        getActionParameterOperationMap().put(workspaceReferenceNameKey, workspaceReferenceNameActionParameterOperation);
-        getActionParameterOperationMap().put(scriptKey, scriptActionParameterOperation);
-
-        this.workspaceReferenceName = convertWorkspaceReferenceName(workspaceReferenceNameActionParameterOperation.getValue());
-        this.script = convertScript(scriptActionParameterOperation.getValue());
+    public void prepareAction() {
+        this.workspaceReferenceName = convertWorkspaceReferenceName(getParameterResolvedValue(WORKSPACE_REFERENCE_NAME_KEY));
+        this.script = convertScript(getParameterResolvedValue(SCRIPT_KEY));
     }
 
     private String convertWorkspaceReferenceName(DataType referenceName) {
@@ -66,7 +48,6 @@ public class RExecuteScript extends ActionTypeExecution {
         }
     }
 
-
     @Override
     protected boolean executeAction() throws Exception {
         RWorkspace rWorkspace = getExecutionControl().getExecutionRuntime().getRWorkspace(workspaceReferenceName)
@@ -80,6 +61,11 @@ public class RExecuteScript extends ActionTypeExecution {
             getActionExecution().getActionControl().increaseErrorCount();
             return false;
         }
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "r.executeScript";
     }
 
 }

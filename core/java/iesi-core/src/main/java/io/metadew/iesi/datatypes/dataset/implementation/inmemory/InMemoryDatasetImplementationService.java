@@ -140,8 +140,10 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
         return InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationId(datasetImplementation.getMetadataKey())
                 .stream()
-                .collect(Collectors.toMap(InMemoryDatasetImplementationKeyValue::getKey,
-                        inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime))
+                .collect(Collectors.toMap(
+                        InMemoryDatasetImplementationKeyValue::getKey,
+                        inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance()
+                                .resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime))
                 );
     }
 
@@ -153,13 +155,15 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
             inMemoryDatasetImplementationKeyValue.get().setValue(value.toString());
             InMemoryDatasetImplementationKeyValueConfiguration.getInstance().update(inMemoryDatasetImplementationKeyValue.get());
         } else {
+            InMemoryDatasetImplementationKeyValue newInMemoryDatasetImplementationKeyValue = new InMemoryDatasetImplementationKeyValue(
+                    new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                    datasetImplementation.getMetadataKey(),
+                    key,
+                    value.toString()
+            );
+            datasetImplementation.getKeyValues().add(newInMemoryDatasetImplementationKeyValue);
             InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
-                    .insert(new InMemoryDatasetImplementationKeyValue(
-                            new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
-                            datasetImplementation.getMetadataKey(),
-                            key,
-                            value.toString()
-                    ));
+                    .insert(newInMemoryDatasetImplementationKeyValue);
         }
     }
 
@@ -184,7 +188,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
             List<String> labels = inMemoryDatasetImplementation.getDatasetImplementationLabels().stream()
                     .map(DatasetImplementationLabel::getValue)
                     .collect(Collectors.toList());
-            labels.add(keyPrefix);
+            labels.add(UUID.randomUUID().toString());
             return createNewDatasetImplementation(inMemoryDatasetImplementation.getDatasetKey(), inMemoryDatasetImplementation.getName(), labels);
         } else {
             return inMemoryDatasetImplementation;
@@ -204,7 +208,6 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
     @Override
     public InMemoryDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Dataset Implementation", arguments));
-        arguments = executionRuntime.resolveVariables(arguments);
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
         if (splittedArguments.size() == 2) {
             List<DataType> resolvedArguments = splittedArguments.stream()

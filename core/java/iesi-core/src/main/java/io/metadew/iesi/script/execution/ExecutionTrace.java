@@ -2,10 +2,9 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.metadata.service.action.ActionTraceService;
 import io.metadew.iesi.metadata.service.script.ScriptTraceService;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
+import io.metadew.iesi.script.action.ActionParameterResolvement;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -32,10 +31,12 @@ public class ExecutionTrace {
         ScriptTraceService.getInstance().trace(scriptExecution);
     }
 
-    public void setExecution(ActionExecution actionExecution, Map<String, ActionParameterOperation> actionParameterOperationMap) {
-        ActionTraceService.getInstance().trace(actionExecution, actionParameterOperationMap.entrySet().stream()
-                .filter(entry -> entry.getValue().getValue() != null)
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValue())));
+    public void setExecution(ActionExecution actionExecution, List<ActionParameterResolvement> actionParameterOperationMap) {
+        ActionTraceService.getInstance().trace(actionExecution,
+                actionParameterOperationMap.stream()
+                .collect(Collectors.toMap(
+                        entry -> entry.getActionParameter().getMetadataKey().getParameterName(),
+                        ActionParameterResolvement::getResolvedValue)));
     }
 
 }

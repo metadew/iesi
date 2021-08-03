@@ -7,6 +7,8 @@ import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataFieldType;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
+import java.util.Optional;
+
 public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase> implements ISchemaDatabaseService<OracleDatabase> {
 
     private static OracleDatabaseService INSTANCE;
@@ -38,7 +40,7 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
     public OracleDatabase getDatabase(Connection connection) {
         String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
         String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
+        Optional<String> schemaName = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, schemaKey);
         OracleDatabaseConnection oracleDatabaseConnection;
         if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             oracleDatabaseConnection = new OracleDatabaseConnection(
@@ -46,8 +48,8 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
                     userName,
                     userPassword,
                     null,
-                    schemaName);
-            return new OracleDatabase(oracleDatabaseConnection, schemaName);
+                    schemaName.orElse(null));
+            return new OracleDatabase(oracleDatabaseConnection, schemaName.orElse(null));
         }
         String mode = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, modeKey);
         String host = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
@@ -61,8 +63,8 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
                         userName,
                         userPassword,
                         null,
-                        schemaName);
-                return new OracleDatabase(oracleDatabaseConnection, schemaName);
+                        schemaName.orElse(null));
+                return new OracleDatabase(oracleDatabaseConnection, schemaName.orElse(null));
             case serviceModeKey:
                 oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(
                         host,
@@ -71,8 +73,8 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
                         userName,
                         userPassword,
                         null,
-                        schemaName);
-                return new OracleDatabase(oracleDatabaseConnection, schemaName);
+                        schemaName.orElse(null));
+                return new OracleDatabase(oracleDatabaseConnection, schemaName.orElse(null));
             default:
                 throw new RuntimeException("Oracle database " + connection + " does not know mode '" + mode + "'");
         }

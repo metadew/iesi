@@ -3,19 +3,17 @@ package io.metadew.iesi.script.action.r;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 
 import java.text.MessageFormat;
 
 public class RSetWorkspace extends ActionTypeExecution {
 
-    private static final String pathKey = "path";
-    private static final String referenceNameKey = "name";
+    private static final String PATH_KEY = "path";
+    private static final String REFERENCE_NAME_KEY = "name";
     private String referenceName;
     private String path;
 
@@ -24,25 +22,9 @@ public class RSetWorkspace extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        ActionParameterOperation pathActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), pathKey);
-        ActionParameterOperation referenceNameActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), referenceNameKey);
-
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(referenceNameKey)) {
-                referenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(pathKey)) {
-                pathActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        getActionParameterOperationMap().put(referenceNameKey, referenceNameActionParameterOperation);
-        getActionParameterOperationMap().put(pathKey, pathActionParameterOperation);
-
-        this.referenceName = convertReferenceName(referenceNameActionParameterOperation.getValue());
-        this.path = convertPath(pathActionParameterOperation.getValue());
+    public void prepareAction() {
+        this.referenceName = convertReferenceName(getParameterResolvedValue(REFERENCE_NAME_KEY));
+        this.path = convertPath(getParameterResolvedValue(PATH_KEY));
     }
 
     @Override
@@ -50,6 +32,11 @@ public class RSetWorkspace extends ActionTypeExecution {
         RWorkspace rWorkspace = new RWorkspace(path);
         getExecutionControl().getExecutionRuntime().setRWorkspace(referenceName, rWorkspace);
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "r.setWorkspace";
     }
 
     private String convertReferenceName(DataType referenceName) {

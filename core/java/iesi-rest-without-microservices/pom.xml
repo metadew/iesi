@@ -13,7 +13,7 @@
     <packaging>${packaging.type}</packaging>
     <groupId>io.metadew.iesi</groupId>
     <artifactId>iesi-rest</artifactId>
-    <version>0.6.1</version>
+    <version>0.7.0</version>
     <name>IesiRestApplicationWithoutMicroServices</name>
     <description>IESI REST API</description>
 
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>io.metadew</groupId>
             <artifactId>iesi-core</artifactId>
-            <version>0.6.1</version>
+            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -145,12 +145,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.10.3</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.9</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
@@ -160,12 +160,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.9</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.9.9</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

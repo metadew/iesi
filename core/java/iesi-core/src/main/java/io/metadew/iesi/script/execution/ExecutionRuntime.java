@@ -3,7 +3,6 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.r.RWorkspace;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
@@ -18,7 +17,6 @@ import io.metadew.iesi.script.execution.instruction.lookup.LookupInstructionRepo
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ImpersonationOperation;
 import io.metadew.iesi.script.operation.IterationOperation;
 import io.metadew.iesi.script.operation.StageOperation;
@@ -87,7 +85,7 @@ public class ExecutionRuntime {
         // Initialize extensions
 
         // Initialize data instructions
-        dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution());
+        dataInstructions = DataInstructionRepository.getRepository(new GenerationObjectExecution(), this);
         variableInstructions = VariableInstructionRepository.getRepository(executionControl);
         lookupInstructions = LookupInstructionRepository.getRepository(executionControl, this);
         datasetMap = new HashMap<>();
@@ -246,30 +244,30 @@ public class ExecutionRuntime {
         return input;
     }
 
-
-    public String resolveActionTypeVariables(String input, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-        int openPos;
-        int closePos;
-        String variable_char_open = "[";
-        String variable_char_close = "]";
-        String midBit;
-        String replaceValue;
-        String temp = input;
-        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
-            openPos = temp.indexOf(variable_char_open);
-            closePos = temp.indexOf(variable_char_close, openPos + 1);
-            midBit = temp.substring(openPos + 1, closePos);
-
-            // Replace
-            replaceValue = actionParameterOperationMap.get(midBit).getValue().toString();
-            if (replaceValue != null) {
-                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
-            }
-            temp = temp.substring(closePos + 1, temp.length());
-
-        }
-        return input;
-    }
+//
+//    public String resolveActionTypeVariables(String input, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
+//        int openPos;
+//        int closePos;
+//        String variable_char_open = "[";
+//        String variable_char_close = "]";
+//        String midBit;
+//        String replaceValue;
+//        String temp = input;
+//        while (temp.indexOf(variable_char_open) > 0 || temp.startsWith(variable_char_open)) {
+//            openPos = temp.indexOf(variable_char_open);
+//            closePos = temp.indexOf(variable_char_close, openPos + 1);
+//            midBit = temp.substring(openPos + 1, closePos);
+//
+//            // Replace
+//            replaceValue = actionParameterOperationMap.get(midBit).getValue().toString();
+//            if (replaceValue != null) {
+//                input = input.replace(variable_char_open + midBit + variable_char_close, replaceValue);
+//            }
+//            temp = temp.substring(closePos + 1, temp.length());
+//
+//        }
+//        return input;
+//    }
 
     public String resolveComponentTypeVariables(String input, List<ComponentAttribute> componentAttributeList,
                                                 String environment) {

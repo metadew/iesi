@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
@@ -54,21 +55,20 @@ public class ActionControl {
     }
 
 
-    private List<ActionParameterTrace> logOutputPerDatatype(String key, DataType value) {
-        List<ActionParameterTrace> actionParameterTraces = new ArrayList<>();
-        if (value == null) {
-            executionControl.logExecutionOutput(actionExecution, key, "null");
+    private void logOutputPerDatatype(String key, DataType value) {
+        if (value == null || value instanceof Null) {
+            executionControl.logExecutionOutput(actionExecution, key, "<null>");
         } else if (value instanceof Text) {
             executionControl.logExecutionOutput(actionExecution, key, ((Text) value).getString());
         } else if (value instanceof Array) {
             int counter = 0;
             for (DataType element : ((Array) value).getList()) {
-                logOutputPerDatatype(key + counter, element);
+                logOutputPerDatatype(key + counter + ".", element);
                 counter++;
             }
         } else if (value instanceof InMemoryDatasetImplementation) {
             for (Map.Entry<String, DataType> datasetItem : InMemoryDatasetImplementationService.getInstance().getDataItems((InMemoryDatasetImplementation) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
-                logOutputPerDatatype(key + datasetItem.getKey(), datasetItem.getValue());
+                logOutputPerDatatype(key + datasetItem.getKey() + ".", datasetItem.getValue());
             }
         } else if (value instanceof Template) {
             for (Matcher matcher : ((Template) value).getMatchers()) {
@@ -89,7 +89,6 @@ public class ActionControl {
         } else {
             LOGGER.warn(MessageFormat.format("DataType ''{0}'' is unknown to trace", value.getClass()));
         }
-        return actionParameterTraces;
     }
 
     public void logError(String name, String value) {

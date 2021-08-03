@@ -12,7 +12,7 @@ public class FwkDummy extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
 
     }
 
@@ -20,6 +20,11 @@ public class FwkDummy extends ActionTypeExecution {
         this.getExecutionControl().logMessage("Not doing anything", Level.TRACE);
         this.getActionExecution().getActionControl().increaseSuccessCount();
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "fwk.dummy";
     }
 
 }

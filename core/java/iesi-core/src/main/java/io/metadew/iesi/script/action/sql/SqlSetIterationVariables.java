@@ -5,28 +5,24 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import java.text.MessageFormat;
 
-
+@Log4j2
 public class SqlSetIterationVariables extends ActionTypeExecution {
 
     // Parameters
-    private ActionParameterOperation listName;
-    private ActionParameterOperation sqlQuery;
-    private ActionParameterOperation connectionName;
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final String LIST_KEY = "list";
+    private static final String QUERY_KEY = "query";
+    private static final String CONNECTION_KEY = "connection";
 
 
     public SqlSetIterationVariables(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -34,37 +30,14 @@ public class SqlSetIterationVariables extends ActionTypeExecution {
     }
 
 
-    public void prepare() {
-        // Reset Parameters
-        this.setListName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
-                this.getActionExecution().getAction().getType(), "list"));
-        this.setSqlQuery(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
-                this.getActionExecution().getAction().getType(), "query"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(), this.getActionExecution(),
-                this.getActionExecution().getAction().getType(), "connection"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list")) {
-                this.getListName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
-                this.getSqlQuery().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        //Create parameter list
-        this.getActionParameterOperationMap().put("list", this.getListName());
-        this.getActionParameterOperationMap().put("query", this.getSqlQuery());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+    public void prepareAction() {
     }
 
     protected boolean executeAction() throws InterruptedException {
 
-        String query = convertQuery(getSqlQuery().getValue());
-        String connectionName = convertConnectionName(getConnectionName().getValue());
-        String listName = convertListName(getListName().getValue());
+        String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
+        String listName = convertListName(getParameterResolvedValue(LIST_KEY));
 
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
@@ -78,11 +51,16 @@ public class SqlSetIterationVariables extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.setIterationVariables";
+    }
+
     private String convertListName(DataType listName) {
         if (listName instanceof Text) {
             return listName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for listName",
+            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for listName",
                     listName.getClass()));
             return listName.toString();
         }
@@ -92,7 +70,7 @@ public class SqlSetIterationVariables extends ActionTypeExecution {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()));
             return connectionName.toString();
         }
@@ -102,34 +80,10 @@ public class SqlSetIterationVariables extends ActionTypeExecution {
         if (query instanceof Text) {
             return query.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for query",
+            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for query",
                     query.getClass()));
             return query.toString();
         }
-    }
-
-    public ActionParameterOperation getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(ActionParameterOperation connectionName) {
-        this.connectionName = connectionName;
-    }
-
-    public ActionParameterOperation getSqlQuery() {
-        return sqlQuery;
-    }
-
-    public void setSqlQuery(ActionParameterOperation sqlQuery) {
-        this.sqlQuery = sqlQuery;
-    }
-
-    public ActionParameterOperation getListName() {
-        return listName;
-    }
-
-    public void setListName(ActionParameterOperation listName) {
-        this.listName = listName;
     }
 
 }

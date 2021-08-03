@@ -4,14 +4,12 @@ import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -23,9 +21,9 @@ import java.text.MessageFormat;
 @Log4j2
 public class ScriptLogOutput extends ActionTypeExecution {
 
-    // Parameters
-    private ActionParameterOperation outputName;
-    private ActionParameterOperation outputValue;
+    private static final String NAME_KEY = "name";
+    private static final String VALUE_KEY = "value";
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ScriptLogOutput(ExecutionControl executionControl,
@@ -33,28 +31,12 @@ public class ScriptLogOutput extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        this.outputName = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "name");
-        this.outputValue = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), "value");
-
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
-                outputName.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("value")) {
-                outputValue.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        getActionParameterOperationMap().put("name", outputName);
-        getActionParameterOperationMap().put("value", outputValue);
+    public void prepareAction() {
     }
 
     protected boolean executeAction() throws InterruptedException {
-        String name = convertOutputName(outputName.getValue());
-        String value = convertOutputValue(outputValue.getValue());
+        String name = convertOutputName(getParameterResolvedValue(NAME_KEY));
+        String value = convertOutputValue(getParameterResolvedValue(VALUE_KEY));
 
         // Log the output in the action as well
         getActionExecution().getActionControl().logOutput("output.name", name);
@@ -71,6 +53,11 @@ public class ScriptLogOutput extends ActionTypeExecution {
 
         getActionExecution().getActionControl().increaseSuccessCount();
         return true;
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "script.logOutput";
     }
 
     private String convertOutputValue(DataType outputValue) {

@@ -1,9 +1,7 @@
 package io.metadew.iesi.metadata.definition.execution;
 
-import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -18,9 +16,8 @@ public class ExecutionRequestBuilder {
     private String scope;
     private String context;
 
-    private String space;
-    private String user;
-    private String password;
+    private String userId;
+    private String username;
 
     private String email;
 
@@ -67,7 +64,7 @@ public class ExecutionRequestBuilder {
         return this;
     }
 
-    public ExecutionRequestBuilder user(String user) {
+    /*public ExecutionRequestBuilder user(String user) {
         this.user = user;
         return this;
     }
@@ -80,6 +77,16 @@ public class ExecutionRequestBuilder {
     public ExecutionRequestBuilder password(String password) {
         this.password = password;
         return this;
+    }*/
+
+    public ExecutionRequestBuilder userId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public ExecutionRequestBuilder username(String username) {
+       this.username = username;
+       return this;
     }
 
     public ExecutionRequestBuilder email(String email) {
@@ -89,7 +96,7 @@ public class ExecutionRequestBuilder {
 
     public ExecutionRequest build() throws ExecutionRequestBuilderException {
         verifyMandatoryArguments();
-        if (user != null || space != null || password != null) {
+        if (userId != null || username != null) {
             return buildAuthenticatedExecutionRequest();
         } else {
             return buildNonAuthenticatedExecutionRequest();
@@ -140,13 +147,13 @@ public class ExecutionRequestBuilder {
                 ExecutionRequestStatus.NEW,
                 getScriptExecutionRequests().orElse(new ArrayList<>()),
                 executionRequestLabels,
-                space,
-                user,
-                password);
+                userId,
+                username
+                );
     }
 
     private void verifyMandatoryAuthenticationArguments() throws ExecutionRequestBuilderException {
-        if (user == null || password == null) {
+        if (userId == null || username == null) {
             throw new ExecutionRequestBuilderException();
         }
     }

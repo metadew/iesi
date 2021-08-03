@@ -2,14 +2,18 @@ package io.metadew.iesi.server.rest.connection;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
+import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoService;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,10 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 
 @RestController
 @Tag(name = "connections", description = "Everything about connections")
@@ -28,40 +30,49 @@ import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 public class ConnectionsController {
 
     private ConnectionService connectionService;
+    private ConnectionDtoService connectionDtoService;
     private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
+    private PagedResourcesAssembler<ConnectionDto> connectionDtoPagedResourcesAssembler;
 
     @Autowired
     ConnectionsController(ConnectionService connectionService,
-                          ConnectionDtoResourceAssembler connectionDtoResourceAssembler) {
-        this.connectionDtoResourceAssembler = connectionDtoResourceAssembler;
+                          ConnectionDtoService connectionDtoService,
+                          ConnectionDtoResourceAssembler connectionDtoResourceAssembler,
+                          PagedResourcesAssembler<ConnectionDto> connectionDtoPagedResourcesAssembler) {
         this.connectionService = connectionService;
+        this.connectionDtoService = connectionDtoService;
+        this.connectionDtoResourceAssembler = connectionDtoResourceAssembler;
+        this.connectionDtoPagedResourcesAssembler = connectionDtoPagedResourcesAssembler;
     }
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
-    public HalMultipleEmbeddedResource<ConnectionDto> getAll() {
-        List<Connection> connections = connectionService.getAll();
-        return new HalMultipleEmbeddedResource<>(connections.stream()
-                .filter(distinctByKey(connection -> connection.getMetadataKey().getName()))
-                .map(connection -> connectionDtoResourceAssembler.toModel(connection))
-                .collect(Collectors.toList()));
+    public PagedModel<ConnectionDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
+        List<ConnectionFilter> connectionFilters = extractConnectionFilterOptions(name);
+        Page<ConnectionDto> connectionDtoPage = connectionDtoService.getAll(pageable, connectionFilters);
+
+        if (connectionDtoPage.hasContent()) {
+            return connectionDtoPagedResourcesAssembler.toModel(connectionDtoPage, connectionDtoResourceAssembler::toModel);
+        }
+        return (PagedModel<ConnectionDto>) connectionDtoPagedResourcesAssembler.toEmptyModel(connectionDtoPage, ConnectionDto.class);
+    }
+
+
+    private List<ConnectionFilter> extractConnectionFilterOptions(String name) {
+        List<ConnectionFilter> componentFilters = new ArrayList<>();
+        if (name != null) {
+            componentFilters.add(new ConnectionFilter(ConnectionFilterOption.NAME, name, false));
+        }
+        return componentFilters;
     }
 
     @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
-    public HalMultipleEmbeddedResource<ConnectionDto> getByName(@PathVariable String name) {
-        List<Connection> connections = connectionService.getByName(name);
-        return new HalMultipleEmbeddedResource<>(connections.stream()
-                .filter(distinctByKey(connection -> connection.getMetadataKey().getName()))
-                .map(connection -> connectionDtoResourceAssembler.toModel(connection))
-                .collect(Collectors.toList()));
-    }
-
-    @GetMapping("/{name}/{environment}")
-    @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
-    public ConnectionDto get(@PathVariable String name, @PathVariable String environment) throws MetadataDoesNotExistException {
-        Connection connection = connectionService.getByNameAndEnvironment(name, environment)
-                .orElseThrow(() -> new MetadataDoesNotExistException(new ConnectionKey(name, environment)));
+    public ConnectionDto getByName(@PathVariable String name) {
+        ConnectionDto connection = connectionDtoService.getByName(name)
+                .orElseThrow(() -> new MetadataDoesNotExistException(
+                        new ConnectionKey(name, "")
+                ));
         return connectionDtoResourceAssembler.toModel(connection);
     }
 
@@ -70,7 +81,7 @@ public class ConnectionsController {
     public ResponseEntity<ConnectionDto> post(@Valid @RequestBody ConnectionDto connectionDto) {
         try {
             connectionService.createConnection(connectionDto);
-            return ResponseEntity.ok(connectionDtoResourceAssembler.toModel(connectionDto.convertToEntity()));
+            return ResponseEntity.ok(connectionDtoResourceAssembler.toModel(connectionDto));
         } catch (MetadataAlreadyExistsException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -84,20 +95,20 @@ public class ConnectionsController {
         HalMultipleEmbeddedResource<ConnectionDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         connectionService.updateConnections(connectionDtos);
         for (ConnectionDto connectionDto : connectionDtos) {
-            ConnectionDto updatedConnectionDto = connectionDtoResourceAssembler.toModel(connectionDto.convertToEntity());
+            ConnectionDto updatedConnectionDto = connectionDtoResourceAssembler.toModel(connectionDto);
             halMultipleEmbeddedResource.embedResource(updatedConnectionDto);
         }
         return halMultipleEmbeddedResource;
     }
 
-    @PutMapping("/{name}/{environment}")
+    @PutMapping("/{name}")
     @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
-    public ConnectionDto put(@PathVariable String name, @PathVariable String environment, @RequestBody ConnectionDto connectionDto) throws MetadataDoesNotExistException {
-        if (!connectionDto.getName().equals(name) || !connectionDto.getEnvironment().equals(environment)) {
+    public ConnectionDto put(@PathVariable String name, @RequestBody ConnectionDto connectionDto) throws MetadataDoesNotExistException {
+        if (!connectionDto.getName().equals(name)) {
             throw new DataBadRequestException(name);
         }
         connectionService.updateConnection(connectionDto);
-        return connectionDtoResourceAssembler.toModel(connectionDto.convertToEntity());
+        return connectionDtoResourceAssembler.toModel(connectionDto);
     }
 
     @DeleteMapping("")
@@ -113,12 +124,4 @@ public class ConnectionsController {
         connectionService.deleteByName(name);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-    @DeleteMapping("/{name}/{environment}")
-    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
-    public ResponseEntity<?> delete(@PathVariable String name, @PathVariable String environment) throws MetadataDoesNotExistException {
-        connectionService.deleteByNameAndEnvironment(name, environment);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
 }

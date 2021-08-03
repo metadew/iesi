@@ -52,13 +52,11 @@ jobs:
           command: |
             cd ~/repo/core/java/iesi-core
             mvn dependency:go-offline
-
       - run:
           name: Build, package and install the Core
           command: |
             cd ~/repo/core/java/iesi-core
             mvn clean install
-
       - run:
           name: Save test results
           command: |
@@ -67,14 +65,13 @@ jobs:
           when: always
 
       - store_artifacts:
-          path: core/java/iesi-core/target/iesi-core-0.6.1.jar
+          path: core/java/iesi-core/target/iesi-core-0.7.0.jar
 
       - run:
           name: Fetch dependencies for REST Server
           command: |
             cd ~/repo/core/java/iesi-rest-without-microservices
             mvn dependency:go-offline
-
       - save_cache:
           paths:
             - ~/.m2
@@ -87,7 +84,6 @@ jobs:
           command: |
             cd ~/repo/core/java/iesi-rest-without-microservices
             mvn clean install
-
       - run:
           name: Save test results
           command: |
@@ -99,7 +95,7 @@ jobs:
           path: ~/test-results
 
       - store_artifacts:
-          path: core/java/iesi-rest-without-microservices/target/iesi-rest-0.6.1.jar
+          path: core/java/iesi-rest-without-microservices/target/iesi-rest-0.7.0.jar
 
       - run:
           name: build assembly
@@ -109,16 +105,15 @@ jobs:
             cd ~/repo/core/java/iesi-rest-without-microservices
             mvn project-info-reports:dependencies
             cd ~/repo/core/java/iesi-core/target
-            java -cp iesi-core-0.6.1-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.6.1 
-            cd ~/sandbox/0.6.1/assembly
+            java -cp iesi-core-0.7.0-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.7.0 
+            cd ~/sandbox/0.7.0/assembly
             chmod ug+x bin/*.sh
-            zip -r iesi-dist-v0.6.1.zip ./*
-            mv iesi-dist-v0.6.1.zip ..
-            tar -czvf iesi-dist-v0.6.1.tar.gz ./* 
-            mv iesi-dist-v0.6.1.tar.gz ..
+            zip -r iesi-dist-v0.7.0.zip ./*
+            mv iesi-dist-v0.7.0.zip ..
+            tar -czvf iesi-dist-v0.7.0.tar.gz ./* 
+            mv iesi-dist-v0.7.0.tar.gz ..
+      - store_artifacts:
+          path: ~/sandbox/0.7.0/iesi-dist-v0.7.0.zip
 
       - store_artifacts:
-          path: ~/sandbox/0.6.1/iesi-dist-v0.6.1.zip
-
-      - store_artifacts:
-          path: ~/sandbox/0.6.1/iesi-dist-v0.6.1.tar.gz
+          path: ~/sandbox/0.7.0/iesi-dist-v0.7.0.tar.gz

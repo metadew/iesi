@@ -1,16 +1,15 @@
 package io.metadew.iesi.script.execution.instruction.data;
 
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.instruction.data.belgium.BelgiumNationalRegisterNumber;
-import io.metadew.iesi.script.execution.instruction.data.date.DateBetween;
-import io.metadew.iesi.script.execution.instruction.data.date.DateFormat;
-import io.metadew.iesi.script.execution.instruction.data.date.DateToday;
-import io.metadew.iesi.script.execution.instruction.data.date.DateTravel;
+import io.metadew.iesi.script.execution.instruction.data.date.*;
 import io.metadew.iesi.script.execution.instruction.data.number.NumberBetween;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonEmail;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonFirstName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonLastName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonPhoneNumber;
+import io.metadew.iesi.script.execution.instruction.data.text.TextReplace;
 import io.metadew.iesi.script.execution.instruction.data.text.TextSubstring;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeFormat;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeNow;
@@ -20,7 +19,7 @@ import java.util.HashMap;
 
 public class DataInstructionRepository {
 
-    public static HashMap<String, DataInstruction> getRepository(GenerationObjectExecution generationObjectExecution) {
+    public static HashMap<String, DataInstruction> getRepository(GenerationObjectExecution generationObjectExecution, ExecutionRuntime executionRuntime) {
         HashMap<String, DataInstruction> dataInstructions = new HashMap<>();
 
         DateBetween dateBetween = new DateBetween(generationObjectExecution);
@@ -56,6 +55,12 @@ public class DataInstructionRepository {
 
         TextSubstring textSubstring = new TextSubstring();
         dataInstructions.put(textSubstring.getKeyword(), textSubstring);
+
+        ListSize listSize = new ListSize(executionRuntime);
+        dataInstructions.put(listSize.getKeyword(), listSize);
+
+        TextReplace textReplace = new TextReplace();
+        dataInstructions.put(textReplace.getKeyword(), textReplace);
 
         return dataInstructions;
     }

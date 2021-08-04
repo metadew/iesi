@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
@@ -64,7 +65,7 @@ class EnvironmentsControllerSecurityTest {
 
     @Test
     void testGetAllNoUser() throws Exception {
-        assertThatThrownBy(() -> environmentsController.getAll())
+        assertThatThrownBy(() -> environmentsController.getAll(Pageable.unpaged()))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -96,7 +97,7 @@ class EnvironmentsControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetAllNoEnvironmentReadPrivilege() throws Exception {
-        assertThatThrownBy(() -> environmentsController.getAll())
+        assertThatThrownBy(() -> environmentsController.getAll(Pageable.unpaged()))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -104,7 +105,8 @@ class EnvironmentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"ENVIRONMENTS_READ@PUBLIC"})
     void testGetEnvironmentReadPrivilege() throws Exception {
-        environmentsController.getAll();
+        Pageable pageable = Pageable.unpaged();
+        environmentsController.getAll(pageable);
     }
 
     @Test

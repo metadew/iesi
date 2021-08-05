@@ -3,16 +3,15 @@ package io.metadew.iesi.server.rest.connection.dto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.server.rest.connection.ConnectionsController;
-import io.metadew.iesi.server.rest.environment.EnvironmentsController;
 import org.modelmapper.ModelMapper;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import java.util.stream.Stream;
 
 @Component
 public class ConnectionDtoResourceAssembler extends RepresentationModelAssemblerSupport<Connection, ConnectionDto> {
@@ -26,7 +25,29 @@ public class ConnectionDtoResourceAssembler extends RepresentationModelAssembler
 
     @Override
     public ConnectionDto toModel(Connection connection) {
-        throw new RuntimeException("Unsupported operation");
+        return new ConnectionDto(
+                connection.getMetadataKey().getName(),
+                connection.getType(),
+                connection.getDescription(),
+                toConnectionEnvironmentDto(connection.getParameters())
+        );
+    }
+
+    public Set<ConnectionEnvironmentDto> toConnectionEnvironmentDto(List<ConnectionParameter> parameters) {
+        Set<ConnectionParameterDto> connectionParameterDtos = new HashSet<>();
+        String environment = null;
+        for (ConnectionParameter connectionParameter : parameters) {
+            if (environment == null) {
+                environment = connectionParameter.getMetadataKey().getConnectionKey().getEnvironmentKey().getName();
+            }
+            connectionParameterDtos.add(new ConnectionParameterDto(connectionParameter.getName(),
+                    connectionParameter.getValue()));
+        }
+        return Stream.of(new ConnectionEnvironmentDto(environment, connectionParameterDtos)).collect(Collectors.toSet());
+    }
+
+    public List<ConnectionDto> toModel(List<Connection> connections) {
+        return connections.stream().map(this::toModel).collect(Collectors.toList());
     }
 
     public ConnectionDto convertToDto(ConnectionDto connectionDto) {

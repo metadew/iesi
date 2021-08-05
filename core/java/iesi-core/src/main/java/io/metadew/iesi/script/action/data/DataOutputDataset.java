@@ -2,6 +2,7 @@ package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
@@ -100,7 +101,7 @@ public class DataOutputDataset extends ActionTypeExecution {
 
 
     private boolean convertOnScreen(DataType onScreen) {
-        if (onScreen == null) {
+        if (onScreen == null || onScreen instanceof Null) {
             return false;
         } else if (onScreen instanceof Text) {
             return onScreen.toString().equalsIgnoreCase("y");

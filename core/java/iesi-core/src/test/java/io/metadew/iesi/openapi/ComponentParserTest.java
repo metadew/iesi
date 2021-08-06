@@ -133,7 +133,7 @@ class ComponentParserTest {
     @Test
     void createComponentWithStringVersion() {
         List<String> messages = Collections.singletonList("The version should be a number");
-        openAPI.getInfo().setVersion("1.1-SNAPSHOT");
+        openAPI.getInfo().setVersion("SNAPSHOT-1.1");
 
         SwaggerParserException exception = assertThrows(SwaggerParserException.class, () -> ComponentParser.getInstance().parse(openAPI));
         assertThat(exception.getMessages()).isEqualTo(messages);

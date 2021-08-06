@@ -1,6 +1,5 @@
 package io.metadew.iesi.openapi;
 
-import com.sun.deploy.util.StringUtils;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
@@ -40,7 +39,7 @@ public class ComponentParser implements Parser<Component> {
         String connectionName = openAPI.getInfo().getTitle();
         Long componentVersion;
         try {
-            componentVersion = Long.parseLong(Arrays.stream(StringUtils.splitString(openAPI.getInfo().getVersion(),".")).findFirst().get());
+            componentVersion = Long.parseLong(Arrays.stream(splitString(openAPI.getInfo().getVersion(),".")).findFirst().get());
         } catch (NumberFormatException numberFormatException) {
             throw new SwaggerParserException(Collections.singletonList("The version should be a number"));
         }
@@ -89,5 +88,14 @@ public class ComponentParser implements Parser<Component> {
                 componentParameters,
                 new ArrayList<>());
 
+    }
+
+    public static String[] splitString(String var0, String var1) {
+        StringTokenizer var2 = new StringTokenizer(var0, var1);
+        String[] var3 = new String[var2.countTokens()];
+        for(int var4 = 0; var4 < var3.length; ++var4) {
+            var3[var4] = var2.nextToken();
+        }
+        return var3;
     }
 }

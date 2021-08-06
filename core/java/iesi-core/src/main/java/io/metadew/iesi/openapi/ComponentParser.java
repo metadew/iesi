@@ -1,5 +1,6 @@
 package io.metadew.iesi.openapi;
 
+import com.sun.deploy.util.StringUtils;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
@@ -14,10 +15,7 @@ import io.swagger.v3.oas.models.Paths;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 
@@ -42,7 +40,7 @@ public class ComponentParser implements Parser<Component> {
         String connectionName = openAPI.getInfo().getTitle();
         Long componentVersion;
         try {
-            componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
+            componentVersion = Long.parseLong(Arrays.stream(StringUtils.splitString(openAPI.getInfo().getVersion(),".")).findFirst().get());
         } catch (NumberFormatException numberFormatException) {
             throw new SwaggerParserException(Collections.singletonList("The version should be a number"));
         }

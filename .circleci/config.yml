@@ -110,10 +110,10 @@ jobs:
             chmod ug+x bin/*.sh
             zip -r iesi-dist-v0.8.0.zip ./*
             mv iesi-dist-v0.8.0.zip ..
-            tar -czvf iesi-dist-v0.7.0.tar.gz ./* 
+            tar -czvf iesi-dist-v0.8.0.tar.gz ./* 
             mv iesi-dist-v0.8.0.tar.gz ..
       - store_artifacts:
-          path: ~/sandbox/0.8.0/iesi-dist-v0.7.0.zip
+          path: ~/sandbox/0.8.0/iesi-dist-v0.8.0.zip
 
       - store_artifacts:
-          path: ~/sandbox/0.8.0/iesi-dist-v0.7.0.tar.gz
+          path: ~/sandbox/0.8.0/iesi-dist-v0.8.0.tar.gz

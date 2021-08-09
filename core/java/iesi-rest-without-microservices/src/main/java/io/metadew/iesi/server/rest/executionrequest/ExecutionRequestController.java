@@ -71,7 +71,7 @@ public class ExecutionRequestController {
                                                   @RequestParam(required = false, name = "version") String version,
                                                   @RequestParam(required = false, name = "environment") String environment,
                                                   @RequestParam(required = false, name = "label") String labelKeyCombination,
-                                                  @RequestParam(required = false, name = "run-id") String runId ) {
+                                                  @RequestParam(required = false, name = "run-id") String runId) {
         List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination, runId);
         Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService
                 .getAll(SecurityContextHolder.getContext().getAuthentication(), pageable, executionRequestFilters);

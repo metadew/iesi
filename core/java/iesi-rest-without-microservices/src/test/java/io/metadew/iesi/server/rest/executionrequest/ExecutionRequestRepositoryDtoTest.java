@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
@@ -68,14 +67,14 @@ class ExecutionRequestRepositoryDtoTest {
         //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
     }
 
-    @AfterEach
-    void cleanup() {
-        metadataRepositoryConfiguration.clearAllTables();
-    }
-
     @AfterAll
     static void teardown() {
         //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
+    }
+
+    @AfterEach
+    void cleanup() {
+        metadataRepositoryConfiguration.clearAllTables();
     }
 
     @Test
@@ -486,7 +485,6 @@ class ExecutionRequestRepositoryDtoTest {
                         (ExecutionRequestDto) executionRequest2Map.get("executionRequestDto")
                 );
     }
-
 
 
     @Test

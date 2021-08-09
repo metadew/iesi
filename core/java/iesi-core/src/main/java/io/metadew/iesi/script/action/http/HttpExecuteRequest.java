@@ -8,6 +8,7 @@ import io.metadew.iesi.connection.http.request.HttpRequestService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.connection.http.response.HttpResponseService;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
@@ -130,7 +131,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
 
     private List<HttpHeader> convertHeaderParameters(DataType dataType) {
-        if (dataType == null) {
+        if (dataType == null || dataType instanceof Null) {
             return new ArrayList<>();
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
@@ -152,7 +153,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private List<HttpQueryParameter> convertHttpQueryParameters(DataType dataType) {
-        if (dataType == null) {
+        if (dataType == null || dataType instanceof Null) {
             return new ArrayList<>();
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
@@ -204,7 +205,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private List<String> convertExpectStatusCodes(DataType expectedStatusCodes) {
-        if (expectedStatusCodes == null) {
+        if (expectedStatusCodes == null || expectedStatusCodes instanceof Null) {
             return null;
         }
         if (expectedStatusCodes instanceof Text) {
@@ -234,7 +235,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private ProxyConnection convertProxyName(DataType connectionName) {
-        if (connectionName == null) {
+        if (connectionName == null || connectionName instanceof Null) {
             return null;
         } else if (connectionName instanceof Text) {
             return ConnectionConfiguration.getInstance()
@@ -260,7 +261,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private InMemoryDatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
-        if (outputDatasetReferenceName == null) {
+        if (outputDatasetReferenceName == null || outputDatasetReferenceName instanceof Null) {
             return null;
         } else if (outputDatasetReferenceName instanceof Text) {
             return getExecutionControl().getExecutionRuntime()

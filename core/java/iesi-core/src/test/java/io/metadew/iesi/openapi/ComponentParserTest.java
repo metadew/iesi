@@ -7,9 +7,7 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,5 +135,53 @@ class ComponentParserTest {
 
         SwaggerParserException exception = assertThrows(SwaggerParserException.class, () -> ComponentParser.getInstance().parse(openAPI));
         assertThat(exception.getMessages()).isEqualTo(messages);
+    }
+
+    @Test
+    void createComponentWithLongVersion() {
+        Paths paths = new Paths();
+        PathItem pathItem = new PathItem();
+        pathItem.setGet(new Operation()
+                .description(null)
+                .operationId("operationId"));
+        paths.addPathItem("name", pathItem);
+
+        openAPI.setPaths(paths);
+        openAPI.getInfo().setVersion("1");
+
+        List<Component> components = ComponentParser.getInstance().parse(openAPI);
+        assertThat(components.get(0).getVersion().getMetadataKey().getComponentKey().getVersionNumber()).isEqualTo(1);
+    }
+
+    @Test
+    void createComponentWithSemanticVersion() {
+        Paths paths = new Paths();
+        PathItem pathItem = new PathItem();
+        pathItem.setGet(new Operation()
+                .description(null)
+                .operationId("operationId"));
+        paths.addPathItem("name", pathItem);
+
+        openAPI.setPaths(paths);
+        openAPI.getInfo().setVersion("11.2.3");
+
+        List<Component> components = ComponentParser.getInstance().parse(openAPI);
+        assertThat(components.get(0).getVersion().getMetadataKey().getComponentKey().getVersionNumber()).isEqualTo(11);
+    }
+
+    @Test
+    void testComponentWithSemanticVersion() {
+        Paths paths = new Paths();
+        PathItem pathItem = new PathItem();
+        pathItem.setGet(new Operation()
+                .description(null)
+                .operationId("operationId"));
+        paths.addPathItem("name", pathItem);
+
+        openAPI.setPaths(paths);
+        openAPI.getInfo().setVersion("1.2.3");
+
+        List<Component> components = ComponentParser.getInstance().parse(openAPI);
+        assertThat(components.get(0).getVersion().getMetadataKey().getComponentKey().getVersionNumber()).isNotEqualTo(1.2);
     }
 }

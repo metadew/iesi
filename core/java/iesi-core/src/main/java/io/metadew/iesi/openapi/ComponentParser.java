@@ -14,7 +14,10 @@ import io.swagger.v3.oas.models.Paths;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 
@@ -39,7 +42,7 @@ public class ComponentParser implements Parser<Component> {
         String connectionName = openAPI.getInfo().getTitle();
         Long componentVersion;
         try {
-            componentVersion = Long.parseLong(Arrays.stream(splitString(openAPI.getInfo().getVersion(),".")).findFirst().get());
+            componentVersion = Long.parseLong(openAPI.getInfo().getVersion().split("\\.")[0]);
         } catch (NumberFormatException numberFormatException) {
             throw new SwaggerParserException(Collections.singletonList("The version should be a number"));
         }
@@ -88,14 +91,5 @@ public class ComponentParser implements Parser<Component> {
                 componentParameters,
                 new ArrayList<>());
 
-    }
-
-    public static String[] splitString(String var0, String var1) {
-        StringTokenizer var2 = new StringTokenizer(var0, var1);
-        String[] var3 = new String[var2.countTokens()];
-        for(int var4 = 0; var4 < var3.length; ++var4) {
-            var3[var4] = var2.nextToken();
-        }
-        return var3;
     }
 }

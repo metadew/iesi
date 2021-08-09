@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.HostConnectionTools;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -109,7 +110,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
 
     private String convertSetRuntimeVariablesMode(DataType setRuntimeVariablesMode) {
         // TODO: make optional
-        if (setRuntimeVariablesMode == null) {
+        if (setRuntimeVariablesMode == null || setRuntimeVariablesMode instanceof Null) {
             return "";
         }
         if (setRuntimeVariablesMode instanceof Text) {
@@ -122,7 +123,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
     }
 
     private String convertConnectionName(DataType connectionName) {
-        if (connectionName == null) {
+        if (connectionName == null || connectionName instanceof Null) {
             return "localhost";
         } else if (connectionName instanceof Text) {
             return connectionName.toString();
@@ -135,7 +136,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
 
     private String convertSetRuntimeVariablesPrefix(DataType setRuntimeVariablesPrefix) {
         // TODO: make optional
-        if (setRuntimeVariablesPrefix == null) {
+        if (setRuntimeVariablesPrefix == null || setRuntimeVariablesPrefix instanceof Null) {
             return "";
         }
         if (setRuntimeVariablesPrefix instanceof Text) {
@@ -148,7 +149,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
     }
 
     private boolean convertSetRuntimeVariables(DataType setRuntimeVariables) {
-        if (setRuntimeVariables == null) {
+        if (setRuntimeVariables == null || setRuntimeVariables instanceof Null) {
             return false;
         }
         if (setRuntimeVariables instanceof Text) {

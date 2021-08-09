@@ -2,6 +2,7 @@ package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
@@ -127,7 +128,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     private String convertDatasetType(DataType datasetType) {
-        if (datasetType == null) {
+        if (datasetType == null || datasetType instanceof Null) {
             return "";
         }
         if (!(datasetType instanceof Text)) {

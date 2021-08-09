@@ -89,7 +89,7 @@ class ExecutionRequestsControllerSecurityTest {
     @Test
     void testGetAllNoUser() {
         Pageable pageable = Pageable.unpaged();
-        assertThatThrownBy(() -> executionRequestController.getAll(pageable, null, null, null, null))
+        assertThatThrownBy(() -> executionRequestController.getAll(pageable, null, null, null, null, null))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -122,7 +122,7 @@ class ExecutionRequestsControllerSecurityTest {
                     "DATASETS_WRITE@PUBLIC"})
     void testGetAllNoExecutionRequestReadPrivilege() {
         Pageable pageable = Pageable.unpaged();
-        assertThatThrownBy(() -> executionRequestController.getAll(pageable, null, null, null, null))
+        assertThatThrownBy(() -> executionRequestController.getAll(pageable, null, null, null, null, null))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -133,7 +133,7 @@ class ExecutionRequestsControllerSecurityTest {
         when(executionRequestService
                 .getAll(any(), eq(Pageable.unpaged()), eq(new ArrayList<>())))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
-        executionRequestController.getAll(Pageable.unpaged(), null, null, null, null);
+        executionRequestController.getAll(Pageable.unpaged(), null, null, null, null, null);
     }
 
     @Test

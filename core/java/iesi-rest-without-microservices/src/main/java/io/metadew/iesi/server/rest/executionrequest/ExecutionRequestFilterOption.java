@@ -6,7 +6,8 @@ public enum ExecutionRequestFilterOption {
     VERSION("version"),
     LABEL("label"),
     ENVIRONMENT("environment"),
-    ID("id");
+    ID("id"),
+    RUN_ID("run-id");
 
     private final String keyword;
 

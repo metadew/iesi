@@ -19,13 +19,11 @@ public class NumberFormat implements DataInstruction {
             try {
                 long number = Long.parseLong(inputParameter.group(NUMBER));
                 String format = inputParameter.group(FORMAT);
-                String output = String.format(format, number);
-                return output;
+                return String.format(format, number);
             } catch (NumberFormatException e) {
                 throw new NumberFormatException("String cannot be converted to number");
             }
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
         }
     }

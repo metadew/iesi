@@ -5,6 +5,7 @@ import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.instruction.data.belgium.BelgiumNationalRegisterNumber;
 import io.metadew.iesi.script.execution.instruction.data.date.*;
 import io.metadew.iesi.script.execution.instruction.data.number.NumberBetween;
+import io.metadew.iesi.script.execution.instruction.data.number.NumberFormat;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonEmail;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonFirstName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonLastName;
@@ -61,6 +62,9 @@ public class DataInstructionRepository {
 
         TextReplace textReplace = new TextReplace();
         dataInstructions.put(textReplace.getKeyword(), textReplace);
+
+        NumberFormat numberFormat = new NumberFormat();
+        dataInstructions.put(numberFormat.getKeyword(), numberFormat);
 
         return dataInstructions;
     }

@@ -28,8 +28,7 @@ public class TransformResultDtoResourceAssembler extends RepresentationModelAsse
 
     private TransformResultDto convertToDto(TransformResult transformResult) {
         return new TransformResultDto(
-                transformResult.getConnections().stream()
-                        .map(connection -> connectionDtoResourceAssembler.toModel(connection)).collect(Collectors.toList()),
+                connectionDtoResourceAssembler.toModel(transformResult.getConnections()),
                 transformResult.getComponents().stream()
                         .map(component -> componentDtoResourceAssembler.toModel(component)).collect(Collectors.toList()),
                 transformResult.getTitle(),

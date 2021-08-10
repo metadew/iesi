@@ -449,7 +449,8 @@ class ExecutionRequestRepositoryDtoTest {
         scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
         scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
 
-        UUID runId = UUID.randomUUID();
+        String runId1 = "bf8d0482-0372-42c5-ac2a-6f0f93aeaa69";
+        String runId2 = "cf5n1298-9999-42c5-ac2a-6f0f93aeaa69";
 
         ScriptExecution scriptExecution1 = ScriptExecution.builder()
                 .scriptExecutionKey(new ScriptExecutionKey(UUID.randomUUID().toString()))
@@ -457,7 +458,7 @@ class ExecutionRequestRepositoryDtoTest {
                 .startTimestamp(LocalDateTime.now())
                 .endTimestamp(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS))
                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(executionRequest1Map.get("scriptExecutionRequest10UUID").toString()))
-                .runId(runId.toString())
+                .runId(runId1)
                 .build();
         ScriptExecution scriptExecution2 = ScriptExecution.builder()
                 .scriptExecutionKey(new ScriptExecutionKey(UUID.randomUUID().toString()))
@@ -465,21 +466,21 @@ class ExecutionRequestRepositoryDtoTest {
                 .startTimestamp(LocalDateTime.now())
                 .endTimestamp(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS))
                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(executionRequest2Map.get("scriptExecutionRequest20UUID").toString()))
-                .runId(runId.toString())
+                .runId(runId2)
                 .build();
         scriptExecutionConfiguration.insert(scriptExecution1);
         scriptExecutionConfiguration.insert(scriptExecution2);
 
         ExecutionRequestDto executionRequestDto1 = (ExecutionRequestDto) executionRequest1Map.get("executionRequestDto");
-        executionRequestDto1.getScriptExecutionRequests().iterator().next().setRunId(runId.toString());
+        executionRequestDto1.getScriptExecutionRequests().iterator().next().setRunId(runId1);
         executionRequestDto1.getScriptExecutionRequests().iterator().next().setRunStatus(ScriptRunStatus.RUNNING);
 
         ExecutionRequestDto executionRequestDto2 = (ExecutionRequestDto) executionRequest2Map.get("executionRequestDto");
-        executionRequestDto2.getScriptExecutionRequests().iterator().next().setRunId(runId.toString());
+        executionRequestDto2.getScriptExecutionRequests().iterator().next().setRunId(runId2);
         executionRequestDto2.getScriptExecutionRequests().iterator().next().setRunStatus(ScriptRunStatus.RUNNING);
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2),
-                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, runId.toString(), false)).collect(Collectors.toList())))
+                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, "42c5-ac2a-6f0f93aeaa69", false)).collect(Collectors.toList())))
                 .containsOnly(
                         (ExecutionRequestDto) executionRequest1Map.get("executionRequestDto"),
                         (ExecutionRequestDto) executionRequest2Map.get("executionRequestDto")

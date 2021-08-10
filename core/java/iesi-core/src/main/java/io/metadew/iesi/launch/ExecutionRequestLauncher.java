@@ -30,7 +30,7 @@ import java.util.UUID;
  *
  * @author peter.billen
  */
-public class ScriptLauncher {
+public class ExecutionRequestLauncher {
 
     public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException, IOException {
         ThreadContext.clearAll();
@@ -187,59 +187,23 @@ public class ScriptLauncher {
         System.out.println("script.launcher.start");
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
+        // TODO: listener of the REST server will pick this up
+        // should do a API call to the REST server
         ExecutionRequestConfiguration.getInstance().insert(executionRequest);
 
-        if (serverMode.equalsIgnoreCase("off")) {
-            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
-            ExecutionRequestConfiguration.getInstance().update(executionRequest);
-            ExecutionRequestExecutorService.getInstance().execute(executionRequest);
-        } else if (serverMode.equalsIgnoreCase("standalone")) {
-            System.out.println("RequestID=" + executionRequest.getMetadataKey().getId());
-        } else {
-            throw new RuntimeException("unknown setting for " + Configuration.getInstance().getMandatoryProperty("iesi.server.mode"));
-        }
+//        if (serverMode.equalsIgnoreCase("off")) {
+//            executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+//            ExecutionRequestConfiguration.getInstance().update(executionRequest);
+//            ExecutionRequestExecutorService.getInstance().execute(executionRequest);
+//        } else if (serverMode.equalsIgnoreCase("standalone")) {
+        System.out.println("RequestID=" + executionRequest.getMetadataKey().getId());
+        System.out.println("ScriptExecutionRequestID=" + executionRequest.getScriptExecutionRequests().get(0).getMetadataKey().getId());
+//        } else {
+//            throw new RuntimeException("unknown setting for " + Configuration.getInstance().getMandatoryProperty("iesi.server.mode"));
+//        }
 
         FrameworkInstance.getInstance().shutdown();
     }
 
-//    // TODO: move to service, see fwk execute script
-//    private static Map<String, String> parseParameterFiles(String files) {
-//        Map<String, String> parameters = new HashMap<>();
-//        String[] parts = files.split(",");
-//        for (String paremeterFile : parts) {
-//            parameters.putAll(parseParameterFile(paremeterFile));
-//        }
-//        return parameters;
-//    }
-//
-//    private static Map<String, String> parseParameterFile(String file) {
-//        Map<String, String> parameters = new HashMap<>();
-//        try {
-//            BufferedReader br = new BufferedReader(new FileReader(file));
-//
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                int delim = line.indexOf("=");
-//                if (delim > 0) {
-//                    parameters.put(line.substring(0, delim), line.substring(delim + 1));
-//                }
-//            }
-//            br.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return parameters;
-//    }
-//
-//    private static Map<String, String> parseParameterRepresentation(String parametersRepresentation) {
-//        Map<String, String> parameters = new HashMap<>();
-//        for (String parameterCombination : parametersRepresentation.split(",")) {
-//            String[] parameter = parameterCombination.split("=");
-//            if (parameter.length == 2) {
-//                parameters.put(parameter[0], parameter[1]);
-//            }
-//        }
-//        return parameters;
-//    }
 
 }

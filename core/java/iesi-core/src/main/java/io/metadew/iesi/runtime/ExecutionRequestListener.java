@@ -14,6 +14,8 @@ import java.util.concurrent.*;
 
 @Log4j2
 public class ExecutionRequestListener implements Runnable {
+    //TODO: move to iesi-rest
+    // Scheduled task every second?
 
     private Queue<ExecutionRequest> executionRequestsQueue;
     private final ExecutorService executor;

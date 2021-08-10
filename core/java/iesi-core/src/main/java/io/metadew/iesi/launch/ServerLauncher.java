@@ -13,6 +13,7 @@ import java.io.IOException;
 public class ServerLauncher {
 
     public static void main(String[] args) throws ParseException, IOException {
+        // TODO: move "listener" logic to REST server
         ThreadContext.clearAll();
         Options options = new Options()
                 .addOption(Option.builder("help")

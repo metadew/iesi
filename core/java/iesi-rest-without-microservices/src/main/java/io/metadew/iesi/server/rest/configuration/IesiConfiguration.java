@@ -34,14 +34,25 @@ import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
 import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
+@Log4j2
+@EnableAsync
 public class IesiConfiguration {
 
     @Bean
@@ -231,4 +242,22 @@ public class IesiConfiguration {
     public ScriptDesignAuditConfiguration scriptDesignAuditConfiguration(){
         return ScriptDesignAuditConfiguration.getInstance();
     }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ThreadPoolTaskExecutor executionRequestTaskExecutor() {
+        int threadSize = io.metadew.iesi.common.configuration.Configuration.getInstance()
+                .getProperty("iesi.server.threads.size")
+                .map(Integer.class::cast)
+                .orElse(4);
+        log.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
+
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(threadSize);
+        executor.setMaxPoolSize(threadSize);
+        executor.setThreadNamePrefix("executionRequestTaskExecutor-");
+        executor.initialize();
+        return executor;
+    }
+
 }

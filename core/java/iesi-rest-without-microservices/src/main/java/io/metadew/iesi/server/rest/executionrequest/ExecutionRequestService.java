@@ -2,9 +2,9 @@ package io.metadew.iesi.server.rest.executionrequest;
 
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.executor.ExecutionRequestExecutorService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -18,11 +18,12 @@ import java.util.UUID;
 public class ExecutionRequestService implements IExecutionRequestService {
 
     private final ExecutionRequestConfiguration executionRequestConfiguration;
-
+    private final ExecutionRequestExecutorService executionRequestExecutorService;
     private final ExecutionRequestDtoRepository executionRequestDtoRepository;
 
-    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration, ExecutionRequestDtoRepository executionRequestDtoRepository) {
+    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration, ExecutionRequestExecutorService executionRequestExecutorService, ExecutionRequestDtoRepository executionRequestDtoRepository) {
         this.executionRequestConfiguration = executionRequestConfiguration;
+        this.executionRequestExecutorService = executionRequestExecutorService;
         this.executionRequestDtoRepository = executionRequestDtoRepository;
     }
 
@@ -36,6 +37,7 @@ public class ExecutionRequestService implements IExecutionRequestService {
 
     public ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest) {
         executionRequestConfiguration.insert(executionRequest);
+        executionRequestExecutorService.submit(executionRequest);
         return executionRequest;
     }
 

@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -487,6 +487,67 @@ class ExecutionRequestRepositoryDtoTest {
                 );
     }
 
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {
+                    "EXECUTION_REQUESTS_READ@PUBLIC"
+            })
+    void getAllFilteredByRunIdWithoutScriptExecution() {
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+
+        Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
+                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+
+        executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
+        executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
+        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
+        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+
+        assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2),
+                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, "42c5-ac2a-6f0f93aeaa69", false)).collect(Collectors.toList())))
+                .isEmpty();
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {
+                    "EXECUTION_REQUESTS_READ@PUBLIC"
+            })
+    void getAllFilteredByRunIdWithUnknownScriptExecution() {
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+
+        Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
+                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+
+        executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
+        executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
+        scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
+        scriptConfiguration.insert((Script) executionRequest2Map.get("script"));
+
+        String runId = UUID.randomUUID().toString();
+        ScriptExecution scriptExecution1 = ScriptExecution.builder()
+                .scriptExecutionKey(new ScriptExecutionKey(UUID.randomUUID().toString()))
+                .scriptRunStatus(ScriptRunStatus.RUNNING)
+                .startTimestamp(LocalDateTime.now())
+                .endTimestamp(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS))
+                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(executionRequest1Map.get("scriptExecutionRequest10UUID").toString()))
+                .runId(runId)
+                .build();
+        scriptExecutionConfiguration.insert(scriptExecution1);
+
+        ExecutionRequestDto executionRequestDto1 = (ExecutionRequestDto) executionRequest1Map.get("executionRequestDto");
+        executionRequestDto1.getScriptExecutionRequests().iterator().next().setRunId(runId);
+        executionRequestDto1.getScriptExecutionRequests().iterator().next().setRunStatus(ScriptRunStatus.RUNNING);
+
+        assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2),
+                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, "42c5-ac2a-6f0f93aeaa69", false)).collect(Collectors.toList())))
+                .isEmpty();
+    }
+
 
     @Test
     @WithIesiUser(username = "spring",

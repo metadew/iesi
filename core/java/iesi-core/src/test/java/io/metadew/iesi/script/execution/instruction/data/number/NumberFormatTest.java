@@ -49,4 +49,16 @@ class NumberFormatTest {
         assertThrows(IllegalArgumentException.class, () -> numberFormat.generateOutput("25a, |%d|"));
     }
 
+    @Test
+    void numberFormatWithoutMod() {
+        NumberFormat numberFormat = new NumberFormat();
+        assertEquals("00000000000000000093", numberFormat.generateOutput("\"93\", \"%020d\""));
+    }
+
+    @Test
+    void numberFormatWithoutDoubleQuotes() {
+        NumberFormat numberFormat = new NumberFormat();
+        assertEquals("00000000000000000093", numberFormat.generateOutput("93, \"%020d\""));
+    }
+
 }

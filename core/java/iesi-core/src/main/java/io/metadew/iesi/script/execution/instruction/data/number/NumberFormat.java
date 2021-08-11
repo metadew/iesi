@@ -10,7 +10,7 @@ public class NumberFormat implements DataInstruction {
     private final static String NUMBER = "number";
     private final static String FORMAT = "format";
 
-    private final static Pattern PATTERN = Pattern.compile("\\s*\"(?<" + NUMBER + ">.+)\"\\s*,\\s*\"(?<" + FORMAT + ">.+)\"");
+    private final static Pattern PATTERN = Pattern.compile("\\s*\"?(?<" + NUMBER + ">.+?)\"?\\s*,\\s*\"(?<" + FORMAT + ">.+)\"");
 
     @Override
     public String generateOutput(String parameters) {

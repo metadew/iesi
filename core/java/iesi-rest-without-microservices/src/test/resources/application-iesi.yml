@@ -10,3 +10,8 @@ iesi:
 #    mode: standalone
 #    threads:
 #      timeout: 30
+  workers:
+    - path: '.'
+  master:
+    path: '.'
+    endpoint: ''

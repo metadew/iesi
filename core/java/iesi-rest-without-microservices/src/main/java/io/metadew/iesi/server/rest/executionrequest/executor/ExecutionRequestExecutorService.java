@@ -45,15 +45,11 @@ public class ExecutionRequestExecutorService {
         oldExecutionRequests.forEach(this::execute);
     }
 
-    public void submit(ExecutionRequest executionRequest) {
-        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
-        ExecutionRequestConfiguration.getInstance().update(executionRequest);
-        execute(executionRequest);
-    }
-
     @SuppressWarnings("unchecked")
     @Async("executionRequestTaskExecutor")
     public CompletableFuture<Boolean> execute(ExecutionRequest executionRequest) {
+        executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
+        ExecutionRequestConfiguration.getInstance().update(executionRequest);
         try {
             ExecutionRequestExecutor executionRequestExecutor = executionRequestExecutorMap.get(executionRequest.getClass());
             if (executionRequestExecutor == null) {

@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.configuration;
 
 import io.metadew.iesi.common.FrameworkInstance;
+import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetService;
@@ -44,15 +45,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @Log4j2
-@EnableAsync
 public class IesiConfiguration {
 
     @Bean
@@ -245,6 +240,12 @@ public class IesiConfiguration {
 
     @Bean
     @DependsOn("frameworkInstance")
+    public GuardConfiguration guardConfiguration(){
+        return GuardConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
     public ThreadPoolTaskExecutor executionRequestTaskExecutor() {
         int threadSize = io.metadew.iesi.common.configuration.Configuration.getInstance()
                 .getProperty("iesi.server.threads.size")
@@ -260,4 +261,9 @@ public class IesiConfiguration {
         return executor;
     }
 
+    @Bean("iesiProperties")
+    @DependsOn("frameworkInstance")
+    public io.metadew.iesi.common.configuration.Configuration iesiProperties() {
+        return io.metadew.iesi.common.configuration.Configuration.getInstance();
+    }
 }

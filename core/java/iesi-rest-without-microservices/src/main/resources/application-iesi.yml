@@ -15,3 +15,8 @@ iesi:
     jwt:
       secret: secret
       expiry-date: 10
+  workers:
+    - path: '.'
+  master:
+    path: '.'
+    endpoint: ''

@@ -26,6 +26,7 @@ public class NonAuthenticatedExecutionRequestExecutor implements ExecutionReques
 
     @Override
     public void execute(NonAuthenticatedExecutionRequest executionRequest) {
+        // TODO: extract common logic with AuthenticatedExecutionRequestExecutor
         executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.ACCEPTED);
         executionRequestConfiguration.update(executionRequest);
 

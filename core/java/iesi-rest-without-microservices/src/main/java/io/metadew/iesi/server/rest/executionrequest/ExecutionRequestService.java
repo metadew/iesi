@@ -37,7 +37,7 @@ public class ExecutionRequestService implements IExecutionRequestService {
 
     public ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest) {
         executionRequestConfiguration.insert(executionRequest);
-        executionRequestExecutorService.submit(executionRequest);
+        executionRequestExecutorService.execute(executionRequest);
         return executionRequest;
     }
 

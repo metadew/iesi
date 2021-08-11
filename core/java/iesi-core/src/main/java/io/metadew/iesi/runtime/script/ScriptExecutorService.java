@@ -3,6 +3,7 @@ package io.metadew.iesi.runtime.script;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,6 +11,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class ScriptExecutorService {
 
     private Map<Class<? extends ScriptExecutionRequest>, ScriptExecutor> scriptExecutorMap;
@@ -35,6 +37,7 @@ public class ScriptExecutorService {
 
     @SuppressWarnings("unchecked")
     public void execute(ScriptExecutionRequest scriptExecutionRequest) {
+        log.info("Executing " + scriptExecutionRequest);
         ScriptExecutor scriptExecutor = scriptExecutorMap.get(scriptExecutionRequest.getClass());
 
         scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.SUBMITTED);

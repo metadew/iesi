@@ -108,6 +108,7 @@ public class AuthenticatedExecutionRequestExecutor implements ExecutionRequestEx
         StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
         Executors.newSingleThreadExecutor().submit(streamGobbler);
         int exitCode = process.waitFor();
+        Thread.sleep(60*1000L);
         assert exitCode == 0;
         log.info("Executed " + scriptExecutionRequest.toString());
     }

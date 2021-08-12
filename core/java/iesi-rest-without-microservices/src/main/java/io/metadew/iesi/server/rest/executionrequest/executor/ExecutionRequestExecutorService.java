@@ -21,14 +21,14 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 @Service
 public class ExecutionRequestExecutorService {
-    private final Map<Class<? extends ScriptExecutionRequest>, ExecutionRequestExecutor> executionRequestExecutorMap = new HashMap<>();
+    private final Map<Class<? extends ScriptExecutionRequest>, IExecutionRequestExecutor> executionRequestExecutorMap = new HashMap<>();
     private final ExecutionRequestConfiguration executionRequestConfiguration;
     private final ThreadPoolTaskExecutor executor;
 
-    private final List<ExecutionRequestExecutor> executionRequestExecutors;
+    private final List<IExecutionRequestExecutor> executionRequestExecutors;
 
     public ExecutionRequestExecutorService(ExecutionRequestConfiguration executionRequestConfiguration,
-                                           ThreadPoolTaskExecutor executor, List<ExecutionRequestExecutor> executionRequestExecutors) {
+                                           ThreadPoolTaskExecutor executor, List<IExecutionRequestExecutor> executionRequestExecutors) {
         this.executionRequestConfiguration = executionRequestConfiguration;
         this.executor = executor;
         this.executionRequestExecutors = executionRequestExecutors;
@@ -50,7 +50,7 @@ public class ExecutionRequestExecutorService {
         executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
         ExecutionRequestConfiguration.getInstance().update(executionRequest);
         try {
-            ExecutionRequestExecutor executionRequestExecutor = executionRequestExecutorMap.get(executionRequest.getClass());
+            IExecutionRequestExecutor executionRequestExecutor = executionRequestExecutorMap.get(executionRequest.getClass());
             if (executionRequestExecutor == null) {
                 log.error(MessageFormat.format("No Executor found for request type {0}", executionRequest.getClass()));
                 executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.DECLINED);

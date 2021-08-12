@@ -93,6 +93,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -112,7 +114,10 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.LABEL)) {
                         return " execution_request_labels.NAME = '" + executionRequestFilter.getValue().split(":")[0] +
                                 "' and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
-                    } else {
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.RUN_ID)) {
+                        return " script_executions.RUN_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    }
+                    else {
                         return null;
                     }
                 }
@@ -175,6 +180,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");

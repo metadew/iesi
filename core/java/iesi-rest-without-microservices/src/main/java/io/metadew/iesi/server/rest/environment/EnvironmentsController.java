@@ -55,7 +55,6 @@ public class EnvironmentsController {
         this.environmentDtoPagedResourcesAssembler = environmentDtoPagedResourcesAssembler;
     }
 
-
     @GetMapping("")
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
     public PagedModel<EnvironmentDto> getAll(Pageable pageable) {
@@ -64,6 +63,16 @@ public class EnvironmentsController {
         if (environmentDtoPage.hasContent())
             return environmentDtoPagedResourcesAssembler.toModel(environmentDtoPage, environmentDtoResourceAssembler::toModel);
         return (PagedModel<EnvironmentDto>) environmentDtoPagedResourcesAssembler.toEmptyModel(environmentDtoPage, EnvironmentDto.class);
+    }
+
+    @GetMapping("/list")
+    @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
+    public HalMultipleEmbeddedResource<EnvironmentDto> getAll() {
+        List<Environment> environments = environmentService.getAll();
+        return new HalMultipleEmbeddedResource<>(
+                environments.stream().filter(distinctByKey(Environment::getName))
+                        .map(environment -> environmentDtoResourceAssembler.toModel(environment))
+                        .collect(Collectors.toList()));
     }
 
     @GetMapping("/{name}")

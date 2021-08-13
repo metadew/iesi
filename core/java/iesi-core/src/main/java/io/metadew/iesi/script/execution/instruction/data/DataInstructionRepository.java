@@ -10,6 +10,7 @@ import io.metadew.iesi.script.execution.instruction.data.person.PersonEmail;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonFirstName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonLastName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonPhoneNumber;
+import io.metadew.iesi.script.execution.instruction.data.text.RandomUUID;
 import io.metadew.iesi.script.execution.instruction.data.text.TextReplace;
 import io.metadew.iesi.script.execution.instruction.data.text.TextSubstring;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeFormat;
@@ -65,6 +66,9 @@ public class DataInstructionRepository {
 
         NumberFormat numberFormat = new NumberFormat();
         dataInstructions.put(numberFormat.getKeyword(), numberFormat);
+      
+        RandomUUID uuid = new RandomUUID();
+        dataInstructions.put(uuid.getKeyword(), uuid);
 
         return dataInstructions;
     }

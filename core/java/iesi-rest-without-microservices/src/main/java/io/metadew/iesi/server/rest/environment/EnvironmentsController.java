@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -68,11 +68,15 @@ public class EnvironmentsController {
     @GetMapping("/list")
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
     public HalMultipleEmbeddedResource<EnvironmentDto> getAll() {
-        List<Environment> environments = environmentService.getAll();
-        return new HalMultipleEmbeddedResource<>(
-                environments.stream().filter(distinctByKey(Environment::getName))
-                        .map(environment -> environmentDtoResourceAssembler.toModel(environment))
-                        .collect(Collectors.toList()));
+        List<EnvironmentDto> environmentDtos = environmentDtoService.getAll();
+        HalMultipleEmbeddedResource<EnvironmentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+        for (EnvironmentDto environmentDto : environmentDtos) {
+            halMultipleEmbeddedResource.embedResource(environmentDto);
+            Link selfLink = linkTo(methodOn(EnvironmentsController.class).getByName(environmentDto.getName()))
+                    .withSelfRel();
+            environmentDto.add(selfLink);
+        }
+        return halMultipleEmbeddedResource;
     }
 
     @GetMapping("/{name}")

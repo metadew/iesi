@@ -65,6 +65,23 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
         }
     }
 
+    @Override
+    public List<EnvironmentDto> getAll() {
+        try {
+            Map<String, EnvironmentDtoBuilder> environmentDtoBuilders = new LinkedHashMap<>();
+            String query = getFetchAllQuery(Pageable.unpaged());
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()){
+                mapRow(cachedRowSet, environmentDtoBuilders);
+            }
+            return environmentDtoBuilders.values().stream()
+                    .map(EnvironmentDtoBuilder::build)
+                    .collect(Collectors.toList());
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     private long getRowSize() throws SQLException {
         String query = "select count(*) as row_count from (select distinct environments.ENV_NM " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " + ");";

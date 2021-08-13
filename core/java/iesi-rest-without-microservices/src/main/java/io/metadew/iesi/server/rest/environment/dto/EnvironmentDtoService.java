@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EnvironmentDtoService implements IEnvironmentDtoService{
 
@@ -18,5 +20,10 @@ public class EnvironmentDtoService implements IEnvironmentDtoService{
     @Override
     public Page<EnvironmentDto> getAll(Pageable pageable) {
         return environmentDtoRepository.getAll(pageable);
+    }
+
+    @Override
+    public List<EnvironmentDto> getAll() {
+        return environmentDtoRepository.getAll();
     }
 }

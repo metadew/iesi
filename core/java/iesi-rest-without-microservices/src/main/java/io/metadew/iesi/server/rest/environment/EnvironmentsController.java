@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -55,7 +55,6 @@ public class EnvironmentsController {
         this.environmentDtoPagedResourcesAssembler = environmentDtoPagedResourcesAssembler;
     }
 
-
     @GetMapping("")
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
     public PagedModel<EnvironmentDto> getAll(Pageable pageable) {
@@ -64,6 +63,21 @@ public class EnvironmentsController {
         if (environmentDtoPage.hasContent())
             return environmentDtoPagedResourcesAssembler.toModel(environmentDtoPage, environmentDtoResourceAssembler::toModel);
         return (PagedModel<EnvironmentDto>) environmentDtoPagedResourcesAssembler.toEmptyModel(environmentDtoPage, EnvironmentDto.class);
+    }
+
+    @GetMapping("/list")
+    @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
+    public HalMultipleEmbeddedResource<EnvironmentDto> getAll() {
+        Page<EnvironmentDto> environmentDtoPage = environmentDtoService.getAll(Pageable.unpaged());
+        List<EnvironmentDto> environmentDtos = environmentDtoPage.getContent();
+        HalMultipleEmbeddedResource<EnvironmentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+        for (EnvironmentDto environmentDto : environmentDtos) {
+            halMultipleEmbeddedResource.embedResource(environmentDto);
+            Link selfLink = linkTo(methodOn(EnvironmentsController.class).getByName(environmentDto.getName()))
+                    .withSelfRel();
+            environmentDto.add(selfLink);
+        }
+        return halMultipleEmbeddedResource;
     }
 
     @GetMapping("/{name}")

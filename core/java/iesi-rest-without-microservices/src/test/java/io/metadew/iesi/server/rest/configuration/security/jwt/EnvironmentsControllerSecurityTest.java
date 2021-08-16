@@ -65,7 +65,7 @@ class EnvironmentsControllerSecurityTest {
 
     @Test
     void testGetAllNoUser() throws Exception {
-        assertThatThrownBy(() -> environmentsController.getAll(Pageable.unpaged()))
+        assertThatThrownBy(() -> environmentsController.getAll())
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -105,8 +105,7 @@ class EnvironmentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"ENVIRONMENTS_READ@PUBLIC"})
     void testGetEnvironmentReadPrivilege() throws Exception {
-        Pageable pageable = Pageable.unpaged();
-        environmentsController.getAll(pageable);
+        environmentsController.getAll();
     }
 
     @Test

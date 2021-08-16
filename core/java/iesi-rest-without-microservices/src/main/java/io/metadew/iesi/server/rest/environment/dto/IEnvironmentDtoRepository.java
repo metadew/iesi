@@ -8,6 +8,4 @@ import java.util.List;
 public interface IEnvironmentDtoRepository {
 
     Page<EnvironmentDto> getAll(Pageable pageable);
-
-    List<EnvironmentDto> getAll();
 }

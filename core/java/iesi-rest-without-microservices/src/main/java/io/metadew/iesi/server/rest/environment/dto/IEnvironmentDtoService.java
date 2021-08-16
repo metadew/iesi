@@ -7,7 +7,4 @@ import java.util.List;
 
 public interface IEnvironmentDtoService {
     Page<EnvironmentDto> getAll(Pageable pageable);
-
-    List<EnvironmentDto> getAll();
-
 }

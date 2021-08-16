@@ -22,8 +22,4 @@ public class EnvironmentDtoService implements IEnvironmentDtoService{
         return environmentDtoRepository.getAll(pageable);
     }
 
-    @Override
-    public List<EnvironmentDto> getAll() {
-        return environmentDtoRepository.getAll();
-    }
 }

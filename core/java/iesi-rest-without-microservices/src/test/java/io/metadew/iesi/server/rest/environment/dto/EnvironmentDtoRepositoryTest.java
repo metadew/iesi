@@ -184,19 +184,4 @@ class EnvironmentDtoRepositoryTest {
         return new EnvironmentParameter(environmentName, environmentParameterName, value);
     }
 
-    @Test
-    void getAllListTest() {
-        Environment environment1 = createEnvironment("iesi-test");
-        Environment environment2 = createEnvironment("iesi-dev");
-        environmentConfiguration.insert(environment1);
-        environmentConfiguration.insert(environment2);
-        EnvironmentDto environmentDto1 = environmentDtoResourceAssembler.toModel(environment1);
-        EnvironmentDto environmentDto2 = environmentDtoResourceAssembler.toModel(environment2);
-        assertThat(environmentDtoRepository.getAll()).containsOnly(
-                environmentDto1,
-                environmentDto2
-        );
-    }
-
-
 }

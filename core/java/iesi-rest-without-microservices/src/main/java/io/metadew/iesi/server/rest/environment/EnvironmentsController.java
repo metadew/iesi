@@ -68,7 +68,8 @@ public class EnvironmentsController {
     @GetMapping("/list")
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
     public HalMultipleEmbeddedResource<EnvironmentDto> getAll() {
-        List<EnvironmentDto> environmentDtos = environmentDtoService.getAll();
+        Page<EnvironmentDto> environmentDtoPage = environmentDtoService.getAll(Pageable.unpaged());
+        List<EnvironmentDto> environmentDtos = environmentDtoPage.getContent();
         HalMultipleEmbeddedResource<EnvironmentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         for (EnvironmentDto environmentDto : environmentDtos) {
             halMultipleEmbeddedResource.embedResource(environmentDto);

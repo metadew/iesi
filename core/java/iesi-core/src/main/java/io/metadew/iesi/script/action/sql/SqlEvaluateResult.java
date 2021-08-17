@@ -6,14 +6,12 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,48 +21,22 @@ import java.text.MessageFormat;
 
 public class SqlEvaluateResult extends ActionTypeExecution {
 
-    // Parameters
-    private ActionParameterOperation sqlQuery;
-    private ActionParameterOperation expectedResult;
-    private ActionParameterOperation connectionName;
+    private static final String SQL_QUERY_KEY = "query";
+    private static final String SQL_EXPECTED_RESULT_KEY = "hasResult";
+    private static final String CONNECTION_NAME_KEY = "connection";
     private static final Logger LOGGER = LogManager.getLogger();
-
 
     public SqlEvaluateResult(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        this.setSqlQuery(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "query"));
-        this.setExpectedResult(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "hasResult"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
-                this.getSqlQuery().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("hasresult")) {
-                this.getExpectedResult().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("query", this.getSqlQuery());
-        this.getActionParameterOperationMap().put("hasResult", this.getExpectedResult());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
-    }
+    public void prepareAction() { }
 
     protected boolean executeAction() throws InterruptedException {
-        String query = convertQuery(getSqlQuery().getValue());
-        boolean hasResult = convertHasResult(getExpectedResult().getValue());
-        String connectionName = convertConnectionName(getConnectionName().getValue());
+        String query = convertQuery(getParameterResolvedValue(SQL_QUERY_KEY));
+        boolean hasResult = convertHasResult(getParameterResolvedValue(SQL_EXPECTED_RESULT_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
 
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
@@ -101,6 +73,10 @@ public class SqlEvaluateResult extends ActionTypeExecution {
         }
     }
 
+    @Override
+    protected String getKeyword() {
+        return "sql.evaluateResult";
+    }
 
     private boolean convertHasResult(DataType hasResult) {
         if (hasResult instanceof Text) {
@@ -131,30 +107,4 @@ public class SqlEvaluateResult extends ActionTypeExecution {
             return query.toString();
         }
     }
-
-
-    public ActionParameterOperation getExpectedResult() {
-        return expectedResult;
-    }
-
-    public void setExpectedResult(ActionParameterOperation expectedResult) {
-        this.expectedResult = expectedResult;
-    }
-
-    public ActionParameterOperation getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(ActionParameterOperation connectionName) {
-        this.connectionName = connectionName;
-    }
-
-    public ActionParameterOperation getSqlQuery() {
-        return sqlQuery;
-    }
-
-    public void setSqlQuery(ActionParameterOperation sqlQuery) {
-        this.sqlQuery = sqlQuery;
-    }
-
 }

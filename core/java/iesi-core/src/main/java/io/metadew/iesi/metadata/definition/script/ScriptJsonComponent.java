@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 import io.metadew.iesi.metadata.definition.action.Action;
@@ -24,6 +23,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,11 +75,19 @@ public class ScriptJsonComponent {
                 versionNumber = versionNode.get(ScriptVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
                 scriptVersion = new ScriptVersion(
                         new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)),
-                        versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText()
-                );
+                        versionNode.get(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value()).asText(),
+                        "admin",
+                        LocalDateTime.now().toString(),
+                        "admin",
+                        LocalDateTime.now().toString());
             } else {
                 versionNumber = 0L;
-                scriptVersion = new ScriptVersion(new ScriptVersionKey(new ScriptKey(scriptId, versionNumber)), "default version");
+                scriptVersion = new ScriptVersion(new ScriptVersionKey(
+                        new ScriptKey(scriptId, versionNumber)), "default version",
+                        "admin",
+                        LocalDateTime.now().toString(),
+                        "admin",
+                        LocalDateTime.now().toString());
             }
             ScriptKey scriptKey = new ScriptKey(scriptId, versionNumber);
 

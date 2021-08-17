@@ -2,6 +2,7 @@ package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
@@ -13,12 +14,10 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -48,56 +47,12 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        ActionParameterOperation referenceNameActionParameterOperation = new ActionParameterOperation(
-                this.getExecutionControl(),
-                this.getActionExecution(),
-                this.getActionExecution().getAction().getType(),
-                NAME_KEY);
-        ActionParameterOperation datasetTypeActionParameterOperation = new ActionParameterOperation(
-                this.getExecutionControl(),
-                this.getActionExecution(),
-                this.getActionExecution().getAction().getType(),
-                TYPE_KEY);
-        ActionParameterOperation datasetNameActionParameterOperation = new ActionParameterOperation(
-                this.getExecutionControl(),
-                this.getActionExecution(),
-                this.getActionExecution().getAction().getType(),
-                DATASET_KEY);
-        ActionParameterOperation datasetLabelsActionParameterOperation = new ActionParameterOperation(
-                this.getExecutionControl(),
-                this.getActionExecution(),
-                this.getActionExecution().getAction().getType(),
-                LABELS_KEY);
+    public void prepareAction() {
 
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(NAME_KEY)) {
-                referenceNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(TYPE_KEY)) {
-                datasetTypeActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(DATASET_KEY)) {
-                datasetNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(LABELS_KEY)) {
-                datasetLabelsActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Default values
-        if (datasetLabelsActionParameterOperation.getValue() == null)
-            datasetLabelsActionParameterOperation.setInputValue("", getExecutionControl().getExecutionRuntime());
-
-        // Create parameter list
-        getActionParameterOperationMap().put(NAME_KEY, referenceNameActionParameterOperation);
-        getActionParameterOperationMap().put(TYPE_KEY, datasetTypeActionParameterOperation);
-        getActionParameterOperationMap().put(DATASET_KEY, datasetNameActionParameterOperation);
-        getActionParameterOperationMap().put(LABELS_KEY, datasetLabelsActionParameterOperation);
-
-        referenceName = convertDatasetReferenceName(referenceNameActionParameterOperation.getValue());
-        datasetName = convertDatasetName(datasetNameActionParameterOperation.getValue());
-        datasetType = convertDatasetType(datasetTypeActionParameterOperation.getValue());
-        datasetLabels = convertDatasetLabels(datasetLabelsActionParameterOperation.getValue());
+        referenceName = convertDatasetReferenceName(getParameterResolvedValue(NAME_KEY));
+        datasetName = convertDatasetName(getParameterResolvedValue(DATASET_KEY));
+        datasetType = convertDatasetType(getParameterResolvedValue(TYPE_KEY));
+        datasetLabels = convertDatasetLabels(getParameterResolvedValue(LABELS_KEY));
     }
 
     protected boolean executeAction() throws IOException {
@@ -139,6 +94,11 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "data.setDatasetConnection";
+    }
+
     private String convertDatasetReferenceName(DataType referenceName) {
         if (!(referenceName instanceof Text)) {
             log.warn(MessageFormat.format("{0} does not accept {1} as type for reference name",
@@ -168,7 +128,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     private String convertDatasetType(DataType datasetType) {
-        if (datasetType == null) {
+        if (datasetType == null || datasetType instanceof Null) {
             return "";
         }
         if (!(datasetType instanceof Text)) {

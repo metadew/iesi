@@ -1,6 +1,6 @@
 package io.metadew.iesi.script.action.http;
 
-import io.metadew.iesi.component.http.HttpComponentService;
+import io.metadew.iesi.component.http.*;
 import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.request.HttpRequest;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
@@ -8,20 +8,19 @@ import io.metadew.iesi.connection.http.request.HttpRequestService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.connection.http.response.HttpResponseService;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ActionPerformanceLogger;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.Header;
 
@@ -30,6 +29,7 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -38,13 +38,17 @@ import java.util.stream.Collectors;
 
 
 @Log4j2
+@Getter
 public class HttpExecuteRequest extends ActionTypeExecution {
 
+    private static final String ACTION_TYPE = "http.executeRequest";
     private static final String REQUEST_KEY = "request";
     private static final String BODY_KEY = "body";
     private static final String PROXY_KEY = "proxy";
     private static final String SET_DATASET_KEY = "setDataset";
     private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
+    private static final String HEADERS_KEY = "headers";
+    private static final String QUERY_PARAMETERS_KEY = "queryParameters";
 
     private HttpRequest httpRequest;
     private InMemoryDatasetImplementation outputDataset;
@@ -64,46 +68,25 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() throws URISyntaxException, HttpRequestBuilderException, IOException, MetadataDoesNotExistException {
-        // Reset Parameters
-        ActionParameterOperation requestNameActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), REQUEST_KEY);
-        ActionParameterOperation requestBodyActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), BODY_KEY);
-        ActionParameterOperation setDatasetActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), SET_DATASET_KEY);
-        ActionParameterOperation expectedStatusCodesActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), EXPECTED_STATUS_CODES_KEY);
-        ActionParameterOperation proxyActionParameterOperation = new ActionParameterOperation(getExecutionControl(), getActionExecution(), getActionExecution().getAction().getType(), PROXY_KEY);
+    public void prepareAction() throws URISyntaxException, HttpRequestBuilderException, KeyValuePairException {
 
-        // Get Parameters
-        for (ActionParameter actionParameter : getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(REQUEST_KEY)) {
-                requestNameActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(BODY_KEY)) {
-                requestBodyActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(SET_DATASET_KEY)) {
-                setDatasetActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(EXPECTED_STATUS_CODES_KEY)) {
-                expectedStatusCodesActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase(PROXY_KEY)) {
-                proxyActionParameterOperation.setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
+        HttpComponent httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
 
-        // Create parameter list
-        getActionParameterOperationMap().put(REQUEST_KEY, requestNameActionParameterOperation);
-        getActionParameterOperationMap().put(BODY_KEY, requestBodyActionParameterOperation);
-        getActionParameterOperationMap().put(SET_DATASET_KEY, setDatasetActionParameterOperation);
-        getActionParameterOperationMap().put(EXPECTED_STATUS_CODES_KEY, expectedStatusCodesActionParameterOperation);
-        getActionParameterOperationMap().put(PROXY_KEY, proxyActionParameterOperation);
+        Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
 
-        Optional<String> body = convertHttpRequestBody(requestBodyActionParameterOperation.getValue());
+        List<HttpHeader> headers = combineParameters(httpComponent.getHeaders(), convertHeaderParameters(getParameterResolvedValue(HEADERS_KEY)));
+        List<HttpQueryParameter> queryParameters = combineParameters(httpComponent.getQueryParameters(), convertHttpQueryParameters(getParameterResolvedValue(QUERY_PARAMETERS_KEY)));
+
+        httpComponent.setQueryParameters(queryParameters);
+        httpComponent.setHeaders(headers);
 
         if (body.isPresent()) {
             getActionExecution().getActionControl().logOutput("request.body", body.get());
             httpRequest = HttpComponentService.getInstance().buildHttpRequest(
-                    HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution(), REQUEST_KEY),
+                    httpComponent,
                     body.get());
         } else {
-            httpRequest = HttpComponentService.getInstance().buildHttpRequest(
-                    HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(requestNameActionParameterOperation.getValue()), getActionExecution(), REQUEST_KEY));
+            httpRequest = HttpComponentService.getInstance().buildHttpRequest(httpComponent);
         }
         getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
         getActionExecution().getActionControl().logOutput("request.method", httpRequest.getHttpRequest().getMethod());
@@ -113,9 +96,9 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             getActionExecution().getActionControl().logOutput("request.header." + i, header.toString());
         }
 
-        expectedStatusCodes = convertExpectStatusCodes(expectedStatusCodesActionParameterOperation.getValue());
-        proxyConnection = convertProxyName(proxyActionParameterOperation.getValue());
-        outputDataset = convertOutputDatasetReferenceName(setDatasetActionParameterOperation.getValue());
+        expectedStatusCodes = convertExpectStatusCodes(getParameterResolvedValue(EXPECTED_STATUS_CODES_KEY));
+        proxyConnection = convertProxyName(getParameterResolvedValue(PROXY_KEY));
+        outputDataset = convertOutputDatasetReferenceName(getParameterResolvedValue(SET_DATASET_KEY));
 
     }
 
@@ -132,8 +115,97 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return ACTION_TYPE;
+    }
+
+    private <T extends HttpParameter> List<T> combineParameters(List<T> componentLevelParameters, List<T> actionLevelParameters) {
+        List<T> additionalParameters = componentLevelParameters.stream()
+                .filter(componentLevelHeader -> actionLevelParameters.stream()
+                        .noneMatch(actionLevelHeader -> actionLevelHeader.getName().equals(componentLevelHeader.getName())))
+                .collect(Collectors.toList());
+        actionLevelParameters.addAll(additionalParameters);
+        return actionLevelParameters;
+    }
+
+
+    private List<HttpHeader> convertHeaderParameters(DataType dataType) {
+        if (dataType == null || dataType instanceof Null) {
+            return new ArrayList<>();
+        } else if (dataType instanceof Text) {
+            return Arrays.stream(dataType.toString().split(","))
+                    .map(this::buildHttpHeader).collect(Collectors.toList());
+        } else if (dataType instanceof InMemoryDatasetImplementation) {
+            return InMemoryDatasetImplementationService
+                    .getInstance()
+                    .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
+                            .getExecutionRuntime()).entrySet().stream()
+                    .map(dataItem -> new HttpHeader(dataItem.getKey(), dataItem.getValue().toString()))
+                    .collect(
+                            Collectors.toList()
+                    );
+        } else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for headers"),
+                    dataType.getClass()));
+            return new ArrayList<>();
+        }
+    }
+
+    private List<HttpQueryParameter> convertHttpQueryParameters(DataType dataType) {
+        if (dataType == null || dataType instanceof Null) {
+            return new ArrayList<>();
+        } else if (dataType instanceof Text) {
+            return Arrays.stream(dataType.toString().split(","))
+                    .map(this::buildHttpQueryParameter).collect(Collectors.toList());
+        } else if (dataType instanceof InMemoryDatasetImplementation) {
+            return InMemoryDatasetImplementationService
+                    .getInstance()
+                    .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
+                            .getExecutionRuntime()).entrySet().stream()
+                    .map(dataItem -> new HttpQueryParameter(dataItem.getKey(), dataItem.getValue().toString()))
+                    .collect(
+                            Collectors.toList()
+                    );
+        } else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for queryParameters"),
+                    dataType.getClass()));
+            return new ArrayList<>();
+        }
+    }
+
+    private HttpHeader buildHttpHeader(String header) {
+        String[] keyValues;
+
+        if (!header.contains("=")) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", header));
+        }
+
+        keyValues = header.split("=");
+        if (keyValues.length > 2) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", header));
+        }
+
+        return new HttpHeader(keyValues[0], keyValues[1]);
+    }
+
+    private HttpQueryParameter buildHttpQueryParameter(String queryParameter) {
+        String[] keyValues;
+
+        if (!queryParameter.contains("=")) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", queryParameter));
+        }
+
+        keyValues = queryParameter.split("=");
+        if (keyValues.length > 2) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", queryParameter));
+        }
+
+        return new HttpQueryParameter(keyValues[0], keyValues[1]);
+    }
+
     private List<String> convertExpectStatusCodes(DataType expectedStatusCodes) {
-        if (expectedStatusCodes == null) {
+        if (expectedStatusCodes == null || expectedStatusCodes instanceof Null) {
             return null;
         }
         if (expectedStatusCodes instanceof Text) {
@@ -157,13 +229,13 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else {
             log.warn(String.format("%s does not accept %s as type for expectedStatusCode",
                     getActionExecution().getAction().getType(),
-                            expectedStatusCode.getClass()));
+                    expectedStatusCode.getClass()));
             return expectedStatusCode.toString();
         }
     }
 
     private ProxyConnection convertProxyName(DataType connectionName) {
-        if (connectionName == null) {
+        if (connectionName == null || connectionName instanceof Null) {
             return null;
         } else if (connectionName instanceof Text) {
             return ConnectionConfiguration.getInstance()
@@ -189,7 +261,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private InMemoryDatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
-        if (outputDatasetReferenceName == null) {
+        if (outputDatasetReferenceName == null || outputDatasetReferenceName instanceof Null) {
             return null;
         } else if (outputDatasetReferenceName instanceof Text) {
             return getExecutionControl().getExecutionRuntime()
@@ -272,15 +344,15 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    private Optional<InMemoryDatasetImplementation> getOutputDataset() {
+    protected Optional<InMemoryDatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 
-    private Optional<List<String>> getExpectedStatusCodes() {
+    protected Optional<List<String>> getExpectedStatusCodes() {
         return Optional.ofNullable(expectedStatusCodes);
     }
 
-    private Optional<ProxyConnection> getProxyConnection() {
+    protected Optional<ProxyConnection> getProxyConnection() {
         return Optional.ofNullable(proxyConnection);
     }
 

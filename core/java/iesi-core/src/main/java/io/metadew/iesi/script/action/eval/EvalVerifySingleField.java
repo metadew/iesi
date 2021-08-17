@@ -5,14 +5,12 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,22 +20,14 @@ import java.text.MessageFormat;
 
 public class EvalVerifySingleField extends ActionTypeExecution {
 
-    // Parameters
-    private ActionParameterOperation databaseName;
-
-    private ActionParameterOperation schemaName;
-
-    private ActionParameterOperation tableName;
-
-    private ActionParameterOperation fieldName;
-
-    private ActionParameterOperation checkName;
-
-    private ActionParameterOperation checkOperatorName;
-
-    private ActionParameterOperation checkValue;
-
-    private ActionParameterOperation connectionName;
+    private final static String DATABASE_KEY = "database";
+    private final static String SCHEMA_KEY = "schema";
+    private final static String TABLE_KEY = "table";
+    private final static String FIELD_KEY = "field";
+    private final static String CHECK_KEY = "check";
+    private final static String OPERATOR_KEY = "operator";
+    private final static String VALUE_KEY = "value";
+    private final static String CONNECTION_KEY = "connection";
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -53,66 +43,18 @@ public class EvalVerifySingleField extends ActionTypeExecution {
     }
 
 
-    public void prepare() {
-        // Reset Parameters
-        this.setDatabaseName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "database"));
-        this.setSchemaName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "schema"));
-        this.setTableName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "table"));
-        this.setFieldName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "field"));
-        this.setCheckName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "check"));
-        this.setCheckOperatorName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "operator"));
-        this.setCheckValue(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "value"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("database")) {
-                this.getDatabaseName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("schema")) {
-                this.getSchemaName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("table")) {
-                this.getTableName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("field")) {
-                this.getFieldName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("check")) {
-                this.getCheckName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("operator")) {
-                this.getCheckOperatorName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("value")) {
-                this.getCheckValue().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("database", this.getDatabaseName());
-        this.getActionParameterOperationMap().put("schema", this.getSchemaName());
-        this.getActionParameterOperationMap().put("table", this.getTableName());
-        this.getActionParameterOperationMap().put("field", this.getFieldName());
-        this.getActionParameterOperationMap().put("check", this.getCheckName());
-        this.getActionParameterOperationMap().put("operator", this.getCheckOperatorName());
-        this.getActionParameterOperationMap().put("value", this.getCheckValue());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
+    public void prepareAction() {
     }
 
     protected boolean executeAction() throws SQLException, InterruptedException {
-        String databaseName = convertDatabaseName(getDatabaseName().getValue());
-        String schemaName = convertSchemaName(getSchemaName().getValue());
-        String tableName = convertTableName(getTableName().getValue());
-        String fieldName = convertFieldName(getFieldName().getValue());
-        String checkName = convertCheckName(getCheckName().getValue());
-        String checkValue = convertCheckValue(getCheckValue().getValue());
-        String checkOperatorName = convertCheckOperationName(getCheckOperatorName().getValue());
-        String connectionName = convertConnectionName(getConnectionName().getValue());
+        String databaseName = convertDatabaseName(getParameterResolvedValue(DATABASE_KEY));
+        String schemaName = convertSchemaName(getParameterResolvedValue(SCHEMA_KEY));
+        String tableName = convertTableName(getParameterResolvedValue(TABLE_KEY));
+        String fieldName = convertFieldName(getParameterResolvedValue(FIELD_KEY));
+        String checkName = convertCheckName(getParameterResolvedValue(CHECK_KEY));
+        String checkValue = convertCheckValue(getParameterResolvedValue(VALUE_KEY));
+        String checkOperatorName = convertCheckOperationName(getParameterResolvedValue(OPERATOR_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
@@ -148,6 +90,11 @@ public class EvalVerifySingleField extends ActionTypeExecution {
             this.getActionExecution().getActionControl().increaseErrorCount();
             return true;
         }
+    }
+
+    @Override
+    protected String getKeyword() {
+        return "eval.verifySingleField";
     }
 
     private String convertCheckOperationName(DataType checkOperationName) {
@@ -272,46 +219,6 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         return resTestQueries;
     }
 
-    public ActionParameterOperation getDatabaseName() {
-        return databaseName;
-    }
-
-    public void setDatabaseName(ActionParameterOperation databaseName) {
-        this.databaseName = databaseName;
-    }
-
-    public ActionParameterOperation getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(ActionParameterOperation schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public ActionParameterOperation getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(ActionParameterOperation tableName) {
-        this.tableName = tableName;
-    }
-
-    public ActionParameterOperation getFieldName() {
-        return fieldName;
-    }
-
-    public void setFieldName(ActionParameterOperation fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    public ActionParameterOperation getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(ActionParameterOperation connectionName) {
-        this.connectionName = connectionName;
-    }
-
     public String getSqlSuccess() {
         return sqlSuccess;
     }
@@ -328,27 +235,4 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         this.sqlError = sqlError;
     }
 
-    public ActionParameterOperation getCheckName() {
-        return checkName;
-    }
-
-    public void setCheckName(ActionParameterOperation checkName) {
-        this.checkName = checkName;
-    }
-
-    public ActionParameterOperation getCheckValue() {
-        return checkValue;
-    }
-
-    public void setCheckValue(ActionParameterOperation checkValue) {
-        this.checkValue = checkValue;
-    }
-
-    public ActionParameterOperation getCheckOperatorName() {
-        return checkOperatorName;
-    }
-
-    public void setCheckOperatorName(ActionParameterOperation checkOperatorName) {
-        this.checkOperatorName = checkOperatorName;
-    }
 }

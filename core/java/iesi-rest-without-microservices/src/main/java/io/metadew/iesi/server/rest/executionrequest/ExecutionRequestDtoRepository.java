@@ -40,12 +40,13 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
         return "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
                 // " execution_requests.SECURITY_GROUP_ID as exe_req_security_group_id, execution_requests.SECURITY_GROUP_NAME as exe_req_security_group_name, " +
-                "auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass, " +
+                //"auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass, " +
+                "auth_execution_requests.REQUEST_ID as exe_req_auth,  auth_execution_requests.USER_ID as exe_req_user_id, auth_execution_requests.USERNAME as exe_req_username, " +
                 "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
                 "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
                 "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
-                "file_script_execution_requests.ID as script_exe_req_file_id, file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
-                "name_script_execution_requests.ID as script_exe_req_name_id, name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
+                "file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
+                "name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
                 "scripts.SECURITY_GROUP_NAME as script_security_group_name, " +
                 "script_execution_request_imps.ID as script_exe_req_imp_id, script_execution_request_imps.IMP_ID as script_exe_req_imp_id_id, " +
                 "script_execution_request_pars.ID as script_exe_req_par_id, script_execution_request_pars.NAME as script_exe_req_par_name, script_execution_request_pars.VALUE as script_exe_req_par_val, " +
@@ -92,6 +93,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -111,7 +114,10 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.LABEL)) {
                         return " execution_request_labels.NAME = '" + executionRequestFilter.getValue().split(":")[0] +
                                 "' and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
-                    } else {
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.RUN_ID)) {
+                        return " script_executions.RUN_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    }
+                    else {
                         return null;
                     }
                 }
@@ -174,6 +180,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
@@ -305,7 +313,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         if (scriptExecutionRequestParameterDto == null) {
             scriptExecutionRequestParameterDto = new ScriptExecutionRequestParameterDto(
                     cachedRowSet.getString("script_exe_req_par_name"),
-                    cachedRowSet.getString("script_exe_req_par_val")
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "script_exe_req_par_val")
             );
             scriptExecutionRequestBuilder.getParameters().put(scriptExecutionRequestParameterId, scriptExecutionRequestParameterDto);
         }
@@ -336,7 +344,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
             return;
         }
         ExecutionRequestLabelDto executionRequestLabelDto = executionRequestBuilder.getExecutionRequestLabels().get(executionRequestLabelId);
-
         if (executionRequestLabelDto == null) {
             executionRequestLabelDto = new ExecutionRequestLabelDto(
                     cachedRowSet.getString("exe_req_label_name"),
@@ -361,6 +368,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 cachedRowSet.getString("exe_req_scope"),
                 cachedRowSet.getString("exe_req_context"),
                 cachedRowSet.getString("exe_req_email"),
+                cachedRowSet.getString("exe_req_user_id"),
+                cachedRowSet.getString("exe_req_username"),
                 ExecutionRequestStatus.valueOf(cachedRowSet.getString("exec_req_status")),
                 new HashMap<>(),
                 new HashMap<>()
@@ -380,6 +389,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         private String scope;
         private String context;
         private String email;
+        private String userId;
+        private String username;
         private ExecutionRequestStatus executionRequestStatus;
         private Map<String, ScriptExecutionRequestBuilder> scriptExecutionRequests;
         public Map<String, ExecutionRequestLabelDto> executionRequestLabels;
@@ -395,6 +406,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     scope,
                     context,
                     email,
+                    userId,
+                    username,
                     executionRequestStatus,
                     scriptExecutionRequests.values().stream()
                             .map(ScriptExecutionRequestBuilder::build)

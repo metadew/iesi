@@ -116,8 +116,35 @@ public class DatasetController {
 
     @GetMapping("/{uuid}/implementations")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
-    public List<DatasetImplementationDto> getImplementationsByUuid(@PathVariable UUID uuid) {
-        return datasetDtoService.fetchImplementationsByUuid(uuid);
+    public List<DatasetImplementationDto> getImplementationsByDatasetUuid(@PathVariable UUID uuid) {
+        return datasetDtoService.fetchImplementationsByDatasetUuid(uuid);
+    }
+
+    @GetMapping("/{datasetUuid}/implementations/{datasetImplementationUuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
+    public DatasetImplementationDto getImplementationByUuid(@PathVariable UUID datasetUuid, @PathVariable UUID datasetImplementationUuid) {
+        return datasetDtoService.fetchImplementationByUuid(datasetImplementationUuid)
+                .orElseThrow(() -> new MetadataDoesNotExistException(new DatasetImplementationKey(datasetImplementationUuid)));
+    }
+
+    @DeleteMapping("/{datasetUuid}/implementations/{datasetImplementationUuid}")
+    @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
+    public ResponseEntity<Object> deleteImplementationByUuid(@PathVariable UUID datasetUuid, @PathVariable UUID datasetImplementationUuid) {
+        if (!datasetImplementationService.exists(new DatasetImplementationKey(datasetImplementationUuid))) {
+            return ResponseEntity.notFound().build();
+        }
+        datasetImplementationService.delete(new DatasetImplementationKey(datasetImplementationUuid));
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{datasetUuid}/implementations")
+    @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
+    public ResponseEntity<Object> deleteImplementationsByDatasetUuid(@PathVariable UUID datasetUuid) {
+        if (!datasetService.exists(new DatasetKey(datasetUuid))) {
+            return ResponseEntity.notFound().build();
+        }
+        datasetImplementationService.deleteByDatasetId(new DatasetKey(datasetUuid));
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{uuid}")

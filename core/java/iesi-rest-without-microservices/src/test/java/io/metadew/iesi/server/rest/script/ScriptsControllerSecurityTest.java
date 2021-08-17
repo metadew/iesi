@@ -1,14 +1,20 @@
 package io.metadew.iesi.server.rest.script;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;
+import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
+import io.metadew.iesi.metadata.definition.audit.key.ScriptDesignAuditKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.script.ScriptService;
 import io.metadew.iesi.server.rest.script.ScriptsController;
+import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditService;
 import io.metadew.iesi.server.rest.script.dto.*;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
+import io.metadew.iesi.server.rest.user.UserDto;
+import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +35,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Log4j2
@@ -59,6 +66,15 @@ class ScriptsControllerSecurityTest {
 
     @MockBean
     private PagedResourcesAssembler<ScriptDto> scriptDtoPagedResourcesAssembler;
+
+    @MockBean
+    private UserDtoRepository userDtoRepository;
+
+    @MockBean
+    private UserDto userDto;
+
+    @MockBean
+    private ScriptDesignAuditService scriptDesignAuditService;
 
     @Test
     void testGetAllNoUser() {

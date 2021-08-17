@@ -4,12 +4,10 @@ import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,8 +23,8 @@ import java.util.List;
  */
 public class FwkOutputMessage extends ActionTypeExecution {
 
-    private ActionParameterOperation message;
-    private ActionParameterOperation onScreen;
+    private static final String MESSAGE_KEY = "message";
+    private static final String ON_SCREEN_KEY = "onScreen";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkOutputMessage(ExecutionControl executionControl,
@@ -34,26 +32,7 @@ public class FwkOutputMessage extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Reset Parameters
-        this.setMessage(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "message"));
-        this.setOnScreen(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "onScreen"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("message")) {
-                this.getMessage().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("onscreen")) {
-                this.getOnScreen().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("message", this.getMessage());
-        this.getActionParameterOperationMap().put("onScreen", this.getOnScreen());
-    }
+    public void prepareAction() { }
 
     private boolean convertOnScreen(DataType onScreen) {
         if (onScreen instanceof Text) {
@@ -82,8 +61,8 @@ public class FwkOutputMessage extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws InterruptedException {
-        List<String> messages = convertMessages(getMessage().getValue());
-        boolean onScreen = convertOnScreen(getOnScreen().getValue());
+        List<String> messages = convertMessages(getParameterResolvedValue(MESSAGE_KEY));
+        boolean onScreen = convertOnScreen(getParameterResolvedValue(ON_SCREEN_KEY));
         final Level level = onScreen ? Level.INFO : Level.DEBUG;
 
         messages.forEach(message -> {
@@ -100,20 +79,9 @@ public class FwkOutputMessage extends ActionTypeExecution {
         return true;
     }
 
-    public ActionParameterOperation getMessage() {
-        return message;
-    }
-
-    public void setMessage(ActionParameterOperation message) {
-        this.message = message;
-    }
-
-    public ActionParameterOperation getOnScreen() {
-        return onScreen;
-    }
-
-    public void setOnScreen(ActionParameterOperation onScreen) {
-        this.onScreen = onScreen;
+    @Override
+    protected String getKeyword() {
+        return "fwk.outputMessage";
     }
 
 }

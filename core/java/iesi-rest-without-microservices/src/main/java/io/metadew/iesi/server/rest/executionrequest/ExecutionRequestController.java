@@ -3,9 +3,9 @@ package io.metadew.iesi.server.rest.executionrequest;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
+import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
-import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
@@ -14,6 +14,8 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
+import io.metadew.iesi.server.rest.user.UserDto;
+import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,20 +47,24 @@ public class ExecutionRequestController {
     private final IesiSecurityChecker iesiSecurityChecker;
     private final ScriptConfiguration scriptConfiguration;
     private final Clock clock;
+    private final UserDtoRepository userDtoRepository;
+
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
                                ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler,
                                PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage,
                                IesiSecurityChecker iesiSecurityChecker,
+                               Clock clock,
                                ScriptConfiguration scriptConfiguration,
-                               Clock clock) {
+                               UserDtoRepository userDtoRepository) {
         this.executionRequestService = executionRequestService;
         this.executionRequestDtoModelAssembler = executionRequestDtoModelAssembler;
         this.executionRequestDtoResourceAssemblerPage = executionRequestDtoResourceAssemblerPage;
         this.iesiSecurityChecker = iesiSecurityChecker;
         this.scriptConfiguration = scriptConfiguration;
         this.clock = clock;
+        this.userDtoRepository = userDtoRepository;
     }
 
     @SuppressWarnings("unchecked")
@@ -68,8 +74,9 @@ public class ExecutionRequestController {
                                                   @RequestParam(required = false, name = "script") String script,
                                                   @RequestParam(required = false, name = "version") String version,
                                                   @RequestParam(required = false, name = "environment") String environment,
-                                                  @RequestParam(required = false, name = "label") String labelKeyCombination) {
-        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination);
+                                                  @RequestParam(required = false, name = "label") String labelKeyCombination,
+                                                  @RequestParam(required = false, name = "run-id") String runId) {
+        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination, runId);
         Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService
                 .getAll(SecurityContextHolder.getContext().getAuthentication(), pageable, executionRequestFilters);
         if (executionRequestDtoPage.hasContent())
@@ -77,7 +84,7 @@ public class ExecutionRequestController {
         return (PagedModel<ExecutionRequestDto>) executionRequestDtoResourceAssemblerPage.toEmptyModel(executionRequestDtoPage, ExecutionRequestDto.class);
     }
 
-    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination) {
+    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination, String runId) {
         List<ExecutionRequestFilter> executionRequestFilters = new ArrayList<>();
         if (name != null) {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, name, false));
@@ -90,6 +97,9 @@ public class ExecutionRequestController {
         }
         if (version != null) {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, version, true));
+        }
+        if (runId != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, runId, false));
         }
         return executionRequestFilters;
     }
@@ -117,11 +127,15 @@ public class ExecutionRequestController {
                         .collect(Collectors.toList()))) {
             throw new AccessDeniedException("User is not allowed to delete this execution request");
         }
-
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserDto userDto = userDtoRepository.get(username)
+                .orElseThrow(() -> new RuntimeException("Cannot find user :" + username));
         String newExecutionRequestId = UUID.randomUUID().toString();
-        ExecutionRequest executionRequest = NonAuthenticatedExecutionRequest.builder()
+        AuthenticatedExecutionRequest authenticatedExecutionRequest = AuthenticatedExecutionRequest.builder()
                 .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
                 .name(executionRequestPostDto.getName())
+                .username(userDto.getUsername())
+                .userID(userDto.getId().toString())
                 .context(executionRequestPostDto.getContext())
                 .description(executionRequestPostDto.getDescription())
                 .scope(executionRequestPostDto.getScope())
@@ -136,7 +150,7 @@ public class ExecutionRequestController {
                 .requestTimestamp(LocalDateTime.now(clock))
                 .build();
 
-        executionRequest = executionRequestService.createExecutionRequest(executionRequest);
+        ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(authenticatedExecutionRequest);
         return executionRequestDtoModelAssembler.toModel(executionRequest);
     }
 

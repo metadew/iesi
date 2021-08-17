@@ -3,8 +3,6 @@ package io.metadew.iesi.server.rest.user;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.server.rest.dataset.DatasetDtoListResultSetExtractor;
-import io.metadew.iesi.server.rest.dataset.DatasetFilter;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,10 @@ import org.springframework.stereotype.Repository;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository

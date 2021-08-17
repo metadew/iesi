@@ -1,9 +1,9 @@
 package io.metadew.iesi.server.rest.executionrequest.dto;
 
+import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSuppor
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -47,7 +46,7 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
     public void addLinksToExistingDto(ExecutionRequestDto executionRequestDto) {
         Link selfLink = linkTo(methodOn(ExecutionRequestController.class).getById(executionRequestDto.getExecutionRequestId()))
                 .withSelfRel();
-        Link linkToAll = linkTo(methodOn(ExecutionRequestController.class).getAll(PageRequest.of(0, 20), null, null, null, null))
+        Link linkToAll = linkTo(methodOn(ExecutionRequestController.class).getAll(PageRequest.of(0, 20), null, null, null, null, null))
                 .withRel("executionrequest");
         executionRequestDto.add(selfLink, linkToAll);
     }
@@ -60,7 +59,24 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
                     // executionRequest.getSecurityGroupName(),
                     executionRequest.getRequestTimestamp(),
                     executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
-                    executionRequest.getContext(), executionRequest.getEmail(), executionRequest.getExecutionRequestStatus(),
+                    executionRequest.getContext(), executionRequest.getEmail(),
+                    null, null,
+                    executionRequest.getExecutionRequestStatus(),
+                    executionRequest.getScriptExecutionRequests().stream()
+                            .map(scriptExecutionRequestDtoModelAssembler::toModel)
+                            .collect(Collectors.toSet()),
+                    executionRequest.getExecutionRequestLabels().stream()
+                            .map(this::convertToDto)
+                            .collect(Collectors.toSet()));
+        } else if (executionRequest instanceof AuthenticatedExecutionRequest) {
+            return new ExecutionRequestDto(
+                    executionRequest.getMetadataKey().getId(),
+                    executionRequest.getRequestTimestamp(),
+                    executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
+                    executionRequest.getContext(), executionRequest.getEmail(),
+                    ((AuthenticatedExecutionRequest) executionRequest).getUserID(),
+                    ((AuthenticatedExecutionRequest) executionRequest).getUsername(),
+                    executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
                             .map(scriptExecutionRequestDtoModelAssembler::toModel)
                             .collect(Collectors.toSet()),

@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.metadata.configuration.action.ActionBuilder;
-import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
@@ -97,6 +96,7 @@ public class ScriptBuilder {
                     .map(SecurityGroup::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("Could not find Security Group with name" + securityGroupName));
         }
+
         return new Script(new ScriptKey(scriptId, versionNumber),
                 securityGroupKey,
                 securityGroupName,
@@ -104,7 +104,9 @@ public class ScriptBuilder {
                 "dummy",
                 new ScriptVersionBuilder(scriptId, versionNumber).build(),
                 scriptParameters,
-                actions, scriptLabels);
+                actions,
+                scriptLabels
+        );
     }
 
 }

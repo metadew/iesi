@@ -1,14 +1,13 @@
 package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.Iteration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,15 +16,15 @@ import java.text.MessageFormat;
 
 public class FwkSetIteration extends ActionTypeExecution {
 
-    private ActionParameterOperation iterationName;
-    private ActionParameterOperation iterationType;
-    private ActionParameterOperation iterationList;
-    private ActionParameterOperation iterationValues;
-    private ActionParameterOperation iterationFrom;
-    private ActionParameterOperation iterationTo;
-    private ActionParameterOperation iterationStep;
-    private ActionParameterOperation iterationCondition;
-    private ActionParameterOperation iterationInterrupt;
+    private static final String ITERATION_NAME_KEY = "name";
+    private static final String ITERATION_TYPE_KEY = "type";
+    private static final String ITERATION_LIST_KEY = "list";
+    private static final String ITERATION_VALUES_KEY = "values";
+    private static final String ITERATION_FROM_KEY = "from";
+    private static final String ITERATION_TO_KEY = "to";
+    private static final String ITERATION_STEP_KEY = "step";
+    private static final String ITERATION_CONDITION_KEY = "condition";
+    private static final String ITERATION_INTERRUPT_KEY = "interrupt";
     private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkSetIteration(ExecutionControl executionControl,
@@ -33,72 +32,20 @@ public class FwkSetIteration extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
+    public void prepareAction() {
         // TODO: based on type a different class should be defined? e.g. fwk.setIteration.list or fwk.setIteration.range or fwk.setIteration.values
-        // Reset Parameters
-        this.setIterationName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "name"));
-        this.setIterationType(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "type"));
-        this.setIterationList(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "list"));
-        this.setIterationValues(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "values"));
-        this.setIterationFrom(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "from"));
-        this.setIterationTo(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "to"));
-        this.setIterationStep(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "step"));
-        this.setIterationCondition(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "condition"));
-        this.setIterationInterrupt(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "interrupt"));
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("name")) {
-                this.getIterationName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("type")) {
-                this.getIterationType().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("list")) {
-                this.getIterationList().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("values")) {
-                this.getIterationValues().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("from")) {
-                this.getIterationFrom().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("to")) {
-                this.getIterationTo().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("step")) {
-                this.getIterationStep().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("condition")) {
-                this.getIterationCondition().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("interrupt")) {
-                this.getIterationInterrupt().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("name", this.getIterationName());
-        this.getActionParameterOperationMap().put("type", this.getIterationType());
-        this.getActionParameterOperationMap().put("list", this.getIterationList());
-        this.getActionParameterOperationMap().put("values", this.getIterationValues());
-        this.getActionParameterOperationMap().put("from", this.getIterationFrom());
-        this.getActionParameterOperationMap().put("to", this.getIterationTo());
-        this.getActionParameterOperationMap().put("step", this.getIterationStep());
-        this.getActionParameterOperationMap().put("condition", this.getIterationCondition());
-        this.getActionParameterOperationMap().put("interrupt", this.getIterationInterrupt());
     }
 
     protected boolean executeAction() throws InterruptedException {
-        String name = convertIterationName(getIterationName().getValue());
-        String type = convertIterationType(getIterationType().getValue());
-        String list = convertIterationList(getIterationList().getValue());
-        String values = convertIterationValues(getIterationValues().getValue());
-        String from = convertIterationFrom(getIterationFrom().getValue());
-        String to = convertIterationTo(getIterationTo().getValue());
-        String step = convertIterationStep(getIterationStep().getValue());
-        String condition = convertIterationCondition(getIterationCondition().getValue());
-        boolean interrupt = convertIterationInterrupt(getIterationInterrupt().getValue());
+        String name = convertIterationName(getParameterResolvedValue(ITERATION_NAME_KEY));
+        String type = convertIterationType(getParameterResolvedValue(ITERATION_TYPE_KEY));
+        String list = convertIterationList(getParameterResolvedValue(ITERATION_LIST_KEY));
+        String values = convertIterationValues(getParameterResolvedValue(ITERATION_VALUES_KEY));
+        String from = convertIterationFrom(getParameterResolvedValue(ITERATION_FROM_KEY));
+        String to = convertIterationTo(getParameterResolvedValue(ITERATION_TO_KEY));
+        String step = convertIterationStep(getParameterResolvedValue(ITERATION_STEP_KEY));
+        String condition = convertIterationCondition(getParameterResolvedValue(ITERATION_CONDITION_KEY));
+        boolean interrupt = convertIterationInterrupt(getParameterResolvedValue(ITERATION_INTERRUPT_KEY));
         Iteration iteration = new Iteration(name, type, list, values, from, to, step == null ? "1" : step, condition, interrupt ? "y" : "n");
         this.getExecutionControl().getExecutionRuntime().setIteration(iteration);
         this.getActionExecution().getActionControl().increaseSuccessCount();
@@ -106,10 +53,15 @@ public class FwkSetIteration extends ActionTypeExecution {
         return true;
     }
 
+    @Override
+    protected String getKeyword() {
+        return "fwk.setIteration";
+    }
+
 
     private boolean convertIterationInterrupt(DataType iterationInterrupt) {
         // TODO: remove if different class for every iteration variable
-        if (iterationInterrupt == null) {
+        if (iterationInterrupt == null || iterationInterrupt instanceof Null) {
             return false;
         } else if (iterationInterrupt instanceof Text) {
             return iterationInterrupt.toString().equalsIgnoreCase("y");
@@ -122,7 +74,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationCondition(DataType iterationCondition) {
         // TODO: remove if different class for every iteration variable
-        if (iterationCondition == null) {
+        if (iterationCondition == null || iterationCondition instanceof Null) {
             return null;
         } else if (iterationCondition instanceof Text) {
             return iterationCondition.toString();
@@ -135,7 +87,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationStep(DataType iterationStep) {
         // TODO: remove if different class for every iteration variable
-        if (iterationStep == null) {
+        if (iterationStep == null || iterationStep instanceof Null) {
             return null;
         } else if (iterationStep instanceof Text) {
             return iterationStep.toString();
@@ -148,7 +100,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationTo(DataType iterationTo) {
         // TODO: remove if different class for every iteration variable
-        if (iterationTo == null) {
+        if (iterationTo == null || iterationTo instanceof Null) {
             return null;
         } else if (iterationTo instanceof Text) {
             return iterationTo.toString();
@@ -161,7 +113,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationFrom(DataType iterationFrom) {
         // TODO: remove if different class for every iteration variable
-        if (iterationFrom == null) {
+        if (iterationFrom == null || iterationFrom instanceof Null) {
             return null;
         } else if (iterationFrom instanceof Text) {
             return iterationFrom.toString();
@@ -174,7 +126,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationValues(DataType iterationValues) {
         // TODO: remove if different class for every iteration variable
-        if (iterationValues == null) {
+        if (iterationValues == null || iterationValues instanceof Null) {
             return null;
         } else if (iterationValues instanceof Text) {
             return iterationValues.toString();
@@ -187,7 +139,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationList(DataType iterationList) {
         // TODO: remove if different class for every iteration variable
-        if (iterationList == null) {
+        if (iterationList == null || iterationList instanceof Null) {
             return null;
         } else if (iterationList instanceof Text) {
             return iterationList.toString();
@@ -217,77 +169,4 @@ public class FwkSetIteration extends ActionTypeExecution {
             return iterationName.toString();
         }
     }
-
-    public ActionParameterOperation getIterationName() {
-        return iterationName;
-    }
-
-    public void setIterationName(ActionParameterOperation iterationName) {
-        this.iterationName = iterationName;
-    }
-
-    public ActionParameterOperation getIterationType() {
-        return iterationType;
-    }
-
-    public void setIterationType(ActionParameterOperation iterationType) {
-        this.iterationType = iterationType;
-    }
-
-    public ActionParameterOperation getIterationList() {
-        return iterationList;
-    }
-
-    public void setIterationList(ActionParameterOperation iterationList) {
-        this.iterationList = iterationList;
-    }
-
-    public ActionParameterOperation getIterationValues() {
-        return iterationValues;
-    }
-
-    public void setIterationValues(ActionParameterOperation iterationValues) {
-        this.iterationValues = iterationValues;
-    }
-
-    public ActionParameterOperation getIterationFrom() {
-        return iterationFrom;
-    }
-
-    public void setIterationFrom(ActionParameterOperation iterationFrom) {
-        this.iterationFrom = iterationFrom;
-    }
-
-    public ActionParameterOperation getIterationTo() {
-        return iterationTo;
-    }
-
-    public void setIterationTo(ActionParameterOperation iterationTo) {
-        this.iterationTo = iterationTo;
-    }
-
-    public ActionParameterOperation getIterationStep() {
-        return iterationStep;
-    }
-
-    public void setIterationStep(ActionParameterOperation iterationStep) {
-        this.iterationStep = iterationStep;
-    }
-
-    public ActionParameterOperation getIterationInterrupt() {
-        return iterationInterrupt;
-    }
-
-    public void setIterationInterrupt(ActionParameterOperation iterationInterrupt) {
-        this.iterationInterrupt = iterationInterrupt;
-    }
-
-    public ActionParameterOperation getIterationCondition() {
-        return iterationCondition;
-    }
-
-    public void setIterationCondition(ActionParameterOperation iterationCondition) {
-        this.iterationCondition = iterationCondition;
-    }
-
 }

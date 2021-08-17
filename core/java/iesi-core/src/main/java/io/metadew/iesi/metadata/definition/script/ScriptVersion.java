@@ -10,16 +10,29 @@ import lombok.EqualsAndHashCode;
 public class ScriptVersion extends Metadata<ScriptVersionKey> {
 
     private String description = "Default version";
+    private String createdBy;
+    private String createdAt;
+    private String lastModifiedBy;
+    private String lastModifiedAt;
+
 
     @Builder
-    public ScriptVersion(ScriptVersionKey scriptVersionKey, String description) {
+    public ScriptVersion(ScriptVersionKey scriptVersionKey, String description, String createdBy, String createdAt, String lastModifiedBy, String lastModifiedAt) {
         super(scriptVersionKey);
         this.description = description;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedAt = lastModifiedAt;
     }
 
-    public ScriptVersion(String scriptId, long number, String description) {
+    public ScriptVersion(String scriptId, long number, String description, String createdBy, String createdAt, String lastModifiedBy, String lastModifiedAt) {
         super(new ScriptVersionKey(new ScriptKey(scriptId, number)));
         this.description = description;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedAt = lastModifiedAt;
     }
 
     // Getters and Setters
@@ -37,5 +50,37 @@ public class ScriptVersion extends Metadata<ScriptVersionKey> {
 
     public String getScriptId() {
         return getMetadataKey().getScriptKey().getScriptId();
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+  
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public String getLastModifiedAt() {
+        return lastModifiedAt;
+    }
+
+    public void setLastModifiedAt(String lastModifiedAt) {
+        this.lastModifiedAt = lastModifiedAt;
     }
 }

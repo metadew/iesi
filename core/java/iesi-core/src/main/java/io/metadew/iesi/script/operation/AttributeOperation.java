@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.operation;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
@@ -53,7 +54,7 @@ public class AttributeOperation {
         try {
             while (crs.next()) {
                 String key = crs.getString("COMP_ATT_NM");
-                String value = crs.getString("COMP_ATT_VAL");
+                String value = SQLTools.getStringFromSQLClob(crs, "COMP_ATT_VAL");
                 properties.put(key, value);
                 this.getExecutionControl().logMessage("attribute.name=" + key, Level.DEBUG);
                 this.getExecutionControl().logMessage("attribute.name=" + value, Level.DEBUG);

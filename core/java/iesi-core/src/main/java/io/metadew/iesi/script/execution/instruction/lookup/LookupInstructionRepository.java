@@ -21,7 +21,7 @@ public class LookupInstructionRepository {
         FileLookup fileLookup = new FileLookup();
         lookupInstructions.put(fileLookup.getKeyword(), fileLookup);
         // Coalesce
-        CoalesceLookup coalesceLookup = new CoalesceLookup();
+        CoalesceLookup coalesceLookup = new CoalesceLookup(executionRuntime);
         lookupInstructions.put(coalesceLookup.getKeyword(), coalesceLookup);
         // Environment
         EnvironmentLookup environmentLookup = new EnvironmentLookup();

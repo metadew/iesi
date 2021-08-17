@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,8 +25,13 @@ public class DatasetDtoService implements IDatasetDtoService {
         return datasetDtoRepository.fetchAll(pageable, datasetFilters);
     }
 
-    public List<DatasetImplementationDto> fetchImplementationsByUuid(UUID uuid){
-        return datasetDtoRepository.fetchImplementationsByUuid(uuid);
+    public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid){
+        return datasetDtoRepository.fetchImplementationsByDatasetUuid(datasetUuid);
+    }
+
+    @Override
+    public Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid) {
+        return datasetDtoRepository.fetchImplementationByUuid(uuid);
     }
 
 }

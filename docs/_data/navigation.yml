@@ -1,11 +1,15 @@
 - link: /iesi/index.html
   name: Home
-- link: /iesi/pages/introduction.html
-  name: Introduction
+- link: /iesi/pages/framework.html
+  name: IESI Framework
+- link: /iesi/pages/usecases.html
+  name: Use Cases
 - link: /iesi/pages/download.html
   name: Download
 - link: /iesi/pages/quickstart.html
   name: Quick start
+- link: /iesi/pages/learniesi.html
+  name: Learn about IESI
 - link: /iesi/pages/documentation.html
   name: Documentation
 - link: /iesi/pages/about.html

@@ -41,6 +41,11 @@ public abstract class DatasetImplementationService<T extends DatasetImplementati
     }
 
     @Override
+    public void deleteByDatasetId(DatasetKey datasetKey) {
+        DatasetImplementationConfiguration.getInstance().deleteByDatasetId(datasetKey);
+    }
+
+    @Override
     public void update(T datasetImplementation) {
         DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
     }

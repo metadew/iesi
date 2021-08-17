@@ -29,9 +29,6 @@ public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssembl
         Link selfLink = linkTo(methodOn(EnvironmentsController.class).getByName(environmentDto.getName()))
                 .withSelfRel();
         environmentDto.add(selfLink);
-        Link connectionsLink = linkTo(methodOn(EnvironmentsController.class).getConnections(environmentDto.getName()))
-                .withRel("connections");
-        environmentDto.add(connectionsLink);
         return environmentDto;
     }
 
@@ -45,5 +42,9 @@ public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssembl
 
     private EnvironmentParameterDto convertToDto(EnvironmentParameter environmentParameter) {
         return new EnvironmentParameterDto(environmentParameter.getName(), environmentParameter.getValue());
+    }
+
+    public EnvironmentDto toModel(EnvironmentDto environmentDto){
+        return environmentDto;
     }
 }

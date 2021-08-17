@@ -161,7 +161,8 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
             crsScript.next();
 
             // Get the version
-            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
+            Optional<ScriptVersion> scriptVersion = ScriptVersionConfiguration.getInstance().get(
+                    new ScriptVersionKey(new ScriptKey(scriptKey.getScriptId(), scriptKey.getScriptVersion())));
             if (!scriptVersion.isPresent()) {
                 return Optional.empty();
             }
@@ -374,6 +375,11 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
         }
     }
 
+    @Override
+    public void update(Script script) {
+        ScriptVersionConfiguration.getInstance().update(script.getVersion());
+        getMetadataRepository().executeUpdate(getInsertStatement(script));
+    }
 
     public Optional<Script> getLatestVersion(String scriptName) {
         Optional<ScriptVersion> latestVersion = ScriptVersionConfiguration.getInstance().getLatestVersionNumber(IdentifierTools.getScriptIdentifier(scriptName));

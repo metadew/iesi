@@ -7,31 +7,27 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
-import io.metadew.iesi.script.operation.ActionParameterOperation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Optional;
 
-
+@Log4j2
 public class SqlExecuteQuery extends ActionTypeExecution {
 
     // Parameters
-    private ActionParameterOperation sqlQuery;
-    private ActionParameterOperation connectionName;
-    private ActionParameterOperation outputDataset;
-    private ActionParameterOperation appendOutput;
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final String QUERY_KEY = "query";
+    private static final String CONNECTION_KEY = "connection";
+    private static final String APPEND_OUTPUT_KEY = "appendOutput";
+    private static final String OUTPUT_DATASET_KEY = "outputDataset";
 
 
     public SqlExecuteQuery(ExecutionControl executionControl,
@@ -39,42 +35,14 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepare() {
-        // Set Parameters
-        this.setSqlQuery(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "query"));
-        this.setConnectionName(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "connection"));
-        this.setOutputDataset(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "outputDataset"));
-        this.setAppendOutput(new ActionParameterOperation(this.getExecutionControl(),
-                this.getActionExecution(), this.getActionExecution().getAction().getType(), "appendOutput"));
-
-        // Get Parameters
-        for (ActionParameter actionParameter : this.getActionExecution().getAction().getParameters()) {
-            if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("query")) {
-                this.getSqlQuery().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("connection")) {
-                this.getConnectionName().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("outputdataset")) {
-                this.getOutputDataset().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            } else if (actionParameter.getMetadataKey().getParameterName().equalsIgnoreCase("appendoutput")) {
-                this.getAppendOutput().setInputValue(actionParameter.getValue(), getExecutionControl().getExecutionRuntime());
-            }
-        }
-
-        // Create parameter list
-        this.getActionParameterOperationMap().put("query", this.getSqlQuery());
-        this.getActionParameterOperationMap().put("connection", this.getConnectionName());
-        this.getActionParameterOperationMap().put("outputdataset", this.getOutputDataset());
-        this.getActionParameterOperationMap().put("appendoutput", this.getAppendOutput());
+    public void prepareAction() {
     }
 
     private String convertConnectionName(DataType connectionName) {
         if (connectionName instanceof Text) {
             return connectionName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
+            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for connection name",
                     connectionName.getClass()));
             return connectionName.toString();
         }
@@ -84,7 +52,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         if (query instanceof Text) {
             return query.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for query",
+            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for query",
                     query.getClass()));
             return query.toString();
         }
@@ -94,7 +62,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         if (appendOutput instanceof Text) {
             return appendOutput.toString().equalsIgnoreCase("y");
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
+            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
                     appendOutput.getClass()));
             return false;
         }
@@ -104,17 +72,17 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         if (datasetReferenceName instanceof Text) {
             return datasetReferenceName.toString();
         } else {
-            LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
+            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
                     datasetReferenceName.getClass()));
             return datasetReferenceName.toString();
         }
     }
 
     protected boolean executeAction() throws SQLException, InterruptedException {
-        String query = convertQuery(getSqlQuery().getValue());
-        String connectionName = convertConnectionName(getConnectionName().getValue());
-        String outputDatasetReferenceName = convertDatasetReferenceName(getSqlQuery().getValue());
-        boolean appendOutput = convertAppendOutput(getConnectionName().getValue());
+        String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
+        String outputDatasetReferenceName = convertDatasetReferenceName(getParameterResolvedValue(OUTPUT_DATASET_KEY));
+        boolean appendOutput = convertAppendOutput(getParameterResolvedValue(APPEND_OUTPUT_KEY));
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
@@ -154,42 +122,10 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         return true;
     }
 
-
-    public ActionParameterOperation getConnectionName() {
-        return connectionName;
+    @Override
+    protected String getKeyword() {
+        return "sql.executeQuery";
     }
 
-    public void setConnectionName(ActionParameterOperation connectionName) {
-        this.connectionName = connectionName;
-    }
-
-
-    public ActionParameterOperation getActionParameterOperation(String key) {
-        return this.getActionParameterOperationMap().get(key);
-    }
-
-    public ActionParameterOperation getSqlQuery() {
-        return sqlQuery;
-    }
-
-    public void setSqlQuery(ActionParameterOperation sqlQuery) {
-        this.sqlQuery = sqlQuery;
-    }
-
-    public ActionParameterOperation getOutputDataset() {
-        return outputDataset;
-    }
-
-    public void setOutputDataset(ActionParameterOperation outputDataset) {
-        this.outputDataset = outputDataset;
-    }
-
-    public ActionParameterOperation getAppendOutput() {
-        return appendOutput;
-    }
-
-    public void setAppendOutput(ActionParameterOperation appendOutput) {
-        this.appendOutput = appendOutput;
-    }
 
 }

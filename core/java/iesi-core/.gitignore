@@ -1,9 +1,10 @@
+repository.db3
 *.conf
 /.idea
 *.jardesc
 *.iml
 /src/main/resources/encryption.key
-
+/logs/
 /coverage/
 /run/
 /metadata/

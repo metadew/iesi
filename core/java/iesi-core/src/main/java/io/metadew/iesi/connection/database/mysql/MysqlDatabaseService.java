@@ -1,15 +1,27 @@
 package io.metadew.iesi.connection.database.mysql;
 
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
+import java.util.Optional;
+
 public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> implements ISchemaDatabaseService<MysqlDatabase> {
 
+    private static final String KEYWORD = "db.mysql";
+    private final static String USER_KEY = "user";
+    private final static String PASSWORD_KEY = "password";
+    private final static String SCHEMA_KEY = "schema";
+    private final static String CONNECTION_URL_KEY = "connectionURL";
+    private final static String HOST_KEY = "host";
+    private final static String PORT_KEY = "port";
+    private final static String DATABASE_KEY = "database";
     private static MysqlDatabaseService INSTANCE;
 
-    private static final String keyword= "db.mysql";
+    private MysqlDatabaseService() {
+    }
 
     public synchronized static MysqlDatabaseService getInstance() {
         if (INSTANCE == null) {
@@ -18,16 +30,39 @@ public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> i
         return INSTANCE;
     }
 
-    private MysqlDatabaseService() {}
-
     @Override
     public MysqlDatabase getDatabase(Connection connection) {
-        return null;
+        String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, USER_KEY);
+        String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, PASSWORD_KEY);
+        Optional<String> schemaName = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, SCHEMA_KEY);
+        MysqlDatabaseConnection mysqlDatabaseConnection;
+        if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).isPresent()) {
+            mysqlDatabaseConnection = new MysqlDatabaseConnection(
+                    DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).get(),
+                    userName,
+                    userPassword,
+                    "",
+                    schemaName.orElse(null)
+            );
+            return new MysqlDatabase(mysqlDatabaseConnection, schemaName.orElse(null));
+        }
+        String hostName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, HOST_KEY);
+        int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, PORT_KEY));
+        String databaseName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, DATABASE_KEY);
+        mysqlDatabaseConnection = new MysqlDatabaseConnection(
+                hostName,
+                port,
+                databaseName,
+                userName,
+                userPassword,
+                ""
+        );
+        return new MysqlDatabase(mysqlDatabaseConnection, schemaName.orElse(null));
     }
 
     @Override
     public String keyword() {
-        return keyword;
+        return KEYWORD;
     }
 
     @Override

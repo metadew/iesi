@@ -23,9 +23,9 @@ public class MysqlDatabaseConnection extends SchemaDatabaseConnection {
 //        super(type, connectionURL, userName, userPassword, null);
 //    }
 //
-    public MysqlDatabaseConnection(String hostName, int portNumber, String schemaName, String userName,
+    public MysqlDatabaseConnection(String hostName, int portNumber, String database, String userName,
                                    String userPassword, String connectionInitSql) {
-        this("jdbc:mysql://" + hostName + ":" + portNumber + "/" + schemaName, userName, userPassword, connectionInitSql, schemaName);
+        this("jdbc:mysql://" + hostName + ":" + portNumber + "/" + database, userName, userPassword, connectionInitSql, database);
     }
 
     public MysqlDatabaseConnection(String hostName, int portNumber, String userName,

@@ -61,14 +61,11 @@ class NetezzaConnectionServiceTest {
                 "description",
                 Stream.of(
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "connectionUrl"), "connectionUrl"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         NetezzaDatabase netezzaDatabase = new NetezzaDatabase(
-                new NetezzaDatabaseConnection("connectionUrl", "user", "password", "", null));
+                new NetezzaDatabaseConnection("connectionUrl", "user", "password", ""));
         Assertions.assertEquals(netezzaDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 

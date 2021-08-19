@@ -78,14 +78,11 @@ class PostgresqlConnectionServiceTest {
                 "description",
                 Stream.of(
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "connectionUrl"), "connectionUrl"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         PostgresqlDatabase postgresqlDatabase = new PostgresqlDatabase(
-                new PostgresqlDatabaseConnection("connectionUrl", "user", "password", "", null));
+                new PostgresqlDatabaseConnection("connectionUrl", "user", "password", ""));
         Assertions.assertEquals(postgresqlDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 

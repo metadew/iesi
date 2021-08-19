@@ -61,14 +61,11 @@ class MysqlConnectionServiceTest {
                 "description",
                 Stream.of(
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "connectionUrl"), "connectionUrl"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
                         new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         MysqlDatabase mysqlDatabase = new MysqlDatabase(
-                new MysqlDatabaseConnection("connectionUrl", "user", "password", "", null));
+                new MysqlDatabaseConnection("connectionUrl", "user", "password", ""));
         Assertions.assertEquals(mysqlDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 

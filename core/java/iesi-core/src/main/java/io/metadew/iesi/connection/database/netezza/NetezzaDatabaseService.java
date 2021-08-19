@@ -11,13 +11,13 @@ import java.util.Optional;
 public class NetezzaDatabaseService extends SchemaDatabaseService<NetezzaDatabase> implements ISchemaDatabaseService<NetezzaDatabase> {
 
     private static final String KEYWORD = "db.netezza";
-    private final static String USER_KEY = "user";
-    private final static String PASSWORD_KEY = "password";
-    private final static String SCHEMA_KEY = "schema";
-    private final static String CONNECTION_URL_KEY = "connectionURL";
-    private final static String HOST_KEY = "host";
-    private final static String PORT_KEY = "port";
-    private final static String DATABASE_KEY = "database";
+    private static final String USER_KEY = "user";
+    private static final String PASSWORD_KEY = "password";
+    private static final String SCHEMA_KEY = "schema";
+    private static final String CONNECTION_URL_KEY = "connectionURL";
+    private static final String HOST_KEY = "host";
+    private static final String PORT_KEY = "port";
+    private static final String DATABASE_KEY = "database";
     private static NetezzaDatabaseService INSTANCE;
 
     private NetezzaDatabaseService() {
@@ -48,12 +48,12 @@ public class NetezzaDatabaseService extends SchemaDatabaseService<NetezzaDatabas
         }
         String hostName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, HOST_KEY);
         int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, PORT_KEY));
-        String databaseName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, DATABASE_KEY);
+        String database = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, DATABASE_KEY);
 
         netezzaDatabaseConnection = new NetezzaDatabaseConnection(
                 hostName,
                 port,
-                databaseName,
+                database,
                 userName,
                 userPassword,
                 "",

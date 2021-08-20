@@ -15,17 +15,13 @@ public class MysqlDatabaseConnection extends SchemaDatabaseConnection {
         super(type, connectionURL, userName, userPassword, connectionInitSql);
     }
 
-    public MysqlDatabaseConnection(String connectionURL, String userName, String userPassword, String connectionInitSql, String schema) {
-        super(type, connectionURL, userName, userPassword, connectionInitSql, schema);
+    public MysqlDatabaseConnection(String connectionURL, String userName, String userPassword, String connectionInitSql, String database) {
+        super(type, connectionURL, userName, userPassword, connectionInitSql, database);
     }
 
-    //    public MysqlDatabaseConnection(String connectionURL, String userName, String userPassword) {
-//        super(type, connectionURL, userName, userPassword, null);
-//    }
-//
-    public MysqlDatabaseConnection(String hostName, int portNumber, String schemaName, String userName,
+    public MysqlDatabaseConnection(String hostName, int portNumber, String database, String userName,
                                    String userPassword, String connectionInitSql) {
-        this("jdbc:mysql://" + hostName + ":" + portNumber + "/" + schemaName, userName, userPassword, connectionInitSql, schemaName);
+        this("jdbc:mysql://" + hostName + ":" + portNumber + "/" + database, userName, userPassword, connectionInitSql, database);
     }
 
     public MysqlDatabaseConnection(String hostName, int portNumber, String userName,

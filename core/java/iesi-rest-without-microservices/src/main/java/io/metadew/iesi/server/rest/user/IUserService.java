@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.metadata.definition.user.*;
-import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

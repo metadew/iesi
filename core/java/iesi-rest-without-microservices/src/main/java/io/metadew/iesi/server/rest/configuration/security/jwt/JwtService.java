@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
 import io.metadew.iesi.server.rest.user.AuthenticationResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,7 @@ public class JwtService {
                 .withSubject(authentication.getName())
                 .withIssuedAt(Timestamp.valueOf(now))
                 .withExpiresAt(Timestamp.valueOf(expiresAt))
+                .withClaim("uuid", ((IesiUserDetails) authentication.getPrincipal()).getId().toString())
                 .sign(algorithm);
         return new AuthenticationResponse(token, ChronoUnit.SECONDS.between(now, expiresAt));
     }

@@ -9,7 +9,7 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '.'
+  home: '/home/robbe/git/iesi/core/java/iesi-core'
   security:
     enabled: true
     jwt:

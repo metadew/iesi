@@ -100,6 +100,8 @@ public class UserController {
     @PostMapping("/login")
     public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
         log.trace("authenticating " + authenticationRequest.getUsername());
+        // authenticationManager will load the user details (containing the encrypted password) using the IesiUserDetailManager
+        // and will match the password based on the provided password
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         return jwtService.generateAuthenticationResponse(authentication);
     }

@@ -46,7 +46,6 @@ public class DefaultHttpResponseEntityService implements IHttpResponseEntityServ
                     .orElse(Consts.UTF_8);
             log.info(MessageFormat.format("Writing http response {0} with default interpreter", new Text(new String(s, charset))));
             InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, new Text(new String(s, charset)));
-            InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, "rawbody", new Text(new String(httpResponse.getEntityContent().get(), charset)));
         });
     }
 

@@ -44,7 +44,6 @@ public class TextPlainHttpResponseEntityService implements IHttpResponseEntitySe
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
             InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, new Text(new String(s, charset)));
-            InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, "rawbody", new Text(new String(httpResponse.getEntityContent().get(), charset)));
         });
     }
 

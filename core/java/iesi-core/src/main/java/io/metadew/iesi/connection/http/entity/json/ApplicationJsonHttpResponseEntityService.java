@@ -54,7 +54,6 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
                 log.warn("response does not contain a valid JSON message: " + jsonContent + ". ");
             } else {
                 InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
-                InMemoryDatasetImplementationService.getInstance().setDataItem(dataset, "rawbody", new Text(jsonContent));
             }
         }
     }

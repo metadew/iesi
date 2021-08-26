@@ -43,4 +43,8 @@ public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssembl
     private EnvironmentParameterDto convertToDto(EnvironmentParameter environmentParameter) {
         return new EnvironmentParameterDto(environmentParameter.getName(), environmentParameter.getValue());
     }
+
+    public EnvironmentDto toModel(EnvironmentDto environmentDto){
+        return environmentDto;
+    }
 }

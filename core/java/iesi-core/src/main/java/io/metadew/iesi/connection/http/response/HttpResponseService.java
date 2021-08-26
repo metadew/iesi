@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.http.response;
 
 import io.metadew.iesi.connection.http.entity.HttpResponseEntityHandler;
+import io.metadew.iesi.connection.http.entity._default.DefaultHttpResponseEntityService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
@@ -34,6 +35,7 @@ public class HttpResponseService implements IHttpResponseService {
                         .map(header -> new Text(header.getName() + ":" + header.getValue()))
                         .collect(Collectors.toList())));
         HttpResponseEntityHandler.getInstance().writeToDataset(httpResponse, dataset, "body", executionRuntime);
+        DefaultHttpResponseEntityService.getInstance().writeToDataset(httpResponse, dataset, "rawbody", executionRuntime);
     }
 
     public void traceOutput(HttpResponse httpResponse, ActionControl actionControl) {

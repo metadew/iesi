@@ -8,7 +8,7 @@
 	<name>iesi-cockpit</name>
 
     <properties>
-        <vaadin.version>13.0.7</vaadin.version>
+        <vaadin.version>14.6.8</vaadin.version>
         <jetty.plugin.version>9.4.15.v20190215</jetty.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8

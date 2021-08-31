@@ -116,6 +116,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                                 "' and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.RUN_ID)) {
                         return " script_executions.RUN_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.STATUS)) {
+                        return " script_executions.ST_NM " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
                     }
                     else {
                         return null;

@@ -72,8 +72,8 @@ public class ExecutionRequestController {
                                                   @RequestParam(required = false, name = "environment") String environment,
                                                   @RequestParam(required = false, name = "label") String labelKeyCombination,
                                                   @RequestParam(required = false, name = "run-id") String runId,
-                                                  @RequestParam(required = false, name = "status") String status) {
-        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination, runId, status);
+                                                  @RequestParam(required = false, name = "runStatus") String runStatus) {
+        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination, runId, runStatus);
         Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService
                 .getAll(SecurityContextHolder.getContext().getAuthentication(), pageable, executionRequestFilters);
         if (executionRequestDtoPage.hasContent())
@@ -81,7 +81,7 @@ public class ExecutionRequestController {
         return (PagedModel<ExecutionRequestDto>) executionRequestDtoResourceAssemblerPage.toEmptyModel(executionRequestDtoPage, ExecutionRequestDto.class);
     }
 
-    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination, String runId, String status) {
+    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination, String runId, String runStatus) {
         List<ExecutionRequestFilter> executionRequestFilters = new ArrayList<>();
         if (name != null) {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, name, false));
@@ -98,8 +98,8 @@ public class ExecutionRequestController {
         if (runId != null) {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, runId, false));
         }
-        if (status != null) {
-            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, status, false));
+        if (runStatus != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, runStatus, false));
         }
         return executionRequestFilters;
     }

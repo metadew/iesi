@@ -72,7 +72,7 @@ public class ExecutionRequestController {
                                                   @RequestParam(required = false, name = "environment") String environment,
                                                   @RequestParam(required = false, name = "label") String labelKeyCombination,
                                                   @RequestParam(required = false, name = "run-id") String runId,
-                                                  @RequestParam(required = false, name = "runStatus") String runStatus) {
+                                                  @RequestParam(required = false, name = "run-status") String runStatus) {
         List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination, runId, runStatus);
         Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService
                 .getAll(SecurityContextHolder.getContext().getAuthentication(), pageable, executionRequestFilters);
@@ -99,7 +99,7 @@ public class ExecutionRequestController {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, runId, false));
         }
         if (runStatus != null) {
-            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, runStatus, false));
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, runStatus, true));
         }
         return executionRequestFilters;
     }

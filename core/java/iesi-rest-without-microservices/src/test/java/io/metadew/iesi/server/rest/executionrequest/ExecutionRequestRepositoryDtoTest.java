@@ -445,19 +445,19 @@ class ExecutionRequestRepositoryDtoTest {
         executionRequestDto2.getScriptExecutionRequests().iterator().next().setRunStatus(ScriptRunStatus.WARNING);
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2),
-                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, "SUCCESS", false)).collect(Collectors.toList())))
+                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, "SUCCESS", true)).collect(Collectors.toList())))
                 .containsOnly(
                         (ExecutionRequestDto) executionRequest1Map.get("executionRequestDto")
                 );
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2),
-                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, "WARNING", false)).collect(Collectors.toList())))
+                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, "WARNING", true)).collect(Collectors.toList())))
                 .containsOnly(
                         (ExecutionRequestDto) executionRequest2Map.get("executionRequestDto")
                 );
 
         assertThat(executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2),
-                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, "STOPPED", false)).collect(Collectors.toList())))
+                Stream.of(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, "STOPPED", true)).collect(Collectors.toList())))
                 .isEmpty();
     }
 

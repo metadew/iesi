@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.metadata.componenttypes.MetadataComp
 import io.metadew.iesi.server.rest.componentTypes.dto.ComponentTypeDto;
 import io.metadew.iesi.server.rest.componentTypes.dto.ComponentTypeDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/component-types")
+@ConditionalOnWebApplication
 public class ComponentTypeController {
     private ComponentTypeDtoResourceAssembler componentTypeDtoResourceAssembler;
 

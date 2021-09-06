@@ -58,9 +58,7 @@ public class ExecutionLauncher {
         ScriptExecutorService.getInstance().execute(scriptExecutionRequest);
 
         FrameworkInstance.getInstance().shutdown();
-        System.exit(0
-
-        );
+        System.exit(0);
     }
 
 

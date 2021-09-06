@@ -1,11 +1,19 @@
 package io.metadew.iesi.launch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.connection.http.request.*;
+import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.definition.execution.*;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilder;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilder;
@@ -16,13 +24,21 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionR
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
-import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import org.apache.commons.cli.*;
+import org.apache.http.Consts;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -32,7 +48,7 @@ import java.util.UUID;
  */
 public class ExecutionRequestLauncher {
 
-    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException, IOException {
+    public static void main(String[] args) throws ScriptExecutionRequestBuilderException, ExecutionRequestBuilderException, ParseException, IOException, URISyntaxException, HttpRequestBuilderException, NoSuchAlgorithmException, KeyManagementException {
         ThreadContext.clearAll();
 
         Options options = new Options()
@@ -188,7 +204,7 @@ public class ExecutionRequestLauncher {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
         // TODO: listener of the REST server will pick this up
-        // should do a API call to the REST server
+        String accessToken = loginIntoMaster();
         ExecutionRequestConfiguration.getInstance().insert(executionRequest);
 
 //        if (serverMode.equalsIgnoreCase("off")) {
@@ -203,7 +219,72 @@ public class ExecutionRequestLauncher {
 //        }
 
         FrameworkInstance.getInstance().shutdown();
+        System.exit(0);
     }
 
+    private static String loginIntoMaster() throws IOException, NoSuchAlgorithmException, KeyManagementException, URISyntaxException, HttpRequestBuilderException {
+        String iesiEndpoint = (String) Configuration.getInstance().getMandatoryProperty("iesi.master.endpoint");
+        String iesiUser = (String) Configuration.getInstance().getMandatoryProperty("iesi.master.credentials.user");
+        String iesiUserPassword = (String) Configuration.getInstance().getMandatoryProperty("iesi.master.credentials.user");
+        HttpRequest loginHttpRequest = new HttpRequestBuilder()
+                .jsonBody(String.format("{\"username\":\"%s\",\"password\":\"%s\"}", iesiUser, iesiUserPassword))
+                .type("post")
+                .header("content-type", "application/json")
+                .uri(String.format("%s/api/users/logon", iesiEndpoint))
+                .build();
+        HttpResponse httpResponse = HttpRequestService.getInstance().send(loginHttpRequest);
+        if (httpResponse.getStatusLine().getStatusCode() != 200) {
+            System.out.println("unable to authenticate to master");
+            System.exit(1);
+        }
+        if (!httpResponse.getEntityContent().isPresent()) {
+            System.out.println("unable to interpret login response");
+            System.exit(1);
+        }
+        byte[] loginResponseBytes = httpResponse.getEntityContent().get();
+        Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
+                .map(contentType -> Optional.ofNullable(contentType.getCharset())
+                        .orElse(Consts.UTF_8))
+                .orElse(Consts.UTF_8);
+        String loginResponse = new String(loginResponseBytes, charset);
+        JsonNode loginJsonNode = new ObjectMapper().readTree(loginResponse);
+        if (loginJsonNode.hasNonNull("accessToken")) {
+            System.out.println("unable to obtain access token from login response");
+            System.exit(1);
+        }
+        return loginJsonNode.get("accessToken").asText();
+    }
+
+    private static String sendExecutionRequest(ExecutionRequest executionRequest, String accessToken) throws IOException, NoSuchAlgorithmException, KeyManagementException, URISyntaxException, HttpRequestBuilderException {
+        String iesiEndpoint = (String) Configuration.getInstance().getMandatoryProperty("iesi.master.endpoint");
+        HttpRequest loginHttpRequest = new HttpRequestBuilder()
+                .jsonBody(new ObjectMapper().writeValueAsString(executionRequest))
+                .type("post")
+                .header("Content-Type", "application/json")
+                .header("Authorization", String.format("Bearer %s", accessToken))
+                .uri(String.format("%s/api/execution-requests", iesiEndpoint))
+                .build();
+        HttpResponse httpResponse = HttpRequestService.getInstance().send(loginHttpRequest);
+        if (httpResponse.getStatusLine().getStatusCode() != 200) {
+            System.out.println("unable to create execution request at master");
+            System.exit(1);
+        }
+        if (!httpResponse.getEntityContent().isPresent()) {
+            System.out.println("unable to interpret execution request response");
+            System.exit(1);
+        }
+        byte[] executionRequestResponseBytes = httpResponse.getEntityContent().get();
+        Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
+                .map(contentType -> Optional.ofNullable(contentType.getCharset())
+                        .orElse(Consts.UTF_8))
+                .orElse(Consts.UTF_8);
+        String executionRequestResponse = new String(executionRequestResponseBytes, charset);
+        JsonNode executionRequestJsonNode = new ObjectMapper().readTree(executionRequestResponse);
+        if (executionRequestJsonNode.hasNonNull("id")) {
+            System.out.println("unable to obtain id from execution request response");
+            System.exit(1);
+        }
+        return executionRequestJsonNode.get("is").asText();
+    }
 
 }

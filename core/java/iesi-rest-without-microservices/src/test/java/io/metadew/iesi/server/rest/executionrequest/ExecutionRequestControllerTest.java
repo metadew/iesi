@@ -145,9 +145,9 @@ class ExecutionRequestControllerTest {
                 .requestTimestamp(requestTimestamp)
                 .build();
 
-        when(executionRequestService.createExecutionRequest(argThat(executionRequest -> equalsWithoutUuid(executionRequest, expectedAuthenticatedExecutionRequest))))
-                .thenReturn(expectedAuthenticatedExecutionRequest);
 
+        when(executionRequestService.createExecutionRequest((ExecutionRequest) argThat(executionRequest -> equalsWithoutUuid((ExecutionRequest) executionRequest, expectedAuthenticatedExecutionRequest))))
+                .thenReturn(expectedAuthenticatedExecutionRequest);
         // Perform test method
         ExecutionRequestDto executionRequestDto1 = executionRequestController.post(executionRequestPostDto);
 

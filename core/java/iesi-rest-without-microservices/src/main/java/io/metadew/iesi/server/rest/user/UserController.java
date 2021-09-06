@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +36,7 @@ import java.util.UUID;
 @Log4j2
 // the team controller should be created first as it needs to check if the 'iesi' team is already created.
 @DependsOn("teamsController")
+@ConditionalOnWebApplication
 public class UserController {
 
     private static final String ADMIN_USERNAME = "admin";

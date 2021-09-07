@@ -1,12 +1,14 @@
 package io.metadew.iesi.server.rest.executionrequest.script.dto;
 
-import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
-import io.metadew.iesi.metadata.definition.execution.script.*;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -20,8 +22,8 @@ public class ScriptExecutionRequestPostDto extends RepresentationModel<ScriptExe
 
     private String environment;
     private boolean exit;
-    private Set<ScriptExecutionRequestImpersonationDto> impersonations;
-    private Set<ScriptExecutionRequestParameterDto> parameters;
+    private Set<ScriptExecutionRequestImpersonationDto> impersonations = new HashSet<>();
+    private Set<ScriptExecutionRequestParameterDto> parameters = new HashSet<>();
     private String scriptName;
     private Long scriptVersion;
 

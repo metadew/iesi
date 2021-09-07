@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.configuration.security.jwt;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-// @Profile("security")
+@ConditionalOnWebApplication
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTAuthenticationConverter jwtAuthenticationConverter;

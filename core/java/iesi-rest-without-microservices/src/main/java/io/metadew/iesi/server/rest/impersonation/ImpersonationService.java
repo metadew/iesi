@@ -5,11 +5,13 @@ import io.metadew.iesi.metadata.configuration.impersonation.ImpersonationConfigu
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.server.rest.impersonation.dto.ImpersonationDto;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@ConditionalOnWebApplication
 public class ImpersonationService implements IImpersonationService {
 
     private ImpersonationConfiguration impersonationConfiguration;

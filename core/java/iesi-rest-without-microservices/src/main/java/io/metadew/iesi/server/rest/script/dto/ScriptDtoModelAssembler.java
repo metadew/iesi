@@ -8,14 +8,15 @@ import io.metadew.iesi.server.rest.script.dto.label.IScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.IScriptParameterDtoService;
 import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 
-
 @Component
+@ConditionalOnWebApplication
 public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport<Script, ScriptDto> {
 
     private final IScriptParameterDtoService scriptParameterDtoService;

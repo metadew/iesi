@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Service
+@ConditionalOnWebApplication
 abstract class ExecutionRequestExecutor<T extends ExecutionRequest> implements IExecutionRequestExecutor<T> {
 
     private final ExecutionRequestConfiguration executionRequestConfiguration;

@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.executor.ExecutionRequestExecutorService;
 import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@ConditionalOnWebApplication
 public class ExecutionRequestService implements IExecutionRequestService {
 
     private final ExecutionRequestConfiguration executionRequestConfiguration;

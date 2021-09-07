@@ -6,10 +6,12 @@ import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfigur
 import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
+@ConditionalOnWebApplication
 public class AuthenticatedExecutionRequestExecutor
     extends ExecutionRequestExecutor<AuthenticatedExecutionRequest>
         implements IExecutionRequestExecutor<AuthenticatedExecutionRequest> {
@@ -33,9 +35,6 @@ public class AuthenticatedExecutionRequestExecutor
 
 
     public void checkUserAccess(AuthenticatedExecutionRequest authenticatedExecutionRequest) {
-        if (!authenticationEnabled) {
-            log.info("authentication.disabled:access automatically granted");
-        }
     }
 
 }

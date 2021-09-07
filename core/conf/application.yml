@@ -1,12 +1,11 @@
 iesi:
-  home: ".."
   guard:
     authenticate: N
-#  script:
-#    execution:
-#       runtime: ''
+  #  script:
+  #    execution:
+  #       runtime: ''
   server:
-#    mode: off
+    #    mode: off
     mode: standalone
     threads:
       timeout: 30
@@ -14,4 +13,7 @@ iesi:
     - path: '.'
   master:
     path: '.'
-    endpoint: ''
+    host: 'http://localhost:8080'
+    credentials:
+      user: admin
+      password: admin

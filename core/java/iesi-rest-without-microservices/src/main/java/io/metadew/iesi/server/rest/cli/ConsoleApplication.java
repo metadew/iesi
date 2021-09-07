@@ -141,7 +141,7 @@ public class ConsoleApplication implements CommandLineRunner {
             executionRequestPostDto.setName("scriptLauncher");
             executionRequestPostDto.setScope("execution_request");
             executionRequestPostDto.setContext("on_demand");
-            // TODO: create IESI Rest Template
+            executionRequestPostDto.getScriptExecutionRequests().add(scriptExecutionRequestPostDto);
             ExecutionRequestDto executionRequestDto = masterClient.createExecutionRequest(
                     executionRequestPostDto,
                     authenticationResponse.getAccessToken()

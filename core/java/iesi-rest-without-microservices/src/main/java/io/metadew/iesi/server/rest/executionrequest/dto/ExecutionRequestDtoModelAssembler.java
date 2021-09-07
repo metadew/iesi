@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRe
 import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -19,6 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
+@ConditionalOnWebApplication
 public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemblerSupport<ExecutionRequest, ExecutionRequestDto> {
 
     private final ScriptExecutionRequestDtoModelAssembler scriptExecutionRequestDtoModelAssembler;

@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Log4j2
 @Service
+@ConditionalOnWebApplication
 public class ExecutionRequestExecutorService {
     private final Map<Class<? extends ScriptExecutionRequest>, IExecutionRequestExecutor> executionRequestExecutorMap = new HashMap<>();
     private final ExecutionRequestConfiguration executionRequestConfiguration;

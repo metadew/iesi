@@ -2,11 +2,13 @@ package io.metadew.iesi.server.rest.connectiontypes;
 
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 import io.metadew.iesi.server.rest.connectiontypes.parameter.ConnectionTypeParameterDtoService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
 @Service
+@ConditionalOnWebApplication
 public class ConnectionTypeDtoService implements IConnectionTypeDtoService {
 
     private ConnectionTypeParameterDtoService connectionTypeParameterDtoService;

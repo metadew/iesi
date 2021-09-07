@@ -1,6 +1,8 @@
 #!/bin/bash
-current_dir=$(dirname "${BASH_SOURCE[0]}")
-lib_dir=$current_dir/../lib
+calling_dir=$(pwd)
+relative_dir=$(dirname "${BASH_SOURCE[0]}")
+absolute_dir=$calling_dir/$relative_dir
+lib_dir=$absolute_dir/../lib
 
 classpath="*"
 
@@ -10,8 +12,6 @@ for i in *.jar; do
 done
 
 
-cd $lib_dir
-
 java -Dlog4j.configurationFile=$lib_dir/log4j2.xml -cp $classpath io.metadew.iesi.launch.ExecutionLauncher "$@"
 
-cd $current_dir
+cd $calling_dir

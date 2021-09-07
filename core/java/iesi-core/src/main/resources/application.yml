@@ -14,7 +14,7 @@ iesi:
     - path: '.'
   master:
     path: '.'
-    endpoint: ''
+    host: ''
     credentials:
       user: admin
       password: admin

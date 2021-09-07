@@ -1,25 +1,21 @@
 package io.metadew.iesi.server.rest.cli;
 
 import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
-import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
-import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestService;
+import io.metadew.iesi.server.rest.client.IMasterClient;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestImpersonationDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestParameterDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestPostDto;
+import io.metadew.iesi.server.rest.user.AuthenticationRequest;
+import io.metadew.iesi.server.rest.user.AuthenticationResponse;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -29,24 +25,22 @@ import java.util.Arrays;
 @Log4j2
 public class ConsoleApplication implements CommandLineRunner {
 
-    @Autowired
-    private ConfigurableApplicationContext context;
+    private final ConfigurableApplicationContext context;
+    private final IMasterClient masterClient;
+    private final String defaultIesiUser;
+    private final String defaultIesiPassword;
 
-    //@Autowired
-    // private AuthenticationManager authenticationManager;
-
     @Autowired
-    private ExecutionRequestService executionRequestService;
+    public ConsoleApplication(ConfigurableApplicationContext context, IMasterClient masterClient, Configuration iesiProperties) {
+        this.context = context;
+        this.masterClient = masterClient;
+        this.defaultIesiUser = (String) iesiProperties.getMandatoryProperty("iesi.master.credentials.user");
+        this.defaultIesiPassword = (String) iesiProperties.getMandatoryProperty("iesi.master.credentials.password");
 
-//    @Autowired
-//    private IesiUserDetailsManager iesiUserDetailsManager;
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private Configuration iesiProperties;
+    }
 
     @Override
-    public void run(String... args) throws ParseException {
+    public void run(String... args) throws ParseException, InterruptedException {
         Options options = new Options()
                 .addOption(Option.builder("launch").desc("launch table generator(s)").build())
                 .addOption(Option.builder("script").hasArg().desc("define the script name to execute").build())
@@ -70,9 +64,14 @@ public class ConsoleApplication implements CommandLineRunner {
                 password = new String(console.readPassword("password:"));
             } else {
                 log.info("Option -user (user) missing. Using default user");
-                user = (String) Configuration.getInstance().getMandatoryProperty("iesi.master.credentials.user");
-                password = (String) Configuration.getInstance().getMandatoryProperty("iesi.master.credentials.user");
+                user = defaultIesiUser;
+                password = defaultIesiPassword;
             }
+
+            AuthenticationResponse authenticationResponse = masterClient.login(new AuthenticationRequest(
+                    user,
+                    password
+            )).block();
 
             ExecutionRequestPostDto executionRequestPostDto = new ExecutionRequestPostDto();
             ScriptExecutionRequestPostDto scriptExecutionRequestPostDto = new ScriptExecutionRequestPostDto();
@@ -143,9 +142,11 @@ public class ConsoleApplication implements CommandLineRunner {
             executionRequestPostDto.setScope("execution_request");
             executionRequestPostDto.setContext("on_demand");
             // TODO: create IESI Rest Template
-            // 1. login
-            // 2. post execution request
-            log.info("created execution request: " + "id");
+            ExecutionRequestDto executionRequestDto = masterClient.createExecutionRequest(
+                    executionRequestPostDto,
+                    authenticationResponse.getAccessToken()
+            ).block();
+            log.info("created execution request: " + executionRequestDto.getExecutionRequestId());
             context.close();
             System.exit(0);
         }

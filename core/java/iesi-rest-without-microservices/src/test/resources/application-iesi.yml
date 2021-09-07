@@ -1,17 +1,25 @@
 iesi:
-  home: '.'
   guard:
     authenticate: N
 #  script:
 #    execution:
 #       runtime: ''
   server:
-    mode: off
-#    mode: standalone
-#    threads:
-#      timeout: 30
+#    mode: off
+    mode: standalone
+    threads:
+      timeout: 30
+  home: '.'
+  security:
+    enabled: true
+    jwt:
+      secret: secret
+      expiry-date: 10
   workers:
     - path: '.'
   master:
     path: '.'
-    endpoint: ''
+    host: 'http://localhost:8080'
+    credentials:
+      user: admin
+      password: admin

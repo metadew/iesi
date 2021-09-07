@@ -1,5 +1,4 @@
 iesi:
-  home: "."
   guard:
     authenticate: N
   #  script:
@@ -14,7 +13,7 @@ iesi:
     - path: '.'
   master:
     path: '.'
-    host: ''
+    host: 'http://localhost:8080'
     credentials:
       user: admin
       password: admin

@@ -18,8 +18,6 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -378,6 +376,22 @@ public class ScriptConfiguration extends Configuration<Script, ScriptKey> {
     @Override
     public void update(Script script) {
         ScriptVersionConfiguration.getInstance().update(script.getVersion());
+        ScriptKey scriptKey = script.getMetadataKey();
+
+        ScriptParameterConfiguration.getInstance().deleteByScript(scriptKey);
+        for (ScriptParameter scriptParameter : script.getParameters()) {
+            ScriptParameterConfiguration.getInstance().insert(scriptParameter);
+        }
+
+        ActionConfiguration.getInstance().deleteByScript(scriptKey);
+        for (Action action : script.getActions()) {
+            ActionConfiguration.getInstance().insert(action);
+        }
+
+        ScriptLabelConfiguration.getInstance().deleteByScript(scriptKey);
+        for (ScriptLabel scriptLabel : script.getLabels()) {
+            ScriptLabelConfiguration.getInstance().insert(scriptLabel);
+        }
         getMetadataRepository().executeUpdate(getInsertStatement(script));
     }
 

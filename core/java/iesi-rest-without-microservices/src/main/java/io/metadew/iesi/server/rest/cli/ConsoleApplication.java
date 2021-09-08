@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.cli;
 
 import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.server.rest.client.IMasterClient;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestLabelDto;
@@ -27,13 +28,15 @@ public class ConsoleApplication implements CommandLineRunner {
 
     private final ConfigurableApplicationContext context;
     private final IMasterClient masterClient;
+    private final FrameworkCrypto frameworkCrypto;
     private final String defaultIesiUser;
     private final String defaultIesiPassword;
 
     @Autowired
-    public ConsoleApplication(ConfigurableApplicationContext context, IMasterClient masterClient, Configuration iesiProperties) {
+    public ConsoleApplication(ConfigurableApplicationContext context, IMasterClient masterClient, FrameworkCrypto frameworkCrypto, Configuration iesiProperties) {
         this.context = context;
         this.masterClient = masterClient;
+        this.frameworkCrypto = frameworkCrypto;
         this.defaultIesiUser = (String) iesiProperties.getMandatoryProperty("iesi.master.credentials.user");
         this.defaultIesiPassword = (String) iesiProperties.getMandatoryProperty("iesi.master.credentials.password");
 
@@ -65,7 +68,7 @@ public class ConsoleApplication implements CommandLineRunner {
             } else {
                 log.info("Option -user (user) missing. Using default user");
                 user = defaultIesiUser;
-                password = defaultIesiPassword;
+                password = frameworkCrypto.decryptIfNeeded(defaultIesiPassword);
             }
 
             AuthenticationResponse authenticationResponse = masterClient.login(new AuthenticationRequest(

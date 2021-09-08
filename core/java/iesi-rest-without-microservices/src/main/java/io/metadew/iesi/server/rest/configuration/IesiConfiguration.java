@@ -34,7 +34,6 @@ import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
-import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,12 +55,6 @@ public class IesiConfiguration {
         io.metadew.iesi.common.configuration.Configuration.getInstance();
         MetadataConfiguration.getInstance();
         return FrameworkInstance.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    ExecutionRequestExecutorService executorService() {
-        return ExecutionRequestExecutorService.getInstance();
     }
 
     @Bean

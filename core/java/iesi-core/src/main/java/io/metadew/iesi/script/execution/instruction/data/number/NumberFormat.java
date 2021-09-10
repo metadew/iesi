@@ -22,7 +22,7 @@ public class NumberFormat implements DataInstruction {
         if (inputParameter.find()) {
             try {
                 Double number = Double.parseDouble(inputParameter.group(NUMBER));
-                DecimalFormat format = new DecimalFormat(inputParameter.group(FORMAT));
+                DecimalFormat format = new DecimalFormat(inputParameter.group(FORMAT).replaceAll("\\*", "#"));
                 format.setRoundingMode(RoundingMode.FLOOR);
                 return format.format(number);
             } catch (NumberFormatException e) {

@@ -17,6 +17,7 @@ iesi:
       expiry-date: 10
   workers:
     - path: '.'
+      timeout: 30
   master:
     path: '.'
     host: 'http://localhost:8080'

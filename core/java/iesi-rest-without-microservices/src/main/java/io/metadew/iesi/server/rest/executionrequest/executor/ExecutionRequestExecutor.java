@@ -16,9 +16,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.nio.file.Paths;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -39,7 +41,10 @@ abstract class ExecutionRequestExecutor<T extends ExecutionRequest> implements I
         Collection<Map<String, String>> scriptExecutionWorkersInfo = (Collection<Map<String, String>>) iesiProperties.getMandatoryProperty("iesi.workers");
         scriptExecutionWorkers = new RoundRobin<>(
                 scriptExecutionWorkersInfo.stream()
-                        .map(scriptExecutionWorkerInfo -> new ScriptExecutionWorker(Paths.get(scriptExecutionWorkerInfo.get("path"))))
+                        .map(scriptExecutionWorkerInfo -> new ScriptExecutionWorker(
+                                Paths.get(scriptExecutionWorkerInfo.get("path")),
+                                Long.parseLong(scriptExecutionWorkerInfo.get("timeout")))
+                        )
                         .collect(Collectors.toSet()),
                 ScriptExecutionWorker.class);
     }
@@ -91,7 +96,10 @@ abstract class ExecutionRequestExecutor<T extends ExecutionRequest> implements I
         StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), log::info);
         Executors.newSingleThreadExecutor().submit(streamGobbler);
         // TODO: what to do when failed
-        int exitCode = process.waitFor();
+        boolean exited = process.waitFor(scriptExecutionWorker.getTimeoutInMinutes(), TimeUnit.MINUTES);
+        if (!exited) {
+            process.destroyForcibly();
+        }
     }
 
     abstract void checkUserAccess(T executionRequest);

@@ -8,5 +8,6 @@ import java.nio.file.Path;
 public class ScriptExecutionWorker {
 
     private final Path path;
+    private final Long timeoutInMinutes;
 
 }

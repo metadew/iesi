@@ -6,9 +6,9 @@ import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -19,10 +19,10 @@ import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelPostDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValuePostDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValuePostDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationPostDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -189,7 +189,7 @@ class DatasetsControllerTest {
         UUID uuid = UUID.randomUUID();
 
         List<DatasetImplementationDto> datasetImplementationDtoList = new ArrayList<>();
-        datasetImplementationDtoList.add(new InMemoryDatasetImplementationDto());
+        datasetImplementationDtoList.add(new DatabaseDatasetImplementationDto());
 
         when(datasetDtoService.fetchImplementationsByDatasetUuid(uuid))
                 .thenReturn(datasetImplementationDtoList);
@@ -217,7 +217,7 @@ class DatasetsControllerTest {
     void testGetImplementationByUuid() {
         UUID uuid = UUID.randomUUID();
 
-        DatasetImplementationDto datasetImplementationDto = new InMemoryDatasetImplementationDto();
+        DatasetImplementationDto datasetImplementationDto = new DatabaseDatasetImplementationDto();
 
         when(datasetDtoService.fetchImplementationByUuid(uuid))
                 .thenReturn(Optional.of(datasetImplementationDto));
@@ -246,9 +246,9 @@ class DatasetsControllerTest {
         DatasetPostDto datasetPostDto = DatasetPostDto.builder()
                 .name("dataset")
                 .implementations(Stream.of(
-                        InMemoryDatasetImplementationPostDto.builder()
+                        DatabaseDatasetImplementationPostDto.builder()
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValuePostDto.builder()
+                                        DatabaseDatasetImplementationKeyValuePostDto.builder()
                                                 .key("key1")
                                                 .value("value1")
                                                 .build()
@@ -292,9 +292,9 @@ class DatasetsControllerTest {
                 .name("dataset")
                 .uuid(UUID.randomUUID())
                 .implementations(Stream.of(
-                        InMemoryDatasetImplementationDto.builder()
+                        DatabaseDatasetImplementationDto.builder()
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValueDto.builder()
+                                        DatabaseDatasetImplementationKeyValueDto.builder()
                                                 .uuid(UUID.randomUUID())
                                                 .key("key1")
                                                 .value("value1")
@@ -335,9 +335,9 @@ class DatasetsControllerTest {
         DatasetPostDto datasetPostDto = DatasetPostDto.builder()
                 .name("dataset")
                 .implementations(Stream.of(
-                        InMemoryDatasetImplementationPostDto.builder()
+                        DatabaseDatasetImplementationPostDto.builder()
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValuePostDto.builder()
+                                        DatabaseDatasetImplementationKeyValuePostDto.builder()
                                                 .key("key1")
                                                 .value("value1")
                                                 .build()
@@ -369,9 +369,9 @@ class DatasetsControllerTest {
                 .uuid(datasetUuid)
                 .name("dataset")
                 .implementations(Stream.of(
-                        InMemoryDatasetImplementationPostDto.builder()
+                        DatabaseDatasetImplementationPostDto.builder()
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValuePostDto.builder()
+                                        DatabaseDatasetImplementationKeyValuePostDto.builder()
                                                 .key("key1")
                                                 .value("value1")
                                                 .build()
@@ -382,9 +382,9 @@ class DatasetsControllerTest {
                                                 .build()
                                 ).collect(Collectors.toSet()))
                                 .build(),
-                        InMemoryDatasetImplementationPostDto.builder()
+                        DatabaseDatasetImplementationPostDto.builder()
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValuePostDto.builder()
+                                        DatabaseDatasetImplementationKeyValuePostDto.builder()
                                                 .key("key1")
                                                 .value("value1")
                                                 .build()
@@ -448,9 +448,9 @@ class DatasetsControllerTest {
                 .name("dataset")
                 .uuid(UUID.randomUUID())
                 .implementations(Stream.of(
-                        InMemoryDatasetImplementationDto.builder()
+                        DatabaseDatasetImplementationDto.builder()
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValueDto.builder()
+                                        DatabaseDatasetImplementationKeyValueDto.builder()
                                                 .uuid(UUID.randomUUID())
                                                 .key("key1")
                                                 .value("value1")
@@ -463,9 +463,9 @@ class DatasetsControllerTest {
                                                 .build()
                                 ).collect(Collectors.toSet()))
                                 .build(),
-                        InMemoryDatasetImplementationDto.builder()
+                        DatabaseDatasetImplementationDto.builder()
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValueDto.builder()
+                                        DatabaseDatasetImplementationKeyValueDto.builder()
                                                 .uuid(UUID.randomUUID())
                                                 .key("key1")
                                                 .value("value1")
@@ -659,13 +659,13 @@ class DatasetsControllerTest {
 
 
     public boolean equalsWithoutUuid(DatasetImplementationDto datasetImplementation1, DatasetImplementationDto datasetImplementation2) {
-        if (!(datasetImplementation1 instanceof InMemoryDatasetImplementationDto
-                && datasetImplementation2 instanceof InMemoryDatasetImplementationDto)) {
+        if (!(datasetImplementation1 instanceof DatabaseDatasetImplementationDto
+                && datasetImplementation2 instanceof DatabaseDatasetImplementationDto)) {
             return false;
-        } else if (((InMemoryDatasetImplementationDto) datasetImplementation1).getKeyValues().size() != ((InMemoryDatasetImplementationDto) datasetImplementation2).getKeyValues().size()) {
+        } else if (((DatabaseDatasetImplementationDto) datasetImplementation1).getKeyValues().size() != ((DatabaseDatasetImplementationDto) datasetImplementation2).getKeyValues().size()) {
             return false;
-        } else if (((InMemoryDatasetImplementationDto) datasetImplementation1).getKeyValues().stream()
-                .noneMatch(keyValue1 -> ((InMemoryDatasetImplementationDto) datasetImplementation2).getKeyValues().stream()
+        } else if (((DatabaseDatasetImplementationDto) datasetImplementation1).getKeyValues().stream()
+                .noneMatch(keyValue1 -> ((DatabaseDatasetImplementationDto) datasetImplementation2).getKeyValues().stream()
                         .anyMatch(keyValue2 -> keyValue2.getKey().equals(keyValue1.getKey())
                                 && keyValue2.getValue().equals(keyValue1.getValue())))) {
             return false;

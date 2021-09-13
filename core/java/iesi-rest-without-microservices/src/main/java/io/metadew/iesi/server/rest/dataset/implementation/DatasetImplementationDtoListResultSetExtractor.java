@@ -2,8 +2,8 @@ package io.metadew.iesi.server.rest.dataset.implementation;
 
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueDto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -60,7 +60,7 @@ public class DatasetImplementationDtoListResultSetExtractor {
             String key = rs.getString("dataset_in_mem_impl_kvs_key");
             String clobValue = SQLTools.getStringFromSQLClob(rs, "dataset_in_mem_impl_kvs_value");
             datasetImplementationBuilder.getKeyValues().put(UUID.fromString(inMemoryKeyValueId),
-                    new InMemoryDatasetImplementationKeyValueDto(
+                    new DatabaseDatasetImplementationKeyValueDto(
                             UUID.fromString(inMemoryKeyValueId),
                             key,
                             clobValue)
@@ -111,16 +111,16 @@ public class DatasetImplementationDtoListResultSetExtractor {
     @ToString(callSuper = true)
     private static class InMemoryDatasetImplementationDtoBuilder extends DatasetImplementationDtoBuilder {
 
-        private final Map<UUID, InMemoryDatasetImplementationKeyValueDto> keyValues;
+        private final Map<UUID, DatabaseDatasetImplementationKeyValueDto> keyValues;
 
-        public InMemoryDatasetImplementationDtoBuilder(UUID uuid, Map<UUID, DatasetImplementationLabelDto> datasetImplementationLabels, Map<UUID, InMemoryDatasetImplementationKeyValueDto> keyValues) {
+        public InMemoryDatasetImplementationDtoBuilder(UUID uuid, Map<UUID, DatasetImplementationLabelDto> datasetImplementationLabels, Map<UUID, DatabaseDatasetImplementationKeyValueDto> keyValues) {
             super(uuid, datasetImplementationLabels);
             this.keyValues = keyValues;
         }
 
         @Override
         public DatasetImplementationDto build() {
-            return new InMemoryDatasetImplementationDto(
+            return new DatabaseDatasetImplementationDto(
                     getUuid(),
                     new HashSet<>(getDatasetImplementationLabels().values()),
                     new HashSet<>(getKeyValues().values()));

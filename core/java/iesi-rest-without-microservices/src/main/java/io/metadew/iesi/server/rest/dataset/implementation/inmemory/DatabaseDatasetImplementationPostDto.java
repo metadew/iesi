@@ -17,14 +17,14 @@ import java.util.Set;
 @ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class InMemoryDatasetImplementationPostDto extends DatasetImplementationPostDto {
+public class DatabaseDatasetImplementationPostDto extends DatasetImplementationPostDto {
 
     @NotNull
-    private Set<InMemoryDatasetImplementationKeyValuePostDto> keyValues;
+    private Set<DatabaseDatasetImplementationKeyValuePostDto> keyValues;
 
     @Builder
-    public InMemoryDatasetImplementationPostDto(Set<DatasetImplementationLabelPostDto> labels,
-                                                Set<InMemoryDatasetImplementationKeyValuePostDto> keyValues) {
+    public DatabaseDatasetImplementationPostDto(Set<DatasetImplementationLabelPostDto> labels,
+                                                Set<DatabaseDatasetImplementationKeyValuePostDto> keyValues) {
         super(DatasetImplementationType.IN_MEMORY.value(), labels);
         this.keyValues = keyValues;
     }

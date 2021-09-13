@@ -5,7 +5,7 @@ import io.metadew.iesi.connection.http.entity._default.DefaultHttpResponseEntity
 import io.metadew.iesi.connection.http.entity.json.ApplicationJsonHttpResponseEntityService;
 import io.metadew.iesi.connection.http.entity.plain.TextPlainHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;

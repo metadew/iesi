@@ -10,7 +10,7 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -197,7 +197,7 @@ class DatasetsControllerSecurityTest {
         UUID datasetImplementationUuid = UUID.randomUUID();
         when(datasetDtoService
                 .fetchImplementationByUuid(datasetImplementationUuid))
-                .thenReturn(Optional.of(new InMemoryDatasetImplementationDto()));
+                .thenReturn(Optional.of(new DatabaseDatasetImplementationDto()));
         datasetController.getImplementationByUuid(datasetUuid, datasetImplementationUuid);
     }
 

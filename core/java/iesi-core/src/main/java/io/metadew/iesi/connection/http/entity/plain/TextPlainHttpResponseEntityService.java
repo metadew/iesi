@@ -2,8 +2,8 @@ package io.metadew.iesi.connection.http.entity.plain;
 
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;

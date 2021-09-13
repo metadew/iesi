@@ -8,7 +8,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationJsonComponent;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.*;
+import io.metadew.iesi.datatypes.dataset.implementation.database.*;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelJsonComponent;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;

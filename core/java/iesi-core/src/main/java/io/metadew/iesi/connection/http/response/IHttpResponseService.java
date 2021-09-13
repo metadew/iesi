@@ -1,6 +1,6 @@
 package io.metadew.iesi.connection.http.response;
 
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 
 import java.io.IOException;

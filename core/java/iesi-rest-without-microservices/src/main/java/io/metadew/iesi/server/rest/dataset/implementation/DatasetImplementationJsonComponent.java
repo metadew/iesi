@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
 
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationPostDto;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class DatasetImplementationJsonComponent {
             String type = node.get(Field.TYPE.value()).asText();
 
             if (type.equals(DatasetImplementationType.IN_MEMORY.value())) {
-                return jsonParser.getCodec().treeToValue(node, InMemoryDatasetImplementationPostDto.class);
+                return jsonParser.getCodec().treeToValue(node, DatabaseDatasetImplementationPostDto.class);
             } else {
                 throw new JsonParseException(jsonParser, "Unexpected dataset implementation type: " + jsonParser.getCodec().readTree(jsonParser).toString());
             }

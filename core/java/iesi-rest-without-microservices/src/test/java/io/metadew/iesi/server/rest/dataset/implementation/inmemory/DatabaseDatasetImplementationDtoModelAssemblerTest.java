@@ -2,9 +2,9 @@ package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DatabaseDatasetImplementationDtoModelAssemblerTest {
 
     @Autowired
-    private InMemoryDatasetImplementationDtoModelAssembler inMemoryDatasetImplementationDtoModelAssembler;
+    private DatabaseDatasetImplementationDtoModelAssembler databaseDatasetImplementationDtoModelAssembler;
 
 
     @Test
@@ -42,7 +42,7 @@ class DatabaseDatasetImplementationDtoModelAssemblerTest {
         UUID inMemoryDatasetImplementationKeyValue1Uuid = UUID.randomUUID();
         UUID inMemoryDatasetImplementationKeyValue2Uuid = UUID.randomUUID();
 
-        assertThat(inMemoryDatasetImplementationDtoModelAssembler.toModel(
+        assertThat(databaseDatasetImplementationDtoModelAssembler.toModel(
                 DatabaseDatasetImplementation.builder()
                         .metadataKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                         .datasetKey(new DatasetKey(datasetUuid))
@@ -74,15 +74,15 @@ class DatabaseDatasetImplementationDtoModelAssemblerTest {
                                         .build()
                         ).collect(Collectors.toSet()))
                         .build())
-        ).isEqualTo(InMemoryDatasetImplementationDto.builder()
+        ).isEqualTo(DatabaseDatasetImplementationDto.builder()
                 .uuid(inMemoryDatasetImplementationUuid)
                 .keyValues(Stream.of(
-                        InMemoryDatasetImplementationKeyValueDto.builder()
+                        DatabaseDatasetImplementationKeyValueDto.builder()
                                 .uuid(inMemoryDatasetImplementationKeyValue1Uuid)
                                 .key("key1")
                                 .value("value1")
                                 .build(),
-                        InMemoryDatasetImplementationKeyValueDto.builder()
+                        DatabaseDatasetImplementationKeyValueDto.builder()
                                 .uuid(inMemoryDatasetImplementationKeyValue2Uuid)
                                 .key("key2")
                                 .value("value2")

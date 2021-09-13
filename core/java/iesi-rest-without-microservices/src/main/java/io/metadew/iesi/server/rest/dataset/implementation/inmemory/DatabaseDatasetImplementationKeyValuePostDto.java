@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InMemoryDatasetImplementationKeyValuePostDto {
+public class DatabaseDatasetImplementationKeyValuePostDto {
 
     @NotBlank
     private String key;

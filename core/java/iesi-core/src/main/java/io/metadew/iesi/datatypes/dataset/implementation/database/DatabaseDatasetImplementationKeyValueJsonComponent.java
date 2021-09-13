@@ -1,9 +1,10 @@
-package io.metadew.iesi.datatypes.dataset.implementation.inmemory;
+package io.metadew.iesi.datatypes.dataset.implementation.database;
 
-public class DatabaseDatasetImplementationJsonComponent {
+public class DatabaseDatasetImplementationKeyValueJsonComponent {
 
     public enum Field {
-        KEY_VALUES_KEY("key_values");
+        KEY_KEY("key"),
+        VALUE_KEY("value");
 
         private final String label;
 

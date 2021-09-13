@@ -16,12 +16,12 @@ import java.util.UUID;
 @ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class InMemoryDatasetImplementationDto extends DatasetImplementationDto {
+public class DatabaseDatasetImplementationDto extends DatasetImplementationDto {
 
-    private Set<InMemoryDatasetImplementationKeyValueDto> keyValues;
+    private Set<DatabaseDatasetImplementationKeyValueDto> keyValues;
 
     @Builder
-    public InMemoryDatasetImplementationDto(UUID uuid, Set<DatasetImplementationLabelDto> labels, Set<InMemoryDatasetImplementationKeyValueDto> keyValues) {
+    public DatabaseDatasetImplementationDto(UUID uuid, Set<DatasetImplementationLabelDto> labels, Set<DatabaseDatasetImplementationKeyValueDto> keyValues) {
         super(uuid, DatasetImplementationType.IN_MEMORY.value(), labels);
         this.keyValues = keyValues;
     }

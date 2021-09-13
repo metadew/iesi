@@ -1,8 +1,8 @@
 package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
 import lombok.*;
 
@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InMemoryDatasetImplementationKeyValueDto extends NoEmptyLinksRepresentationModel<InMemoryDatasetImplementationKeyValueDto> {
+public class DatabaseDatasetImplementationKeyValueDto extends NoEmptyLinksRepresentationModel<DatabaseDatasetImplementationKeyValueDto> {
 
     private UUID uuid;
     private String key;

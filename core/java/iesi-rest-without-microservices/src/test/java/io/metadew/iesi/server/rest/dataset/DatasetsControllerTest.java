@@ -6,9 +6,9 @@ import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -265,13 +265,13 @@ class DatasetsControllerTest {
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
                 .name("dataset")
                 .datasetImplementations(Stream.of(
-                        InMemoryDatasetImplementation.builder()
+                        DatabaseDatasetImplementation.builder()
                                 .metadataKey(new DatasetImplementationKey(UUID.randomUUID()))
                                 .datasetKey(new DatasetKey(UUID.randomUUID()))
                                 .name("dataset")
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValue.builder()
-                                                .metadataKey(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                        DatabaseDatasetImplementationKeyValue.builder()
+                                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()))
                                                 .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
                                                 .key("key1")
                                                 .value("value1")
@@ -401,13 +401,13 @@ class DatasetsControllerTest {
                 .metadataKey(new DatasetKey(datasetUuid))
                 .name("dataset")
                 .datasetImplementations(Stream.of(
-                        InMemoryDatasetImplementation.builder()
+                        DatabaseDatasetImplementation.builder()
                                 .metadataKey(new DatasetImplementationKey(UUID.randomUUID()))
                                 .datasetKey(new DatasetKey(UUID.randomUUID()))
                                 .name("dataset")
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValue.builder()
-                                                .metadataKey(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                        DatabaseDatasetImplementationKeyValue.builder()
+                                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()))
                                                 .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
                                                 .key("key1")
                                                 .value("value1")
@@ -421,13 +421,13 @@ class DatasetsControllerTest {
                                                 .build()
                                 ).collect(Collectors.toSet()))
                                 .build(),
-                        InMemoryDatasetImplementation.builder()
+                        DatabaseDatasetImplementation.builder()
                                 .metadataKey(new DatasetImplementationKey(UUID.randomUUID()))
                                 .datasetKey(new DatasetKey(UUID.randomUUID()))
                                 .name("dataset")
                                 .keyValues(Stream.of(
-                                        InMemoryDatasetImplementationKeyValue.builder()
-                                                .metadataKey(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                        DatabaseDatasetImplementationKeyValue.builder()
+                                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()))
                                                 .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
                                                 .key("key1")
                                                 .value("value1")
@@ -636,15 +636,15 @@ class DatasetsControllerTest {
     }
 
     public boolean equalsWithoutUuid(DatasetImplementation datasetImplementation1, DatasetImplementation datasetImplementation2) {
-        if (!(datasetImplementation1 instanceof InMemoryDatasetImplementation
-                && datasetImplementation2 instanceof InMemoryDatasetImplementation)) {
+        if (!(datasetImplementation1 instanceof DatabaseDatasetImplementation
+                && datasetImplementation2 instanceof DatabaseDatasetImplementation)) {
             return false;
         } else if (!datasetImplementation1.getName().equals(datasetImplementation2.getName())) {
             return false;
-        } else if (((InMemoryDatasetImplementation) datasetImplementation1).getKeyValues().size() != ((InMemoryDatasetImplementation) datasetImplementation2).getKeyValues().size()) {
+        } else if (((DatabaseDatasetImplementation) datasetImplementation1).getKeyValues().size() != ((DatabaseDatasetImplementation) datasetImplementation2).getKeyValues().size()) {
             return false;
-        } else if (((InMemoryDatasetImplementation) datasetImplementation1).getKeyValues().stream()
-                .noneMatch(keyValue1 -> ((InMemoryDatasetImplementation) datasetImplementation2).getKeyValues().stream()
+        } else if (((DatabaseDatasetImplementation) datasetImplementation1).getKeyValues().stream()
+                .noneMatch(keyValue1 -> ((DatabaseDatasetImplementation) datasetImplementation2).getKeyValues().stream()
                         .anyMatch(keyValue2 -> keyValue2.getKey().equals(keyValue1.getKey())
                                 && keyValue2.getValue().equals(keyValue1.getValue())))) {
             return false;

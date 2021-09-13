@@ -9,8 +9,8 @@ import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
@@ -73,12 +73,12 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                 .map(datasetLabel -> getExecutionControl().getExecutionRuntime().resolveVariables(datasetLabel))
                 .collect(Collectors.toList());
 
-        InMemoryDatasetImplementation inMemoryDatasetImplementation = InMemoryDatasetImplementationService.getInstance()
+        DatabaseDatasetImplementation databaseDatasetImplementation = DatabaseDatasetImplementationService.getInstance()
                 .getDatasetImplementation(datasetKey, resolvedDatasetLabels)
                 .orElseGet(() -> {
                     log.warn(MessageFormat.format("DatasetImplementation {0}-{1} does not exists. Creating dataset implementation now", datasetName, resolvedDatasetLabels));
                     DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
-                    InMemoryDatasetImplementation newInMemoryDatasetImplementation = new InMemoryDatasetImplementation(
+                    DatabaseDatasetImplementation newDatabaseDatasetImplementation = new DatabaseDatasetImplementation(
                             datasetImplementationKey,
                             datasetKey,
                             datasetName,
@@ -86,11 +86,11 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                                     .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
                                     .collect(Collectors.toSet()),
                             new HashSet<>());
-                    DatasetImplementationConfiguration.getInstance().insert(newInMemoryDatasetImplementation);
-                    return newInMemoryDatasetImplementation;
+                    DatasetImplementationConfiguration.getInstance().insert(newDatabaseDatasetImplementation);
+                    return newDatabaseDatasetImplementation;
                 });
         getExecutionControl().getExecutionRuntime()
-                .setKeyValueDataset(referenceName, inMemoryDatasetImplementation);
+                .setKeyValueDataset(referenceName, databaseDatasetImplementation);
         return true;
     }
 

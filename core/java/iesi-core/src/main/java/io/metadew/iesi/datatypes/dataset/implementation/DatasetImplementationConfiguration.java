@@ -4,14 +4,12 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueConfiguration;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -341,7 +339,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     @Override
     public void insert(DatasetImplementation metadata) {
-        if (metadata instanceof InMemoryDatasetImplementation) {
+        if (metadata instanceof DatabaseDatasetImplementation) {
             getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_QUERY,
                     SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
                     SQLTools.getStringForSQL(metadata.getDatasetKey().getUuid())));
@@ -351,7 +349,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                             SQLTools.getStringForSQL(datasetImplementationLabel.getMetadataKey().getUuid()),
                             SQLTools.getStringForSQL(datasetImplementationLabel.getDatasetImplementationKey().getUuid()),
                             SQLTools.getStringForSQL(datasetImplementationLabel.getValue()))));
-            ((InMemoryDatasetImplementation) metadata).getKeyValues().forEach(inMemoryDatasetImplementationKeyValue ->
+            ((DatabaseDatasetImplementation) metadata).getKeyValues().forEach(inMemoryDatasetImplementationKeyValue ->
                     getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_IN_MEMORY_DATASET_IMPLEMENTATION_KEY_VALUE_QUERY,
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid()),
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
@@ -391,8 +389,8 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
 
             inMemoryDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
-                    new InMemoryDatasetImplementationKeyValue(
-                            new InMemoryDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
+                    new DatabaseDatasetImplementationKeyValue(
+                            new DatabaseDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                             new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
                             key,
                             clobValue)
@@ -465,16 +463,16 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     @ToString(callSuper = true)
     private class InMemoryDatasetImplementationBuilder extends DatasetImplementationBuilder {
 
-        private Map<String, InMemoryDatasetImplementationKeyValue> keyValues;
+        private Map<String, DatabaseDatasetImplementationKeyValue> keyValues;
 
-        public InMemoryDatasetImplementationBuilder(DatasetImplementationKey datasetImplementationKey, DatasetKey datasetKey, String name, Map<String, DatasetImplementationLabel> executionRequestLabels, Map<String, InMemoryDatasetImplementationKeyValue> keyValues) {
+        public InMemoryDatasetImplementationBuilder(DatasetImplementationKey datasetImplementationKey, DatasetKey datasetKey, String name, Map<String, DatasetImplementationLabel> executionRequestLabels, Map<String, DatabaseDatasetImplementationKeyValue> keyValues) {
             super(datasetImplementationKey, datasetKey, name, executionRequestLabels);
             this.keyValues = keyValues;
         }
 
         @Override
         public DatasetImplementation build() {
-            return new InMemoryDatasetImplementation(
+            return new DatabaseDatasetImplementation(
                     getDatasetImplementationKey(),
                     getDatasetKey(),
                     getName(),

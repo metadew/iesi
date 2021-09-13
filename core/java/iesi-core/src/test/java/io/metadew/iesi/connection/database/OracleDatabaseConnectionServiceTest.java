@@ -1,18 +1,9 @@
 package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.oracle.OracleDatabaseConnectionService;
-import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 
 public class OracleDatabaseConnectionServiceTest {
 

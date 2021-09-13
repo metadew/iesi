@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Builder
-public class InMemoryDatasetImplementationKeyValueKey extends MetadataKey {
+public class DatabaseDatasetImplementationKeyValueKey extends MetadataKey {
 
     private UUID uuid = UUID.randomUUID();
 

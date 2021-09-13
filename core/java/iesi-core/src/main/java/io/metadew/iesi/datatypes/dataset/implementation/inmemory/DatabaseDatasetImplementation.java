@@ -8,17 +8,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
 import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class InMemoryDatasetImplementation extends DatasetImplementation {
+public class DatabaseDatasetImplementation extends DatasetImplementation {
 
-    private Set<InMemoryDatasetImplementationKeyValue> keyValues;
+    private Set<DatabaseDatasetImplementationKeyValue> keyValues;
 
     @Builder
-    public InMemoryDatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, Set<DatasetImplementationLabel> datasetImplementationLabels, Set<InMemoryDatasetImplementationKeyValue> keyValues) {
+    public DatabaseDatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, Set<DatasetImplementationLabel> datasetImplementationLabels, Set<DatabaseDatasetImplementationKeyValue> keyValues) {
         super(metadataKey, datasetKey, name, datasetImplementationLabels);
         this.keyValues = keyValues;
     }

@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.rest.dataset.implementation;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -20,8 +20,8 @@ public class DatasetImplementationDtoModelAssembler extends RepresentationModelA
 
     @Override
     public DatasetImplementationDto toModel(DatasetImplementation datasetImplementation) {
-        if (datasetImplementation instanceof InMemoryDatasetImplementation) {
-            return inMemoryDatasetImplementationDtoModelAssembler.toModel((InMemoryDatasetImplementation) datasetImplementation);
+        if (datasetImplementation instanceof DatabaseDatasetImplementation) {
+            return inMemoryDatasetImplementationDtoModelAssembler.toModel((DatabaseDatasetImplementation) datasetImplementation);
         } else {
             throw new RuntimeException();
         }

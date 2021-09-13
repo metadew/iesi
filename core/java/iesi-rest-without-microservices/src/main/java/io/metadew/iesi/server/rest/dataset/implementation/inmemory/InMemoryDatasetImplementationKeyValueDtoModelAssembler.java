@@ -1,13 +1,13 @@
 package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValue;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 @Component
-public class InMemoryDatasetImplementationKeyValueDtoModelAssembler extends RepresentationModelAssemblerSupport<InMemoryDatasetImplementationKeyValue, InMemoryDatasetImplementationKeyValueDto> {
+public class InMemoryDatasetImplementationKeyValueDtoModelAssembler extends RepresentationModelAssemblerSupport<DatabaseDatasetImplementationKeyValue, InMemoryDatasetImplementationKeyValueDto> {
 
     @Autowired
     public InMemoryDatasetImplementationKeyValueDtoModelAssembler() {
@@ -15,12 +15,12 @@ public class InMemoryDatasetImplementationKeyValueDtoModelAssembler extends Repr
     }
 
     @Override
-    public InMemoryDatasetImplementationKeyValueDto toModel(InMemoryDatasetImplementationKeyValue inMemoryDatasetImplementationKeyValue) {
-        InMemoryDatasetImplementationKeyValueDto inMemoryDatasetImplementationKeyValueDto = instantiateModel(inMemoryDatasetImplementationKeyValue);
+    public InMemoryDatasetImplementationKeyValueDto toModel(DatabaseDatasetImplementationKeyValue databaseDatasetImplementationKeyValue) {
+        InMemoryDatasetImplementationKeyValueDto inMemoryDatasetImplementationKeyValueDto = instantiateModel(databaseDatasetImplementationKeyValue);
 
-        inMemoryDatasetImplementationKeyValueDto.setUuid(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid());
-        inMemoryDatasetImplementationKeyValueDto.setKey(inMemoryDatasetImplementationKeyValue.getKey());
-        inMemoryDatasetImplementationKeyValueDto.setValue(inMemoryDatasetImplementationKeyValue.getValue());
+        inMemoryDatasetImplementationKeyValueDto.setUuid(databaseDatasetImplementationKeyValue.getMetadataKey().getUuid());
+        inMemoryDatasetImplementationKeyValueDto.setKey(databaseDatasetImplementationKeyValue.getKey());
+        inMemoryDatasetImplementationKeyValueDto.setValue(databaseDatasetImplementationKeyValue.getValue());
         return inMemoryDatasetImplementationKeyValueDto;
     }
 

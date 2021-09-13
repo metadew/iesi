@@ -2,8 +2,8 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
@@ -39,11 +39,11 @@ public class DatasetLookup implements LookupInstruction {
         // TODO: parse with antlr
 
         String[] arguments = splitInput(parameters);
-        InMemoryDatasetImplementation dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
+        DatabaseDatasetImplementation dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
         DataType lookupVariable = convertLookupVariable(DataTypeHandler.getInstance().resolve(arguments[1].trim(), executionRuntime));
         Optional<DataType> matchedDataItem;
         if (lookupVariable instanceof Text) {
-            matchedDataItem = InMemoryDatasetImplementationService.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);
+            matchedDataItem = DatabaseDatasetImplementationService.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Cannot lookup {0} in dataset {1}", lookupVariable, dataset.toString()));
         }
@@ -59,12 +59,12 @@ public class DatasetLookup implements LookupInstruction {
         return lookupVariable;
     }
 
-    private InMemoryDatasetImplementation getDataset(DataType dataset) {
+    private DatabaseDatasetImplementation getDataset(DataType dataset) {
         if (dataset instanceof Text) {
             return executionRuntime.getDataset(((Text) dataset).getString())
                     .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No dataset found with reference name {0}", ((Text) dataset).getString())));
-        } else if (dataset instanceof InMemoryDatasetImplementation) {
-            return (InMemoryDatasetImplementation) dataset;
+        } else if (dataset instanceof DatabaseDatasetImplementation) {
+            return (DatabaseDatasetImplementation) dataset;
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Dataset cannot be of type {0}", dataset.getClass()));
         }

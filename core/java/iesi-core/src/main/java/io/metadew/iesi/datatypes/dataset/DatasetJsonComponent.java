@@ -59,17 +59,17 @@ public class DatasetJsonComponent {
 
                 String type = implementationNode.get(DatasetImplementationJsonComponent.Field.TYPE_KEY.value()).asText();
                 if (type.equalsIgnoreCase(DatasetImplementationType.IN_MEMORY.value())) {
-                    Set<InMemoryDatasetImplementationKeyValue> keyValues = new HashSet<>();
-                    for (JsonNode keyValueNode : implementationNode.get(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
-                        keyValues.add(InMemoryDatasetImplementationKeyValue.builder()
-                                .metadataKey(new InMemoryDatasetImplementationKeyValueKey())
+                    Set<DatabaseDatasetImplementationKeyValue> keyValues = new HashSet<>();
+                    for (JsonNode keyValueNode : implementationNode.get(DatabaseDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
+                        keyValues.add(DatabaseDatasetImplementationKeyValue.builder()
+                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey())
                                 .datasetImplementationKey(datasetImplementationKey)
-                                .key(keyValueNode.get(InMemoryDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
-                                .value(keyValueNode.get(InMemoryDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText())
+                                .key(keyValueNode.get(DatabaseDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
+                                .value(keyValueNode.get(DatabaseDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText())
                                 .build());
                     }
                     datasetImplementations.add(
-                            InMemoryDatasetImplementation.builder()
+                            DatabaseDatasetImplementation.builder()
                                     .metadataKey(datasetImplementationKey)
                                     .datasetKey(datasetKey)
                                     .name(name)
@@ -110,13 +110,13 @@ public class DatasetJsonComponent {
                 }
                 jsonGenerator.writeEndArray();
 
-                if (datasetImplementation instanceof InMemoryDatasetImplementation) {
+                if (datasetImplementation instanceof DatabaseDatasetImplementation) {
                     jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.IN_MEMORY.value());
-                    jsonGenerator.writeArrayFieldStart(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
-                    for (InMemoryDatasetImplementationKeyValue inMemoryDatasetImplementationKeyValue : ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues()) {
+                    jsonGenerator.writeArrayFieldStart(DatabaseDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
+                    for (DatabaseDatasetImplementationKeyValue databaseDatasetImplementationKeyValue : ((DatabaseDatasetImplementation) datasetImplementation).getKeyValues()) {
                         jsonGenerator.writeStartObject();
-                        jsonGenerator.writeStringField(InMemoryDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), inMemoryDatasetImplementationKeyValue.getKey());
-                        jsonGenerator.writeStringField(InMemoryDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), inMemoryDatasetImplementationKeyValue.getValue());
+                        jsonGenerator.writeStringField(DatabaseDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), databaseDatasetImplementationKeyValue.getKey());
+                        jsonGenerator.writeStringField(DatabaseDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), databaseDatasetImplementationKeyValue.getValue());
                         jsonGenerator.writeEndObject();
                     }
                     jsonGenerator.writeEndArray();

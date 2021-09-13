@@ -5,7 +5,7 @@ package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationController;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDtoModelAssembler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryDatasetImplementationDtoModelAssembler extends RepresentationModelAssemblerSupport<InMemoryDatasetImplementation, InMemoryDatasetImplementationDto> {
+public class InMemoryDatasetImplementationDtoModelAssembler extends RepresentationModelAssemblerSupport<DatabaseDatasetImplementation, InMemoryDatasetImplementationDto> {
 
     private final InMemoryDatasetImplementationKeyValueDtoModelAssembler inMemoryDatasetImplementationKeyValueDtoModelAssembler;
     private final DatasetImplementationLabelDtoModelAssembler datasetImplementationLabelDtoModelAssembler;
@@ -28,15 +28,15 @@ public class InMemoryDatasetImplementationDtoModelAssembler extends Representati
     }
 
     @Override
-    public InMemoryDatasetImplementationDto toModel(InMemoryDatasetImplementation inMemoryDatasetImplementation) {
-        InMemoryDatasetImplementationDto inMemoryDatasetImplementationDto = instantiateModel(inMemoryDatasetImplementation);
+    public InMemoryDatasetImplementationDto toModel(DatabaseDatasetImplementation databaseDatasetImplementation) {
+        InMemoryDatasetImplementationDto inMemoryDatasetImplementationDto = instantiateModel(databaseDatasetImplementation);
 
-        inMemoryDatasetImplementationDto.setUuid(inMemoryDatasetImplementation.getMetadataKey().getUuid());
+        inMemoryDatasetImplementationDto.setUuid(databaseDatasetImplementation.getMetadataKey().getUuid());
         inMemoryDatasetImplementationDto.setType(DatasetImplementationType.IN_MEMORY.value());
-        inMemoryDatasetImplementationDto.setKeyValues(inMemoryDatasetImplementation.getKeyValues().stream()
+        inMemoryDatasetImplementationDto.setKeyValues(databaseDatasetImplementation.getKeyValues().stream()
                 .map(inMemoryDatasetImplementationKeyValueDtoModelAssembler::toModel)
                 .collect(Collectors.toSet()));
-        inMemoryDatasetImplementationDto.setLabels(inMemoryDatasetImplementation.getDatasetImplementationLabels().stream()
+        inMemoryDatasetImplementationDto.setLabels(databaseDatasetImplementation.getDatasetImplementationLabels().stream()
                 .map(datasetImplementationLabelDtoModelAssembler::toModel)
                 .collect(Collectors.toSet())
         );

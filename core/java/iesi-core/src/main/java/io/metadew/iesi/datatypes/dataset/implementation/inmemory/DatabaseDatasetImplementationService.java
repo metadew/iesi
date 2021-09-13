@@ -23,36 +23,36 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class InMemoryDatasetImplementationService extends DatasetImplementationService<InMemoryDatasetImplementation> implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
+public class DatabaseDatasetImplementationService extends DatasetImplementationService<DatabaseDatasetImplementation> implements IDatabaseDatasetImplementationService, IDataTypeService<DatabaseDatasetImplementation> {
 
-    private static InMemoryDatasetImplementationService instance;
+    private static DatabaseDatasetImplementationService instance;
 
-    public static synchronized InMemoryDatasetImplementationService getInstance() {
+    public static synchronized DatabaseDatasetImplementationService getInstance() {
         if (instance == null) {
-            instance = new InMemoryDatasetImplementationService();
+            instance = new DatabaseDatasetImplementationService();
         }
         return instance;
     }
 
-    private InMemoryDatasetImplementationService() {
+    private DatabaseDatasetImplementationService() {
     }
 
     @Override
-    public Optional<InMemoryDatasetImplementation> getDatasetImplementation(String name, List<String> labels) {
+    public Optional<DatabaseDatasetImplementation> getDatasetImplementation(String name, List<String> labels) {
         return DatasetImplementationConfiguration.getInstance().getByNameAndLabels(name, labels)
-                .map(datasetImplementation -> (InMemoryDatasetImplementation) datasetImplementation);
+                .map(datasetImplementation -> (DatabaseDatasetImplementation) datasetImplementation);
     }
 
     @Override
-    public Optional<InMemoryDatasetImplementation> getDatasetImplementation(DatasetKey datasetKey, List<String> labels) {
+    public Optional<DatabaseDatasetImplementation> getDatasetImplementation(DatasetKey datasetKey, List<String> labels) {
         return DatasetImplementationConfiguration.getInstance().getByDatasetIdAndLabels(datasetKey, labels)
-                .map(datasetImplementation -> (InMemoryDatasetImplementation) datasetImplementation);
+                .map(datasetImplementation -> (DatabaseDatasetImplementation) datasetImplementation);
     }
 
     @Override
-    public InMemoryDatasetImplementation createNewDatasetImplementation(Dataset dataset, List<String> labels) {
+    public DatabaseDatasetImplementation createNewDatasetImplementation(Dataset dataset, List<String> labels) {
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
-        InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
+        DatabaseDatasetImplementation databaseDatasetImplementation = new DatabaseDatasetImplementation(
                 datasetImplementationKey,
                 dataset.getMetadataKey(),
                 dataset.getName(),
@@ -61,14 +61,14 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
                         .collect(Collectors.toSet()),
                 new HashSet<>()
         );
-        DatasetImplementationConfiguration.getInstance().insert(inMemoryDatasetImplementation);
-        return inMemoryDatasetImplementation;
+        DatasetImplementationConfiguration.getInstance().insert(databaseDatasetImplementation);
+        return databaseDatasetImplementation;
     }
 
     @Override
-    public InMemoryDatasetImplementation createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels) {
+    public DatabaseDatasetImplementation createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels) {
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
-        InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
+        DatabaseDatasetImplementation databaseDatasetImplementation = new DatabaseDatasetImplementation(
                 datasetImplementationKey,
                 datasetKey,
                 name,
@@ -77,12 +77,12 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
                         .collect(Collectors.toSet()),
                 new HashSet<>()
         );
-        DatasetImplementationConfiguration.getInstance().insert(inMemoryDatasetImplementation);
-        return inMemoryDatasetImplementation;
+        DatasetImplementationConfiguration.getInstance().insert(databaseDatasetImplementation);
+        return databaseDatasetImplementation;
     }
 
     @Override
-    public InMemoryDatasetImplementation createNewDatasetImplementation(String name, List<String> labels) {
+    public DatabaseDatasetImplementation createNewDatasetImplementation(String name, List<String> labels) {
         Dataset dataset = DatasetConfiguration.getInstance().getByName(name)
                 .orElseGet(() -> {
                     Dataset newDataset = new Dataset(new DatasetKey(), name, new HashSet<>());
@@ -91,7 +91,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
                 });
 
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
-        InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
+        DatabaseDatasetImplementation databaseDatasetImplementation = new DatabaseDatasetImplementation(
                 datasetImplementationKey,
                 dataset.getMetadataKey(),
                 dataset.getName(),
@@ -100,104 +100,104 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
                         .collect(Collectors.toSet()),
                 new HashSet<>()
         );
-        DatasetImplementationConfiguration.getInstance().insert(inMemoryDatasetImplementation);
-        return inMemoryDatasetImplementation;
+        DatasetImplementationConfiguration.getInstance().insert(databaseDatasetImplementation);
+        return databaseDatasetImplementation;
     }
 
     @Override
-    public void clean(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
-        InMemoryDatasetImplementationService.getInstance().getDataItems(datasetImplementation, executionRuntime)
+    public void clean(DatabaseDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
+        DatabaseDatasetImplementationService.getInstance().getDataItems(datasetImplementation, executionRuntime)
                 .forEach((s, dataType) -> deleteDataType(dataType, executionRuntime));
         datasetImplementation.setKeyValues(new HashSet<>());
         DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
     }
 
     @Override
-    public void delete(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
-        InMemoryDatasetImplementationService.getInstance().getDataItems(datasetImplementation, executionRuntime)
+    public void delete(DatabaseDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
+        DatabaseDatasetImplementationService.getInstance().getDataItems(datasetImplementation, executionRuntime)
                 .forEach((s, dataType) -> deleteDataType(dataType, executionRuntime));
         DatasetImplementationConfiguration.getInstance().delete(datasetImplementation.getMetadataKey());
     }
 
     private void deleteDataType(DataType dataType, ExecutionRuntime executionRuntime) {
-        if (dataType instanceof InMemoryDatasetImplementation) {
-            delete((InMemoryDatasetImplementation) dataType, executionRuntime);
+        if (dataType instanceof DatabaseDatasetImplementation) {
+            delete((DatabaseDatasetImplementation) dataType, executionRuntime);
         } else if (dataType instanceof Array) {
             ((Array) dataType).getList().forEach(element -> deleteDataType(element, executionRuntime));
         }
     }
 
     @Override
-    public Optional<DataType> getDataItem(InMemoryDatasetImplementation datasetImplementation, String dataItem, ExecutionRuntime executionRuntime) {
-        return InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
+    public Optional<DataType> getDataItem(DatabaseDatasetImplementation datasetImplementation, String dataItem, ExecutionRuntime executionRuntime) {
+        return DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationIdAndKey(datasetImplementation.getMetadataKey(), dataItem)
                 .map(inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime));
     }
 
     @Override
-    public Map<String, DataType> getDataItems(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
+    public Map<String, DataType> getDataItems(DatabaseDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
         // https://bugs.openjdk.java.net/browse/JDK-8148463
-        return InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
+        return DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationId(datasetImplementation.getMetadataKey())
                 .stream()
                 .collect(Collectors.toMap(
-                        InMemoryDatasetImplementationKeyValue::getKey,
+                        DatabaseDatasetImplementationKeyValue::getKey,
                         inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance()
                                 .resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime))
                 );
     }
 
     @Override
-    public void setDataItem(InMemoryDatasetImplementation datasetImplementation, String key, DataType value) {
-        Optional<InMemoryDatasetImplementationKeyValue> inMemoryDatasetImplementationKeyValue = InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
+    public void setDataItem(DatabaseDatasetImplementation datasetImplementation, String key, DataType value) {
+        Optional<DatabaseDatasetImplementationKeyValue> inMemoryDatasetImplementationKeyValue = DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationIdAndKey(datasetImplementation.getMetadataKey(), key);
         if (inMemoryDatasetImplementationKeyValue.isPresent()) {
             inMemoryDatasetImplementationKeyValue.get().setValue(value.toString());
-            InMemoryDatasetImplementationKeyValueConfiguration.getInstance().update(inMemoryDatasetImplementationKeyValue.get());
+            DatabaseDatasetImplementationKeyValueConfiguration.getInstance().update(inMemoryDatasetImplementationKeyValue.get());
         } else {
-            InMemoryDatasetImplementationKeyValue newInMemoryDatasetImplementationKeyValue = new InMemoryDatasetImplementationKeyValue(
-                    new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+            DatabaseDatasetImplementationKeyValue newDatabaseDatasetImplementationKeyValue = new DatabaseDatasetImplementationKeyValue(
+                    new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
                     datasetImplementation.getMetadataKey(),
                     key,
                     value.toString()
             );
-            datasetImplementation.getKeyValues().add(newInMemoryDatasetImplementationKeyValue);
-            InMemoryDatasetImplementationKeyValueConfiguration.getInstance()
-                    .insert(newInMemoryDatasetImplementationKeyValue);
+            datasetImplementation.getKeyValues().add(newDatabaseDatasetImplementationKeyValue);
+            DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
+                    .insert(newDatabaseDatasetImplementationKeyValue);
         }
     }
 
     @Override
-    public boolean isEmpty(InMemoryDatasetImplementation datasetImplementation) {
+    public boolean isEmpty(DatabaseDatasetImplementation datasetImplementation) {
         return DatasetImplementationConfiguration.getInstance().isEmpty(datasetImplementation.getMetadataKey());
     }
 
-    public DataType resolve(InMemoryDatasetImplementation dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) {
+    public DataType resolve(DatabaseDatasetImplementation dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-        InMemoryDatasetImplementation inMemoryDatasetImplementation = getObjectDataset(dataset, key);
+        DatabaseDatasetImplementation databaseDatasetImplementation = getObjectDataset(dataset, key);
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
-            DataType object = DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementation, field.getKey(), field.getValue(), executionRuntime);
-            setDataItem(inMemoryDatasetImplementation, field.getKey(), object);
+            DataType object = DataTypeHandler.getInstance().resolve(databaseDatasetImplementation, field.getKey(), field.getValue(), executionRuntime);
+            setDataItem(databaseDatasetImplementation, field.getKey(), object);
         }
-        return inMemoryDatasetImplementation;
+        return databaseDatasetImplementation;
     }
 
-    private InMemoryDatasetImplementation getObjectDataset(InMemoryDatasetImplementation inMemoryDatasetImplementation, String keyPrefix) {
+    private DatabaseDatasetImplementation getObjectDataset(DatabaseDatasetImplementation databaseDatasetImplementation, String keyPrefix) {
         if (keyPrefix != null) {
-            List<String> labels = inMemoryDatasetImplementation.getDatasetImplementationLabels().stream()
+            List<String> labels = databaseDatasetImplementation.getDatasetImplementationLabels().stream()
                     .map(DatasetImplementationLabel::getValue)
                     .collect(Collectors.toList());
             labels.add(UUID.randomUUID().toString());
-            return createNewDatasetImplementation(inMemoryDatasetImplementation.getDatasetKey(), inMemoryDatasetImplementation.getName(), labels);
+            return createNewDatasetImplementation(databaseDatasetImplementation.getDatasetKey(), databaseDatasetImplementation.getName(), labels);
         } else {
-            return inMemoryDatasetImplementation;
+            return databaseDatasetImplementation;
         }
     }
 
     @Override
-    public Class<InMemoryDatasetImplementation> appliesTo() {
-        return InMemoryDatasetImplementation.class;
+    public Class<DatabaseDatasetImplementation> appliesTo() {
+        return DatabaseDatasetImplementation.class;
     }
 
     @Override
@@ -206,7 +206,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
     }
 
     @Override
-    public InMemoryDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
+    public DatabaseDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Dataset Implementation", arguments));
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
         if (splittedArguments.size() == 2) {
@@ -271,7 +271,7 @@ public class InMemoryDatasetImplementationService extends DatasetImplementationS
     }
 
     @Override
-    public boolean equals(InMemoryDatasetImplementation _this, InMemoryDatasetImplementation other, ExecutionRuntime executionRuntime) {
+    public boolean equals(DatabaseDatasetImplementation _this, DatabaseDatasetImplementation other, ExecutionRuntime executionRuntime) {
         if (_this == null && other == null) {
             return true;
         }

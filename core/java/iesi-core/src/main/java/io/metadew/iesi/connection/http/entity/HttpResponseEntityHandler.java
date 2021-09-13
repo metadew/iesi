@@ -5,7 +5,7 @@ import io.metadew.iesi.connection.http.entity._default.DefaultHttpResponseEntity
 import io.metadew.iesi.connection.http.entity.json.ApplicationJsonHttpResponseEntityService;
 import io.metadew.iesi.connection.http.entity.plain.TextPlainHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.DatabaseDatasetImplementation;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
@@ -38,12 +38,12 @@ public class HttpResponseEntityHandler implements IHttpResponseEntityHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public void writeToDataset(HttpResponseEntityStrategy httpResponseEntityStrategy, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
+    public void writeToDataset(HttpResponseEntityStrategy httpResponseEntityStrategy, DatabaseDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         getHttpResponseEntityService(httpResponseEntityStrategy).writeToDataset(httpResponseEntityStrategy, dataset, key, executionRuntime);
     }
 
     @Override
-    public void writeToDataset(HttpResponse httpResponse, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
+    public void writeToDataset(HttpResponse httpResponse, DatabaseDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         if (httpResponse.getHeaders().stream()
                 .filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
                 .count() > 1) {

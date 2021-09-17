@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationJsonComponent;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
+import io.metadew.iesi.datatypes.dataset.implementation.*;
 import io.metadew.iesi.datatypes.dataset.implementation.database.*;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelJsonComponent;
@@ -59,10 +56,10 @@ public class DatasetJsonComponent {
 
                 String type = implementationNode.get(DatasetImplementationJsonComponent.Field.TYPE_KEY.value()).asText();
                 if (type.equalsIgnoreCase(DatasetImplementationType.IN_MEMORY.value())) {
-                    Set<DatabaseDatasetImplementationKeyValue> keyValues = new HashSet<>();
+                    Set<DatasetImplementationKeyValue> keyValues = new HashSet<>();
                     for (JsonNode keyValueNode : implementationNode.get(DatabaseDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
-                        keyValues.add(DatabaseDatasetImplementationKeyValue.builder()
-                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey())
+                        keyValues.add(DatasetImplementationKeyValue.builder()
+                                .metadataKey(new DatasetImplementationKeyValueKey())
                                 .datasetImplementationKey(datasetImplementationKey)
                                 .key(keyValueNode.get(DatabaseDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
                                 .value(keyValueNode.get(DatabaseDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText())
@@ -113,10 +110,10 @@ public class DatasetJsonComponent {
                 if (datasetImplementation instanceof DatabaseDatasetImplementation) {
                     jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.IN_MEMORY.value());
                     jsonGenerator.writeArrayFieldStart(DatabaseDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
-                    for (DatabaseDatasetImplementationKeyValue databaseDatasetImplementationKeyValue : ((DatabaseDatasetImplementation) datasetImplementation).getKeyValues()) {
+                    for (DatasetImplementationKeyValue datasetImplementationKeyValue : ((DatabaseDatasetImplementation) datasetImplementation).getKeyValues()) {
                         jsonGenerator.writeStartObject();
-                        jsonGenerator.writeStringField(DatabaseDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), databaseDatasetImplementationKeyValue.getKey());
-                        jsonGenerator.writeStringField(DatabaseDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), databaseDatasetImplementationKeyValue.getValue());
+                        jsonGenerator.writeStringField(DatabaseDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), datasetImplementationKeyValue.getKey());
+                        jsonGenerator.writeStringField(DatabaseDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), datasetImplementationKeyValue.getValue());
                         jsonGenerator.writeEndObject();
                     }
                     jsonGenerator.writeEndArray();

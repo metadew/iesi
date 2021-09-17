@@ -2,8 +2,8 @@ package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 
@@ -51,14 +51,14 @@ public class DatasetBuilder {
                                                             .map(keyValueIndex -> {
                                                                 UUID datasetImplementationKeyValueUUID = UUID.randomUUID();
                                                                 info.put(String.format("datasetImplementation%dKeyValue%dUUID", implementationIndex, keyValueIndex), datasetImplementationKeyValueUUID);
-                                                                DatabaseDatasetImplementationKeyValue databaseDatasetImplementationKeyValue = DatabaseDatasetImplementationKeyValue.builder()
-                                                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(datasetImplementationKeyValueUUID))
+                                                                DatasetImplementationKeyValue datasetImplementationKeyValue = DatasetImplementationKeyValue.builder()
+                                                                        .metadataKey(new DatasetImplementationKeyValueKey(datasetImplementationKeyValueUUID))
                                                                         .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUUID))
                                                                         .key(String.format("key%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
                                                                         .value(String.format("value%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
                                                                         .build();
-                                                                info.put(String.format("datasetImplementation%dKeyValue%d", implementationIndex, keyValueIndex), databaseDatasetImplementationKeyValue);
-                                                                return databaseDatasetImplementationKeyValue;
+                                                                info.put(String.format("datasetImplementation%dKeyValue%d", implementationIndex, keyValueIndex), datasetImplementationKeyValue);
+                                                                return datasetImplementationKeyValue;
                                                             }).collect(Collectors.toSet())
                                             )
                                             .build();

@@ -7,8 +7,8 @@ import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
@@ -276,8 +276,8 @@ class DatasetDtoRepositoryTest {
                                                                 UUID datasetImplementationKeyValueUUID = UUID.randomUUID();
                                                                 info.put(String.format("datasetImplementation%dKeyValue%dUUID", implementationIndex, keyValueIndex), datasetImplementationKeyValueUUID);
 
-                                                                return DatabaseDatasetImplementationKeyValue.builder()
-                                                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(datasetImplementationKeyValueUUID))
+                                                                return DatasetImplementationKeyValue.builder()
+                                                                        .metadataKey(new DatasetImplementationKeyValueKey(datasetImplementationKeyValueUUID))
                                                                         .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUUID))
                                                                         .key(String.format("key%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
                                                                         .value(String.format("value%d%d%d", datasetIndex, implementationIndex, keyValueIndex))

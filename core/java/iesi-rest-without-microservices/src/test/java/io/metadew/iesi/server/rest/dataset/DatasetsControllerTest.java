@@ -7,8 +7,8 @@ import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -270,8 +270,8 @@ class DatasetsControllerTest {
                                 .datasetKey(new DatasetKey(UUID.randomUUID()))
                                 .name("dataset")
                                 .keyValues(Stream.of(
-                                        DatabaseDatasetImplementationKeyValue.builder()
-                                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                        DatasetImplementationKeyValue.builder()
+                                                .metadataKey(new DatasetImplementationKeyValueKey(UUID.randomUUID()))
                                                 .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
                                                 .key("key1")
                                                 .value("value1")
@@ -406,8 +406,8 @@ class DatasetsControllerTest {
                                 .datasetKey(new DatasetKey(UUID.randomUUID()))
                                 .name("dataset")
                                 .keyValues(Stream.of(
-                                        DatabaseDatasetImplementationKeyValue.builder()
-                                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                        DatasetImplementationKeyValue.builder()
+                                                .metadataKey(new DatasetImplementationKeyValueKey(UUID.randomUUID()))
                                                 .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
                                                 .key("key1")
                                                 .value("value1")
@@ -426,8 +426,8 @@ class DatasetsControllerTest {
                                 .datasetKey(new DatasetKey(UUID.randomUUID()))
                                 .name("dataset")
                                 .keyValues(Stream.of(
-                                        DatabaseDatasetImplementationKeyValue.builder()
-                                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                        DatasetImplementationKeyValue.builder()
+                                                .metadataKey(new DatasetImplementationKeyValueKey(UUID.randomUUID()))
                                                 .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
                                                 .key("key1")
                                                 .value("value1")

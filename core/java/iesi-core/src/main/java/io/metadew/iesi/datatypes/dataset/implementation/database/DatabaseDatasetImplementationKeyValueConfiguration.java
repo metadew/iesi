@@ -4,6 +4,8 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import lombok.extern.log4j.Log4j2;
 
@@ -16,7 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
-public class DatabaseDatasetImplementationKeyValueConfiguration extends Configuration<DatabaseDatasetImplementationKeyValue, DatabaseDatasetImplementationKeyValueKey> {
+public class DatabaseDatasetImplementationKeyValueConfiguration extends Configuration<DatasetImplementationKeyValue, DatasetImplementationKeyValueKey> {
 
     private static final String EXISTS_QUERY = "SELECT " +
             "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
@@ -70,10 +72,10 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
     }
 
     @Override
-    public boolean exists(DatabaseDatasetImplementationKeyValueKey databaseDatasetImplementationKeyValueKey) {
+    public boolean exists(DatasetImplementationKeyValueKey datasetImplementationKeyValueKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(EXISTS_QUERY, SQLTools.getStringForSQL(databaseDatasetImplementationKeyValueKey.getUuid())),
+                    MessageFormat.format(EXISTS_QUERY, SQLTools.getStringForSQL(datasetImplementationKeyValueKey.getUuid())),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -82,13 +84,13 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
     }
 
     @Override
-    public Optional<DatabaseDatasetImplementationKeyValue> get(DatabaseDatasetImplementationKeyValueKey databaseDatasetImplementationKeyValueKey) {
+    public Optional<DatasetImplementationKeyValue> get(DatasetImplementationKeyValueKey datasetImplementationKeyValueKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(SELECT_SINGLE_QUERY, SQLTools.getStringForSQL(databaseDatasetImplementationKeyValueKey.getUuid())),
+                    MessageFormat.format(SELECT_SINGLE_QUERY, SQLTools.getStringForSQL(datasetImplementationKeyValueKey.getUuid())),
                     "reader");
             if (cachedRowSet.size() > 1) {
-                log.warn(String.format("found more than 1 %s with id %s", DatabaseDatasetImplementationKeyValue.class.getSimpleName(), databaseDatasetImplementationKeyValueKey));
+                log.warn(String.format("found more than 1 %s with id %s", DatasetImplementationKeyValue.class.getSimpleName(), datasetImplementationKeyValueKey));
             }
             if (cachedRowSet.next()) {
                 return Optional.of(mapRow(cachedRowSet));
@@ -100,32 +102,32 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
         }
     }
 
-    public List<DatabaseDatasetImplementationKeyValue> getByDatasetImplementationId(DatasetImplementationKey datasetImplementationKey) {
+    public List<DatasetImplementationKeyValue> getByDatasetImplementationId(DatasetImplementationKey datasetImplementationKey) {
         try {
-            List<DatabaseDatasetImplementationKeyValue> databaseDatasetImplementationKeyValues = new LinkedList<>();
+            List<DatasetImplementationKeyValue> datasetImplementationKeyValues = new LinkedList<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(SELECT_BY_DATASET_IMPL_ID_QUERY,
                             SQLTools.getStringForSQL(datasetImplementationKey.getUuid())),
                     "reader");
             while (cachedRowSet.next()) {
-                databaseDatasetImplementationKeyValues.add(mapRow(cachedRowSet));
+                datasetImplementationKeyValues.add(mapRow(cachedRowSet));
             }
-            return databaseDatasetImplementationKeyValues;
+            return datasetImplementationKeyValues;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Optional<DatabaseDatasetImplementationKeyValue> getByDatasetImplementationIdAndKey(DatasetImplementationKey datasetImplementationKey, String key) {
+    public Optional<DatasetImplementationKeyValue> getByDatasetImplementationIdAndKey(DatasetImplementationKey datasetImplementationKey, String key) {
         try {
-            List<DatabaseDatasetImplementationKeyValue> databaseDatasetImplementationKeyValues = new LinkedList<>();
+            List<DatasetImplementationKeyValue> datasetImplementationKeyValues = new LinkedList<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(SELECT_BY_DATASET_IMPL_ID_AND_KEY_QUERY,
                             SQLTools.getStringForSQL(datasetImplementationKey.getUuid()),
                             SQLTools.getStringForSQL(key)),
                     "reader");
             if (cachedRowSet.size() > 1) {
-                log.warn(String.format("found more than 1 %s with dataset implementation id %s and key %s", DatabaseDatasetImplementationKeyValue.class.getSimpleName(), datasetImplementationKey, key));
+                log.warn(String.format("found more than 1 %s with dataset implementation id %s and key %s", DatasetImplementationKeyValue.class.getSimpleName(), datasetImplementationKey, key));
             }
             if (cachedRowSet.next()) {
                 return Optional.of(mapRow(cachedRowSet));
@@ -138,25 +140,25 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
     }
 
     @Override
-    public List<DatabaseDatasetImplementationKeyValue> getAll() {
+    public List<DatasetImplementationKeyValue> getAll() {
         try {
-            List<DatabaseDatasetImplementationKeyValue> databaseDatasetImplementationKeyValues = new LinkedList<>();
+            List<DatasetImplementationKeyValue> datasetImplementationKeyValues = new LinkedList<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     SELECT_QUERY,
                     "reader");
             while (cachedRowSet.next()) {
-                databaseDatasetImplementationKeyValues.add(mapRow(cachedRowSet));
+                datasetImplementationKeyValues.add(mapRow(cachedRowSet));
             }
-            return databaseDatasetImplementationKeyValues;
+            return datasetImplementationKeyValues;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void delete(DatabaseDatasetImplementationKeyValueKey databaseDatasetImplementationKeyValueKey) {
+    public void delete(DatasetImplementationKeyValueKey datasetImplementationKeyValueKey) {
         getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_QUERY,
-                SQLTools.getStringForSQL(databaseDatasetImplementationKeyValueKey.getUuid())));
+                SQLTools.getStringForSQL(datasetImplementationKeyValueKey.getUuid())));
     }
 
     public void deleteByDatasetImplementationId(DatasetImplementationKey datasetImplementationKey) {
@@ -165,35 +167,35 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
     }
 
     @Override
-    public void insert(DatabaseDatasetImplementationKeyValue databaseDatasetImplementationKeyValue) {
+    public void insert(DatasetImplementationKeyValue datasetImplementationKeyValue) {
         getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_QUERY,
-                SQLTools.getStringForSQL(databaseDatasetImplementationKeyValue.getMetadataKey().getUuid()),
-                SQLTools.getStringForSQL(databaseDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
-                SQLTools.getStringForSQL(databaseDatasetImplementationKeyValue.getKey()),
-                SQLTools.getStringForSQLClob(databaseDatasetImplementationKeyValue.getValue(),
+                SQLTools.getStringForSQL(datasetImplementationKeyValue.getMetadataKey().getUuid()),
+                SQLTools.getStringForSQL(datasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
+                SQLTools.getStringForSQL(datasetImplementationKeyValue.getKey()),
+                SQLTools.getStringForSQLClob(datasetImplementationKeyValue.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
                                 .orElseThrow(RuntimeException::new))));
     }
 
     @Override
-    public void update(DatabaseDatasetImplementationKeyValue databaseDatasetImplementationKeyValue) {
+    public void update(DatasetImplementationKeyValue datasetImplementationKeyValue) {
         getMetadataRepository().executeUpdate(MessageFormat.format(UPDATE_QUERY,
-                SQLTools.getStringForSQL(databaseDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
-                SQLTools.getStringForSQL(databaseDatasetImplementationKeyValue.getKey()),
-                SQLTools.getStringForSQLClob(databaseDatasetImplementationKeyValue.getValue(),
+                SQLTools.getStringForSQL(datasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
+                SQLTools.getStringForSQL(datasetImplementationKeyValue.getKey()),
+                SQLTools.getStringForSQLClob(datasetImplementationKeyValue.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
                                 .orElseThrow(RuntimeException::new)),
-                SQLTools.getStringForSQL(databaseDatasetImplementationKeyValue.getMetadataKey().getUuid())));
+                SQLTools.getStringForSQL(datasetImplementationKeyValue.getMetadataKey().getUuid())));
     }
 
-    public DatabaseDatasetImplementationKeyValue mapRow(CachedRowSet cachedRowSet) throws SQLException {
+    public DatasetImplementationKeyValue mapRow(CachedRowSet cachedRowSet) throws SQLException {
         String inMemoryKeyValueId = cachedRowSet.getString("dataset_in_mem_impl_kv_id");
         String key = cachedRowSet.getString("dataset_in_mem_impl_kvs_key");
         String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
-        return new DatabaseDatasetImplementationKeyValue(
-                new DatabaseDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
+        return new DatasetImplementationKeyValue(
+                new DatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                 new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
                 key,
                 clobValue);

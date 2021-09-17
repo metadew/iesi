@@ -4,8 +4,8 @@ import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -242,8 +242,8 @@ class DatasetConfigurationTest {
                                         .build()
                         ).collect(Collectors.toSet()),
                         Stream.of(
-                                DatabaseDatasetImplementationKeyValue.builder()
-                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                DatasetImplementationKeyValue.builder()
+                                        .metadataKey(new DatasetImplementationKeyValueKey(UUID.randomUUID()))
                                         .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUuid))
                                         .key("key1")
                                         .value("Value1")

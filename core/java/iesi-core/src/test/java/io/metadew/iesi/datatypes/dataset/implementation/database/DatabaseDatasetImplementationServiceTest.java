@@ -11,6 +11,8 @@ import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
@@ -238,13 +240,13 @@ class DatabaseDatasetImplementationServiceTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationIdAndKey(new DatasetImplementationKey((UUID) datasetMap.get("datasetImplementation0UUID")), "key000"))
                 .isPresent()
-                .map(DatabaseDatasetImplementationKeyValue::getValue)
+                .map(DatasetImplementationKeyValue::getValue)
                 .get()
                 .isEqualTo("value000");
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationIdAndKey(new DatasetImplementationKey((UUID) datasetMap.get("datasetImplementation0UUID")), "key"))
                 .isPresent()
-                .map(DatabaseDatasetImplementationKeyValue::getValue)
+                .map(DatasetImplementationKeyValue::getValue)
                 .get()
                 .isEqualTo("value");
     }
@@ -266,7 +268,7 @@ class DatabaseDatasetImplementationServiceTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationIdAndKey(new DatasetImplementationKey((UUID) datasetMap.get("datasetImplementation0UUID")), "key000"))
                 .isPresent()
-                .map(DatabaseDatasetImplementationKeyValue::getValue)
+                .map(DatasetImplementationKeyValue::getValue)
                 .get()
                 .isEqualTo("value001");
     }
@@ -303,14 +305,14 @@ class DatabaseDatasetImplementationServiceTest {
                 .hasSize(2)
                 .usingElementComparatorOnFields("key", "value")
                 .containsOnly(
-                        new DatabaseDatasetImplementationKeyValue(
-                                new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new DatasetImplementationKeyValue(
+                                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 datasetImplementationKey,
                                 "key1",
                                 "value1"
                         ),
-                        new DatabaseDatasetImplementationKeyValue(
-                                new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new DatasetImplementationKeyValue(
+                                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 datasetImplementationKey,
                                 "key2",
                                 "value2"
@@ -370,8 +372,8 @@ class DatabaseDatasetImplementationServiceTest {
                 .hasSize(1)
                 .usingElementComparatorOnFields("key")
                 .containsOnly(
-                        new DatabaseDatasetImplementationKeyValue(
-                                new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new DatasetImplementationKeyValue(
+                                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 datasetImplementationKey,
                                 "key1",
                                 "dataset"
@@ -384,8 +386,8 @@ class DatabaseDatasetImplementationServiceTest {
                 .hasSize(1)
                 .usingElementComparatorOnFields("key")
                 .containsOnly(
-                        new DatabaseDatasetImplementationKeyValue(
-                                new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new DatasetImplementationKeyValue(
+                                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 datasetImplementationKey,
                                 "key2",
                                 "value2"

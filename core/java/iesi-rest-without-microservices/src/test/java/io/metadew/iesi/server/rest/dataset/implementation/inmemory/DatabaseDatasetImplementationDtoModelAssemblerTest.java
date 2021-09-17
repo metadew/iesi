@@ -3,8 +3,8 @@ package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
@@ -48,14 +48,14 @@ class DatabaseDatasetImplementationDtoModelAssemblerTest {
                         .datasetKey(new DatasetKey(datasetUuid))
                         .name("dataset")
                         .keyValues(Stream.of(
-                                DatabaseDatasetImplementationKeyValue.builder()
-                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue1Uuid))
+                                DatasetImplementationKeyValue.builder()
+                                        .metadataKey(new DatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue1Uuid))
                                         .datasetImplementationKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                                         .key("key1")
                                         .value("value1")
                                         .build(),
-                                DatabaseDatasetImplementationKeyValue.builder()
-                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue2Uuid))
+                                DatasetImplementationKeyValue.builder()
+                                        .metadataKey(new DatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue2Uuid))
                                         .datasetImplementationKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                                         .key("key2")
                                         .value("value2")

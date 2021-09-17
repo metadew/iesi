@@ -9,9 +9,7 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.*;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
@@ -141,7 +139,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
                 .getByDatasetImplementationId(datasetImplementation.getMetadataKey())
                 .stream()
                 .collect(Collectors.toMap(
-                        DatabaseDatasetImplementationKeyValue::getKey,
+                        DatasetImplementationKeyValue::getKey,
                         inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance()
                                 .resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime))
                 );
@@ -149,21 +147,21 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public void setDataItem(DatabaseDatasetImplementation datasetImplementation, String key, DataType value) {
-        Optional<DatabaseDatasetImplementationKeyValue> inMemoryDatasetImplementationKeyValue = DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
+        Optional<DatasetImplementationKeyValue> inMemoryDatasetImplementationKeyValue = DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationIdAndKey(datasetImplementation.getMetadataKey(), key);
         if (inMemoryDatasetImplementationKeyValue.isPresent()) {
             inMemoryDatasetImplementationKeyValue.get().setValue(value.toString());
             DatabaseDatasetImplementationKeyValueConfiguration.getInstance().update(inMemoryDatasetImplementationKeyValue.get());
         } else {
-            DatabaseDatasetImplementationKeyValue newDatabaseDatasetImplementationKeyValue = new DatabaseDatasetImplementationKeyValue(
-                    new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
+            DatasetImplementationKeyValue newDatasetImplementationKeyValue = new DatasetImplementationKeyValue(
+                    new DatasetImplementationKeyValueKey(UUID.randomUUID()),
                     datasetImplementation.getMetadataKey(),
                     key,
                     value.toString()
             );
-            datasetImplementation.getKeyValues().add(newDatabaseDatasetImplementationKeyValue);
+            datasetImplementation.getKeyValues().add(newDatasetImplementationKeyValue);
             DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
-                    .insert(newDatabaseDatasetImplementationKeyValue);
+                    .insert(newDatasetImplementationKeyValue);
         }
     }
 
@@ -209,7 +207,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
     public DatabaseDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Dataset Implementation", arguments));
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
-        if (splittedArguments.size() == 2) {
+        if (splittedArguments.size() == 3) {
             List<DataType> resolvedArguments = splittedArguments.stream()
                     .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
                     .collect(Collectors.toList());

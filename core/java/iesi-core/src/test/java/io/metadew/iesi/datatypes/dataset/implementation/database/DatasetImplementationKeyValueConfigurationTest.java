@@ -5,6 +5,8 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +19,7 @@ import java.util.UUID;
 import static io.metadew.iesi.datatypes.dataset.DatasetBuilder.generateDataset;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DatabaseDatasetImplementationKeyValueConfigurationTest {
+class DatasetImplementationKeyValueConfigurationTest {
 
     @BeforeAll
     static void prepare() {
@@ -47,7 +49,7 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
         DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
-                .exists(new DatabaseDatasetImplementationKeyValueKey((UUID) datasetMap.get("datasetImplementation0KeyValue0UUID"))))
+                .exists(new DatasetImplementationKeyValueKey((UUID) datasetMap.get("datasetImplementation0KeyValue0UUID"))))
                 .isTrue();
     }
 
@@ -56,7 +58,7 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
         DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
-                .exists(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID())))
+                .exists(new DatasetImplementationKeyValueKey(UUID.randomUUID())))
                 .isFalse();
     }
 
@@ -66,8 +68,8 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
         DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
-                .get(new DatabaseDatasetImplementationKeyValueKey((UUID) datasetMap.get("datasetImplementation0KeyValue0UUID"))))
-                .hasValue((DatabaseDatasetImplementationKeyValue) datasetMap.get("datasetImplementation0KeyValue0"));
+                .get(new DatasetImplementationKeyValueKey((UUID) datasetMap.get("datasetImplementation0KeyValue0UUID"))))
+                .hasValue((DatasetImplementationKeyValue) datasetMap.get("datasetImplementation0KeyValue0"));
     }
 
 
@@ -75,7 +77,7 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
     void testGetByIdDoesNotExist() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 0);
         DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance().get(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID())))
+        assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance().get(new DatasetImplementationKeyValueKey(UUID.randomUUID())))
                 .isEmpty();
     }
 
@@ -88,10 +90,10 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
                 .containsOnly(
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
     }
 
     @Test
@@ -103,8 +105,8 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationId(new DatasetImplementationKey((UUID) datasetMap2.get("datasetImplementation0UUID"))))
                 .containsOnly(
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"));
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"));
     }
 
     @Test
@@ -115,7 +117,7 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         DatasetConfiguration.getInstance().insert((Dataset) datasetMap2.get("dataset"));
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationIdAndKey(new DatasetImplementationKey((UUID) datasetMap2.get("datasetImplementation0UUID")), "key200"))
-                .hasValue((DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"));
+                .hasValue((DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"));
     }
 
     @Test
@@ -127,27 +129,27 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
                 .containsOnly(
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
         DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
-                .update(new DatabaseDatasetImplementationKeyValue(
-                        new DatabaseDatasetImplementationKeyValueKey((UUID) datasetMap2.get("datasetImplementation0KeyValue0UUID")),
+                .update(new DatasetImplementationKeyValue(
+                        new DatasetImplementationKeyValueKey((UUID) datasetMap2.get("datasetImplementation0KeyValue0UUID")),
                         new DatasetImplementationKey((UUID) datasetMap2.get("datasetImplementation0UUID")),
                         "key",
                         "value")
                 );
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
-                .containsOnly(new DatabaseDatasetImplementationKeyValue(
-                                new DatabaseDatasetImplementationKeyValueKey((UUID) datasetMap2.get("datasetImplementation0KeyValue0UUID")),
+                .containsOnly(new DatasetImplementationKeyValue(
+                                new DatasetImplementationKeyValueKey((UUID) datasetMap2.get("datasetImplementation0KeyValue0UUID")),
                                 new DatasetImplementationKey((UUID) datasetMap2.get("datasetImplementation0UUID")),
                                 "key",
                                 "value"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
     }
 
     @Test
@@ -177,25 +179,25 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
                 .containsOnly(
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
         DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
-                .delete(new DatabaseDatasetImplementationKeyValueKey((UUID) datasetMap2.get("datasetImplementation0KeyValue0UUID")));
+                .delete(new DatasetImplementationKeyValueKey((UUID) datasetMap2.get("datasetImplementation0KeyValue0UUID")));
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
                 .containsOnly(
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
         DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
-                .delete(new DatabaseDatasetImplementationKeyValueKey((UUID) datasetMap1.get("datasetImplementation0KeyValue0UUID")));
+                .delete(new DatasetImplementationKeyValueKey((UUID) datasetMap1.get("datasetImplementation0KeyValue0UUID")));
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
                 .containsOnly(
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
     }
 
     @Test
@@ -210,8 +212,8 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
                 .containsOnly(
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
     }
 
     @Test
@@ -223,14 +225,14 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
                 .containsOnly(
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
-        DatabaseDatasetImplementationKeyValueKey databaseDatasetImplementationKeyValueKey = new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID());
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+        DatasetImplementationKeyValueKey datasetImplementationKeyValueKey = new DatasetImplementationKeyValueKey(UUID.randomUUID());
         DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
-                .insert(new DatabaseDatasetImplementationKeyValue(
-                        databaseDatasetImplementationKeyValueKey,
+                .insert(new DatasetImplementationKeyValue(
+                        datasetImplementationKeyValueKey,
                         new DatasetImplementationKey((UUID) datasetMap1.get("datasetImplementation0UUID")),
                         "key",
                         "value")
@@ -238,15 +240,15 @@ class DatabaseDatasetImplementationKeyValueConfigurationTest {
         assertThat(DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getAll())
                 .containsOnly(
-                        new DatabaseDatasetImplementationKeyValue(
-                                databaseDatasetImplementationKeyValueKey,
+                        new DatasetImplementationKeyValue(
+                                datasetImplementationKeyValueKey,
                                 new DatasetImplementationKey((UUID) datasetMap1.get("datasetImplementation0UUID")),
                                 "key",
                                 "value"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
-                        (DatabaseDatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap2.get("datasetImplementation0KeyValue1"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation0KeyValue0"),
+                        (DatasetImplementationKeyValue) datasetMap1.get("datasetImplementation1KeyValue0"));
     }
 
 }

@@ -5,8 +5,6 @@ import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfig
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.Configuration;
@@ -389,8 +387,8 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
 
             inMemoryDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
-                    new DatabaseDatasetImplementationKeyValue(
-                            new DatabaseDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
+                    new DatasetImplementationKeyValue(
+                            new DatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                             new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
                             key,
                             clobValue)
@@ -463,9 +461,9 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     @ToString(callSuper = true)
     private class InMemoryDatasetImplementationBuilder extends DatasetImplementationBuilder {
 
-        private Map<String, DatabaseDatasetImplementationKeyValue> keyValues;
+        private Map<String, DatasetImplementationKeyValue> keyValues;
 
-        public InMemoryDatasetImplementationBuilder(DatasetImplementationKey datasetImplementationKey, DatasetKey datasetKey, String name, Map<String, DatasetImplementationLabel> executionRequestLabels, Map<String, DatabaseDatasetImplementationKeyValue> keyValues) {
+        public InMemoryDatasetImplementationBuilder(DatasetImplementationKey datasetImplementationKey, DatasetKey datasetKey, String name, Map<String, DatasetImplementationLabel> executionRequestLabels, Map<String, DatasetImplementationKeyValue> keyValues) {
             super(datasetImplementationKey, datasetKey, name, executionRequestLabels);
             this.keyValues = keyValues;
         }

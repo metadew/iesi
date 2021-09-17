@@ -1,8 +1,8 @@
 package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
 @DirtiesContext
-class DatabaseDatasetImplementationKeyValueDtoModelAssemblerTest {
+class DatasetImplementationKeyValueDtoModelAssemblerTest {
 
     @Autowired
     private DatabaseDatasetImplementationKeyValueDtoModelAssembler databaseDatasetImplementationKeyValueDtoModelAssembler;
@@ -30,8 +30,8 @@ class DatabaseDatasetImplementationKeyValueDtoModelAssemblerTest {
     void toModelTest() {
         UUID keyValueUuid = UUID.randomUUID();
         assertThat(databaseDatasetImplementationKeyValueDtoModelAssembler.toModel(
-                DatabaseDatasetImplementationKeyValue.builder()
-                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(keyValueUuid))
+                DatasetImplementationKeyValue.builder()
+                        .metadataKey(new DatasetImplementationKeyValueKey(keyValueUuid))
                         .datasetImplementationKey(new DatasetImplementationKey(UUID.randomUUID()))
                         .key("key")
                         .value("value")

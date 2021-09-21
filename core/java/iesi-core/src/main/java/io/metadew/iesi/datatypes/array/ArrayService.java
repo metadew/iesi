@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
@@ -67,7 +68,7 @@ public class ArrayService implements IDataTypeService<Array> {
         return true;
     }
 
-    public Array resolve(DatabaseDatasetImplementation databaseDatasetImplementation, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) {
+    public Array resolve(DatasetImplementation databaseDatasetImplementation, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) {
         Array array = new Array();
         int elementCounter = 1;
         for (JsonNode element : jsonNode) {

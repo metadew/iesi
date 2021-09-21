@@ -2,6 +2,8 @@ package io.metadew.iesi.connection.http.entity._default;
 
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
@@ -32,20 +34,20 @@ public class DefaultHttpResponseEntityService implements IHttpResponseEntityServ
     }
 
     @Override
-    public void writeToDataset(DefaultHttpResponseEntityStrategy textPlainHttpResponseEntityStrategy, DatabaseDatasetImplementation dataset,
+    public void writeToDataset(DefaultHttpResponseEntityStrategy textPlainHttpResponseEntityStrategy, DatasetImplementation dataset,
                                String key, ExecutionRuntime executionRuntime) {
         writeToDataset(textPlainHttpResponseEntityStrategy.getHttpResponse(), dataset, key, executionRuntime);
     }
 
     @Override
-    public void writeToDataset(HttpResponse httpResponse, DatabaseDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) {
+    public void writeToDataset(HttpResponse httpResponse, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) {
         httpResponse.getEntityContent().ifPresent(s -> {
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
             log.info(MessageFormat.format("Writing http response {0} with default interpreter", new Text(new String(s, charset))));
-            DatabaseDatasetImplementationService.getInstance().setDataItem(dataset, key, new Text(new String(s, charset)));
+            DatasetImplementationHandler.getInstance().setDataItem(dataset, key, new Text(new String(s, charset)));
         });
     }
 

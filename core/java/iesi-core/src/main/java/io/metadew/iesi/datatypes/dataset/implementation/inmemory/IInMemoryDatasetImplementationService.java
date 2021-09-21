@@ -1,4 +1,7 @@
 package io.metadew.iesi.datatypes.dataset.implementation.inmemory;
 
-public interface IInMemoryDatasetImplementationService {
+import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
+
+public interface IInMemoryDatasetImplementationService extends IDatasetImplementationService<InMemoryDatasetImplementation> {
+
 }

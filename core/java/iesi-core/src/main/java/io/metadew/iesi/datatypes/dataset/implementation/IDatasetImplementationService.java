@@ -1,15 +1,28 @@
 package io.metadew.iesi.datatypes.dataset.implementation;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.IDataTypeService;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public interface IDatasetImplementationService<T extends DatasetImplementation> {
+public interface IDatasetImplementationService<T extends DatasetImplementation> extends IDataTypeService<T> {
+
+    boolean isEmpty(T datasetImplementation);
+
+    void delete(T datasetImplementation, ExecutionRuntime executionRuntime);
+
+    void setDataItem(T datasetImplementation, String key, DataType value);
+
+    Optional<DataType> getDataItem(T datasetImplementation, String dataItem, ExecutionRuntime executionRuntime);
+
+    Map<String, DataType> getDataItems(T datasetImplementation, ExecutionRuntime executionRuntime);
 
     Optional<T> getDatasetImplementation(String name, List<String> labels);
 
@@ -23,34 +36,6 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
 
     void clean(T datasetImplementation, ExecutionRuntime executionRuntime);
 
-    void delete(T datasetImplementation, ExecutionRuntime executionRuntime);
-
-    Optional<DataType> getDataItem(T datasetImplementation, String dataItem, ExecutionRuntime executionRuntime);
-
-    Map<String, DataType> getDataItems(T datasetImplementation, ExecutionRuntime executionRuntime);
-
-    void setDataItem(T datasetImplementation, String key, DataType value);
-
-    boolean exists(DatasetImplementationKey datasetImplementationKey);
-
-    boolean exists(String name, List<String> labels);
-
-    Optional<DatasetImplementation> get(DatasetImplementationKey datasetImplementationKey);
-
-    void create(T datasetImplementation);
-
-    void delete(T datasetImplementation);
-
-    void delete(DatasetImplementationKey datasetImplementationKey);
-
-    void deleteByDatasetId(DatasetKey datasetKey);
-
-    void update(T datasetImplementation);
-
-    List<DatasetImplementation> getAll();
-
-    boolean isEmpty(T datasetImplementation);
-
-    List<DatasetImplementation> getByDatasetId(DatasetKey datasetKey);
+    DataType resolve(T dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime);
 
 }

@@ -10,6 +10,8 @@ import io.metadew.iesi.connection.http.response.HttpResponseService;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
@@ -49,12 +51,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
     private static final String HEADERS_KEY = "headers";
     private static final String QUERY_PARAMETERS_KEY = "queryParameters";
-
-    private HttpRequest httpRequest;
-    private DatabaseDatasetImplementation outputDataset;
-    private ProxyConnection proxyConnection;
-    private List<String> expectedStatusCodes;
-
     private static final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
     private static final Pattern SUCCESS_STATUS_CODE = Pattern.compile("2\\d\\d");
     private static final Pattern REDIRECT_STATUS_CODE = Pattern.compile("3\\d\\d");
@@ -62,6 +58,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final Pattern SERVER_ERROR_STATUS_CODE = Pattern.compile("4\\d\\d");
     @SuppressWarnings("unused")
     private static final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d");
+    private HttpRequest httpRequest;
+    private DatasetImplementation outputDataset;
+    private ProxyConnection proxyConnection;
+    private List<String> expectedStatusCodes;
 
     public HttpExecuteRequest(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -249,18 +249,18 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private void outputResponse(HttpResponse httpResponse) throws IOException {
-        Optional<DatabaseDatasetImplementation> outputDataset = getOutputDataset();
+        Optional<DatasetImplementation> outputDataset = getOutputDataset();
         if (outputDataset.isPresent()) {
-            if (!DatabaseDatasetImplementationService.getInstance().isEmpty(outputDataset.get())) {
-                log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
-                DatabaseDatasetImplementationService.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
-            }
-            HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
+                if (!DatasetImplementationHandler.getInstance().isEmpty(outputDataset.get())) {
+                    log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
+                    DatasetImplementationHandler.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
+                }
+                HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
         }
         HttpResponseService.getInstance().traceOutput(httpResponse, getActionExecution().getActionControl());
     }
 
-    private DatabaseDatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
+    private DatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
         if (outputDatasetReferenceName == null || outputDatasetReferenceName instanceof Null) {
             return null;
         } else if (outputDatasetReferenceName instanceof Text) {
@@ -344,7 +344,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    protected Optional<DatabaseDatasetImplementation> getOutputDataset() {
+    protected Optional<DatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 

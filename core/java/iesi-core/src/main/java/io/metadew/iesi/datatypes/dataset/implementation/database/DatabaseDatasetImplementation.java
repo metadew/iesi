@@ -18,12 +18,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 public class DatabaseDatasetImplementation extends DatasetImplementation {
 
-    private Set<DatasetImplementationKeyValue> keyValues;
-
     @Builder
     public DatabaseDatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, Set<DatasetImplementationLabel> datasetImplementationLabels, Set<DatasetImplementationKeyValue> keyValues) {
-        super(metadataKey, datasetKey, name, datasetImplementationLabels);
-        this.keyValues = keyValues;
+        super(metadataKey, datasetKey, name, datasetImplementationLabels, keyValues);
     }
 
     public String toString() {

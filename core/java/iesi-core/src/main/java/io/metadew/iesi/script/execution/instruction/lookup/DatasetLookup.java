@@ -2,6 +2,7 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
@@ -39,11 +40,11 @@ public class DatasetLookup implements LookupInstruction {
         // TODO: parse with antlr
 
         String[] arguments = splitInput(parameters);
-        DatabaseDatasetImplementation dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
+        DatasetImplementation dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
         DataType lookupVariable = convertLookupVariable(DataTypeHandler.getInstance().resolve(arguments[1].trim(), executionRuntime));
         Optional<DataType> matchedDataItem;
         if (lookupVariable instanceof Text) {
-            matchedDataItem = DatabaseDatasetImplementationService.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);
+            matchedDataItem = DatabaseDatasetImplementationService.getInstance().getDataItem((DatabaseDatasetImplementation)dataset, ((Text) lookupVariable).getString(), executionRuntime);
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Cannot lookup {0} in dataset {1}", lookupVariable, dataset.toString()));
         }
@@ -59,7 +60,7 @@ public class DatasetLookup implements LookupInstruction {
         return lookupVariable;
     }
 
-    private DatabaseDatasetImplementation getDataset(DataType dataset) {
+    private DatasetImplementation getDataset(DataType dataset) {
         if (dataset instanceof Text) {
             return executionRuntime.getDataset(((Text) dataset).getString())
                     .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No dataset found with reference name {0}", ((Text) dataset).getString())));

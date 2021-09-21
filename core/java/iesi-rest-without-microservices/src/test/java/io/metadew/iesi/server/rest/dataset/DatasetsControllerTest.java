@@ -9,6 +9,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationSe
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -72,7 +73,7 @@ class DatasetsControllerTest {
     private IDatasetService datasetService;
 
     @MockBean
-    private IDatasetImplementationService datasetImplementationService;
+    private IDatabaseDatasetImplementationService datasetImplementationService;
 
     @MockBean
     private IDatasetDtoService datasetDtoService;

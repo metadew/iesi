@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
@@ -54,7 +55,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         this.message = convertMessage(getParameterResolvedValue(MESSAGE_KEY));
         this.protocol = convertProtocol(getParameterResolvedValue(PROTOCOL_KEY));
         this.socket = convertSocket(getParameterResolvedValue(SOCKET_KEY));
-        this.outputDataset = convertOutputDataset(getParameterResolvedValue(OUTPUT_KEY));
+        this.outputDataset = (DatabaseDatasetImplementation) convertOutputDataset(getParameterResolvedValue(OUTPUT_KEY));
     }
 
     private Integer convertTimeout(DataType timeout) {
@@ -73,7 +74,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         }
     }
 
-    private DatabaseDatasetImplementation convertOutputDataset(DataType dataset) {
+    private DatasetImplementation convertOutputDataset(DataType dataset) {
         if (dataset == null || dataset instanceof Null) {
             return null;
         } else if (dataset instanceof Text) {

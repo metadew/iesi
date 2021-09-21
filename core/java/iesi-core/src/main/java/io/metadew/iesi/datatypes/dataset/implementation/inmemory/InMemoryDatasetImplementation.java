@@ -18,11 +18,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 public class InMemoryDatasetImplementation extends DatasetImplementation {
 
-    private Set<DatasetImplementationKeyValue> keyValues;
-
     @Builder
-    public InMemoryDatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, Set<DatasetImplementationLabel> datasetImplementationLabels) {
-        super(metadataKey, datasetKey, name, datasetImplementationLabels);
+    public InMemoryDatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, Set<DatasetImplementationLabel> datasetImplementationLabels, Set<DatasetImplementationKeyValue> keyValues) {
+        super(metadataKey, datasetKey, name, datasetImplementationLabels, keyValues);
     }
 
     public String toString() {

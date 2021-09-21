@@ -5,6 +5,7 @@ import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.r.RWorkspace;
 import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
@@ -46,7 +47,7 @@ public class ExecutionRuntime {
 
     //private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
-    private HashMap<String, DatabaseDatasetImplementation> datasetMap;
+    private HashMap<String, DatasetImplementation> datasetMap;
     private HashMap<String, Array> arrayMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
@@ -529,11 +530,11 @@ public class ExecutionRuntime {
         this.getStageOperationMap().put(stageName, stageOperation);
     }
 
-    public void setKeyValueDataset(String referenceName, DatabaseDatasetImplementation datasetImplementation) {
+    public void setKeyValueDataset(String referenceName, DatasetImplementation datasetImplementation) {
         datasetMap.put(referenceName, datasetImplementation);
     }
 
-    public Optional<DatabaseDatasetImplementation> getDataset(String referenceName) {
+    public Optional<DatasetImplementation> getDataset(String referenceName) {
         return Optional.ofNullable(datasetMap.get(referenceName));
     }
 

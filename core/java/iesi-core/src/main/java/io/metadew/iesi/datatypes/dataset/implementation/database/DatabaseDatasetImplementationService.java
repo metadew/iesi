@@ -35,6 +35,9 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
     private DatabaseDatasetImplementationService() {
     }
 
+
+
+
     @Override
     public Optional<DatabaseDatasetImplementation> getDatasetImplementation(String name, List<String> labels) {
         return DatasetImplementationConfiguration.getInstance().getByNameAndLabels(name, labels)
@@ -166,6 +169,61 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
     }
 
     @Override
+    public boolean exists(DatasetImplementationKey datasetImplementationKey) {
+        return DatasetImplementationConfiguration.getInstance()
+                .exists(datasetImplementationKey);
+    }
+
+    @Override
+    public boolean exists(String name, List<String> labels) {
+        return DatasetImplementationConfiguration.getInstance()
+                .exists(name, labels);
+    }
+
+    @Override
+    public Optional<DatasetImplementation> get(DatasetImplementationKey datasetImplementationKey) {
+        return DatasetImplementationConfiguration.getInstance()
+                .get(datasetImplementationKey);
+    }
+
+    @Override
+    public void create(DatabaseDatasetImplementation datasetImplementation) {
+        DatasetImplementationConfiguration.getInstance().insert(datasetImplementation);
+    }
+
+    @Override
+    public void delete(DatabaseDatasetImplementation datasetImplementation) {
+        delete(datasetImplementation.getMetadataKey());
+    }
+
+    @Override
+    public void delete(DatasetImplementationKey datasetImplementationKey) {
+        DatasetImplementationConfiguration.getInstance().delete(datasetImplementationKey);
+    }
+
+    @Override
+    public void deleteByDatasetId(DatasetKey datasetKey) {
+        DatasetImplementationConfiguration.getInstance().deleteByDatasetId(datasetKey);
+    }
+
+    @Override
+    public void update(DatabaseDatasetImplementation datasetImplementation) {
+        DatasetImplementationConfiguration.getInstance().update(datasetImplementation);
+    }
+
+    @Override
+    public List<DatasetImplementation> getAll() {
+        return DatasetImplementationConfiguration.getInstance()
+                .getAll();
+    }
+
+    @Override
+    public List<DatasetImplementation> getByDatasetId(DatasetKey datasetKey) {
+        return DatasetImplementationConfiguration.getInstance()
+                .getByDatasetId(datasetKey);
+    }
+
+    @Override
     public boolean isEmpty(DatabaseDatasetImplementation datasetImplementation) {
         return DatasetImplementationConfiguration.getInstance().isEmpty(datasetImplementation.getMetadataKey());
     }
@@ -200,7 +258,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public String keyword() {
-        return "dataset";
+        return "database";
     }
 
     @Override

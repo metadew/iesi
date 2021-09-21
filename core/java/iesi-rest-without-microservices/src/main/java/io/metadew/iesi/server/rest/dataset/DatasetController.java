@@ -9,6 +9,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationSe
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -43,13 +44,13 @@ public class DatasetController {
     private final IDatasetService datasetService;
     private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetDtoService datasetDtoService;
-    private final IDatasetImplementationService datasetImplementationService;
+    private final DatabaseDatasetImplementationService datasetImplementationService;
 
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
                              IDatasetService datasetService,
-                             IDatasetImplementationService datasetImplementationService,
+                             DatabaseDatasetImplementationService datasetImplementationService,
                              PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,
                              IDatasetDtoService datasetDtoService) {
         this.datasetDtoModelAssembler = datasetDtoModelAssembler;
@@ -245,7 +246,7 @@ public class DatasetController {
                 return ResponseEntity.badRequest().build();
             }
 
-            datasetImplementationService.create(datasetImplementation);
+            datasetImplementationService.create((DatabaseDatasetImplementation) datasetImplementation);
             return datasetService.get(new DatasetKey(uuid))
                     .map(datasetDtoModelAssembler::toModel)
                     .map(ResponseEntity::ok)

@@ -2,13 +2,19 @@ package io.metadew.iesi.datatypes.dataset.implementation;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
+import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DatasetImplementationHandler implements IDatasetImplementationHandler{
 
@@ -84,7 +90,21 @@ public class DatasetImplementationHandler implements IDatasetImplementationHandl
 
     @Override
     public DatasetImplementation resolve(String input, ExecutionRuntime executionRuntime) {
-        return null;
+        List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(input);
+        if (splittedArguments.size() == 3) {
+            String dataset = splittedArguments.get(2);
+            if (dataset == "in_memory"){
+                return DatabaseDatasetImplementationService.getInstance().resolve(input, executionRuntime);
+            }
+            else if (dataset == "database"){
+                return InMemoryDatasetImplementationService.getInstance().resolve(input, executionRuntime);
+            }
+            else {
+                throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
+            }
+        } else {
+            throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
+        }
     }
 
     @Override

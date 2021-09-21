@@ -213,7 +213,12 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     public DataType resolve(InMemoryDatasetImplementation dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
         InMemoryDatasetImplementation inMemoryDatasetImplementation = getObjectDataset(dataset, key);
-        return null;
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> field = fields.next();
+            DataType object = DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementation, field.getKey(), field.getValue(), executionRuntime);
+            setDataItem(inMemoryDatasetImplementation, field.getKey(), object);
+        }
+        return inMemoryDatasetImplementation;
     }
 
     private InMemoryDatasetImplementation getObjectDataset(InMemoryDatasetImplementation inMemoryDatasetImplementation, String keyPrefix) {

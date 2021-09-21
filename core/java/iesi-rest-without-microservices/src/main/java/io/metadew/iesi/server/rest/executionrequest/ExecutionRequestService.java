@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,14 @@ public class ExecutionRequestService implements IExecutionRequestService {
         this.executionRequestExecutorService = executionRequestExecutorService;
         this.executionRequestDtoRepository = executionRequestDtoRepository;
         this.userDtoRepository = userDtoRepository;
+    }
+
+
+    @PostConstruct
+    public void init() {
+        // Called from here and not in post construct of ExecutionRequestExecutorService because otherwise the @Async (aspect) will not be picked up
+        List<ExecutionRequest> oldExecutionRequests = executionRequestConfiguration.getAllNew();
+        oldExecutionRequests.forEach(executionRequestExecutorService::execute);
     }
 
     public Page<ExecutionRequestDto> getAll(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {

@@ -13,6 +13,7 @@ import io.metadew.iesi.server.rest.user.AuthenticationRequest;
 import io.metadew.iesi.server.rest.user.AuthenticationResponse;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -57,6 +58,8 @@ public class ConsoleApplication implements CommandLineRunner {
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
         if (cmd.hasOption("launch")) {
+            ThreadContext.clearAll();
+            ThreadContext.put("type", "request");
 
             // Get the environment
             String user;

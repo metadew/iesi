@@ -38,12 +38,12 @@ abstract class ExecutionRequestExecutor<T extends ExecutionRequest> implements I
     ExecutionRequestExecutor(ExecutionRequestConfiguration executionRequestConfiguration,
                                     Configuration iesiProperties) {
         this.executionRequestConfiguration = executionRequestConfiguration;
-        Collection<Map<String, String>> scriptExecutionWorkersInfo = (Collection<Map<String, String>>) iesiProperties.getMandatoryProperty("iesi.workers");
+        Collection<Map<String, Object>> scriptExecutionWorkersInfo = (Collection<Map<String, Object>>) iesiProperties.getMandatoryProperty("iesi.workers");
         scriptExecutionWorkers = new RoundRobin<>(
                 scriptExecutionWorkersInfo.stream()
                         .map(scriptExecutionWorkerInfo -> new ScriptExecutionWorker(
-                                Paths.get(scriptExecutionWorkerInfo.get("path")),
-                                Long.parseLong(scriptExecutionWorkerInfo.get("timeout")))
+                                Paths.get((String) scriptExecutionWorkerInfo.get("path")),
+                                        (Integer) scriptExecutionWorkerInfo.get("timeout"))
                         )
                         .collect(Collectors.toSet()),
                 ScriptExecutionWorker.class);

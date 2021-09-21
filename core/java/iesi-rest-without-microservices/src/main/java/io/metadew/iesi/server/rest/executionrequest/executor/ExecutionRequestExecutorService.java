@@ -41,9 +41,6 @@ public class ExecutionRequestExecutorService {
     public void init() {
         executionRequestExecutors
                 .forEach(scriptExecutor -> executionRequestExecutorMap.put(scriptExecutor.appliesTo(), scriptExecutor));
-        // TODO: load NEW EXECUTION REQUESTS in queue
-        List<ExecutionRequest> oldExecutionRequests = executionRequestConfiguration.getAllNew();
-        oldExecutionRequests.forEach(this::execute);
     }
 
     @SuppressWarnings("unchecked")

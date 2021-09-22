@@ -10,6 +10,7 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
@@ -359,7 +360,7 @@ class DatabaseDatasetImplementationServiceTest {
 
         ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":{\"key2\":\"value2\"}}");
 
-        DataType dataType = DatabaseDatasetImplementationService.getInstance()
+        DataType dataType = DatasetImplementationHandler.getInstance()
                 .resolve(
                         databaseDatasetImplementation,
                         "key",
@@ -378,7 +379,7 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key1",
                                 "dataset"
                         ));
-        DataType dataType1 = DataTypeHandler.getInstance()
+        DataType dataType1 = DatasetImplementationHandler.getInstance()
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
         assertThat(dataType1)
                 .isInstanceOf(DatabaseDatasetImplementation.class);

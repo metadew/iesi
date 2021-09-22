@@ -2,6 +2,7 @@ package io.metadew.iesi.connection.http.entity.json;
 
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
@@ -24,8 +25,8 @@ class ApplicationJsonHttpResponseEntityServiceTest {
     @Test
     void writeToDatasetTest() throws IOException {
         // Setup
-        DatabaseDatasetImplementationService datasetHandler = mock(DatabaseDatasetImplementationService.class);
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", datasetHandler);
+        DatasetImplementationHandler datasetHandler = mock(DatasetImplementationHandler.class);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "INSTANCE", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
@@ -53,8 +54,8 @@ class ApplicationJsonHttpResponseEntityServiceTest {
     @Test
     void writeToDatasetNoCharsetTest() throws IOException {
         // Setup
-        DatabaseDatasetImplementationService datasetHandler = mock(DatabaseDatasetImplementationService.class);
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", datasetHandler);
+        DatasetImplementationHandler datasetHandler = mock(DatasetImplementationHandler.class);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "INSTANCE", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 

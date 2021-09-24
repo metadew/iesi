@@ -24,10 +24,6 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
 
     Map<String, DataType> getDataItems(T datasetImplementation, ExecutionRuntime executionRuntime);
 
-    Optional<T> getDatasetImplementation(String name, List<String> labels);
-
-    Optional<T> getDatasetImplementation(DatasetKey datasetKey, List<String> labels);
-
     T createNewDatasetImplementation(Dataset dataset, List<String> labels);
 
     T createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels);

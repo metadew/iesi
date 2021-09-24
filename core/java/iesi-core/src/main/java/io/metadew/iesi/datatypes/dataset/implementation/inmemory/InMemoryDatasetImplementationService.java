@@ -57,11 +57,11 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
             List<DataType> resolvedArguments = splittedArguments.stream()
                     .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
                     .collect(Collectors.toList());
-            return getDatasetImplementation(
+            /*return getDatasetImplementation(
                     convertDatasetName(resolvedArguments.get(0)),
                     convertDatasetLabels(resolvedArguments.get(1), executionRuntime)
             )
-                    .orElseGet(() -> {
+                    .orElseGet(() -> {*/
                         DatasetKey datasetKey = DatasetConfiguration.getInstance()
                                 .getIdByName(convertDatasetName(resolvedArguments.get(0)))
                                 .orElseThrow(() -> new RuntimeException(String.format("Cannot find dataset %s", convertDatasetName(resolvedArguments.get(0)))));
@@ -69,7 +69,6 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
                                 datasetKey,
                                 convertDatasetName(resolvedArguments.get(0)),
                                 convertDatasetLabels(resolvedArguments.get(1), executionRuntime));
-                    });
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }
@@ -260,15 +259,5 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
                         inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance()
                                 .resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime)
                 ));
-    }
-
-    @Override
-    public Optional<InMemoryDatasetImplementation> getDatasetImplementation(String name, List<String> labels) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<InMemoryDatasetImplementation> getDatasetImplementation(DatasetKey datasetKey, List<String> labels) {
-        return Optional.empty();
     }
 }

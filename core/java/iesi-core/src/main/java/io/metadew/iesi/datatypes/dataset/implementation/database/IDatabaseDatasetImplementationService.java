@@ -30,4 +30,8 @@ public interface IDatabaseDatasetImplementationService extends IDatasetImplement
 
     List<DatasetImplementation> getByDatasetId(DatasetKey datasetKey);
 
+    Optional<DatabaseDatasetImplementation> getDatasetImplementation(String name, List<String> labels);
+
+    Optional<DatabaseDatasetImplementation> getDatasetImplementation(DatasetKey datasetKey, List<String> labels);
+
 }

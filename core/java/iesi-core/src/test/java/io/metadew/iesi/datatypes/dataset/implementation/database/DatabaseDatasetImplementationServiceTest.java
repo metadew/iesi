@@ -10,7 +10,6 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
@@ -360,15 +359,14 @@ class DatabaseDatasetImplementationServiceTest {
 
         ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":{\"key2\":\"value2\"}}");
 
-        DataType dataType = DatasetImplementationHandler.getInstance()
+        DataType dataType = DataTypeHandler.getInstance()
                 .resolve(
                         databaseDatasetImplementation,
                         "key",
                         jsonNode,
                         executionRuntime
                 );
-        assertThat(dataType)
-                .isInstanceOf(DatabaseDatasetImplementation.class);
+        assertThat(dataType instanceof DatabaseDatasetImplementation).isTrue();
         assertThat(((DatabaseDatasetImplementation) dataType).getKeyValues())
                 .hasSize(1)
                 .usingElementComparatorOnFields("key")
@@ -381,8 +379,7 @@ class DatabaseDatasetImplementationServiceTest {
                         ));
         DataType dataType1 = DataTypeHandler.getInstance()
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
-        assertThat(dataType1)
-                .isInstanceOf(DatabaseDatasetImplementation.class);
+        assertThat(dataType1 instanceof DatabaseDatasetImplementation).isTrue();
         assertThat(((DatabaseDatasetImplementation) dataType1).getKeyValues())
                 .hasSize(1)
                 .usingElementComparatorOnFields("key")
@@ -394,6 +391,5 @@ class DatabaseDatasetImplementationServiceTest {
                                 "value2"
                         ));
     }
-
 
 }

@@ -247,7 +247,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     @Override
     public Optional<DataType> getDataItem(InMemoryDatasetImplementation datasetImplementation, String dataItem, ExecutionRuntime executionRuntime) {
         return datasetImplementation.getKeyValues().stream()
-                .filter(inMemoryDatasetImplementationKeyValue -> inMemoryDatasetImplementationKeyValue.getValue().equals(dataItem))
+                .filter(inMemoryDatasetImplementationKeyValue -> inMemoryDatasetImplementationKeyValue.getKey().equals(dataItem))
                 .map(inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime))
                 .findFirst();
     }

@@ -7,6 +7,7 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
@@ -48,7 +49,6 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     public void prepareAction() {
-
         referenceName = convertDatasetReferenceName(getParameterResolvedValue(NAME_KEY));
         datasetName = convertDatasetName(getParameterResolvedValue(DATASET_KEY));
         datasetType = convertDatasetType(getParameterResolvedValue(TYPE_KEY));
@@ -73,24 +73,34 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                 .map(datasetLabel -> getExecutionControl().getExecutionRuntime().resolveVariables(datasetLabel))
                 .collect(Collectors.toList());
 
-        DatabaseDatasetImplementation databaseDatasetImplementation = DatabaseDatasetImplementationService.getInstance()
-                .getDatasetImplementation(datasetKey, resolvedDatasetLabels)
-                .orElseGet(() -> {
-                    log.warn(MessageFormat.format("DatasetImplementation {0}-{1} does not exists. Creating dataset implementation now", datasetName, resolvedDatasetLabels));
-                    DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
-                    DatabaseDatasetImplementation newDatabaseDatasetImplementation = new DatabaseDatasetImplementation(
-                            datasetImplementationKey,
-                            datasetKey,
-                            datasetName,
-                            resolvedDatasetLabels.stream()
-                                    .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
-                                    .collect(Collectors.toSet()),
-                            new HashSet<>());
-                    DatasetImplementationConfiguration.getInstance().insert(newDatabaseDatasetImplementation);
-                    return newDatabaseDatasetImplementation;
-                });
+        // TODO: is datatype a mandatory parameter? if not, what is the default type?
+        DatasetImplementation datasetImplementation;
+        if (datasetType.equals("database")) {
+            datasetImplementation = DatabaseDatasetImplementationService.getInstance()
+                    .getDatasetImplementation(datasetKey, resolvedDatasetLabels)
+                    .orElseGet(() -> {
+                        log.warn(MessageFormat.format("DatasetImplementation {0}-{1} does not exists. Creating dataset implementation now", datasetName, resolvedDatasetLabels));
+                        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
+                        DatabaseDatasetImplementation newDatabaseDatasetImplementation = new DatabaseDatasetImplementation(
+                                datasetImplementationKey,
+                                datasetKey,
+                                datasetName,
+                                resolvedDatasetLabels.stream()
+                                        .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
+                                        .collect(Collectors.toSet()),
+                                new HashSet<>());
+                        DatasetImplementationConfiguration.getInstance().insert(newDatabaseDatasetImplementation);
+                        return newDatabaseDatasetImplementation;
+                    });
+        } else if (datasetType.equals("in_memory")) {
+            // TODO inmemory?
+            datasetImplementation = null;
+        } else {
+            // TODO: clear error message
+            throw new RuntimeException("type not recognized");
+        }
         getExecutionControl().getExecutionRuntime()
-                .setKeyValueDataset(referenceName, databaseDatasetImplementation);
+                .setKeyValueDataset(referenceName, datasetImplementation);
         return true;
     }
 
@@ -129,7 +139,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
 
     private String convertDatasetType(DataType datasetType) {
         if (datasetType == null || datasetType instanceof Null) {
-            return "";
+            return null;
         }
         if (!(datasetType instanceof Text)) {
             log.warn(MessageFormat.format("{0} does not accept {1} as type for dataset type",

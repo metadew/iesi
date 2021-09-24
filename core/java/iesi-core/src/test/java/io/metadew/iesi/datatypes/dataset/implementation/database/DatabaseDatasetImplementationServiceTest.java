@@ -379,7 +379,7 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key1",
                                 "dataset"
                         ));
-        DataType dataType1 = DatasetImplementationHandler.getInstance()
+        DataType dataType1 = DataTypeHandler.getInstance()
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
         assertThat(dataType1)
                 .isInstanceOf(DatabaseDatasetImplementation.class);

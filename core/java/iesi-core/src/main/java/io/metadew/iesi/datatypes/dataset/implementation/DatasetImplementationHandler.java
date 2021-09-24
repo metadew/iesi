@@ -89,7 +89,7 @@ public class DatasetImplementationHandler implements IDatasetImplementationHandl
     public DatasetImplementation resolve(String input, ExecutionRuntime executionRuntime) {
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(input);
         if (splittedArguments.size() == 3) {
-            if (splittedArguments.get(2).equalsIgnoreCase("dataset")){
+            if (splittedArguments.get(2).equalsIgnoreCase("database")){
                 return DatabaseDatasetImplementationService.getInstance().resolve(input, executionRuntime);
             }
             else if (splittedArguments.get(2).equalsIgnoreCase("in_memory")){

@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.dataset.implementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.server.rest.dataset.DatasetDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,12 +31,12 @@ import static java.lang.Math.min;
 public class DatasetImplementationController {
 
     private final DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler;
-    private final IDatasetImplementationService datasetImplementationService;
+    private final IDatabaseDatasetImplementationService datasetImplementationService;
     private final PagedResourcesAssembler<DatasetImplementation> datasetImplementationPagedResourcesAssembler;
 
 
     public DatasetImplementationController(DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler,
-                                           IDatasetImplementationService datasetImplementationService,
+                                           IDatabaseDatasetImplementationService datasetImplementationService,
                                            PagedResourcesAssembler<DatasetImplementation> datasetImplementationPagedResourcesAssembler) {
         this.datasetImplementationDtoModelAssembler = datasetImplementationDtoModelAssembler;
         this.datasetImplementationService = datasetImplementationService;

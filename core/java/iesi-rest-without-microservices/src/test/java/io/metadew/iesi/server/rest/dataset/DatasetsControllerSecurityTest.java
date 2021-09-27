@@ -6,6 +6,8 @@ import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
@@ -56,7 +58,7 @@ class DatasetsControllerSecurityTest {
     private IDatasetService datasetService;
 
     @MockBean
-    private IDatasetImplementationService datasetImplementationService;
+    private IDatabaseDatasetImplementationService datasetImplementationService;
 
     @MockBean
     private PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;

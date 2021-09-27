@@ -10,6 +10,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDataset
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
@@ -44,13 +45,13 @@ public class DatasetController {
     private final IDatasetService datasetService;
     private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetDtoService datasetDtoService;
-    private final DatabaseDatasetImplementationService datasetImplementationService;
+    private final IDatabaseDatasetImplementationService datasetImplementationService;
 
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
                              IDatasetService datasetService,
-                             DatabaseDatasetImplementationService datasetImplementationService,
+                             IDatabaseDatasetImplementationService datasetImplementationService,
                              PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,
                              IDatasetDtoService datasetDtoService) {
         this.datasetDtoModelAssembler = datasetDtoModelAssembler;

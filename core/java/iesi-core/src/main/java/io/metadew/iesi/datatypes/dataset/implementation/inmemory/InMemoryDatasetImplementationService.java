@@ -56,11 +56,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
             List<DataType> resolvedArguments = splittedArguments.stream()
                     .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
                     .collect(Collectors.toList());
-            DatasetKey datasetKey = DatasetConfiguration.getInstance()
-                    .getIdByName(convertDatasetName(resolvedArguments.get(0)))
-                    .orElseThrow(() -> new RuntimeException(String.format("Cannot find dataset %s", convertDatasetName(resolvedArguments.get(0)))));
             return createNewDatasetImplementation(
-                    datasetKey,
                     convertDatasetName(resolvedArguments.get(0)),
                     convertDatasetLabels(resolvedArguments.get(1), executionRuntime));
         } else {

@@ -1,6 +1,8 @@
 package io.metadew.iesi.datatypes.dataset.implementation.in_memory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.DataType;
@@ -222,6 +224,48 @@ class InMemoryDatasetImplementationServiceTest {
                 ).collect(Collectors.toSet())
         );
 
+        InMemoryDatasetImplementationService.getInstance().setDataItem(inMemoryDatasetImplementation, "key2", new Text("value"));
+
+        assertThat(InMemoryDatasetImplementationService.getInstance().getDataItem(inMemoryDatasetImplementation, "key2", executionRuntime))
+                .hasValue(new Text("value"));
+    }
+
+    @Test
+    void testSetDataItemExistingKey() {
+        DataTypeHandler dataTypeHandler = DataTypeHandler.getInstance();
+        DataTypeHandler dataTypeHandlerSpy = Mockito.spy(dataTypeHandler);
+        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandlerSpy);
+
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+
+        doReturn(new Text("value1"))
+                .when(dataTypeHandlerSpy)
+                .resolve("value1", executionRuntime);
+
+        doReturn(new Text("value"))
+                .when(dataTypeHandlerSpy)
+                .resolve("value", executionRuntime);
+
+        UUID datasetImplemenationUuid = UUID.randomUUID();
+        InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
+                new DatasetImplementationKey(datasetImplemenationUuid),
+                new DatasetKey(UUID.randomUUID()),
+                "dataset",
+                Stream.of(new DatasetImplementationLabel(
+                                new DatasetImplementationLabelKey(UUID.randomUUID()),
+                                new DatasetImplementationKey(datasetImplemenationUuid),
+                                "label1"
+                        )
+                ).collect(Collectors.toSet()),
+                Stream.of(
+                        new DatasetImplementationKeyValue(new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                new DatasetImplementationKey(datasetImplemenationUuid),
+                                "key1",
+                                "value1"
+                        )
+                ).collect(Collectors.toSet())
+        );
+
         InMemoryDatasetImplementationService.getInstance().setDataItem(inMemoryDatasetImplementation, "key1", new Text("value"));
 
         assertThat(InMemoryDatasetImplementationService.getInstance().getDataItem(inMemoryDatasetImplementation, "key1", executionRuntime))
@@ -229,18 +273,48 @@ class InMemoryDatasetImplementationServiceTest {
     }
 
     @Test
-    void testSetDataItemExistingKey() {
-        // TODO
-    }
-
-    @Test
     void testResolve() throws JsonProcessingException {
-        // TODO
-    }
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+        InMemoryDatasetImplementation datasetImplementation = InMemoryDatasetImplementation.builder()
+                .metadataKey(datasetImplementationKey)
+                .datasetKey(new DatasetKey(UUID.randomUUID()))
+                .name("dataset")
+                .datasetImplementationLabels(Stream.of(
+                        new DatasetImplementationLabel(
+                                new DatasetImplementationLabelKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "label1"
+                        )).collect(Collectors.toSet()))
+                .keyValues(new HashSet<>())
+                .build();
 
-    @Test
-    void testResolveNested() throws JsonProcessingException {
-        // TODO
+        ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":\"value1\",\"key2\":\"value2\"}");
+
+        DataType dataType = InMemoryDatasetImplementationService.getInstance()
+                .resolve(
+                        datasetImplementation,
+                        "key",
+                        jsonNode,
+                        executionRuntime
+                );
+        assertThat(dataType).isInstanceOf(InMemoryDatasetImplementation.class);
+        assertThat(((InMemoryDatasetImplementation)dataType).getKeyValues())
+                .hasSize(2)
+                .usingElementComparatorOnFields("key", "value")
+                .containsOnly(
+                        new DatasetImplementationKeyValue(
+                                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "key1",
+                                "value1"
+                        ),
+                        new DatasetImplementationKeyValue(
+                                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                datasetImplementationKey,
+                                "key2",
+                                "value2"
+                        ));
     }
 
 }

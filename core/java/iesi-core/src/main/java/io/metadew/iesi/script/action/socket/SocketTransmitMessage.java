@@ -3,6 +3,7 @@ package io.metadew.iesi.script.action.socket;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
@@ -57,7 +58,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
     }
 
     private Integer convertTimeout(DataType timeout) {
-        if (timeout == null) {
+        if (timeout == null || timeout instanceof Null) {
             return null;
         } else if (timeout instanceof Text) {
             try {
@@ -73,7 +74,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
     }
 
     private InMemoryDatasetImplementation convertOutputDataset(DataType dataset) {
-        if (dataset == null) {
+        if (dataset == null || dataset instanceof Null) {
             return null;
         } else if (dataset instanceof Text) {
             return getExecutionControl().getExecutionRuntime().getDataset(((Text) dataset).getString())

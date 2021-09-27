@@ -19,6 +19,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,9 +73,14 @@ public class DesignMetadataRepository extends MetadataRepository {
                 script.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
                 script.setSecurityGroupName(publicSecurityGroup.getName());
             }
+
+            script.getVersion().setCreatedBy("admin");
+            script.getVersion().setCreatedAt(LocalDateTime.now().toString());
             ScriptConfiguration.getInstance().insert(script);
         } catch (MetadataAlreadyExistsException e) {
             log.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
+            script.getVersion().setLastModifiedBy("admin");
+            script.getVersion().setLastModifiedAt(LocalDateTime.now().toString());
             ScriptConfiguration.getInstance().update(script);
         }
     }

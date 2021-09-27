@@ -70,8 +70,10 @@ public class ExecutionRequestController {
                                                   @RequestParam(required = false, name = "script") String script,
                                                   @RequestParam(required = false, name = "version") String version,
                                                   @RequestParam(required = false, name = "environment") String environment,
-                                                  @RequestParam(required = false, name = "label") String labelKeyCombination) {
-        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination);
+                                                  @RequestParam(required = false, name = "label") String labelKeyCombination,
+                                                  @RequestParam(required = false, name = "run-id") String runId,
+                                                  @RequestParam(required = false, name = "run-status") String runStatus) {
+        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination, runId, runStatus);
         Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService
                 .getAll(SecurityContextHolder.getContext().getAuthentication(), pageable, executionRequestFilters);
         if (executionRequestDtoPage.hasContent())
@@ -79,7 +81,7 @@ public class ExecutionRequestController {
         return (PagedModel<ExecutionRequestDto>) executionRequestDtoResourceAssemblerPage.toEmptyModel(executionRequestDtoPage, ExecutionRequestDto.class);
     }
 
-    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination) {
+    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination, String runId, String runStatus) {
         List<ExecutionRequestFilter> executionRequestFilters = new ArrayList<>();
         if (name != null) {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, name, false));
@@ -92,6 +94,12 @@ public class ExecutionRequestController {
         }
         if (version != null) {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, version, true));
+        }
+        if (runId != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, runId, false));
+        }
+        if (runStatus != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, runStatus, true));
         }
         return executionRequestFilters;
     }

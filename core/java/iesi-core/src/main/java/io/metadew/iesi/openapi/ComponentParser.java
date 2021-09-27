@@ -42,7 +42,7 @@ public class ComponentParser implements Parser<Component> {
         String connectionName = openAPI.getInfo().getTitle();
         Long componentVersion;
         try {
-            componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
+            componentVersion = Long.parseLong(openAPI.getInfo().getVersion().split("\\.")[0]);
         } catch (NumberFormatException numberFormatException) {
             throw new SwaggerParserException(Collections.singletonList("The version should be a number"));
         }

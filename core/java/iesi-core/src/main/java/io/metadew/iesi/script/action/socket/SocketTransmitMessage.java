@@ -5,8 +5,8 @@ import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -108,11 +108,11 @@ public class SocketTransmitMessage extends ActionTypeExecution {
                 message.getBytes(Charset.forName(socket.getEncoding())).length);
         datagramSocket.send(datagramPacketToSend);
         if (getOutputDataset().isPresent()) {
-            DatabaseDatasetImplementationService.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
+            DatasetImplementationHandler.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
             byte[] buffer = new byte[65508];
             DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
             datagramSocket.receive(datagramPacketToReceive);
-            DatabaseDatasetImplementationService.getInstance().setDataItem(outputDataset, "response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
+            DatasetImplementationHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
         }
     }
 
@@ -124,7 +124,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         dOut.write(message.getBytes(Charset.forName(socket.getEncoding())));
         dOut.flush();
         if (getOutputDataset().isPresent()) {
-            DatabaseDatasetImplementationService.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
+            DatasetImplementationHandler.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
             LocalDateTime endDateTime;
             if (timeout == null) {
                 endDateTime = LocalDateTime.now()
@@ -138,7 +138,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
                     byte[] bytes = new byte[dIn.available()];
                     int bytesRead = dIn.read(bytes);
                     LocalDateTime end = LocalDateTime.now();
-                    DatabaseDatasetImplementationService.getInstance().setDataItem(outputDataset, "response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
+                    DatasetImplementationHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
                     ActionPerformanceLogger.getInstance().log(getActionExecution(), "response", start, end);
                     break;
                 }
@@ -178,7 +178,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         }
     }
 
-    private Optional<DatabaseDatasetImplementation> getOutputDataset() {
+    private Optional<DatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 

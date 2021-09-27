@@ -13,7 +13,6 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -136,8 +135,8 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
                     .map(this::buildHttpHeader).collect(Collectors.toList());
-        } else if (dataType instanceof DatabaseDatasetImplementation) {
-            return DatabaseDatasetImplementationService
+        } else if (dataType instanceof DatasetImplementation) {
+            return DatasetImplementationHandler
                     .getInstance()
                     .getDataItems((DatabaseDatasetImplementation) dataType, getExecutionControl()
                             .getExecutionRuntime()).entrySet().stream()
@@ -158,10 +157,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
                     .map(this::buildHttpQueryParameter).collect(Collectors.toList());
-        } else if (dataType instanceof DatabaseDatasetImplementation) {
-            return DatabaseDatasetImplementationService
+        } else if (dataType instanceof DatasetImplementation) {
+            return DatasetImplementationHandler
                     .getInstance()
-                    .getDataItems((DatabaseDatasetImplementation) dataType, getExecutionControl()
+                    .getDataItems((DatasetImplementation) dataType, getExecutionControl()
                             .getExecutionRuntime()).entrySet().stream()
                     .map(dataItem -> new HttpQueryParameter(dataItem.getKey(), dataItem.getValue().toString()))
                     .collect(

@@ -6,8 +6,11 @@ import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetService;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.metadata.configuration.action.design.ActionDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
@@ -168,8 +171,20 @@ public class IesiConfiguration {
 
     @Bean
     @DependsOn("frameworkInstance")
-    public IDatasetImplementationService datasetImplementationService() {
+    public DatabaseDatasetImplementationService datasetImplementationService() {
         return DatabaseDatasetImplementationService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public InMemoryDatasetImplementationService inMemoryDatasetImplementationService(){
+        return InMemoryDatasetImplementationService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public IDatasetImplementationHandler datasetImplementationHandler(){
+        return DatasetImplementationHandler.getInstance();
     }
 
     @Bean

@@ -3,8 +3,7 @@ package io.metadew.iesi.script.execution.instruction.lookup;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.LogManager;
@@ -44,7 +43,7 @@ public class DatasetLookup implements LookupInstruction {
         DataType lookupVariable = convertLookupVariable(DataTypeHandler.getInstance().resolve(arguments[1].trim(), executionRuntime));
         Optional<DataType> matchedDataItem;
         if (lookupVariable instanceof Text) {
-            matchedDataItem = DatabaseDatasetImplementationService.getInstance().getDataItem((DatabaseDatasetImplementation)dataset, ((Text) lookupVariable).getString(), executionRuntime);
+            matchedDataItem = DatasetImplementationHandler.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Cannot lookup {0} in dataset {1}", lookupVariable, dataset.toString()));
         }
@@ -64,8 +63,8 @@ public class DatasetLookup implements LookupInstruction {
         if (dataset instanceof Text) {
             return executionRuntime.getDataset(((Text) dataset).getString())
                     .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("No dataset found with reference name {0}", ((Text) dataset).getString())));
-        } else if (dataset instanceof DatabaseDatasetImplementation) {
-            return (DatabaseDatasetImplementation) dataset;
+        } else if (dataset instanceof DatasetImplementation) {
+            return (DatasetImplementation) dataset;
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Dataset cannot be of type {0}", dataset.getClass()));
         }

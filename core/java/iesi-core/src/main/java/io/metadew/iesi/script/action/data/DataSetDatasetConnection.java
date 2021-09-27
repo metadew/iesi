@@ -12,6 +12,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationCon
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
@@ -73,9 +74,8 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                 .map(datasetLabel -> getExecutionControl().getExecutionRuntime().resolveVariables(datasetLabel))
                 .collect(Collectors.toList());
 
-        // TODO: is datatype a mandatory parameter? if not, what is the default type?
         DatasetImplementation datasetImplementation;
-        if (datasetType.equals("database")) {
+        if (datasetType != null && datasetType.equals("database")) {
             datasetImplementation = DatabaseDatasetImplementationService.getInstance()
                     .getDatasetImplementation(datasetKey, resolvedDatasetLabels)
                     .orElseGet(() -> {
@@ -92,12 +92,17 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                         DatasetImplementationConfiguration.getInstance().insert(newDatabaseDatasetImplementation);
                         return newDatabaseDatasetImplementation;
                     });
-        } else if (datasetType.equals("in_memory")) {
-            // TODO inmemory?
-            datasetImplementation = null;
+        } else if (datasetType != null && datasetType.equals("in_memory")) {
+            DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
+            datasetImplementation = new InMemoryDatasetImplementation(datasetImplementationKey,
+                    datasetKey,
+                    datasetName,
+                    resolvedDatasetLabels.stream()
+                            .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
+                            .collect(Collectors.toSet()),
+                    new HashSet<>());
         } else {
-            // TODO: clear error message
-            throw new RuntimeException("type not recognized");
+            throw new RuntimeException(String.format("{0} is not recognized dataset type"));
         }
         getExecutionControl().getExecutionRuntime()
                 .setKeyValueDataset(referenceName, datasetImplementation);

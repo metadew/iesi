@@ -3,8 +3,8 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
@@ -63,8 +63,8 @@ public class ActionControl {
                 logOutputPerDatatype(key + counter + ".", element);
                 counter++;
             }
-        } else if (value instanceof DatabaseDatasetImplementation) {
-            for (Map.Entry<String, DataType> datasetItem : DatabaseDatasetImplementationService.getInstance().getDataItems((DatabaseDatasetImplementation) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
+        } else if (value instanceof DatasetImplementation) {
+            for (Map.Entry<String, DataType> datasetItem : DatasetImplementationHandler.getInstance().getDataItems((DatasetImplementation) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
                 logOutputPerDatatype(key + datasetItem.getKey() + ".", datasetItem.getValue());
             }
         } else if (value instanceof Template) {

@@ -188,7 +188,44 @@ class InMemoryDatasetImplementationServiceTest {
 
     @Test
     void testSetDataItemNewKey() {
-        // TODO
+        DataTypeHandler dataTypeHandler = DataTypeHandler.getInstance();
+        DataTypeHandler dataTypeHandlerSpy = Mockito.spy(dataTypeHandler);
+        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandlerSpy);
+
+        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+
+        doReturn(new Text("value1"))
+                .when(dataTypeHandlerSpy)
+                .resolve("value1", executionRuntime);
+
+        doReturn(new Text("value"))
+                .when(dataTypeHandlerSpy)
+                .resolve("value", executionRuntime);
+
+        UUID datasetImplemenationUuid = UUID.randomUUID();
+        InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
+                new DatasetImplementationKey(datasetImplemenationUuid),
+                new DatasetKey(UUID.randomUUID()),
+                "dataset",
+                Stream.of(new DatasetImplementationLabel(
+                                new DatasetImplementationLabelKey(UUID.randomUUID()),
+                                new DatasetImplementationKey(datasetImplemenationUuid),
+                                "label1"
+                        )
+                ).collect(Collectors.toSet()),
+                Stream.of(
+                        new DatasetImplementationKeyValue(new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                new DatasetImplementationKey(datasetImplemenationUuid),
+                                "key1",
+                                "value1"
+                        )
+                ).collect(Collectors.toSet())
+        );
+
+        InMemoryDatasetImplementationService.getInstance().setDataItem(inMemoryDatasetImplementation, "key1", new Text("value"));
+
+        assertThat(InMemoryDatasetImplementationService.getInstance().getDataItem(inMemoryDatasetImplementation, "key1", executionRuntime))
+                .hasValue(new Text("value"));
     }
 
     @Test

@@ -228,13 +228,21 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
 
     @Override
     public void setDataItem(InMemoryDatasetImplementation datasetImplementation, String key, DataType value) {
-        DatasetImplementationKeyValue newDatasetImplementationKeyValue = new DatasetImplementationKeyValue(
-                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
-                datasetImplementation.getMetadataKey(),
-                key,
-                value.toString()
-        );
-        datasetImplementation.getKeyValues().add(newDatasetImplementationKeyValue);
+        Optional<DatasetImplementationKeyValue> datasetImplementationKeyValues = datasetImplementation.getKeyValues().stream()
+                .filter(inMemoryDatasetImplementationKeyValue -> inMemoryDatasetImplementationKeyValue.getKey().equals(key))
+                .findFirst();
+        if (datasetImplementationKeyValues.isPresent()){
+            datasetImplementationKeyValues.get().setValue(value.toString());
+        }
+        else {
+            DatasetImplementationKeyValue newDatasetImplementationKeyValue = new DatasetImplementationKeyValue(
+                    new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                    datasetImplementation.getMetadataKey(),
+                    key,
+                    value.toString()
+            );
+            datasetImplementation.getKeyValues().add(newDatasetImplementationKeyValue);
+        }
     }
 
     @Override

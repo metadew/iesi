@@ -10,6 +10,7 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
@@ -32,8 +33,6 @@ import java.util.AbstractMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -336,11 +335,8 @@ class DatabaseDatasetImplementationServiceTest {
                     Object[] args = invocation.getArguments();
                     return new LookupResult((String) args[0], null, null);
                 });
-
-
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
         DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
-
         DatabaseDatasetImplementation databaseDatasetImplementation = DatabaseDatasetImplementation.builder()
                 .metadataKey(datasetImplementationKey)
                 .datasetKey(datasetKey)
@@ -349,10 +345,11 @@ class DatabaseDatasetImplementationServiceTest {
                         new DatasetImplementationLabel(
                                 new DatasetImplementationLabelKey(UUID.randomUUID()),
                                 datasetImplementationKey,
-                                "key1"
+                                "label1"
                         )).collect(Collectors.toSet()))
                 .keyValues(new HashSet<>())
                 .build();
+
         Dataset dataset = new Dataset(
                 datasetKey,
                 "dataset",
@@ -360,10 +357,14 @@ class DatabaseDatasetImplementationServiceTest {
         );
 
         DatasetConfiguration.getInstance().insert(dataset);
-
         ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":{\"key2\":\"value2\"}}");
 
-        DataType dataType = DataTypeHandler.getInstance()
+        DatabaseDatasetImplementationService databaseDatasetImplementationService = DatabaseDatasetImplementationService.getInstance();
+        DatabaseDatasetImplementationService databaseDatasetImplementationServiceSpy = Mockito.spy(databaseDatasetImplementationService);
+        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", databaseDatasetImplementationServiceSpy);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
+
+        DataType dataType = DatabaseDatasetImplementationService.getInstance()
                 .resolve(
                         databaseDatasetImplementation,
                         "key",
@@ -394,6 +395,8 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key2",
                                 "value2"
                         ));
+        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
 }

@@ -35,9 +35,6 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
     private DatabaseDatasetImplementationService() {
     }
 
-
-
-
     @Override
     public Optional<DatabaseDatasetImplementation> getDatasetImplementation(String name, List<String> labels) {
         return DatasetImplementationConfiguration.getInstance().getByNameAndLabels(name, labels)

@@ -26,7 +26,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
     void writeToDatasetTest() throws IOException {
         // Setup
         DatasetImplementationHandler datasetHandler = mock(DatasetImplementationHandler.class);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "INSTANCE", datasetHandler);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
@@ -55,7 +55,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
     void writeToDatasetNoCharsetTest() throws IOException {
         // Setup
         DatasetImplementationHandler datasetHandler = mock(DatasetImplementationHandler.class);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "INSTANCE", datasetHandler);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 

@@ -17,13 +17,13 @@ public class DatasetImplementationHandler implements IDatasetImplementationHandl
 
     private Map<Class<? extends DatasetImplementation>, IDatasetImplementationService> datasetImplementationServiceMap;
 
-    private static DatasetImplementationHandler INSTANCE;
+    private static DatasetImplementationHandler instance;
 
-    public synchronized static DatasetImplementationHandler getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DatasetImplementationHandler();
+    public static synchronized DatasetImplementationHandler getInstance() {
+        if (instance == null) {
+            instance = new DatasetImplementationHandler();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private DatasetImplementationHandler() {

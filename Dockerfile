@@ -17,8 +17,8 @@ WORKDIR /app/core/java/iesi-rest-without-microservices
 RUN mvn -Dmaven.test.skip=true package
 RUN mvn project-info-reports:dependencies
 WORKDIR /app/core/java/iesi-core/target
-RUN java -cp iesi-core-0.7.0-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository /app -sandbox /app/sandbox -instance assembly -version 0.7.0
-WORKDIR /app/sandbox/0.7.0/assembly
+RUN java -cp iesi-core-0.8.0-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository /app -sandbox /app/sandbox -instance assembly -version 0.8.0
+WORKDIR /app/sandbox/0.8.0/assembly
 RUN chmod ug+x bin/*.sh
 
 FROM debian:10

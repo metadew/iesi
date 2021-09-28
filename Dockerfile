@@ -25,7 +25,7 @@ FROM debian:10
 RUN apt-get update && apt-get -y install software-properties-common gettext-base procps
 RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main' && apt-get update
 RUN apt-get -y install openjdk-8-jdk
-COPY --from=staging /app/sandbox/0.7.0/assembly /opt/iesi
+COPY --from=staging /app/sandbox/0.8.0/assembly /opt/iesi
 COPY --from=staging /app/docker/application-repository.yml.template /opt/iesi/conf/application-repository.yml.template
 ENV DATABASE_CONNECTION_URL jdbc:sqlite:../repository.db3
 ENV DATABASE_TYPE sqlite

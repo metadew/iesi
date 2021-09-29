@@ -2,7 +2,7 @@ package io.metadew.iesi.datatypes.dataset.implementation.database;
 
 public class DatabaseDatasetImplementationJsonComponent {
 
-    public enum Field {
+    /*public enum Field {
         KEY_VALUES_KEY("key_values");
 
         private final String label;
@@ -14,5 +14,5 @@ public class DatabaseDatasetImplementationJsonComponent {
         public String value() {
             return label;
         }
-    }
+    }*/
 }

@@ -1,6 +1,6 @@
-package io.metadew.iesi.datatypes.dataset.implementation.database;
+package io.metadew.iesi.datatypes.dataset.implementation;
 
-public class DatabaseDatasetImplementationKeyValueJsonComponent {
+public class DatasetImplementationKeyValueJsonComponent {
 
     public enum Field {
         KEY_KEY("key"),

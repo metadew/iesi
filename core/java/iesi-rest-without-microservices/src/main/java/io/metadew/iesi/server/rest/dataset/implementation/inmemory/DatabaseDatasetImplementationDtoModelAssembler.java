@@ -32,7 +32,7 @@ public class DatabaseDatasetImplementationDtoModelAssembler extends Representati
         DatabaseDatasetImplementationDto databaseDatasetImplementationDto = instantiateModel(databaseDatasetImplementation);
 
         databaseDatasetImplementationDto.setUuid(databaseDatasetImplementation.getMetadataKey().getUuid());
-        databaseDatasetImplementationDto.setType(DatasetImplementationType.IN_MEMORY.value());
+        databaseDatasetImplementationDto.setType(DatasetImplementationType.DATABASE.value());
         databaseDatasetImplementationDto.setKeyValues(databaseDatasetImplementation.getKeyValues().stream()
                 .map(databaseDatasetImplementationKeyValueDtoModelAssembler::toModel)
                 .collect(Collectors.toSet()));

@@ -1,8 +1,8 @@
 package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
 import lombok.*;
 
@@ -19,18 +19,18 @@ public class DatabaseDatasetImplementationKeyValueDto extends NoEmptyLinksRepres
     private String key;
     private String value;
 
-    public DatasetImplementationKeyValue convertToEntity(UUID datasetImplementationUuid) {
-        return new DatasetImplementationKeyValue(
-                new DatasetImplementationKeyValueKey(getUuid()),
+    public DatabaseDatasetImplementationKeyValue convertToEntity(UUID datasetImplementationUuid) {
+        return new DatabaseDatasetImplementationKeyValue(
+                new DatabaseDatasetImplementationKeyValueKey(getUuid()),
                 new DatasetImplementationKey(datasetImplementationUuid),
                 getKey(),
                 getValue()
         );
     }
 
-    public DatasetImplementationKeyValue convertToNewEntity(UUID datasetImplementationUuid) {
-        return new DatasetImplementationKeyValue(
-                new DatasetImplementationKeyValueKey(getUuid() == null ? UUID.randomUUID() : getUuid()),
+    public DatabaseDatasetImplementationKeyValue convertToNewEntity(UUID datasetImplementationUuid) {
+        return new DatabaseDatasetImplementationKeyValue(
+                new DatabaseDatasetImplementationKeyValueKey(getUuid() == null ? UUID.randomUUID() : getUuid()),
                 new DatasetImplementationKey(datasetImplementationUuid),
                 getKey(),
                 getValue()

@@ -7,11 +7,8 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
@@ -224,18 +221,18 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
 
     @Override
     public void setDataItem(InMemoryDatasetImplementation datasetImplementation, String key, DataType value) {
-        Optional<DatasetImplementationKeyValue> datasetImplementationKeyValues = datasetImplementation.getKeyValues().stream()
+        Optional<InMemoryDatasetImplementationKeyValue> datasetImplementationKeyValues = datasetImplementation.getKeyValues().stream()
                 .filter(inMemoryDatasetImplementationKeyValue -> inMemoryDatasetImplementationKeyValue.getKey().equals(key))
                 .findFirst();
         if (datasetImplementationKeyValues.isPresent()){
-            datasetImplementationKeyValues.get().setValue(value.toString());
+            datasetImplementationKeyValues.get().setValue(value);
         }
         else {
-            DatasetImplementationKeyValue newDatasetImplementationKeyValue = new DatasetImplementationKeyValue(
-                    new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+            InMemoryDatasetImplementationKeyValue newDatasetImplementationKeyValue = new InMemoryDatasetImplementationKeyValue(
+                    new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                     datasetImplementation.getMetadataKey(),
                     key,
-                    value.toString()
+                    value
             );
             datasetImplementation.getKeyValues().add(newDatasetImplementationKeyValue);
         }
@@ -245,7 +242,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     public Optional<DataType> getDataItem(InMemoryDatasetImplementation datasetImplementation, String dataItem, ExecutionRuntime executionRuntime) {
         return datasetImplementation.getKeyValues().stream()
                 .filter(inMemoryDatasetImplementationKeyValue -> inMemoryDatasetImplementationKeyValue.getKey().equals(dataItem))
-                .map(inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime))
+                .map(inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue().toString(), executionRuntime))
                 .findFirst();
     }
 
@@ -253,9 +250,9 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     public Map<String, DataType> getDataItems(InMemoryDatasetImplementation datasetImplementation, ExecutionRuntime executionRuntime) {
         return datasetImplementation.getKeyValues().stream()
                 .collect(Collectors.toMap(
-                        DatasetImplementationKeyValue::getKey,
+                        InMemoryDatasetImplementationKeyValue::getKey,
                         inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance()
-                                .resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime)
+                                .resolve(inMemoryDatasetImplementationKeyValue.getValue().toString(), executionRuntime)
                 ));
     }
 }

@@ -43,7 +43,7 @@ public class DatasetImplementationJsonComponent {
             }
             String type = node.get(Field.TYPE.value()).asText();
 
-            if (type.equals(DatasetImplementationType.IN_MEMORY.value())) {
+            if (type.equals(DatasetImplementationType.DATABASE.value())) {
                 return jsonParser.getCodec().treeToValue(node, DatabaseDatasetImplementationPostDto.class);
             } else {
                 throw new JsonParseException(jsonParser, "Unexpected dataset implementation type: " + jsonParser.getCodec().readTree(jsonParser).toString());

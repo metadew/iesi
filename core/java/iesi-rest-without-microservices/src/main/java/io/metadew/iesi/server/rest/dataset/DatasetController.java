@@ -5,11 +5,9 @@ import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
@@ -103,8 +101,8 @@ public class DatasetController {
                                                     datasetImplementationLabelDto.getLabel()))
                                             .collect(Collectors.toSet()),
                                     ((DatabaseDatasetImplementationPostDto) datasetImplementationDto).getKeyValues().stream()
-                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new DatasetImplementationKeyValue(
-                                                    new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new DatabaseDatasetImplementationKeyValue(
+                                                    new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                                     new DatasetImplementationKey(datasetImplementationUuid),
                                                     inMemoryDatasetImplementationKeyValuePostDto.getKey(),
                                                     inMemoryDatasetImplementationKeyValuePostDto.getValue()
@@ -195,8 +193,8 @@ public class DatasetController {
                                                     datasetImplementationLabelDto.getLabel()))
                                             .collect(Collectors.toSet()),
                                     ((DatabaseDatasetImplementationPostDto) datasetImplementationDto).getKeyValues().stream()
-                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new DatasetImplementationKeyValue(
-                                                    new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new DatabaseDatasetImplementationKeyValue(
+                                                    new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                                     new DatasetImplementationKey(datasetImplementationUuid),
                                                     inMemoryDatasetImplementationKeyValuePostDto.getKey(),
                                                     inMemoryDatasetImplementationKeyValuePostDto.getValue()
@@ -236,8 +234,8 @@ public class DatasetController {
                                 ))
                                 .collect(Collectors.toSet()),
                         ((DatabaseDatasetImplementationPostDto) datasetImplementationPostDto).getKeyValues().stream()
-                                .map(keyValue -> new DatasetImplementationKeyValue(
-                                        new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                .map(keyValue -> new DatabaseDatasetImplementationKeyValue(
+                                        new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                         new DatasetImplementationKey(datasetImplementationUuid),
                                         keyValue.getKey(),
                                         keyValue.getValue()))

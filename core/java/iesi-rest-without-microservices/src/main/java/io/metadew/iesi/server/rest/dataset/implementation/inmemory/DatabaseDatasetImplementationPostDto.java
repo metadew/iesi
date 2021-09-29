@@ -25,7 +25,7 @@ public class DatabaseDatasetImplementationPostDto extends DatasetImplementationP
     @Builder
     public DatabaseDatasetImplementationPostDto(Set<DatasetImplementationLabelPostDto> labels,
                                                 Set<DatabaseDatasetImplementationKeyValuePostDto> keyValues) {
-        super(DatasetImplementationType.IN_MEMORY.value(), labels);
+        super(DatasetImplementationType.DATABASE.value(), labels);
         this.keyValues = keyValues;
     }
 

@@ -139,7 +139,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
                 .getByDatasetImplementationId(datasetImplementation.getMetadataKey())
                 .stream()
                 .collect(Collectors.toMap(
-                        DatasetImplementationKeyValue::getKey,
+                        DatabaseDatasetImplementationKeyValue::getKey,
                         inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance()
                                 .resolve(inMemoryDatasetImplementationKeyValue.getValue(), executionRuntime))
                 );
@@ -147,14 +147,14 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public void setDataItem(DatabaseDatasetImplementation datasetImplementation, String key, DataType value) {
-        Optional<DatasetImplementationKeyValue> inMemoryDatasetImplementationKeyValue = DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
+        Optional<DatabaseDatasetImplementationKeyValue> inMemoryDatasetImplementationKeyValue = DatabaseDatasetImplementationKeyValueConfiguration.getInstance()
                 .getByDatasetImplementationIdAndKey(datasetImplementation.getMetadataKey(), key);
         if (inMemoryDatasetImplementationKeyValue.isPresent()) {
             inMemoryDatasetImplementationKeyValue.get().setValue(value.toString());
             DatabaseDatasetImplementationKeyValueConfiguration.getInstance().update(inMemoryDatasetImplementationKeyValue.get());
         } else {
-            DatasetImplementationKeyValue newDatasetImplementationKeyValue = new DatasetImplementationKeyValue(
-                    new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+            DatabaseDatasetImplementationKeyValue newDatasetImplementationKeyValue = new DatabaseDatasetImplementationKeyValue(
+                    new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
                     datasetImplementation.getMetadataKey(),
                     key,
                     value.toString()

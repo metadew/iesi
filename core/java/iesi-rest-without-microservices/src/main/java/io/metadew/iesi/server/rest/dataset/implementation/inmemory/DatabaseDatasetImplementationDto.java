@@ -22,7 +22,7 @@ public class DatabaseDatasetImplementationDto extends DatasetImplementationDto {
 
     @Builder
     public DatabaseDatasetImplementationDto(UUID uuid, Set<DatasetImplementationLabelDto> labels, Set<DatabaseDatasetImplementationKeyValueDto> keyValues) {
-        super(uuid, DatasetImplementationType.IN_MEMORY.value(), labels);
+        super(uuid, DatasetImplementationType.DATABASE.value(), labels);
         this.keyValues = keyValues;
     }
 

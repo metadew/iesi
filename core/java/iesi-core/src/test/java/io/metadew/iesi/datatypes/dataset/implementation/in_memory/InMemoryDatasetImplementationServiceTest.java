@@ -9,9 +9,9 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
@@ -84,10 +84,10 @@ class InMemoryDatasetImplementationServiceTest {
                         )
                 ).collect(Collectors.toSet()),
                 Stream.of(
-                        new DatasetImplementationKeyValue(new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new InMemoryDatasetImplementationKeyValue(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 new DatasetImplementationKey(datasetImplemenationUuid),
                                 "key1",
-                                "value1"
+                                new Text("value1")
                         )
                 ).collect(Collectors.toSet())
         );
@@ -122,15 +122,15 @@ class InMemoryDatasetImplementationServiceTest {
                         )
                 ).collect(Collectors.toSet()),
                 Stream.of(
-                        new DatasetImplementationKeyValue(new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new InMemoryDatasetImplementationKeyValue(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 new DatasetImplementationKey(datasetImplemenationUuid),
                                 "key1",
-                                "value1"
+                                new Text("value1")
                         ),
-                        new DatasetImplementationKeyValue(new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new InMemoryDatasetImplementationKeyValue(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 new DatasetImplementationKey(datasetImplemenationUuid),
                                 "key2",
-                                "value2")
+                                new Text("value2"))
                 ).collect(Collectors.toSet())
         );
         assertThat(InMemoryDatasetImplementationService.getInstance().getDataItems(inMemoryDatasetImplementation, executionRuntime))
@@ -177,10 +177,10 @@ class InMemoryDatasetImplementationServiceTest {
                         )
                 ).collect(Collectors.toSet()),
                 Stream.of(
-                        new DatasetImplementationKeyValue(new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new InMemoryDatasetImplementationKeyValue(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 new DatasetImplementationKey(datasetImplemenationUuid),
                                 "key1",
-                                "value1"
+                                new Text("value1")
                         )
                 ).collect(Collectors.toSet())
         );
@@ -216,10 +216,10 @@ class InMemoryDatasetImplementationServiceTest {
                         )
                 ).collect(Collectors.toSet()),
                 Stream.of(
-                        new DatasetImplementationKeyValue(new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new InMemoryDatasetImplementationKeyValue(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 new DatasetImplementationKey(datasetImplemenationUuid),
                                 "key1",
-                                "value1"
+                                new Text("value1")
                         )
                 ).collect(Collectors.toSet())
         );
@@ -258,10 +258,10 @@ class InMemoryDatasetImplementationServiceTest {
                         )
                 ).collect(Collectors.toSet()),
                 Stream.of(
-                        new DatasetImplementationKeyValue(new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new InMemoryDatasetImplementationKeyValue(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 new DatasetImplementationKey(datasetImplemenationUuid),
                                 "key1",
-                                "value1"
+                                new Text("value1")
                         )
                 ).collect(Collectors.toSet())
         );
@@ -303,17 +303,17 @@ class InMemoryDatasetImplementationServiceTest {
                 .hasSize(2)
                 .usingElementComparatorOnFields("key", "value")
                 .containsOnly(
-                        new DatasetImplementationKeyValue(
-                                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new InMemoryDatasetImplementationKeyValue(
+                                new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 datasetImplementationKey,
                                 "key1",
-                                "value1"
+                                new Text("value1")
                         ),
-                        new DatasetImplementationKeyValue(
-                                new DatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        new InMemoryDatasetImplementationKeyValue(
+                                new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                 datasetImplementationKey,
                                 "key2",
-                                "value2"
+                                new Text("value2")
                         ));
     }
 

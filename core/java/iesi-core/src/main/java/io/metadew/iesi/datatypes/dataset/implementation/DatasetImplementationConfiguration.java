@@ -5,6 +5,8 @@ import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfig
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.Configuration;
@@ -372,7 +374,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             }
             String type = mapType(cachedRowSet);
             if (type.equalsIgnoreCase("in_memory")) {
-                mapInMemoryDatasetImplementation(cachedRowSet, (InMemoryDatasetImplementationBuilder) datasetImplementationBuilder);
+                mapInMemoryDatasetImplementation(cachedRowSet, (DatabaseDatasetImplementationBuilder) datasetImplementationBuilder);
             } else {
                 log.warn("no type found for dataset implementation");
             }
@@ -380,15 +382,15 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
         }
     }
 
-    private void mapInMemoryDatasetImplementation(CachedRowSet cachedRowSet, InMemoryDatasetImplementationBuilder inMemoryDatasetImplementationBuilder) throws SQLException {
+    private void mapInMemoryDatasetImplementation(CachedRowSet cachedRowSet, DatabaseDatasetImplementationBuilder databaseDatasetImplementationBuilder) throws SQLException {
         String inMemoryKeyValueId = cachedRowSet.getString("dataset_in_mem_impl_kv_id");
-        if (inMemoryKeyValueId != null && inMemoryDatasetImplementationBuilder.getKeyValues().get(inMemoryKeyValueId) == null) {
+        if (inMemoryKeyValueId != null && databaseDatasetImplementationBuilder.getKeyValues().get(inMemoryKeyValueId) == null) {
             String key = cachedRowSet.getString("dataset_in_mem_impl_kvs_key");
             String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
 
-            inMemoryDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
-                    new DatasetImplementationKeyValue(
-                            new DatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
+            databaseDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
+                    new DatabaseDatasetImplementationKeyValue(
+                            new DatabaseDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                             new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
                             key,
                             clobValue)
@@ -433,7 +435,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
         // "dataset_impls.ID as dataset_impl_id, dataset_impls.DATASET_ID as dataset_impl_dataset_id, " +
         // "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, dataset_impls.DATASET_ID as dataset_impl_dataset_id, " +
         // "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-        return new InMemoryDatasetImplementationBuilder(
+        return new DatabaseDatasetImplementationBuilder(
                 new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_impl_id"))),
                 new DatasetKey(UUID.fromString(cachedRowSet.getString("dataset_id"))),
                 cachedRowSet.getString("dataset_name"),
@@ -459,11 +461,11 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     @Getter
     @ToString(callSuper = true)
-    private class InMemoryDatasetImplementationBuilder extends DatasetImplementationBuilder {
+    private class DatabaseDatasetImplementationBuilder extends DatasetImplementationBuilder {
 
-        private Map<String, DatasetImplementationKeyValue> keyValues;
+        private Map<String, DatabaseDatasetImplementationKeyValue> keyValues;
 
-        public InMemoryDatasetImplementationBuilder(DatasetImplementationKey datasetImplementationKey, DatasetKey datasetKey, String name, Map<String, DatasetImplementationLabel> executionRequestLabels, Map<String, DatasetImplementationKeyValue> keyValues) {
+        public DatabaseDatasetImplementationBuilder(DatasetImplementationKey datasetImplementationKey, DatasetKey datasetKey, String name, Map<String, DatasetImplementationLabel> executionRequestLabels, Map<String, DatabaseDatasetImplementationKeyValue> keyValues) {
             super(datasetImplementationKey, datasetKey, name, executionRequestLabels);
             this.keyValues = keyValues;
         }

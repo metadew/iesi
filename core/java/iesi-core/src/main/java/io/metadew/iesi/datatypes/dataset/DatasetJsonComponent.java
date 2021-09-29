@@ -6,9 +6,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import io.metadew.iesi.datatypes.dataset.implementation.*;
 import io.metadew.iesi.datatypes.dataset.implementation.database.*;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelJsonComponent;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 
@@ -55,14 +59,14 @@ public class DatasetJsonComponent {
                 }
 
                 String type = implementationNode.get(DatasetImplementationJsonComponent.Field.TYPE_KEY.value()).asText();
-                if (type.equalsIgnoreCase(DatasetImplementationType.IN_MEMORY.value())) {
-                    Set<DatasetImplementationKeyValue> keyValues = new HashSet<>();
-                    for (JsonNode keyValueNode : implementationNode.get(DatabaseDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
-                        keyValues.add(DatasetImplementationKeyValue.builder()
-                                .metadataKey(new DatasetImplementationKeyValueKey())
+                if (type.equalsIgnoreCase(DatasetImplementationType.DATABASE.value())) {
+                    Set<DatabaseDatasetImplementationKeyValue> keyValues = new HashSet<>();
+                    for (JsonNode keyValueNode : implementationNode.get(DatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
+                        keyValues.add(DatabaseDatasetImplementationKeyValue.builder()
+                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey())
                                 .datasetImplementationKey(datasetImplementationKey)
-                                .key(keyValueNode.get(DatabaseDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
-                                .value(keyValueNode.get(DatabaseDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText())
+                                .key(keyValueNode.get(DatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
+                                .value(keyValueNode.get(DatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText())
                                 .build());
                     }
                     datasetImplementations.add(
@@ -74,7 +78,27 @@ public class DatasetJsonComponent {
                                     .keyValues(keyValues)
                                     .build()
                     );
-                } else {
+                } else if (type.equalsIgnoreCase(DatasetImplementationType.IN_MEMORY.value())) {
+                    Set<InMemoryDatasetImplementationKeyValue> keyValues = new HashSet<>();
+                    for (JsonNode keyValueNode : implementationNode.get(DatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
+                        keyValues.add(InMemoryDatasetImplementationKeyValue.builder()
+                                .metadataKey(new InMemoryDatasetImplementationKeyValueKey())
+                                .datasetImplementationKey(datasetImplementationKey)
+                                .key(keyValueNode.get(DatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
+                                .value(new Text(keyValueNode.get(DatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText()))
+                                .build());
+                    }
+                    datasetImplementations.add(
+                            InMemoryDatasetImplementation.builder()
+                                    .metadataKey(datasetImplementationKey)
+                                    .datasetKey(datasetKey)
+                                    .name(name)
+                                    .datasetImplementationLabels(datasetImplementationLabels)
+                                    .keyValues(keyValues)
+                                    .build()
+                    );
+                }
+                else {
                     throw new RuntimeException("Cannot create DatasetImplementation of type " + type);
                 }
             }
@@ -108,16 +132,25 @@ public class DatasetJsonComponent {
                 jsonGenerator.writeEndArray();
 
                 if (datasetImplementation instanceof DatabaseDatasetImplementation) {
-                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.IN_MEMORY.value());
-                    jsonGenerator.writeArrayFieldStart(DatabaseDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
-                    for (DatasetImplementationKeyValue datasetImplementationKeyValue : ((DatabaseDatasetImplementation) datasetImplementation).getKeyValues()) {
+                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.DATABASE.value());
+                    jsonGenerator.writeArrayFieldStart(DatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
+                    for (DatabaseDatasetImplementationKeyValue datasetImplementationKeyValue : ((DatabaseDatasetImplementation) datasetImplementation).getKeyValues()) {
                         jsonGenerator.writeStartObject();
-                        jsonGenerator.writeStringField(DatabaseDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), datasetImplementationKeyValue.getKey());
-                        jsonGenerator.writeStringField(DatabaseDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), datasetImplementationKeyValue.getValue());
+                        jsonGenerator.writeStringField(DatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), datasetImplementationKeyValue.getKey());
+                        jsonGenerator.writeStringField(DatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), datasetImplementationKeyValue.getValue());
                         jsonGenerator.writeEndObject();
                     }
                     jsonGenerator.writeEndArray();
-                } else {
+                } else if (datasetImplementation instanceof InMemoryDatasetImplementation) {
+                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.IN_MEMORY.value());
+                    jsonGenerator.writeArrayFieldStart(DatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
+                    for (InMemoryDatasetImplementationKeyValue datasetImplementationKeyValue : ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues()) {
+                        jsonGenerator.writeStringField(DatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), datasetImplementationKeyValue.getKey());
+                        jsonGenerator.writeStringField(DatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), datasetImplementationKeyValue.getValue().toString());
+                        jsonGenerator.writeEndObject();
+                    }
+                }
+                else {
                     // TODO
                 }
                 jsonGenerator.writeEndObject();

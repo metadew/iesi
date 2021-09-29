@@ -19,14 +19,12 @@ public abstract class DatasetImplementation extends Metadata<DatasetImplementati
     private final DatasetKey datasetKey;
     private final String name;
     private final Set<DatasetImplementationLabel> datasetImplementationLabels;
-    private Set<DatasetImplementationKeyValue> keyValues;
 
-    public DatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, Set<DatasetImplementationLabel> datasetImplementationLabels, Set<DatasetImplementationKeyValue> keyValues) {
+    public DatasetImplementation(DatasetImplementationKey metadataKey, DatasetKey datasetKey, String name, Set<DatasetImplementationLabel> datasetImplementationLabels) {
         super(metadataKey);
         this.datasetKey = datasetKey;
         this.name = name;
         this.datasetImplementationLabels = datasetImplementationLabels;
-        this.keyValues = keyValues;
     }
 
 

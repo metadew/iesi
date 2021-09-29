@@ -1,13 +1,13 @@
 package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatabaseDatasetImplementationKeyValueDtoModelAssembler extends RepresentationModelAssemblerSupport<DatasetImplementationKeyValue, DatabaseDatasetImplementationKeyValueDto> {
+public class DatabaseDatasetImplementationKeyValueDtoModelAssembler extends RepresentationModelAssemblerSupport<DatabaseDatasetImplementationKeyValue, DatabaseDatasetImplementationKeyValueDto> {
 
     @Autowired
     public DatabaseDatasetImplementationKeyValueDtoModelAssembler() {
@@ -15,7 +15,7 @@ public class DatabaseDatasetImplementationKeyValueDtoModelAssembler extends Repr
     }
 
     @Override
-    public DatabaseDatasetImplementationKeyValueDto toModel(DatasetImplementationKeyValue datasetImplementationKeyValue) {
+    public DatabaseDatasetImplementationKeyValueDto toModel(DatabaseDatasetImplementationKeyValue datasetImplementationKeyValue) {
         DatabaseDatasetImplementationKeyValueDto databaseDatasetImplementationKeyValueDto = instantiateModel(datasetImplementationKeyValue);
 
         databaseDatasetImplementationKeyValueDto.setUuid(datasetImplementationKeyValue.getMetadataKey().getUuid());

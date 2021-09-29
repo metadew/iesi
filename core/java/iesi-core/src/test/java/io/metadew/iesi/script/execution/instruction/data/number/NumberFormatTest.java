@@ -1,11 +1,28 @@
 package io.metadew.iesi.script.execution.instruction.data.number;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class NumberFormatTest {
+
+    private Locale local;
+
+    @BeforeEach
+    void beforeEach(){
+        this.local = Locale.getDefault();
+        Locale.setDefault(new Locale("en", "US"));
+    }
+
+    @AfterEach
+    void afterEach(){
+        Locale.setDefault(this.local);
+    }
 
     @Test
     void numberFormat() {

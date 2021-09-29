@@ -52,7 +52,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     public InMemoryDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Dataset Implementation", arguments));
         List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
-        if (splittedArguments.size() == 3) {
+        if (splittedArguments.size() == 3 || splittedArguments.size() == 2) {
             List<DataType> resolvedArguments = splittedArguments.stream()
                     .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
                     .collect(Collectors.toList());

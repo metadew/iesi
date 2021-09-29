@@ -98,7 +98,10 @@ public class DatasetImplementationHandler implements IDatasetImplementationHandl
             else {
                 throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
             }
-        } else {
+        } else if (splittedArguments.size() == 2) {
+            return InMemoryDatasetImplementationService.getInstance().resolve(input, executionRuntime);
+        }
+        else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }
     }

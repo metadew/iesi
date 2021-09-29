@@ -144,7 +144,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
 
     private String convertDatasetType(DataType datasetType) {
         if (datasetType == null || datasetType instanceof Null) {
-            return null;
+            return "in_memory";
         }
         if (!(datasetType instanceof Text)) {
             log.warn(MessageFormat.format("{0} does not accept {1} as type for dataset type",

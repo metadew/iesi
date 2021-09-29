@@ -100,6 +100,5 @@ class JavaKeystoreTest {
         assertThatThrownBy(() -> {
             new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
         }).isInstanceOf(Exception.class);
-                //.hasMessageContaining("java.io.IOException: Integrity check failed: java.security.UnrecoverableKeyException: Failed PKCS12 integrity checking");
     }
 }

@@ -35,10 +35,12 @@ import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
+import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -267,5 +269,11 @@ public class IesiConfiguration {
         return FrameworkCrypto.getInstance();
     }
 
+    @Bean
+    @Profile("dev")
+    @DependsOn("frameworkInstance")
+    public ScriptExecutorService scriptExecutorService() {
+        return ScriptExecutorService.getInstance();
+    }
 
 }

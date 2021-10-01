@@ -6,18 +6,20 @@ import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRe
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
+@Profile("!dev")
 @ConditionalOnWebApplication
-public class NonAuthenticatedExecutionRequestExecutor
-extends ExecutionRequestExecutor<NonAuthenticatedExecutionRequest>
+public class NonAuthenticatedWorkerAgentExecutionRequestExecutor
+extends WorkerAgentExecutionRequestExecutor<NonAuthenticatedExecutionRequest>
         implements IExecutionRequestExecutor<NonAuthenticatedExecutionRequest> {
 
     @Autowired
-    public NonAuthenticatedExecutionRequestExecutor(ExecutionRequestConfiguration executionRequestConfiguration,
-                                                    Configuration iesiProperties) {
+    public NonAuthenticatedWorkerAgentExecutionRequestExecutor(ExecutionRequestConfiguration executionRequestConfiguration,
+                                                               Configuration iesiProperties) {
         super(executionRequestConfiguration, iesiProperties);
     }
 

@@ -270,7 +270,7 @@ public class IesiConfiguration {
     }
 
     @Bean
-    @Profile("dev")
+    @Profile("single_process")
     @DependsOn("frameworkInstance")
     public ScriptExecutorService scriptExecutorService() {
         return ScriptExecutorService.getInstance();

@@ -14,15 +14,15 @@ import org.springframework.stereotype.Service;
 @Log4j2
 @ConditionalOnWebApplication
 @Service
-@Profile("dev")
-class DevelopmentWorkerAgentExecutionRequestExecutor extends ExecutionRequestExecutor<ExecutionRequest> {
+@Profile("single_process")
+class SingleProcessExecutionRequestExecutor extends ExecutionRequestExecutor<ExecutionRequest> {
 
     private final ExecutionRequestConfiguration executionRequestConfiguration;
     private final ScriptExecutorService scriptExecutorService;
 
     @Autowired
-    DevelopmentWorkerAgentExecutionRequestExecutor(ExecutionRequestConfiguration executionRequestConfiguration,
-                                                   ScriptExecutorService scriptExecutorService) {
+    SingleProcessExecutionRequestExecutor(ExecutionRequestConfiguration executionRequestConfiguration,
+                                          ScriptExecutorService scriptExecutorService) {
         this.executionRequestConfiguration = executionRequestConfiguration;
         this.scriptExecutorService = scriptExecutorService;
     }

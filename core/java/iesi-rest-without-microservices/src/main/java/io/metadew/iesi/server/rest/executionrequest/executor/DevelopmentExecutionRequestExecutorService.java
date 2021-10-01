@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 @Service
 @ConditionalOnWebApplication
-@Profile("dev")
+@Profile("single_process")
 public class DevelopmentExecutionRequestExecutorService implements IExecutionRequestExecutorService {
     private final Map<Class<? extends ScriptExecutionRequest>, IExecutionRequestExecutor> executionRequestExecutorMap = new HashMap<>();
     private final ExecutionRequestConfiguration executionRequestConfiguration;

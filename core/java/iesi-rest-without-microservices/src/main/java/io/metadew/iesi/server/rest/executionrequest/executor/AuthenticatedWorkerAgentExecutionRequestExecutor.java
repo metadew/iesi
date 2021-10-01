@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
-@Profile("!dev")
+@Profile("!single_process")
 @ConditionalOnWebApplication
 public class AuthenticatedWorkerAgentExecutionRequestExecutor
     extends WorkerAgentExecutionRequestExecutor<AuthenticatedExecutionRequest>

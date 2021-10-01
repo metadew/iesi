@@ -8,6 +8,7 @@ import io.metadew.iesi.datatypes.IDataTypeService;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
@@ -53,9 +54,20 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
             List<DataType> resolvedArguments = splittedArguments.stream()
                     .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
                     .collect(Collectors.toList());
+            String datasetName = convertDatasetName(resolvedArguments.get(0));
+            List<String> datasetLabels = convertDatasetLabels(resolvedArguments.get(1), executionRuntime);
+            Map<String, DatasetImplementation> dataset =  executionRuntime.getDatasetMap();
+            for (DatasetImplementation datasetImplementation : dataset.values()) {
+                if(datasetImplementation.getName().equals(datasetName)){
+                    List<String> labels =  datasetImplementation.getDatasetImplementationLabels().stream().map(DatasetImplementationLabel::getValue).collect(Collectors.toList());
+                    if (labels.equals(datasetLabels)) {
+                        return (InMemoryDatasetImplementation) datasetImplementation;
+                    }
+                }
+            }
             return createNewDatasetImplementation(
-                    convertDatasetName(resolvedArguments.get(0)),
-                    convertDatasetLabels(resolvedArguments.get(1), executionRuntime));
+                    datasetName,
+                    datasetLabels, executionRuntime);
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));
         }
@@ -144,7 +156,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     }
 
     @Override
-    public InMemoryDatasetImplementation createNewDatasetImplementation(Dataset dataset, List<String> labels) {
+    public InMemoryDatasetImplementation createNewDatasetImplementation(Dataset dataset, List<String> labels, ExecutionRuntime executionRuntime) {
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
         InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
                 datasetImplementationKey,
@@ -155,11 +167,12 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
                         .collect(Collectors.toSet()),
                 new HashSet<>()
         );
+        executionRuntime.setKeyValueDataset(UUID.randomUUID().toString(), inMemoryDatasetImplementation);
         return inMemoryDatasetImplementation;
     }
 
     @Override
-    public InMemoryDatasetImplementation createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels) {
+    public InMemoryDatasetImplementation createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels, ExecutionRuntime executionRuntime) {
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
         InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
                 datasetImplementationKey,
@@ -170,11 +183,13 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
                         .collect(Collectors.toSet()),
                 new HashSet<>()
         );
+        executionRuntime.setKeyValueDataset(UUID.randomUUID().toString(), inMemoryDatasetImplementation);
         return inMemoryDatasetImplementation;
     }
 
+    //Todo :
     @Override
-    public InMemoryDatasetImplementation createNewDatasetImplementation(String name, List<String> labels) {
+    public InMemoryDatasetImplementation createNewDatasetImplementation(String name, List<String> labels, ExecutionRuntime executionRuntime) {
         Dataset dataset = new Dataset(new DatasetKey(), name, new HashSet<>());
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
         InMemoryDatasetImplementation inMemoryDatasetImplementation = new InMemoryDatasetImplementation(
@@ -186,6 +201,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
                         .collect(Collectors.toSet()),
                 new HashSet<>()
         );
+        executionRuntime.setKeyValueDataset(UUID.randomUUID().toString(), inMemoryDatasetImplementation);
         return inMemoryDatasetImplementation;
     }
 
@@ -198,7 +214,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     @Override
     public DataType resolve(InMemoryDatasetImplementation dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-        InMemoryDatasetImplementation inMemoryDatasetImplementation = getObjectDataset(dataset, key);
+        InMemoryDatasetImplementation inMemoryDatasetImplementation = getObjectDataset(dataset, key, executionRuntime);
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
             DataType object = DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementation, field.getKey(), field.getValue(), executionRuntime);
@@ -207,13 +223,13 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
         return inMemoryDatasetImplementation;
     }
 
-    private InMemoryDatasetImplementation getObjectDataset(InMemoryDatasetImplementation inMemoryDatasetImplementation, String keyPrefix) {
+    private InMemoryDatasetImplementation getObjectDataset(InMemoryDatasetImplementation inMemoryDatasetImplementation, String keyPrefix, ExecutionRuntime executionRuntime) {
         if (keyPrefix != null) {
             List<String> labels = inMemoryDatasetImplementation.getDatasetImplementationLabels().stream()
                     .map(DatasetImplementationLabel::getValue)
                     .collect(Collectors.toList());
             labels.add(UUID.randomUUID().toString());
-            return createNewDatasetImplementation(inMemoryDatasetImplementation.getDatasetKey(), inMemoryDatasetImplementation.getName(), labels);
+            return createNewDatasetImplementation(inMemoryDatasetImplementation.getDatasetKey(), inMemoryDatasetImplementation.getName(), labels, executionRuntime);
         } else {
             return inMemoryDatasetImplementation;
         }
@@ -242,7 +258,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     public Optional<DataType> getDataItem(InMemoryDatasetImplementation datasetImplementation, String dataItem, ExecutionRuntime executionRuntime) {
         return datasetImplementation.getKeyValues().stream()
                 .filter(inMemoryDatasetImplementationKeyValue -> inMemoryDatasetImplementationKeyValue.getKey().equals(dataItem))
-                .map(inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementationKeyValue.getValue().toString(), executionRuntime))
+                .map(InMemoryDatasetImplementationKeyValue::getValue)
                 .findFirst();
     }
 

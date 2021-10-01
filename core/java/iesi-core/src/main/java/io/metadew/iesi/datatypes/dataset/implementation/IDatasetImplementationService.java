@@ -24,11 +24,11 @@ public interface IDatasetImplementationService<T extends DatasetImplementation> 
 
     Map<String, DataType> getDataItems(T datasetImplementation, ExecutionRuntime executionRuntime);
 
-    T createNewDatasetImplementation(Dataset dataset, List<String> labels);
+    T createNewDatasetImplementation(Dataset dataset, List<String> labels, ExecutionRuntime executionRuntime);
 
-    T createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels);
+    T createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels, ExecutionRuntime executionRuntime);
 
-    T createNewDatasetImplementation(String name, List<String> labels);
+    T createNewDatasetImplementation(String name, List<String> labels, ExecutionRuntime executionRuntime);
 
     void clean(T datasetImplementation, ExecutionRuntime executionRuntime);
 

@@ -48,7 +48,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
     }
 
     @Override
-    public DatabaseDatasetImplementation createNewDatasetImplementation(Dataset dataset, List<String> labels) {
+    public DatabaseDatasetImplementation createNewDatasetImplementation(Dataset dataset, List<String> labels, ExecutionRuntime executionRuntime) {
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
         DatabaseDatasetImplementation databaseDatasetImplementation = new DatabaseDatasetImplementation(
                 datasetImplementationKey,
@@ -64,7 +64,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
     }
 
     @Override
-    public DatabaseDatasetImplementation createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels) {
+    public DatabaseDatasetImplementation createNewDatasetImplementation(DatasetKey datasetKey, String name, List<String> labels, ExecutionRuntime executionRuntime) {
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
         DatabaseDatasetImplementation databaseDatasetImplementation = new DatabaseDatasetImplementation(
                 datasetImplementationKey,
@@ -80,7 +80,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
     }
 
     @Override
-    public DatabaseDatasetImplementation createNewDatasetImplementation(String name, List<String> labels) {
+    public DatabaseDatasetImplementation createNewDatasetImplementation(String name, List<String> labels, ExecutionRuntime executionRuntime) {
         Dataset dataset = DatasetConfiguration.getInstance().getByName(name)
                 .orElseGet(() -> {
                     Dataset newDataset = new Dataset(new DatasetKey(), name, new HashSet<>());
@@ -227,7 +227,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
 
     public DataType resolve(DatabaseDatasetImplementation dataset, String key, ObjectNode jsonNode, ExecutionRuntime executionRuntime) {
         Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
-        DatabaseDatasetImplementation databaseDatasetImplementation = getObjectDataset(dataset, key);
+        DatabaseDatasetImplementation databaseDatasetImplementation = getObjectDataset(dataset, key, executionRuntime);
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
             DataType object = DataTypeHandler.getInstance().resolve(databaseDatasetImplementation, field.getKey(), field.getValue(), executionRuntime);
@@ -236,13 +236,13 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
         return databaseDatasetImplementation;
     }
 
-    private DatabaseDatasetImplementation getObjectDataset(DatabaseDatasetImplementation databaseDatasetImplementation, String keyPrefix) {
+    private DatabaseDatasetImplementation getObjectDataset(DatabaseDatasetImplementation databaseDatasetImplementation, String keyPrefix, ExecutionRuntime executionRuntime) {
         if (keyPrefix != null) {
             List<String> labels = databaseDatasetImplementation.getDatasetImplementationLabels().stream()
                     .map(DatasetImplementationLabel::getValue)
                     .collect(Collectors.toList());
             labels.add(UUID.randomUUID().toString());
-            return createNewDatasetImplementation(databaseDatasetImplementation.getDatasetKey(), databaseDatasetImplementation.getName(), labels);
+            return createNewDatasetImplementation(databaseDatasetImplementation.getDatasetKey(), databaseDatasetImplementation.getName(), labels, executionRuntime);
         } else {
             return databaseDatasetImplementation;
         }
@@ -277,7 +277,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
                         return createNewDatasetImplementation(
                                 datasetKey,
                                 convertDatasetName(resolvedArguments.get(0)),
-                                convertDatasetLabels(resolvedArguments.get(1), executionRuntime));
+                                convertDatasetLabels(resolvedArguments.get(1), executionRuntime), executionRuntime);
                     });
         } else {
             throw new RuntimeException(MessageFormat.format("Cannot create dataset with arguments ''{0}''", splittedArguments.toString()));

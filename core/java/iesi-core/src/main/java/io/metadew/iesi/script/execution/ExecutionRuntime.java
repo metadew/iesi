@@ -142,6 +142,10 @@ public class ExecutionRuntime {
         }
     }
 
+    public HashMap<String, DatasetImplementation> getDatasetMap() {
+        return datasetMap;
+    }
+
     public void setRuntimeVariablesFromList(ActionExecution actionExecution, ResultSet rs) {
         try {
             rs.beforeFirst();

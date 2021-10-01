@@ -142,7 +142,7 @@ public class ExecutionRuntime {
         }
     }
 
-    public HashMap<String, DatasetImplementation> getDatasetMap() {
+    public Map<String, DatasetImplementation> getDatasetMap() {
         return datasetMap;
     }
 

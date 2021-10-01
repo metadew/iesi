@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.service.action;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
@@ -77,7 +78,7 @@ public class ActionParameterTraceService {
 //                actionParameterTraces.addAll(getActionParameterTraces(actionExecution, key + counter, element));
 //                counter++;
 //            }
-        } else if (value instanceof DatabaseDatasetImplementation) {
+        } else if (value instanceof DatasetImplementation) {
             actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), value.toString()));
 //            for (Map.Entry<String, DataType> datasetItem : DatasetHandler.getInstance().getDataItems((Dataset) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
 //                actionParameterTraces.addAll(getActionParameterTraces(actionExecution, key + datasetItem.getKey(), datasetItem.getValue()));

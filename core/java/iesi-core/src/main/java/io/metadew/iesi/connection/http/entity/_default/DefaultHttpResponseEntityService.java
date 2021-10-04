@@ -22,13 +22,13 @@ import java.util.stream.Stream;
 @Log4j2
 public class DefaultHttpResponseEntityService implements IHttpResponseEntityService<DefaultHttpResponseEntityStrategy> {
 
-    private static DefaultHttpResponseEntityService INSTANCE;
+    private static DefaultHttpResponseEntityService instance;
 
-    public synchronized static DefaultHttpResponseEntityService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DefaultHttpResponseEntityService();
+    public static synchronized DefaultHttpResponseEntityService getInstance() {
+        if (instance == null) {
+            instance = new DefaultHttpResponseEntityService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     @Override

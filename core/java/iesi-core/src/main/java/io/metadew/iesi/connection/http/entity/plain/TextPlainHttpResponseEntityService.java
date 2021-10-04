@@ -21,13 +21,13 @@ import java.util.stream.Stream;
 @Log4j2
 public class TextPlainHttpResponseEntityService implements IHttpResponseEntityService<TextPlainHttpResponseEntityStrategy> {
 
-    private static TextPlainHttpResponseEntityService INSTANCE;
+    private static TextPlainHttpResponseEntityService instance;
 
-    public synchronized static TextPlainHttpResponseEntityService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TextPlainHttpResponseEntityService();
+    public static synchronized TextPlainHttpResponseEntityService getInstance() {
+        if (instance == null) {
+            instance = new TextPlainHttpResponseEntityService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     @Override

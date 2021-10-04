@@ -58,15 +58,15 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
 
     private static DatabaseDatasetImplementationKeyValueConfiguration instance;
 
+    private DatabaseDatasetImplementationKeyValueConfiguration() {
+        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
+    }
+
     public static synchronized DatabaseDatasetImplementationKeyValueConfiguration getInstance() {
         if (instance == null) {
             instance = new DatabaseDatasetImplementationKeyValueConfiguration();
         }
         return instance;
-    }
-
-    private DatabaseDatasetImplementationKeyValueConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
     }
 
     @Override

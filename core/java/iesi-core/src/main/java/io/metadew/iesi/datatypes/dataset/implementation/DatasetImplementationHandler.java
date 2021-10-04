@@ -108,6 +108,27 @@ public class DatasetImplementationHandler implements IDatasetImplementationHandl
 
     @Override
     public boolean equals(DatasetImplementation _this, DatasetImplementation other, ExecutionRuntime executionRuntime) {
-        return false;
+        if (_this == null && other == null) {
+            return true;
+        }
+        if (_this == null || other == null) {
+            return false;
+        }
+        if (!_this.getClass().equals(other.getClass())) {
+            return false;
+        }
+        Map<String, DataType> thisDataItems = getDataItems(_this, executionRuntime);
+        Map<String, DataType> otherDataItems = getDataItems(other, executionRuntime);
+        if (!thisDataItems.keySet().equals(otherDataItems.keySet())) {
+            return false;
+        }
+        for (Map.Entry<String, DataType> thisDataItem : thisDataItems.entrySet()) {
+            if (!getDataItem(other, thisDataItem.getKey(), executionRuntime)
+                    .map(dataType -> DataTypeHandler.getInstance().equals(dataType, thisDataItem.getValue(), executionRuntime))
+                    .orElse(false)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

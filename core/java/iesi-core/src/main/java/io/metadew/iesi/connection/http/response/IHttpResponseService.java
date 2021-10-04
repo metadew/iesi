@@ -7,6 +7,6 @@ import java.io.IOException;
 
 public interface IHttpResponseService {
 
-    public void writeToDataset(HttpResponse httpResponse, DatasetImplementation dataset, ExecutionRuntime executionRuntime) throws IOException;
+    void writeToDataset(HttpResponse httpResponse, DatasetImplementation dataset, ExecutionRuntime executionRuntime) throws IOException;
 
 }

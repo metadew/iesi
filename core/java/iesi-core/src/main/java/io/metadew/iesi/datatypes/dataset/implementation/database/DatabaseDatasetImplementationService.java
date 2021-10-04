@@ -38,13 +38,13 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
     @Override
     public Optional<DatabaseDatasetImplementation> getDatasetImplementation(String name, List<String> labels) {
         return DatasetImplementationConfiguration.getInstance().getByNameAndLabels(name, labels)
-                .map(datasetImplementation -> (DatabaseDatasetImplementation) datasetImplementation);
+                .map(DatabaseDatasetImplementation.class::cast);
     }
 
     @Override
     public Optional<DatabaseDatasetImplementation> getDatasetImplementation(DatasetKey datasetKey, List<String> labels) {
         return DatasetImplementationConfiguration.getInstance().getByDatasetIdAndLabels(datasetKey, labels)
-                .map(datasetImplementation -> (DatabaseDatasetImplementation) datasetImplementation);
+                .map(DatabaseDatasetImplementation.class::cast);
     }
 
     @Override

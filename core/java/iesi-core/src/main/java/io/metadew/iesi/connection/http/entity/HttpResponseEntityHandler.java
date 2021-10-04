@@ -6,7 +6,6 @@ import io.metadew.iesi.connection.http.entity.json.ApplicationJsonHttpResponseEn
 import io.metadew.iesi.connection.http.entity.plain.TextPlainHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
@@ -21,21 +20,21 @@ import java.util.List;
 @Log4j2
 public class HttpResponseEntityHandler implements IHttpResponseEntityHandler {
 
-    private static HttpResponseEntityHandler INSTANCE;
+    private static HttpResponseEntityHandler instance;
     private final List<IHttpResponseEntityService> httpResponseEntityServices;
-
-    public synchronized static HttpResponseEntityHandler getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpResponseEntityHandler();
-        }
-        return INSTANCE;
-    }
 
     private HttpResponseEntityHandler() {
         httpResponseEntityServices = new ArrayList<>();
         httpResponseEntityServices.add(ApplicationJsonHttpResponseEntityService.getInstance());
         httpResponseEntityServices.add(TextPlainHttpResponseEntityService.getInstance());
         httpResponseEntityServices.add(DefaultHttpResponseEntityService.getInstance());
+    }
+
+    public static synchronized HttpResponseEntityHandler getInstance() {
+        if (instance == null) {
+            instance = new HttpResponseEntityHandler();
+        }
+        return instance;
     }
 
     @Override

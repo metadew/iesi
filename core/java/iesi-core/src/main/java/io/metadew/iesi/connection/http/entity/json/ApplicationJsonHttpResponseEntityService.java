@@ -24,13 +24,13 @@ import java.util.stream.Stream;
 @Log4j2
 public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEntityService<ApplicationJsonHttpResponseEntityStrategy> {
 
-    private static ApplicationJsonHttpResponseEntityService INSTANCE;
+    private static ApplicationJsonHttpResponseEntityService instance;
 
-    public synchronized static ApplicationJsonHttpResponseEntityService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ApplicationJsonHttpResponseEntityService();
+    public static synchronized ApplicationJsonHttpResponseEntityService getInstance() {
+        if (instance == null) {
+            instance = new ApplicationJsonHttpResponseEntityService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     @Override

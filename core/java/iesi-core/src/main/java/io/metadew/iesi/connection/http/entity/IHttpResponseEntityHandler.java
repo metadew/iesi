@@ -9,10 +9,10 @@ import java.io.IOException;
 
 public interface IHttpResponseEntityHandler {
 
-    public void writeToDataset(HttpResponseEntityStrategy httpResponseEntityStrategy, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException;
+    void writeToDataset(HttpResponseEntityStrategy httpResponseEntityStrategy, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException;
 
-    public void writeToDataset(HttpResponse httpResponse, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException;
+    void writeToDataset(HttpResponse httpResponse, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException;
 
-    public void traceOutput(HttpResponse httpResponse, ActionControl actionControl);
+    void traceOutput(HttpResponse httpResponse, ActionControl actionControl);
 
 }

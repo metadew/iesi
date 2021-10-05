@@ -43,7 +43,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
     private String message;
     private String protocol;
     private SocketConnection socket;
-    private DatabaseDatasetImplementation outputDataset;
+    private DatasetImplementation outputDataset;
     private Integer timeout;
 
     public SocketTransmitMessage(ExecutionControl executionControl,
@@ -55,7 +55,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         this.message = convertMessage(getParameterResolvedValue(MESSAGE_KEY));
         this.protocol = convertProtocol(getParameterResolvedValue(PROTOCOL_KEY));
         this.socket = convertSocket(getParameterResolvedValue(SOCKET_KEY));
-        this.outputDataset = (DatabaseDatasetImplementation) convertOutputDataset(getParameterResolvedValue(OUTPUT_KEY));
+        this.outputDataset = convertOutputDataset(getParameterResolvedValue(OUTPUT_KEY));
     }
 
     private Integer convertTimeout(DataType timeout) {

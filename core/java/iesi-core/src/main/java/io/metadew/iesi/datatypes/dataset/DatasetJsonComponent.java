@@ -151,7 +151,7 @@ public class DatasetJsonComponent {
                     }
                 }
                 else {
-                    // TODO
+                    throw new RuntimeException("dataset implementation type is not correct");
                 }
                 jsonGenerator.writeEndObject();
             }

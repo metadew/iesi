@@ -373,7 +373,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                 datasetImplementationBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
             }
             String type = mapType(cachedRowSet);
-            if (type.equalsIgnoreCase("in_memory")) {
+            if (type.equalsIgnoreCase("database")) {
                 mapInMemoryDatasetImplementation(cachedRowSet, (DatabaseDatasetImplementationBuilder) datasetImplementationBuilder);
             } else {
                 log.warn("no type found for dataset implementation");
@@ -401,7 +401,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private DatasetImplementationBuilder extractDatasetImplementationBuilderMapRow(CachedRowSet cachedRowSet) throws SQLException {
         // "dataset_impls.ID as dataset_impl_id, dataset_impls.DATASET_ID as dataset_impl_dataset_id, " +
         String type = mapType(cachedRowSet);
-        if (type.equalsIgnoreCase("in_memory")) {
+        if (type.equalsIgnoreCase("database")) {
             return extractInMemoryDatasetImplementation(cachedRowSet);
         } else {
             throw new RuntimeException("cannot create dataset implementation for type " + type);
@@ -411,7 +411,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private String mapType(CachedRowSet cachedRowSet) throws SQLException {
         // "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
         if (cachedRowSet.getString("dataset_in_mem_impl_id") != null) {
-            return "in_memory";
+            return "database";
         } else {
             throw new RuntimeException("cannot determine the type of dataset_implementation");
         }

@@ -16,7 +16,6 @@ public class OracleDatabaseConnectionServiceTest {
                 .isEqualTo("SELECT script.SCRIPT_ID, script.SCRIPT_DSC  OFFSET 77 ROWS FETCH NEXT 10 ROWS ONLY ");
         assertThat(OracleDatabaseConnectionService.getInstance().refactorLimitAndOffset(query2))
                 .isEqualTo("SELECT script.SCRIPT_ID, script.SCRIPT_DSC  OFFSET 77 ROWS FETCH NEXT 10 ROWS ONLY  Select script.SCRIPT_ID offset 23");
-        ;
 
     }
 

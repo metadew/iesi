@@ -138,7 +138,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (dataType instanceof DatasetImplementation) {
             return DatasetImplementationHandler
                     .getInstance()
-                    .getDataItems((DatabaseDatasetImplementation) dataType, getExecutionControl()
+                    .getDataItems((DatasetImplementation) dataType, getExecutionControl()
                             .getExecutionRuntime()).entrySet().stream()
                     .map(dataItem -> new HttpHeader(dataItem.getKey(), dataItem.getValue().toString()))
                     .collect(

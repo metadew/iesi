@@ -4,6 +4,7 @@ import io.metadew.iesi.server.rest.configuration.security.ErrorJson;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 @Log4j2
 @RestController
+@ConditionalOnWebApplication
 public class CustomErrorController implements ErrorController {
 
     private static final String PATH = "/error";

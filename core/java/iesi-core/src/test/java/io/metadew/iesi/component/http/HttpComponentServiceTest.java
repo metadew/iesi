@@ -191,8 +191,8 @@ class HttpComponentServiceTest {
         HttpComponentService httpComponentServiceSpy = Mockito.spy(httpComponentService);
         ActionExecution actionExecution = mock(ActionExecution.class);
         ExecutionControl executionControl = mock(ExecutionControl.class);
-        Long componentVersion1 = 0L;
-        Long componentVersion2 = 1L;
+        long componentVersion1 = 0L;
+        long componentVersion2 = 1L;
 
         when(actionExecution.getExecutionControl()).thenReturn(executionControl);
         when(executionControl.getProcessId()).thenReturn(1L);
@@ -200,7 +200,7 @@ class HttpComponentServiceTest {
         when(executionControl.getEnvName()).thenReturn("env0");
 
         Mockito.doReturn("/pet").when(httpComponentServiceSpy).resolveEndpoint(anyString(), any(ActionExecution.class));
-        Mockito.doReturn("PUT").when(httpComponentServiceSpy).resolveType(anyString(), any(ActionExecution.class));
+        Mockito.doReturn("GET").when(httpComponentServiceSpy).resolveType(anyString(), any(ActionExecution.class));
 
         HttpComponent httpComponent1 = new HttpComponent(
                 "component1",

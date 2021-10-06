@@ -417,7 +417,7 @@ class HttpExecuteRequestTest {
     void mockGetAndTraceHttpComponent(HttpComponent httpComponent) {
         doReturn(httpComponent)
                 .when(httpComponentServiceSpy)
-                .getAndTrace("request", actionExecution, "request", httpComponent.getVersion());
+                .getAndTrace("request", actionExecution, "request", null);
     }
 
     HttpComponent createBaseComponent(List<HttpHeader> headers, List<HttpQueryParameter> queryParameters) {

@@ -9,7 +9,7 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '.'
+  home: '/home/hkhattabi/metadew/iesi/core/java/iesi-core'
   security:
     enabled: true
     jwt:

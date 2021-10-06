@@ -43,6 +43,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
     private static final String ACTION_TYPE = "http.executeRequest";
     private static final String REQUEST_KEY = "request";
+    private static final String REQUEST_VERSION = "requestVersion";
     private static final String BODY_KEY = "body";
     private static final String PROXY_KEY = "proxy";
     private static final String SET_DATASET_KEY = "setDataset";
@@ -68,9 +69,9 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepareAction() throws URISyntaxException, HttpRequestBuilderException, KeyValuePairException {
+    public void prepareAction() throws HttpRequestBuilderException, URISyntaxException {
 
-        HttpComponent httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
+        HttpComponent httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION)));
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
 
@@ -310,6 +311,19 @@ public class HttpExecuteRequest extends ActionTypeExecution {
                     httpRequestName.getClass()));
             return httpRequestName.toString();
         }
+    }
+
+    private Long convertHttpRequestVersion(DataType httpRequestVersion) {
+        if (httpRequestVersion == null) {
+            return null;
+        }
+        if (httpRequestVersion instanceof Text) {
+            return Long.parseLong(httpRequestVersion.toString());
+        }
+        log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
+                httpRequestVersion.getClass()));
+        return null;
+
     }
 
     private void checkStatusCode(HttpResponse httpResponse) {

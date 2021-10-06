@@ -76,7 +76,6 @@ class HttpExecuteRequestTest {
         Whitebox.setInternalState(HttpComponentService.class, "instance", (HttpComponentService) null);
     }
 
-
     @Test
     void prepareNoHeadersAndNoQueries() throws Exception {
 
@@ -418,7 +417,7 @@ class HttpExecuteRequestTest {
     void mockGetAndTraceHttpComponent(HttpComponent httpComponent) {
         doReturn(httpComponent)
                 .when(httpComponentServiceSpy)
-                .getAndTrace("request", actionExecution, "request");
+                .getAndTrace("request", actionExecution, "request", httpComponent.getVersion());
     }
 
     HttpComponent createBaseComponent(List<HttpHeader> headers, List<HttpQueryParameter> queryParameters) {

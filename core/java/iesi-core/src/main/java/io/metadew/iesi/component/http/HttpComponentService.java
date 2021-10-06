@@ -70,9 +70,9 @@ public class HttpComponentService implements IHttpComponentService {
     }
 
     @Override
-    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName) {
-        Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, 1L)
-                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + "and version 1"));
+    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName, Long version) {
+        Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, version)
+                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + " and version " + version));
         HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convertAndTrace(component, actionExecution, actionParameterName);
         return convertAndTrace(httpComponentDefinition, actionExecution, actionParameterName);
     }
@@ -109,7 +109,7 @@ public class HttpComponentService implements IHttpComponentService {
         return httpComponent;
     }
 
-    private String resolveEndpoint(String endpoint, ActionExecution actionExecution) {
+    protected String resolveEndpoint(String endpoint, ActionExecution actionExecution) {
         String actionResolvedValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(endpoint);
         String resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, actionResolvedValue);
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
@@ -118,7 +118,7 @@ public class HttpComponentService implements IHttpComponentService {
         return convertEndpointDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 
-    private String resolveType(String type, ActionExecution actionExecution) {
+    protected String resolveType(String type, ActionExecution actionExecution) {
         String actionResolvedValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(type);
         String resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, actionResolvedValue);
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();

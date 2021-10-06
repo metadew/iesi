@@ -14,7 +14,7 @@ public interface IHttpComponentService {
 
     public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution);
 
-    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName);
+    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName, Long version);
 
     public String getUri(HttpComponent httpComponent);
 

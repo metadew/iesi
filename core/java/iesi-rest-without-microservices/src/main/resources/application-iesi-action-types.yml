@@ -772,6 +772,13 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
+          requestVersion:
+            description: Version of the http component
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
           setRuntimeVariables:
             description: Flag indicating if an expected result will be set as a runtime variable
             type: string

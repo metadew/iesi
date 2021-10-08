@@ -41,11 +41,11 @@ public class HttpComponentService implements IHttpComponentService {
                 .headers(httpComponent.getHeaders().stream().collect(Collectors.toMap(HttpHeader::getName, HttpHeader::getValue)))
                 .queryParameters(httpComponent.getQueryParameters().stream().collect(Collectors.toMap(HttpQueryParameter::getName, HttpQueryParameter::getValue)))
                 .body(body, ContentType.getByMimeType(
-                        httpComponent.getHeaders().stream()
-                                .filter(httpHeader -> httpHeader.getName().equalsIgnoreCase("Content-Type"))
-                                .findFirst()
-                                .map(HttpHeader::getValue)
-                                .orElse("text/plain")
+                                httpComponent.getHeaders().stream()
+                                        .filter(httpHeader -> httpHeader.getName().equalsIgnoreCase("Content-Type"))
+                                        .findFirst()
+                                        .map(HttpHeader::getValue)
+                                        .orElse("text/plain")
                         )
                 );
         return httpRequestBuilder.build();

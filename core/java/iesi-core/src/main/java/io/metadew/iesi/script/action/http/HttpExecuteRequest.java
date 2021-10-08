@@ -318,7 +318,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             return null;
         }
         if (httpRequestVersion instanceof Text) {
-            return Long.parseLong(httpRequestVersion.toString());
+            if (httpRequestVersion.toString().length() > 0) {
+                return Long.parseLong(httpRequestVersion.toString());
+            }
+            return null;
         }
         log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
                 httpRequestVersion.getClass()));

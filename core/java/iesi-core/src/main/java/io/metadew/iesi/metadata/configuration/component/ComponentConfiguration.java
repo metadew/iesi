@@ -57,7 +57,8 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             crsComponent.next();
             // get version
             if (version == null) {
-                componentVersion = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(crsComponent.getString("COMP_ID"));
+                componentVersion = ComponentVersionConfiguration.getInstance()
+                        .getLatestVersionByComponentId(crsComponent.getString("COMP_ID"));
             } else {
                 componentKey = new ComponentKey(crsComponent.getString("COMP_ID"), version);
                 componentVersion = ComponentVersionConfiguration.getInstance().get(new ComponentVersionKey(componentKey));
@@ -270,7 +271,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     }
 
     public Optional<Component> get(String componentId) {
-       ComponentVersion componentVersion = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentId).orElseThrow(
+        ComponentVersion componentVersion = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentId).orElseThrow(
                 () -> new RuntimeException(String.format("No versions found with the componentId {0} ", componentId))
         );
         return get(componentVersion.getMetadataKey().getComponentKey());

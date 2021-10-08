@@ -773,7 +773,7 @@ iesi:
             subroutine:
             impersonate: false
           requestVersion:
-            description: Version of the http component
+            description: Version of the request
             type: string
             mandatory: false
             encrypted: false

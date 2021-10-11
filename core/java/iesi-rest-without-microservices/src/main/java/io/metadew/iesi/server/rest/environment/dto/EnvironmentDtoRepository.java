@@ -67,7 +67,7 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
 
     private long getRowSize() throws SQLException {
         String query = "select count(*) as row_count from (select distinct environments.ENV_NM " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " + ");";
+                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " AS environments " + ") AS environments;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

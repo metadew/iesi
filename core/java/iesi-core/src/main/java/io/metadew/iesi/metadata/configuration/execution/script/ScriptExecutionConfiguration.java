@@ -167,6 +167,7 @@ public class ScriptExecutionConfiguration extends Configuration<ScriptExecution,
     }
 
     public String updateStatement(ScriptExecution scriptExecution) {
+        System.out.println("Test: " + scriptExecution.getScriptRunStatus().value() );
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutions") + " SET " +
                 "SCRPT_REQUEST_ID= " + SQLTools.getStringForSQL(scriptExecution.getScriptExecutionRequestKey().getId()) + ", " +
                 "RUN_ID=" + SQLTools.getStringForSQL(scriptExecution.getRunId()) + ", " +

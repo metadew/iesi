@@ -343,14 +343,9 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     "USERNAME=" + SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUsername()) +
                     " WHERE " +
                     "REQUEST_ID =" + SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
-            return queries;
         } else if (executionRequest instanceof NonAuthenticatedExecutionRequest) {
-            return queries;
         } else {
             LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequest.toString()));
-        }
-        for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-            queries.addAll(ScriptExecutionRequestConfiguration.getInstance().updateStatement(scriptExecutionRequest));
         }
         return queries;
     }

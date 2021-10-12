@@ -54,7 +54,6 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
 
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
 
-            //TODO: start the script as a async separate process and follow up
             log.info("Executing " + scriptExecutionRequest.toString());
             try {
                 ScriptExecutionWorker scriptExecutionWorker = selectScriptExecutionWorker(scriptExecutionRequest);

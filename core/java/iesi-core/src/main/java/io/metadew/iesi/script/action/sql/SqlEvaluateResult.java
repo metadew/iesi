@@ -46,7 +46,7 @@ public class SqlEvaluateResult extends ActionTypeExecution {
 
         // Run the action
         CachedRowSet crs;
-        crs = DatabaseHandler.getInstance().executeQueryLimitRows(database, query, 10);
+        crs = DatabaseHandler.getInstance().executeQuery(database, query);
         int rowCount = SQLTools.getRowCount(crs);
         this.getActionExecution().getActionControl().logOutput("count", Integer.toString(rowCount));
 

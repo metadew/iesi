@@ -19,7 +19,7 @@ public class ScriptExecutorService {
     private static final Logger LOGGER = LogManager.getLogger();
     private static ScriptExecutorService INSTANCE;
 
-    public synchronized static ScriptExecutorService getInstance() {
+    public static synchronized ScriptExecutorService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ScriptExecutorService();
         }
@@ -52,9 +52,9 @@ public class ScriptExecutorService {
             ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
 
             scriptExecutor.execute(scriptExecutionRequest);
-
             scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.COMPLETED);
             ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
         }
+
     }
 }

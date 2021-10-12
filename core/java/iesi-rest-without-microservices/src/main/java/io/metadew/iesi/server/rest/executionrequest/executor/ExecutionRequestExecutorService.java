@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.executionrequest.executor;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.scheduling.annotation.Async;
@@ -57,6 +58,9 @@ public class ExecutionRequestExecutorService {
             } else {
                 log.info(MessageFormat.format("Executing request {0}", executionRequest.getMetadataKey().getId()));
                 executionRequestExecutor.get().execute(executionRequest);
+                ExecutionRequestKey executionRequestKey = executionRequest.getMetadataKey();
+                executionRequest = ExecutionRequestConfiguration.getInstance().get(executionRequestKey)
+                        .orElseThrow(() -> new RuntimeException(String.format("Could not find execution request %s", executionRequestKey)));
                 executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
                 executionRequestConfiguration.update(executionRequest);
                 log.info(MessageFormat.format("Processed request {0}", executionRequest.getMetadataKey().getId()));

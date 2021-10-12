@@ -15,7 +15,6 @@ public class GenericDatabaseConnectionService extends DatabaseConnectionService<
         return instance;
     }
 
-    //TODO : What should be the type because database is generic
     @Override
     public String getDriver(GenericDatabaseConnection databaseConnection) {
         return null;
@@ -23,6 +22,6 @@ public class GenericDatabaseConnectionService extends DatabaseConnectionService<
 
     @Override
     public Class appliesTo() {
-        return null;
+        return GenericDatabaseConnection.class;
     }
 }

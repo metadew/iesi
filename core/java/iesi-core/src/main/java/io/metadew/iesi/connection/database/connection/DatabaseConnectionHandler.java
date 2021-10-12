@@ -1,11 +1,11 @@
 package io.metadew.iesi.connection.database.connection;
 
 import com.zaxxer.hikari.HikariConfig;
-import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.bigquery.BigqueryDatabaseConnectionService;
 import io.metadew.iesi.connection.database.db2.Db2DatabaseConnectionService;
 import io.metadew.iesi.connection.database.dremio.DremioDatabaseConnectionService;
 import io.metadew.iesi.connection.database.drill.DrillDatabaseConnectionService;
+import io.metadew.iesi.connection.database.generic.GenericDatabaseConnectionService;
 import io.metadew.iesi.connection.database.h2.H2DatabaseConnectionService;
 import io.metadew.iesi.connection.database.mariadb.MariadbDatabaseConnectionService;
 import io.metadew.iesi.connection.database.mssql.MssqlDatabaseConnectionService;
@@ -57,6 +57,7 @@ public class DatabaseConnectionHandler implements IDatabaseConnectionHandler {
         databaseConnectionServiceMap.put(PrestoDatabaseConnectionService.getInstance().appliesTo(), PrestoDatabaseConnectionService.getInstance());
         databaseConnectionServiceMap.put(SqliteDatabaseConnectionService.getInstance().appliesTo(), SqliteDatabaseConnectionService.getInstance());
         databaseConnectionServiceMap.put(TeradataDatabaseConnectionService.getInstance().appliesTo(), TeradataDatabaseConnectionService.getInstance());
+        databaseConnectionServiceMap.put(GenericDatabaseConnectionService.getInstance().appliesTo(), GenericDatabaseConnectionService.getInstance());
     }
 
     @SuppressWarnings("unchecked")

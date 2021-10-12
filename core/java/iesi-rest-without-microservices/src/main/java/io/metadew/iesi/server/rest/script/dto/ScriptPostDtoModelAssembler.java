@@ -3,10 +3,12 @@ package io.metadew.iesi.server.rest.script.dto;
 
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.script.ScriptsController;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnWebApplication
 public class ScriptPostDtoModelAssembler extends RepresentationModelAssemblerSupport<Script, ScriptPostDto> {
 
     private IScriptPostDtoService iScriptPostDtoService;

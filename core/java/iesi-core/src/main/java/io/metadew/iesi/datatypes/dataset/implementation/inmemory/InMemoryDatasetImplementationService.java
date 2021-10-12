@@ -23,7 +23,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class InMemoryDatasetImplementationService extends DatasetImplementationService<InMemoryDatasetImplementation> implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
+public class InMemoryDatasetImplementationService
+        extends DatasetImplementationService<InMemoryDatasetImplementation>
+        implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
 
     private static InMemoryDatasetImplementationService instance;
 

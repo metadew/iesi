@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Repository
+@ConditionalOnWebApplication
 public class ConnectionDtoRepository extends PaginatedRepository implements IConnectionDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;

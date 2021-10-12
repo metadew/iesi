@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
+@ConditionalOnWebApplication
 public class ScriptDesignAuditService implements IScriptDesignAuditService {
 
     private final UserDtoRepository userDtoRepository;

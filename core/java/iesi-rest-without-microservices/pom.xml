@@ -32,13 +32,6 @@
                 <start-class>io.metadew.iesi.server.rest.ApplicationWar</start-class>
                 <!--                <tomcat.version>9.0.27</tomcat.version>-->
             </properties>
-            <!--            <dependencies>-->
-            <!--            <dependency>-->
-            <!--                <groupId>org.springframework.boot</groupId>-->
-            <!--                <artifactId>spring-boot-starter-tomcat</artifactId>-->
-            <!--                <scope>provided</scope>-->
-            <!--            </dependency>-->
-            <!--        </dependencies>-->
         </profile>
         <profile>
             <id>report</id>
@@ -99,6 +92,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.26</version>
+        </dependency>
+        <dependency>
             <groupId>io.metadew</groupId>
             <artifactId>iesi-core</artifactId>
             <version>0.8.0</version>
@@ -117,6 +115,10 @@
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

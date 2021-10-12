@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.security_group;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
+@ConditionalOnWebApplication
 public class SecurityGroupDtoService implements ISecurityGroupDtoService {
 
     private final ISecurityGroupDtoRepository securityGroupDtoRepository;

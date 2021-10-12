@@ -33,8 +33,7 @@ public class ScriptExecutionBuilder {
         this.script = script;
         return this;
     }
-    
-    
+
     public ScriptExecutionBuilder environment(String environment) {
         this.environment = environment;
         return this;
@@ -99,10 +98,12 @@ public class ScriptExecutionBuilder {
     private ScriptExecution buildNonRouteScriptExecution() {
         if (root) {
             try {
-                ExecutionControl executionControl = new ExecutionControl();
+                Script script = getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder"));
+                String environment = getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder"));
+                ExecutionControl executionControl = new ExecutionControl(new ScriptExecutionInitializationParameters(script, parameters, environment));
                 return new NonRouteScriptExecution(
-                        getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
-                        getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
+                        script,
+                        environment,
                         executionControl,
                         new ExecutionMetrics(),
                         -1L,
@@ -137,10 +138,14 @@ public class ScriptExecutionBuilder {
 
     private ScriptExecution buildRouteScriptExecution() {
         try {
-            ExecutionControl executionControl = root ? new ExecutionControl() : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
-            return new RouteScriptExecution (
-                    getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to route script execution builder")),
-                    getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
+            Script script = getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder"));
+            String environment = getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder"));
+            ExecutionControl executionControl = root ?
+                    new ExecutionControl(new ScriptExecutionInitializationParameters(script, parameters, environment)) :
+                    getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
+            return new RouteScriptExecution(
+                    script,
+                    environment,
                     executionControl,
                     getExecutionMetrics().orElseThrow(() -> new ScriptExecutionBuildException("No execution metrics supplied to route script execution builder")),
                     -1L,
@@ -158,7 +163,7 @@ public class ScriptExecutionBuilder {
     }
 
     public Optional<Script> getScript() {
-        return  Optional.ofNullable(script);
+        return Optional.ofNullable(script);
     }
 
     public Optional<ExecutionControl> getExecutionControl() {

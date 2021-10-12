@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import io.metadew.iesi.server.rest.user.AuthenticationResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,7 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
 @Service
-// @Profile("security")
+@ConditionalOnWebApplication
 public class JwtService {
 
     private static final String ISSUER = "iesi";

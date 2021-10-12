@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.openapi;
 import io.metadew.iesi.openapi.TransformResult;
 import io.metadew.iesi.server.rest.openapi.dto.TransformResultDto;
 import io.metadew.iesi.server.rest.openapi.dto.TransformResultDtoResourceAssembler;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/openapi")
+@ConditionalOnWebApplication
 public class OpenAPIController {
 
     private final IOpenAPIService openAPIService;

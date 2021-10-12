@@ -18,6 +18,7 @@ import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 @RestController
 @Tag(name = "execution requests", description = "Everything about execution requests")
 @RequestMapping("/execution-requests")
+@ConditionalOnWebApplication
 public class ExecutionRequestController {
 
     private final ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler;

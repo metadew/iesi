@@ -1,9 +1,11 @@
 package io.metadew.iesi.server.rest.dataset;
 
 import io.metadew.iesi.connection.tools.SQLTools;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnWebApplication
 public class FilterService {
 
     public String getStringCondition(String columnName, Filter filter) {

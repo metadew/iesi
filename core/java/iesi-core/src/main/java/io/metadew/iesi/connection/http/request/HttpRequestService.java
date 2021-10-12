@@ -21,13 +21,13 @@ import java.time.LocalDateTime;
 @Log4j2
 public class HttpRequestService implements IHttpRequestService {
 
-    private static HttpRequestService INSTANCE;
+    private static HttpRequestService instance;
 
-    public synchronized static HttpRequestService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpRequestService();
+    public static synchronized HttpRequestService getInstance() {
+        if (instance == null) {
+            instance = new HttpRequestService();
         }
-        return INSTANCE;
+        return instance;
     }
 
     private HttpRequestService() {

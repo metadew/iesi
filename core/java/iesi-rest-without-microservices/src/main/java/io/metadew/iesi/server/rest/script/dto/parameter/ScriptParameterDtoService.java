@@ -3,9 +3,11 @@ package io.metadew.iesi.server.rest.script.dto.parameter;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptParameterKey;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnWebApplication
 public class ScriptParameterDtoService implements IScriptParameterDtoService {
 
     public ScriptParameter convertToEntity(ScriptParameterDto scriptParameterDto, ScriptKey scriptKey) {

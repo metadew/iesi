@@ -79,26 +79,4 @@ public class GenericConnectionServiceTest {
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'connectionUrl'", connection));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

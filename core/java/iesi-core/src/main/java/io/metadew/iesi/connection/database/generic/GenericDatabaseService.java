@@ -10,12 +10,14 @@ import java.util.Optional;
 
 public class GenericDatabaseService extends DatabaseService<GenericDatabase> implements IDatabaseService<GenericDatabase> {
 
-    private static GenericDatabaseService instance;
-
     private static final String keyword = "db.generic";
     private static final String connectionUrlKey = "connectionURL";
     private static final String userKey = "user";
     private static final String passwordKey = "password";
+    private static GenericDatabaseService instance;
+
+    private GenericDatabaseService() {
+    }
 
     public static synchronized GenericDatabaseService getInstance() {
         if (instance == null) {
@@ -23,8 +25,6 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
         }
         return instance;
     }
-
-    private GenericDatabaseService() {}
 
     @Override
     public GenericDatabase getDatabase(Connection connection) {

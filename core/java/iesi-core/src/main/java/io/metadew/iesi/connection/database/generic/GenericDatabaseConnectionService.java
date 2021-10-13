@@ -1,6 +1,5 @@
 package io.metadew.iesi.connection.database.generic;
 
-
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionService;
 import io.metadew.iesi.connection.database.connection.IDatabaseConnectionService;
 

@@ -13,7 +13,7 @@ import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 
 public class GenericDatabaseConnection extends DatabaseConnection {
 
-    private static String type = "generic";
+    private static String type = "db.generic";
 
     public GenericDatabaseConnection(String connectionURL, String userName, String userPassword, String connectionInitSql) {
         super(type, connectionURL, userName, userPassword, connectionInitSql);

@@ -1,100 +1,83 @@
 package io.metadew.iesi.script.execution.instruction.data.number;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class NumberFormatTest {
 
-    @Test
-    void numberFormat() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertEquals("00000000000000000093", numberFormat.generateOutput("\"93\", \"%020d\""));
+    private Locale local;
+
+    @BeforeEach
+    void beforeEach(){
+        this.local = Locale.getDefault();
+        Locale.setDefault(new Locale("en", "US"));
+    }
+
+    @AfterEach
+    void afterEach(){
+        Locale.setDefault(this.local);
     }
 
     @Test
-    void numberFormatWithWidth() {
+    void numberFormat1() {
         NumberFormat numberFormat = new NumberFormat();
-        assertEquals("                  93", numberFormat.generateOutput("\"93\", \"%20d\""));
+        assertEquals("1234567.89", numberFormat.generateOutput("1234567.89, \"*.**\""));
     }
 
     @Test
-    void numberFormatWithLeftJustifyingWidth() {
+    void numberFormat2() {
         NumberFormat numberFormat = new NumberFormat();
-        assertEquals("93                  ", numberFormat.generateOutput("\"93\", \"%-20d\""));
+        assertEquals("1234567.89", numberFormat.generateOutput("1234567.89, \"0.00\""));
+    }
+
+
+    @Test
+    void numberFormat3() {
+        NumberFormat numberFormat = new NumberFormat();
+        assertEquals("1234567.89", numberFormat.generateOutput("1234567.89, \"*.***\""));
     }
 
     @Test
-    void numberFormatWithComma() {
+    void numberFormat4() {
         NumberFormat numberFormat = new NumberFormat();
-        assertEquals("10,000,000", numberFormat.generateOutput("\"10000000\", \"%,d\""));
+        assertEquals("1234567.890", numberFormat.generateOutput("1234567.89, \"0.000\""));
+    }
+
+
+    @Test
+    void numberFormat5() {
+        NumberFormat numberFormat = new NumberFormat();
+        assertEquals("1234567.8", numberFormat.generateOutput("1234567.89, \"*.*\""));
     }
 
     @Test
-    void numberFormatWithNegative() {
+    void numberFormat6() {
         NumberFormat numberFormat = new NumberFormat();
-        assertEquals("(25)", numberFormat.generateOutput("\"-25\", \"%(d\""));
+        assertEquals("1234567.8", numberFormat.generateOutput("1234567.89, \"0.0\""));
+    }
+
+
+    @Test
+    void numberFormat7() {
+        NumberFormat numberFormat = new NumberFormat();
+        assertEquals("1,234,567.89", numberFormat.generateOutput("1234567.89, \"*,***.**\""));
     }
 
     @Test
-    void numberFormatThrowNumberFormat() {
+    void numberFormat8() {
         NumberFormat numberFormat = new NumberFormat();
-        assertThrows(NumberFormatException.class, () -> numberFormat.generateOutput("\"25a\", \"%d\""));
+        assertEquals("1,234,567", numberFormat.generateOutput("1234567.89, \"*,***\""));
     }
 
     @Test
-    void numberFormatThrowIllegalArgument() {
+    void numberFormat9() {
         NumberFormat numberFormat = new NumberFormat();
-        assertThrows(IllegalArgumentException.class, () -> numberFormat.generateOutput("25a, %d"));
-    }
-
-    @Test
-    void numberFormatWithMod() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertEquals("|00000000000000000093|", numberFormat.generateOutput("\"93\", \"|%020d|\""));
-    }
-
-    @Test
-    void numberFormatWithoutDoubleQuotes() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertEquals("00000000000000000093", numberFormat.generateOutput("93, \"%020d\""));
-    }
-
-    @Test
-    void numberFormatWithWidthWithoutDoubleQuotes() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertEquals("                  93", numberFormat.generateOutput("93, \"%20d\""));
-    }
-
-    @Test
-    void numberFormatWithLeftJustifyingWidthWithoutDoubleQuotes() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertEquals("93                  ", numberFormat.generateOutput("93, \"%-20d\""));
-    }
-
-    @Test
-    void numberFormatWithCommaWithoutDoubleQuotes() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertEquals("10,000,000", numberFormat.generateOutput("10000000, \"%,d\""));
-    }
-
-    @Test
-    void numberFormatWithNegativeWithoutDoubleQuotes() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertEquals("(25)", numberFormat.generateOutput("-25, \"%(d\""));
-    }
-
-    @Test
-    void numberFormatThrowNumberFormatWithoutDoubleQuotes() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertThrows(NumberFormatException.class, () -> numberFormat.generateOutput("25a, \"%d\""));
-    }
-
-    @Test
-    void numberFormatThrowIllegalArgumentWithoutDoubleQuotes() {
-        NumberFormat numberFormat = new NumberFormat();
-        assertThrows(IllegalArgumentException.class, () -> numberFormat.generateOutput("25a, %d"));
+        assertEquals("1,234,567", numberFormat.generateOutput("\"1234567.89\", \"*,***\""));
     }
 
 }

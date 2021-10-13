@@ -2,12 +2,14 @@ package io.metadew.iesi.server.rest.componentTypes.dto;
 
 import io.metadew.iesi.metadata.definition.component.ComponentType;
 import io.metadew.iesi.metadata.definition.component.ComponentTypeParameter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnWebApplication
 public class ComponentTypeDtoResourceAssembler extends RepresentationModelAssemblerSupport<ComponentType, ComponentTypeDto> {
 
     public ComponentTypeDtoResourceAssembler() {

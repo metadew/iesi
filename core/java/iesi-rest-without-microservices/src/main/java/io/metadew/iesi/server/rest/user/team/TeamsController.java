@@ -14,6 +14,7 @@ import io.metadew.iesi.server.rest.user.role.RolePostDto;
 import io.metadew.iesi.server.rest.user.role.RolePutDto;
 import io.metadew.iesi.server.rest.user.role.RoleUserPutDto;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 @CrossOrigin
 @Log4j2
 @DependsOn("securityGroupController")
+@ConditionalOnWebApplication
 public class TeamsController {
 
     private final ITeamService teamService;

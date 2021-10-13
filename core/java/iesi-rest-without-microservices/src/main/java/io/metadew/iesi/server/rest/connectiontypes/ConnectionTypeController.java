@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.connectiontypes;
 
 import io.metadew.iesi.common.configuration.metadata.connectiontypes.MetadataConnectionTypesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/connection-types")
+@ConditionalOnWebApplication
 public class ConnectionTypeController {
 
     private IConnectionTypeDtoService connectionTypeDtoService;

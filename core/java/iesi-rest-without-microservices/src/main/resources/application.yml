@@ -1,6 +1,11 @@
 server:
   servlet:
     context-path: /api
+  error:
+    whitelabel:
+      enabled: false
+springdoc:
+  version: '0.3.0'
 spring:
   profiles:
     active: http
@@ -15,6 +20,7 @@ iesi:
     jwt:
       secret: secret
       expiry-date: 3600
+  debug: true
 
 management:
   endpoints:

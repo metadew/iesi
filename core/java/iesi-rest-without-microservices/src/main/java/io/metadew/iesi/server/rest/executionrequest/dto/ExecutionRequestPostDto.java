@@ -4,7 +4,6 @@ import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRe
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

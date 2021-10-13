@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.component.dto.IComponentDtoService;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -29,6 +30,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/components")
+@ConditionalOnWebApplication
 public class ComponentsController {
 
     private final IComponentService componentService;

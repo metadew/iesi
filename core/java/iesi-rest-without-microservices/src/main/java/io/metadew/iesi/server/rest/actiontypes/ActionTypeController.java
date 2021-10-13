@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.actiontypes;
 
 import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/action-types")
+@ConditionalOnWebApplication
 public class ActionTypeController {
 
     private IActionTypeDtoService actionTypeDtoService;

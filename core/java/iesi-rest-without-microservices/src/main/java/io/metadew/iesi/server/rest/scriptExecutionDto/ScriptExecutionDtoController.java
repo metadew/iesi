@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/script-executions")
+@ConditionalOnWebApplication
 public class ScriptExecutionDtoController {
 
     IScriptExecutionDtoService scriptExecutionService;

@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ import java.util.UUID;
 @RequestMapping("/users")
 @Log4j2
 @DependsOn("teamsController")
+@ConditionalOnWebApplication
 public class UserController {
 
     private static final String ADMIN_USERNAME = "admin";

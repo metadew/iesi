@@ -1,5 +1,8 @@
-current_dir=$(dirname "${BASH_SOURCE[0]}")
-lib_dir=$current_dir/../lib
+#!/bin/bash
+calling_dir=$(pwd)
+relative_dir=$(dirname "${BASH_SOURCE[0]}")
+absolute_dir=$calling_dir/$relative_dir
+lib_dir=$absolute_dir/../lib
 
 classpath="*"
 
@@ -10,4 +13,4 @@ done
 
 java -cp $classpath io.metadew.iesi.openapi.OpenAPILauncher "$@"
 
-cd $current_dir
+cd $calling_dir

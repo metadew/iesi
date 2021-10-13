@@ -9,6 +9,7 @@ import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoService;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/connections")
+@ConditionalOnWebApplication
 public class ConnectionsController {
 
     private ConnectionService connectionService;

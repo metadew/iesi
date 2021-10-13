@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 
 @Repository
 @Log4j2
+@ConditionalOnWebApplication
 public class ExecutionRequestDtoRepository extends PaginatedRepository implements IExecutionRequestDtoRepository {
 
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
@@ -116,6 +118,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                                 "' and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.RUN_ID)) {
                         return " script_executions.RUN_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.STATUS)) {
+                        return " script_executions.ST_NM " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
                     }
                     else {
                         return null;

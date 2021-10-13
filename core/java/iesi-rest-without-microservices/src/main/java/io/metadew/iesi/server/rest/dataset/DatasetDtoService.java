@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.dataset;
 
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
+@ConditionalOnWebApplication
 public class DatasetDtoService implements IDatasetDtoService {
 
     final IDatasetDtoRepository datasetDtoRepository;

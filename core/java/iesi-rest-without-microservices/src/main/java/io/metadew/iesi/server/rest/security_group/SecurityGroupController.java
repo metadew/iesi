@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/security-groups")
 @CrossOrigin
 @Log4j2
+@ConditionalOnWebApplication
 public class SecurityGroupController {
 
     public static final String PUBLIC_GROUP_NAME = "PUBLIC";

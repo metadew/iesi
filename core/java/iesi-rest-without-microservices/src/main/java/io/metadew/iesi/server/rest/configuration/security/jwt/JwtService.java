@@ -8,6 +8,7 @@ import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
 import io.metadew.iesi.server.rest.user.AuthenticationResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Service
-// @Profile("security")
+@ConditionalOnWebApplication
 public class JwtService {
 
     private static final String ISSUER = "iesi";

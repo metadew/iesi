@@ -4,12 +4,14 @@ import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfigurati
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDto;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@ConditionalOnWebApplication
 public class EnvironmentService implements IEnvironmentService {
 
     private EnvironmentConfiguration environmentConfiguration;

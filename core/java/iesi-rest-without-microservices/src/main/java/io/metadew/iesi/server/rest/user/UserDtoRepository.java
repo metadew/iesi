@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
+@ConditionalOnWebApplication
 public class UserDtoRepository extends PaginatedRepository implements IUserDtoRepository {
 
     private static final String FETCH_SINGLE_QUERY = "select " +

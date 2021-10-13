@@ -6,6 +6,7 @@ import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.scriptResultDto.dto.ScriptResultDto;
 import io.metadew.iesi.server.rest.scriptResultDto.dto.ScriptResultDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/script-results")
+@ConditionalOnWebApplication
 public class ScriptResultController {
     private final IScriptResultService scriptResultService;
     private final ScriptResultDtoModelAssembler scriptResultDtoModelAssembler;

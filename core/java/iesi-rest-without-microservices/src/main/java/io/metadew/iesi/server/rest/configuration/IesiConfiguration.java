@@ -10,8 +10,8 @@ import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHan
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.IInMemoryDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.IInMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.metadata.configuration.action.design.ActionDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;

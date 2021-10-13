@@ -1,4 +1,4 @@
-package io.metadew.iesi.datatypes.dataset.implementation.inmemory;
+package io.metadew.iesi.datatypes.dataset.implementation.in.memory;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
 import lombok.*;

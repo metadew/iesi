@@ -70,9 +70,17 @@ public class HttpComponentService implements IHttpComponentService {
     }
 
     @Override
-    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName, Long version) {
-        Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, version)
-                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + " and version " + version));
+    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName, Long componentVersion) {
+        Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, componentVersion)
+                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + " and version " + componentVersion));
+        HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convertAndTrace(component, actionExecution, actionParameterName);
+        return convertAndTrace(httpComponentDefinition, actionExecution, actionParameterName);
+    }
+
+    @Override
+    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName) {
+        Component component = ComponentConfiguration.getInstance().getByNameAndLatestVersion(httpComponentReferenceName)
+                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName));
         HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convertAndTrace(component, actionExecution, actionParameterName);
         return convertAndTrace(httpComponentDefinition, actionExecution, actionParameterName);
     }

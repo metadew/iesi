@@ -5,7 +5,6 @@ import io.metadew.iesi.component.http.HttpComponentService;
 import io.metadew.iesi.component.http.HttpHeader;
 import io.metadew.iesi.component.http.HttpQueryParameter;
 import io.metadew.iesi.connection.http.HttpConnection;
-import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -417,7 +415,7 @@ class HttpExecuteRequestTest {
     void mockGetAndTraceHttpComponent(HttpComponent httpComponent) {
         doReturn(httpComponent)
                 .when(httpComponentServiceSpy)
-                .getAndTrace("request", actionExecution, "request", null);
+                .getAndTrace("request", actionExecution, "request");
     }
 
     HttpComponent createBaseComponent(List<HttpHeader> headers, List<HttpQueryParameter> queryParameters) {

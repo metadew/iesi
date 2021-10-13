@@ -70,8 +70,14 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     public void prepareAction() throws HttpRequestBuilderException, URISyntaxException {
+        Long componentVersion = convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION));
+        HttpComponent httpComponent;
+        if (componentVersion == null) {
+            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
+        } else {
+            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
+        }
 
-        HttpComponent httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION)));
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
 
@@ -318,15 +324,14 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             return null;
         }
         if (httpRequestVersion instanceof Text) {
-            if (httpRequestVersion.toString().length() > 0) {
+            try {
                 return Long.parseLong(httpRequestVersion.toString());
+            } catch (NumberFormatException e) {
+                return null;
             }
-            return null;
         }
-        log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
+        throw new RuntimeException(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
                 httpRequestVersion.getClass()));
-        return null;
-
     }
 
     private void checkStatusCode(HttpResponse httpResponse) {

@@ -235,24 +235,24 @@ class HttpComponentServiceTest {
 
         ));
         ComponentConfiguration.getInstance().insert(new Component(
-                    new ComponentKey("component1", componentVersion1),
-                    "http.request",
-                    "component1",
+                new ComponentKey("component1", componentVersion1),
+                "http.request",
+                "component1",
                 "description",
-                    new ComponentVersion( new ComponentVersionKey("component1", componentVersion1), "description"),
-                    Stream.of(
-                            ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("/pet").build(),
-                            ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("GET").build(),
-                            ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("connectionName").build()
-                    ).collect(Collectors.toList()),
-                  new ArrayList<>()
-                ));
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion1), "description"),
+                Stream.of(
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("/pet").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("GET").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("connectionName").build()
+                ).collect(Collectors.toList()),
+                new ArrayList<>()
+        ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion2),
                 "http.request",
                 "component1",
                 "description",
-                new ComponentVersion( new ComponentVersionKey("component1", componentVersion2), "description"),
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion2), "description"),
                 Stream.of(
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("/pet").build(),
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("PUT").build(),
@@ -273,7 +273,7 @@ class HttpComponentServiceTest {
         Long componentVersion1 = 0L;
         Long componentVersion2 = 1L;
 
-        when (actionExecution.getExecutionControl()).thenReturn(executionControl);
+        when(actionExecution.getExecutionControl()).thenReturn(executionControl);
         when(executionControl.getProcessId()).thenReturn(1L);
         when(executionControl.getRunId()).thenReturn("1");
         when(executionControl.getEnvName()).thenReturn("env0");
@@ -299,7 +299,7 @@ class HttpComponentServiceTest {
                 "http.request",
                 "component1",
                 "description",
-                new ComponentVersion( new ComponentVersionKey("component1", componentVersion1), "description"),
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion1), "description"),
                 Stream.of(
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("/pet").build(),
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("GET").build(),
@@ -312,7 +312,7 @@ class HttpComponentServiceTest {
                 "http.request",
                 "component1",
                 "description",
-                new ComponentVersion( new ComponentVersionKey("component1", componentVersion2), "description"),
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion2), "description"),
                 Stream.of(
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("/pet").build(),
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("PUT").build(),
@@ -356,7 +356,7 @@ class HttpComponentServiceTest {
         );
 
 
-        when (actionExecution.getExecutionControl()).thenReturn(executionControl);
+        when(actionExecution.getExecutionControl()).thenReturn(executionControl);
         when(executionControl.getProcessId()).thenReturn(1L);
         when(executionControl.getRunId()).thenReturn("1");
         when(executionControl.getEnvName()).thenReturn("env0");
@@ -383,7 +383,7 @@ class HttpComponentServiceTest {
                 "http.request",
                 "component1",
                 "description",
-                new ComponentVersion( new ComponentVersionKey("component1", componentVersion1), "description"),
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion1), "description"),
                 Stream.of(
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("/pet").build(),
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("GET").build(),
@@ -396,7 +396,7 @@ class HttpComponentServiceTest {
                 "http.request",
                 "component1",
                 "description",
-                new ComponentVersion( new ComponentVersionKey("component1", componentVersion2), "description"),
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion2), "description"),
                 Stream.of(
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("/pet").build(),
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("PUT").build(),
@@ -410,7 +410,7 @@ class HttpComponentServiceTest {
                 "http.request",
                 "component1",
                 "description",
-                new ComponentVersion( new ComponentVersionKey("component1", componentVersion3), "description"),
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion3), "description"),
                 Stream.of(
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion3)).build()).value("/pet").build(),
                         ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion3)).build()).value("PUT").build(),
@@ -419,7 +419,7 @@ class HttpComponentServiceTest {
                 new ArrayList<>()
         ));
 
-        assertThat(httpComponentServiceSpy.getAndTrace("component1", actionExecution, "request", null)).isEqualTo(httpComponent3);
+        assertThat(httpComponentServiceSpy.getAndTrace("component1", actionExecution, "request")).isEqualTo(httpComponent3);
     }
 
     @Disabled

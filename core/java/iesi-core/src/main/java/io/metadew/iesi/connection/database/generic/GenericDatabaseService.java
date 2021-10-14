@@ -51,7 +51,7 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public String getSystemTimestampExpression(GenericDatabase database) {
-        throw new RuntimeException("Unsupported operation");
+        throw new UnsupportedOperationException("Unsupported Operation");
     }
 
     @Override
@@ -75,7 +75,7 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public String toQueryString(GenericDatabase database, MetadataField field) {
-        throw new RuntimeException("Unsupported operation");
+        throw new UnsupportedOperationException("Unsupported Operation");
     }
 
     @Override

@@ -9,12 +9,14 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.script.audit.IScriptDesignAuditService;
 import io.metadew.iesi.server.rest.script.dto.IScriptPostDtoService;
 import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@ConditionalOnWebApplication
 public class ScriptService implements IScriptService {
 
     private ScriptConfiguration scriptConfiguration;

@@ -5,12 +5,14 @@ import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationL
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnWebApplication
 public class DatabaseDatasetImplementationDtoModelAssembler extends RepresentationModelAssemblerSupport<DatabaseDatasetImplementation, DatabaseDatasetImplementationDto> {
 
     private final DatabaseDatasetImplementationKeyValueDtoModelAssembler databaseDatasetImplementationKeyValueDtoModelAssembler;

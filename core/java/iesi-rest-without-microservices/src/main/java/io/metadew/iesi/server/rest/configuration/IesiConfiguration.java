@@ -1,7 +1,9 @@
 package io.metadew.iesi.server.rest.configuration;
 
 import io.metadew.iesi.common.FrameworkInstance;
+import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetService;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
@@ -37,15 +39,21 @@ import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
-import io.metadew.iesi.runtime.ExecutionRequestExecutorService;
+import io.metadew.iesi.runtime.script.ScriptExecutorService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 @Configuration
+@Log4j2
 public class IesiConfiguration {
 
     @Bean
@@ -54,12 +62,6 @@ public class IesiConfiguration {
         io.metadew.iesi.common.configuration.Configuration.getInstance();
         MetadataConfiguration.getInstance();
         return FrameworkInstance.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    ExecutionRequestExecutorService executorService() {
-        return ExecutionRequestExecutorService.getInstance();
     }
 
     @Bean
@@ -247,4 +249,47 @@ public class IesiConfiguration {
     public ScriptDesignAuditConfiguration scriptDesignAuditConfiguration(){
         return ScriptDesignAuditConfiguration.getInstance();
     }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public GuardConfiguration guardConfiguration(){
+        return GuardConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ThreadPoolTaskExecutor executionRequestTaskExecutor() {
+        int threadSize = io.metadew.iesi.common.configuration.Configuration.getInstance()
+                .getProperty("iesi.server.threads.size")
+                .map(Integer.class::cast)
+                .orElse(4);
+        log.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
+
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(threadSize);
+        executor.setMaxPoolSize(threadSize);
+        executor.setThreadNamePrefix("executionRequestTaskExecutor-");
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean("iesiProperties")
+    @DependsOn("frameworkInstance")
+    public io.metadew.iesi.common.configuration.Configuration iesiProperties() {
+        return io.metadew.iesi.common.configuration.Configuration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public FrameworkCrypto frameworkCrypto(){
+        return FrameworkCrypto.getInstance();
+    }
+
+    @Bean
+    @Profile("single_process")
+    @DependsOn("frameworkInstance")
+    public ScriptExecutorService scriptExecutorService() {
+        return ScriptExecutorService.getInstance();
+    }
+
 }

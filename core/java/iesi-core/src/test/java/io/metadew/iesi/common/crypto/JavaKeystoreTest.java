@@ -99,7 +99,6 @@ class JavaKeystoreTest {
         String alias = "mypass";
         assertThatThrownBy(() -> {
             new JavaKeystore().loadKey(userinput.toCharArray(), keystoreLocation, alias);
-        }).isInstanceOf(Exception.class)
-                .hasMessageContaining("java.io.IOException: Integrity check failed: java.security.UnrecoverableKeyException: Failed PKCS12 integrity checking");
+        }).isInstanceOf(Exception.class);
     }
 }

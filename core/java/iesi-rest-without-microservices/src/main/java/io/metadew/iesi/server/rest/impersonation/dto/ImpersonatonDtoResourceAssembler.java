@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.impersonation.dto;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.server.rest.impersonation.ImpersonationController;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
+@ConditionalOnWebApplication
 public class ImpersonatonDtoResourceAssembler extends RepresentationModelAssemblerSupport<Impersonation, ImpersonationDto> {
 
     public ImpersonatonDtoResourceAssembler() {

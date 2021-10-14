@@ -12,6 +12,7 @@ import io.metadew.iesi.server.rest.user.role.RolePutDto;
 import io.metadew.iesi.server.rest.user.role.RoleUserPutDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
 @Log4j2
 // SecurityController first needs to initialize the PUBLIC security group
 @DependsOn("securityGroupController")
+@ConditionalOnWebApplication
 public class TeamsController {
 
     private final TeamService teamService;

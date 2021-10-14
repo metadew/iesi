@@ -49,26 +49,26 @@ public class ExecutionControl {
 
     private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
 
-    public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
+    public ExecutionControl(ScriptExecutionInitializationParameters scriptExecutionInitializationParameters) throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
         this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.actionDesignTraceService = new ActionDesignTraceService();
         initializeRunId();
-        initializeExecutionRuntime(runId);
+        initializeExecutionRuntime(runId, scriptExecutionInitializationParameters);
         this.lastProcessId = -1L;
         this.elasticSearchConnection = new DelimitedFileBeatElasticSearchConnection();
     }
 
     @SuppressWarnings("unchecked")
-    private void initializeExecutionRuntime(String runId) throws ClassNotFoundException,
+    private void initializeExecutionRuntime(String runId, ScriptExecutionInitializationParameters scriptExecutionInitializationParameters) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (Configuration.getInstance().getProperty("iesi.script.execution.runtime").isPresent()) {
             Class classRef = Class.forName((String) Configuration.getInstance().getProperty("iesi.script.execution.runtime").get());
-            Class[] initParams = {ExecutionControl.class, String.class};
+            Class[] initParams = {ExecutionControl.class, String.class, ScriptExecutionInitializationParameters.class};
             Constructor constructor = classRef.getConstructor(initParams);
-            this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId);
+            this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId, scriptExecutionInitializationParameters);
         } else {
-            this.executionRuntime = new ExecutionRuntime(this, runId);
+            this.executionRuntime = new ExecutionRuntime(this, runId, scriptExecutionInitializationParameters);
         }
     }
 

@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.scriptExecutionDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@ConditionalOnWebApplication
 public class ScriptExecutionDtoService implements IScriptExecutionDtoService {
 
     private final IScriptExecutionDtoRepository scriptExecutionDtoRepository;

@@ -4,9 +4,11 @@ import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnWebApplication
 public class ScriptLabelDtoService implements IScriptLabelDtoService {
 
     public ScriptLabel convertToEntity(ScriptLabelDto scriptLabelDto, ScriptKey scriptKey) {

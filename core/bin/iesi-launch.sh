@@ -1,14 +1,11 @@
 #!/bin/bash
-current_dir=$(dirname "${BASH_SOURCE[0]}")
-lib_dir=$current_dir/../lib
-
-classpath="*"
+calling_dir=$(pwd)
+relative_dir=$(dirname "${BASH_SOURCE[0]}")
+absolute_dir=$calling_dir/$relative_dir
+lib_dir=$absolute_dir/../rest
 
 cd $lib_dir
-for i in *.jar; do
-    classpath="$classpath:$lib_dir/$i"
-done
 
-java -cp $classpath io.metadew.iesi.launch.ScriptLauncher "$@"
+java -Dspring.main.web-application-type=NONE -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest.jar -launch "$@"
 
-cd $current_dir
+cd $calling_dir

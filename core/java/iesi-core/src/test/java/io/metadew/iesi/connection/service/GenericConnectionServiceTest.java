@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-public class GenericConnectionServiceTest {
+class GenericConnectionServiceTest {
 
     @BeforeAll
     static void setup() {
@@ -63,6 +63,21 @@ public class GenericConnectionServiceTest {
 
         GenericDatabase genericDatabase = new GenericDatabase(
                 new GenericDatabaseConnection("connectionUrl", "user", "password", null));
+        Assertions.assertEquals(genericDatabase, DatabaseHandler.getInstance().getDatabase(connection));
+    }
+
+    @Test
+    void getDatabaseConnectionUrlSchemaTest() {
+        Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                "db.generic",
+                "description",
+                Stream.of(
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "connectionUrl"), "connectionUrl"),
+                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"))
+                        .collect(Collectors.toList()));
+
+        GenericDatabase genericDatabase = new GenericDatabase(
+                new GenericDatabaseConnection("connectionUrl", null, null, null, "schema"));
         Assertions.assertEquals(genericDatabase, DatabaseHandler.getInstance().getDatabase(connection));
     }
 

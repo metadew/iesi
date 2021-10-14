@@ -14,6 +14,7 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
     private static final String connectionUrlKey = "connectionURL";
     private static final String userKey = "user";
     private static final String passwordKey = "password";
+    private static final String schemaKey = "schema";
     private static GenericDatabaseService instance;
 
     private GenericDatabaseService() {
@@ -30,13 +31,15 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
     public GenericDatabase getDatabase(Connection connection) {
         Optional<String> username = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, userKey);
         Optional<String> password = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, passwordKey);
+        Optional<String> schema = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, schemaKey);
         String connectionURL = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, connectionUrlKey);
 
         GenericDatabaseConnection genericDatabaseConnection = new GenericDatabaseConnection(
                 connectionURL,
                 username.orElse(null),
                 password.orElse(null),
-                null
+                null,
+                schema.orElse(null)
         );
         return new GenericDatabase(genericDatabaseConnection);
     }
@@ -48,17 +51,21 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public String getSystemTimestampExpression(GenericDatabase database) {
-        return "CURRENT_TIMESTAMP";
+        throw new RuntimeException("Unsupported operation");
     }
 
     @Override
     public String getAllTablesQuery(GenericDatabase database, String pattern) {
-        return null;
+        return "select table_schema as \"OWNER\", table_name as \"TABLE_NAME\" from information_schema.tables where"
+                + database.getSchema().map(schema -> " table_schema = '" + schema + "' and").orElse("")
+                + " table_name like '"
+                + pattern
+                + "%' order by table_name asc";
     }
 
     @Override
     public String createQueryExtras(GenericDatabase database) {
-        return null;
+        return "";
     }
 
     @Override
@@ -68,7 +75,7 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public String toQueryString(GenericDatabase database, MetadataField field) {
-        return null;
+        throw new RuntimeException("Unsupported operation");
     }
 
     @Override

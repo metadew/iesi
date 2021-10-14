@@ -432,6 +432,11 @@ iesi:
             type: string
             mandatory: true
             encrypted: false
+          schema:
+            description: The schema name in the catalog to connect to
+            type: string
+            mandatory: false
+            encrypted: false
           user:
             description: The user name to connect to the database
             type: string

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
 
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationPostDto;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationPostDto;
 import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;

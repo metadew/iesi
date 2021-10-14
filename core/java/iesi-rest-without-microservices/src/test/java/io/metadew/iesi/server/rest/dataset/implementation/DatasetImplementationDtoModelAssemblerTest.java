@@ -9,8 +9,8 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueDto;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationKeyValueDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

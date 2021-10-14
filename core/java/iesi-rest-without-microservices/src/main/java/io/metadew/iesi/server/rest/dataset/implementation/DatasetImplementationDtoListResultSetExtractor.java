@@ -2,8 +2,8 @@ package io.metadew.iesi.server.rest.dataset.implementation;
 
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.DatabaseDatasetImplementationKeyValueDto;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationKeyValueDto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

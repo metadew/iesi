@@ -16,14 +16,9 @@ iesi:
 #          owner:
 #            user: user
 #            password: user
-
-
-          type: mysql
-          connection: jdbc:mysql://iesimysqldb-qwlr6w3fsyfig.mysql.database.azure.com:3306/iesidb?useSSL=true&requireSSL=false&useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
-          schema: iesidb
-          owner:
-            user: dbadmin@iesimysqldb-qwlr6w3fsyfig
-            password: R99kelly*fox
+          
+          type: sqlite
+            file: ./repository.db3
 
 #          type: h2
 #          mode: memory

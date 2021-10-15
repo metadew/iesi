@@ -5,6 +5,7 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionK
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "script-executions", description = "Everything about script_executions")
 @RestController
 @RequestMapping("/script-executions")
+@ConditionalOnWebApplication
 public class ScriptExecutionDtoController {
 
     IScriptExecutionDtoService scriptExecutionService;

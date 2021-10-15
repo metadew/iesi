@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -27,6 +28,7 @@ import java.util.List;
 @RestController
 @Tag(name = "connections", description = "Everything about connections")
 @RequestMapping("/connections")
+@ConditionalOnWebApplication
 public class ConnectionsController {
 
     private ConnectionService connectionService;

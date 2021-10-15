@@ -9,7 +9,6 @@ import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRe
 import io.metadew.iesi.metadata.definition.execution.*;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -168,43 +167,70 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
-
-                if (cachedRowSet.getString("AUTH") != null) {
-                    executionRequests.add(new AuthenticatedExecutionRequest(
-                            new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
-                            SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
-                            cachedRowSet.getString("REQUEST_NM"),
-                            cachedRowSet.getString("REQUEST_DSC"),
-                            cachedRowSet.getString("NOTIF_EMAIL"),
-                            cachedRowSet.getString("SCOPE_NM"),
-                            cachedRowSet.getString("CONTEXT_NM"),
-                            ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                            ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                            cachedRowSet.getString("USER_ID"),
-                            cachedRowSet.getString("USERNAME")
-
-                    ));
-                } else if (cachedRowSet.getString("NON_AUTH") != null) {
-                    executionRequests.add(new NonAuthenticatedExecutionRequest(
-                            new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
-                            SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
-                            cachedRowSet.getString("REQUEST_NM"),
-                            cachedRowSet.getString("REQUEST_DSC"),
-                            cachedRowSet.getString("NOTIF_EMAIL"),
-                            cachedRowSet.getString("SCOPE_NM"),
-                            cachedRowSet.getString("CONTEXT_NM"),
-                            ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                            ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
-                } else {
-                    LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
-
-                }
+                executionRequests.add(mapRow(cachedRowSet));
             }
             return executionRequests;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public List<ExecutionRequest> getAllSubmitted() {
+        try {
+            List<ExecutionRequest> executionRequests = new ArrayList<>();
+            String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
+                    "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
+                    "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
+                    "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
+                    "FROM " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") + " EXECUTION_REQUEST " +
+                    "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") + " AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+                    "LEFT OUTER JOIN " + getMetadataRepository().getTableNameByLabel("NonAuthenticatedExecutionRequests") + " NON_AUTH_EXECUTION_REQUEST " +
+                    "ON EXECUTION_REQUEST.REQUEST_ID = NON_AUTH_EXECUTION_REQUEST.REQUEST_ID " +
+                    "WHERE ST_NM = " + SQLTools.getStringForSQL(ExecutionRequestStatus.SUBMITTED.value()) + ";";
+
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                executionRequests.add(mapRow(cachedRowSet));
+            }
+            return executionRequests;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ExecutionRequest mapRow(CachedRowSet cachedRowSet) throws SQLException {
+        if (cachedRowSet.getString("AUTH") != null) {
+            return new AuthenticatedExecutionRequest(
+                    new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+                    cachedRowSet.getString("REQUEST_NM"),
+                    cachedRowSet.getString("REQUEST_DSC"),
+                    cachedRowSet.getString("NOTIF_EMAIL"),
+                    cachedRowSet.getString("SCOPE_NM"),
+                    cachedRowSet.getString("CONTEXT_NM"),
+                    ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                    ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                    ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                    cachedRowSet.getString("USER_ID"),
+                    cachedRowSet.getString("USERNAME")
+
+            );
+        } else if (cachedRowSet.getString("NON_AUTH") != null) {
+            return new NonAuthenticatedExecutionRequest(
+                    new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")),
+                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("REQUEST_TMS")),
+                    cachedRowSet.getString("REQUEST_NM"),
+                    cachedRowSet.getString("REQUEST_DSC"),
+                    cachedRowSet.getString("NOTIF_EMAIL"),
+                    cachedRowSet.getString("SCOPE_NM"),
+                    cachedRowSet.getString("CONTEXT_NM"),
+                    ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
+                    ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                    ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))));
+        } else {
+            throw new RuntimeException(String.format("ExecutionRequest %s does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
         }
     }
 
@@ -317,14 +343,9 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     "USERNAME=" + SQLTools.getStringForSQL(((AuthenticatedExecutionRequest) executionRequest).getUsername()) +
                     " WHERE " +
                     "REQUEST_ID =" + SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + ";");
-            return queries;
         } else if (executionRequest instanceof NonAuthenticatedExecutionRequest) {
-            return queries;
         } else {
             LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequest.toString()));
-        }
-        for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-            queries.addAll(ScriptExecutionRequestConfiguration.getInstance().updateStatement(scriptExecutionRequest));
         }
         return queries;
     }

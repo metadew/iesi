@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Repository
+@ConditionalOnWebApplication
 public class SecurityGroupDtoRepository implements ISecurityGroupDtoRepository {
 
     private static final String FETCH_SINGLE_QUERY = "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +

@@ -3,12 +3,14 @@ package io.metadew.iesi.server.rest.scriptResultDto;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultConfiguration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@ConditionalOnWebApplication
 public class ScriptResultService implements IScriptResultService {
 
     private ScriptResultConfiguration scriptResultConfiguration;

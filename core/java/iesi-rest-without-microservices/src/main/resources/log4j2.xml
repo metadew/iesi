@@ -10,9 +10,9 @@
                 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
             </PatternLayout>
             <Policies>
-                <SizeBasedTriggeringPolicy size="100MB" />
+                <SizeBasedTriggeringPolicy size="50MB" />
             </Policies>
-            <DefaultRolloverStrategy max="5" />
+            <DefaultRolloverStrategy max="10" />
         </RollingFile>
         <RollingFile
                 name="rest"
@@ -23,10 +23,36 @@
                 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
             </PatternLayout>
             <Policies>
-                <SizeBasedTriggeringPolicy size="100MB" />
+                <SizeBasedTriggeringPolicy size="50MB" />
             </Policies>
-            <DefaultRolloverStrategy max="5" />
+            <DefaultRolloverStrategy max="10" />
         </RollingFile>
+        <Routing name="rest">
+            <Routes pattern="$${ctx:runId}">
+                <Route key="${ctx:runId}">
+                    <RollingFile
+                            name="repository"
+                            fileName="./logs/rest.log"
+                            filePattern="./logs/rest.%i.log.gz"
+                            ignoreExceptions="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                        <Policies>
+                            <SizeBasedTriggeringPolicy size="50MB" />
+                        </Policies>
+                        <DefaultRolloverStrategy max="10" />
+                    </RollingFile>
+                </Route>
+                <Route>
+                    <File fileName="../logs/${ctx:runId}/rest.log" name="rest-${ctx:runId}" append="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
         <RollingFile
                 name="queries"
                 fileName="./logs/iesi-SQL.log"
@@ -36,9 +62,9 @@
                 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
             </PatternLayout>
             <Policies>
-                <SizeBasedTriggeringPolicy size="100MB"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="5"/>
+            <DefaultRolloverStrategy max="10"/>
         </RollingFile>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d %-5p [%c{1.}] - %m%n" />
@@ -47,23 +73,23 @@
     <Loggers>
         <Logger name="io.metadew.iesi" additivity="false" level="all">
             <AppenderRef ref="STDOUT" level="info" />
-            <AppenderRef ref="default" level="all" />
+            <AppenderRef ref="default" level="debug" />
         </Logger>
         <Logger name="io.metadew.iesi.rest" additivity="false" level="all">
             <AppenderRef ref="STDOUT" level="info" />
-            <AppenderRef ref="rest" level="all" />
+            <AppenderRef ref="rest" level="debug" />
         </Logger>
         <Logger name="io.metadew.iesi.connection.database" additivity="false">
             <AppenderRef ref="queries" level="all" />
-            <AppenderRef ref="rest" level="WARN" />
+            <AppenderRef ref="rest" level="debug" />
         </Logger>
         <Logger name="org.springframework" additivity="false" level="all">
             <AppenderRef ref="STDOUT" level="info" />
-            <AppenderRef ref="rest" level="all" />
+            <AppenderRef ref="rest" level="debug" />
         </Logger>
         <Root level="all" additivity="false">
             <AppenderRef ref="STDOUT" level="INFO"/>
-            <AppenderRef ref="rest" level="INFO" />
+            <AppenderRef ref="rest" level="debug" />
         </Root>
     </Loggers>
 </Configuration>

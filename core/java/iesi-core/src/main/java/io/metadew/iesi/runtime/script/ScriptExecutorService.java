@@ -3,6 +3,7 @@ package io.metadew.iesi.runtime.script;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,6 +11,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class ScriptExecutorService {
 
     private Map<Class<? extends ScriptExecutionRequest>, ScriptExecutor> scriptExecutorMap;
@@ -17,7 +19,7 @@ public class ScriptExecutorService {
     private static final Logger LOGGER = LogManager.getLogger();
     private static ScriptExecutorService INSTANCE;
 
-    public synchronized static ScriptExecutorService getInstance() {
+    public static synchronized ScriptExecutorService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ScriptExecutorService();
         }
@@ -35,7 +37,7 @@ public class ScriptExecutorService {
 
     @SuppressWarnings("unchecked")
     public void execute(ScriptExecutionRequest scriptExecutionRequest) {
-        System.out.println("Test: ");
+        log.info("Executing " + scriptExecutionRequest);
         ScriptExecutor scriptExecutor = scriptExecutorMap.get(scriptExecutionRequest.getClass());
 
         scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.SUBMITTED);
@@ -50,9 +52,9 @@ public class ScriptExecutorService {
             ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
 
             scriptExecutor.execute(scriptExecutionRequest);
-
             scriptExecutionRequest.setScriptExecutionRequestStatus(ScriptExecutionRequestStatus.COMPLETED);
             ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
         }
+
     }
 }

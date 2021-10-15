@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.user.Role;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,8 +24,8 @@ import java.util.Set;
 
 
 @Component
-// @Profile("security")
 @DependsOn("metadataRepositoryConfiguration")
+@ConditionalOnWebApplication
 public class IesiUserDetailsManager implements UserDetailsManager {
 
     private TeamConfiguration teamConfiguration;

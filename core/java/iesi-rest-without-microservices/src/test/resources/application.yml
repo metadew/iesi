@@ -15,6 +15,7 @@ iesi:
     jwt:
       secret: secret
       expiry-date: 10
+  debug: true
 
 management:
   endpoints:

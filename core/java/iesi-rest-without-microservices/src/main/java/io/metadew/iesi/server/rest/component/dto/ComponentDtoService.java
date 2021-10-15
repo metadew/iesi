@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.component.dto;
 import io.metadew.iesi.server.rest.component.ComponentFilter;
 import io.metadew.iesi.server.rest.component.IComponentDtoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@ConditionalOnWebApplication
 public class ComponentDtoService implements IComponentDtoService {
 
     private final IComponentDtoRepository componentDtoRepository;

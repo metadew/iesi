@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.server.rest.dataset.DatasetDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import static java.lang.Math.min;
 @CrossOrigin
 @Tag(name = "datasetImplementations", description = "Everything about dataset implementations")
 @RequestMapping("/datasetImplementations")
+@ConditionalOnWebApplication
 public class DatasetImplementationController {
 
     private final DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler;

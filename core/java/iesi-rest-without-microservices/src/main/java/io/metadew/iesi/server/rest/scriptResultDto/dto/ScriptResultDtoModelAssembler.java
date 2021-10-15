@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.scriptResultDto.dto;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.server.rest.scriptResultDto.ScriptResultController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
+@ConditionalOnWebApplication
 public class ScriptResultDtoModelAssembler extends RepresentationModelAssemblerSupport<ScriptResult, ScriptResultDto> {
 
     @Autowired

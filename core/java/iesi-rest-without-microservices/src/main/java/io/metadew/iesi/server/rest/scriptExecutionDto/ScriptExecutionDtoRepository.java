@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Repository
+@ConditionalOnWebApplication
 public class ScriptExecutionDtoRepository implements IScriptExecutionDtoRepository {
 
     MetadataRepositoryConfiguration metadataRepositoryConfiguration;

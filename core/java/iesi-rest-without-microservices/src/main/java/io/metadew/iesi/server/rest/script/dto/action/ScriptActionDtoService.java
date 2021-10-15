@@ -5,11 +5,13 @@ import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
 @Service
+@ConditionalOnWebApplication
 public class ScriptActionDtoService implements IScriptActionDtoService {
 
     public Action convertToEntity(ActionDto actionDto, String scriptId, long version) {

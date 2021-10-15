@@ -1,12 +1,14 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@ConditionalOnWebApplication
 public class IesiSecurityChecker {
     @Value("${iesi.security.enabled:false}")
     private boolean enableSecurity;

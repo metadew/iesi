@@ -45,7 +45,6 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
 
     @Override
     public void execute(ScriptNameExecutionRequest scriptExecutionRequest) {
-
         Script script = scriptExecutionRequest.getScriptVersion()
                 .map(scriptVersion -> ScriptConfiguration.getInstance().get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptExecutionRequest.getScriptName()), scriptVersion)))
                 .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptExecutionRequest.getScriptName()))
@@ -71,7 +70,9 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
                         scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(),
                         ScriptRunStatus.RUNNING, LocalDateTime.now(), null);
         ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
+
         scriptExecution.execute();
+
         scriptExecution1.updateScriptRunStatus(ScriptResultConfiguration.getInstance().get(new ScriptResultKey(scriptExecution1.getRunId(), -1L))
                 .map(ScriptResult::getStatus)
                 .orElseThrow(() -> new RuntimeException("Cannot find result of run id: " + scriptExecution1.getRunId())));

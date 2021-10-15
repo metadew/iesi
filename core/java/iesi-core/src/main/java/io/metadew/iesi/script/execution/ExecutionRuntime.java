@@ -63,7 +63,9 @@ public class ExecutionRuntime {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ExecutionRuntime(ExecutionControl executionControl, String runId) {
+    public ExecutionRuntime(ExecutionControl executionControl,
+                            String runId,
+                            ScriptExecutionInitializationParameters scriptExecutionInitializationParameters) {
         this.runId = runId;
 
         // Create cache folder

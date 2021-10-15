@@ -6,6 +6,7 @@ import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
+@ConditionalOnWebApplication
 public class EnvironmentDtoRepository extends PaginatedRepository implements IEnvironmentDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;

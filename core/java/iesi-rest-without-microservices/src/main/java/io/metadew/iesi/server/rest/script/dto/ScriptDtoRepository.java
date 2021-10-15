@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
 
 @Log4j2
 @Repository
+@ConditionalOnWebApplication
 public class ScriptDtoRepository extends PaginatedRepository implements IScriptDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;

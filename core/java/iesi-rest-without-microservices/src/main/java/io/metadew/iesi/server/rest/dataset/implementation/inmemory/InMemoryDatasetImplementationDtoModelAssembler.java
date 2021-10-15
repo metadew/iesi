@@ -9,12 +9,14 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnWebApplication
 public class InMemoryDatasetImplementationDtoModelAssembler extends RepresentationModelAssemblerSupport<InMemoryDatasetImplementation, InMemoryDatasetImplementationDto> {
 
     private final InMemoryDatasetImplementationKeyValueDtoModelAssembler inMemoryDatasetImplementationKeyValueDtoModelAssembler;

@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.script.ScriptFilter;
 import io.metadew.iesi.server.rest.script.dto.version.IScriptVersionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@ConditionalOnWebApplication
 public class ScriptDtoService implements IScriptDtoService {
 
     private final IScriptVersionDtoService scriptVersionDtoService;

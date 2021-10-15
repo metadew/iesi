@@ -1,69 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-		<RollingFile
-			name="default"
-			fileName="./logs/iesi.log"
-			filePattern="./logs/iesi.%i.log.gz"
-			ignoreExceptions="false">
-			<PatternLayout>
-				 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-			</PatternLayout>
-			<Policies>
-				<SizeBasedTriggeringPolicy size="100MB" />
-			</Policies>
-			<DefaultRolloverStrategy max="5" />
-		</RollingFile>
-		<RollingFile
-			name="rest"
-			fileName="./logs/rest.log"
-			filePattern="./logs/rest.%i.log.gz"
-			ignoreExceptions="false">
-			<PatternLayout>
-				 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-			</PatternLayout>
-			<Policies>
-				<SizeBasedTriggeringPolicy size="100MB" />
-			</Policies>
-			<DefaultRolloverStrategy max="5" />
-		</RollingFile>
-        <Routing name="elasticSearchFileBeat">
-            <Routes pattern="$${marker:}">
-                <Route key="${marker:}">
-                    <File fileName="./logs/filebeat.log" name="script" append="true">
-                        <PatternLayout>
-                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-                        </PatternLayout>
-                    </File>
-                </Route>
-                <Route>
-                    <File fileName="./logs/filebeat/${marker:}.log" name="filebeat-${marker:}" append="false">
-                        <PatternLayout>
-                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-                        </PatternLayout>
-                    </File>
-                </Route>
-            </Routes>
-        </Routing>
-        <Routing name="scriptExecution">
+        <RollingFile
+                name="default"
+                fileName="./logs/iesi.log"
+                filePattern="./logs/iesi.%i.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="50MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="10" />
+        </RollingFile>
+        <RollingFile
+                name="rest"
+                fileName="./logs/rest.log"
+                filePattern="./logs/rest.%i.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="50MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="10" />
+        </RollingFile>
+        <Routing name="rest">
             <Routes pattern="$${ctx:runId}">
                 <Route key="${ctx:runId}">
-					<RollingFile
-						name="script"
-						fileName="./logs/iesi-script.log"
-						filePattern="./logs/iesi-script.%i.log.gz"
-						ignoreExceptions="false">
-						<PatternLayout>
-							 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-						</PatternLayout>
-						<Policies>
-							<SizeBasedTriggeringPolicy size="100MB" />
-						</Policies>
-						<DefaultRolloverStrategy max="5" />
-					</RollingFile>
+                    <RollingFile
+                            name="repository"
+                            fileName="./logs/rest.log"
+                            filePattern="./logs/rest.%i.log.gz"
+                            ignoreExceptions="false">
+                        <PatternLayout>
+                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+                        </PatternLayout>
+                        <Policies>
+                            <SizeBasedTriggeringPolicy size="50MB" />
+                        </Policies>
+                        <DefaultRolloverStrategy max="10" />
+                    </RollingFile>
                 </Route>
                 <Route>
-					<File fileName="./logs/${ctx:runId}/script.log" name="script-${ctx:runId}" append="false">
+                    <File fileName="../logs/${ctx:runId}/rest.log" name="rest-${ctx:runId}" append="false">
                         <PatternLayout>
                             <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
                         </PatternLayout>
@@ -71,58 +53,19 @@
                 </Route>
             </Routes>
         </Routing>
-        <Routing name="repository">
-            <Routes pattern="$${ctx:runId}">
-                <Route key="${ctx:runId}">
-					<RollingFile
-						name="repository"
-						fileName="./logs/iesi-repository.log"
-						filePattern="./logs/iesi-repository.%i.log.gz"
-						ignoreExceptions="false">
-						<PatternLayout>
-							 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-						</PatternLayout>
-						<Policies>
-							<SizeBasedTriggeringPolicy size="100MB" />
-						</Policies>
-						<DefaultRolloverStrategy max="5" />
-					</RollingFile>
-                </Route>
-                <Route>
-                    <File fileName="./logs/${ctx:runId}/repository.log" name="repository-${ctx:runId}" append="false">
-                        <PatternLayout>
-                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-                        </PatternLayout>
-                    </File>
-                </Route>
-            </Routes>
-        </Routing>
-        <Routing name="queries">
-            <Routes pattern="$${ctx:runId}">
-                <Route key="${ctx:runId}">
-					<RollingFile
-						name="queries"
-						fileName="./logs/iesi-SQL.log"
-						filePattern="./logs/iesi-SQL.%i.log.gz"
-						ignoreExceptions="false">
-						<PatternLayout>
-							 <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-						</PatternLayout>
-						<Policies>
-							<SizeBasedTriggeringPolicy size="100MB" />
-						</Policies>
-						<DefaultRolloverStrategy max="5" />
-					</RollingFile>
-                </Route>
-                <Route>
-                    <File fileName="./logs/${ctx:runId}/SQL.log" name="queries-${ctx:runId}" append="false">
-                        <PatternLayout>
-                            <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
-                        </PatternLayout>
-                    </File>
-                </Route>
-            </Routes>
-        </Routing>
+        <RollingFile
+                name="queries"
+                fileName="./logs/iesi-SQL.log"
+                filePattern="./logs/iesi-SQL.%i.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %-5p [%c{1.}] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d %-5p [%c{1.}] - %m%n" />
         </Console>
@@ -130,32 +73,23 @@
     <Loggers>
         <Logger name="io.metadew.iesi" additivity="false" level="all">
             <AppenderRef ref="STDOUT" level="info" />
-            <AppenderRef ref="default" level="all" />
+            <AppenderRef ref="default" level="debug" />
         </Logger>
-        <Logger name="io.metadew.iesi.connection.elasticsearch.filebeat" additivity="false" level="all">
-            <AppenderRef ref="elasticSearchFileBeat" level="info" />
+        <Logger name="io.metadew.iesi.rest" additivity="false" level="all">
+            <AppenderRef ref="STDOUT" level="info" />
+            <AppenderRef ref="rest" level="debug" />
         </Logger>
         <Logger name="io.metadew.iesi.connection.database" additivity="false">
             <AppenderRef ref="queries" level="all" />
+            <AppenderRef ref="rest" level="debug" />
         </Logger>
-        <Logger name="io.metadew.iesi.script" additivity="false">
+        <Logger name="org.springframework" additivity="false" level="all">
             <AppenderRef ref="STDOUT" level="info" />
-            <AppenderRef ref="scriptExecution" level="all" />
-        </Logger>
-        <Logger name="io.metadew.iesi.metadata.configuration" additivity="false">
-            <AppenderRef ref="repository" level="all" />
-        </Logger>
-        <Logger name="io.metadew.iesi.server.rest" additivity="false">
-            <AppenderRef ref="STDOUT" level="info" />
-            <AppenderRef ref="rest" level="all" />
-        </Logger>
-        <Logger name="org.springframework" additivity="false">
-            <AppenderRef ref="STDOUT" level="info" />
-            <AppenderRef ref="rest" level="all" />
+            <AppenderRef ref="rest" level="debug" />
         </Logger>
         <Root level="all" additivity="false">
-            <AppenderRef ref="STDOUT" level="warn" />
-            <AppenderRef ref="default" level="all" />
+            <AppenderRef ref="STDOUT" level="INFO"/>
+            <AppenderRef ref="rest" level="debug" />
         </Root>
     </Loggers>
 </Configuration>

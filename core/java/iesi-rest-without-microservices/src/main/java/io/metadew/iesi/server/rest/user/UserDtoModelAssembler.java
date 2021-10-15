@@ -3,10 +3,12 @@ package io.metadew.iesi.server.rest.user;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnWebApplication
 public class UserDtoModelAssembler extends RepresentationModelAssemblerSupport<User, UserDto> {
 
 

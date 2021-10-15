@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.openapi;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
 import io.metadew.iesi.openapi.TransformResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @Service
+@ConditionalOnWebApplication
 public class OpenAPIService implements IOpenAPIService {
 
     private final OpenAPIGenerator openAPIGenerator;

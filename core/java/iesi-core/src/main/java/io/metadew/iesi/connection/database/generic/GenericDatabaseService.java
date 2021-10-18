@@ -10,11 +10,11 @@ import java.util.Optional;
 
 public class GenericDatabaseService extends DatabaseService<GenericDatabase> implements IDatabaseService<GenericDatabase> {
 
-    private static final String keyword = "db.generic";
-    private static final String connectionUrlKey = "connectionURL";
-    private static final String userKey = "user";
-    private static final String passwordKey = "password";
-    private static final String schemaKey = "schema";
+    private static final String KEYWORD = "db.generic";
+    private static final String CONNECTION_URL_KEY = "connectionURL";
+    private static final String USER_KEY = "user";
+    private static final String PASSWORD_KEY = "password";
+    private static final String SCHEMA_KEY = "schema";
     private static GenericDatabaseService instance;
 
     private GenericDatabaseService() {
@@ -29,10 +29,10 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public GenericDatabase getDatabase(Connection connection) {
-        Optional<String> username = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, userKey);
-        Optional<String> password = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, passwordKey);
-        Optional<String> schema = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, schemaKey);
-        String connectionURL = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, connectionUrlKey);
+        Optional<String> username = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, USER_KEY);
+        Optional<String> password = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, PASSWORD_KEY);
+        Optional<String> schema = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, SCHEMA_KEY);
+        String connectionURL = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, CONNECTION_URL_KEY);
 
         GenericDatabaseConnection genericDatabaseConnection = new GenericDatabaseConnection(
                 connectionURL,
@@ -46,7 +46,7 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public String keyword() {
-        return keyword;
+        return KEYWORD;
     }
 
     @Override
@@ -56,11 +56,7 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public String getAllTablesQuery(GenericDatabase database, String pattern) {
-        return "select table_schema as \"OWNER\", table_name as \"TABLE_NAME\" from information_schema.tables where"
-                + database.getSchema().map(schema -> " table_schema = '" + schema + "' and").orElse("")
-                + " table_name like '"
-                + pattern
-                + "%' order by table_name asc";
+        throw new UnsupportedOperationException("Unsupported Operation");
     }
 
     @Override

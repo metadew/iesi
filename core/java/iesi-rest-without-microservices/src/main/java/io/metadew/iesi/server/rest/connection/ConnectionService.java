@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
+import io.metadew.iesi.server.rest.connection.dto.IConnectionDtoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,11 @@ import java.util.Optional;
 public class ConnectionService implements IConnectionService {
 
     private ConnectionConfiguration connectionConfiguration;
+    private IConnectionDtoService connectionDtoService;
 
     @Autowired
-    public ConnectionService(ConnectionConfiguration connectionConfiguration) {
+    public ConnectionService(ConnectionConfiguration connectionConfiguration, IConnectionDtoService connectionDtoService) {
+        this.connectionConfiguration = connectionConfiguration;
         this.connectionConfiguration = connectionConfiguration;
     }
 
@@ -45,13 +48,13 @@ public class ConnectionService implements IConnectionService {
         if (connectionConfiguration.exists(connectionDto.getName())) {
             throw new MetadataAlreadyExistsException(new ConnectionKey(connectionDto.getName(), ""));
         }
-        for (Connection connection : connectionDto.convertToEntity()) {
+        for (Connection connection : connectionDtoService.convertToEntity(connectionDto)) {
             connectionConfiguration.insert(connection);
         }
     }
 
     public void updateConnection(ConnectionDto connectionDto) {
-        for (Connection connection : connectionDto.convertToEntity()) {
+        for (Connection connection : connectionDtoService.convertToEntity(connectionDto)) {
             connectionConfiguration.update(connection);
         }
     }

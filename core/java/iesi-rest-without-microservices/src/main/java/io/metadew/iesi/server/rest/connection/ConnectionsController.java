@@ -18,6 +18,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -51,7 +52,11 @@ public class ConnectionsController {
     @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
     public PagedModel<ConnectionDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
         List<ConnectionFilter> connectionFilters = extractConnectionFilterOptions(name);
-        Page<ConnectionDto> connectionDtoPage = connectionDtoService.getAll(pageable, connectionFilters);
+        System.out.println("COUCOUCOUCOUCOUCOUCOUCOUC");
+        Page<ConnectionDto> connectionDtoPage = connectionDtoService
+                .getAll(SecurityContextHolder.getContext().getAuthentication(),
+                        pageable,
+                        connectionFilters);
 
         if (connectionDtoPage.hasContent()) {
             return connectionDtoPagedResourcesAssembler.toModel(connectionDtoPage, connectionDtoResourceAssembler::toModel);
@@ -71,7 +76,9 @@ public class ConnectionsController {
     @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
     public ConnectionDto getByName(@PathVariable String name) {
-        ConnectionDto connection = connectionDtoService.getByName(name)
+        ConnectionDto connection = connectionDtoService.getByName(
+                SecurityContextHolder.getContext().getAuthentication(),
+                name)
                 .orElseThrow(() -> new MetadataDoesNotExistException(
                         new ConnectionKey(name, "")
                 ));

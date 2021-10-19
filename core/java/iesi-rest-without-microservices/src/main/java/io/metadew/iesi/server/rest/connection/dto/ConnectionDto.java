@@ -19,20 +19,9 @@ import java.util.stream.Stream;
 public class ConnectionDto extends RepresentationModel<ConnectionDto> {
 
     private String name;
+    private String securityGroupName;
     private String type;
     private String description;
     private Set<ConnectionEnvironmentDto> environments;
-
-    public List<Connection> convertToEntity() {
-        return environments.stream().map(environment -> new Connection(
-                name,
-                type,
-                description,
-                environment.getEnvironment(),
-                environment.getParameters().stream()
-                        .map(parameter -> parameter.convertToEntity(name, environment.getEnvironment()))
-                        .collect(Collectors.toList())
-        )).collect(Collectors.toList());
-    }
 
 }

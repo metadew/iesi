@@ -2,6 +2,7 @@ package io.metadew.iesi.openapi;
 
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -57,6 +58,8 @@ public class ConnectionParserTest {
         List<ConnectionParameter> connectionParameters = Arrays.asList(baseUrl, host,tls);
         Connection connection = new Connection(
                 "Documentation",
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http",
                 "Documentation description",
                 "env0",

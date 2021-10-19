@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +21,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ConnectionConfiguration extends Configuration<Connection, ConnectionKey> {
 
@@ -40,7 +42,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     @Override
     public Optional<Connection> get(ConnectionKey connectionKey) {
         try {
-            String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " +
+            String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC, SECURITY_GROUP_ID, SECURITY_GROUP_NM from " +
                     getMetadataRepository().getTableNameByLabel("Connections") +
                     " WHERE " +
                     " CONN_NM  = " + SQLTools.getStringForSQL(connectionKey.getName()) + ";";
@@ -55,8 +57,14 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             if (connectionParameters.isEmpty()) {
                 return Optional.empty();
             } else {
-                return Optional.of(new Connection(connectionKey, cachedRowSet.getString("CONN_TYP_NM"),
-                        cachedRowSet.getString("CONN_DSC"), connectionParameters));
+                SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("SECURITY_GROUP_ID")));
+                return Optional.of(
+                        new Connection(
+                                connectionKey,
+                                securityGroupKey,
+                                cachedRowSet.getString("SECURITY_GROUP_NAME"),
+                                cachedRowSet.getString("CONN_TYP_NM"),
+                                cachedRowSet.getString("CONN_DSC"), connectionParameters));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -66,7 +74,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     @Override
     public List<Connection> getAll() {
         List<Connection> connections = new ArrayList<>();
-        String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC from " + getMetadataRepository().getTableNameByLabel("Connections")
+        String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC, SECURITY_GROUP_ID, SECURITY_GROUP_NAME from " + getMetadataRepository().getTableNameByLabel("Connections")
                 + " order by CONN_NM ASC";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
@@ -77,8 +85,11 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                 CachedRowSet environmentCachedRowSet = getMetadataRepository().executeQuery(queryConnectionParameters, "reader");
                 while (environmentCachedRowSet.next()) {
                     ConnectionKey connectionKey = new ConnectionKey(crs.getString("CONN_NM"), environmentCachedRowSet.getString("ENV_NM"));
+                    SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.fromString(crs.getString("SECURITY_GROUP_ID")));
                     connections.add(new Connection(
                             connectionKey,
+                            securityGroupKey,
+                            crs.getString("SECURITY_GROUP_NAME"),
                             crs.getString("CONN_TYP_NM"),
                             crs.getString("CONN_DSC"),
                             ConnectionParameterConfiguration.getInstance().getByConnection(connectionKey)));
@@ -142,8 +153,10 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                 " WHERE CONN_NM = " + SQLTools.getStringForSQL(connection.getMetadataKey().getName()) + ";", "reader");
         if (cachedRowSet.size() == 0) {
             return Optional.of("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Connections") +
-                    " (CONN_NM, CONN_TYP_NM, CONN_DSC) VALUES (" +
+                    " (CONN_NM, SECURITY_GROUP_ID, SECURITY_GROUP_NM, CONN_TYP_NM, CONN_DSC) VALUES (" +
                     SQLTools.getStringForSQL(connection.getMetadataKey().getName()) + "," +
+                    SQLTools.getStringForSQL(connection.getSecurityGroupKey().getUuid()) + "," +
+                    SQLTools.getStringForSQL(connection.getSecurityGroupName()) + "," +
                     SQLTools.getStringForSQL(connection.getType()) + "," +
                     SQLTools.getStringForSQL(connection.getDescription()) + ");");
         } else {

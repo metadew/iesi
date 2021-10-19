@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
 import java.text.MessageFormat;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +42,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
@@ -59,6 +63,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseWithEncryptedPasswordTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
@@ -78,6 +84,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseMissingMode() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "cluster"), "cluster"),
@@ -97,6 +105,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseMissingCluster() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
@@ -116,6 +126,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseMissingDirectory() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
@@ -135,6 +147,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseMissingClusterid() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
@@ -153,6 +167,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseMissingSchema() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
@@ -171,6 +187,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseMissingTries() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
@@ -189,6 +207,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseMissingUser() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),
@@ -207,6 +227,8 @@ public class DbDrillConnectionServiceTest {
     @Test
     void getDatabaseMissingPassword() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.drill",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "mode"),

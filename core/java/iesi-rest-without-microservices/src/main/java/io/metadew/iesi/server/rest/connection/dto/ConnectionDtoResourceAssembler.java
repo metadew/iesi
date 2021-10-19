@@ -29,6 +29,7 @@ public class ConnectionDtoResourceAssembler extends RepresentationModelAssembler
     public ConnectionDto toModel(Connection connection) {
         return new ConnectionDto(
                 connection.getMetadataKey().getName(),
+                connection.getSecurityGroupName(),
                 connection.getType(),
                 connection.getDescription(),
                 toConnectionEnvironmentDto(connection.getParameters())

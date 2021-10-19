@@ -1,7 +1,11 @@
 package io.metadew.iesi.openapi;
 
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +37,9 @@ public class ConnectionParser implements Parser<Connection> {
         String name = openAPI.getInfo().getTitle();
         String description = openAPI.getInfo().getDescription();
         List<URL> addresses = getAddresses(openAPI.getServers());
+        SecurityGroupKey securityGroupKey = SecurityGroupService.getInstance().get("PUBLIC")
+                .map(Metadata::getMetadataKey)
+                .orElseThrow(() -> new RuntimeException("could not find Security Group " + "PUBLIC"));
         return IntStream.range(0, addresses.size()).boxed()
                 .map(index -> {
                     URL address = addresses.get(index);
@@ -48,7 +55,14 @@ public class ConnectionParser implements Parser<Connection> {
                             ));
                     connectionParameters.add(new ConnectionParameter(name, environment, "host", getHost(address)));
                     connectionParameters.add(new ConnectionParameter(name, environment, "tls", getProtocol(address)));
-                    return new Connection(name, "http", description, environment, connectionParameters);
+                    return new Connection(
+                            name,
+                            securityGroupKey,
+                            "PUBLIC",
+                            "http",
+                            description,
+                            environment,
+                            connectionParameters);
 
                 }).collect(Collectors.toList());
     }

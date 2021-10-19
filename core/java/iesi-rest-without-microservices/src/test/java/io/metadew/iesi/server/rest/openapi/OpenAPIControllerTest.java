@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.openapi.TransformResult;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
@@ -157,6 +158,7 @@ class OpenAPIControllerTest {
         ConnectionParameterDto tls = new ConnectionParameterDto("tls", "Y");
         ConnectionDto connectionDto = new ConnectionDto(
                 "Swagger Petstore - OpenAPI 3.22",
+                "PUBLIC",
                 "http", "small description",
                 Stream.of(
                         new ConnectionEnvironmentDto(
@@ -206,7 +208,13 @@ class OpenAPIControllerTest {
         ConnectionParameter tls = new ConnectionParameter(
                 new ConnectionParameterKey(connectionKey, "tls"),
                 "Y");
-        Connection connection = new Connection(connectionKey, "http", "small description", Arrays.asList(baseUrl, host, tls));
+        Connection connection = new Connection(
+                connectionKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http",
+                "small description",
+                Arrays.asList(baseUrl, host, tls));
 
 
         ComponentParameter endpoint = new ComponentParameter(

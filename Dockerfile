@@ -35,4 +35,4 @@ ENV PORT 8080
 ENV HOST 0.0.0.0
 
 EXPOSE $PORT
-CMD sh -c "envsubst '\$DATABASE_CONNECTION_URL:\$DATABASE_CONNECTION_URL,\$DATABASE_TYPE:\$DATABASE_TYPE,\$DATABASE_USER:\$DATABASE_USER,\$DATABASE_PASSWORD:\$DATABASE_PASSWORD' < /opt/iesi/conf/application-repository.yml.template > /opt/iesi/conf/application-repository.yml && /opt/iesi/bin/iesi-backend.sh"
+CMD sh -c "envsubst '\$DATABASE_CONNECTION_URL:\$DATABASE_CONNECTION_URL,\$DATABASE_TYPE:\$DATABASE_TYPE,\$DATABASE_USER:\$DATABASE_USER,\$DATABASE_PASSWORD:\$DATABASE_PASSWORD' < /opt/iesi/conf/application-repository.yml.template > /opt/iesi/conf/application-repository.yml && /opt/iesi/bin/iesi-rest.sh"

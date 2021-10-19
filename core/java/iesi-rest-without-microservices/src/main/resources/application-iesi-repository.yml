@@ -18,7 +18,7 @@ iesi:
 #            password: user
           
           type: sqlite
-            file: ./repository.db3
+          file: ./repository.db3
 
 #          type: h2
 #          mode: memory

@@ -324,10 +324,13 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             return null;
         }
         if (httpRequestVersion instanceof Text) {
-            try {
-                return Long.parseLong(httpRequestVersion.toString());
-            } catch (NumberFormatException e) {
+            if (((Text) httpRequestVersion).getString().isEmpty()) {
                 return null;
+            }
+            try {
+                return Long.parseLong(((Text) httpRequestVersion).getString());
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(String.format("Unable to parse the input value %s", ((Text) httpRequestVersion).getString()));
             }
         }
         throw new RuntimeException(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for request name",

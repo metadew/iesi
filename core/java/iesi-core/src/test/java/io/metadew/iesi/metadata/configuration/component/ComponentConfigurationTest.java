@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -100,7 +101,7 @@ class ComponentConfigurationTest {
     @Test
     void componentInsertAlreadyExistsTest() {
         ComponentConfiguration.getInstance().insert(component1);
-        assertThrows(MetadataAlreadyExistsException.class,() -> ComponentConfiguration.getInstance().insert(component1));
+        assertThrows(MetadataAlreadyExistsException.class, () -> ComponentConfiguration.getInstance().insert(component1));
     }
 
     @Test
@@ -127,14 +128,51 @@ class ComponentConfigurationTest {
 
     @Test
     void componentDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class,() ->
+        assertThrows(MetadataDoesNotExistException.class, () ->
                 ComponentConfiguration.getInstance().delete(component1.getMetadataKey()));
     }
 
     @Test
-    void componentGetNotExistsTest(){
+    void componentGetNotExistsTest() {
         assertFalse(ComponentConfiguration.getInstance().exists(component1));
         assertFalse(ComponentConfiguration.getInstance().get(component1.getMetadataKey()).isPresent());
+    }
+
+    @Test
+    void componentGetWithVersionTest() {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        Optional<Component> fetchedComponentVersion2 = ComponentConfiguration.getInstance().getByNameAndVersion("comp1", 1L);
+        assertThat(fetchedComponentVersion2).isPresent();
+        assertThat(fetchedComponentVersion2.get().getName()).isEqualTo("comp1");
+        assertThat(fetchedComponentVersion2.get().getVersion().getMetadataKey().getComponentKey().getVersionNumber()).isEqualTo(1L);
+    }
+
+    @Test
+    void componentGetWithLatestVersionTest() {
+        ComponentConfiguration.getInstance().insert(component1);
+        ComponentConfiguration.getInstance().insert(component2);
+        Optional<Component> fetchedComponentLatestVersion = ComponentConfiguration.getInstance().getByNameAndLatestVersion("comp1");
+        assertThat(fetchedComponentLatestVersion).isPresent();
+        assertThat(fetchedComponentLatestVersion.get().getName()).isEqualTo("comp1");
+        assertThat(fetchedComponentLatestVersion.get().getVersion().getMetadataKey().getComponentKey().getVersionNumber()).isEqualTo(2L);
+    }
+
+    @Test
+    void componentGetWithUnexistingVersionTest() {
+        ComponentConfiguration.getInstance().insert(component2);
+        assertThat(ComponentConfiguration.getInstance().getByNameAndVersion("comp1", 10L)).isEmpty();
+    }
+
+    @Test
+    void componentGetWithUnexistingNameTest() {
+        ComponentConfiguration.getInstance().insert(component2);
+        assertThat(ComponentConfiguration.getInstance().getByNameAndVersion("comp", 2L)).isEmpty();
+    }
+
+    @Test
+    void componentGetWithUnexistingNameAndVersionTest() {
+        assertThat(ComponentConfiguration.getInstance().getByNameAndVersion("comp", 2L)).isEmpty();
     }
 
     @Test
@@ -271,48 +309,6 @@ class ComponentConfigurationTest {
         assertEquals(componentParameters3, component3.getParameters());
         assertEquals(2, component3.getParameters().size());
     }
-
-//    @Test
-//    void componentGetByComponentId1Test() {
-//        ComponentConfiguration.getInstance().insert(component1);
-//        ComponentConfiguration.getInstance().insert(component2);
-//        ComponentConfiguration.getInstance().insert(component3);
-//
-//        assertEquals(Stream.of(component1, component2).collect(Collectors.toList()),
-//                ComponentConfiguration.getInstance().getByComponent(component1.getMetadataKey().getComponentKey().getId()));
-//    }
-//    @Test
-//    void componentGetByComponentId2Test() {
-//        ComponentConfiguration.getInstance().insert(component1);
-//        ComponentConfiguration.getInstance().insert(component2);
-//        ComponentConfiguration.getInstance().insert(component3);
-//
-//        assertEquals(Stream.of(component3).collect(Collectors.toList()),
-//                ComponentConfiguration.getInstance().getByComponent(component3.getMetadataKey().getComponentKey().getId()));
-//    }
-//
-//    @Test
-//    void componentDeleteByComponentId1Test() throws MetadataAlreadyExistsException, MetadataDoesNotExistException {
-//        ComponentConfiguration.getInstance().insert(component1);
-//        ComponentConfiguration.getInstance().insert(component2);
-//        ComponentConfiguration.getInstance().insert(component3);
-//
-//        ComponentConfiguration.getInstance().deleteByComponent(component3.getMetadataKey().getComponentKey());
-//
-//        assertEquals(Stream.of(component1, component2).collect(Collectors.toList()),
-//                ComponentConfiguration.getInstance().getByComponent(component1.getMetadataKey().getComponentKey().getId()));
-//    }
-//    @Test
-//    void componentDeleteByComponentId2Test() throws MetadataAlreadyExistsException, MetadataDoesNotExistException {
-//        ComponentConfiguration.getInstance().insert(component1);
-//        ComponentConfiguration.getInstance().insert(component2);
-//        ComponentConfiguration.getInstance().insert(component3);
-//
-//        ComponentConfiguration.getInstance().deleteByComponent(component1.getMetadataKey().getComponentKey());
-//
-//        assertEquals(Stream.of(component3).collect(Collectors.toList()),
-//                ComponentConfiguration.getInstance().getByComponent(component3.getMetadataKey().getComponentKey().getId()));
-//    }
 
     @Test
     void componentDeleteAllTest() {

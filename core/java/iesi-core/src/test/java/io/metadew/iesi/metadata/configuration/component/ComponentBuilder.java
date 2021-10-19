@@ -75,8 +75,8 @@ public class ComponentBuilder {
                 .map(i -> new ComponentAttributeBuilder(componentID, version, "env", "parameter" + i).build())
                 .collect(Collectors.toList()));
         return new Component(new ComponentKey(componentID, version),
-                name == null ? "name" : name,
                 type == null ? "dummy" : type,
+                name == null ? "name" : name,
                 description == null ? "dummy" : description,
                 new ComponentVersion(new ComponentVersionKey(componentID, version), "description"),
                 componentParameters,

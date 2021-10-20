@@ -417,7 +417,7 @@ iesi:
       db.generic:
         description: Generic Database connection
         parameters:
-          url:
+          connectionURL:
             description: The connection URL for the instance
             type: string
             mandatory: true

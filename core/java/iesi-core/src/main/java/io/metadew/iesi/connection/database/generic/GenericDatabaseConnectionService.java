@@ -16,7 +16,7 @@ public class GenericDatabaseConnectionService extends DatabaseConnectionService<
 
     @Override
     public String getDriver(GenericDatabaseConnection databaseConnection) {
-        return null;
+        return "";
     }
 
     @Override

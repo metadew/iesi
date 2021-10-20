@@ -17,15 +17,15 @@ iesi:
           #            user: user
           #            password: user
 
-          type: sqlite
-          file: ./repository.db3
+#          type: sqlite
+#          file: ./repository.db3
 
-#          type: mysql
-#            connection: jdbc:mysql://iesi-dbsmysql.mysql.database.azure.com:3306/iesidb?useSSL=true&requireSSL=false&useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
-#            schema: iesidb
-#            owner:
-#              user: iesi-db-admin@iesi-dbsmysql
-#              password: nhq3CP;LN"&J
+          type: mysql
+          connection: jdbc:mysql://iesi-dbsmysql.mysql.database.azure.com:3306/iesidb?useSSL=true&requireSSL=false&useOldAliasMetadataBehavior=true&sessionVariables=sql_mode=ANSI_QUOTES
+          schema: iesidb
+          owner:
+            user: iesi-db-admin@iesi-dbsmysql
+            password: nhq3CP;LN"&J
 
 #          type: h2
 #          mode: memory

@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface IConnectionDtoService {
     Page<ConnectionDto> getAll(Authentication authentication, Pageable pageable, List<ConnectionFilter> componentFilters);
+
     Optional<ConnectionDto> getByName(Authentication authentication, String name);
+
     List<Connection> convertToEntity(ConnectionDto connectionDto);
 }

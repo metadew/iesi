@@ -2,7 +2,6 @@ package io.metadew.iesi.server.rest.connection;
 
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
@@ -12,19 +11,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @ConditionalOnWebApplication
 public class ConnectionService implements IConnectionService {
 
-    private ConnectionConfiguration connectionConfiguration;
-    private IConnectionDtoService connectionDtoService;
+    private final ConnectionConfiguration connectionConfiguration;
+    private final IConnectionDtoService connectionDtoService;
 
     @Autowired
     public ConnectionService(ConnectionConfiguration connectionConfiguration, IConnectionDtoService connectionDtoService) {
         this.connectionConfiguration = connectionConfiguration;
-        this.connectionConfiguration = connectionConfiguration;
+        this.connectionDtoService = connectionDtoService;
     }
 
     public List<Connection> getAll() {
@@ -38,10 +36,6 @@ public class ConnectionService implements IConnectionService {
     @Override
     public List<Connection> getByEnvironment(String name) {
         return connectionConfiguration.getByEnvironment(name);
-    }
-
-    public Optional<Connection> getByNameAndEnvironment(String name, String environment) {
-        return connectionConfiguration.get(new ConnectionKey(name, environment));
     }
 
     public void createConnection(ConnectionDto connectionDto) {
@@ -70,9 +64,4 @@ public class ConnectionService implements IConnectionService {
     public void deleteByName(String name) {
         connectionConfiguration.deleteByName(name);
     }
-
-    public void deleteByNameAndEnvironment(String name, String environment) {
-        connectionConfiguration.delete(new ConnectionKey(name, environment));
-    }
-
 }

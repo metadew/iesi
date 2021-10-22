@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.connection.dto;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import io.metadew.iesi.server.rest.connection.ConnectionFilter;
 import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
@@ -110,12 +109,12 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
     private String getOrderByClause(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) return " ORDER BY connections.CONN_NM ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
-            if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "connections.CONN_NM" + " " + order.getDirection();
-            } else {
-                return null;
-            }
-        })
+                    if (order.getProperty().equalsIgnoreCase("NAME")) {
+                        return "connections.CONN_NM" + " " + order.getDirection();
+                    } else {
+                        return null;
+                    }
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
@@ -144,7 +143,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
                     .collect(Collectors.toSet());
             filterStatements = filterStatements +
                     (filterStatements.isEmpty()
-                            ? "" : " and " ) +
+                            ? "" : " and ") +
                     " connections.SECURITY_GROUP_NM IN (" + String.join(", ", securityGroups) + ") ";
         }
 

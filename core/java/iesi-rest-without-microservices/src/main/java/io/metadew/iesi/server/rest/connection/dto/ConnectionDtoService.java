@@ -28,7 +28,6 @@ public class ConnectionDtoService implements IConnectionDtoService {
 
     @Override
     public Page<ConnectionDto> getAll(Authentication authentication, Pageable pageable, List<ConnectionFilter> componentFilters) {
-        System.out.println("MECMECMECMECMECMECMECMECMECM");
         return connectionDtoRepository.getAll(authentication, pageable, componentFilters);
     }
 
@@ -52,7 +51,7 @@ public class ConnectionDtoService implements IConnectionDtoService {
                         environment.getParameters().stream()
                                 .map(parameter -> parameter.convertToEntity(connectionDto.getName(), environment.getEnvironment()))
                                 .collect(Collectors.toList())
-                        ))
+                ))
                 .collect(Collectors.toList());
     }
 }

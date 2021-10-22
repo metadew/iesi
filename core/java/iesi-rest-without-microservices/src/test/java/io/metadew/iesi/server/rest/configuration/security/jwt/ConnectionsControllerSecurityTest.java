@@ -1,22 +1,14 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.connection.ConnectionService;
 import io.metadew.iesi.server.rest.connection.ConnectionsController;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionEnvironmentDto;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionParameterDto;
+import io.metadew.iesi.server.rest.connection.dto.*;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,16 +16,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,10 +50,13 @@ class ConnectionsControllerSecurityTest {
     private ConnectionService connectionService;
 
     @MockBean
+    private ConnectionDtoService connectionDtoService;
+
+    @MockBean
     private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
 
     @Test
-    void testGetAllNoUser() throws Exception {
+    void testGetAllNoUser() {
         assertThatThrownBy(() -> connectionsController.getAll(Pageable.unpaged(), ""))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
@@ -93,7 +88,7 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testGetAllNoConnectionReadPrivilege() throws Exception {
+    void testGetAllNoConnectionReadPrivilege() {
         assertThatThrownBy(() -> connectionsController.getAll(Pageable.unpaged(), ""))
                 .isInstanceOf(AccessDeniedException.class);
     }
@@ -101,8 +96,10 @@ class ConnectionsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"CONNECTIONS_READ@PUBLIC"})
-    void testGetConnectionReadPrivilege() throws Exception {
-        connectionsController.getAll(Pageable.unpaged(), "");
+    void testGetConnectionReadPrivilege() {
+        when(connectionDtoService.getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
+        connectionsController.getAll(Pageable.unpaged(), null);
     }
 
     @Test
@@ -132,7 +129,7 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testGetByNameNoConnectionRead() throws Exception {
+    void testGetByNameNoConnectionRead() {
         assertThatThrownBy(() -> connectionsController.getByName("test"))
                 .isInstanceOf(AccessDeniedException.class);
     }
@@ -140,12 +137,11 @@ class ConnectionsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"CONNECTIONS_READ@PUBLIC"})
-    void testGetByNameNozConnectionReadNoResult() throws Exception {
+    void testGetByNameNozConnectionReadNoResult() {
         assertThatThrownBy(() -> connectionsController.getByName("test"))
                 .isInstanceOf(MetadataDoesNotExistException.class);
     }
 
-    // create connections
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -173,9 +169,57 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testCreateNoConnectionsWrite() throws Exception {
+    void testCreateNoConnectionsWrite() {
         ConnectionDto connectionDto = ConnectionDto.builder()
                 .name("test")
+                .securityGroupName("PUBLIC")
+                .environments(
+                        Stream.of(new ConnectionEnvironmentDto(
+                                "env",
+                                Stream.of(
+                                        new ConnectionParameterDto("param1", "value1")
+                                ).collect(Collectors.toSet())
+                        )).collect(Collectors.toSet())
+                )
+                .type("type")
+                .description("description")
+                .build();
+        assertThatThrownBy(() -> connectionsController.post(connectionDto))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"SCRIPTS_WRITE@PUBLIC",
+                    "SCRIPTS_READ@PUBLIC",
+                    "COMPONENTS_WRITE@PUBLIC",
+                    "COMPONENTS_READ@PUBLIC",
+                    // "CONNECTIONS_WRITE@PUBLIC",
+                    "CONNECTIONS_READ@PUBLIC",
+                    "CONNECTION_WRITE@PUBLIC",
+                    "ENVIRONMENTS_WRITE@PUBLIC",
+                    "ENVIRONMENTS_READ@PUBLIC",
+                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
+                    "EXECUTION_REQUESTS_READ@PUBLIC",
+                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
+                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_READ@PUBLIC",
+                    "IMPERSONATIONS_WRITE@PUBLIC",
+                    "SCRIPT_RESULTS_READ@PUBLIC",
+                    "USERS_WRITE@PUBLIC",
+                    "USERS_READ@PUBLIC",
+                    "USERS_DELETE@PUBLIC",
+                    "TEAMS_WRITE@PUBLIC",
+                    "TEAMS_READ@PUBLIC",
+                    "ROLES_WRITE@PUBLIC",
+                    "GROUPS_WRITE@PUBLIC",
+                    "GROUPS_READ@PUBLIC",
+                    "DATASETS_READ@PUBLIC",
+                    "DATASETS_WRITE@PUBLIC"})
+    void testCreateConnectionsWriteWrongGroup() {
+        ConnectionDto connectionDto = ConnectionDto.builder()
+                .name("test")
+                .securityGroupName("GROUPA")
                 .environments(
                         Stream.of(new ConnectionEnvironmentDto(
                                 "env",
@@ -194,9 +238,10 @@ class ConnectionsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testCreateConnectionsWrite() throws Exception {
+    void testCreateConnectionsWrite() {
         ConnectionDto connectionDto = ConnectionDto.builder()
                 .name("test")
+                .securityGroupName("PUBLIC")
                 .environments(
                         Stream.of(new ConnectionEnvironmentDto(
                                 "env",
@@ -211,7 +256,6 @@ class ConnectionsControllerSecurityTest {
         connectionsController.post(connectionDto);
     }
 
-    // update bulk connections
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -239,28 +283,7 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testUpdateBulkNoConnectionWritePrivilege() throws Exception {
-        List<ConnectionDto> connectionDtos = Collections.singletonList(ConnectionDto.builder()
-                        .name("test")
-                .environments(
-                        Stream.of(new ConnectionEnvironmentDto(
-                                "env",
-                                Stream.of(
-                                        new ConnectionParameterDto("param1", "value1")
-                                ).collect(Collectors.toSet())
-                        )).collect(Collectors.toSet())
-                )
-                        .type("type")
-                        .description("description")
-                        .build());
-        assertThatThrownBy(() -> connectionsController.putAll(connectionDtos))
-                .isInstanceOf(AccessDeniedException.class);
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testUpdateBulkConnectionWritePrivilege() throws Exception {
+    void testUpdateBulkNoConnectionWritePrivilege() {
         List<ConnectionDto> connectionDtos = Collections.singletonList(ConnectionDto.builder()
                 .name("test")
                 .environments(
@@ -274,10 +297,54 @@ class ConnectionsControllerSecurityTest {
                 .type("type")
                 .description("description")
                 .build());
+        assertThatThrownBy(() -> connectionsController.putAll(connectionDtos))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
+    void testUpdateBulkConnectionWritePrivilege() {
+        List<ConnectionDto> connectionDtos = Collections.singletonList(ConnectionDto.builder()
+                .name("test")
+                .securityGroupName("PUBLIC")
+                .environments(
+                        Stream.of(new ConnectionEnvironmentDto(
+                                "env",
+                                Stream.of(
+                                        new ConnectionParameterDto("param1", "value1")
+                                ).collect(Collectors.toSet())
+                        )).collect(Collectors.toSet())
+                )
+                .type("type")
+                .description("description")
+                .build());
+
         connectionsController.putAll(connectionDtos);
     }
 
-    // update single connection
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
+    void testUpdateBulkConnectionWritePrivilegeWrongGroup() {
+        List<ConnectionDto> connectionDtos = Collections.singletonList(ConnectionDto.builder()
+                .name("test")
+                .securityGroupName("GROUPA")
+                .environments(
+                        Stream.of(new ConnectionEnvironmentDto(
+                                "env",
+                                Stream.of(
+                                        new ConnectionParameterDto("param1", "value1")
+                                ).collect(Collectors.toSet())
+                        )).collect(Collectors.toSet())
+                )
+                .type("type")
+                .description("description")
+                .build());
+        assertThatThrownBy(() -> connectionsController.putAll(connectionDtos)).isInstanceOf(AccessDeniedException.class);
+        ;
+    }
+
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -305,9 +372,10 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testUpdateSingleNoConnectionWritePrivilege() throws Exception {
+    void testUpdateSingleNoConnectionWritePrivilege() {
         ConnectionDto connectionDto = ConnectionDto.builder()
                 .name("test")
+                .securityGroupName("PUBLIC")
                 .environments(
                         Stream.of(new ConnectionEnvironmentDto(
                                 "env",
@@ -326,9 +394,10 @@ class ConnectionsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testUpdateSingleConnectionWritePrivilege() throws Exception {
+    void testUpdateSingleConnectionWritePrivilege() {
         ConnectionDto connectionDto = ConnectionDto.builder()
                 .name("test")
+                .securityGroupName("PUBLIC")
                 .environments(
                         Stream.of(new ConnectionEnvironmentDto(
                                 "env",
@@ -343,47 +412,29 @@ class ConnectionsControllerSecurityTest {
         connectionsController.put("test", connectionDto);
     }
 
-    //delete all
     @Test
     @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    "COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    // "CONNECTIONS_WRITE@PUBLIC",
-                    "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testDeleteAllNoConnectionWritePrivilege() throws Exception {
-        assertThatThrownBy(() -> connectionsController.deleteAll())
+            authorities = {"CONNECTIONS_WRITE@GROUPA"})
+    void testUpdateSingleConnectionWritePrivilegeWrongGroup() {
+        ConnectionDto connectionDto = ConnectionDto.builder()
+                .name("test")
+                .securityGroupName("PUBLIC")
+                .environments(
+                        Stream.of(new ConnectionEnvironmentDto(
+                                "env",
+                                Stream.of(
+                                        new ConnectionParameterDto("param1", "value1")
+                                ).collect(Collectors.toSet())
+                        )).collect(Collectors.toSet())
+                )
+                .type("type")
+                .description("description")
+                .build();
+        assertThatThrownBy(() -> connectionsController.put("test", connectionDto))
                 .isInstanceOf(AccessDeniedException.class);
+        ;
     }
 
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testDeleteAllConnectionWritePrivilege() throws Exception {
-        connectionsController.deleteAll();
-    }
-
-    //delete by name
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -411,7 +462,7 @@ class ConnectionsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testDeleteByNameNoConnectionWritePrivilege() throws Exception {
+    void testDeleteByNameNoConnectionWritePrivilege() {
         assertThatThrownBy(() -> connectionsController.deleteByName("test"))
                 .isInstanceOf(AccessDeniedException.class);
     }
@@ -419,7 +470,30 @@ class ConnectionsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"CONNECTIONS_WRITE@PUBLIC"})
-    void testDeleteByNameConnectionWritePrivilege() throws Exception {
-        connectionsController.deleteByName("test");
+    void testDeleteByNameConnectionWritePrivilege() {
+        ConnectionDto connectionDto = new ConnectionDto(
+                "connectionA",
+                "PUBLIC",
+                "http",
+                "",
+                new HashSet<>()
+        );
+        when(connectionDtoService.getByName(null, "connectionA")).thenReturn(Optional.of(connectionDto));
+        connectionsController.deleteByName("connectionA");
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"CONNECTIONS_WRITE@PUBLIC"})
+    void testDeleteByNameConnectionWritePrivilegeWrongGroup() {
+        ConnectionDto connectionDto = new ConnectionDto(
+                "connectionA",
+                "GROUPA",
+                "http",
+                "",
+                new HashSet<>()
+        );
+        when(connectionDtoService.getByName(null, "connectionA")).thenReturn(Optional.of(connectionDto));
+        assertThatThrownBy(() -> connectionsController.getByName("connectionA")).isInstanceOf(AccessDeniedException.class);
     }
 }

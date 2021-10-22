@@ -40,12 +40,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -86,8 +89,8 @@ class OpenAPIControllerTest {
     @Test
     void transformFromYAML() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("file", yamlFile);
-        given(openAPIService.transform(multipartFile)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
                 multipart("/openapi/transform")
@@ -110,8 +113,8 @@ class OpenAPIControllerTest {
     void transformFromJSON() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("file", jsonFile);
 
-        given(openAPIService.transform(multipartFile)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
                 multipart("/openapi/transform")
@@ -134,8 +137,8 @@ class OpenAPIControllerTest {
     void transformFromBody() throws Exception {
         String jsonContent = new String(jsonFile);
 
-        given(openAPIService.transform(jsonContent)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform(anyString())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
                 post("/openapi/transform")

@@ -12,31 +12,26 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.definition.user.RoleKey;
-import io.metadew.iesi.metadata.definition.user.User;
-import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
-import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.connection.ConnectionFilter;
 import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.*;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -70,7 +65,7 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getAllNoResultsTest() {
-        assertThat(connectionDtoRepository.getAll(null,Pageable.unpaged(), new ArrayList<>())).isEmpty();
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>())).isEmpty();
     }
 
     @Test
@@ -101,14 +96,13 @@ class ConnectionDtoRepositoryTest {
         insert(connection3);
         ConnectionDto connection1Dto = createConnectionDto(connection1);
         ConnectionDto connection2Dto = createConnectionDto(connection2);
-        ConnectionDto connection3Dto = createConnectionDto(connection3);
 
         Pageable page1 = PageRequest.of(0, 1);
         Pageable page2 = PageRequest.of(1, 1);
-        assertThat(connectionDtoRepository.getAll(null,page1, new ArrayList<>())).containsOnly(
+        assertThat(connectionDtoRepository.getAll(null, page1, new ArrayList<>())).containsOnly(
                 connection1Dto
         );
-        assertThat(connectionDtoRepository.getAll(null,page2, new ArrayList<>())).containsOnly(
+        assertThat(connectionDtoRepository.getAll(null, page2, new ArrayList<>())).containsOnly(
                 connection2Dto
         );
     }
@@ -137,9 +131,9 @@ class ConnectionDtoRepositoryTest {
         PageRequest pageable2 = PageRequest.of(1, 2);
         PageRequest pageable3 = PageRequest.of(2, 2);
 
-        Page<ConnectionDto> page1 = connectionDtoRepository.getAll(null,pageable1, new ArrayList<>());
-        Page<ConnectionDto> page2 = connectionDtoRepository.getAll(null,pageable2, new ArrayList<>());
-        Page<ConnectionDto> page3 = connectionDtoRepository.getAll(null,pageable3, new ArrayList<>());
+        Page<ConnectionDto> page1 = connectionDtoRepository.getAll(null, pageable1, new ArrayList<>());
+        Page<ConnectionDto> page2 = connectionDtoRepository.getAll(null, pageable2, new ArrayList<>());
+        Page<ConnectionDto> page3 = connectionDtoRepository.getAll(null, pageable3, new ArrayList<>());
 
         assertThat(page1).containsExactly(
                 connection1Dto,
@@ -182,9 +176,9 @@ class ConnectionDtoRepositoryTest {
         PageRequest pageable2 = PageRequest.of(1, 2, Sort.by(Sort.Direction.DESC, "name"));
         PageRequest pageable3 = PageRequest.of(2, 2, Sort.by(Sort.Direction.DESC, "name"));
 
-        Page<ConnectionDto> page1 = connectionDtoRepository.getAll(null,pageable1, new ArrayList<>());
-        Page<ConnectionDto> page2 = connectionDtoRepository.getAll(null,pageable2, new ArrayList<>());
-        Page<ConnectionDto> page3 = connectionDtoRepository.getAll(null,pageable3, new ArrayList<>());
+        Page<ConnectionDto> page1 = connectionDtoRepository.getAll(null, pageable1, new ArrayList<>());
+        Page<ConnectionDto> page2 = connectionDtoRepository.getAll(null, pageable2, new ArrayList<>());
+        Page<ConnectionDto> page3 = connectionDtoRepository.getAll(null, pageable3, new ArrayList<>());
         assertThat(page1).containsExactly(
                 connection5Dto,
                 connection4Dto
@@ -211,17 +205,17 @@ class ConnectionDtoRepositoryTest {
         insert(connection2);
         ConnectionDto connection1Dto = createConnectionDto(connection1);
         ConnectionDto connection2Dto = createConnectionDto(connection2);
-        assertThat(connectionDtoRepository.getAll(null,Pageable.unpaged(),
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(),
                 Stream.of(
                         new ConnectionFilter(ConnectionFilterOption.NAME, "ion", false)
                 ).collect(Collectors.toList())
         )).containsOnly(connection2Dto, connection1Dto);
-        assertThat(connectionDtoRepository.getAll(null,Pageable.unpaged(),
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(),
                 Stream.of(
                         new ConnectionFilter(ConnectionFilterOption.NAME, "ion1", false)
                 ).collect(Collectors.toList())
         )).containsExactly(connection1Dto);
-        assertThat(connectionDtoRepository.getAll(null,Pageable.unpaged(),
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(),
                 Stream.of(
                         new ConnectionFilter(ConnectionFilterOption.NAME, "ion2", false)
                 ).collect(Collectors.toList())
@@ -406,9 +400,9 @@ class ConnectionDtoRepositoryTest {
         ConnectionDto connection1Dto = createConnectionDto(connection1);
         ConnectionDto connection2Dto = createConnectionDto(connection2);
 
-        assertThat(connectionDtoRepository.getByName(null,"connection1"))
+        assertThat(connectionDtoRepository.getByName(null, "connection1"))
                 .isEqualTo(Optional.of(connection1Dto));
-        assertThat(connectionDtoRepository.getByName(null,"connection2"))
+        assertThat(connectionDtoRepository.getByName(null, "connection2"))
                 .isEqualTo(Optional.of(connection2Dto));
     }
 
@@ -420,10 +414,8 @@ class ConnectionDtoRepositoryTest {
         environmentConfiguration.insert(createEnvironment("env2"));
         insert(connection1);
         insert(connection2);
-        ConnectionDto connection1Dto = createConnectionDto(connection1);
-        ConnectionDto connection2Dto = createConnectionDto(connection2);
 
-        assertThat(connectionDtoRepository.getByName(null,"connection3"))
+        assertThat(connectionDtoRepository.getByName(null, "connection3"))
                 .isEmpty();
     }
 
@@ -637,23 +629,23 @@ class ConnectionDtoRepositoryTest {
                     .securityGroupName(securityGroupName)
                     .parameters(
                             Stream.of(
-                                    new ConnectionParameter(
-                                            new ConnectionParameterKey(connectionKey, "host"),
-                                            "test.test.com"
-                                    ),
-                                    new ConnectionParameter(
-                                            new ConnectionParameterKey(connectionKey, "port"),
-                                            "80"
-                                    ),
-                                    new ConnectionParameter(
-                                            new ConnectionParameterKey(connectionKey, "baseUrl"),
-                                            "/api"
-                                    ),
-                                    new ConnectionParameter(
-                                            new ConnectionParameterKey(connectionKey, "tls"),
-                                            "N"
+                                            new ConnectionParameter(
+                                                    new ConnectionParameterKey(connectionKey, "host"),
+                                                    "test.test.com"
+                                            ),
+                                            new ConnectionParameter(
+                                                    new ConnectionParameterKey(connectionKey, "port"),
+                                                    "80"
+                                            ),
+                                            new ConnectionParameter(
+                                                    new ConnectionParameterKey(connectionKey, "baseUrl"),
+                                                    "/api"
+                                            ),
+                                            new ConnectionParameter(
+                                                    new ConnectionParameterKey(connectionKey, "tls"),
+                                                    "N"
+                                            )
                                     )
-                            )
                                     .collect(Collectors.toList())
                     )
                     .build();

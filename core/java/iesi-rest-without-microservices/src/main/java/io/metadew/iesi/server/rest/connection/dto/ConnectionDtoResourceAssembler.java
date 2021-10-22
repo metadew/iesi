@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.connection.dto;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.server.rest.connection.ConnectionsController;
-import org.modelmapper.ModelMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -18,11 +17,8 @@ import java.util.stream.Stream;
 @ConditionalOnWebApplication
 public class ConnectionDtoResourceAssembler extends RepresentationModelAssemblerSupport<Connection, ConnectionDto> {
 
-    private ModelMapper modelMapper;
-
     public ConnectionDtoResourceAssembler() {
         super(ConnectionsController.class, ConnectionDto.class);
-        this.modelMapper = new ModelMapper();
     }
 
     @Override

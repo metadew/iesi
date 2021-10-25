@@ -15,6 +15,7 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
     private static final String USER_KEY = "user";
     private static final String PASSWORD_KEY = "password";
     private static final String SCHEMA_KEY = "schema";
+    private static final String INIT_SQL = "initSql";
     private static GenericDatabaseService instance;
 
     private GenericDatabaseService() {
@@ -33,12 +34,13 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
         Optional<String> password = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, PASSWORD_KEY);
         Optional<String> schema = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, SCHEMA_KEY);
         String connectionURL = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, CONNECTION_URL_KEY);
+        Optional<String> initSql = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, INIT_SQL);
 
         GenericDatabaseConnection genericDatabaseConnection = new GenericDatabaseConnection(
                 connectionURL,
                 username.orElse(null),
                 password.orElse(null),
-                null,
+                initSql.orElse(null),
                 schema.orElse(null)
         );
         return new GenericDatabase(genericDatabaseConnection);

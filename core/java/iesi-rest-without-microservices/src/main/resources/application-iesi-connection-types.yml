@@ -447,6 +447,11 @@ iesi:
             type: string
             mandatory: false
             encrypted: true
+          initSql:
+            description: connectionInitSql query
+            type: string
+            mandatory: false
+            encrypted: false
       fwk.alias:
         description: Connection alias only to be used for impersonation
         parameters:

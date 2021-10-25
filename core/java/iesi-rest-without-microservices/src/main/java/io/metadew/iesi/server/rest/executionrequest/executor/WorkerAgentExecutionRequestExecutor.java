@@ -85,7 +85,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
                     "./../bin/iesi-execute.sh",
                     "-scriptExecutionRequestKey",
                     scriptExecutionRequest.getMetadataKey().getId()
-            ).;
+            );
         }
         builder.directory(scriptExecutionWorker.getPath().toFile());
         Process process = builder.start();

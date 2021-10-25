@@ -41,11 +41,11 @@ public class HttpComponentService implements IHttpComponentService {
                 .headers(httpComponent.getHeaders().stream().collect(Collectors.toMap(HttpHeader::getName, HttpHeader::getValue)))
                 .queryParameters(httpComponent.getQueryParameters().stream().collect(Collectors.toMap(HttpQueryParameter::getName, HttpQueryParameter::getValue)))
                 .body(body, ContentType.getByMimeType(
-                        httpComponent.getHeaders().stream()
-                                .filter(httpHeader -> httpHeader.getName().equalsIgnoreCase("Content-Type"))
-                                .findFirst()
-                                .map(HttpHeader::getValue)
-                                .orElse("text/plain")
+                                httpComponent.getHeaders().stream()
+                                        .filter(httpHeader -> httpHeader.getName().equalsIgnoreCase("Content-Type"))
+                                        .findFirst()
+                                        .map(HttpHeader::getValue)
+                                        .orElse("text/plain")
                         )
                 );
         return httpRequestBuilder.build();
@@ -70,9 +70,17 @@ public class HttpComponentService implements IHttpComponentService {
     }
 
     @Override
+    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName, Long componentVersion) {
+        Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, componentVersion)
+                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + " and version " + componentVersion));
+        HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convertAndTrace(component, actionExecution, actionParameterName);
+        return convertAndTrace(httpComponentDefinition, actionExecution, actionParameterName);
+    }
+
+    @Override
     public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName) {
-        Component component = ComponentConfiguration.getInstance().getByNameAndVersion(httpComponentReferenceName, 1L)
-                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName + "and version 1"));
+        Component component = ComponentConfiguration.getInstance().getByNameAndLatestVersion(httpComponentReferenceName)
+                .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName));
         HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convertAndTrace(component, actionExecution, actionParameterName);
         return convertAndTrace(httpComponentDefinition, actionExecution, actionParameterName);
     }
@@ -109,7 +117,7 @@ public class HttpComponentService implements IHttpComponentService {
         return httpComponent;
     }
 
-    private String resolveEndpoint(String endpoint, ActionExecution actionExecution) {
+    protected String resolveEndpoint(String endpoint, ActionExecution actionExecution) {
         String actionResolvedValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(endpoint);
         String resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, actionResolvedValue);
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
@@ -118,7 +126,7 @@ public class HttpComponentService implements IHttpComponentService {
         return convertEndpointDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 
-    private String resolveType(String type, ActionExecution actionExecution) {
+    protected String resolveType(String type, ActionExecution actionExecution) {
         String actionResolvedValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(type);
         String resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, actionResolvedValue);
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();

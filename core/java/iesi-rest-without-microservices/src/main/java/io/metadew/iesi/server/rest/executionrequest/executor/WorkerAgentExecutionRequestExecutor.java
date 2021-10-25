@@ -82,10 +82,10 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
             );
         } else {
             builder.command(
-                    "./bin/iesi-execute.sh",
+                    "./../bin/iesi-execute.sh",
                     "-scriptExecutionRequestKey",
                     scriptExecutionRequest.getMetadataKey().getId()
-            );
+            ).;
         }
         builder.directory(scriptExecutionWorker.getPath().toFile());
         Process process = builder.start();

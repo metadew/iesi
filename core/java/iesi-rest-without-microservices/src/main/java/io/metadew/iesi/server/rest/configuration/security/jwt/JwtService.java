@@ -7,10 +7,13 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
 import io.metadew.iesi.server.rest.user.AuthenticationResponse;
+import io.metadew.iesi.server.rest.user.IUserService;
+import io.metadew.iesi.server.rest.user.UserDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -28,15 +31,18 @@ public class JwtService {
 
     private final IesiUserDetailsManager iesiUserDetailsManager;
 
+    private final IUserService userService;
+
     @Value("${iesi.security.jwt.secret}")
     private String secret;
 
     @Value("${iesi.security.jwt.expiry-date}")
     private Long accessTokenExpiryDate;
 
-    public JwtService(Clock clock, IesiUserDetailsManager iesiUserDetailsManager) {
+    public JwtService(Clock clock, IesiUserDetailsManager iesiUserDetailsManager, IUserService userService) {
         this.clock = clock;
         this.iesiUserDetailsManager = iesiUserDetailsManager;
+        this.userService = userService;
     }
 
     private DecodedJWT verify(String token) {
@@ -66,7 +72,12 @@ public class JwtService {
                 .withExpiresAt(Timestamp.valueOf(expiresAt))
                 .withClaim("uuid", ((IesiUserDetails) authentication.getPrincipal()).getId().toString())
                 .sign(algorithm);
-        return new AuthenticationResponse(token, ChronoUnit.SECONDS.between(now, expiresAt));
+        UserDto userDto = userService.get(((IesiUserDetails) authentication.getPrincipal()).getId())
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format("Cannot find user %s (%s)",
+                                ((IesiUserDetails) authentication.getPrincipal()).getId().toString(),
+                                ((IesiUserDetails) authentication.getPrincipal()).getUsername())));
+        return new AuthenticationResponse(token, ChronoUnit.SECONDS.between(now, expiresAt), userDto.getRoles());
     }
 }
 

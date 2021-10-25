@@ -61,7 +61,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                         new Connection(
                                 connectionKey,
                                 securityGroupKey,
-                                cachedRowSet.getString("SECURITY_GROUP_NAME"),
+                                cachedRowSet.getString("SECURITY_GROUP_NM"),
                                 cachedRowSet.getString("CONN_TYP_NM"),
                                 cachedRowSet.getString("CONN_DSC"), connectionParameters));
             }
@@ -73,7 +73,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     @Override
     public List<Connection> getAll() {
         List<Connection> connections = new ArrayList<>();
-        String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC, SECURITY_GROUP_ID, SECURITY_GROUP_NAME from " + getMetadataRepository().getTableNameByLabel("Connections")
+        String query = "select CONN_NM, CONN_TYP_NM, CONN_DSC, SECURITY_GROUP_ID, SECURITY_GROUP_NM from " + getMetadataRepository().getTableNameByLabel("Connections")
                 + " order by CONN_NM ASC";
         CachedRowSet crs = getMetadataRepository().executeQuery(query, "reader");
         try {
@@ -88,7 +88,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                     connections.add(new Connection(
                             connectionKey,
                             securityGroupKey,
-                            crs.getString("SECURITY_GROUP_NAME"),
+                            crs.getString("SECURITY_GROUP_NM"),
                             crs.getString("CONN_TYP_NM"),
                             crs.getString("CONN_DSC"),
                             ConnectionParameterConfiguration.getInstance().getByConnection(connectionKey)));

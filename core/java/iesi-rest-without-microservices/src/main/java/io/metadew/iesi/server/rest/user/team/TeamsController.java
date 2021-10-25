@@ -251,7 +251,7 @@ public class TeamsController {
         }
 
         if (checkRoleMembership(team, roleUuid)) {
-            roleService.addUser(new RoleKey(roleUuid), new UserKey(rolePostDto.getId()));
+            teamService.addUserToRole(team.getMetadataKey(), new RoleKey(roleUuid), new UserKey(rolePostDto.getId()));
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.badRequest().build();
@@ -275,7 +275,7 @@ public class TeamsController {
             throw new AccessDeniedException(String.format("User %s cannot add a user to the team %s", user.getUsername(), team.getTeamName()));
         }
         if (checkRoleMembership(team, roleUuid)) {
-            roleService.removeUser(new RoleKey(roleUuid), new UserKey(userUuid));
+            teamService.removeUserFromRole(team.getMetadataKey(), new RoleKey(roleUuid), new UserKey(userUuid));
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.badRequest().build();

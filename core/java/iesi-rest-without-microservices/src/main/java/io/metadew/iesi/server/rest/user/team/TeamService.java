@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.user.team;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
+import io.metadew.iesi.metadata.service.user.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -16,13 +17,16 @@ import java.util.UUID;
 public class TeamService implements ITeamService {
 
     private final ITeamDtoRepository teamDtoRepository;
+    private final RoleService roleService;
 
     private final io.metadew.iesi.metadata.service.user.TeamService rawTeamService;
 
     @Autowired
     public TeamService(ITeamDtoRepository teamDtoRepository,
+                       RoleService roleService,
                        io.metadew.iesi.metadata.service.user.TeamService rawTeamService) {
         this.teamDtoRepository = teamDtoRepository;
+        this.roleService = roleService;
         this.rawTeamService = rawTeamService;
     }
 
@@ -118,6 +122,18 @@ public class TeamService implements ITeamService {
     @CacheEvict(value = "users", allEntries = true)
     public void removeSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {
         rawTeamService.removeSecurityGroup(teamKey, securityGroupKey);
+    }
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    public void removeUserFromRole(TeamKey teamKey, RoleKey roleKey, UserKey userKey) {
+        roleService.removeUser(roleKey, userKey);
+    }
+
+    @Override
+    @CacheEvict(value = "users", allEntries = true)
+    public void addUserToRole(TeamKey teamKey, RoleKey roleKey, UserKey userKey) {
+        roleService.addUser(roleKey, userKey);
     }
 
 }

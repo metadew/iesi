@@ -47,4 +47,10 @@ public interface ITeamService {
 
     void removeSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey);
 
+    void removeUserFromRole(TeamKey teamKey, RoleKey roleKey, UserKey userKey);
+
+    void addUserToRole(TeamKey teamKey, RoleKey roleKey, UserKey userKey);
+
+
+
 }

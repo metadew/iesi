@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.actiontypes;
 
 import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@Tag(name = "actionTypes", description = "Everything about action types")
 @RequestMapping("/action-types")
 @ConditionalOnWebApplication
 public class ActionTypeController {

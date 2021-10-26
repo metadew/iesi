@@ -18,9 +18,10 @@ public class ApiError {
     private LocalDateTime timestamp;
     private String message;
 
-    public ApiError(HttpStatus status, Throwable ex) {
+    public ApiError(HttpStatus status, Throwable ex, LocalDateTime timestamp) {
         super();
-        this.timestamp = LocalDateTime.now();
+        // TODO: inject clock bean
+        this.timestamp = timestamp;
         this.status = status.value();
         this.message = ex.getMessage();
     }

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ActiveProfiles({"http", "test", "security"})
+@ActiveProfiles({"test"})
 @DirtiesContext
 class DatasetsControllerSecurityTest {
 

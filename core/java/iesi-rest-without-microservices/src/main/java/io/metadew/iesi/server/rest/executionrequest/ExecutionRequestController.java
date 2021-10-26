@@ -16,7 +16,6 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
@@ -31,6 +30,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@Tag(name = "execution requests", description = "Everything about execution requests")
 @RequestMapping("/execution-requests")
 @ConditionalOnWebApplication
 public class ExecutionRequestController {
@@ -49,19 +48,24 @@ public class ExecutionRequestController {
     private final PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage;
     private final IesiSecurityChecker iesiSecurityChecker;
     private final ScriptConfiguration scriptConfiguration;
+    private final Clock clock;
     private final UserDtoRepository userDtoRepository;
 
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
                                ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler,
-                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage, IesiSecurityChecker iesiSecurityChecker,
-                               ScriptConfiguration scriptConfiguration, UserDtoRepository userDtoRepository) {
+                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage,
+                               IesiSecurityChecker iesiSecurityChecker,
+                               Clock clock,
+                               ScriptConfiguration scriptConfiguration,
+                               UserDtoRepository userDtoRepository) {
         this.executionRequestService = executionRequestService;
         this.executionRequestDtoModelAssembler = executionRequestDtoModelAssembler;
         this.executionRequestDtoResourceAssemblerPage = executionRequestDtoResourceAssemblerPage;
         this.iesiSecurityChecker = iesiSecurityChecker;
         this.scriptConfiguration = scriptConfiguration;
+        this.clock = clock;
         this.userDtoRepository = userDtoRepository;
     }
 
@@ -149,7 +153,7 @@ public class ExecutionRequestController {
                         .map(scriptExecutionRequestPostDto -> scriptExecutionRequestPostDto.convertToEntity(newExecutionRequestId))
                         .collect(Collectors.toList()))
                 .executionRequestStatus(ExecutionRequestStatus.NEW)
-                .requestTimestamp(LocalDateTime.now())
+                .requestTimestamp(LocalDateTime.now(clock))
                 .build();
 
         ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(authenticatedExecutionRequest);

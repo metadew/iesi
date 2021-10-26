@@ -1,12 +1,14 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
 import io.metadew.iesi.metadata.definition.user.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.UUID;
 
+@Data
 public class IesiUserDetails implements UserDetails {
 
     private final User user;

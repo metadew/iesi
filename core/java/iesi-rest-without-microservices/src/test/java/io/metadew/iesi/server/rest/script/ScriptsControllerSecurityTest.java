@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.configuration.security.jwt;
+package io.metadew.iesi.server.rest.script;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;

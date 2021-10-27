@@ -1,18 +1,12 @@
 package io.metadew.iesi.server.rest.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.datatypes.dataset.Dataset;
-import io.metadew.iesi.datatypes.dataset.DatasetKey;
-import io.metadew.iesi.datatypes.dataset.IDatasetService;
-import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.metadata.service.user.TeamService;
-import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
-import io.metadew.iesi.server.rest.dataset.*;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +38,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ActiveProfiles({"http", "test", "security"})
+@ActiveProfiles({"test"})
 @DirtiesContext
 class UsersControllerSecurityTest {
 
@@ -63,9 +57,9 @@ class UsersControllerSecurityTest {
     @MockBean
     private TeamService teamService;
     @MockBean
-    private UserService userService;
+    private io.metadew.iesi.metadata.service.user.UserService userService;
     @MockBean
-    private UserDtoService userDtoService;
+    private UserService userDtoService;
     @MockBean
     private PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
 
@@ -167,7 +161,7 @@ class UsersControllerSecurityTest {
                                 false,
                                 false,
                                 new HashSet<>())
-                        ));
+                ));
         userController.fetch(uuid);
     }
 

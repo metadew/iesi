@@ -85,7 +85,7 @@ class ExecutionRequestControllerTest {
                                 .impersonations(new HashSet<>())
                                 .parameters(new HashSet<>())
                                 .build()
-                ).collect(Collectors.toSet()))
+                ).collect(Collectors.toList()))
                 .context("context")
                 .description("description")
                 .email("email")

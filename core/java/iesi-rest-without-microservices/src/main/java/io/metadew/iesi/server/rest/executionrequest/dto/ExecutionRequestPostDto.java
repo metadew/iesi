@@ -6,7 +6,9 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -24,7 +26,7 @@ public class ExecutionRequestPostDto extends RepresentationModel<ExecutionReques
     private String scope;
     private String context;
     private String email;
-    private Set<ScriptExecutionRequestPostDto> scriptExecutionRequests = new HashSet<>();
+    private List<ScriptExecutionRequestPostDto> scriptExecutionRequests = new ArrayList<>();
     private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
 
 }

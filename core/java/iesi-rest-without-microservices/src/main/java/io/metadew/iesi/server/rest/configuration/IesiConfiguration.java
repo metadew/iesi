@@ -108,13 +108,13 @@ public class IesiConfiguration {
         return UserConfiguration.getInstance();
     }
 
-    @Bean
+    @Bean("rawUserService")
     @DependsOn("frameworkInstance")
     public UserService userService() {
         return UserService.getInstance();
     }
 
-    @Bean
+    @Bean("rawTeamService")
     @DependsOn("frameworkInstance")
     public TeamService teamService() {
         return TeamService.getInstance();
@@ -126,7 +126,7 @@ public class IesiConfiguration {
         return RoleService.getInstance();
     }
 
-    @Bean
+    @Bean("rawSecurityGroupService")
     @DependsOn("frameworkInstance")
     public SecurityGroupService securityGroupService() {
         return SecurityGroupService.getInstance();

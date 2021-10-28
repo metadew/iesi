@@ -8,7 +8,6 @@ import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoService;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
@@ -26,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@Tag(name = "connections", description = "Everything about connections")
 @RequestMapping("/connections")
 @ConditionalOnWebApplication
 public class ConnectionsController {

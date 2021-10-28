@@ -11,7 +11,6 @@ import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,7 +28,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     private static final Logger LOGGER = LogManager.getLogger();
     private static ComponentConfiguration INSTANCE;
 
-    public synchronized static ComponentConfiguration getInstance() {
+    public static synchronized ComponentConfiguration getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ComponentConfiguration();
         }
@@ -51,16 +50,55 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             if (crsComponent.size() == 0) {
                 return Optional.empty();
             } else if (crsComponent.size() > 1) {
-                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component {0}. Returning first implementation.", name));
+                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component %s. Returning the version provided", name));
             }
             crsComponent.next();
             ComponentKey componentKey = new ComponentKey(crsComponent.getString("COMP_ID"), version);
-            // get version
             Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().get(new ComponentVersionKey(componentKey));
+
+            if (!componentVersion.isPresent()) {
+                return Optional.empty();
+            }
+            List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
+            List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
+
+            String componentType = crsComponent.getString("COMP_TYP_NM");
+            String componentDescription = crsComponent.getString("COMP_DSC");
+            String componentName = crsComponent.getString("COMP_NM");
+            crsComponent.close();
+            return Optional.of(new Component(componentKey,
+                    componentType,
+                    componentName,
+                    componentDescription,
+                    componentVersion.get(),
+                    componentParameters,
+                    componentAttributes));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<Component> getByNameAndLatestVersion(String name) {
+        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
+                + getMetadataRepository().getTableNameByLabel("Components")
+                + " where COMP_NM = " + SQLTools.getStringForSQL(name);
+        CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
+        try {
+            if (crsComponent.size() == 0) {
+                return Optional.empty();
+            } else if (crsComponent.size() > 1) {
+                LOGGER.warn(MessageFormat.format("component.version=found multiple implementations for component %s. Returning latest implementation.", name));
+            }
+
+            crsComponent.next();
+            Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance()
+                    .getLatestVersionByComponentId(crsComponent.getString("COMP_ID"));
+
             if (!componentVersion.isPresent()) {
                 return Optional.empty();
             }
 
+            ComponentKey componentKey = componentVersion.get().getMetadataKey().getComponentKey();
             List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
             List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
 
@@ -93,7 +131,6 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             }
             crsComponent.next();
 
-            // get version
             Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().get(new ComponentVersionKey(componentKey));
             if (!componentVersion.isPresent()) {
                 return Optional.empty();
@@ -262,8 +299,10 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     }
 
     public Optional<Component> get(String componentId) {
-        return get(new ComponentKey(componentId,
-                ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentId)));
+        ComponentVersion componentVersion = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentId).orElseThrow(
+                () -> new RuntimeException(String.format("No versions found with the componentId %s ", componentId))
+        );
+        return get(componentVersion.getMetadataKey().getComponentKey());
     }
 
 

@@ -8,18 +8,20 @@ import java.net.URISyntaxException;
 
 public interface IHttpComponentService {
 
-    public HttpRequest buildHttpRequest(HttpComponent httpComponent, String body) throws URISyntaxException, HttpRequestBuilderException;
+    HttpRequest buildHttpRequest(HttpComponent httpComponent, String body) throws URISyntaxException, HttpRequestBuilderException;
 
-    public HttpRequest buildHttpRequest(HttpComponent httpComponent) throws URISyntaxException, HttpRequestBuilderException;
+    HttpRequest buildHttpRequest(HttpComponent httpComponent) throws URISyntaxException, HttpRequestBuilderException;
 
-    public HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution);
+    HttpComponent get(String httpComponentReferenceName, ActionExecution actionExecution);
 
-    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName);
+    HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName);
 
-    public String getUri(HttpComponent httpComponent);
+    HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName, Long version);
 
-    public HttpComponent convert(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution);
+    String getUri(HttpComponent httpComponent);
 
-    public HttpComponent convertAndTrace(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution, String actionParameterName);
+    HttpComponent convert(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution);
+
+    HttpComponent convertAndTrace(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution, String actionParameterName);
 
 }

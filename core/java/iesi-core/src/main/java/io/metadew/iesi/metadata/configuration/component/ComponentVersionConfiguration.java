@@ -146,7 +146,7 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
     }
 
     public Optional<ComponentVersion> getLatestVersionByComponentId(String componentId) {
-        String queryComponentVersion = "select max(COMP_VRS_NB) as \"MAX_VRS_NB\", COMP_VRS_DSC from "
+        String queryComponentVersion = "select max(COMP_VRS_NB) as \"MAX_VRS_NB\", max(COMP_VRS_DSC) as \"MAX_VRS_DSC\" from "
                 + getMetadataRepository().getTableNameByLabel("ComponentVersions") +
                 " where COMP_ID = " + SQLTools.getStringForSQL(componentId) + ";";
         CachedRowSet crsComponentVersion = getMetadataRepository().executeQuery(queryComponentVersion, "reader");
@@ -155,7 +155,7 @@ public class ComponentVersionConfiguration extends Configuration<ComponentVersio
                 throw new RuntimeException(MessageFormat.format("Component with ID {0} does not exeist, cannot find latest version", componentId));
             } else {
                 crsComponentVersion.next();
-                String description = crsComponentVersion.getString("COMP_VRS_DSC");
+                String description = crsComponentVersion.getString("MAX_VRS_DSC");
                 long componentVersionNumber = crsComponentVersion.getLong("MAX_VRS_NB");
                 ComponentVersionKey componentVersionKey = new ComponentVersionKey(new ComponentKey(componentId, componentVersionNumber));
                 ComponentVersion componentVersion = new ComponentVersion(componentVersionKey, description);

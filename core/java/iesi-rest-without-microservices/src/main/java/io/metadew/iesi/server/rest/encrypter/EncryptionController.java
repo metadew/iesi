@@ -18,7 +18,7 @@ import javax.validation.Valid;
 
 @RestController
 @Tag(name = "encrypt", description = "controller to encrypt text")
-@RequestMapping("/encrypt")
+@RequestMapping("/encryption")
 @ConditionalOnWebApplication
 public class EncryptionController {
 
@@ -28,7 +28,7 @@ public class EncryptionController {
         this.encryptionService = encryptionService;
     }
 
-    @PostMapping("")
+    @PostMapping("/encrypt")
     public EncryptDto getEncryptedPassword(@Valid @RequestBody EncryptPostDto encryptPostDto){
         return new EncryptDto(encryptionService.getEncryptedPassword(encryptPostDto.getText()));
     }

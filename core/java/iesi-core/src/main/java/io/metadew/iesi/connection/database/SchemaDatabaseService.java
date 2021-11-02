@@ -50,7 +50,6 @@ public abstract class SchemaDatabaseService<T extends SchemaDatabase> extends Da
                 .ifPresent(uniqueConstraint -> createQuery.append(",\n").append(uniqueConstraint));
         createQuery.append("\n)").append(createQueryExtras(schemaDatabase)).append(";");
 
-
         return createQuery.toString();
     }
 

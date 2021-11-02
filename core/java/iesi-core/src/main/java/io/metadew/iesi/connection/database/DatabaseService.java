@@ -365,11 +365,11 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         getPrimaryKeyConstraints(database, table)
                 .ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
         getUniqueConstraints(database, table)
-                .ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
+                .ifPresent(uniqueConstraint -> createQuery.append(",\n").append(uniqueConstraint));
 
         createQuery.append("\n);\n");
         createQuery.append(createQueryExtras(database));
-        // createQuery.append(fieldComments).append("\n\n");
+
 
         return createQuery.toString();
     }

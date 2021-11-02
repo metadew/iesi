@@ -29,7 +29,7 @@ class EncryptionControllerTest {
     private EncryptionController controller;
 
     @Test
-    void getEncryptedPassword() {
-        controller.getEncryptedPassword(new EncryptPostDto("password"));
+    void getEncryptedText() {
+        controller.getEncryptedText(new EncryptPostDto("password"));
     }
 }

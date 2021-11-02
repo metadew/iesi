@@ -29,7 +29,7 @@ public class EncryptionController {
     }
 
     @PostMapping("/encrypt")
-    public EncryptDto getEncryptedPassword(@Valid @RequestBody EncryptPostDto encryptPostDto){
-        return new EncryptDto(encryptionService.getEncryptedPassword(encryptPostDto.getText()));
+    public EncryptDto getEncryptedText(@Valid @RequestBody EncryptPostDto encryptPostDto){
+        return new EncryptDto(encryptionService.getEncryptedText(encryptPostDto.getText()));
     }
 }

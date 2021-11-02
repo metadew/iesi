@@ -20,7 +20,7 @@ public class EncryptionService implements IEncryptionService{
     }
 
     @Override
-    public String getEncryptedPassword(String text) {
+    public String getEncryptedText(String text) {
         return frameworkCrypto.encrypt(text);
     }
 

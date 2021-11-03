@@ -109,7 +109,6 @@ class ComponentConfigurationTest {
 
     @Test
     void componentInsertAlreadyExistsTest() {
-        System.out.println("SECURITY GROUP NAME : " + component1.getSecurityGroupName());
         ComponentConfiguration.getInstance().insert(component1);
         assertThrows(MetadataAlreadyExistsException.class, () -> ComponentConfiguration.getInstance().insert(component1));
     }

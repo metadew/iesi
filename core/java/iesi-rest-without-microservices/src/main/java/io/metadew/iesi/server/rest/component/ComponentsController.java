@@ -66,7 +66,7 @@ public class ComponentsController {
 
         if (componentDtoPage.hasContent())
             return componentDtoPagedResourcesAssembler.toModel(componentDtoPage, componentDtoResourceAssembler::toModel);
-        //noinspection unchecked
+
         return (PagedModel<ComponentDto>) componentDtoPagedResourcesAssembler.toEmptyModel(componentDtoPage, ComponentDto.class);
     }
 
@@ -84,7 +84,7 @@ public class ComponentsController {
         Page<ComponentDto> componentDtoPage = componentDtoService.getByName(SecurityContextHolder.getContext().getAuthentication(), pageable, name);
         if (componentDtoPage.hasContent())
             return componentDtoPagedResourcesAssembler.toModel(componentDtoPage, componentDtoResourceAssembler::toModel);
-        //noinspection unchecked
+
         return (PagedModel<ComponentDto>) componentDtoPagedResourcesAssembler.toEmptyModel(componentDtoPage, ComponentDto.class);
     }
 

@@ -2,8 +2,6 @@ package io.metadew.iesi.server.rest.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.server.rest.Application;
-import io.metadew.iesi.server.rest.component.ComponentService;
-import io.metadew.iesi.server.rest.component.ComponentsController;
 import io.metadew.iesi.server.rest.component.dto.*;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
@@ -20,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -105,7 +104,7 @@ class ComponentsControllerSecurityTest {
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetComponentReadPrivilege() throws Exception {
         when(componentDtoService
-                .getAll(Pageable.unpaged(), new ArrayList<>()))
+                .getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         componentsController.getAll(Pageable.unpaged(), null);
     }
@@ -149,7 +148,7 @@ class ComponentsControllerSecurityTest {
     void testGetByNameComponentRead() throws Exception {
         Pageable pageable = Pageable.unpaged();
         when(componentDtoService
-                .getByName(Pageable.unpaged(), "test"))
+                .getByName(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), "test"))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         componentsController.getByName(pageable, "test");
     }
@@ -199,7 +198,7 @@ class ComponentsControllerSecurityTest {
                 .parameters(new HashSet<>())
                 .attributes(new HashSet<>())
                 .build();
-        when(componentDtoService.getByNameAndVersion("test", 1L))
+        when(componentDtoService.getByNameAndVersion(SecurityContextHolder.getContext().getAuthentication(), "test", 1L))
                 .thenReturn(Optional.of(componentDto));
         componentsController.get("test", 1L);
     }

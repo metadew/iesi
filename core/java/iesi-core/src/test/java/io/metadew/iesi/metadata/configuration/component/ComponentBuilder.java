@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ public class ComponentBuilder {
     private List<ComponentParameter> componentParameters = new ArrayList<>();
     private List<ComponentAttribute> componentAttributes = new ArrayList<>();
     private String componentID;
+    private SecurityGroupKey securityGroupKey;
+    private String securityGroupName;
     private long version;
     private String description;
     private String type;
@@ -27,6 +30,17 @@ public class ComponentBuilder {
     public ComponentBuilder(String componentID, long version) {
         this.componentID = componentID;
         this.version = version;
+    }
+
+    public ComponentBuilder securityGroupName(String securityGroupName) {
+        this.securityGroupName = securityGroupName;
+        return this;
+    }
+
+
+    public ComponentBuilder securityGroupKey(SecurityGroupKey securityGroupKey) {
+        this.securityGroupKey = securityGroupKey;
+        return this;
     }
 
     public ComponentBuilder description(String description) {
@@ -75,6 +89,8 @@ public class ComponentBuilder {
                 .map(i -> new ComponentAttributeBuilder(componentID, version, "env", "parameter" + i).build())
                 .collect(Collectors.toList()));
         return new Component(new ComponentKey(componentID, version),
+                securityGroupKey,
+                securityGroupName,
                 type == null ? "dummy" : type,
                 name == null ? "name" : name,
                 description == null ? "dummy" : description,

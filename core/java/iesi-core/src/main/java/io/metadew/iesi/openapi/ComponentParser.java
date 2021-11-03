@@ -1,11 +1,14 @@
 package io.metadew.iesi.openapi;
 
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -38,6 +41,9 @@ public class ComponentParser implements Parser<Component> {
 
     public List<Component> parse(OpenAPI openAPI) {
         List<Component> components = new ArrayList<>();
+        SecurityGroupKey securityGroupKey = SecurityGroupService.getInstance().get("PUBLIC")
+                .map(Metadata::getMetadataKey)
+                .orElseThrow(() -> new RuntimeException("could not find security group PUBLIC"));
         Paths paths = openAPI.getPaths();
         String connectionName = openAPI.getInfo().getTitle();
         Long componentVersion;
@@ -56,6 +62,7 @@ public class ComponentParser implements Parser<Component> {
             for (Entry<PathItem.HttpMethod, Operation> operationEntry : operations.entrySet()) {
 
                 components.add(createComponent(
+                        securityGroupKey,
                         componentVersion,
                         connectionName,
                         operationEntry.getValue(),
@@ -68,7 +75,7 @@ public class ComponentParser implements Parser<Component> {
         return components;
     }
 
-    public Component createComponent(Long componentVersion, String connectionName, Operation operation, String pathName, String method) {
+    public Component createComponent(SecurityGroupKey securityGroupKey, Long componentVersion, String connectionName, Operation operation, String pathName, String method) {
         List<ComponentParameter> componentParameters = new ArrayList<>();
         ComponentKey componentKey = new ComponentKey(
                 IdentifierTools.getComponentIdentifier(operation.getOperationId()),
@@ -84,6 +91,8 @@ public class ComponentParser implements Parser<Component> {
 
         return new Component(
                 componentKey,
+                securityGroupKey,
+                "PUBLIC",
                 "http.request",
                 operation.getOperationId(),
                 operation.getDescription(),

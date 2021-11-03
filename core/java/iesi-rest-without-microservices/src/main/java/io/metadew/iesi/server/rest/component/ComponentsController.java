@@ -18,6 +18,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -53,7 +54,7 @@ public class ComponentsController {
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public PagedModel<ComponentDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
         List<ComponentFilter> componentFilters = extractComponentFilterOptions(name);
-        Page<ComponentDto> componentDtoPage = componentDtoService.getAll(pageable, componentFilters);
+        Page<ComponentDto> componentDtoPage = componentDtoService.getAll(SecurityContextHolder.getContext().getAuthentication(), pageable, componentFilters);
 
         if (componentDtoPage.hasContent())
             return componentDtoPagedResourcesAssembler.toModel(componentDtoPage, componentDtoResourceAssembler::toModel);
@@ -72,7 +73,7 @@ public class ComponentsController {
     @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public PagedModel<ComponentDto> getByName(Pageable pageable, @PathVariable String name) {
-        Page<ComponentDto> componentDtoPage = componentDtoService.getByName(pageable, name);
+        Page<ComponentDto> componentDtoPage = componentDtoService.getByName(SecurityContextHolder.getContext().getAuthentication(), pageable, name);
         if (componentDtoPage.hasContent())
             return componentDtoPagedResourcesAssembler.toModel(componentDtoPage, componentDtoResourceAssembler::toModel);
         //noinspection unchecked
@@ -82,20 +83,20 @@ public class ComponentsController {
     @GetMapping("/{name}/{version}")
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     public ComponentDto get(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
-        ComponentDto component = componentDtoService.getByNameAndVersion(name, version)
+        ComponentDto component = componentDtoService.getByNameAndVersion(SecurityContextHolder.getContext().getAuthentication(), name, version)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
         return componentDtoResourceAssembler.toModel(component);
     }
 
     @PostMapping("")
     @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
-    public ComponentDto post(@Valid @RequestBody ComponentDto component) {
+    public ComponentDto post(@Valid @RequestBody ComponentDto componentDto) {
         try {
-            componentService.createComponent(component);
-            return componentDtoResourceAssembler.toModel(component.convertToEntity());
+            componentService.createComponent(componentDto);
+            return componentDtoResourceAssembler.toModel(componentDtoService.convertToEntity(componentDto));
         } catch (MetadataAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Component " + component.getName() + " already exists");
+                    "Component " + componentDto.getName() + " already exists");
         }
     }
 
@@ -116,14 +117,14 @@ public class ComponentsController {
 
     @PutMapping("/{name}/{version}")
     @PreAuthorize("hasPrivilege('COMPONENTS_WRITE')")
-    public ComponentDto put(@PathVariable String name, @PathVariable Long version, @RequestBody ComponentDto component) throws MetadataDoesNotExistException {
-        if (!component.getName().equals(name)) {
+    public ComponentDto put(@PathVariable String name, @PathVariable Long version, @RequestBody ComponentDto componentDto) throws MetadataDoesNotExistException {
+        if (!componentDto.getName().equals(name)) {
             throw new DataBadRequestException(name);
-        } else if (component.getVersion().getNumber() != version) {
+        } else if (componentDto.getVersion().getNumber() != version) {
             throw new DataBadRequestException(version);
         }
-        componentService.updateComponent(component);
-        return componentDtoResourceAssembler.toModel(component.convertToEntity());
+        componentService.updateComponent(componentDto);
+        return componentDtoResourceAssembler.toModel(componentDtoService.convertToEntity(componentDto));
 
     }
 

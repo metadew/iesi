@@ -17,6 +17,7 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.*;
 import org.apache.http.client.methods.HttpGet;
@@ -29,6 +30,7 @@ import org.powermock.reflect.Whitebox;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -236,6 +238,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -249,6 +253,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -296,6 +302,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -309,6 +317,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -380,6 +390,8 @@ class HttpComponentServiceTest {
 
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -393,6 +405,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -407,6 +421,8 @@ class HttpComponentServiceTest {
 
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion3),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",

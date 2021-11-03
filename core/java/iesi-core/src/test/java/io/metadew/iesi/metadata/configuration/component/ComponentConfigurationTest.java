@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -54,21 +56,28 @@ class ComponentConfigurationTest {
 
     @BeforeEach
     void setup() {
+        SecurityGroupKey securityGroupKey1 = new SecurityGroupKey(UUID.randomUUID());
         component1 = new ComponentBuilder("1", 1)
                 .numberOfAttributes(2)
                 .numberOfParameters(3)
+                .securityGroupKey(securityGroupKey1)
+                .securityGroupName("PUBLIC")
                 .description("test")
                 .name("comp1")
                 .build();
         component2 = new ComponentBuilder("1", 2)
                 .numberOfAttributes(2)
                 .numberOfParameters(3)
+                .securityGroupKey(securityGroupKey1)
+                .securityGroupName("PUBLIC")
                 .name("comp1")
                 .description("test")
                 .build();
         component3 = new ComponentBuilder("2", 1)
                 .numberOfAttributes(2)
                 .numberOfParameters(3)
+                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
+                .securityGroupName("PUBLIC")
                 .name("comp2")
                 .description("test")
                 .build();
@@ -100,6 +109,7 @@ class ComponentConfigurationTest {
 
     @Test
     void componentInsertAlreadyExistsTest() {
+        System.out.println("SECURITY GROUP NAME : " + component1.getSecurityGroupName());
         ComponentConfiguration.getInstance().insert(component1);
         assertThrows(MetadataAlreadyExistsException.class, () -> ComponentConfiguration.getInstance().insert(component1));
     }

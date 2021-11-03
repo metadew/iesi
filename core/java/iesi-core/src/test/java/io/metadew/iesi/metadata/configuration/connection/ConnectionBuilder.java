@@ -62,16 +62,6 @@ public class ConnectionBuilder {
     }
 
     public Connection build() {
-        if (securityGroupName == null) {
-            securityGroupName = "DEFAULT";
-        }
-
-        if (securityGroupKey == null) {
-            securityGroupKey = SecurityGroupService.getInstance().get(securityGroupName)
-                    .map(SecurityGroup::getMetadataKey)
-                    .orElseThrow(() -> new RuntimeException("Could not find Security Group with name" + securityGroupName));
-        }
-
         connectionParameters.addAll(IntStream.range(0, numberOfParameters)
                 .boxed()
                 .map(i -> new ConnectionParameterBuilder(connectionName, environmentName, "parameter" + i).build())

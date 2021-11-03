@@ -143,7 +143,7 @@ public class ComponentsController {
         ComponentDto componentDto = componentDtoService.getByNameAndVersion(null, name, version)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
         if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(),
-                IESIPrivilege.SCRIPTS_MODIFY.getPrivilege(),
+                IESIPrivilege.COMPONENTS_MODIFY.getPrivilege(),
                 componentDto.getSecurityGroupName())
         ) {
             throw new AccessDeniedException("User is not allowed to delete this component");

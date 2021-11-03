@@ -191,6 +191,7 @@ class ComponentsControllerSecurityTest {
     void testGetByNameAndVersionAdminComponentsReadPrivilege() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("test")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -203,7 +204,6 @@ class ComponentsControllerSecurityTest {
         componentsController.get("test", 1L);
     }
 
-    // create components
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -250,6 +250,7 @@ class ComponentsControllerSecurityTest {
     void testCreateComponentsWrite() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -259,7 +260,6 @@ class ComponentsControllerSecurityTest {
         componentsController.post(componentDto);
     }
 
-    // update bulk components
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -290,6 +290,7 @@ class ComponentsControllerSecurityTest {
     void testUpdateBulkNoComponentWritePrivilege() throws Exception {
         List<ComponentDto> componentDto = Collections.singletonList(ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -306,6 +307,7 @@ class ComponentsControllerSecurityTest {
     void testUpdateBulkComponentWritePrivilege() throws Exception {
         List<ComponentDto> componentDto = Collections.singletonList(ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -315,7 +317,6 @@ class ComponentsControllerSecurityTest {
         componentsController.putAll(componentDto);
     }
 
-    // update single component
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -346,6 +347,7 @@ class ComponentsControllerSecurityTest {
     void testUpdateSingleNoComponentWritePrivilege() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -362,6 +364,7 @@ class ComponentsControllerSecurityTest {
     void testUpdateSingleComponentWritePrivilege() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -408,6 +411,18 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_WRITE@PUBLIC"})
     void testDeleteByNameAndVersionComponentWritePrivilege() throws Exception {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PUBLIC")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build();
+
+        when(componentDtoService.getByNameAndVersion(null, "test", 1L)).thenReturn(Optional.of(componentDto));
+
         componentsController.delete("test", 1L);
     }
 

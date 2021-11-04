@@ -195,13 +195,33 @@ class ComponentsControllerSecurityTest {
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
-                .version(new ComponentVersionDto(1L, "version description"))
+                .version(new ComponentVersionDto(1L, "description"))
                 .parameters(new HashSet<>())
                 .attributes(new HashSet<>())
                 .build();
-        when(componentDtoService.getByNameAndVersion(SecurityContextHolder.getContext().getAuthentication(), "test", 1L))
+        when(componentDtoService.getByNameAndVersion(null, "test", 1L))
                 .thenReturn(Optional.of(componentDto));
         componentsController.get("test", 1L);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_READ@PUBLIC"})
+    void testGetByNameAndVersionWrongSecurityGroup() throws Exception {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("test")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .attributes(new HashSet<>())
+                .build();
+        when(componentDtoService.getByNameAndVersion(null, "test", 1L))
+                .thenReturn(Optional.of(componentDto));
+        assertThatThrownBy(() -> componentsController.get("test", 1L))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
@@ -234,6 +254,7 @@ class ComponentsControllerSecurityTest {
     void testCreateNoComponentsWrite() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -319,6 +340,23 @@ class ComponentsControllerSecurityTest {
 
     @Test
     @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_WRITE@PUBLIC"})
+    void testUpdateBulkComponentWrongSecurityGroup() throws Exception {
+        List<ComponentDto> componentDto = Collections.singletonList(ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build());
+        assertThatThrownBy(() -> componentsController.putAll(componentDto))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
                     "SCRIPTS_READ@PUBLIC",
                     //"COMPONENTS_WRITE@PUBLIC",
@@ -372,6 +410,23 @@ class ComponentsControllerSecurityTest {
                 .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
                 .build();
         componentsController.put("component", 1L, componentDto);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_WRITE@PUBLIC"})
+    void testUpdateSingleComponentWrongSecurityGroup() throws Exception {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build();
+        assertThatThrownBy(() -> componentsController.put("component", 1L, componentDto))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test

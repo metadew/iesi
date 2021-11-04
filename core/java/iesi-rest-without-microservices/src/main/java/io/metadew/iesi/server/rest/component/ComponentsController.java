@@ -92,9 +92,8 @@ public class ComponentsController {
     @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
     @PostAuthorize("hasPrivilege('COMPONENTS_READ', returnObject.securityGroupName)")
     public ComponentDto get(@PathVariable String name, @PathVariable Long version) throws MetadataDoesNotExistException {
-        ComponentDto component = componentDtoService.getByNameAndVersion(SecurityContextHolder.getContext().getAuthentication(), name, version)
+        return componentDtoService.getByNameAndVersion(null, name, version)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
-        return componentDtoResourceAssembler.toModel(component);
     }
 
     @PostMapping("")

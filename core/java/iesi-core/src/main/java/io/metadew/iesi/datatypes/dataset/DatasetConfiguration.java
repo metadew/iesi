@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.metadata.configuration.Configuration;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.AllArgsConstructor;
@@ -217,6 +218,9 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
 
     @Override
     public void insert(Dataset dataset) {
+        if (exists(dataset.getMetadataKey())) {
+            throw new MetadataAlreadyExistsException(dataset);
+        }
         getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_QUERY,
                 SQLTools.getStringForSQL(dataset.getMetadataKey().getUuid()),
                 SQLTools.getStringForSQL(dataset.getSecurityGroupKey().getUuid()),

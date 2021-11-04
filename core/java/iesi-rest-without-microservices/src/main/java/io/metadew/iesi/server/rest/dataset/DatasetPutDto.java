@@ -18,6 +18,8 @@ public class DatasetPutDto {
 
     @NotEmpty
     private UUID uuid;
+    @NotBlank
+    private String securityGroupName;
 
     @NotBlank
     private String name;

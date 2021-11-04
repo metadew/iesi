@@ -6,10 +6,15 @@ import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
+import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
+import io.metadew.iesi.server.rest.dataset.dto.DatasetDtoModelAssembler;
+import io.metadew.iesi.server.rest.dataset.dto.DatasetPostDto;
+import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoService;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -23,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -109,7 +115,7 @@ class DatasetsControllerSecurityTest {
             authorities = {"DATASETS_READ@PUBLIC"})
     void testGetDatasetReadPrivilege() {
         when(datasetDtoService
-                .fetchAll(Pageable.unpaged(), new HashSet<>()))
+                .fetchAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new HashSet<>()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         datasetController.getAll(Pageable.unpaged(), null);
     }
@@ -152,7 +158,7 @@ class DatasetsControllerSecurityTest {
     void testGetImplementationsByDatasetUUIDReadPrivilege() {
         UUID datasetUuid = UUID.randomUUID();
         when(datasetDtoService
-                .fetchImplementationsByDatasetUuid(datasetUuid))
+                .fetchImplementationsByDatasetUuid(SecurityContextHolder.getContext().getAuthentication(), datasetUuid))
                 .thenReturn(new ArrayList<>());
         datasetController.getImplementationsByDatasetUuid(datasetUuid);
     }
@@ -196,7 +202,7 @@ class DatasetsControllerSecurityTest {
         UUID datasetUuid = UUID.randomUUID();
         UUID datasetImplementationUuid = UUID.randomUUID();
         when(datasetDtoService
-                .fetchImplementationByUuid(datasetImplementationUuid))
+                .fetchImplementationByUuid(SecurityContextHolder.getContext().getAuthentication(), datasetImplementationUuid))
                 .thenReturn(Optional.of(new InMemoryDatasetImplementationDto()));
         datasetController.getImplementationByUuid(datasetUuid, datasetImplementationUuid);
     }
@@ -243,12 +249,16 @@ class DatasetsControllerSecurityTest {
                 .thenReturn(Optional.of(
                         new Dataset(
                                 new DatasetKey(uuid),
+                                new SecurityGroupKey(UUID.randomUUID()),
+                                "PUBLIC",
                                 "dataset",
                                 new HashSet<>()
                         )));
         when(datasetDtoModelAssembler.toModel(
                 new Dataset(
                         new DatasetKey(uuid),
+                        new SecurityGroupKey(UUID.randomUUID()),
+                        "PUBLIC",
                         "dataset",
                         new HashSet<>()
                 )))
@@ -298,7 +308,7 @@ class DatasetsControllerSecurityTest {
             authorities = {"DATASETS_READ@PUBLIC"})
     void testGetImplementationByUuidDatasetRead() {
         UUID uuid = UUID.randomUUID();
-        when(datasetDtoService.fetchImplementationsByDatasetUuid(uuid))
+        when(datasetDtoService.fetchImplementationsByDatasetUuid(SecurityContextHolder.getContext().getAuthentication(), uuid))
                 .thenReturn(new ArrayList<>()
                 );
         datasetController.getImplementationsByDatasetUuid(uuid);

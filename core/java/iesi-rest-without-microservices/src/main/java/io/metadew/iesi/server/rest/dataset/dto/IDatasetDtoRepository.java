@@ -1,11 +1,23 @@
 package io.metadew.iesi.server.rest.dataset.dto;
 
-import io.metadew.iesi.server.rest.dataset.DatasetDto;
+
+import io.metadew.iesi.server.rest.dataset.DatasetFilter;
+import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public interface IDatasetDtoRepository {
 
-    Page<DatasetDto> fetchAll(Pageable pageable);
+    Page<DatasetDto> fetchAll(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters);
+
+    List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(Authentication authentication, UUID datasetUuid);
+
+    Optional<DatasetImplementationDto> fetchImplementationByUuid(Authentication authentication, UUID uuid);
 
 }

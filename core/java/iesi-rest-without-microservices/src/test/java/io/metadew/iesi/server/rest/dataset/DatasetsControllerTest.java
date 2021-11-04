@@ -12,10 +12,15 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
+import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
+import io.metadew.iesi.server.rest.dataset.dto.DatasetDtoModelAssembler;
+import io.metadew.iesi.server.rest.dataset.dto.DatasetPostDto;
+import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoService;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelPostDto;
@@ -39,6 +44,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -99,7 +105,7 @@ class DatasetsControllerTest {
                 Pageable.unpaged(),
                 2);
         when(datasetDtoService
-                .fetchAll(Pageable.unpaged(), new HashSet<>()))
+                .fetchAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new HashSet<>()))
                 .thenReturn(page);
 
         when(datasetDtoModelAssembler.toModel(datasetDto1))
@@ -130,7 +136,7 @@ class DatasetsControllerTest {
                 Pageable.unpaged(),
                 2);
         when(datasetDtoService
-                .fetchAll(Pageable.unpaged(), new HashSet<>()))
+                .fetchAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new HashSet<>()))
                 .thenReturn(page);
 
         PagedModel<DatasetDto> pagedModel = new PagedModel<>(
@@ -155,6 +161,8 @@ class DatasetsControllerTest {
         UUID uuid = UUID.randomUUID();
         Dataset dataset = new Dataset(
                 new DatasetKey(uuid),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "dataset",
                 new HashSet<>()
         );
@@ -191,7 +199,7 @@ class DatasetsControllerTest {
         List<DatasetImplementationDto> datasetImplementationDtoList = new ArrayList<>();
         datasetImplementationDtoList.add(new InMemoryDatasetImplementationDto());
 
-        when(datasetDtoService.fetchImplementationsByDatasetUuid(uuid))
+        when(datasetDtoService.fetchImplementationsByDatasetUuid(SecurityContextHolder.getContext().getAuthentication(), uuid))
                 .thenReturn(datasetImplementationDtoList);
 
         assertThat(datasetController.getImplementationsByDatasetUuid(uuid))
@@ -204,7 +212,7 @@ class DatasetsControllerTest {
     void testGetImplementationsByDatasetUuidNotFound() {
         UUID uuid = UUID.randomUUID();
 
-        when(datasetDtoService.fetchImplementationsByDatasetUuid(uuid))
+        when(datasetDtoService.fetchImplementationsByDatasetUuid(SecurityContextHolder.getContext().getAuthentication(), uuid))
                 .thenReturn(null);
 
         assertThatThrownBy(() -> datasetController.get(uuid))
@@ -219,7 +227,7 @@ class DatasetsControllerTest {
 
         DatasetImplementationDto datasetImplementationDto = new InMemoryDatasetImplementationDto();
 
-        when(datasetDtoService.fetchImplementationByUuid(uuid))
+        when(datasetDtoService.fetchImplementationByUuid(SecurityContextHolder.getContext().getAuthentication(), uuid))
                 .thenReturn(Optional.of(datasetImplementationDto));
 
         assertThat(datasetController.getImplementationByUuid(UUID.randomUUID(), uuid))
@@ -232,7 +240,7 @@ class DatasetsControllerTest {
     void testGetImplementationByUuidNotFound() {
         UUID uuid = UUID.randomUUID();
 
-        when(datasetDtoService.fetchImplementationByUuid(uuid))
+        when(datasetDtoService.fetchImplementationByUuid(SecurityContextHolder.getContext().getAuthentication(), uuid))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> datasetController.getImplementationByUuid(UUID.randomUUID(), uuid))

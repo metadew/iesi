@@ -13,6 +13,8 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
+import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoRepository;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
@@ -76,7 +78,7 @@ class DatasetDtoRepositoryTest {
         datasetConfiguration.insert(dataset);
         Pageable pageable = PageRequest.of(0, 2);
         assertThat(
-                datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
+                datasetDtoRepository.fetchAll(null, pageable, new HashSet<>()))
                 .containsOnly(datasetDto);
     }
 
@@ -87,7 +89,7 @@ class DatasetDtoRepositoryTest {
         datasetConfiguration.insert(dataset);
 
         Pageable pageable = PageRequest.of(0, 2);
-        assertThat(datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
+        assertThat(datasetDtoRepository.fetchAll(null, pageable, new HashSet<>()))
                 .containsOnly((DatasetDto) dataset1Info.get("datasetDto"));
     }
 
@@ -97,7 +99,7 @@ class DatasetDtoRepositoryTest {
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
-        assertThat(datasetDtoRepository.fetchImplementationByUuid(((DatasetImplementation) dataset1Info.get("datasetImplementation1")).getMetadataKey().getUuid()))
+        assertThat(datasetDtoRepository.fetchImplementationByUuid(null, ((DatasetImplementation) dataset1Info.get("datasetImplementation1")).getMetadataKey().getUuid()))
                 .hasValue((DatasetImplementationDto) dataset1Info.get("datasetImplementationDto1"));
     }
 
@@ -107,7 +109,7 @@ class DatasetDtoRepositoryTest {
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
-        assertThat(datasetDtoRepository.fetchImplementationByUuid(UUID.randomUUID()))
+        assertThat(datasetDtoRepository.fetchImplementationByUuid(null, UUID.randomUUID()))
                 .isEmpty();
     }
 
@@ -117,7 +119,7 @@ class DatasetDtoRepositoryTest {
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
-        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
+        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(null, ((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
                 .containsOnly((DatasetImplementationDto) dataset1Info.get("datasetImplementationDto1"),
                         (DatasetImplementationDto) dataset1Info.get("datasetImplementationDto0"));
     }
@@ -128,7 +130,7 @@ class DatasetDtoRepositoryTest {
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
-        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
+        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(null, ((Dataset) dataset1Info.get("dataset")).getMetadataKey().getUuid()))
                 .doesNotContain((DatasetImplementationDto) dataset1Info.get("datasetImplementationDto3"),
                         (DatasetImplementationDto) dataset1Info.get("datasetImplementationDto4"));
     }
@@ -139,7 +141,7 @@ class DatasetDtoRepositoryTest {
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
-        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(UUID.randomUUID())
+        assertThat(datasetDtoRepository.fetchImplementationsByDatasetUuid(null, UUID.randomUUID())
                 .isEmpty());
     }
 
@@ -172,7 +174,7 @@ class DatasetDtoRepositoryTest {
                 .build();
         Pageable pageable = PageRequest.of(1, 2);
         assertThat(
-                datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
+                datasetDtoRepository.fetchAll(null, pageable, new HashSet<>()))
                 .containsOnly(datasetDto3);
     }
 
@@ -213,6 +215,7 @@ class DatasetDtoRepositoryTest {
                 .build();
         assertThat(
                 datasetDtoRepository.fetchAll(
+                        null,
                         Pageable.unpaged(),
                         Stream.of(
                                 new DatasetFilter(DatasetFilterOption.NAME, "dataset", false)
@@ -220,6 +223,7 @@ class DatasetDtoRepositoryTest {
                 .containsOnly(datasetDto1, datasetDto2, datasetDto3);
         assertThat(
                 datasetDtoRepository.fetchAll(
+                        null,
                         Pageable.unpaged(),
                         Stream.of(
                                 new DatasetFilter(DatasetFilterOption.NAME, "dataset1", false)
@@ -227,6 +231,7 @@ class DatasetDtoRepositoryTest {
                 .containsOnly(datasetDto1, datasetDto2);
         assertThat(
                 datasetDtoRepository.fetchAll(
+                        null,
                         Pageable.unpaged(),
                         Stream.of(
                                 new DatasetFilter(DatasetFilterOption.NAME, "dataset3", false)
@@ -234,6 +239,7 @@ class DatasetDtoRepositoryTest {
                 .containsOnly(datasetDto3);
         assertThat(
                 datasetDtoRepository.fetchAll(
+                        null,
                         Pageable.unpaged(),
                         Stream.of(
                                 new DatasetFilter(DatasetFilterOption.NAME, "dataset4", false)

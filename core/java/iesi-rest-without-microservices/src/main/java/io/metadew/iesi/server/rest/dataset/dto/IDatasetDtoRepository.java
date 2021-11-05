@@ -16,8 +16,8 @@ public interface IDatasetDtoRepository {
 
     Page<DatasetDto> fetchAll(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters);
 
-    List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(Authentication authentication, UUID datasetUuid);
+    List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid);
 
-    Optional<DatasetImplementationDto> fetchImplementationByUuid(Authentication authentication, UUID uuid);
+    Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid);
 
 }

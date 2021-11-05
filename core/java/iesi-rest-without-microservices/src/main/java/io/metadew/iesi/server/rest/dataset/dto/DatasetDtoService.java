@@ -30,13 +30,13 @@ public class DatasetDtoService implements IDatasetDtoService {
         return datasetDtoRepository.fetchAll(authentication, pageable, datasetFilters);
     }
 
-    public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(Authentication authentication, UUID datasetUuid){
-        return datasetDtoRepository.fetchImplementationsByDatasetUuid(authentication, datasetUuid);
+    public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid) {
+        return datasetDtoRepository.fetchImplementationsByDatasetUuid(datasetUuid);
     }
 
     @Override
-    public Optional<DatasetImplementationDto> fetchImplementationByUuid(Authentication authentication, UUID uuid) {
-        return datasetDtoRepository.fetchImplementationByUuid(authentication, uuid);
+    public Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid) {
+        return datasetDtoRepository.fetchImplementationByUuid(uuid);
     }
 
     @Override

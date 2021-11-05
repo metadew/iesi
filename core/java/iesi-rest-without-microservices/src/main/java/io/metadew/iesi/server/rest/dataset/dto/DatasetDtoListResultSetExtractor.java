@@ -49,7 +49,7 @@ public class DatasetDtoListResultSetExtractor {
         private final Set<UUID> datasetImplementationBuilders;
 
         public DatasetDto build() {
-            return new DatasetDto(uuid, securityGroupName, name, datasetImplementationBuilders);
+            return new DatasetDto(uuid, name, securityGroupName, datasetImplementationBuilders);
         }
     }
 

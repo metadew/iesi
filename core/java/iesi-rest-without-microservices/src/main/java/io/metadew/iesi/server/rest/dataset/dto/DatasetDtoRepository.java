@@ -51,7 +51,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-    public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(Authentication authentication, UUID datasetUuid) {
+    public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
                     MessageFormat.format(getFetchImplementationsByDatasetIdQuery(),
@@ -64,7 +64,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-    public Optional<DatasetImplementationDto> fetchImplementationByUuid(Authentication authentication, UUID uuid) {
+    public Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
                     MessageFormat.format(getFetchImplementationByIdQuery(),
@@ -80,7 +80,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "SELECT " +
                 "dataset_impls.ID as dataset_impl_id, " +
-                "dataset.SECURITY_GROUP_NM as dataset_security_group_name, " +
+                "datasets.SECURITY_GROUP_NM as dataset_security_group_name, " +
                 "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
                 "from (" + getBaseQuery(authentication, pageable, datasetFilters) + ") base_datasets " + //base table
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
@@ -122,6 +122,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
                 "where datasets.ID={0};";
     }
+
     private String getBaseQuery(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "select datasets.ID " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +

@@ -11,6 +11,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
@@ -91,7 +92,7 @@ public class DatasetController {
 
     @GetMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
-    @PostAuthorize("hasPrivilege('DATASETS_READ'), returnObject.securityGroupName")
+    @PostAuthorize("hasPrivilege('DATASETS_READ', returnObject.securityGroupName)")
     public DatasetDto get(@PathVariable UUID uuid) {
         return datasetService.get(new DatasetKey(uuid))
                 .map(datasetDtoModelAssembler::toModel)
@@ -102,13 +103,27 @@ public class DatasetController {
     @GetMapping("/{uuid}/implementations")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public List<DatasetImplementationDto> getImplementationsByDatasetUuid(@PathVariable UUID uuid) {
-        return datasetDtoService.fetchImplementationsByDatasetUuid(SecurityContextHolder.getContext().getAuthentication(), uuid);
+        Optional<Dataset> dataset = datasetService.get(new DatasetKey(uuid));
+
+        if (dataset.isPresent() && !iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(), IESIPrivilege.DATASET_READ.getPrivilege(), dataset.get().getSecurityGroupName())) {
+            throw new AccessDeniedException("User is not allowed to retrieve dataset implementation in the dataset : " + dataset.get().getName() + " and ID " + uuid);
+        } else if (!dataset.isPresent()) {
+            throw new MetadataDoesNotExistException(new DatasetImplementationKey(uuid));
+        }
+        return datasetDtoService.fetchImplementationsByDatasetUuid(uuid);
     }
 
     @GetMapping("/{datasetUuid}/implementations/{datasetImplementationUuid}")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     public DatasetImplementationDto getImplementationByUuid(@PathVariable UUID datasetUuid, @PathVariable UUID datasetImplementationUuid) {
-        return datasetDtoService.fetchImplementationByUuid(SecurityContextHolder.getContext().getAuthentication(), datasetImplementationUuid)
+        Optional<Dataset> dataset = datasetService.get(new DatasetKey(datasetUuid));
+        if (dataset.isPresent() && !iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(), IESIPrivilege.DATASET_READ.getPrivilege(), dataset.get().getSecurityGroupName())) {
+            throw new AccessDeniedException("User is not allowed to retrieve dataset implementation in the dataset : " + dataset.get().getName() + " and ID " + datasetUuid);
+        } else if (!dataset.isPresent()) {
+            throw new MetadataDoesNotExistException(new DatasetImplementationKey(datasetUuid));
+        }
+
+        return datasetDtoService.fetchImplementationByUuid(datasetImplementationUuid)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new DatasetImplementationKey(datasetImplementationUuid)));
     }
 
@@ -116,8 +131,9 @@ public class DatasetController {
     @PostMapping("")
     @PreAuthorize("hasPrivilege('DATASETS_WRITE', #datasetPostDto.securityGroupName)")
     public ResponseEntity<DatasetDto> create(@RequestBody DatasetPostDto datasetPostDto) {
-        if (datasetService.exists(datasetPostDto.getName())) {
-            return ResponseEntity.badRequest().build();
+        Optional<Dataset> dataset = datasetService.getByName(datasetPostDto.getName());
+        if (dataset.isPresent()) {
+            throw new MetadataAlreadyExistsException(dataset.get().getMetadataKey());
         }
 
         String datasetName = datasetPostDto.getName();
@@ -125,7 +141,7 @@ public class DatasetController {
 
         SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(datasetPostDto.getSecurityGroupName())
                 .orElseThrow(() -> new RuntimeException("Could not find security group with name + " + datasetPostDto.getSecurityGroupName()));
-        Dataset dataset = new Dataset(
+        Dataset newDataset = new Dataset(
                 new DatasetKey(datasetUuid),
                 securityGroup.getMetadataKey(),
                 securityGroup.getName(),
@@ -155,8 +171,8 @@ public class DatasetController {
                         })
                         .collect(Collectors.toSet())
         );
-        datasetService.create(dataset);
-        return ResponseEntity.ok(datasetDtoModelAssembler.toModel(dataset));
+        datasetService.create(newDataset);
+        return ResponseEntity.ok(datasetDtoModelAssembler.toModel(newDataset));
     }
 
     @SuppressWarnings("unchecked")
@@ -210,8 +226,8 @@ public class DatasetController {
     public ResponseEntity<DatasetDto> update(@PathVariable UUID uuid, @RequestBody DatasetPutDto datasetPutDto) {
         if (!datasetPutDto.getUuid().equals(uuid)) {
             return ResponseEntity.badRequest().build();
-        } else if (!datasetService.exists(new DatasetKey(datasetPutDto.getUuid()))) {
-            return ResponseEntity.notFound().build();
+        } else if (!datasetService.exists(new DatasetKey(uuid))) {
+            throw new MetadataDoesNotExistException(new DatasetKey(uuid));
         }
 
 
@@ -266,7 +282,11 @@ public class DatasetController {
                 throw new AccessDeniedException("User is not allowed to delete dataset implementations in the dataset : " + dataset.get().getName() + " and ID " + datasetUuid);
             }
         } else {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetKey(datasetUuid));
+        }
+
+        if (!datasetImplementationService.exists(new DatasetImplementationKey(datasetImplementationUuid))) {
+            throw new MetadataDoesNotExistException(new DatasetImplementationKey(datasetImplementationUuid));
         }
 
         datasetImplementationService.delete(new DatasetImplementationKey(datasetImplementationUuid));
@@ -282,7 +302,7 @@ public class DatasetController {
                 throw new AccessDeniedException("User is not allowed to delete dataset implementations in the dataset : " + dataset.get().getName() + " and ID " + datasetUuid);
             }
         } else {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetKey(datasetUuid));
         }
 
         datasetImplementationService.deleteByDatasetId(new DatasetKey(datasetUuid));
@@ -299,7 +319,7 @@ public class DatasetController {
                 throw new AccessDeniedException("User is not allowed to delete dataset implementations in the dataset : " + dataset.get().getName() + " and ID " + uuid);
             }
         } else {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetKey(uuid));
         }
 
         datasetService.delete(new DatasetKey(uuid));

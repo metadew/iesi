@@ -268,7 +268,7 @@ class ComponentsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_WRITE@PUBLIC"})
-    void testCreateComponentsWrite() throws Exception {
+    void testCreateComponentsWrite() {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
                 .securityGroupName("PUBLIC")
@@ -279,6 +279,23 @@ class ComponentsControllerSecurityTest {
                 .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
                 .build();
         componentsController.post(componentDto);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_WRITE@PUBLIC"})
+    void testCreateComponentsWrongSecurityGroup() {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build();
+        assertThatThrownBy(() -> componentsController.post(componentDto))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
@@ -479,6 +496,26 @@ class ComponentsControllerSecurityTest {
         when(componentDtoService.getByNameAndVersion(null, "test", 1L)).thenReturn(Optional.of(componentDto));
 
         componentsController.delete("test", 1L);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_WRITE@PUBLIC"})
+    void testDeleteByNameAndVersionComponentWrongSecurityGroup() throws Exception {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build();
+
+        when(componentDtoService.getByNameAndVersion(null, "test", 1L)).thenReturn(Optional.of(componentDto));
+
+        assertThatThrownBy(() -> componentsController.delete("test", 1L))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
 }

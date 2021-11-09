@@ -67,7 +67,7 @@ public final class SQLTools {
             }
             connection.close();
             return DatabaseConnectionHandler.getInstance()
-                    .generateClobInsertValue(database.getDatabaseConnection(), getCleanString(rawClobString));
+                    .generateClobInsertValue(database.getDatabaseConnection(), rawClobString);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

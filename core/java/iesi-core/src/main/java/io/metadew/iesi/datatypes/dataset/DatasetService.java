@@ -36,7 +36,7 @@ public class DatasetService implements IDatasetService {
 
     @Override
     public Optional<Dataset> get(DatasetKey datasetKey) {
-        if (exists(datasetKey)) {
+        if (!exists(datasetKey)) {
             throw new MetadataDoesNotExistException(datasetKey);
         }
         return DatasetConfiguration.getInstance().get(datasetKey);

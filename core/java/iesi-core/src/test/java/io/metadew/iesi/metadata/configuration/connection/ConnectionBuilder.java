@@ -1,12 +1,9 @@
 package io.metadew.iesi.metadata.configuration.connection;
 
-import io.metadew.iesi.metadata.configuration.script.ScriptBuilder;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -54,14 +54,14 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
     public void save(Connection connection) {
         LOGGER.info(MessageFormat.format("Inserting connection {0}-{1} into connectivity repository",
                 connection.getMetadataKey().getName(), connection.getMetadataKey().getEnvironmentKey().getName()));
-        if (connection.getSecurityGroupKey() == null) {
-            LOGGER.warn("{0} not linked to a security group, linking it to the public security group");
-            SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
-                    .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
-            connection.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
-            connection.setSecurityGroupName(publicSecurityGroup.getName());
-        }
         try {
+            if (connection.getSecurityGroupKey() == null) {
+                LOGGER.warn("{0} not linked to a security group, linking it to the public security group");
+                SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
+                        .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
+                connection.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
+                connection.setSecurityGroupName(publicSecurityGroup.getName());
+            }
             ConnectionConfiguration.getInstance().insert(connection);
         } catch (MetadataAlreadyExistsException e1) {
             LOGGER.info(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",

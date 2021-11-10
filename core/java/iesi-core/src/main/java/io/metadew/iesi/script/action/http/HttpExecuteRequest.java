@@ -22,6 +22,7 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -141,8 +143,9 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (dataType == null || dataType instanceof Null) {
             return new ArrayList<>();
         } else if (dataType instanceof Text) {
-            return Arrays.stream(dataType.toString().split(","))
-                    .map(this::buildHttpHeader).collect(Collectors.toList());
+            List<String> tokens = Arrays.stream(dataType.toString().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)).collect(Collectors.toList());
+            return tokens
+                    .stream().map(this::buildHttpHeader).collect(Collectors.toList());
         } else if (dataType instanceof InMemoryDatasetImplementation) {
             return InMemoryDatasetImplementationService
                     .getInstance()
@@ -182,18 +185,27 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private HttpHeader buildHttpHeader(String header) {
-        String[] keyValues;
+        List<String> keyValue;
+        String key;
+        String value;
 
         if (!header.contains("=")) {
             throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", header));
         }
 
-        keyValues = header.split("=");
-        if (keyValues.length > 2) {
+        keyValue = Arrays.stream(header.split("=", 2)).collect(Collectors.toList());
+        if (keyValue.size() > 2) {
             throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", header));
         }
 
-        return new HttpHeader(keyValues[0], keyValues[1]);
+        key = keyValue.get(0);
+        value = keyValue.get(1);
+
+        if (!(value.startsWith("\"") && value.endsWith("\""))) {
+            throw new QuoteCharException(String.format("The value %s is not provided correctly, please use quotes", value));
+        }
+
+        return new HttpHeader(key, StringUtils.substringBetween(value, "\"", "\""));
     }
 
     private HttpQueryParameter buildHttpQueryParameter(String queryParameter) {

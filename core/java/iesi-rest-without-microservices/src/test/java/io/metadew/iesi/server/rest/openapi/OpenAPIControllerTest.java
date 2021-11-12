@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.openapi.TransformResult;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
@@ -39,12 +40,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -85,16 +88,16 @@ class OpenAPIControllerTest {
     @Test
     void transformFromYAML() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("file", yamlFile);
-        given(openAPIService.transform(multipartFile)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
-                multipart("/openapi/transform")
-                        .file(multipartFile)
-                        .header("Content-Type", "multipart/form-data")
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .accept(MediaType.APPLICATION_JSON)
-        )
+                        multipart("/openapi/transform")
+                                .file(multipartFile)
+                                .header("Content-Type", "multipart/form-data")
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$.title").isString())
@@ -109,16 +112,16 @@ class OpenAPIControllerTest {
     void transformFromJSON() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("file", jsonFile);
 
-        given(openAPIService.transform(multipartFile)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
-                multipart("/openapi/transform")
-                        .file(multipartFile)
-                        .header("Content-Type", "multipart/form-data")
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .accept(MediaType.APPLICATION_JSON)
-        )
+                        multipart("/openapi/transform")
+                                .file(multipartFile)
+                                .header("Content-Type", "multipart/form-data")
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$.title").isString())
@@ -133,15 +136,15 @@ class OpenAPIControllerTest {
     void transformFromBody() throws Exception {
         String jsonContent = new String(jsonFile);
 
-        given(openAPIService.transform(jsonContent)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
-                post("/openapi/transform")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(jsonContent)
-        )
+                        post("/openapi/transform")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .content(jsonContent)
+                )
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$.title").isString())
                 .andExpect(jsonPath("$.version").isString())
@@ -172,6 +175,7 @@ class OpenAPIControllerTest {
         ComponentVersionDto componentVersionDto = new ComponentVersionDto(1L, "Update an existing pet by Id");
         ComponentDto componentDto = new ComponentDto(
                 "http.request",
+                "PUBLIC",
                 "updatePet",
                 "Update an existing pet by Id",
                 componentVersionDto,
@@ -223,6 +227,8 @@ class OpenAPIControllerTest {
         );
         Component component = new Component(
                 componentKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "updatePet",
                 "Update an existing pet by Id",

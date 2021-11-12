@@ -2,8 +2,6 @@ package io.metadew.iesi.server.rest.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.server.rest.Application;
-import io.metadew.iesi.server.rest.component.ComponentService;
-import io.metadew.iesi.server.rest.component.ComponentsController;
 import io.metadew.iesi.server.rest.component.dto.*;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
@@ -20,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -105,7 +104,7 @@ class ComponentsControllerSecurityTest {
             authorities = {"COMPONENTS_READ@PUBLIC"})
     void testGetComponentReadPrivilege() throws Exception {
         when(componentDtoService
-                .getAll(Pageable.unpaged(), new ArrayList<>()))
+                .getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         componentsController.getAll(Pageable.unpaged(), null);
     }
@@ -149,7 +148,7 @@ class ComponentsControllerSecurityTest {
     void testGetByNameComponentRead() throws Exception {
         Pageable pageable = Pageable.unpaged();
         when(componentDtoService
-                .getByName(Pageable.unpaged(), "test"))
+                .getByName(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), "test"))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
         componentsController.getByName(pageable, "test");
     }
@@ -192,19 +191,39 @@ class ComponentsControllerSecurityTest {
     void testGetByNameAndVersionAdminComponentsReadPrivilege() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("test")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
-                .version(new ComponentVersionDto(1L, "version description"))
+                .version(new ComponentVersionDto(1L, "description"))
                 .parameters(new HashSet<>())
                 .attributes(new HashSet<>())
                 .build();
-        when(componentDtoService.getByNameAndVersion("test", 1L))
+        when(componentDtoService.getByNameAndVersion(null, "test", 1L))
                 .thenReturn(Optional.of(componentDto));
         componentsController.get("test", 1L);
     }
 
-    // create components
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_READ@PUBLIC"})
+    void testGetByNameAndVersionWrongSecurityGroup() throws Exception {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("test")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1L, "description"))
+                .parameters(new HashSet<>())
+                .attributes(new HashSet<>())
+                .build();
+        when(componentDtoService.getByNameAndVersion(null, "test", 1L))
+                .thenReturn(Optional.of(componentDto));
+        assertThatThrownBy(() -> componentsController.get("test", 1L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -235,6 +254,7 @@ class ComponentsControllerSecurityTest {
     void testCreateNoComponentsWrite() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -248,9 +268,10 @@ class ComponentsControllerSecurityTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_WRITE@PUBLIC"})
-    void testCreateComponentsWrite() throws Exception {
+    void testCreateComponentsWrite() {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -260,7 +281,23 @@ class ComponentsControllerSecurityTest {
         componentsController.post(componentDto);
     }
 
-    // update bulk components
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_WRITE@PUBLIC"})
+    void testCreateComponentsWrongSecurityGroup() {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build();
+        assertThatThrownBy(() -> componentsController.post(componentDto))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -291,6 +328,7 @@ class ComponentsControllerSecurityTest {
     void testUpdateBulkNoComponentWritePrivilege() throws Exception {
         List<ComponentDto> componentDto = Collections.singletonList(ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -307,6 +345,7 @@ class ComponentsControllerSecurityTest {
     void testUpdateBulkComponentWritePrivilege() throws Exception {
         List<ComponentDto> componentDto = Collections.singletonList(ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -316,7 +355,23 @@ class ComponentsControllerSecurityTest {
         componentsController.putAll(componentDto);
     }
 
-    // update single component
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_WRITE@PUBLIC"})
+    void testUpdateBulkComponentWrongSecurityGroup() throws Exception {
+        List<ComponentDto> componentDto = Collections.singletonList(ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build());
+        assertThatThrownBy(() -> componentsController.putAll(componentDto))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -347,6 +402,7 @@ class ComponentsControllerSecurityTest {
     void testUpdateSingleNoComponentWritePrivilege() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -363,6 +419,7 @@ class ComponentsControllerSecurityTest {
     void testUpdateSingleComponentWritePrivilege() throws Exception {
         ComponentDto componentDto = ComponentDto.builder()
                 .name("component")
+                .securityGroupName("PUBLIC")
                 .type("type")
                 .description("description")
                 .attributes(new HashSet<>())
@@ -372,87 +429,23 @@ class ComponentsControllerSecurityTest {
         componentsController.put("component", 1L, componentDto);
     }
 
-    //delete all
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    //"COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    "CONNECTIONS_WRITE@PUBLIC",
-                    "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testDeleteAllNoComponentWritePrivilege() throws Exception {
-        assertThatThrownBy(() -> componentsController.deleteAll())
-                .isInstanceOf(AccessDeniedException.class);
-    }
-
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_WRITE@PUBLIC"})
-    void testDeleteAllComponentWritePrivilege() throws Exception {
-        componentsController.deleteAll();
-    }
-
-    //delete by name
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"SCRIPTS_WRITE@PUBLIC",
-                    "SCRIPTS_READ@PUBLIC",
-                    //"COMPONENTS_WRITE@PUBLIC",
-                    "COMPONENTS_READ@PUBLIC",
-                    "CONNECTIONS_WRITE@PUBLIC",
-                    "CONNECTIONS_READ@PUBLIC",
-                    "ENVIRONMENTS_WRITE@PUBLIC",
-                    "ENVIRONMENTS_READ@PUBLIC",
-                    "EXECUTION_REQUESTS_WRITE@PUBLIC",
-                    "EXECUTION_REQUESTS_READ@PUBLIC",
-                    "SCRIPT_EXECUTIONS_WRITE@PUBLIC",
-                    "SCRIPT_EXECUTIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_READ@PUBLIC",
-                    "IMPERSONATIONS_WRITE@PUBLIC",
-                    "SCRIPT_RESULTS_READ@PUBLIC",
-                    "USERS_WRITE@PUBLIC",
-                    "USERS_READ@PUBLIC",
-                    "USERS_DELETE@PUBLIC",
-                    "TEAMS_WRITE@PUBLIC",
-                    "TEAMS_READ@PUBLIC",
-                    "ROLES_WRITE@PUBLIC",
-                    "GROUPS_WRITE@PUBLIC",
-                    "GROUPS_READ@PUBLIC",
-                    "DATASETS_READ@PUBLIC",
-                    "DATASETS_WRITE@PUBLIC"})
-    void testDeleteByNameNoComponentWritePrivilege() throws Exception {
-        assertThatThrownBy(() -> componentsController.deleteByName("test"))
+    void testUpdateSingleComponentWrongSecurityGroup() throws Exception {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build();
+        assertThatThrownBy(() -> componentsController.put("component", 1L, componentDto))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"COMPONENTS_WRITE@PUBLIC"})
-    void testDeleteByNameComponentWritePrivilege() throws Exception {
-        componentsController.deleteByName("test");
-    }
-
-    //delete by name and version
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -490,7 +483,39 @@ class ComponentsControllerSecurityTest {
     @WithIesiUser(username = "spring",
             authorities = {"COMPONENTS_WRITE@PUBLIC"})
     void testDeleteByNameAndVersionComponentWritePrivilege() throws Exception {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PUBLIC")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build();
+
+        when(componentDtoService.getByNameAndVersion(null, "test", 1L)).thenReturn(Optional.of(componentDto));
+
         componentsController.delete("test", 1L);
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {"COMPONENTS_WRITE@PUBLIC"})
+    void testDeleteByNameAndVersionComponentWrongSecurityGroup() throws Exception {
+        ComponentDto componentDto = ComponentDto.builder()
+                .name("component")
+                .securityGroupName("PRIVATE")
+                .type("type")
+                .description("description")
+                .attributes(new HashSet<>())
+                .version(new ComponentVersionDto(1, "description"))
+                .parameters(Stream.of(new ComponentParameterDto("param1", "value1")).collect(Collectors.toSet()))
+                .build();
+
+        when(componentDtoService.getByNameAndVersion(null, "test", 1L)).thenReturn(Optional.of(componentDto));
+
+        assertThatThrownBy(() -> componentsController.delete("test", 1L))
+                .isInstanceOf(AccessDeniedException.class);
     }
 
 }

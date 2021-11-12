@@ -4,7 +4,6 @@ import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.dataset.implementation.IDatasetImplementationPostDtoService;
 
 import java.util.UUID;
@@ -34,10 +33,5 @@ public class DatasetPostDtoService implements IDatasetPostDtoService {
                         .map(datasetImplementationPostDto -> datasetImplementationPostDtoService.convertToEntity(uuid, datasetPostDto.getName(), datasetImplementationPostDto))
                         .collect(Collectors.toSet())
         );
-    }
-
-    @Override
-    public Dataset convertToEntity(DatasetPostDto datasetPostDto) {
-        return null;
     }
 }

@@ -1,6 +1,5 @@
 package io.metadew.iesi.server.rest.dataset.dto;
 
-import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.server.rest.dataset.DatasetFilter;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +36,6 @@ public class DatasetDtoService implements IDatasetDtoService {
     @Override
     public Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid) {
         return datasetDtoRepository.fetchImplementationByUuid(uuid);
-    }
-
-    @Override
-    public Dataset convertToEntity(DatasetDto datasetDto) {
-        return null;
     }
 
 }

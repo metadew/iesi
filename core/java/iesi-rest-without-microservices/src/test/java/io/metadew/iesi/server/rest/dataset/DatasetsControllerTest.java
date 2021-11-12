@@ -398,7 +398,6 @@ class DatasetsControllerTest {
     void testUpdateDataset() {
         UUID datasetUuid = UUID.randomUUID();
         DatasetPutDto datasetPutDto = DatasetPutDto.builder()
-                .uuid(datasetUuid)
                 .name("dataset")
                 .securityGroupName("PUBLIC")
                 .implementations(Stream.of(
@@ -539,25 +538,9 @@ class DatasetsControllerTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"DATASETS_WRITE@PUBLIC"})
-    void testUpdateDatasetBadRequest() {
-        DatasetPutDto datasetPutDto = DatasetPutDto.builder()
-                .uuid(UUID.randomUUID())
-                .name("dataset")
-                .securityGroupName("PUBLIC")
-                .implementations(new HashSet<>())
-                .build();
-        ResponseEntity<DatasetDto> responseEntity = datasetController.update(UUID.randomUUID(), datasetPutDto);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @Test
-    @WithIesiUser(username = "spring",
-            authorities = {"DATASETS_WRITE@PUBLIC"})
     void testUpdateDatasetDoesNotExist() {
         UUID datasetUuid = UUID.randomUUID();
         DatasetPutDto datasetPutDto = DatasetPutDto.builder()
-                .uuid(datasetUuid)
                 .name("dataset")
                 .securityGroupName("PUBLIC")
                 .implementations(new HashSet<>())

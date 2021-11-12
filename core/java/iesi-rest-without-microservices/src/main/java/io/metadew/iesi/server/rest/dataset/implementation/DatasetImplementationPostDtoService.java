@@ -13,7 +13,7 @@ import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatas
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class DatasetImplementationImplementationPostDtoService implements IDatasetImplementationPostDtoService {
+public class DatasetImplementationPostDtoService implements IDatasetImplementationPostDtoService {
     @Override
     public DatasetImplementation convertToEntity(String datasetUUID, String datasetName, DatasetImplementationPostDto datasetImplementationPostDto) {
         UUID datasetImplementationUUID = UUID.randomUUID();

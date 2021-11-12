@@ -465,7 +465,6 @@ class DatasetsControllerSecurityTest {
     void testUpdateNoDatasetWritePrivilege() {
         UUID uuid = UUID.randomUUID();
         DatasetPutDto datasetPutDto = DatasetPutDto.builder()
-                .uuid(uuid)
                 .name("dataset")
                 .securityGroupName("PUBLIC")
                 .implementations(new HashSet<>())
@@ -481,7 +480,6 @@ class DatasetsControllerSecurityTest {
     void testUpdateDatasetWritePrivilege() {
         UUID uuid = UUID.randomUUID();
         DatasetPutDto datasetPutDto = DatasetPutDto.builder()
-                .uuid(uuid)
                 .name("dataset")
                 .securityGroupName("PUBLIC")
                 .implementations(new HashSet<>())
@@ -508,7 +506,6 @@ class DatasetsControllerSecurityTest {
     void testUpdateDatasetWrongSecurityGroup() {
         UUID uuid = UUID.randomUUID();
         DatasetPutDto datasetPutDto = DatasetPutDto.builder()
-                .uuid(uuid)
                 .name("dataset")
                 .securityGroupName("PRIVATE")
                 .implementations(new HashSet<>())

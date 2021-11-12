@@ -224,9 +224,7 @@ public class DatasetController {
     @PutMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('DATASETS_WRITE', #datasetPutDto.securityGroupName)")
     public ResponseEntity<DatasetDto> update(@PathVariable UUID uuid, @RequestBody DatasetPutDto datasetPutDto) {
-        if (!datasetPutDto.getUuid().equals(uuid)) {
-            return ResponseEntity.badRequest().build();
-        } else if (!datasetService.exists(new DatasetKey(uuid))) {
+        if (!datasetService.exists(new DatasetKey(uuid))) {
             throw new MetadataDoesNotExistException(new DatasetKey(uuid));
         }
 
@@ -235,7 +233,7 @@ public class DatasetController {
                 .orElseThrow(() -> new RuntimeException("Could not find security group with name + " + datasetPutDto.getSecurityGroupName()));
 
         Dataset dataset = new Dataset(
-                new DatasetKey(datasetPutDto.getUuid()),
+                new DatasetKey(uuid),
                 securityGroup.getMetadataKey(),
                 securityGroup.getName(),
                 datasetPutDto.getName(),
@@ -244,7 +242,7 @@ public class DatasetController {
                             UUID datasetImplementationUuid = UUID.randomUUID();
                             return new InMemoryDatasetImplementation(
                                     new DatasetImplementationKey(datasetImplementationUuid),
-                                    new DatasetKey(datasetPutDto.getUuid()),
+                                    new DatasetKey(uuid),
                                     datasetPutDto.getName(),
                                     datasetImplementationDto.getLabels().stream()
                                             .map(datasetImplementationLabelDto -> new DatasetImplementationLabel(

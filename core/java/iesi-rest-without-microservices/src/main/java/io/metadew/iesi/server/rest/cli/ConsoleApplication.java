@@ -82,7 +82,6 @@ public class ConsoleApplication implements CommandLineRunner {
             ExecutionRequestPostDto executionRequestPostDto = new ExecutionRequestPostDto();
             ScriptExecutionRequestPostDto scriptExecutionRequestPostDto = new ScriptExecutionRequestPostDto();
 
-            scriptExecutionRequestPostDto.setExit(false);
             // parse the command cmd arguments
 
             // Get the script

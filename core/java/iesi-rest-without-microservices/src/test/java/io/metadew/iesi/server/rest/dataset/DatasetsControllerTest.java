@@ -23,6 +23,7 @@ import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatas
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValuePostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +43,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -354,10 +356,7 @@ class DatasetsControllerTest {
         when(datasetService.exists("dataset"))
                 .thenReturn(true);
 
-        ResponseEntity<DatasetDto> responseEntity = datasetController.create(datasetPostDto);
-
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThatThrownBy(() -> datasetController.create(datasetPostDto)).isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
@@ -510,9 +509,7 @@ class DatasetsControllerTest {
                 .name("dataset")
                 .implementations(new HashSet<>())
                 .build();
-        ResponseEntity<DatasetDto> responseEntity = datasetController.update(UUID.randomUUID(), datasetPutDto);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThatThrownBy(() -> datasetController.update(UUID.randomUUID(), datasetPutDto)).isInstanceOf(DataBadRequestException.class);
     }
 
     @Test
@@ -527,10 +524,7 @@ class DatasetsControllerTest {
                 .build();
         when(datasetService.exists(new DatasetKey(datasetUuid)))
                 .thenReturn(false);
-
-        ResponseEntity<DatasetDto> responseEntity = datasetController.update(datasetUuid, datasetPutDto);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+        assertThatThrownBy(() -> datasetController.update(datasetUuid, datasetPutDto)).isInstanceOf(MetadataDoesNotExistException.class);
     }
 
     @Test
@@ -554,11 +548,7 @@ class DatasetsControllerTest {
         UUID datasetUuid = UUID.randomUUID();
         when(datasetService.exists(new DatasetKey(datasetUuid)))
                 .thenReturn(false);
-        ResponseEntity<Object> responseEntity = datasetController.delete(datasetUuid);
-        verify(datasetService, times(0))
-                .delete((new DatasetKey(datasetUuid)));
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+        assertThatThrownBy(() -> datasetController.delete(datasetUuid)).isInstanceOf(MetadataDoesNotExistException.class);
     }
 
     @Test
@@ -582,11 +572,7 @@ class DatasetsControllerTest {
         UUID datasetUuid = UUID.randomUUID();
         when(datasetService.exists(new DatasetKey(datasetUuid)))
                 .thenReturn(false);
-        ResponseEntity<Object> responseEntity = datasetController.deleteImplementationsByDatasetUuid(datasetUuid);
-        verify(datasetImplementationService, times(0))
-                .deleteByDatasetId((new DatasetKey(datasetUuid)));
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+        assertThatThrownBy(() -> datasetController.deleteImplementationsByDatasetUuid(datasetUuid)).isInstanceOf(MetadataDoesNotExistException.class);
     }
 
     @Test
@@ -612,13 +598,10 @@ class DatasetsControllerTest {
         UUID datasetImplementationUuid = UUID.randomUUID();
         when(datasetImplementationService.exists(new DatasetImplementationKey(datasetImplementationUuid)))
                 .thenReturn(false);
-        ResponseEntity<Object> responseEntity = datasetController.deleteImplementationByUuid(
+        assertThatThrownBy(() -> datasetController.deleteImplementationByUuid(
                 UUID.randomUUID(),
-                datasetImplementationUuid);
-        verify(datasetImplementationService, times(0))
-                .delete((new DatasetImplementationKey(datasetImplementationUuid)));
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+                datasetImplementationUuid))
+                .isInstanceOf(MetadataDoesNotExistException.class);
     }
 
     public boolean equalsWithoutUuid(Dataset dataset1, Dataset dataset2) {

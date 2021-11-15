@@ -15,6 +15,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -23,9 +24,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +81,8 @@ public class DatasetController {
     @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public ResponseEntity<DatasetDto> create(@RequestBody DatasetPostDto datasetPostDto) {
         if (datasetService.exists(datasetPostDto.getName())) {
-            return ResponseEntity.badRequest().build();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Dataset " + datasetPostDto.getName() + " already exists");
         }
 
         String datasetName = datasetPostDto.getName();
@@ -133,7 +137,7 @@ public class DatasetController {
     @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public ResponseEntity<Object> deleteImplementationByUuid(@PathVariable UUID datasetUuid, @PathVariable UUID datasetImplementationUuid) {
         if (!datasetImplementationService.exists(new DatasetImplementationKey(datasetImplementationUuid))) {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetImplementationKey(datasetImplementationUuid));
         }
         datasetImplementationService.delete(new DatasetImplementationKey(datasetImplementationUuid));
         return ResponseEntity.ok().build();
@@ -143,7 +147,7 @@ public class DatasetController {
     @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public ResponseEntity<Object> deleteImplementationsByDatasetUuid(@PathVariable UUID datasetUuid) {
         if (!datasetService.exists(new DatasetKey(datasetUuid))) {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetKey(datasetUuid));
         }
         datasetImplementationService.deleteByDatasetId(new DatasetKey(datasetUuid));
         return ResponseEntity.ok().build();
@@ -161,7 +165,7 @@ public class DatasetController {
     @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public ResponseEntity<Object> delete(@PathVariable UUID uuid) {
         if (!datasetService.exists(new DatasetKey(uuid))) {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetKey(uuid));
         }
         datasetService.delete(new DatasetKey(uuid));
         return ResponseEntity.ok().build();
@@ -171,9 +175,9 @@ public class DatasetController {
     @PreAuthorize("hasPrivilege('DATASETS_WRITE')")
     public ResponseEntity<DatasetDto> update(@PathVariable UUID uuid, @RequestBody DatasetPutDto datasetPutDto) {
         if (!datasetPutDto.getUuid().equals(uuid)) {
-            return ResponseEntity.badRequest().build();
+            throw new DataBadRequestException(uuid.toString());
         } else if (!datasetService.exists(new DatasetKey(datasetPutDto.getUuid()))) {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetKey(datasetPutDto.getUuid()));
         }
 
         Dataset dataset = new Dataset(
@@ -242,7 +246,8 @@ public class DatasetController {
                                 .collect(Collectors.toSet())
                 );
             } else {
-                return ResponseEntity.badRequest().build();
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Please specify the correct type of DatasetImplementation");
             }
 
             datasetImplementationService.create(datasetImplementation);
@@ -251,7 +256,7 @@ public class DatasetController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } else {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetKey(uuid));
         }
     }
 

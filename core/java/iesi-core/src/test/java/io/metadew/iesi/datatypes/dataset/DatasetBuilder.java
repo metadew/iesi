@@ -6,7 +6,6 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +23,6 @@ public class DatasetBuilder {
         Dataset dataset = Dataset.builder()
                 .metadataKey(new DatasetKey(datasetUUID))
                 .name(String.format("dataset%d", datasetIndex))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
                 .datasetImplementations(
                         IntStream.range(0, implementationCount).boxed()
                                 .map(implementationIndex -> {

@@ -6,7 +6,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.metadata.configuration.Configuration;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -32,8 +32,6 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     private static final String FETCH_SINGLE_QUERY = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
             "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
-            "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
-            "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
             "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
             "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
@@ -51,8 +49,6 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     private static final String FETCH_QUERY = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
             "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
-            "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
-            "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
             "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
             "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
@@ -69,8 +65,6 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     private static final String FETCH_BY_NAME_QUERY = "SELECT " +
             "dataset_impls.ID as dataset_impl_id, " +
             "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
-            "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
-            "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
             "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
             "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
             "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
@@ -91,7 +85,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             "WHERE datasets.NAME={0};";
 
     private static final String INSERT_QUERY = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
-            " (ID, SECURITY_GROUP_ID, SECURITY_GROUP_NM, NAME) VALUES ({0}, {1}, {2}, {3})";
+            " (ID, NAME) VALUES ({0}, {1})";
 
     private static final String UPDATE_QUERY = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
             " SET NAME={0} " +
@@ -218,8 +212,6 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public void insert(Dataset dataset) {
         getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_QUERY,
                 SQLTools.getStringForSQL(dataset.getMetadataKey().getUuid()),
-                SQLTools.getStringForSQL(dataset.getSecurityGroupKey().getUuid()),
-                SQLTools.getStringForSQL(dataset.getSecurityGroupName()),
                 SQLTools.getStringForSQL(dataset.getName())));
         dataset.getDatasetImplementations()
                 .forEach(datasetImplementation -> DatasetImplementationConfiguration.getInstance().insert(datasetImplementation));
@@ -248,8 +240,6 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     private DatasetBuilder extractDatasetBuilder(CachedRowSet cachedRowSet) throws SQLException {
         return new DatasetBuilder(
                 new DatasetKey(UUID.fromString(cachedRowSet.getString("dataset_id"))),
-                new SecurityGroupKey(UUID.fromString(cachedRowSet.getString("dataset_security_group_id"))),
-                cachedRowSet.getString("dataset_security_group_name"),
                 cachedRowSet.getString("dataset_name"),
                 new HashMap<>()
         );
@@ -260,13 +250,11 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     @ToString
     private class DatasetBuilder {
         private final DatasetKey datasetKey;
-        private final SecurityGroupKey securityGroupKey;
-        private final String securityGroupName;
         private final String name;
         public final Map<String, DatasetImplementationConfiguration.DatasetImplementationBuilder> datasetImplementationBuilders;
 
         public Dataset build() {
-            return new Dataset(datasetKey, securityGroupKey, securityGroupName, name, datasetImplementationBuilders.values().stream()
+            return new Dataset(datasetKey, name, datasetImplementationBuilders.values().stream()
                     .map(DatasetImplementationConfiguration.DatasetImplementationBuilder::build)
                     .collect(Collectors.toSet()));
         }

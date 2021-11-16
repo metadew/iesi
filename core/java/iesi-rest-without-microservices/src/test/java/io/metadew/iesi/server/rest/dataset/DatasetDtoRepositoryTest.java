@@ -11,12 +11,8 @@ import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDataset
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
-import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoRepository;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
@@ -28,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,250 +65,35 @@ class DatasetDtoRepositoryTest {
     void getAllPaginatedNoImplementationsLinkedToDataset() {
         Dataset dataset = Dataset.builder()
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
                 .name("dataset")
                 .datasetImplementations(new HashSet<>())
                 .build();
         DatasetDto datasetDto = DatasetDto.builder()
                 .uuid(dataset.getMetadataKey().getUuid())
                 .name("dataset")
-                .securityGroupName("PUBLIC")
                 .implementations(new HashSet<>())
                 .build();
         datasetConfiguration.insert(dataset);
         Pageable pageable = PageRequest.of(0, 2);
         assertThat(
-                datasetDtoRepository.fetchAll(null, pageable, new HashSet<>()))
+                datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
                 .containsOnly(datasetDto);
     }
 
     @Test
-    @WithIesiUser(username = "userA", authorities = {
-            "DATASETS_READ@GROUPA"
-    })
-    void getAllPaginatedWithNoImplementationsLinkedToDatasetGroupA() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 0, 0, 0, "GROUPA");
-        Map<String, Object> datasetInfoB = generateDataset(1, 0, 0, 0, "GROUPB");
-
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).containsOnly((DatasetDto) datasetInfoA.get("datasetDto"));
-    }
-
-    @Test
-    @WithIesiUser(username = "userB", authorities = {
-            "DATASETS_READ@GROUPB"
-    })
-    void getAllPaginatedWithNoImplementationsLinkedToDatasetGroupB() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 0, 0, 0, "GROUPA");
-        Map<String, Object> datasetInfoB = generateDataset(1, 0, 0, 0, "GROUPB");
-
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).containsOnly((DatasetDto) datasetInfoB.get("datasetDto"));
-    }
-
-    @Test
-    @WithIesiUser(username = "userBA", authorities = {
-            "DATASETS_READ@GROUPB",
-            "DATASETS_READ@GROUPA"
-    })
-    void getAllPaginatedWithNoImplementationsLinkedToDatasetGroupBA() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 0, 0, 0, "GROUPA");
-        Map<String, Object> datasetInfoB = generateDataset(1, 0, 0, 0, "GROUPB");
-        Map<String, Object> datasetInfoC = generateDataset(2, 0, 0, 0, "GROUPC");
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-        Dataset datasetC = (Dataset) datasetInfoC.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-        datasetConfiguration.insert(datasetC);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).containsOnly((DatasetDto) datasetInfoA.get("datasetDto"), (DatasetDto) datasetInfoB.get("datasetDto"));
-    }
-
-    @Test
-    @WithIesiUser(username = "userA", authorities = {
-            "DATASETS_READ@GROUPA"
-    })
-    void getAllPaginatedWithNoImplementationsLinkedToDatasetNoMatchedSecurityGroup() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 0, 0, 0, "PUBLIC");
-        Map<String, Object> datasetInfoB = generateDataset(1, 0, 0, 0, "PUBLIC");
-
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).isEmpty();
-    }
-
-    @Test
-    @WithIesiUser(username = "userA", authorities = {})
-    void getAllPaginatedWithNoImplementationsLinkedToDatasetNoSecurityGroup() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 0, 0, 0, "PUBLIC");
-        Map<String, Object> datasetInfoB = generateDataset(1, 0, 0, 0, "PUBLIC");
-
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).isEmpty();
-    }
-
-    @Test
     void getAllPaginatedWithImplementationsLinkedToDataset() {
-        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2, "PUBLIC");
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
         Pageable pageable = PageRequest.of(0, 2);
-        assertThat(datasetDtoRepository.fetchAll(null, pageable, new HashSet<>()))
+        assertThat(datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
                 .containsOnly((DatasetDto) dataset1Info.get("datasetDto"));
     }
 
     @Test
-    @WithIesiUser(username = "userA", authorities = {
-            "DATASETS_READ@GROUPA"
-    })
-    void getAllPaginatedWithImplementationsLinkedToDatasetGroupA() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 2, 2, 2, "GROUPA");
-        Map<String, Object> datasetInfoB = generateDataset(1, 2, 2, 2, "GROUPB");
-
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).containsOnly((DatasetDto) datasetInfoA.get("datasetDto"));
-    }
-
-    @Test
-    @WithIesiUser(username = "userB", authorities = {
-            "DATASETS_READ@GROUPB"
-    })
-    void getAllPaginatedWithImplementationsLinkedToDatasetGroupB() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 2, 2, 2, "GROUPA");
-        Map<String, Object> datasetInfoB = generateDataset(1, 2, 2, 2, "GROUPB");
-
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).containsOnly((DatasetDto) datasetInfoB.get("datasetDto"));
-    }
-
-    @Test
-    @WithIesiUser(username = "userBA", authorities = {
-            "DATASETS_READ@GROUPB",
-            "DATASETS_READ@GROUPA"
-    })
-    void getAllPaginatedWithImplementationsLinkedToDatasetGroupBA() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 2, 2, 2, "GROUPA");
-        Map<String, Object> datasetInfoB = generateDataset(1, 2, 2, 2, "GROUPB");
-        Map<String, Object> datasetInfoC = generateDataset(2, 2, 2, 2, "GROUPC");
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-        Dataset datasetC = (Dataset) datasetInfoC.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-        datasetConfiguration.insert(datasetC);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).containsOnly((DatasetDto) datasetInfoA.get("datasetDto"), (DatasetDto) datasetInfoB.get("datasetDto"));
-    }
-
-    @Test
-    @WithIesiUser(username = "userA", authorities = {
-            "DATASETS_READ@GROUPA"
-    })
-    void getAllPaginatedWithImplementationsLinkedToDatasetNoMatchedSecurityGroups() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 2, 2, 2, "PUBLIC");
-        Map<String, Object> datasetInfoB = generateDataset(1, 2, 2, 2, "PUBLIC");
-
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).isEmpty();
-    }
-
-    @Test
-    @WithIesiUser(username = "userA", authorities = {})
-    void getAllPaginatedWithImplementationsLinkedToDatasetNoSecurityGroups() {
-        Map<String, Object> datasetInfoA = generateDataset(0, 2, 2, 2, "PUBLIC");
-        Map<String, Object> datasetInfoB = generateDataset(1, 2, 2, 2, "PUBLIC");
-
-        Dataset datasetA = (Dataset) datasetInfoA.get("dataset");
-        Dataset datasetB = (Dataset) datasetInfoB.get("dataset");
-
-        datasetConfiguration.insert(datasetA);
-        datasetConfiguration.insert(datasetB);
-
-        assertThat(datasetDtoRepository.fetchAll(
-                SecurityContextHolder.getContext().getAuthentication(),
-                PageRequest.of(0, 2),
-                new HashSet<>()
-        )).isEmpty();
-    }
-
-    @Test
     void getDatasetImplementationByUuid() {
-        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2, "PUBLIC");
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
@@ -323,7 +103,7 @@ class DatasetDtoRepositoryTest {
 
     @Test
     void getDatasetImplementationByUuidNotFound() {
-        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2, "PUBLIC");
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
@@ -333,7 +113,7 @@ class DatasetDtoRepositoryTest {
 
     @Test
     void getDatasetImplementationsByDatasetUuid() {
-        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2, "PUBLIC");
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
@@ -344,7 +124,7 @@ class DatasetDtoRepositoryTest {
 
     @Test
     void getDatasetImplementationsByDatasetUuidNotExisting() {
-        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2, "PUBLIC");
+        Map<String, Object> dataset1Info = generateDataset(0, 2, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
@@ -355,7 +135,7 @@ class DatasetDtoRepositoryTest {
 
     @Test
     void getDatasetImplementationsByDatasetUuidEmpty() {
-        Map<String, Object> dataset1Info = generateDataset(0, 0, 2, 2, "PUBLIC");
+        Map<String, Object> dataset1Info = generateDataset(0, 0, 2, 2);
         Dataset dataset = (Dataset) dataset1Info.get("dataset");
         datasetConfiguration.insert(dataset);
 
@@ -368,21 +148,15 @@ class DatasetDtoRepositoryTest {
         Dataset dataset1 = Dataset.builder()
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
                 .name("dataset1")
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
                 .datasetImplementations(new HashSet<>())
                 .build();
         Dataset dataset2 = Dataset.builder()
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
                 .name("dataset2")
                 .datasetImplementations(new HashSet<>())
                 .build();
         Dataset dataset3 = Dataset.builder()
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
                 .name("dataset3")
                 .datasetImplementations(new HashSet<>())
                 .build();
@@ -393,13 +167,12 @@ class DatasetDtoRepositoryTest {
         datasetConfiguration.insert(dataset3);
         DatasetDto datasetDto3 = DatasetDto.builder()
                 .uuid(dataset3.getMetadataKey().getUuid())
-                .securityGroupName("PUBLIC")
                 .name("dataset3")
                 .implementations(new HashSet<>())
                 .build();
         Pageable pageable = PageRequest.of(1, 2);
         assertThat(
-                datasetDtoRepository.fetchAll(null, pageable, new HashSet<>()))
+                datasetDtoRepository.fetchAll(pageable, new HashSet<>()))
                 .containsOnly(datasetDto3);
     }
 
@@ -407,22 +180,16 @@ class DatasetDtoRepositoryTest {
     void getAllFilterByName() throws InterruptedException {
         Dataset dataset1 = Dataset.builder()
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
                 .name("dataset1")
                 .datasetImplementations(new HashSet<>())
                 .build();
         Dataset dataset2 = Dataset.builder()
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
                 .name("dataset11")
                 .datasetImplementations(new HashSet<>())
                 .build();
         Dataset dataset3 = Dataset.builder()
                 .metadataKey(new DatasetKey(UUID.randomUUID()))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
                 .name("dataset3")
                 .datasetImplementations(new HashSet<>())
                 .build();
@@ -432,24 +199,20 @@ class DatasetDtoRepositoryTest {
         DatasetDto datasetDto1 = DatasetDto.builder()
                 .uuid(dataset1.getMetadataKey().getUuid())
                 .name("dataset1")
-                .securityGroupName("PUBLIC")
                 .implementations(new HashSet<>())
                 .build();
         DatasetDto datasetDto2 = DatasetDto.builder()
                 .uuid(dataset2.getMetadataKey().getUuid())
                 .name("dataset11")
-                .securityGroupName("PUBLIC")
                 .implementations(new HashSet<>())
                 .build();
         DatasetDto datasetDto3 = DatasetDto.builder()
                 .uuid(dataset3.getMetadataKey().getUuid())
                 .name("dataset3")
-                .securityGroupName("PUBLIC")
                 .implementations(new HashSet<>())
                 .build();
         assertThat(
                 datasetDtoRepository.fetchAll(
-                        null,
                         Pageable.unpaged(),
                         Stream.of(
                                 new DatasetFilter(DatasetFilterOption.NAME, "dataset", false)
@@ -457,7 +220,6 @@ class DatasetDtoRepositoryTest {
                 .containsOnly(datasetDto1, datasetDto2, datasetDto3);
         assertThat(
                 datasetDtoRepository.fetchAll(
-                        null,
                         Pageable.unpaged(),
                         Stream.of(
                                 new DatasetFilter(DatasetFilterOption.NAME, "dataset1", false)
@@ -465,7 +227,6 @@ class DatasetDtoRepositoryTest {
                 .containsOnly(datasetDto1, datasetDto2);
         assertThat(
                 datasetDtoRepository.fetchAll(
-                        null,
                         Pageable.unpaged(),
                         Stream.of(
                                 new DatasetFilter(DatasetFilterOption.NAME, "dataset3", false)
@@ -473,7 +234,6 @@ class DatasetDtoRepositoryTest {
                 .containsOnly(datasetDto3);
         assertThat(
                 datasetDtoRepository.fetchAll(
-                        null,
                         Pageable.unpaged(),
                         Stream.of(
                                 new DatasetFilter(DatasetFilterOption.NAME, "dataset4", false)
@@ -481,15 +241,13 @@ class DatasetDtoRepositoryTest {
                 .isEmpty();
     }
 
-    private Map<String, Object> generateDataset(int datasetIndex, int implementationCount, int labelCount, int keyValueCount, String securityGroupName) {
+    private Map<String, Object> generateDataset(int datasetIndex, int implementationCount, int labelCount, int keyValueCount) {
         Map<String, Object> info = new HashMap<>();
 
         UUID datasetUUID = UUID.randomUUID();
         info.put("datasetUUID", datasetUUID);
         Dataset dataset = Dataset.builder()
                 .metadataKey(new DatasetKey(datasetUUID))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName(securityGroupName)
                 .name(String.format("dataset%d", datasetIndex))
                 .datasetImplementations(
                         IntStream.range(0, implementationCount).boxed()
@@ -537,7 +295,6 @@ class DatasetDtoRepositoryTest {
         DatasetDto datasetDto = DatasetDto.builder()
                 .uuid(datasetUUID)
                 .name(String.format("dataset%d", datasetIndex))
-                .securityGroupName(securityGroupName)
                 .implementations(
                         IntStream.range(0, implementationCount).boxed()
                                 .map(implementationIndex -> {

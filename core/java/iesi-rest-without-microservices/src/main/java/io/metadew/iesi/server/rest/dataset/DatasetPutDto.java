@@ -4,8 +4,10 @@ import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationP
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -14,8 +16,8 @@ import java.util.Set;
 @Builder
 public class DatasetPutDto {
 
-    @NotBlank
-    private String securityGroupName;
+    @NotEmpty
+    private UUID uuid;
 
     @NotBlank
     private String name;

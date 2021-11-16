@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset;
 
 
 import lombok.AllArgsConstructor;
@@ -44,12 +44,11 @@ public class DatasetDtoListResultSetExtractor {
     @ToString
     private static class DatasetDtoBuilder {
         private final UUID uuid;
-        private final String securityGroupName;
         private final String name;
         private final Set<UUID> datasetImplementationBuilders;
 
         public DatasetDto build() {
-            return new DatasetDto(uuid, name, securityGroupName, datasetImplementationBuilders);
+            return new DatasetDto(uuid, name, datasetImplementationBuilders);
         }
     }
 
@@ -57,7 +56,6 @@ public class DatasetDtoListResultSetExtractor {
     private DatasetDtoBuilder mapDatasetDtoBuilder(CachedRowSet rs) throws SQLException {
         return new DatasetDtoBuilder(
                 UUID.fromString(rs.getString("dataset_id")),
-                rs.getString("dataset_security_group_name"),
                 rs.getString("dataset_name"),
                 new HashSet<>()
         );

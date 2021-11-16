@@ -5,9 +5,7 @@ import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
-import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.MessageFormat;
@@ -37,13 +35,6 @@ public class DataMetadataRepository extends MetadataRepository {
 
     public void save(Dataset dataset) {
         log.info(MessageFormat.format("Saving dataset {0} into data repository", dataset.getName()));
-        if (dataset.getSecurityGroupKey() == null) {
-            log.warn("{0} not linked to a security group, linking it to the public security group");
-            SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
-                    .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
-            dataset.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
-            dataset.setSecurityGroupName(publicSecurityGroup.getName());
-        }
         if (!DatasetConfiguration.getInstance().exists(dataset.getMetadataKey())) {
             DatasetConfiguration.getInstance().insert(dataset);
         } else {

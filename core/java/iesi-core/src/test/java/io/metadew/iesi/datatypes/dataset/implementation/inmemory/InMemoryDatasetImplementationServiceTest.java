@@ -14,7 +14,6 @@ import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
@@ -350,8 +349,6 @@ class InMemoryDatasetImplementationServiceTest {
                 .build();
         Dataset dataset = new Dataset(
                 datasetKey,
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
                 "dataset",
                 Stream.of(inMemoryDatasetImplementation).collect(Collectors.toSet())
         );

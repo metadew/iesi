@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.dto;
+package io.metadew.iesi.server.rest.dataset;
 
 
 import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
@@ -18,7 +18,6 @@ public class DatasetDto extends NoEmptyLinksRepresentationModel<DatasetDto> {
 
     private UUID uuid;
     private String name;
-    private String securityGroupName;
     private Set<UUID> implementations;
 
 }

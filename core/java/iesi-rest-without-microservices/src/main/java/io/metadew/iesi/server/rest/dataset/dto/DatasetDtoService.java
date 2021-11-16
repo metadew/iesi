@@ -1,10 +1,12 @@
-package io.metadew.iesi.server.rest.dataset;
+package io.metadew.iesi.server.rest.dataset.dto;
 
+import io.metadew.iesi.server.rest.dataset.DatasetFilter;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +25,11 @@ public class DatasetDtoService implements IDatasetDtoService {
         this.datasetDtoRepository = datasetDtoRepository;
     }
 
-    public Page<DatasetDto> fetchAll(Pageable pageable, Set<DatasetFilter> datasetFilters) {
-        return datasetDtoRepository.fetchAll(pageable, datasetFilters);
+    public Page<DatasetDto> fetchAll(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
+        return datasetDtoRepository.fetchAll(authentication, pageable, datasetFilters);
     }
 
-    public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid){
+    public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid) {
         return datasetDtoRepository.fetchImplementationsByDatasetUuid(datasetUuid);
     }
 

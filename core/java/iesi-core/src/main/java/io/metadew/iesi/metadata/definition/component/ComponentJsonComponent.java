@@ -4,12 +4,16 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupJsonComponent;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 
 import java.io.IOException;
@@ -44,6 +48,16 @@ public class ComponentJsonComponent {
         public Component deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             String componentId = IdentifierTools.getComponentIdentifier(node.get(Field.NAME_KEY.value()).asText());
+            String securityGroupName;
+
+            if (node.get(SecurityGroupJsonComponent.Field.SECURITY_GROUP_NAME.value()) != null) {
+                securityGroupName = node.get(SecurityGroupJsonComponent.Field.SECURITY_GROUP_NAME.value()).asText();
+            } else {
+                securityGroupName = "PUBLIC";
+            }
+            SecurityGroupKey securityGroupKey = SecurityGroupService.getInstance().get(securityGroupName)
+                    .map(Metadata::getMetadataKey)
+                    .orElseThrow(() -> new RuntimeException("could not find Security Group " + securityGroupName));
 
             JsonNode versionNode = node.get(Field.VERSION_KEY.value());
             long versionNumber = versionNode.get(ComponentVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
@@ -77,6 +91,8 @@ public class ComponentJsonComponent {
 
             return new Component(
                     new ComponentKey(componentId, versionNumber),
+                    securityGroupKey,
+                    securityGroupName,
                     node.get(Field.COMPONENT_TYPE_KEY.value()).asText(),
                     node.get(Field.NAME_KEY.value()).asText(),
                     node.get(Field.DESCRIPTION_KEY.value()).asText(),

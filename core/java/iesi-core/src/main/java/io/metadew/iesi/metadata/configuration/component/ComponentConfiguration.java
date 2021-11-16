@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,6 +23,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ComponentConfiguration extends Configuration<Component, ComponentKey> {
 
@@ -42,7 +44,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
 
 
     public Optional<Component> getByNameAndVersion(String name, Long version) {
-        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
+        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC, SECURITY_GROUP_ID, SECURITY_GROUP_NM from "
                 + getMetadataRepository().getTableNameByLabel("Components")
                 + " where COMP_NM = " + SQLTools.getStringForSQL(name);
         CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
@@ -62,11 +64,15 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
             List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
 
+            SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.fromString(crsComponent.getString("SECURITY_GROUP_ID")));
+            String securityGroupName = crsComponent.getString("SECURITY_GROUP_NM");
             String componentType = crsComponent.getString("COMP_TYP_NM");
             String componentDescription = crsComponent.getString("COMP_DSC");
             String componentName = crsComponent.getString("COMP_NM");
             crsComponent.close();
             return Optional.of(new Component(componentKey,
+                    securityGroupKey,
+                    securityGroupName,
                     componentType,
                     componentName,
                     componentDescription,
@@ -79,7 +85,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     }
 
     public Optional<Component> getByNameAndLatestVersion(String name) {
-        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
+        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC, SECURITY_GROUP_ID, SECURITY_GROUP_NM from "
                 + getMetadataRepository().getTableNameByLabel("Components")
                 + " where COMP_NM = " + SQLTools.getStringForSQL(name);
         CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
@@ -103,10 +109,14 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
 
             String componentType = crsComponent.getString("COMP_TYP_NM");
+            SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.fromString(crsComponent.getString("SECURITY_GROUP_ID")));
+            String securityGroupName = crsComponent.getString("SECURITY_GROUP_NM");
             String componentDescription = crsComponent.getString("COMP_DSC");
             String componentName = crsComponent.getString("COMP_NM");
             crsComponent.close();
             return Optional.of(new Component(componentKey,
+                    securityGroupKey,
+                    securityGroupName,
                     componentType,
                     componentName,
                     componentDescription,
@@ -119,7 +129,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     }
 
     public Optional<Component> get(ComponentKey componentKey) {
-        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC from "
+        String queryComponent = "select COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC, SECURITY_GROUP_ID, SECURITY_GROUP_NM from "
                 + getMetadataRepository().getTableNameByLabel("Components")
                 + " where COMP_ID = " + SQLTools.getStringForSQL(componentKey.getId());
         CachedRowSet crsComponent = getMetadataRepository().executeQuery(queryComponent, "reader");
@@ -139,11 +149,15 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
             List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
 
+            SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.fromString(crsComponent.getString("SECURITY_GROUP_ID")));
+            String securityGroupName = crsComponent.getString("SECURITY_GROUP_NM");
             String componentType = crsComponent.getString("COMP_TYP_NM");
             String componentDescription = crsComponent.getString("COMP_DSC");
             String componentName = crsComponent.getString("COMP_NM");
             crsComponent.close();
             return Optional.of(new Component(componentKey,
+                    securityGroupKey,
+                    securityGroupName,
                     componentType,
                     componentName,
                     componentDescription,
@@ -281,8 +295,10 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     private Optional<String> getInsertStatement(Component component) {
         if (!existsById(component.getMetadataKey().getId())) {
             return Optional.of("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Components") +
-                    " (COMP_ID, COMP_TYP_NM, COMP_NM, COMP_DSC) VALUES (" +
+                    " (COMP_ID, SECURITY_GROUP_ID, SECURITY_GROUP_NM, COMP_TYP_NM, COMP_NM, COMP_DSC) VALUES (" +
                     SQLTools.getStringForSQL(component.getMetadataKey().getId()) + "," +
+                    SQLTools.getStringForSQL(component.getSecurityGroupKey().getUuid()) + "," +
+                    SQLTools.getStringForSQL(component.getSecurityGroupName()) + "," +
                     SQLTools.getStringForSQL(component.getType()) + "," +
                     SQLTools.getStringForSQL(component.getName()) + "," +
                     SQLTools.getStringForSQL(component.getDescription()) + ");");

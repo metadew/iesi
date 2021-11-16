@@ -77,8 +77,7 @@ public class DatasetController {
     @SuppressWarnings("unchecked")
     @GetMapping("")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
-    public PagedModel<DatasetDto> getAll(Pageable pageable,
-                                         @RequestParam(required = false, name = "name") String name) {
+    public PagedModel<DatasetDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
         Page<DatasetDto> datasetDtoPage = datasetDtoService.fetchAll(
                 SecurityContextHolder.getContext().getAuthentication(),
                 pageable,

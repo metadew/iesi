@@ -92,12 +92,12 @@ class OpenAPIControllerTest {
         given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
-                        multipart("/openapi/transform")
-                                .file(multipartFile)
-                                .header("Content-Type", "multipart/form-data")
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
+                multipart("/openapi/transform")
+                        .file(multipartFile)
+                        .header("Content-Type", "multipart/form-data")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$.title").isString())
@@ -116,12 +116,12 @@ class OpenAPIControllerTest {
         given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
-                        multipart("/openapi/transform")
-                                .file(multipartFile)
-                                .header("Content-Type", "multipart/form-data")
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
+                multipart("/openapi/transform")
+                        .file(multipartFile)
+                        .header("Content-Type", "multipart/form-data")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$.title").isString())
@@ -140,11 +140,11 @@ class OpenAPIControllerTest {
         given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
-                        post("/openapi/transform")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(jsonContent)
-                )
+                post("/openapi/transform")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(jsonContent)
+        )
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$.title").isString())
                 .andExpect(jsonPath("$.version").isString())
@@ -160,7 +160,9 @@ class OpenAPIControllerTest {
         ConnectionParameterDto tls = new ConnectionParameterDto("tls", "Y");
         ConnectionDto connectionDto = new ConnectionDto(
                 "Swagger Petstore - OpenAPI 3.22",
-                "http", "small description",
+                "PUBLIC",
+                "http",
+                "small description",
                 Stream.of(
                         new ConnectionEnvironmentDto(
                                 "env0",
@@ -210,7 +212,7 @@ class OpenAPIControllerTest {
         ConnectionParameter tls = new ConnectionParameter(
                 new ConnectionParameterKey(connectionKey, "tls"),
                 "Y");
-        Connection connection = new Connection(connectionKey, "http", "small description", Arrays.asList(baseUrl, host, tls));
+        Connection connection = new Connection(connectionKey, new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", "http", "small description", Arrays.asList(baseUrl, host, tls));
 
 
         ComponentParameter endpoint = new ComponentParameter(

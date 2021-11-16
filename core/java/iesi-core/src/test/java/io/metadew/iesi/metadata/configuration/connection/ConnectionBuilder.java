@@ -3,6 +3,7 @@ package io.metadew.iesi.metadata.configuration.connection;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,8 @@ public class ConnectionBuilder {
     private int numberOfParameters = 0;
     private List<ConnectionParameter> connectionParameters = new ArrayList<>();
     private String connectionName;
+    private SecurityGroupKey securityGroupKey;
+    private String securityGroupName;
     private String environmentName;
     private String description;
     private String type;
@@ -21,6 +24,17 @@ public class ConnectionBuilder {
     public ConnectionBuilder(String connectionName, String environmentName) {
         this.connectionName = connectionName;
         this.environmentName = environmentName;
+    }
+
+    public ConnectionBuilder securityGroupName(String securityGroupName) {
+        this.securityGroupName = securityGroupName;
+        return this;
+    }
+
+
+    public ConnectionBuilder securityGroupKey(SecurityGroupKey securityGroupKey) {
+        this.securityGroupKey = securityGroupKey;
+        return this;
     }
 
     public ConnectionBuilder description(String description) {
@@ -49,7 +63,13 @@ public class ConnectionBuilder {
                 .boxed()
                 .map(i -> new ConnectionParameterBuilder(connectionName, environmentName, "parameter" + i).build())
                 .collect(Collectors.toList()));
-        return new Connection(new ConnectionKey(connectionName, environmentName), type == null ? "dummy" : type, description == null ? "dummy" : description, connectionParameters);
+        return new Connection(
+                new ConnectionKey(connectionName, environmentName),
+                securityGroupKey,
+                securityGroupName,
+                type == null ? "dummy" : type,
+                description == null ? "dummy" : description,
+                connectionParameters);
     }
 
 }

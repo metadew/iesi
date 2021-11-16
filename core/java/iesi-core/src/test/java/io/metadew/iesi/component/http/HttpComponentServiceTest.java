@@ -225,6 +225,8 @@ class HttpComponentServiceTest {
 
         ConnectionConfiguration.getInstance().insert(new Connection(
                 "connectionName",
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http",
                 "description",
                 "env0",
@@ -289,6 +291,8 @@ class HttpComponentServiceTest {
 
         ConnectionConfiguration.getInstance().insert(new Connection(
                 "connectionName",
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http",
                 "description",
                 "env0",
@@ -376,6 +380,8 @@ class HttpComponentServiceTest {
 
         ConnectionConfiguration.getInstance().insert(new Connection(
                 "connectionName",
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http",
                 "description",
                 "env0",

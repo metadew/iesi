@@ -240,6 +240,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -253,6 +255,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -302,6 +306,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -315,6 +321,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -388,6 +396,8 @@ class HttpComponentServiceTest {
 
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -401,6 +411,8 @@ class HttpComponentServiceTest {
         ));
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",
@@ -415,6 +427,8 @@ class HttpComponentServiceTest {
 
         ComponentConfiguration.getInstance().insert(new Component(
                 new ComponentKey("component1", componentVersion3),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "component1",
                 "description",

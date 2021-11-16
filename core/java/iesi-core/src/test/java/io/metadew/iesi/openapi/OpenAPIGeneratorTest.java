@@ -36,7 +36,6 @@ class OpenAPIGeneratorTest {
     String title;
     String version;
 
-
     @BeforeAll
     static void prepare() {
         Configuration.getInstance();
@@ -74,11 +73,12 @@ class OpenAPIGeneratorTest {
     @Test
     void transformFromFile() throws IOException {
         File file = File.createTempFile("doc", null);
+        OpenAPIGenerator openAPIGenerator = OpenAPIGenerator.getInstance();
         try (OutputStream os = new FileOutputStream(file)) {
             os.write(docFile);
         }
 
-        assertThat(OpenAPIGenerator.getInstance().transformFromFile(file.getPath())).isEqualTo(getTransformResult());
+        assertThat(openAPIGenerator.transformFromFile(file.getPath())).isEqualTo(getTransformResult());
     }
 
     @Test
@@ -132,6 +132,8 @@ class OpenAPIGeneratorTest {
         );
         Component component = new Component(
                 componentKey,
+                securityGroup.getMetadataKey(),
+                "PUBLIC",
                 "http.request",
                 "updatePet",
                 "Update an existing pet by Id",

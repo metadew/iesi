@@ -15,7 +15,6 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 @Log4j2
 @RestController
 @CrossOrigin
-@Tag(name = "datasets", description = "Everything about datasets")
 @RequestMapping("/datasets")
 @ConditionalOnWebApplication
 public class DatasetController {

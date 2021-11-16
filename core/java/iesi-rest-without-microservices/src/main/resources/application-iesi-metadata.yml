@@ -1250,7 +1250,6 @@ iesi:
             type: STRING
             length: 255
             nullable: false
-            primaryKey: true
             defaultTimestamp:
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
@@ -1259,6 +1258,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           EXIT:
             description: Unique identifier for the script request item
             order: 1
@@ -1374,6 +1374,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           SCRPT_FILENAME:
             description: Unique identifier for the script request item
             order: 1
@@ -1400,6 +1401,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           SCRPT_NAME:
             description: Unique identifier for the script request item
             order: 1
@@ -1592,30 +1594,42 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          SECURITY_GROUP_NM:
+            description: name of the security group
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
           COMP_TYP_NM:
             description: Keyword for the component type
-            order: 2
+            order: 4
             type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           COMP_NM:
             description: Unique short name for the component
-            order: 3
+            order: 5
             type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           COMP_DSC:
             description: Description of the component
-            order: 4
+            order: 6
             type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 5
+            order: 7
             type: TIMESTAMP
             length: 0
             nullable: false
@@ -1875,35 +1889,35 @@ iesi:
             defaultTimestamp:
           CREATED_BY:
             description: Username of the user that created the script
-            order: 5
+            order: 4
             type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           CREATED_AT:
             description: the timestamp of creation
-            order: 6
+            order: 5
             type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           LAST_MODIFIED_BY:
             description: Username of the user that Modified the script
-            order: 4
+            order: 6
             type: STRING
             length: 255
             nullable: true
             defaultTimestamp:
           LAST_MODIFIED_AT:
             description: the timestamp of modification
-            order: 5
+            order: 7
             type: STRING
             length: 255
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 6
+            order: 8
             type: TIMESTAMP
             length: 0
             nullable: false
@@ -2605,67 +2619,6 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
-      - name: AUD_SCRIPT
-        label: ScriptAudit
-        description: Store Script Audit
-        category: design
-        fields:
-          ID:
-            description: Unique ID for the Script Audit
-            order: 1
-            type: STRING
-            length: 255
-            nullable: false
-            primaryKey: true
-          USERNAME:
-            description: username of user
-            order: 2
-            type: STRING
-            length: 255
-            nullable: false
-          USER_ID:
-            description: UUID of User
-            order: 3
-            type: STRING
-            length: 255
-            nullable: false
-          ACTION:
-            description: enumeration of the possible actions of the users
-            order: 4
-            type: STRING
-            length: 255
-            nullable: false
-          TIMESTAMP:
-            description: timestamp of the action
-            order: 5
-            type: STRING
-            length: 255
-            nullable: false
-            defaultTimestamp:
-          SCRIPT_ID:
-            description: Id of the script being updated
-            order: 6
-            type: STRING
-            length: 255
-            nullable: false
-          SCRIPT_NAME:
-            description: name of the script being updated
-            order: 7
-            type: STRING
-            length: 2000
-            nullable: false
-          SCRIPT_VERSION:
-            description: version of the script being updated
-            order: 8
-            type: NUMBER
-            length: 0
-            nullable: false
-          SECURITY_GROUP:
-            description: security group of the script being updated
-            order: 9
-            type: STRING
-            length: 255
-            nullable: false
       - name: RES_ACTION_OUT
         label: ActionResultOutputs
         description: Opertional metadata for action result outputs
@@ -2685,8 +2638,8 @@ iesi:
             type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp:
             primaryKey: true
+            defaultTimestamp:
           ACTION_ID:
             description: Unique identifier for the action design
             order: 3
@@ -2913,6 +2866,67 @@ iesi:
             length: 0
             nullable: false
             defaultTimestamp: true
+      - name: AUD_SCRIPT
+        label: ScriptAudit
+        description: Store Script Audit
+        category: design
+        fields:
+          ID:
+            description: Unique ID for the Script Audit
+            order: 1
+            type: STRING
+            length: 255
+            nullable: false
+            primaryKey: true
+          USERNAME:
+            description: username of user
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          USER_ID:
+            description: UUID of User
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
+          ACTION:
+            description: enumeration of the possible actions of the users
+            order: 4
+            type: STRING
+            length: 255
+            nullable: false
+          TIMESTAMP:
+            description: timestamp of the action
+            order: 5
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
+          SCRIPT_ID:
+            description: Id of the script being updated
+            order: 6
+            type: STRING
+            length: 255
+            nullable: false
+          SCRIPT_NAME:
+            description: name of the script being updated
+            order: 7
+            type: STRING
+            length: 2000
+            nullable: false
+          SCRIPT_VERSION:
+            description: version of the script being updated
+            order: 8
+            type: NUMBER
+            length: 0
+            nullable: false
+          SECURITY_GROUP:
+            description: security group of the script being updated
+            order: 9
+            type: STRING
+            length: 255
+            nullable: false
       - name: TRC_COMP_DES
         label: TraceComponentDesign
         description: to do

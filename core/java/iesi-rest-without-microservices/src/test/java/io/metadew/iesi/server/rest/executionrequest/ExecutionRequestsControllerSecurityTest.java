@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.configuration.security.jwt;
+package io.metadew.iesi.server.rest.executionrequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
@@ -270,7 +270,7 @@ class ExecutionRequestsControllerSecurityTest {
                                 .impersonations(new HashSet<>())
                                 .parameters(new HashSet<>())
                                 .build()
-                ).collect(Collectors.toSet()))
+                ).collect(Collectors.toList()))
                 .context("context")
                 .description("description")
                 .email("email")
@@ -297,7 +297,7 @@ class ExecutionRequestsControllerSecurityTest {
                                 .impersonations(new HashSet<>())
                                 .parameters(new HashSet<>())
                                 .build()
-                ).collect(Collectors.toSet()))
+                ).collect(Collectors.toList()))
                 .context("context")
                 .description("description")
                 .email("email")
@@ -339,7 +339,7 @@ class ExecutionRequestsControllerSecurityTest {
                                 .impersonations(new HashSet<>())
                                 .parameters(new HashSet<>())
                                 .build()
-                ).collect(Collectors.toSet()))
+                ).collect(Collectors.toList()))
                 .context("context")
                 .description("description")
                 .email("email")

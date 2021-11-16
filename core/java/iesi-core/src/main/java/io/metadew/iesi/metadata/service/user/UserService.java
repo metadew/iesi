@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Log4j2
 public class UserService {
@@ -41,6 +42,10 @@ public class UserService {
 
     public Optional<User> get(UserKey userKey) {
         return UserConfiguration.getInstance().get(userKey);
+    }
+
+    public Optional<UUID> getUuidByName(String username) {
+        return UserConfiguration.getInstance().getUuidByName(username);
     }
 
     public Optional<User> get(String username) {

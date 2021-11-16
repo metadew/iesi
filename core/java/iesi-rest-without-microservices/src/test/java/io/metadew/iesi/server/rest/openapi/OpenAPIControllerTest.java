@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -137,7 +136,7 @@ class OpenAPIControllerTest {
     void transformFromBody() throws Exception {
         String jsonContent = new String(jsonFile);
 
-        given(openAPIService.transform(anyString())).willReturn(getTransformResult());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
         given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
@@ -162,7 +161,8 @@ class OpenAPIControllerTest {
         ConnectionDto connectionDto = new ConnectionDto(
                 "Swagger Petstore - OpenAPI 3.22",
                 "PUBLIC",
-                "http", "small description",
+                "http",
+                "small description",
                 Stream.of(
                         new ConnectionEnvironmentDto(
                                 "env0",
@@ -177,6 +177,7 @@ class OpenAPIControllerTest {
         ComponentVersionDto componentVersionDto = new ComponentVersionDto(1L, "Update an existing pet by Id");
         ComponentDto componentDto = new ComponentDto(
                 "http.request",
+                "PUBLIC",
                 "updatePet",
                 "Update an existing pet by Id",
                 componentVersionDto,
@@ -211,13 +212,7 @@ class OpenAPIControllerTest {
         ConnectionParameter tls = new ConnectionParameter(
                 new ConnectionParameterKey(connectionKey, "tls"),
                 "Y");
-        Connection connection = new Connection(
-                connectionKey,
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "http",
-                "small description",
-                Arrays.asList(baseUrl, host, tls));
+        Connection connection = new Connection(connectionKey, new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", "http", "small description", Arrays.asList(baseUrl, host, tls));
 
 
         ComponentParameter endpoint = new ComponentParameter(
@@ -234,6 +229,8 @@ class OpenAPIControllerTest {
         );
         Component component = new Component(
                 componentKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "updatePet",
                 "Update an existing pet by Id",

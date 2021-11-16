@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.user;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.server.rest.user.role.PrivilegeDto;
 import io.metadew.iesi.server.rest.user.role.RoleTeamDto;
+import io.metadew.iesi.server.rest.user.team.TeamSecurityGroupDto;
 import lombok.Data;
 
 import javax.sql.rowset.CachedRowSet;
@@ -53,6 +54,18 @@ public class UserDtoListResultSetExtractor {
                     k -> mapRowToUserRoleDtoBuilder(cachedRowSet)
             );
             addPrivilege(userRoleDtoBuilder, cachedRowSet);
+            addTeamSecurityGroup(userRoleDtoBuilder, cachedRowSet);
+        }
+    }
+
+    private void addTeamSecurityGroup(UserRoleDtoBuilder userRoleDtoBuilder, CachedRowSet cachedRowSet) throws SQLException {
+        if (cachedRowSet.getString("security_group_id") != null) {
+            userRoleDtoBuilder.getTeam().getSecurityGroups().add(
+                    new TeamSecurityGroupDto(
+                            UUID.fromString(cachedRowSet.getString("security_group_id")),
+                            cachedRowSet.getString("security_group_name")
+                    )
+            );
         }
     }
 
@@ -69,12 +82,14 @@ public class UserDtoListResultSetExtractor {
 
     private UserRoleDtoBuilder mapRowToUserRoleDtoBuilder(CachedRowSet cachedRowSet) {
         try {
+
             return new UserRoleDtoBuilder(
                     UUID.fromString(cachedRowSet.getString("role_id")),
                     cachedRowSet.getString("role_role_name"),
                     new RoleTeamDto(
                             UUID.fromString(cachedRowSet.getString("team_id")),
-                            cachedRowSet.getString("team_name")
+                            cachedRowSet.getString("team_name"),
+                            new HashSet<>()
                     ),
                     new HashSet<>());
         } catch (SQLException e) {

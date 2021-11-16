@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.dataset;
+package io.metadew.iesi.server.rest.dataset.dto;
 
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import lombok.*;
@@ -16,6 +16,8 @@ public class DatasetPostDto {
 
     @NotBlank
     private String name;
+    @NotBlank
+    private String securityGroupName;
 
     @NotNull
     private Set<DatasetImplementationPostDto> implementations;

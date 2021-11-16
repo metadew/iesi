@@ -14,16 +14,28 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          SECURITY_GROUP_NM:
+            description: name of the security group
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
           NAME:
             description: Name of the dataset
-            order: 2
+            order: 4
             type: STRING
             length: 255
             nullable: false
             unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 4
+            order: 5
             type: TIMESTAMP
             length: 0
             nullable: false

@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.configuration;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
+import io.metadew.iesi.common.configuration.metadata.ldap.MetadataLdapConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetService;
@@ -42,6 +43,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -274,6 +277,22 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ScriptExecutorService scriptExecutorService() {
         return ScriptExecutorService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public LdapContextSource contextSource() {
+        LdapContextSource contextSource = new LdapContextSource(); contextSource.setUrl(MetadataLdapConfiguration.getInstance().getProperty("ldap.url"));
+        contextSource.setBase(MetadataLdapConfiguration.getInstance().getProperty("ldap.partitionSuffix"));
+        contextSource.setUserDn(MetadataLdapConfiguration.getInstance().getProperty("ldap.principal"));
+        contextSource.setPassword(MetadataLdapConfiguration.getInstance().getProperty("ldap.password"));
+        return contextSource;
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public LdapTemplate ldapTemplate() {
+        return new LdapTemplate(contextSource());
     }
 
 }

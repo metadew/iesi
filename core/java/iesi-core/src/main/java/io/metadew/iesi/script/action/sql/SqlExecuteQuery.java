@@ -59,17 +59,24 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     }
 
     private boolean convertAppendOutput(DataType appendOutput) {
-        if (appendOutput instanceof Text) {
+        if (appendOutput == null ){
+            return false;
+        }
+        else if (appendOutput instanceof Text) {
             return appendOutput.toString().equalsIgnoreCase("y");
         } else {
-         /*   log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
-                    appendOutput.getClass()));*/
+
+            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
+                    appendOutput.getClass()));
             return false;
         }
     }
 
     private String convertDatasetReferenceName(DataType datasetReferenceName) {
-        if (datasetReferenceName instanceof Text) {
+        if (datasetReferenceName == null){
+            return null;
+        }
+        else if (datasetReferenceName instanceof Text) {
             return datasetReferenceName.toString();
         } else {
             log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",

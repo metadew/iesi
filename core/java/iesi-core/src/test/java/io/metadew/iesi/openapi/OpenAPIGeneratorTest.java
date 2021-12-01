@@ -73,11 +73,12 @@ class OpenAPIGeneratorTest {
     @Test
     void transformFromFile() throws IOException {
         File file = File.createTempFile("doc", null);
+        OpenAPIGenerator openAPIGenerator = OpenAPIGenerator.getInstance();
         try (OutputStream os = new FileOutputStream(file)) {
             os.write(docFile);
         }
 
-        assertThat(OpenAPIGenerator.getInstance().transformFromFile(file.getPath())).isEqualTo(getTransformResult());
+        assertThat(openAPIGenerator.transformFromFile(file.getPath())).isEqualTo(getTransformResult());
     }
 
     @Test
@@ -114,7 +115,7 @@ class OpenAPIGeneratorTest {
         ConnectionParameter tls = new ConnectionParameter(
                 new ConnectionParameterKey(connectionKey, "tls"),
                 "Y");
-        Connection connection = new Connection(connectionKey, "http", "small description", Arrays.asList(baseUrl, host, tls));
+        Connection connection = new Connection(connectionKey, securityGroup.getMetadataKey(), "PUBLIC", "http", "small description", Arrays.asList(baseUrl, host, tls));
 
 
         ComponentParameter endpoint = new ComponentParameter(

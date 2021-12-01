@@ -4,6 +4,7 @@ import io.metadew.iesi.data.generation.execution.GenerationObjectExecution;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.instruction.data.belgium.BelgiumNationalRegisterNumber;
 import io.metadew.iesi.script.execution.instruction.data.date.*;
+import io.metadew.iesi.script.execution.instruction.data.math.*;
 import io.metadew.iesi.script.execution.instruction.data.number.NumberBetween;
 import io.metadew.iesi.script.execution.instruction.data.number.NumberFormat;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonEmail;
@@ -69,6 +70,21 @@ public class DataInstructionRepository {
       
         RandomUUID uuid = new RandomUUID();
         dataInstructions.put(uuid.getKeyword(), uuid);
+
+        Addition addition = new Addition();
+        dataInstructions.put(addition.getKeyword(), addition);
+
+        Substraction substraction = new Substraction();
+        dataInstructions.put(substraction.getKeyword(), substraction);
+
+        Division division = new Division();
+        dataInstructions.put(division.getKeyword(), division);
+
+        Exponentiation exponentiation = new Exponentiation();
+        dataInstructions.put(exponentiation.getKeyword(), exponentiation);
+
+        Multiplication multiplication = new Multiplication();
+        dataInstructions.put(multiplication.getKeyword(), multiplication);
 
         return dataInstructions;
     }

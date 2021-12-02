@@ -14,16 +14,28 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          SECURITY_GROUP_NM:
+            description: name of the security group
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
           NAME:
             description: Name of the dataset
-            order: 2
+            order: 4
             type: STRING
             length: 255
             nullable: false
             unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 4
+            order: 5
             type: TIMESTAMP
             length: 0
             nullable: false
@@ -161,23 +173,35 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          SECURITY_GROUP_NM:
+            description: name of the security group
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
           CONN_TYP_NM:
             description: Keyword for the connection type
-            order: 2
+            order: 4
             type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           CONN_DSC:
             description: Description for the connection
-            order: 3
+            order: 5
             type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 4
+            order: 6
             type: TIMESTAMP
             length: 0
             nullable: false
@@ -1238,7 +1262,6 @@ iesi:
             type: STRING
             length: 255
             nullable: false
-            primaryKey: true
             defaultTimestamp:
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
@@ -1247,6 +1270,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           EXIT:
             description: Unique identifier for the script request item
             order: 1
@@ -1362,6 +1386,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           SCRPT_FILENAME:
             description: Unique identifier for the script request item
             order: 1
@@ -1388,6 +1413,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           SCRPT_NAME:
             description: Unique identifier for the script request item
             order: 1
@@ -1580,30 +1606,42 @@ iesi:
             nullable: false
             primaryKey: true
             defaultTimestamp:
+          SECURITY_GROUP_ID:
+            description: id of the security group
+            order: 2
+            type: STRING
+            length: 255
+            nullable: false
+          SECURITY_GROUP_NM:
+            description: name of the security group
+            order: 3
+            type: STRING
+            length: 255
+            nullable: false
           COMP_TYP_NM:
             description: Keyword for the component type
-            order: 2
+            order: 4
             type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           COMP_NM:
             description: Unique short name for the component
-            order: 3
+            order: 5
             type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           COMP_DSC:
             description: Description of the component
-            order: 4
+            order: 6
             type: STRING
             length: 2000
             nullable: true
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 5
+            order: 7
             type: TIMESTAMP
             length: 0
             nullable: false

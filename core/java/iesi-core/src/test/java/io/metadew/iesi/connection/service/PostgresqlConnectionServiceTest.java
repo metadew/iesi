@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
 import java.text.MessageFormat;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +43,8 @@ class PostgresqlConnectionServiceTest {
     @Test
     void getDatabaseTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.postgresql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -58,6 +62,8 @@ class PostgresqlConnectionServiceTest {
     @Test
     void getDatabaseWithEncryptedPasswordTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.postgresql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -74,6 +80,8 @@ class PostgresqlConnectionServiceTest {
     @Test
     void getDatabaseConnectionUrlTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.postgresql",
                 "description",
                 Stream.of(
@@ -89,6 +97,8 @@ class PostgresqlConnectionServiceTest {
     @Test
     void getDatabaseMissingHost() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.postgresql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
@@ -103,6 +113,8 @@ class PostgresqlConnectionServiceTest {
     @Test
     void getDatabaseMissingPort() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.postgresql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -117,6 +129,8 @@ class PostgresqlConnectionServiceTest {
     @Test
     void getDatabaseMissingDatabase() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.postgresql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -131,6 +145,8 @@ class PostgresqlConnectionServiceTest {
     @Test
     void getDatabaseMissingUser() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.postgresql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -145,6 +161,8 @@ class PostgresqlConnectionServiceTest {
     @Test
     void getDatabaseMissingPassword() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.postgresql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),

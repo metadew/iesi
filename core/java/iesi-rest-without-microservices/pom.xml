@@ -96,6 +96,11 @@
             <version>8.0.26</version>
         </dependency>
         <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>19.3.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>io.metadew</groupId>
             <artifactId>iesi-core</artifactId>
             <version>0.8.0</version>

@@ -63,11 +63,6 @@ public class ScriptExecutionRequestBuilder {
         return this;
     }
 
-   /* public ScriptExecutionRequestBuilder exit(boolean exit) {
-        this.exit = exit;
-        return this;
-    }*/
-
     public ScriptExecutionRequestBuilder parameters(List<ScriptExecutionRequestParameter> parameters) {
         this.parameters.addAll(parameters);
         return this;

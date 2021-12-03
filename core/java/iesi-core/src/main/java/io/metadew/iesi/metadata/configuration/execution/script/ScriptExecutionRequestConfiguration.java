@@ -81,7 +81,6 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                         new ExecutionRequestKey(
                                 cachedRowSet.getString("ID")),
                         cachedRowSet.getString("ENVIRONMENT"),
-                      //  SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
                         ScriptExecutionRequestImpersonationConfiguration.getInstance().getByScriptExecutionRequest(scriptExecutionRequestKey),
                         ScriptExecutionRequestParameterConfiguration.getInstance().getByScriptExecutionRequest(scriptExecutionRequestKey),
                         ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
@@ -102,7 +101,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
     public List<ScriptExecutionRequest> getAll() {
         try {
             List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
-            String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.ID," /* SCRIPT_EXEC_REQ.EXIT, "*/ +
+            String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.ID," +
                     "SCRIPT_EXEC_REQ.ENVIRONMENT, SCRIPT_EXEC_REQ.ST_NM, SCRIPT_EXEC_REQ.ST_NM, " +
                     "SCRIPT_FILE_EXEC_REQ.SCRPT_FILENAME, " +
                     "SCRIPT_NAME_EXEC_REQ.SCRPT_NAME, SCRIPT_NAME_EXEC_REQ.SCRPT_VRS, " +
@@ -127,7 +126,6 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                             new ExecutionRequestKey(cachedRowSet.getString("ID")),
                             cachedRowSet.getString("SCRPT_FILENAME"),
                             cachedRowSet.getString("ENVIRONMENT"),
-                    //        SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
                             ScriptExecutionRequestImpersonationConfiguration.getInstance()
                                     .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))),
                             ScriptExecutionRequestParameterConfiguration.getInstance()
@@ -137,7 +135,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                     scriptExecutionRequests.add(new ScriptNameExecutionRequest(
                             new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                             new ExecutionRequestKey(cachedRowSet.getString("ID")),
-                            cachedRowSet.getString("ENVIRONMENT"),/* SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),*/ ScriptExecutionRequestImpersonationConfiguration.getInstance()
+                            cachedRowSet.getString("ENVIRONMENT"), ScriptExecutionRequestImpersonationConfiguration.getInstance()
                             .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestParameterConfiguration.getInstance()
                             .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
                             cachedRowSet.getLong("SCRPT_VRS")
@@ -199,7 +197,6 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                 " (SCRPT_REQUEST_ID, ID, ENVIRONMENT, ST_NM) VALUES (" +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
-        //        SQLTools.getStringForSQL(scriptExecutionRequest.isExit()) + "," +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getEnvironment()) + "," +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestStatus().value()) + ");");
         if (scriptExecutionRequest instanceof ScriptFileExecutionRequest) {
@@ -224,7 +221,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
     public List<ScriptExecutionRequest> getByExecutionRequest(ExecutionRequestKey executionRequestKey) {
         try {
             List<ScriptExecutionRequest> scriptExecutionRequests = new ArrayList<>();
-            String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.ID, "/*SCRIPT_EXEC_REQ.EXIT, "*/ +
+            String query = "SELECT SCRIPT_EXEC_REQ.SCRPT_REQUEST_ID, SCRIPT_EXEC_REQ.ID, " +
                     "SCRIPT_EXEC_REQ.ENVIRONMENT, SCRIPT_EXEC_REQ.ST_NM, " +
                     "SCRIPT_FILE_EXEC_REQ.SCRPT_FILENAME, " +
                     "SCRIPT_NAME_EXEC_REQ.SCRPT_NAME, SCRIPT_NAME_EXEC_REQ.SCRPT_VRS, " +
@@ -251,7 +248,6 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                             executionRequestKey,
                             cachedRowSet.getString("SCRPT_FILENAME"),
                             cachedRowSet.getString("ENVIRONMENT"),
-                    //        SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),
                             ScriptExecutionRequestImpersonationConfiguration.getInstance()
                                     .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))),
                             ScriptExecutionRequestParameterConfiguration.getInstance()
@@ -261,7 +257,7 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
                     scriptExecutionRequests.add(new ScriptNameExecutionRequest(
                             new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID")),
                             executionRequestKey,
-                            cachedRowSet.getString("ENVIRONMENT"), /*SQLTools.getBooleanFromSql(cachedRowSet.getString("EXIT")),*/ ScriptExecutionRequestImpersonationConfiguration.getInstance()
+                            cachedRowSet.getString("ENVIRONMENT"), ScriptExecutionRequestImpersonationConfiguration.getInstance()
                             .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestParameterConfiguration.getInstance()
                             .getByScriptExecutionRequest(new ScriptExecutionRequestKey(cachedRowSet.getString("SCRPT_REQUEST_ID"))), ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")), cachedRowSet.getString("SCRPT_NAME"),
                             cachedRowSet.getLong("SCRPT_VRS")
@@ -320,7 +316,6 @@ public class ScriptExecutionRequestConfiguration extends Configuration<ScriptExe
         List<String> queries = new ArrayList<>();
         queries.add("UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequests") + " SET " +
                 "ID=" + SQLTools.getStringForSQL(scriptExecutionRequest.getExecutionRequestKey().getId()) + ", " +
-         //       "EXIT=" + SQLTools.getStringForSQL(scriptExecutionRequest.isExit()) + "," +
                 "ENVIRONMENT=" + SQLTools.getStringForSQL(scriptExecutionRequest.getEnvironment()) + "," +
                 "ST_NM=" + SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestStatus().value()) + " WHERE " +
                 "SCRPT_REQUEST_ID = " + SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + ";");

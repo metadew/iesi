@@ -59,13 +59,12 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     }
 
     private boolean convertAppendOutput(DataType appendOutput) {
-        if (appendOutput == null ){
+        if (appendOutput == null){
             return false;
         }
         else if (appendOutput instanceof Text) {
             return appendOutput.toString().equalsIgnoreCase("y");
         } else {
-
             log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
                     appendOutput.getClass()));
             return false;

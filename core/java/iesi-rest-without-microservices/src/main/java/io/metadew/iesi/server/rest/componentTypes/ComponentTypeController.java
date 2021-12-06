@@ -5,10 +5,12 @@ import io.metadew.iesi.server.rest.componentTypes.dto.ComponentTypeDto;
 import io.metadew.iesi.server.rest.componentTypes.dto.ComponentTypeDtoResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +43,6 @@ public class ComponentTypeController {
     public ComponentTypeDto getByName(@PathVariable String name) {
         return MetadataComponentTypesConfiguration.getInstance().getComponentType(name)
                 .map(componentType -> componentTypeDtoResourceAssembler.toModel(componentType))
-                .orElseThrow(() -> new RuntimeException("Could not find action type " + name));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find action type " + name));
     }
 }

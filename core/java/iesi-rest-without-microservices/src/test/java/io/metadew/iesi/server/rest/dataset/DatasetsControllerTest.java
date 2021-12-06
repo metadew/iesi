@@ -29,6 +29,7 @@ import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatas
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValuePostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,6 +50,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -387,9 +389,8 @@ class DatasetsControllerTest {
 
         when(datasetService.getByName("dataset"))
                 .thenReturn(Optional.of(Dataset.builder().metadataKey(new DatasetKey(UUID.randomUUID())).build()));
-
-        assertThatThrownBy(() -> datasetController.create(datasetPostDto)).isInstanceOf(MetadataAlreadyExistsException.class);
-
+     
+        assertThatThrownBy(() -> datasetController.create(datasetPostDto)).isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
@@ -547,7 +548,6 @@ class DatasetsControllerTest {
                 .build();
         when(datasetService.exists(new DatasetKey(datasetUuid)))
                 .thenReturn(false);
-
         assertThatThrownBy(() -> datasetController.update(datasetUuid, datasetPutDto)).isInstanceOf(MetadataDoesNotExistException.class);
     }
 
@@ -576,6 +576,7 @@ class DatasetsControllerTest {
                 .thenReturn(false);
         verify(datasetService, times(0))
                 .delete((new DatasetKey(datasetUuid)));
+      
         assertThatThrownBy(() -> datasetController.delete(datasetUuid)).isInstanceOf(MetadataDoesNotExistException.class);
     }
 
@@ -605,7 +606,7 @@ class DatasetsControllerTest {
                 .thenReturn(false);
         verify(datasetImplementationService, times(0))
                 .deleteByDatasetId((new DatasetKey(datasetUuid)));
-
+      
         assertThatThrownBy(() -> datasetController.deleteImplementationsByDatasetUuid(datasetUuid)).isInstanceOf(MetadataDoesNotExistException.class);
     }
 
@@ -651,7 +652,6 @@ class DatasetsControllerTest {
         when(datasetService.get(new DatasetKey(datasetUuid))).thenReturn(Optional.of(Dataset.builder().securityGroupName("PUBLIC").build()));
         when(datasetImplementationService.exists(new DatasetImplementationKey(datasetImplementationUuid)))
                 .thenReturn(false);
-
         verify(datasetImplementationService, times(0))
                 .delete((new DatasetImplementationKey(datasetImplementationUuid)));
         assertThatThrownBy(() -> datasetController.deleteImplementationByUuid(datasetUuid, datasetImplementationUuid)).isInstanceOf(MetadataDoesNotExistException.class);

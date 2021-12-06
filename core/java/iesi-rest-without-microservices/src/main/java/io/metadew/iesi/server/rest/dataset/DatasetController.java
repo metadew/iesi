@@ -24,6 +24,7 @@ import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoService;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -32,12 +33,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -88,7 +91,7 @@ public class DatasetController {
             return datasetDtoPagedResourcesAssembler.toModel(datasetDtoPage, datasetDtoModelAssembler::toModel);
         return (PagedModel<DatasetDto>) datasetDtoPagedResourcesAssembler.toEmptyModel(datasetDtoPage, DatasetDto.class);
     }
-
+  
     @GetMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     @PostAuthorize("hasPrivilege('DATASETS_READ', returnObject.securityGroupName)")
@@ -132,7 +135,8 @@ public class DatasetController {
     public ResponseEntity<DatasetDto> create(@RequestBody DatasetPostDto datasetPostDto) {
         Optional<Dataset> dataset = datasetService.getByName(datasetPostDto.getName());
         if (dataset.isPresent()) {
-            throw new MetadataAlreadyExistsException(dataset.get().getMetadataKey());
+             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Dataset " + datasetPostDto.getName() + " already exists");
         }
 
         String datasetName = datasetPostDto.getName();
@@ -207,7 +211,8 @@ public class DatasetController {
                                 .collect(Collectors.toSet())
                 );
             } else {
-                return ResponseEntity.badRequest().build();
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Please specify the correct type of DatasetImplementation");
             }
 
             datasetImplementationService.create(datasetImplementation);
@@ -216,7 +221,7 @@ public class DatasetController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } else {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new DatasetKey(uuid));
         }
     }
 
@@ -226,7 +231,6 @@ public class DatasetController {
         if (!datasetService.exists(new DatasetKey(uuid))) {
             throw new MetadataDoesNotExistException(new DatasetKey(uuid));
         }
-
 
         SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(datasetPutDto.getSecurityGroupName())
                 .orElseThrow(() -> new RuntimeException("Could not find security group with name + " + datasetPutDto.getSecurityGroupName()));

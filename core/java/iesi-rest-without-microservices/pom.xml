@@ -223,7 +223,6 @@
             <version>3.16.1</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.unboundid</groupId>
             <artifactId>unboundid-ldapsdk</artifactId>

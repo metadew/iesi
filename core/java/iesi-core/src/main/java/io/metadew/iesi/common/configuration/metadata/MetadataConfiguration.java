@@ -4,7 +4,6 @@ import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
 import io.metadew.iesi.common.configuration.metadata.componenttypes.MetadataComponentTypesConfiguration;
 import io.metadew.iesi.common.configuration.metadata.connectiontypes.MetadataConnectionTypesConfiguration;
-import io.metadew.iesi.common.configuration.metadata.ldap.MetadataLdapConfiguration;
 import io.metadew.iesi.common.configuration.metadata.objects.MetadataObjectsConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
@@ -33,7 +32,6 @@ public class MetadataConfiguration {
             MetadataTablesConfiguration.getInstance();
             MetadataObjectsConfiguration.getInstance();
             MetadataRepositoryConfiguration.getInstance();
-            MetadataLdapConfiguration.getInstance();
         } else {
             log.warn("no metadata configuration found on system variable, classpath or filesystem");
         }

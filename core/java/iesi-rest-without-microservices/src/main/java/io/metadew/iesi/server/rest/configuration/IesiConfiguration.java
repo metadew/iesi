@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.configuration;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.common.configuration.metadata.ldap.MetadataLdapConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetService;
@@ -38,22 +37,25 @@ import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
 import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 
-@Configuration
+@org.springframework.context.annotation.Configuration
 @Log4j2
 public class IesiConfiguration {
+
+
+    @Value("${spring.ldap.server.url: 'ldap://localhost:8389/dc=springframework,dc=org'}")
+    private String url;
 
     @Bean
     @Order(0)
@@ -282,10 +284,13 @@ public class IesiConfiguration {
     @Bean
     @DependsOn("frameworkInstance")
     public LdapContextSource contextSource() {
-        LdapContextSource contextSource = new LdapContextSource(); contextSource.setUrl(MetadataLdapConfiguration.getInstance().getProperty("ldap.url"));
-        contextSource.setBase(MetadataLdapConfiguration.getInstance().getProperty("ldap.partitionSuffix"));
-        contextSource.setUserDn(MetadataLdapConfiguration.getInstance().getProperty("ldap.principal"));
-        contextSource.setPassword(MetadataLdapConfiguration.getInstance().getProperty("ldap.password"));
+        LdapContextSource contextSource = new LdapContextSource();
+        contextSource.setUrl(url);
+        contextSource.setAnonymousReadOnly(true);
+        /*contextSource.setBase((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.partitionSuffix"));*/
+        contextSource.setUserDn("uid={0},ou=people");
+        contextSource.afterPropertiesSet();
+        /*contextSource.setPassword((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.password"));*/
         return contextSource;
     }
 

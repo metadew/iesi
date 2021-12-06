@@ -7,6 +7,16 @@ server:
 springdoc:
   version: '0.3.0'
 spring:
+  ldap:
+    server:
+      url: 'ldap://localhost:8389/dc=springframework,dc=org'
+    embedded:
+      port: '8389'
+      ldif: 'classpath:ldap.ldif'
+      base-dn: dc=springframework,dc=org
+#      credential:
+#        username: 'uid=admin'
+#        password: secret
   profiles:
     active: http
   data:

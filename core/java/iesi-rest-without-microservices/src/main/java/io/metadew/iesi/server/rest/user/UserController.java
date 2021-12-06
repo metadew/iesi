@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
+import io.metadew.iesi.server.rest.configuration.security.ldap.LdapAuthenticationProvider;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -19,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +47,7 @@ public class UserController {
     private final IUserService userService;
     private final UserDtoModelAssembler userDtoModelAssembler;
     private final PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
+    private final LdapAuthenticationProvider ldapAuthenticationProvider;
 
     public UserController(AuthenticationManager authenticationManager,
                           JwtService jwtService,
@@ -52,7 +55,8 @@ public class UserController {
                           TeamService teamService,
                           IUserService userService,
                           UserDtoModelAssembler userDtoModelAssembler,
-                          PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler) {
+                          PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler,
+                          LdapAuthenticationProvider ldapAuthenticationProvider) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
@@ -60,6 +64,7 @@ public class UserController {
         this.userService = userService;
         this.userDtoModelAssembler = userDtoModelAssembler;
         this.userDtoPagedResourcesAssembler = userDtoPagedResourcesAssembler;
+        this.ldapAuthenticationProvider = ldapAuthenticationProvider;
     }
 
     @PostConstruct
@@ -104,7 +109,15 @@ public class UserController {
         log.trace("authenticating " + authenticationRequest.getUsername());
         // authenticationManager will load the user details (containing the encrypted password) using the IesiUserDetailManager
         // and will match the password based on the provided password
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+        Authentication authentication = null;
+        try {
+            authentication = ldapAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            if (authentication == null) {
+                authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            }
+        } catch (AuthenticationException e) {
+            log.error("authentication error" + e);
+        }
         return jwtService.generateAuthenticationResponse(authentication);
     }
 

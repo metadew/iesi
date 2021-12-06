@@ -390,7 +390,7 @@ class DatasetsControllerTest {
         when(datasetService.getByName("dataset"))
                 .thenReturn(Optional.of(Dataset.builder().metadataKey(new DatasetKey(UUID.randomUUID())).build()));
      
-        assertThatThrownBy(() -> datasetController.create(datasetPostDto)).isInstanceOf(MetadataAlreadyExistsException.class);
+        assertThatThrownBy(() -> datasetController.create(datasetPostDto)).isInstanceOf(ResponseStatusException.class);
     }
 
     @Test

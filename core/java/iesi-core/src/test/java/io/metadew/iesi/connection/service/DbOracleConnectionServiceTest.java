@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
 import java.text.MessageFormat;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +44,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseServiceTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -60,6 +64,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseTnsTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -78,6 +84,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseConnectionUrlTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -93,6 +101,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseTnsWithEncryptedPasswordTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -111,6 +121,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseServiceWithEncryptedPasswordTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -129,6 +141,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseConnectionUrlWithEncryptedPasswordTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -144,6 +158,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseMissingHost() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -161,6 +177,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseMissingPort() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -179,6 +197,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseMissingUser() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -196,6 +216,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseMissingPassword() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -213,6 +235,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseUnknownMode() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -230,6 +254,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseMissingTnsAlias() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(
@@ -247,6 +273,8 @@ class DbOracleConnectionServiceTest {
     @Test
     void getDatabaseMissingService() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.oracle",
                 "description",
                 Stream.of(

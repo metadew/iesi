@@ -1,8 +1,12 @@
-package io.metadew.iesi.server.rest.dataset;
+package io.metadew.iesi.server.rest.dataset.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
+import io.metadew.iesi.server.rest.dataset.DatasetFilter;
+import io.metadew.iesi.server.rest.dataset.DatasetFilterOption;
+import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDtoListResultSetExtractor;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
@@ -11,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
@@ -33,14 +38,14 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         this.filterService = filterService;
     }
 
-    public Page<DatasetDto> fetchAll(Pageable pageable, Set<DatasetFilter> datasetFilters) {
+    public Page<DatasetDto> fetchAll(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
-                    getFetchAllQuery(pageable, datasetFilters),
+                    getFetchAllQuery(authentication, pageable, datasetFilters),
                     "reader");
             return new PageImpl<>(new DatasetDtoListResultSetExtractor().extractData(cachedRowSet),
                     pageable,
-                    getRowSize(datasetFilters));
+                    getRowSize(authentication, datasetFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -72,11 +77,12 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-    private String getFetchAllQuery(Pageable pageable, Set<DatasetFilter> datasetFilters) {
+    private String getFetchAllQuery(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "SELECT " +
                 "dataset_impls.ID as dataset_impl_id, " +
+                "datasets.SECURITY_GROUP_NM as dataset_security_group_name, " +
                 "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
-                "from (" + getBaseQuery(pageable, datasetFilters) + ") base_datasets " + //base table
+                "from (" + getBaseQuery(authentication, pageable, datasetFilters) + ") base_datasets " + //base table
                 "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
                 "on base_datasets.ID=datasets.ID " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
@@ -116,15 +122,16 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
                 "where datasets.ID={0};";
     }
-    private String getBaseQuery(Pageable pageable, Set<DatasetFilter> datasetFilters) {
+
+    private String getBaseQuery(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "select datasets.ID " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-                getWhereClause(datasetFilters) +
+                getWhereClause(authentication, datasetFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
     }
 
-    private String getWhereClause(Set<DatasetFilter> datasetFilters) {
+    private String getWhereClause(Authentication authentication, Set<DatasetFilter> datasetFilters) {
         String filterStatements = datasetFilters.stream()
                 .map(datasetFilter -> {
                     if (datasetFilter.getFilterOption().equals(DatasetFilterOption.NAME)) {
@@ -135,6 +142,16 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
+        if (authentication != null) {
+            Set<String> securityGroups = authentication.getAuthorities().stream()
+                    .filter(authority -> authority instanceof IESIGrantedAuthority)
+                    .map(authority -> (IESIGrantedAuthority) authority)
+                    .map(IESIGrantedAuthority::getSecurityGroupName)
+                    .map(SQLTools::getStringForSQL).collect(Collectors.toSet());
+            filterStatements = filterStatements +
+                    (filterStatements.isEmpty() ? "" : " and ") +
+                    " datasets.SECURITY_GROUP_NM IN (" + String.join(", ", securityGroups) + ") ";
+        }
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
@@ -150,10 +167,10 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         }
     }
 
-    private long getRowSize(Set<DatasetFilter> datasetFilters) throws SQLException {
+    private long getRowSize(Authentication authentication, Set<DatasetFilter> datasetFilters) throws SQLException {
         String query = "select count(*) as row_count from " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-                getWhereClause(datasetFilters) + ";";
+                getWhereClause(authentication, datasetFilters) + ";";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

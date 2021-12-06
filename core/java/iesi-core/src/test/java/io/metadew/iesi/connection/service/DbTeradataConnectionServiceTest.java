@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
 import java.text.MessageFormat;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +43,8 @@ class DbTeradataConnectionServiceTest {
     @Test
     void getDatabaseTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.teradata",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -56,6 +60,8 @@ class DbTeradataConnectionServiceTest {
     @Test
     void getDatabaseWithEncryptedPasswordTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.teradata",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -71,6 +77,8 @@ class DbTeradataConnectionServiceTest {
     @Test
     void getDatabaseMissingHost() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.teradata",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
@@ -85,6 +93,8 @@ class DbTeradataConnectionServiceTest {
     @Test
     void getDatabaseMissingPort() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.teradata",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -99,6 +109,8 @@ class DbTeradataConnectionServiceTest {
     @Test
     void getDatabaseMissingDatabase() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.teradata",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -113,6 +125,8 @@ class DbTeradataConnectionServiceTest {
     @Test
     void getDatabaseMissingUser() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.teradata",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
@@ -127,6 +141,8 @@ class DbTeradataConnectionServiceTest {
     @Test
     void getDatabaseMissingPassword() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.teradata",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),

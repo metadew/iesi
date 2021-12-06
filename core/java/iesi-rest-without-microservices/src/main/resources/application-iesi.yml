@@ -9,7 +9,7 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: 'C:\Users\nathan.hanoteau\Documents\IESI-singleProcess\iesi\core\java\iesi-core'
+  home: '.'
   security:
     enabled: true
     jwt:

@@ -1,10 +1,12 @@
 package io.metadew.iesi.server.rest.security_group;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +66,7 @@ public class SecurityGroupController {
             securityGroupService.addTeam(new SecurityGroupKey(uuid), new TeamKey(securityGroupTeamPutDto.getId()));
             return ResponseEntity.of(securityGroupService.get(uuid));
         } else {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new SecurityGroupKey(uuid));
         }
     }
 
@@ -73,9 +75,9 @@ public class SecurityGroupController {
     public ResponseEntity<SecurityGroupDto> deleteTeam(@PathVariable("security-group-uuid") UUID securityGroupUuid, @PathVariable("team-uuid") UUID teamUuid) {
         if (securityGroupService.exists(new SecurityGroupKey(securityGroupUuid))) {
             securityGroupService.deleteTeam(new SecurityGroupKey(securityGroupUuid), new TeamKey(teamUuid));
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
-            return ResponseEntity.notFound().build();
+            throw new MetadataDoesNotExistException(new SecurityGroupKey(securityGroupUuid));
         }
     }
 
@@ -112,7 +114,7 @@ public class SecurityGroupController {
     @PreAuthorize("hasPrivilege('GROUPS_WRITE')")
     public ResponseEntity<Object> deleteById(@PathVariable UUID uuid) {
         securityGroupService.delete(new SecurityGroupKey(uuid));
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

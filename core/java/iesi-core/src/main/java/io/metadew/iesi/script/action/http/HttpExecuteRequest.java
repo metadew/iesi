@@ -320,7 +320,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private Long convertHttpRequestVersion(DataType httpRequestVersion) {
-        if (httpRequestVersion == null) {
+        if (httpRequestVersion == null || httpRequestVersion instanceof Null) {
             return null;
         }
         if (httpRequestVersion instanceof Text) {

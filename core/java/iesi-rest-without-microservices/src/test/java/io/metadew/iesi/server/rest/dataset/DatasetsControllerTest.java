@@ -179,7 +179,7 @@ class DatasetsControllerTest {
                 .thenReturn(Optional.of(dataset));
         when(datasetDtoModelAssembler.toModel(dataset))
                 .thenReturn(datasetDto);
-        assertThat(datasetController.get(uuid))
+        assertThat(datasetController.getByName("dataset"))
                 .isEqualTo(datasetDto);
     }
 
@@ -190,7 +190,7 @@ class DatasetsControllerTest {
         UUID uuid = UUID.randomUUID();
         when(datasetService.get(new DatasetKey(uuid)))
                 .thenReturn(Optional.empty());
-        assertThatThrownBy(() -> datasetController.get(uuid))
+        assertThatThrownBy(() -> datasetController.getByName("dataset"))
                 .isInstanceOf(MetadataDoesNotExistException.class);
     }
 

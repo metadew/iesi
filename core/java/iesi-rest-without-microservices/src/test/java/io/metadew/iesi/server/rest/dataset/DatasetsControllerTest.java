@@ -160,7 +160,7 @@ class DatasetsControllerTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"DATASETS_READ@PUBLIC"})
-    void testGetById() {
+    void testGetByName() {
         UUID uuid = UUID.randomUUID();
         Dataset dataset = new Dataset(
                 new DatasetKey(uuid),
@@ -175,7 +175,7 @@ class DatasetsControllerTest {
                 .uuid(uuid)
                 .implementations(new HashSet<>())
                 .build();
-        when(datasetService.get(new DatasetKey(uuid)))
+        when(datasetService.getByName("dataset"))
                 .thenReturn(Optional.of(dataset));
         when(datasetDtoModelAssembler.toModel(dataset))
                 .thenReturn(datasetDto);
@@ -186,12 +186,11 @@ class DatasetsControllerTest {
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"DATASETS_READ@PUBLIC"})
-    void testGetByIdNotFound() {
-        UUID uuid = UUID.randomUUID();
-        when(datasetService.get(new DatasetKey(uuid)))
+    void testGetByNameNotFound() {;
+        when(datasetService.getByName("dataset"))
                 .thenReturn(Optional.empty());
         assertThatThrownBy(() -> datasetController.getByName("dataset"))
-                .isInstanceOf(MetadataDoesNotExistException.class);
+                .isInstanceOf(ResponseStatusException.class);
     }
 
     @Test

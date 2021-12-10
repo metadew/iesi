@@ -296,7 +296,7 @@ class DatasetsControllerSecurityTest {
     void testGetByIdWrongSecurityGroup() {
         UUID uuid = UUID.randomUUID();
         UUID securityGroupUUID = UUID.randomUUID();
-        when(datasetService.get(new DatasetKey(uuid)))
+        when(datasetService.getByName("dataset"))
                 .thenReturn(Optional.of(
                         new Dataset(
                                 new DatasetKey(uuid),

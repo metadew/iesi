@@ -133,7 +133,8 @@ public class DatasetController {
     public ResponseEntity<DatasetDto> create(@RequestBody DatasetPostDto datasetPostDto) {
         Optional<Dataset> dataset = datasetService.getByName(datasetPostDto.getName());
         if (dataset.isPresent()) {
-            throw new MetadataAlreadyExistsException(dataset.get().getMetadataKey());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Dataset " + datasetPostDto.getName() + " already exists");
         }
 
         String datasetName = datasetPostDto.getName();

@@ -9,11 +9,11 @@ springdoc:
 spring:
   ldap:
     server:
-      url: 'ldap://localhost:8389/dc=springframework,dc=org'
+      url: 'ldap://localhost:8389/dc=Belwired,dc=net'
     embedded:
       port: '8389'
-      ldif: 'classpath:ldap.ldif'
-      base-dn: dc=springframework,dc=org
+      ldif: 'classpath:belfius.ldif'
+      base-dn: dc=Belwired,dc=net
 #      credential:
 #        username: 'uid=admin'
 #        password: secret

@@ -111,9 +111,9 @@ public class UserController {
         // and will match the password based on the provided password
         Authentication authentication = null;
         try {
-            authentication = ldapAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
             if (authentication == null) {
-                authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+                authentication = ldapAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
             }
         } catch (AuthenticationException e) {
             log.error("authentication error" + e);

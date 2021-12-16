@@ -1238,7 +1238,6 @@ iesi:
             type: STRING
             length: 255
             nullable: false
-            primaryKey: true
             defaultTimestamp:
           SCRPT_REQUEST_ID:
             description: Unique identifier for the script request item
@@ -1247,6 +1246,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           EXIT:
             description: Unique identifier for the script request item
             order: 1
@@ -1362,6 +1362,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           SCRPT_FILENAME:
             description: Unique identifier for the script request item
             order: 1
@@ -1388,6 +1389,7 @@ iesi:
             length: 255
             nullable: false
             defaultTimestamp:
+            primaryKey: true
           SCRPT_NAME:
             description: Unique identifier for the script request item
             order: 1
@@ -1785,7 +1787,7 @@ iesi:
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 5
+            order: 7
             type: TIMESTAMP
             length: 0
             nullable: false
@@ -2612,8 +2614,8 @@ iesi:
             type: NUMBER
             length: 0
             nullable: false
-            defaultTimestamp:
             primaryKey: true
+            defaultTimestamp:
           ACTION_ID:
             description: Unique identifier for the action design
             order: 3

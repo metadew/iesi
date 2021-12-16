@@ -10,9 +10,11 @@ import io.metadew.iesi.script.execution.instruction.data.person.PersonEmail;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonFirstName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonLastName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonPhoneNumber;
+import io.metadew.iesi.script.execution.instruction.data.text.JsonPathTraversal;
 import io.metadew.iesi.script.execution.instruction.data.text.RandomUUID;
 import io.metadew.iesi.script.execution.instruction.data.text.TextReplace;
 import io.metadew.iesi.script.execution.instruction.data.text.TextSubstring;
+import io.metadew.iesi.script.execution.instruction.data.text.XMLPathTraversal;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeFormat;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeNow;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeTravel;
@@ -69,6 +71,12 @@ public class DataInstructionRepository {
       
         RandomUUID uuid = new RandomUUID();
         dataInstructions.put(uuid.getKeyword(), uuid);
+
+        JsonPathTraversal jsonPathTraversal = new JsonPathTraversal();
+        dataInstructions.put(jsonPathTraversal.getKeyword(), jsonPathTraversal);
+
+        XMLPathTraversal xmlPathTraversal = new XMLPathTraversal();
+        dataInstructions.put(xmlPathTraversal.getKeyword(), xmlPathTraversal);
 
         return dataInstructions;
     }

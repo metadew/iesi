@@ -1,17 +1,22 @@
 package io.metadew.iesi.openapi;
 
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.*;
 
@@ -24,6 +29,14 @@ class ComponentParserTest {
     private OpenAPI openAPI;
     private long componentVersion;
 
+    @BeforeAll
+    static void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
     @BeforeEach
     void setup() {
         SecurityScheme oAuthScheme = new SecurityScheme()
@@ -34,7 +47,7 @@ class ComponentParserTest {
                 .version("1")
                 .title("Swagger Petstore - OpenAPI 3.0");
         Map<String, SecurityScheme> securitySchemeMap = new HashMap<>();
-      
+
         securitySchemeMap.put("petstore_auth", oAuthScheme);
         securitySchemeMap.put("api_key", apiKeyScheme);
 
@@ -44,10 +57,26 @@ class ComponentParserTest {
                         .securitySchemes(securitySchemeMap));
         this.componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
     }
-  
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
+    }
+
     @Test
     void createComponent() {
         Component component;
+        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
         List<ComponentParameter> componentParameters = new ArrayList<>();
         String connectionName = "Swagger Petstore - OpenAPI 3.0";
         Operation operation = new Operation()
@@ -62,6 +91,8 @@ class ComponentParserTest {
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "connection"), connectionName));
 
         component = new Component(componentKey,
+                securityGroupKey,
+                "PUBLIC",
                 "http.request",
                 "operationId",
                 "a description",
@@ -69,12 +100,13 @@ class ComponentParserTest {
                 componentParameters,
                 new ArrayList<>());
 
-        assertThat(ComponentParser.getInstance().createComponent(componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
+        assertThat(ComponentParser.getInstance().createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
     }
 
     @Test
     void createComponentWithNullDescription() {
         Component component;
+        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
         List<ComponentParameter> componentParameters = new ArrayList<>();
         String connectionName = "Swagger Petstore - OpenAPI 3.0";
         Operation operation = new Operation()
@@ -90,6 +122,8 @@ class ComponentParserTest {
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "connection"), connectionName));
 
         component = new Component(componentKey,
+                securityGroupKey,
+                "PUBLIC",
                 "http.request",
                 "operationId",
                 "",
@@ -97,12 +131,13 @@ class ComponentParserTest {
                 componentParameters,
                 new ArrayList<>());
 
-        assertThat(ComponentParser.getInstance().createComponent(componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
+        assertThat(ComponentParser.getInstance().createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
     }
 
     @Test
     void createComponentWithPathParameter() {
         Component component;
+        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
         List<ComponentParameter> componentParameters = new ArrayList<>();
         String connectionName = "Swagger Petstore - OpenAPI 3.0";
         Operation operation = new Operation()
@@ -117,6 +152,8 @@ class ComponentParserTest {
         componentParameters.add(new ComponentParameter(new ComponentParameterKey(componentKey, "connection"), connectionName));
 
         component = new Component(componentKey,
+                securityGroupKey,
+                "PUBLIC",
                 "http.request",
                 "operationId",
                 "a description",
@@ -124,12 +161,21 @@ class ComponentParserTest {
                 componentParameters,
                 new ArrayList<>());
 
-        assertThat(ComponentParser.getInstance().createComponent(componentVersion, connectionName, operation, "/pet/{id}", "POST")).isEqualTo(component);
+        assertThat(ComponentParser.getInstance().createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet/{id}", "POST")).isEqualTo(component);
 
     }
 
     @Test
     void createComponentWithStringVersion() {
+        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
+        SecurityGroupConfiguration.getInstance().insert(
+                new SecurityGroup(
+                        securityGroupKey,
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>()
+                )
+        );
         List<String> messages = Collections.singletonList("The version should be a number");
         openAPI.getInfo().setVersion("SNAPSHOT-1.1");
 
@@ -139,6 +185,15 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithLongVersion() {
+        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
+        SecurityGroupConfiguration.getInstance().insert(
+                new SecurityGroup(
+                        securityGroupKey,
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>()
+                )
+        );
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()
@@ -155,6 +210,15 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithSemanticVersion() {
+        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
+        SecurityGroupConfiguration.getInstance().insert(
+                new SecurityGroup(
+                        securityGroupKey,
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>()
+                )
+        );
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()
@@ -171,6 +235,15 @@ class ComponentParserTest {
 
     @Test
     void testComponentWithSemanticVersion() {
+        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
+        SecurityGroupConfiguration.getInstance().insert(
+                new SecurityGroup(
+                        securityGroupKey,
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>()
+                )
+        );
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()

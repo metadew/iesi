@@ -62,6 +62,7 @@ public class JwtService {
     }
 
     public AuthenticationResponse generateAuthenticationResponse(Authentication authentication) {
+        System.out.println("IN JWT AUTH :" + authentication);
         Algorithm algorithm = Algorithm.HMAC256(secret);
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime expiresAt = now.plus(accessTokenExpiryDate, ChronoUnit.SECONDS);

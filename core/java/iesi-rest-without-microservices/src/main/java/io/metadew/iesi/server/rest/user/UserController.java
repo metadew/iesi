@@ -112,8 +112,10 @@ public class UserController {
         Authentication authentication = null;
         try {
             authentication = ldapAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            System.out.println("LDAP AUTH : " + authentication);
             if (authentication == null) {
                 authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+                System.out.println("IESI AUTH : " + authentication);
             }
         } catch (AuthenticationException e) {
             log.error("authentication error" + e);

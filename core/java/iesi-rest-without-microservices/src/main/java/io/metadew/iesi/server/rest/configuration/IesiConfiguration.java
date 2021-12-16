@@ -54,7 +54,7 @@ import java.text.MessageFormat;
 public class IesiConfiguration {
 
 
-    @Value("${spring.ldap.server.url: 'ldap://localhost:8389/dc=Belwired,dc=net'}")
+    @Value("${spring.ldap.server.url: 'ldaps://adlds.belwired.net:636/CN=ADLDS,DC=Belwired,DC=Net'}")
     private String url;
 
     @Bean
@@ -288,7 +288,7 @@ public class IesiConfiguration {
         contextSource.setUrl(url);
         contextSource.setAnonymousReadOnly(true);
         /*contextSource.setBase((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.partitionSuffix"));*/
-        contextSource.setUserDn("uid={0}, ou=Business, ou=Users, ou=Default, ou=IAM-10-DEFAULT");
+        contextSource.setUserDn("uid={0}");
         contextSource.afterPropertiesSet();
         /*contextSource.setPassword((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.password"));*/
         return contextSource;

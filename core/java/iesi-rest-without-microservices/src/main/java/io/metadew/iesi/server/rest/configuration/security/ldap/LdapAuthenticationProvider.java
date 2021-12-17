@@ -31,17 +31,13 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        System.out.println("SEARCH : ");
-        System.out.println(ldapTemplate.lookup(""));
-        System.out.println(ldapTemplate.list(""));
+        Object lookedUp = ldapTemplate.list("");
+        System.out.println("LOOKED : " + lookedUp);
+        /*
         LdapQuery query = LdapQueryBuilder.query().where("objectClass").is("user").or(LdapQueryBuilder.query().where("objectCategory").is("person"));
-        List<Object> lists =  ldapTemplate.search(query, (AttributesMapper) attrs -> attrs.get("cn").get());
-        System.out.println("LIST SIZE : " + lists.size());
-        System.out.println("LIST : " + lists);
+        ldapTemplate.search("OU=IAM-10-DEFAULT", new EqualsFilter("uid", authentication.getName()).toString(), (AttributesMapper) attrs -> attrs.get("cn").get());
         Filter filter = new EqualsFilter("uid", authentication.getName());
-        System.out.println("BEFORE AUTH LDAP : " + filter.toString());
         Boolean authenticate = ldapTemplate.authenticate(LdapUtils.emptyLdapName(), filter.encode(), authentication.getCredentials().toString());
-        System.out.println("IS AUTH ? " + authenticate);
         if (authenticate) {
             Set<IESIGrantedAuthority> authorities = generateIesiAuthorities();
             IesiUserDetails iesiUserDetails = generateIesiDetails();
@@ -50,6 +46,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
                     authorities
             );
         }
+        */
         return null;
        /* AndFilter filter = new AndFilter();
         filter.and(new EqualsFilter("cn", authentication.getName()));

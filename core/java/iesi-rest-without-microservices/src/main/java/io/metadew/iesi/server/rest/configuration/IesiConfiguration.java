@@ -53,10 +53,6 @@ import java.text.MessageFormat;
 @Log4j2
 public class IesiConfiguration {
 
-
-    @Value("${spring.ldap.server.url: 'ldaps://adlds.belwired.net:636/CN=ADLDS,DC=Belwired,DC=Net'}")
-    private String url;
-
     @Bean
     @Order(0)
     public FrameworkInstance frameworkInstance() throws IOException {
@@ -285,8 +281,9 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public LdapContextSource contextSource() {
         LdapContextSource contextSource = new LdapContextSource();
-        contextSource.setUrl(url);
-        contextSource.setAnonymousReadOnly(true);
+        contextSource.setUrl("ldaps://adlds.belwired.net:636");
+        contextSource.setUserDn("CN=cnkhatth,OU=Administration,CN=TST-ADLDS,DC=Belwired,DC=Net");
+        contextSource.setPassword("W9T2s!fe");
         /*contextSource.setBase((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.partitionSuffix"));*/
         contextSource.setUserDn("uid={0}");
         contextSource.afterPropertiesSet();

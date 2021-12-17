@@ -8,15 +8,12 @@ springdoc:
   version: '0.3.0'
 spring:
   ldap:
-    server:
-      url: 'ldap://localhost:8389/dc=Belwired,dc=net'
-    embedded:
-      port: '8389'
-      ldif: 'classpath:belfius.ldif'
-      base-dn: dc=Belwired,dc=net
-#      credential:
-#        username: 'uid=admin'
-#        password: secret
+    url: ldaps://adlds.belwired.net:636
+    base: DC=Belwired,DC=Net
+    username: CN=cnkhatth,OU=Administration,CN=TST-ADLDS,DC=Belwired,DC=Net
+    password: W9T2s!fe
+    base-environment:
+      com.sun.jndi.ldap.connect.timeout: 500
   profiles:
     active: http
   data:

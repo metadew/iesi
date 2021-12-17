@@ -282,7 +282,7 @@ public class IesiConfiguration {
     public LdapContextSource contextSource() {
         LdapContextSource contextSource = new LdapContextSource();
         contextSource.setUrl("ldaps://adlds.belwired.net:636");
-        contextSource.setUserDn("CN=cnkhatth,OU=Administration,CN=TST-ADLDS,DC=Belwired,DC=Net");
+        contextSource.setUserDn("CN=khatth,OU=Business,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net");
         contextSource.setPassword("W9T2s!fe");
         /*contextSource.setBase((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.partitionSuffix"));*/
         contextSource.setUserDn("uid={0}");

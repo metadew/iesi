@@ -10,7 +10,7 @@ spring:
   ldap:
     url: ldaps://adlds.belwired.net:636
     base: DC=Belwired,DC=Net
-    username: CN=cnkhatth,OU=Administration,CN=TST-ADLDS,DC=Belwired,DC=Net
+    username: CN=khatth,OU=Business,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net
     password: W9T2s!fe
     base-environment:
       com.sun.jndi.ldap.connect.timeout: 500

@@ -4,7 +4,7 @@ name: build_iesi_core_and_rest
 on:
   push:
     branches:
-      - feature/d75991d/update-mysql-for-gcp 
+      - develop 
   pull_request:
     branches:
       - develop

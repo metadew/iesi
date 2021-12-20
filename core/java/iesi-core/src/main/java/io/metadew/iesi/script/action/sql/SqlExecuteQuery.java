@@ -4,6 +4,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -59,7 +60,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     }
 
     private boolean convertAppendOutput(DataType appendOutput) {
-        if (appendOutput == null){
+        if (appendOutput == null || appendOutput instanceof Null){
             return false;
         }
         else if (appendOutput instanceof Text) {
@@ -72,7 +73,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     }
 
     private String convertDatasetReferenceName(DataType datasetReferenceName) {
-        if (datasetReferenceName == null){
+        if (datasetReferenceName == null || datasetReferenceName instanceof Null){
             return null;
         }
         else if (datasetReferenceName instanceof Text) {

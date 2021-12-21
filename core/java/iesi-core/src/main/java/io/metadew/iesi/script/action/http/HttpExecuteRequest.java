@@ -185,7 +185,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         String[] keyValues;
 
         if (!header.contains("=")) {
-            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=\"value\" >.", header));
+            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", header));
         }
 
         keyValues = header.split("=");

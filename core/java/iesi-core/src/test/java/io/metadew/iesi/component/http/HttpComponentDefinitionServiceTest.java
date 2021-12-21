@@ -93,11 +93,11 @@ class HttpComponentDefinitionServiceTest {
                                 .build(),
                         ComponentParameter.builder()
                                 .componentParameterKey(new ComponentParameterKey(componentKey, "header.1"))
-                                .value("content-type=\"application/json\"")
+                                .value("content-type,application/json")
                                 .build(),
                         ComponentParameter.builder()
                                 .componentParameterKey(new ComponentParameterKey(componentKey, "header.2"))
-                                .value("content-length=\"1000\"")
+                                .value("content-length,1000")
                                 .build(),
                         ComponentParameter.builder()
                                 .componentParameterKey(new ComponentParameterKey(componentKey, "queryparam.1"))

@@ -46,7 +46,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "auth_execution_requests.REQUEST_ID as exe_req_auth,  auth_execution_requests.USER_ID as exe_req_user_id, auth_execution_requests.USERNAME as exe_req_username, " +
                 "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
                 "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
-                "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
+                "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
                 "file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
                 "name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
                 "scripts.SECURITY_GROUP_NAME as script_security_group_name, " +
@@ -278,7 +278,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     cachedRowSet.getString("script_exe_req_id"),
                     cachedRowSet.getString("exe_req_id"),
                     cachedRowSet.getString("script_exe_req_env"),
-                    SQLTools.getBooleanFromSql(cachedRowSet.getString("script_exe_req_exit")),
                     new HashMap<>(),
                     new HashMap<>(),
                     ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("script_exe_req_st")),
@@ -426,7 +425,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         private String scriptExecutionRequestId;
         private String executionRequestId;
         private String environment;
-        private boolean exit;
         private Map<String, ScriptExecutionRequestImpersonationDto> impersonations;
         public Map<String, ScriptExecutionRequestParameterDto> parameters;
         private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
@@ -443,7 +441,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     scriptExecutionRequestId,
                     executionRequestId,
                     environment,
-                    exit,
                     new HashSet<>(impersonations.values()),
                     new HashSet<>(parameters.values()),
                     scriptExecutionRequestStatus,

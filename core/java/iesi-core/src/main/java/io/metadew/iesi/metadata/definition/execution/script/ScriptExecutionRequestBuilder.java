@@ -22,7 +22,6 @@ public class ScriptExecutionRequestBuilder {
     private Long scriptVersion;
 
     private List<Long> actionSelect;
-    private boolean exit;
     private Set<ScriptExecutionRequestParameter> parameters = new HashSet<>();
     private Set<ScriptExecutionRequestImpersonation> impersonations = new HashSet<>();
     private String environment;
@@ -61,11 +60,6 @@ public class ScriptExecutionRequestBuilder {
 
     public ScriptExecutionRequestBuilder impersonations(ScriptExecutionRequestImpersonation impersonation) {
         this.impersonations.add(impersonation);
-        return this;
-    }
-
-    public ScriptExecutionRequestBuilder exit(boolean exit) {
-        this.exit = exit;
         return this;
     }
 
@@ -113,7 +107,6 @@ public class ScriptExecutionRequestBuilder {
                 scriptExecutionRequestKey,
                 executionRequestKey,
                 environment,
-                exit,
                 impersonations,
                 parameters,
                 ScriptExecutionRequestStatus.NEW,
@@ -143,7 +136,6 @@ public class ScriptExecutionRequestBuilder {
                 executionRequestKey,
                 fileName,
                 environment,
-                exit,
                 impersonations,
                 parameters,
                 ScriptExecutionRequestStatus.NEW);

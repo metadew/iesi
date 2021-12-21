@@ -15,7 +15,7 @@ iesi:
           endpoint:
             description: url
             type: string
-            mandatory: false
+            mandatory: true
             encrypted: false
           type:
             description: type of HTTP Request

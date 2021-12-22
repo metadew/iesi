@@ -25,25 +25,21 @@ public class JsonPathTraversal implements DataInstruction {
     @Override
     public String generateOutput(String parameters) {
         Matcher inputParameter = PATTERN.matcher(parameters);
-        String result = "";
 
         if (inputParameter.find()) {
             try {
                 String text = inputParameter.group(TEXT);
                 String jsonPath = inputParameter.group(JSON_PATH);
-                result = JsonPath.read(text, "$." + jsonPath).toString();
+                String result = JsonPath.read(text, "$." + jsonPath).toString();
+                return result;
             }
-            catch (PathNotFoundException e) {
-                throw new IllegalArgumentException(e.getMessage() + " " + this.getKeyword() + ":" + parameters);
-            }
-            catch (Exception e) {
+            catch (RuntimeException e) {
                 e.printStackTrace();
+                throw new IllegalArgumentException(e.getMessage() + " " + this.getKeyword() + ":" + parameters);
             }
         }
         else {
             throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
         }
-
-        return result;
     }
 }

@@ -31,7 +31,6 @@ public class XMLPathTraversal implements DataInstruction {
     @Override
     public String generateOutput(String parameters) {
         Matcher inputParameter = PATTERN.matcher(parameters);
-        String result = "";
 
         if (inputParameter.find()) {
             String text = inputParameter.group(TEXT);
@@ -46,8 +45,8 @@ public class XMLPathTraversal implements DataInstruction {
                 Document doc = builder.parse(new InputSource(new StringReader(text)));
 
                 XPath xPath = XPathFactory.newInstance().newXPath();
-                String resultString = (String) xPath.compile(xmlPath).evaluate(doc, XPathConstants.STRING);
-                result = resultString;
+                String result = (String) xPath.compile(xmlPath).evaluate(doc, XPathConstants.STRING);
+                return result;
             }
             catch (SAXParseException e) {
                 throw new IllegalArgumentException(e.getMessage() + " " + this.getKeyword() + ":" + parameters);
@@ -55,12 +54,11 @@ public class XMLPathTraversal implements DataInstruction {
             catch (Exception e)
             {
                 e.printStackTrace();
+                throw new RuntimeException(e.getMessage() + " " + this.getKeyword() + ":" + parameters);
             }
         }
         else {
             throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
         }
-
-        return result;
     }
 }

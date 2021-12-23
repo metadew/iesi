@@ -1,9 +1,10 @@
 package io.metadew.iesi.server.rest.user.team;
 
-import io.metadew.iesi.server.rest.user.UserDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 public interface ITeamDtoRepository {
@@ -12,6 +13,6 @@ public interface ITeamDtoRepository {
 
     public Optional<TeamDto> get(UUID uuid);
 
-    public Set<TeamDto> getAll();
+    public Page<TeamDto> getAll(Pageable pageable, List<TeamFilter> teamFilters);
 
 }

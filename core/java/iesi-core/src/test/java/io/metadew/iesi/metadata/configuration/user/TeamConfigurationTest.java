@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.user.*;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -77,6 +78,10 @@ class TeamConfigurationTest {
         userKey2 = new UserKey(UUID.randomUUID());
         securityGroupKey1 = new SecurityGroupKey(UUID.randomUUID());
         securityGroupKey2 = new SecurityGroupKey(UUID.randomUUID());
+        User user1 = User.builder().userKey(userKey1).build();
+        User user2 = User.builder().userKey(userKey2).build();
+        SecurityGroup securityGroup1 = new SecurityGroup(securityGroupKey1, "PUBLIC", Stream.of(teamKey1).collect(Collectors.toSet()), new HashSet<>());
+        SecurityGroup securityGroup2 = new SecurityGroup(securityGroupKey2, "PRIVATE", Stream.of(teamKey2).collect(Collectors.toSet()), new HashSet<>());
 
         privilege1 = Privilege.builder()
                 .privilegeKey(PrivilegeKey.builder()
@@ -110,14 +115,14 @@ class TeamConfigurationTest {
                 .metadataKey(roleKey1)
                 .teamKey(teamKey1)
                 .name("role1")
-                .userKeys(Stream.of(userKey1, userKey2).collect(Collectors.toSet()))
+                .users(Stream.of(user1, user2).collect(Collectors.toSet()))
                 .privileges(Stream.of(privilege1, privilege2).collect(Collectors.toSet()))
                 .build();
         role2 = Role.builder()
                 .metadataKey(roleKey2)
                 .teamKey(teamKey2)
                 .name("role2")
-                .userKeys(Stream.of(userKey1).collect(Collectors.toSet()))
+                .users(Stream.of(user1).collect(Collectors.toSet()))
                 .privileges(Stream.of(privilege3, privilege4).collect(Collectors.toSet()))
                 .build();
         user1 = User.builder()
@@ -145,13 +150,13 @@ class TeamConfigurationTest {
                 .teamKey(teamKey1)
                 .teamName("team1")
                 .roles(Stream.of(role1).collect(Collectors.toSet()))
-                .securityGroupKeys(Stream.of(securityGroupKey1).collect(Collectors.toSet()))
+                .securityGroups(Stream.of(securityGroup1).collect(Collectors.toSet()))
                 .build();
         team2 = Team.builder()
                 .teamKey(teamKey2)
                 .teamName("team2")
                 .roles(Stream.of(role2).collect(Collectors.toSet()))
-                .securityGroupKeys(Stream.of(securityGroupKey2).collect(Collectors.toSet()))
+                .securityGroups(Stream.of(securityGroup2).collect(Collectors.toSet()))
                 .build();
     }
 

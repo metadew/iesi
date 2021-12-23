@@ -61,15 +61,17 @@ class SecurityGroupConfigurationTest {
         securityGroupKey2 = new SecurityGroupKey(UUID.randomUUID());
         teamKey1 = new TeamKey(UUID.randomUUID());
         teamKey2 = new TeamKey(UUID.randomUUID());
+        SecurityGroup securityGroup1 = new SecurityGroup(securityGroupKey1, "PUBLIC", Stream.of(teamKey1).collect(Collectors.toSet()), new HashSet<>());
+        SecurityGroup securityGroup2 = new SecurityGroup(securityGroupKey2, "PRIVATE", Stream.of(teamKey1, teamKey2).collect(Collectors.toSet()), new HashSet<>());
         team1 = Team.builder()
                 .teamKey(teamKey1)
                 .teamName("team1")
-                .securityGroupKeys(Stream.of(securityGroupKey1, securityGroupKey2).collect(Collectors.toSet()))
+                .securityGroups(Stream.of(securityGroup1, securityGroup2).collect(Collectors.toSet()))
                 .build();
         team2 = Team.builder()
                 .teamKey(teamKey2)
                 .teamName("team2")
-                .securityGroupKeys(Stream.of(securityGroupKey2).collect(Collectors.toSet()))
+                .securityGroups(Stream.of(securityGroup2).collect(Collectors.toSet()))
                 .build();
         securityGroup1 = SecurityGroup.builder()
                 .metadataKey(securityGroupKey1)

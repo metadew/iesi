@@ -67,6 +67,8 @@ class RoleConfigurationTest {
         roleKey2 = new RoleKey(UUID.randomUUID());
         userKey1 = new UserKey(UUID.randomUUID());
         userKey2 = new UserKey(UUID.randomUUID());
+        User user1 = User.builder().userKey(userKey1).build();
+        User user2 = User.builder().userKey(userKey2).build();
 
         privilege1 = Privilege.builder()
                 .privilegeKey(PrivilegeKey.builder()
@@ -100,14 +102,14 @@ class RoleConfigurationTest {
                 .metadataKey(roleKey1)
                 .teamKey(teamKey1)
                 .name("role1")
-                .userKeys(Stream.of(userKey1, userKey2).collect(Collectors.toSet()))
+                .users(Stream.of(user1, user2).collect(Collectors.toSet()))
                 .privileges(Stream.of(privilege1, privilege2).collect(Collectors.toSet()))
                 .build();
         role2 = Role.builder()
                 .metadataKey(roleKey2)
                 .teamKey(teamKey2)
                 .name("role2")
-                .userKeys(Stream.of(userKey1).collect(Collectors.toSet()))
+                .users(Stream.of(user1).collect(Collectors.toSet()))
                 .privileges(Stream.of(privilege3, privilege4).collect(Collectors.toSet()))
                 .build();
         user1 = User.builder()

@@ -15,10 +15,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -113,15 +110,22 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.isUnpaged()) {
-            return " ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY users.username ASC ";
+        List<String> sorting = pageable.getSort().stream().map(order -> {
+                    if (order.getProperty().equalsIgnoreCase("USERNAME")) {
+                        return "users.username" + " " + order.getDirection();
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (sorting.isEmpty()) {
+            sorting.add("ORDER BY users.username");
         }
-        if (pageable.getSort().isUnsorted()) {
-            // set default ordering for pagination to last loaded
-            return " ORDER BY users.LOAD_TMS ASC ";
-        } else {
-            return " ";
-        }
+
+        // System.out.println("SORT : " + " ORDER BY " + String.join(", ", sorting) + " ");
+        return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 
     private String getWhereClause(Set<UserFilter> datasetFilters) {

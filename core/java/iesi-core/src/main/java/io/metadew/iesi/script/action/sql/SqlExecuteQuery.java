@@ -59,7 +59,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         }
     }
 
-    private boolean convertAppendOutput(DataType appendOutput) {
+    /*private boolean convertAppendOutput(DataType appendOutput) {
         if (appendOutput == null || appendOutput instanceof Null){
             return false;
         }
@@ -70,7 +70,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
                     appendOutput.getClass()));
             return false;
         }
-    }
+    }*/
 
     private String convertDatasetReferenceName(DataType datasetReferenceName) {
         if (datasetReferenceName == null || datasetReferenceName instanceof Null){
@@ -89,7 +89,11 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         String outputDatasetReferenceName = convertDatasetReferenceName(getParameterResolvedValue(OUTPUT_DATASET_KEY));
-        boolean appendOutput = convertAppendOutput(getParameterResolvedValue(APPEND_OUTPUT_KEY));
+        /*
+         appendOuput is not being used below so commenting out this block
+         because it is throwing NullPointerException while resolving value
+         boolean appendOutput = convertAppendOutput(getParameterResolvedValue(APPEND_OUTPUT_KEY));
+        */
         // Get Connection
         Connection connection = ConnectionConfiguration.getInstance()
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))

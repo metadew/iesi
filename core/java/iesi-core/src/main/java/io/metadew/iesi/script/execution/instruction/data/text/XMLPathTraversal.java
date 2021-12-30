@@ -2,6 +2,8 @@ package io.metadew.iesi.script.execution.instruction.data.text;
 
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -22,6 +24,7 @@ public class XMLPathTraversal implements DataInstruction {
     private static final String XML_PATH = "xmlPath";
 
     private static final Pattern PATTERN = Pattern.compile("\\s*(?<" + TEXT + ">.+?)\\s*,\\s*(?<" + XML_PATH + ">.+)");
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public String getKeyword() {
@@ -49,12 +52,12 @@ public class XMLPathTraversal implements DataInstruction {
                 return result;
             }
             catch (SAXParseException e) {
-                throw new IllegalArgumentException(e.getMessage() + " " + this.getKeyword() + ":" + parameters);
+                throw new IllegalArgumentException(String.format("%s %s:%s", e.getMessage(), this.getKeyword(), parameters));
             }
             catch (Exception e)
             {
-                e.printStackTrace();
-                throw new RuntimeException(e.getMessage() + " " + this.getKeyword() + ":" + parameters);
+                LOGGER.error(e.getMessage());
+                throw new RuntimeException(String.format("%s %s:%s", e.getMessage(), this.getKeyword(), parameters));
             }
         }
         else {

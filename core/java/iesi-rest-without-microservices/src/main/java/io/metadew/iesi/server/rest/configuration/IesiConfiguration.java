@@ -37,7 +37,6 @@ import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
 import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
@@ -281,11 +280,11 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public LdapContextSource contextSource() {
         LdapContextSource contextSource = new LdapContextSource();
-        contextSource.setUrl("ldaps://adlds.belwired.net:636");
-        contextSource.setUserDn("CN=khatth,OU=Business,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net");
-        contextSource.setPassword("W9T2s!fe");
+        contextSource.setUrl("ldaps://adlds.belwired.net");
+        contextSource.setBase("DC=belwired,DC=net");
         /*contextSource.setBase((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.partitionSuffix"));*/
-        contextSource.setUserDn("uid={0}");
+        contextSource.setUserDn("CN=cagetat,OU=Applications,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net");
+        contextSource.setPassword("hErebih0Nlph99");
         contextSource.afterPropertiesSet();
         /*contextSource.setPassword((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.password"));*/
         return contextSource;

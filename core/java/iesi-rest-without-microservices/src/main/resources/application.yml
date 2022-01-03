@@ -8,10 +8,10 @@ springdoc:
   version: '0.3.0'
 spring:
   ldap:
-    url: ldaps://adlds.belwired.net:636
-    base: DC=Belwired,DC=Net
-    username: CN=khatth,OU=Business,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net
-    password: W9T2s!fe
+    url: ldaps://adlds.belwired.net
+    base: DC=belwired,DC=net
+    username: CN=cagetat,OU=Applications,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net
+    password: hErebih0Nlph99
     base-environment:
       com.sun.jndi.ldap.connect.timeout: 500
   profiles:
@@ -20,7 +20,6 @@ spring:
     web:
       pageable:
         one-indexed-parameters: true #Allow the UI to query page 1 instead of 0
-
 iesi:
   security:
     enabled: true
@@ -34,6 +33,9 @@ management:
     web:
       exposure:
         include: health, httptrace, metrics, mappings
+  health:
+    ldap:
+      enabled: false
   trace:
     http:
       include: request-headers,response-headers,cookie-headers,principal,time-taken,authorization-header,remote-address,session-id

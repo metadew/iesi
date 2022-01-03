@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.configuration.security.ldap;
 import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -17,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Set;
 
 @Component
@@ -31,13 +29,13 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Object lookedUp = ldapTemplate.list("");
-        System.out.println("LOOKED : " + lookedUp);
+        Filter filter = new EqualsFilter("cn", "cagetat");
+        System.out.println("TEST");
+        LdapQuery query = LdapQueryBuilder.query().where("cn").is("cagetat");
+        System.out.println("LDAP NAME : " + ldapContextSource.getBaseLdapName());
+        ldapTemplate.authenticate(LdapUtils.emptyLdapName(), filter.encode(), "hErebih0Nlph99");
+        System.out.println("TEST");
         /*
-        LdapQuery query = LdapQueryBuilder.query().where("objectClass").is("user").or(LdapQueryBuilder.query().where("objectCategory").is("person"));
-        ldapTemplate.search("OU=IAM-10-DEFAULT", new EqualsFilter("uid", authentication.getName()).toString(), (AttributesMapper) attrs -> attrs.get("cn").get());
-        Filter filter = new EqualsFilter("uid", authentication.getName());
-        Boolean authenticate = ldapTemplate.authenticate(LdapUtils.emptyLdapName(), filter.encode(), authentication.getCredentials().toString());
         if (authenticate) {
             Set<IESIGrantedAuthority> authorities = generateIesiAuthorities();
             IesiUserDetails iesiUserDetails = generateIesiDetails();

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
@@ -112,7 +114,7 @@ public class UserController {
     @PreAuthorize("hasPrivilege('USERS_WRITE')")
     public ResponseEntity<Object> create(@RequestBody UserPostDto userPostDto) {
         if (userService.exists(userPostDto.getUsername())) {
-            return ResponseEntity.badRequest().body("username is already taken");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username " + userPostDto.getUsername() + " is already taken");
         }
         User user = new User(
                 new UserKey(UUID.randomUUID()),
@@ -130,11 +132,11 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
-    @GetMapping("/{uuid}")
+    @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('USERS_READ')")
-    public ResponseEntity<UserDto> fetch(@PathVariable UUID uuid) {
+    public ResponseEntity<UserDto> fetch(@PathVariable String name) {
         return ResponseEntity
-                .of(userService.get(uuid));
+                .of(userService.get(name));
     }
 
     @GetMapping("")

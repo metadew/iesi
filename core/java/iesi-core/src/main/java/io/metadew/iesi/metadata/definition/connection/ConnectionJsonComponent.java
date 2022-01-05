@@ -4,7 +4,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupJsonComponent;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +39,16 @@ public class ConnectionJsonComponent {
         @Override
         public Connection deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+            String securityGroupName;
+
+            if (node.get(SecurityGroupJsonComponent.Field.SECURITY_GROUP_NAME.value()) != null) {
+                securityGroupName = node.get(SecurityGroupJsonComponent.Field.SECURITY_GROUP_NAME.value()).asText();
+            } else {
+                securityGroupName = "PUBLIC";
+            }
+            SecurityGroupKey securityGroupKey = SecurityGroupService.getInstance().get(securityGroupName)
+                    .map(Metadata::getMetadataKey)
+                    .orElseThrow(() -> new RuntimeException("could not find Security Group " + securityGroupName));
 
             List<ConnectionParameter> connectionParameters = new ArrayList<>();
             for (JsonNode connectionParameterNode : node.get(Field.PARAMETERS_KEY.value())) {
@@ -46,6 +60,8 @@ public class ConnectionJsonComponent {
             }
 
             return new Connection(node.get(Field.NAME_KEY.value()).asText(),
+                    securityGroupKey,
+                    securityGroupName,
                     node.get(Field.CONNECTION_TYPE_KEY.value()).asText(),
                     node.get(Field.DESCRIPTION_KEY.value()).asText(),
                     node.get(Field.ENVIRONMENT_KEY.value()).asText(),

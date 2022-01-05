@@ -262,9 +262,12 @@ class ComponentVersionConfigurationTest {
         ComponentVersionConfiguration.getInstance().insert(componentVersion2);
         ComponentVersionConfiguration.getInstance().insert(componentVersion3);
 
-        assertEquals(2,ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentVersion1.getMetadataKey().getComponentKey().getId()));
-        assertEquals(1,ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentVersion3.getMetadataKey().getComponentKey().getId()));
-
+        Optional<ComponentVersion> fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentVersion1.getMetadataKey().getComponentKey().getId());
+        Optional<ComponentVersion> fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentVersion3.getMetadataKey().getComponentKey().getId());
+        assertTrue(fetchedComponentVersion2.isPresent());
+        assertEquals(2, fetchedComponentVersion2.get().getMetadataKey().getComponentKey().getVersionNumber());
+        assertTrue(fetchedComponentVersion3.isPresent());
+        assertEquals(1, fetchedComponentVersion3.get().getMetadataKey().getComponentKey().getVersionNumber());
     }
 
 }

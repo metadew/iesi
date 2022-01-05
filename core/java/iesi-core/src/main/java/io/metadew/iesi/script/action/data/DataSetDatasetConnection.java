@@ -16,6 +16,8 @@ import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatase
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -57,12 +59,16 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws IOException {
+        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC")
+                .orElseThrow(() -> new RuntimeException("As the dataset doesn't exist, tried to create new one with the security group PUBLIC, but the group doesn't exist"));
         DatasetKey datasetKey = DatasetConfiguration.getInstance()
                 .getIdByName(datasetName)
                 .orElseGet(() -> {
                     log.warn(MessageFormat.format("Dataset {0} does not exists. Creating dataset now.", datasetName));
                     Dataset newDataset = Dataset.builder()
                             .metadataKey(new DatasetKey())
+                            .securityGroupKey(securityGroup.getMetadataKey())
+                            .securityGroupName(securityGroup.getName())
                             .name(datasetName)
                             .datasetImplementations(new HashSet<>())
                             .build();

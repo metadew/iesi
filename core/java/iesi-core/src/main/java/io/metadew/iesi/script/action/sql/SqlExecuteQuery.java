@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -59,7 +60,10 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     }
 
     private boolean convertAppendOutput(DataType appendOutput) {
-        if (appendOutput instanceof Text) {
+        if (appendOutput == null || appendOutput instanceof Null){
+            return false;
+        }
+        else if (appendOutput instanceof Text) {
             return appendOutput.toString().equalsIgnoreCase("y");
         } else {
             log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for appendOutput",
@@ -69,7 +73,10 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     }
 
     private String convertDatasetReferenceName(DataType datasetReferenceName) {
-        if (datasetReferenceName instanceof Text) {
+        if (datasetReferenceName == null || datasetReferenceName instanceof Null){
+            return null;
+        }
+        else if (datasetReferenceName instanceof Text) {
             return datasetReferenceName.toString();
         } else {
             log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",

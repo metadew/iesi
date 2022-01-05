@@ -387,7 +387,7 @@ public class ExecutionRuntime {
     public LookupResult executeConceptLookup(String input) {
         LOGGER.trace(MessageFormat.format("concept.lookup.resolve.instruction=resolving instruction {0}", input));
         LookupResult lookupResult = new LookupResult();
-        String resolvedInput = input;
+        String resolvedInput = input.replace("\n", "");
         Matcher ConceptLookupMatcher = CONCEPT_LOOKUP_PATTERN.matcher(resolvedInput);
 
         if (!ConceptLookupMatcher.find()) {

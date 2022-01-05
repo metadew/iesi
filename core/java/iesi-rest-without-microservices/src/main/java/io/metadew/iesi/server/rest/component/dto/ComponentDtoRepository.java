@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.server.rest.component.ComponentFilter;
 import io.metadew.iesi.server.rest.component.ComponentFilterOption;
 import io.metadew.iesi.server.rest.component.IComponentDtoRepository;
+import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
@@ -39,10 +41,10 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         this.filterService = filterService;
     }
 
-    private String getFetchAllQuery(Pageable pageable, List<ComponentFilter> componentFilters) {
-        return "select component_designs.COMP_ID,component_designs.COMP_TYP_NM, component_designs.COMP_NM, component_designs.COMP_DSC, versions.COMP_VRS_NB, " +
+    private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
+        return "select component_designs.COMP_ID, component_designs.SECURITY_GROUP_NM, component_designs.COMP_TYP_NM, component_designs.COMP_NM, component_designs.COMP_DSC, versions.COMP_VRS_NB, " +
                 "versions.COMP_VRS_DSC, " + "parameters.COMP_PAR_NM, " + "parameters.COMP_PAR_VAL, " + "versions.COMP_VRS_DSC " +
-                "FROM (" + getBaseQuery(pageable, componentFilters) + ") base_components " +
+                "FROM (" + getBaseQuery(authentication, pageable, componentFilters) + ") base_components " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "on base_components.COMP_ID = component_designs.COMP_ID " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
@@ -53,21 +55,21 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 ";";
     }
 
-    private String getBaseQuery(Pageable pageable, List<ComponentFilter> componentFilters) {
-        return "select distinct component_designs.COMP_ID, versions.COMP_VRS_NB " +
+    private String getBaseQuery(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
+        return "select distinct component_designs.COMP_ID, component_designs.SECURITY_GROUP_NM, versions.COMP_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
                 "on component_designs.COMP_ID = versions.COMP_ID" +
-                getWhereClause(componentFilters) +
+                getWhereClause(authentication, componentFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
     }
 
     @Override
-    public Page<ComponentDto> getAll(Pageable pageable, List<ComponentFilter> componentFilters) {
+    public Page<ComponentDto> getAll(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
         try {
             Map<ComponentKey, ComponentDtoBuilder> componentDtoBuilders = new LinkedHashMap<>();
-            String query = getFetchAllQuery(pageable, componentFilters);
+            String query = getFetchAllQuery(authentication, pageable, componentFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
 
             while (cachedRowSet.next()) {
@@ -76,18 +78,18 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
             List<ComponentDto> components = componentDtoBuilders.values().stream()
                     .map(ComponentDtoBuilder::build)
                     .collect(Collectors.toList());
-            return new PageImpl<>(components, pageable, getRowSize(componentFilters));
+            return new PageImpl<>(components, pageable, getRowSize(authentication, componentFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Page<ComponentDto> getByName(Pageable pageable, String name) {
+    public Page<ComponentDto> getByName(Authentication authentication, Pageable pageable, String name) {
         try {
             Map<ComponentKey, ComponentDtoBuilder> componentDtoBuilders = new LinkedHashMap<>();
             List<ComponentFilter> componentFilters = Stream.of(new ComponentFilter(ComponentFilterOption.NAME, name, true)).collect(Collectors.toList());
-            String query = getFetchAllQuery(pageable, componentFilters);
+            String query = getFetchAllQuery(authentication, pageable, componentFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, componentDtoBuilders);
@@ -97,20 +99,20 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                             .map(ComponentDtoBuilder::build)
                             .collect(Collectors.toList()),
                     pageable,
-                    getRowSize(componentFilters));
+                    getRowSize(authentication, componentFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Optional<ComponentDto> getByNameAndVersion(String name, long version) {
+    public Optional<ComponentDto> getByNameAndVersion(Authentication authentication, String name, long version) {
         try {
             Map<ComponentKey, ComponentDtoBuilder> componentDtoBuilders = new HashMap<>();
             List<ComponentFilter> componentFilters = Stream.of(new ComponentFilter(ComponentFilterOption.NAME, name, true),
-                    new ComponentFilter(ComponentFilterOption.VERSION, Long.toString(version), true))
+                            new ComponentFilter(ComponentFilterOption.VERSION, Long.toString(version), true))
                     .collect(Collectors.toList());
-            String query = getFetchAllQuery(Pageable.unpaged(), componentFilters);
+            String query = getFetchAllQuery(authentication, Pageable.unpaged(), componentFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, componentDtoBuilders);
@@ -124,12 +126,12 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         }
     }
 
-    private long getRowSize(List<ComponentFilter> componentFilters) throws SQLException {
+    private long getRowSize(Authentication authentication, List<ComponentFilter> componentFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct component_designs.COMP_ID, versions.COMP_VRS_NB " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
                 "on component_designs.COMP_ID = versions.COMP_ID " +
-                getWhereClause(componentFilters) +
+                getWhereClause(authentication, componentFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
@@ -139,14 +141,14 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     private String getOrderByClause(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) return " ORDER BY component_designs.COMP_ID ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
-            if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "component_designs.COMP_NM" + " " + order.getDirection();
-            } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
-                return "versions.COMP_VRS_NB" + " " + order.getDirection();
-            } else {
-                return null;
-            }
-        })
+                    if (order.getProperty().equalsIgnoreCase("NAME")) {
+                        return "component_designs.COMP_NM" + " " + order.getDirection();
+                    } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
+                        return "versions.COMP_VRS_NB" + " " + order.getDirection();
+                    } else {
+                        return null;
+                    }
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
@@ -155,7 +157,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 
-    private String getWhereClause(List<ComponentFilter> componentFilters) {
+    private String getWhereClause(Authentication authentication, List<ComponentFilter> componentFilters) {
         String filterStatements = componentFilters.stream()
                 .map(componentFilter -> {
                     if (componentFilter.getFilterOption().equals(ComponentFilterOption.NAME)) {
@@ -168,6 +170,16 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
+        if (authentication != null) {
+            Set<String> securityGroups = authentication.getAuthorities().stream()
+                    .filter(authority -> authority instanceof IESIGrantedAuthority)
+                    .map(authority -> (IESIGrantedAuthority) authority)
+                    .map(IESIGrantedAuthority::getSecurityGroupName)
+                    .map(SQLTools::getStringForSQL).collect(Collectors.toSet());
+            filterStatements = filterStatements +
+                    (filterStatements.isEmpty() ? "" : " and ") +
+                    " component_designs.SECURITY_GROUP_NM IN (" + String.join(", ", securityGroups) + ") ";
+        }
 
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
@@ -185,6 +197,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     private ComponentDtoBuilder mapComponentDto(CachedRowSet cachedRowSet) throws SQLException {
         return new ComponentDtoBuilder(
                 cachedRowSet.getString("COMP_TYP_NM"),
+                cachedRowSet.getString("SECURITY_GROUP_NM"),
                 cachedRowSet.getString("COMP_NM"),
                 cachedRowSet.getString("COMP_DSC"),
                 new ComponentVersionDto(
@@ -212,6 +225,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     @Getter
     private static class ComponentDtoBuilder {
         private final String type;
+        private final String securityGroupName;
         private final String name;
         private final String description;
         private final ComponentVersionDto version;
@@ -219,7 +233,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
 
         public ComponentDto build() {
             return new ComponentDto(
-                    type, name, description, version,
+                    type, securityGroupName, name, description, version,
                     new HashSet<>(parameters.values()),
                     new HashSet<>()
             );

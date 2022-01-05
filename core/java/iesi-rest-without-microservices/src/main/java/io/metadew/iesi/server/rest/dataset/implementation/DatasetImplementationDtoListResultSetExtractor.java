@@ -23,20 +23,23 @@ public class DatasetImplementationDtoListResultSetExtractor {
     public List<DatasetImplementationDto> extractData(CachedRowSet rs) throws SQLException {
         Map<UUID, DatasetImplementationDtoBuilder> datasetBuilderMap = new LinkedHashMap<>();
         while (rs.next()) {
-            UUID datasetImplementationId = UUID.fromString(rs.getString("dataset_impl_id"));
-            DatasetImplementationDtoBuilder datasetImplementationBuilder = datasetBuilderMap.get(datasetImplementationId);
-            if (datasetImplementationBuilder == null) {
-                datasetImplementationBuilder = extractDatasetImplementationBuilderMapRow(rs);
-                datasetBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
+            if (rs.getString("dataset_impl_id") != null) {
+                UUID datasetImplementationId = UUID.fromString(rs.getString("dataset_impl_id"));
+                DatasetImplementationDtoBuilder datasetImplementationBuilder = datasetBuilderMap.get(datasetImplementationId);
+                if (datasetImplementationBuilder == null) {
+                    datasetImplementationBuilder = extractDatasetImplementationBuilderMapRow(rs);
+                    datasetBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
+                }
+                String type = mapType(rs);
+                if (type.equalsIgnoreCase(IN_MEMORY_DATASET_IMPLEMENTATION_TYPE)) {
+                    mapInMemoryDatasetImplementationDto(rs, (InMemoryDatasetImplementationDtoBuilder) datasetImplementationBuilder);
+                } else {
+                    log.warn("no type found for dataset implementation");
+                }
+                mapDatasetImplementationLabel(rs, datasetImplementationBuilder);
             }
-            String type = mapType(rs);
-            if (type.equalsIgnoreCase(IN_MEMORY_DATASET_IMPLEMENTATION_TYPE)) {
-                mapInMemoryDatasetImplementationDto(rs, (InMemoryDatasetImplementationDtoBuilder) datasetImplementationBuilder);
-            } else {
-                log.warn("no type found for dataset implementation");
-            }
-            mapDatasetImplementationLabel(rs, datasetImplementationBuilder);
         }
+
         return datasetBuilderMap.values().stream()
                 .map(DatasetImplementationDtoBuilder::build)
                 .collect(Collectors.toList());

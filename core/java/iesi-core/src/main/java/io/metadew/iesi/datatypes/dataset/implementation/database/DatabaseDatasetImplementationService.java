@@ -13,6 +13,8 @@ import io.metadew.iesi.datatypes.dataset.implementation.*;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
 
@@ -81,9 +83,11 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
 
     @Override
     public DatabaseDatasetImplementation createNewDatasetImplementation(String name, List<String> labels, ExecutionRuntime executionRuntime) {
+        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC")
+                .orElseThrow(() -> new RuntimeException("As the dataset doesn't exist, tried to create new one with the security group PUBLIC, but the group doesn't exist"));
         Dataset dataset = DatasetConfiguration.getInstance().getByName(name)
                 .orElseGet(() -> {
-                    Dataset newDataset = new Dataset(new DatasetKey(), name, new HashSet<>());
+                    Dataset newDataset = new Dataset(new DatasetKey(), securityGroup.getMetadataKey(), securityGroup.getName(), name, new HashSet<>());
                     DatasetConfiguration.getInstance().insert(newDataset);
                     return newDataset;
                 });

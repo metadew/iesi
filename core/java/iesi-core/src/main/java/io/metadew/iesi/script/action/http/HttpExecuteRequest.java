@@ -44,6 +44,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
     private static final String ACTION_TYPE = "http.executeRequest";
     private static final String REQUEST_KEY = "request";
+    private static final String REQUEST_VERSION = "requestVersion";
     private static final String BODY_KEY = "body";
     private static final String PROXY_KEY = "proxy";
     private static final String SET_DATASET_KEY = "setDataset";
@@ -67,9 +68,15 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepareAction() throws URISyntaxException, HttpRequestBuilderException, KeyValuePairException {
+    public void prepareAction() throws HttpRequestBuilderException, URISyntaxException {
+        Long componentVersion = convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION));
+        HttpComponent httpComponent;
+        if (componentVersion == null) {
+            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
+        } else {
+            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
+        }
 
-        HttpComponent httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
 
@@ -309,6 +316,24 @@ public class HttpExecuteRequest extends ActionTypeExecution {
                     httpRequestName.getClass()));
             return httpRequestName.toString();
         }
+    }
+
+    private Long convertHttpRequestVersion(DataType httpRequestVersion) {
+        if (httpRequestVersion == null || httpRequestVersion instanceof Null) {
+            return null;
+        }
+        if (httpRequestVersion instanceof Text) {
+            if (((Text) httpRequestVersion).getString().isEmpty()) {
+                return null;
+            }
+            try {
+                return Long.parseLong(((Text) httpRequestVersion).getString());
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(String.format("Unable to parse the input value %s", ((Text) httpRequestVersion).getString()));
+            }
+        }
+        throw new RuntimeException(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for request name",
+                httpRequestVersion.getClass()));
     }
 
     private void checkStatusCode(HttpResponse httpResponse) {

@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
 import java.text.MessageFormat;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +45,8 @@ public class DbH2ConnectionServiceTest {
     @Test
     void getDatabaseTestForEmbedded() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.h2",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "embedded"),
@@ -59,6 +63,8 @@ public class DbH2ConnectionServiceTest {
     @Test
     void getDatabaseTestForServer() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.h2",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "server"),
@@ -77,6 +83,8 @@ public class DbH2ConnectionServiceTest {
     @Test
     void getDatabaseTestForMemory() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.h2",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "memory"),
@@ -93,6 +101,8 @@ public class DbH2ConnectionServiceTest {
     @Test
     void getDatabaseWithEncryptedPasswordTest() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.h2",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "connectionURL"), "connectionURL"),
@@ -108,6 +118,8 @@ public class DbH2ConnectionServiceTest {
     @Test
     void getDatabaseMissingUser() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.mariadb",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "embedded"),
@@ -122,6 +134,8 @@ public class DbH2ConnectionServiceTest {
     @Test
     void getDatabaseMissingSchema() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.mariadb",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "memory"),
@@ -136,6 +150,8 @@ public class DbH2ConnectionServiceTest {
     @Test
     void getDatabaseMissingPassword() {
         Connection connection = new Connection(new ConnectionKey("test", "tst"),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "db.mariadb",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "embedded"),

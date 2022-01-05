@@ -8,6 +8,7 @@ import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.db2.Db2DatabaseService;
 import io.metadew.iesi.connection.database.dremio.DremioDatabaseService;
 import io.metadew.iesi.connection.database.drill.DrillDatabaseService;
+import io.metadew.iesi.connection.database.generic.GenericDatabaseService;
 import io.metadew.iesi.connection.database.h2.H2DatabaseService;
 import io.metadew.iesi.connection.database.mariadb.MariadbDatabaseService;
 import io.metadew.iesi.connection.database.mssql.MssqlDatabaseService;
@@ -80,6 +81,8 @@ public class DatabaseHandler implements IDatabaseHandler {
                 TeradataDatabaseService.getInstance());
         databaseServiceMap.put(new ClassStringPair(TemporaryDatabaseServiceImpl.getInstance().keyword(), TemporaryDatabaseServiceImpl.getInstance().appliesTo()),
                 TemporaryDatabaseServiceImpl.getInstance());
+        databaseServiceMap.put(new ClassStringPair(GenericDatabaseService.getInstance().keyword(), GenericDatabaseService.getInstance().appliesTo()),
+                GenericDatabaseService.getInstance());
     }
 
     @Override

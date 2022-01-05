@@ -7,7 +7,6 @@ import io.metadew.iesi.server.rest.component.dto.ComponentDtoService;
 import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
-import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -59,7 +59,7 @@ class ComponentControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<ComponentDto> components = new ArrayList<>();
         Page<ComponentDto> page = new PageImpl<>(components, pageable, 1);
-        given(componentDtoService.getAll(eq(pageable), eq(new ArrayList<>())))
+        given(componentDtoService.getAll(any(), eq(pageable), eq(new ArrayList<>())))
                 .willReturn(page);
 
         mvc.perform(get("/components").contentType(MediaType.APPLICATION_JSON))
@@ -88,7 +88,7 @@ class ComponentControllerTest {
         Page<ComponentDto> page2 = new PageImpl<>(components2, pageable2, 3);
         Page<ComponentDto> page3 = new PageImpl<>(components3, pageable3, 3);
 
-        given(componentDtoService.getAll(eq(pageable1), eq(new ArrayList<>())))
+        given(componentDtoService.getAll(any(), eq(pageable1), eq(new ArrayList<>())))
                 .willReturn(page1);
         mvc.perform(get("/components?page=0&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -101,7 +101,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
-        given(componentDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
+        given(componentDtoService.getAll(any(), eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
         mvc.perform(get("/components?page=1&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -113,7 +113,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(componentDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
+        given(componentDtoService.getAll(any(), eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
         mvc.perform(get("/components?page=2&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -144,7 +144,7 @@ class ComponentControllerTest {
         Page<ComponentDto> page2 = new PageImpl<>(components2, pageable2, 3);
         Page<ComponentDto> page3 = new PageImpl<>(components3, pageable3, 3);
 
-        given(componentDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
+        given(componentDtoService.getAll(any(), eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/components?page=0&size=1&sort=name").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -156,7 +156,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
-        given(componentDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
+        given(componentDtoService.getAll(any(), eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
         mvc.perform(get("/components?page=1&size=1&sort=name").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -168,7 +168,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(componentDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
+        given(componentDtoService.getAll(any(), eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
         mvc.perform(get("/components?page=2&size=1&sort=name").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -201,7 +201,7 @@ class ComponentControllerTest {
         Page<ComponentDto> page2 = new PageImpl<>(components2, pageable2, 3);
         Page<ComponentDto> page3 = new PageImpl<>(components1, pageable3, 3);
 
-        given(componentDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
+        given(componentDtoService.getAll(any(), eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/components?page=0&size=1&sort=name,desc").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -213,7 +213,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components3.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
-        given(componentDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
+        given(componentDtoService.getAll(any(), eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
         mvc.perform(get("/components?page=1&size=1&sort=name,desc").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -225,7 +225,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) componentDtoTotalList.size() / components2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(componentDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
+        given(componentDtoService.getAll(any(), eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
         mvc.perform(get("/components?page=2&size=1&sort=name,desc").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -251,7 +251,7 @@ class ComponentControllerTest {
         // Here Script are given in the Desc Order
         Page<ComponentDto> page1 = new PageImpl<>(components1, pageable1, 3);
 
-        given(componentDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
+        given(componentDtoService.getAll(any(), eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/components?page=0&size=3&sort=name").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 // Check Json format and data
@@ -284,9 +284,9 @@ class ComponentControllerTest {
         Page<ComponentDto> page2 = new PageImpl<>(components2, pageable2, 3);
         Page<ComponentDto> page3 = new PageImpl<>(components3, pageable3, 3);
 
-        given(componentDtoService.getByName(eq(pageable1), eq(name))).willReturn(page1);
-        given(componentDtoService.getByName(eq(pageable2), eq(name))).willReturn(page2);
-        given(componentDtoService.getByName(eq(pageable3), eq(name))).willReturn(page3);
+        given(componentDtoService.getByName(any(), eq(pageable1), eq(name))).willReturn(page1);
+        given(componentDtoService.getByName(any(), eq(pageable2), eq(name))).willReturn(page2);
+        given(componentDtoService.getByName(any(), eq(pageable3), eq(name))).willReturn(page3);
 
         mvc.perform(get("/components/" + name + "?page=0&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -328,7 +328,7 @@ class ComponentControllerTest {
     @Test
     void getByNameAndVersionAndPropertyPresenceCheck() throws Exception {
         Optional<ComponentDto> optionalComponentDto = Optional.of(ComponentDtoBuilder.simpleComponentDto("nameTest", 0));
-        given(componentDtoService.getByNameAndVersion("nameTest", 0))
+        given(componentDtoService.getByNameAndVersion(null, "nameTest", 0))
                 .willReturn(optionalComponentDto);
 
         mvc.perform(get("/components/nameTest/0").contentType(MediaType.APPLICATION_JSON))
@@ -352,7 +352,7 @@ class ComponentControllerTest {
     @Test
     void getByNameAndVersion404() throws Exception {
         Optional<ComponentDto> optionalComponentDto = Optional.empty();
-        given(componentDtoService.getByNameAndVersion(eq("nameTest"), eq(0)))
+        given(componentDtoService.getByNameAndVersion(any(), eq("nameTest"), eq(0)))
                 .willReturn(optionalComponentDto);
 
         mvc.perform(get("/components/nameTest/0").contentType(MediaType.APPLICATION_JSON))

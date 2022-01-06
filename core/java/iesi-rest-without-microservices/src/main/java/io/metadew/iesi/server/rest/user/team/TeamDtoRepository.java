@@ -181,7 +181,6 @@ public class TeamDtoRepository extends PaginatedRepository implements ITeamDtoRe
     public Page<TeamDto> getAll(Pageable pageable, List<TeamFilter> teamFilters) {
         try {
             String query = getFetchAllQuery(pageable, teamFilters);
-            System.out.println(query);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
                     query,
                     "reader");
@@ -191,5 +190,4 @@ public class TeamDtoRepository extends PaginatedRepository implements ITeamDtoRe
             throw new RuntimeException(e);
         }
     }
-
 }

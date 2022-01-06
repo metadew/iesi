@@ -9,10 +9,9 @@ import java.util.UUID;
 
 public interface ITeamDtoRepository {
 
-    public Optional<TeamDto> get(String teamName);
+    Optional<TeamDto> get(String teamName);
 
-    public Optional<TeamDto> get(UUID uuid);
+    Optional<TeamDto> get(UUID uuid);
 
-    public Page<TeamDto> getAll(Pageable pageable, List<TeamFilter> teamFilters);
-
+    Page<TeamDto> getAll(Pageable pageable, List<TeamFilter> teamFilters);
 }

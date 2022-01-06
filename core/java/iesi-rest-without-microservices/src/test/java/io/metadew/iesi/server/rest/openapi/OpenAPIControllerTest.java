@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.openapi.TransformResult;
 import io.metadew.iesi.server.rest.component.dto.ComponentDto;
@@ -39,12 +40,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -85,8 +88,8 @@ class OpenAPIControllerTest {
     @Test
     void transformFromYAML() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("file", yamlFile);
-        given(openAPIService.transform(multipartFile)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
                 multipart("/openapi/transform")
@@ -109,8 +112,8 @@ class OpenAPIControllerTest {
     void transformFromJSON() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("file", jsonFile);
 
-        given(openAPIService.transform(multipartFile)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
                 multipart("/openapi/transform")
@@ -133,8 +136,8 @@ class OpenAPIControllerTest {
     void transformFromBody() throws Exception {
         String jsonContent = new String(jsonFile);
 
-        given(openAPIService.transform(jsonContent)).willReturn(getTransformResult());
-        given(transformResultDtoResourceAssembler.toModel(getTransformResult())).willReturn(getTransformResultDto());
+        given(openAPIService.transform((MultipartFile) any())).willReturn(getTransformResult());
+        given(transformResultDtoResourceAssembler.toModel(any())).willReturn(getTransformResultDto());
 
         mvc.perform(
                 post("/openapi/transform")
@@ -157,7 +160,9 @@ class OpenAPIControllerTest {
         ConnectionParameterDto tls = new ConnectionParameterDto("tls", "Y");
         ConnectionDto connectionDto = new ConnectionDto(
                 "Swagger Petstore - OpenAPI 3.22",
-                "http", "small description",
+                "PUBLIC",
+                "http",
+                "small description",
                 Stream.of(
                         new ConnectionEnvironmentDto(
                                 "env0",
@@ -172,6 +177,7 @@ class OpenAPIControllerTest {
         ComponentVersionDto componentVersionDto = new ComponentVersionDto(1L, "Update an existing pet by Id");
         ComponentDto componentDto = new ComponentDto(
                 "http.request",
+                "PUBLIC",
                 "updatePet",
                 "Update an existing pet by Id",
                 componentVersionDto,
@@ -206,7 +212,7 @@ class OpenAPIControllerTest {
         ConnectionParameter tls = new ConnectionParameter(
                 new ConnectionParameterKey(connectionKey, "tls"),
                 "Y");
-        Connection connection = new Connection(connectionKey, "http", "small description", Arrays.asList(baseUrl, host, tls));
+        Connection connection = new Connection(connectionKey, new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", "http", "small description", Arrays.asList(baseUrl, host, tls));
 
 
         ComponentParameter endpoint = new ComponentParameter(
@@ -223,6 +229,8 @@ class OpenAPIControllerTest {
         );
         Component component = new Component(
                 componentKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
                 "http.request",
                 "updatePet",
                 "Update an existing pet by Id",

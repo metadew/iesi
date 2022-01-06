@@ -1,5 +1,7 @@
 package io.metadew.iesi.datatypes.dataset;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,9 @@ public class DatasetService implements IDatasetService {
 
     @Override
     public Optional<Dataset> get(DatasetKey datasetKey) {
+        if (!exists(datasetKey)) {
+            throw new MetadataDoesNotExistException(datasetKey);
+        }
         return DatasetConfiguration.getInstance().get(datasetKey);
     }
 

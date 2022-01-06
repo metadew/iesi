@@ -99,6 +99,14 @@ public class DesignMetadataRepository extends MetadataRepository {
     public void save(Component component) {
         log.info(MessageFormat.format("Saving {0} into design repository", component));
         try {
+            if (component.getSecurityGroupKey() == null) {
+                log.warn("{0} not linked to a security group, linking it to the public security group");
+                SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
+                        .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
+                component.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
+                component.setSecurityGroupName(publicSecurityGroup.getName());
+            }
+
             ComponentConfiguration.getInstance().insert(component);
         } catch (MetadataAlreadyExistsException e) {
             log.warn(MessageFormat.format("{0} already exists in design repository. Updating to new definition", component));

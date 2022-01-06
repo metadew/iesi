@@ -33,7 +33,6 @@ public class ScriptExecutionRequestDtoModelAssembler extends RepresentationModel
                     scriptExecutionRequest.getMetadataKey().getId(),
                     scriptExecutionRequest.getExecutionRequestKey().getId(),
                     scriptExecutionRequest.getEnvironment(),
-                    scriptExecutionRequest.isExit(),
                     scriptExecutionRequest.getImpersonations().stream()
                             .map(this::convertToDto).collect(Collectors.toSet()),
                     scriptExecutionRequest.getParameters().stream()

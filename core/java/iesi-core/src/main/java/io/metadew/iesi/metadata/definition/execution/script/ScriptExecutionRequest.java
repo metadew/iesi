@@ -16,19 +16,17 @@ import java.util.Set;
 public abstract class ScriptExecutionRequest extends Metadata<ScriptExecutionRequestKey> {
 
     private ExecutionRequestKey executionRequestKey;
-    private boolean exit;
     private String environment;
     private Set<ScriptExecutionRequestImpersonation> impersonations;
     private Set<ScriptExecutionRequestParameter> parameters;
     private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
 
     public ScriptExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey, ExecutionRequestKey executionRequestKey,
-                                  String environment, boolean exit, Set<ScriptExecutionRequestImpersonation> impersonations,
+                                  String environment, Set<ScriptExecutionRequestImpersonation> impersonations,
                                   Set<ScriptExecutionRequestParameter> parameters, ScriptExecutionRequestStatus scriptExecutionRequestStatus) {
         super(scriptExecutionRequestKey);
         this.executionRequestKey = executionRequestKey;
         this.environment = environment;
-        this.exit = exit;
         this.impersonations = impersonations;
         this.parameters = parameters;
         this.scriptExecutionRequestStatus = scriptExecutionRequestStatus;

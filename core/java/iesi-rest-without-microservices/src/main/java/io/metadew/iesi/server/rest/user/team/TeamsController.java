@@ -121,11 +121,11 @@ public class TeamsController {
                 .noneMatch(privilegeDto -> SYS_ADMIN_ONLY_PRIVILEGES.contains(privilegeDto.getPrivilege()));
     }
 
-    @GetMapping("/{uuid}")
+    @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('TEAMS_READ')")
-    public ResponseEntity<TeamDto> get(@PathVariable UUID uuid) {
+    public ResponseEntity<TeamDto> get(@PathVariable String name) {
         return ResponseEntity
-                .of(teamService.get(uuid));
+                .of(teamService.get(name));
     }
 
     @PutMapping("/{uuid}")

@@ -30,7 +30,7 @@ public class TeamDtoResourceAssembler extends RepresentationModelAssemblerSuppor
     @Override
     public TeamDto toModel(Team entity) {
         TeamDto teamDto = convertToDto(entity);
-        Link selfLink = linkTo(methodOn(TeamsController.class).get(teamDto.getId()))
+        Link selfLink = linkTo(methodOn(TeamsController.class).get(teamDto.getTeamName()))
                 .withRel("team:" + teamDto.getId());
         teamDto.add(selfLink);
         return teamDto;

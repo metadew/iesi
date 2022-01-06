@@ -280,11 +280,11 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public LdapContextSource contextSource() {
         LdapContextSource contextSource = new LdapContextSource();
-        contextSource.setUrl("ldaps://adlds.belwired.net");
-        contextSource.setBase("DC=belwired,DC=net");
+        contextSource.setUrl("ldaps://belwired.net:636");
+        contextSource.setBase("OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net");
         /*contextSource.setBase((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.partitionSuffix"));*/
-        contextSource.setUserDn("CN=cagetat,OU=Applications,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net");
-        contextSource.setPassword("hErebih0Nlph99");
+        contextSource.setUserDn("CN=cnkhatth,OU=Privileged,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net");
+        contextSource.setPassword("F2E6u!hep8v!Qa");
         contextSource.afterPropertiesSet();
         /*contextSource.setPassword((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.password"));*/
         return contextSource;

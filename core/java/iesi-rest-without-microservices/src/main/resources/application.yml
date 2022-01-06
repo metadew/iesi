@@ -8,7 +8,7 @@ springdoc:
   version: '0.3.0'
 spring:
   ldap:
-    url: ldaps://adlds.belwired.net
+    url: ldaps://belwired.net:636
     base: DC=belwired,DC=net
     username: CN=cagetat,OU=Applications,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net
     password: hErebih0Nlph99

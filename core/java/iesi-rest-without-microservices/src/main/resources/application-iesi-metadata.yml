@@ -1271,13 +1271,6 @@ iesi:
             nullable: false
             defaultTimestamp:
             primaryKey: true
-          EXIT:
-            description: Unique identifier for the script request item
-            order: 1
-            type: STRING
-            length: 255
-            nullable: false
-            defaultTimestamp:
           ENVIRONMENT:
             description: Request timestamp
             order: 4

@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class ScriptExecutionRequestPostDto extends RepresentationModel<ScriptExecutionRequestPostDto> {
 
     private String environment;
-    private boolean exit;
     private Set<ScriptExecutionRequestImpersonationDto> impersonations = new HashSet<>();
     private Set<ScriptExecutionRequestParameterDto> parameters = new HashSet<>();
     private String scriptName;
@@ -34,7 +33,6 @@ public class ScriptExecutionRequestPostDto extends RepresentationModel<ScriptExe
                 .scriptExecutionRequestKey(new ScriptExecutionRequestKey(uuid))
                 .executionRequestKey(new ExecutionRequestKey(executionRequestId))
                 .environment(environment)
-                .exit(exit)
                 .impersonations(impersonations.stream()
                         .map(scriptExecutionRequestImpersonationDto -> scriptExecutionRequestImpersonationDto.convertToEntity(new ScriptExecutionRequestKey(uuid)))
                         .collect(Collectors.toSet()))

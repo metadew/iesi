@@ -24,7 +24,6 @@ import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoService;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
-import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -91,16 +90,15 @@ public class DatasetController {
             return datasetDtoPagedResourcesAssembler.toModel(datasetDtoPage, datasetDtoModelAssembler::toModel);
         return (PagedModel<DatasetDto>) datasetDtoPagedResourcesAssembler.toEmptyModel(datasetDtoPage, DatasetDto.class);
     }
-  
-    @GetMapping("/{uuid}")
+
+    @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
     @PostAuthorize("hasPrivilege('DATASETS_READ', returnObject.securityGroupName)")
-    public DatasetDto get(@PathVariable UUID uuid) {
-        return datasetService.get(new DatasetKey(uuid))
+    public DatasetDto getByName(@PathVariable String name) {
+        return datasetService.getByName(name)
                 .map(datasetDtoModelAssembler::toModel)
-                .orElseThrow(() -> new MetadataDoesNotExistException(new DatasetKey(uuid)));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset " + name + " does not exist"));
     }
-
 
     @GetMapping("/{uuid}/implementations")
     @PreAuthorize("hasPrivilege('DATASETS_READ')")
@@ -135,7 +133,7 @@ public class DatasetController {
     public ResponseEntity<DatasetDto> create(@RequestBody DatasetPostDto datasetPostDto) {
         Optional<Dataset> dataset = datasetService.getByName(datasetPostDto.getName());
         if (dataset.isPresent()) {
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Dataset " + datasetPostDto.getName() + " already exists");
         }
 
@@ -280,7 +278,7 @@ public class DatasetController {
 
         if (dataset.isPresent()) {
             if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(), IESIPrivilege.DATASET_MODIFY.getPrivilege(), dataset.get().getSecurityGroupName())) {
-                throw new AccessDeniedException("User is not allowed to delete dataset implementations in the dataset : " + dataset.get().getName() + " and ID " + datasetUuid);
+                throw new AccessDeniedException("User is not allowed to delete the dataset implementations in the dataset : " + dataset.get().getName() + " and ID " + datasetUuid);
             }
         } else {
             throw new MetadataDoesNotExistException(new DatasetKey(datasetUuid));

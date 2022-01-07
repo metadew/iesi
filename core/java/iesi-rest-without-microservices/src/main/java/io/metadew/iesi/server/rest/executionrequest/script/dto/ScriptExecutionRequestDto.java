@@ -21,7 +21,6 @@ public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecuti
     private String scriptExecutionRequestId;
     private String executionRequestId;
     private String environment;
-    private boolean exit;
     private Set<ScriptExecutionRequestImpersonationDto> impersonations;
     private Set<ScriptExecutionRequestParameterDto> parameters;
     private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
@@ -36,7 +35,6 @@ public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecuti
                 new ScriptExecutionRequestKey(scriptExecutionRequestId),
                 new ExecutionRequestKey(executionRequestId),
                 environment,
-                exit,
                 impersonations.stream()
                         .map(impersonation -> impersonation.convertToEntity(new ScriptExecutionRequestKey(scriptExecutionRequestId)))
                         .collect(Collectors.toSet()),
@@ -56,7 +54,6 @@ public class ScriptExecutionRequestDto extends RepresentationModel<ScriptExecuti
                 .mode("script")
                 .executionRequestKey(new ExecutionRequestKey(executionRequestId))
                 .environment(environment)
-                .exit(exit)
                 .impersonations(impersonations.stream()
                         .map(scriptExecutionRequestImpersonationDto -> scriptExecutionRequestImpersonationDto.convertToEntity(new ScriptExecutionRequestKey(uuid)))
                         .collect(Collectors.toList()))

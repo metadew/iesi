@@ -58,7 +58,7 @@ public class ScriptNameExecutor implements ScriptExecutor<ScriptNameExecutionReq
 
         ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
                 .script(script)
-                .exitOnCompletion(scriptExecutionRequest.isExit())
+                .exitOnCompletion(false)
                 .parameters(scriptExecutionRequest.getParameters().stream()
                         .collect(Collectors.toMap(ScriptExecutionRequestParameter::getName, ScriptExecutionRequestParameter::getValue)))
                 .impersonations(impersonations)

@@ -168,11 +168,13 @@ public class ExecutionRuntime {
     }
 
     public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
+        LOGGER.info(CONCEPT_LOOKUP_PATTERN.toString());
         LOGGER.debug("exec.runvar.set=" + name + ":" + value);
         runtimeVariableConfiguration.setRuntimeVariable(runId, actionExecution.getProcessId(), name, value);
     }
 
     public void setRuntimeVariable(ScriptExecution scriptExecution, String name, String value) {
+        LOGGER.info(CONCEPT_LOOKUP_PATTERN.toString());
         LOGGER.debug("exec.runvar.set=" + name + ":" + value);
         runtimeVariableConfiguration.setRuntimeVariable(runId, scriptExecution.getProcessId(), name, value);
     }
@@ -368,6 +370,10 @@ public class ExecutionRuntime {
                 nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, nextLookupConceptStartIndex + lookupConceptStartKey.length());
             }
 
+            if (lookupConceptStopIndex < input.length()) {
+                lookupConceptStopIndex = input.lastIndexOf(lookupConceptStopKey);
+            }
+
             String resolvement = executeConceptLookup(input.substring(lookupConceptStartIndex, lookupConceptStopIndex + lookupConceptStopKey.length())).getValue();
             input = input.substring(0, lookupConceptStartIndex) +
                     resolvement +
@@ -381,6 +387,7 @@ public class ExecutionRuntime {
     }
 
     public LookupResult executeConceptLookup(String input) {
+        LOGGER.info(input);
         LOGGER.trace(MessageFormat.format("concept.lookup.resolve.instruction=resolving instruction {0}", input));
         LookupResult lookupResult = new LookupResult();
         String resolvedInput = input.replace("\n", "");

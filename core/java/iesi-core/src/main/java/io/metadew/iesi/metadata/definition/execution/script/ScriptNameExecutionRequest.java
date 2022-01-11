@@ -22,7 +22,6 @@ public class ScriptNameExecutionRequest extends ScriptExecutionRequest {
     public ScriptNameExecutionRequest(ScriptExecutionRequestKey scriptExecutionRequestKey,
                                       ExecutionRequestKey executionRequestKey,
                                       String environment,
-                                      boolean exit,
                                       Set<ScriptExecutionRequestImpersonation> impersonations,
                                       Set<ScriptExecutionRequestParameter> parameters,
                                       ScriptExecutionRequestStatus scriptExecutionRequestStatus,
@@ -31,7 +30,6 @@ public class ScriptNameExecutionRequest extends ScriptExecutionRequest {
         super(scriptExecutionRequestKey,
                 executionRequestKey,
                 environment,
-                exit,
                 impersonations,
                 parameters,
                 scriptExecutionRequestStatus);

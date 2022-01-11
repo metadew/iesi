@@ -253,9 +253,8 @@ class DatasetsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     // "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testGetByIdNoDatasetRead() {
-        UUID uuid = UUID.randomUUID();
-        assertThatThrownBy(() -> datasetController.get(uuid))
+    void testGetByNameNoDatasetRead() {
+        assertThatThrownBy(() -> datasetController.getByName("dataset"))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -264,7 +263,8 @@ class DatasetsControllerSecurityTest {
             authorities = {"DATASETS_READ@PUBLIC"})
     void testGetByIdDatasetRead() {
         UUID uuid = UUID.randomUUID();
-        when(datasetService.get(new DatasetKey(uuid)))
+
+        when(datasetService.getByName("dataset"))
                 .thenReturn(Optional.of(
                         new Dataset(
                                 new DatasetKey(uuid),
@@ -287,7 +287,7 @@ class DatasetsControllerSecurityTest {
                         .uuid(uuid)
                         .implementations(new HashSet<>())
                         .build());
-        datasetController.get(uuid);
+        datasetController.getByName("dataset");
     }
 
     @Test
@@ -296,7 +296,7 @@ class DatasetsControllerSecurityTest {
     void testGetByIdWrongSecurityGroup() {
         UUID uuid = UUID.randomUUID();
         UUID securityGroupUUID = UUID.randomUUID();
-        when(datasetService.get(new DatasetKey(uuid)))
+        when(datasetService.getByName("dataset"))
                 .thenReturn(Optional.of(
                         new Dataset(
                                 new DatasetKey(uuid),
@@ -319,7 +319,7 @@ class DatasetsControllerSecurityTest {
                         .uuid(uuid)
                         .implementations(new HashSet<>())
                         .build());
-        assertThatThrownBy(() -> datasetController.get(uuid)).isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> datasetController.getByName("dataset")).isInstanceOf(AccessDeniedException.class);
     }
 
     @Test

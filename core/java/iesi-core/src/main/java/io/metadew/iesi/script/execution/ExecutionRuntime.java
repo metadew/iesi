@@ -168,13 +168,11 @@ public class ExecutionRuntime {
     }
 
     public void setRuntimeVariable(ActionExecution actionExecution, String name, String value) {
-        LOGGER.info(CONCEPT_LOOKUP_PATTERN.toString());
         LOGGER.debug("exec.runvar.set=" + name + ":" + value);
         runtimeVariableConfiguration.setRuntimeVariable(runId, actionExecution.getProcessId(), name, value);
     }
 
     public void setRuntimeVariable(ScriptExecution scriptExecution, String name, String value) {
-        LOGGER.info(CONCEPT_LOOKUP_PATTERN.toString());
         LOGGER.debug("exec.runvar.set=" + name + ":" + value);
         runtimeVariableConfiguration.setRuntimeVariable(runId, scriptExecution.getProcessId(), name, value);
     }
@@ -387,7 +385,6 @@ public class ExecutionRuntime {
     }
 
     public LookupResult executeConceptLookup(String input) {
-        LOGGER.info(input);
         LOGGER.trace(MessageFormat.format("concept.lookup.resolve.instruction=resolving instruction {0}", input));
         LookupResult lookupResult = new LookupResult();
         String resolvedInput = input.replace("\n", "");

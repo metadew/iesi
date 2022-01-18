@@ -30,6 +30,29 @@ public class JsonPathTraversalTest {
     }
 
     @Test
+    void jsonPathValidParametersThree() {
+        JsonPathTraversal jsonPathTraversal = new JsonPathTraversal();
+        String jsonString = "{\"tutorials\": [{\"title\": \"guava\", \"test\": {\"id\": 1}}]}";
+        String jsonPath = ".tutorials[0].title";
+
+        String result = jsonPathTraversal.generateOutput(jsonString + "," + jsonPath);
+
+        assertEquals("guava", result);
+    }
+
+    @Test
+    void jsonPathValidParametersFour() {
+        JsonPathTraversal jsonPathTraversal = new JsonPathTraversal();
+        String jsonString = "{\"menu\": {\"id\": \"file\",\"value\": \"File\", \"popup\": { \"menuitem\": [{\"value\": \"New\", \"onclick\": \"CreateNewDoc()\"},{\"value\": \"Open\", \"onclick\": \"OpenDoc()\"},{\"value\":\"Close\",\"onclick\":\"CloseDoc()\"}]}}}";
+
+        String jsonPath = ".menu.id";
+
+        String result = jsonPathTraversal.generateOutput(jsonString + "," + jsonPath);
+
+        assertEquals("file", result);
+    }
+
+    @Test
     void jsonPathMissingCommaBetweenParametersShouldThrowException() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal();
         String jsonString = "{tutorials: [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";

@@ -116,6 +116,9 @@ public class UserController {
         if (userService.exists(userPostDto.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username " + userPostDto.getUsername() + " is already taken");
         }
+        if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The repeated password does not match the password provided");
+        }
         User user = new User(
                 new UserKey(UUID.randomUUID()),
                 userPostDto.getUsername(),

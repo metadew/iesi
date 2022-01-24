@@ -211,6 +211,7 @@ class UsersControllerSecurityTest {
         UserPostDto userPostDto = UserPostDto.builder()
                 .username("username")
                 .password("password")
+                .repeatedPassword("password")
                 .build();
         when(userDtoService.get((UUID) any()))
                 .thenReturn(Optional.of(

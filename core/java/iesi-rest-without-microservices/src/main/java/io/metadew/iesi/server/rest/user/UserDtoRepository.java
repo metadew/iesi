@@ -124,7 +124,6 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
             sorting.add("ORDER BY users.username");
         }
 
-        // System.out.println("SORT : " + " ORDER BY " + String.join(", ", sorting) + " ");
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 

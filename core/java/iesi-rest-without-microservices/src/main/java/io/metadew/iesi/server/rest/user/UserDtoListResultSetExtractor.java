@@ -22,7 +22,6 @@ public class UserDtoListResultSetExtractor {
     public List<UserDto> extractData(CachedRowSet rs) throws SQLException {
         Map<UUID, UserDtoBuilder> userMap = new LinkedHashMap<>();
         while (rs.next()) {
-            System.out.println(rs.getString("user_username"));
             UUID uuid = UUID.fromString(rs.getString("user_id"));
             UserDtoBuilder userDtoBuilder = userMap.computeIfAbsent(
                     uuid,
@@ -31,7 +30,6 @@ public class UserDtoListResultSetExtractor {
             addRole(userDtoBuilder, rs);
         }
 
-        System.out.println("VALUES : " + userMap.values());
         return userMap.values().stream().map(UserDtoBuilder::build).collect(Collectors.toList());
     }
 

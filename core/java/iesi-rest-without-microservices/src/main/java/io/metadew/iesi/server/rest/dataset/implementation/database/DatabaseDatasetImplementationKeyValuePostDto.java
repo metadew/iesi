@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
+package io.metadew.iesi.server.rest.dataset.implementation.database;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InMemoryDatasetImplementationKeyValuePostDto {
+public class DatabaseDatasetImplementationKeyValuePostDto {
 
     @NotBlank
     private String key;

@@ -1,15 +1,17 @@
-package io.metadew.iesi.datatypes.dataset.implementation.inmemory;
+package io.metadew.iesi.datatypes.dataset.implementation.in.memory;
 
+import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
+import io.metadew.iesi.datatypes.text.Text;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -24,7 +26,11 @@ public class InMemoryDatasetImplementation extends DatasetImplementation {
     }
 
     public String toString() {
-        return super.toString();
+        return "{{^dataset(" + new Text(getName()).toString() + ", " +
+                new Array(getDatasetImplementationLabels().stream()
+                        .map(DatasetImplementationLabel::getValue)
+                        .map(Text::new)
+                        .collect(Collectors.toList())).toString() + ", in_memory" + ")}}";
     }
-
 }
+

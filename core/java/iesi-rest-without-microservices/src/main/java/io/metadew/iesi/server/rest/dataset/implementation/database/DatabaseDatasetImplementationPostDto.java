@@ -1,6 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
-
-
+package io.metadew.iesi.server.rest.dataset.implementation.database;
 
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
@@ -17,15 +15,15 @@ import java.util.Set;
 @ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class InMemoryDatasetImplementationPostDto extends DatasetImplementationPostDto {
+public class DatabaseDatasetImplementationPostDto extends DatasetImplementationPostDto {
 
     @NotNull
-    private Set<InMemoryDatasetImplementationKeyValuePostDto> keyValues;
+    private Set<DatabaseDatasetImplementationKeyValuePostDto> keyValues;
 
     @Builder
-    public InMemoryDatasetImplementationPostDto(Set<DatasetImplementationLabelPostDto> labels,
-                                                Set<InMemoryDatasetImplementationKeyValuePostDto> keyValues) {
-        super(DatasetImplementationType.IN_MEMORY.value(), labels);
+    public DatabaseDatasetImplementationPostDto(Set<DatasetImplementationLabelPostDto> labels,
+                                                Set<DatabaseDatasetImplementationKeyValuePostDto> keyValues) {
+        super(DatasetImplementationType.DATABASE.value(), labels);
         this.keyValues = keyValues;
     }
 

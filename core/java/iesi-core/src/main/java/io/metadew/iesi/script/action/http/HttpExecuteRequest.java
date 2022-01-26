@@ -10,8 +10,9 @@ import io.metadew.iesi.connection.http.response.HttpResponseService;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -50,12 +51,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
     private static final String HEADERS_KEY = "headers";
     private static final String QUERY_PARAMETERS_KEY = "queryParameters";
-
-    private HttpRequest httpRequest;
-    private InMemoryDatasetImplementation outputDataset;
-    private ProxyConnection proxyConnection;
-    private List<String> expectedStatusCodes;
-
     private static final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
     private static final Pattern SUCCESS_STATUS_CODE = Pattern.compile("2\\d\\d");
     private static final Pattern REDIRECT_STATUS_CODE = Pattern.compile("3\\d\\d");
@@ -63,6 +58,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final Pattern SERVER_ERROR_STATUS_CODE = Pattern.compile("4\\d\\d");
     @SuppressWarnings("unused")
     private static final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d");
+    private HttpRequest httpRequest;
+    private DatasetImplementation outputDataset;
+    private ProxyConnection proxyConnection;
+    private List<String> expectedStatusCodes;
 
     public HttpExecuteRequest(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -143,10 +142,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
                     .map(this::buildHttpHeader).collect(Collectors.toList());
-        } else if (dataType instanceof InMemoryDatasetImplementation) {
-            return InMemoryDatasetImplementationService
+        } else if (dataType instanceof DatasetImplementation) {
+            return DatasetImplementationHandler
                     .getInstance()
-                    .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
+                    .getDataItems((DatasetImplementation) dataType, getExecutionControl()
                             .getExecutionRuntime()).entrySet().stream()
                     .map(dataItem -> new HttpHeader(dataItem.getKey(), dataItem.getValue().toString()))
                     .collect(
@@ -165,10 +164,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
                     .map(this::buildHttpQueryParameter).collect(Collectors.toList());
-        } else if (dataType instanceof InMemoryDatasetImplementation) {
-            return InMemoryDatasetImplementationService
+        } else if (dataType instanceof DatasetImplementation) {
+            return DatasetImplementationHandler
                     .getInstance()
-                    .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
+                    .getDataItems((DatasetImplementation) dataType, getExecutionControl()
                             .getExecutionRuntime()).entrySet().stream()
                     .map(dataItem -> new HttpQueryParameter(dataItem.getKey(), dataItem.getValue().toString()))
                     .collect(
@@ -256,26 +255,26 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private void outputResponse(HttpResponse httpResponse) throws IOException {
-        Optional<InMemoryDatasetImplementation> outputDataset = getOutputDataset();
+        Optional<DatasetImplementation> outputDataset = getOutputDataset();
         if (outputDataset.isPresent()) {
-            if (!InMemoryDatasetImplementationService.getInstance().isEmpty(outputDataset.get())) {
-                log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
-                InMemoryDatasetImplementationService.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
-            }
-            HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
+                if (!DatasetImplementationHandler.getInstance().isEmpty(outputDataset.get())) {
+                    log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
+                    DatasetImplementationHandler.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
+                }
+                HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
         }
         HttpResponseService.getInstance().traceOutput(httpResponse, getActionExecution().getActionControl());
     }
 
-    private InMemoryDatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
+    private DatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
         if (outputDatasetReferenceName == null || outputDatasetReferenceName instanceof Null) {
             return null;
         } else if (outputDatasetReferenceName instanceof Text) {
             return getExecutionControl().getExecutionRuntime()
                     .getDataset(((Text) outputDatasetReferenceName).getString())
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
-        } else if (outputDatasetReferenceName instanceof InMemoryDatasetImplementation) {
-            return (InMemoryDatasetImplementation) outputDatasetReferenceName;
+        } else if (outputDatasetReferenceName instanceof DatasetImplementation) {
+            return (DatasetImplementation) outputDatasetReferenceName;
         } else {
             log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
                     outputDatasetReferenceName.getClass()));
@@ -369,7 +368,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    protected Optional<InMemoryDatasetImplementation> getOutputDataset() {
+    protected Optional<DatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 

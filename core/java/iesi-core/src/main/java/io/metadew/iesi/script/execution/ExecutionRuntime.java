@@ -372,6 +372,10 @@ public class ExecutionRuntime {
                 nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, nextLookupConceptStartIndex + lookupConceptStartKey.length());
             }
 
+            if (lookupConceptStopIndex < input.length()) {
+                lookupConceptStopIndex = input.lastIndexOf(lookupConceptStopKey);
+            }
+
             String resolvement = executeConceptLookup(input.substring(lookupConceptStartIndex, lookupConceptStopIndex + lookupConceptStopKey.length())).getValue();
             input = input.substring(0, lookupConceptStartIndex) +
                     resolvement +

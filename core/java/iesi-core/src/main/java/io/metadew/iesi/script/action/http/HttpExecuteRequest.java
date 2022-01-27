@@ -12,7 +12,6 @@ import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -23,6 +22,7 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 
 import java.io.IOException;
@@ -51,6 +51,12 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
     private static final String HEADERS_KEY = "headers";
     private static final String QUERY_PARAMETERS_KEY = "queryParameters";
+
+    private HttpRequest httpRequest;
+    private DatasetImplementation outputDataset;
+    private ProxyConnection proxyConnection;
+    private List<String> expectedStatusCodes;
+
     private static final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
     private static final Pattern SUCCESS_STATUS_CODE = Pattern.compile("2\\d\\d");
     private static final Pattern REDIRECT_STATUS_CODE = Pattern.compile("3\\d\\d");
@@ -58,10 +64,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final Pattern SERVER_ERROR_STATUS_CODE = Pattern.compile("4\\d\\d");
     @SuppressWarnings("unused")
     private static final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d");
-    private HttpRequest httpRequest;
-    private DatasetImplementation outputDataset;
-    private ProxyConnection proxyConnection;
-    private List<String> expectedStatusCodes;
 
     public HttpExecuteRequest(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -140,17 +142,14 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (dataType == null || dataType instanceof Null) {
             return new ArrayList<>();
         } else if (dataType instanceof Text) {
-            return Arrays.stream(dataType.toString().split(","))
-                    .map(this::buildHttpHeader).collect(Collectors.toList());
+            List<String> tokens = Arrays.stream(dataType.toString().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)).collect(Collectors.toList());
+            return tokens
+                    .stream().map(this::buildHttpHeader).collect(Collectors.toList());
         } else if (dataType instanceof DatasetImplementation) {
-            return DatasetImplementationHandler
-                    .getInstance()
-                    .getDataItems((DatasetImplementation) dataType, getExecutionControl()
-                            .getExecutionRuntime()).entrySet().stream()
-                    .map(dataItem -> new HttpHeader(dataItem.getKey(), dataItem.getValue().toString()))
-                    .collect(
-                            Collectors.toList()
-                    );
+            return DatasetImplementationHandler.getInstance()
+                    .getDataItems((DatasetImplementation) dataType, getExecutionControl().getExecutionRuntime())
+                    .entrySet().stream().map(dataItem -> new HttpHeader(dataItem.getKey(), dataItem.getValue().toString()))
+                    .collect(Collectors.toList());
         } else {
             log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for headers"),
                     dataType.getClass()));
@@ -165,14 +164,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             return Arrays.stream(dataType.toString().split(","))
                     .map(this::buildHttpQueryParameter).collect(Collectors.toList());
         } else if (dataType instanceof DatasetImplementation) {
-            return DatasetImplementationHandler
-                    .getInstance()
-                    .getDataItems((DatasetImplementation) dataType, getExecutionControl()
-                            .getExecutionRuntime()).entrySet().stream()
-                    .map(dataItem -> new HttpQueryParameter(dataItem.getKey(), dataItem.getValue().toString()))
-                    .collect(
-                            Collectors.toList()
-                    );
+            return DatasetImplementationHandler.getInstance()
+                    .getDataItems((DatasetImplementation) dataType, getExecutionControl().getExecutionRuntime())
+                    .entrySet().stream().map(dataItem -> new HttpQueryParameter(dataItem.getKey(), dataItem.getValue().toString()))
+                    .collect(Collectors.toList());
         } else {
             log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for queryParameters"),
                     dataType.getClass()));
@@ -181,18 +176,27 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private HttpHeader buildHttpHeader(String header) {
-        String[] keyValues;
+        List<String> keyValue;
+        String key;
+        String value;
 
         if (!header.contains("=")) {
-            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", header));
+            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=\"value\" >.", header));
         }
 
-        keyValues = header.split("=");
-        if (keyValues.length > 2) {
+        keyValue = Arrays.stream(header.split("=", 2)).collect(Collectors.toList());
+        if (keyValue.size() > 2) {
             throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", header));
         }
 
-        return new HttpHeader(keyValues[0], keyValues[1]);
+        key = keyValue.get(0);
+        value = keyValue.get(1);
+
+        if (!(value.startsWith("\"") && value.endsWith("\""))) {
+            throw new QuoteCharException(String.format("The value %s is not provided correctly, please use quotes", value));
+        }
+
+        return new HttpHeader(key, StringUtils.substringBetween(value, "\"", "\""));
     }
 
     private HttpQueryParameter buildHttpQueryParameter(String queryParameter) {
@@ -257,11 +261,11 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private void outputResponse(HttpResponse httpResponse) throws IOException {
         Optional<DatasetImplementation> outputDataset = getOutputDataset();
         if (outputDataset.isPresent()) {
-                if (!DatasetImplementationHandler.getInstance().isEmpty(outputDataset.get())) {
-                    log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
-                    DatasetImplementationHandler.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
-                }
-                HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
+            if (!DatasetImplementationHandler.getInstance().isEmpty(outputDataset.get())) {
+                log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
+                DatasetImplementationHandler.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
+            }
+            HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
         }
         HttpResponseService.getInstance().traceOutput(httpResponse, getActionExecution().getActionControl());
     }

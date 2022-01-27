@@ -102,7 +102,7 @@ class HttpExecuteRequestTest {
     void prepareDefaultHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "X-API-KEY=1234");
+        ActionParameter headersActionParameter = createActionParameter("headers", "X-API-KEY=\"1234\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
         HttpHeader defaultHeader = new HttpHeader("Accept", "application/xml");
 
@@ -128,7 +128,7 @@ class HttpExecuteRequestTest {
     void prepareOverrideHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/xml");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/xml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
         HttpHeader existingHeader = new HttpHeader("Accept", "application/json");
 
@@ -154,7 +154,7 @@ class HttpExecuteRequestTest {
     void prepareHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
 
         when(actionExecution.getAction())
@@ -178,7 +178,7 @@ class HttpExecuteRequestTest {
     void prepareHeadersAndNoQuery() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json,X-API-KEY=12345");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json;version=1.2\",Content-Type=\"application/json,application/xml,application/yml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
 
         when(actionExecution.getAction())
@@ -195,15 +195,15 @@ class HttpExecuteRequestTest {
         HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getAllHeaders()).hasSize(2);
-        assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json");
-        assertThat(httpRequest.getFirstHeader("X-API-KEY").getValue()).isEqualTo("12345");
+        assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json;version=1.2");
+        assertThat(httpRequest.getFirstHeader("Content-Type").getValue()).isEqualTo("application/json,application/xml,application/yml");
     }
 
     @Test
     void prepareWrongHeadersAndNoQueries() {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "Accept======application/json,X-API-KEY12345");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept======\"application/json\",Content-Type\"application/json,application/xml,application/yml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
 
         when(actionExecution.getAction())
@@ -216,7 +216,47 @@ class HttpExecuteRequestTest {
 
         HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
 
-        assertThrows(KeyValuePairException.class, httpExecuteRequest::prepare);
+        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
+    }
+
+    @Test
+    void prepareWrongHeadersNoFirstQuoteAndNoQueries() {
+
+        ActionParameter requestActionParameter = createActionParameter("request", "request");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json\", Content-Type=application/json,application/xml,application/yml\"");
+        Action action = createAction(requestActionParameter, headersActionParameter);
+
+        when(actionExecution.getAction())
+                .thenReturn(action);
+
+        mockResolvedValues(requestActionParameter, headersActionParameter);
+
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
+        mockGetAndTraceHttpComponent(httpComponent);
+
+        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
+
+        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
+    }
+
+    @Test
+    void prepareWrongHeadersNoLastQuoteAndNoQueries() {
+
+        ActionParameter requestActionParameter = createActionParameter("request", "request");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json\", Content-Type=\"application/json,application/xml,application/yml");
+        Action action = createAction(requestActionParameter, headersActionParameter);
+
+        when(actionExecution.getAction())
+                .thenReturn(action);
+
+        mockResolvedValues(requestActionParameter, headersActionParameter);
+
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
+        mockGetAndTraceHttpComponent(httpComponent);
+
+        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
+
+        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
     }
 
     @Test

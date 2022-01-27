@@ -6,15 +6,15 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -106,8 +106,18 @@ public class SecurityGroupController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('GROUPS_READ')")
-    public Set<SecurityGroupDto> fetchAll() {
+    public Set<SecurityGroupDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
+        List<SecurityGroupFilter> securityGroupFilters = extractSecurityGroupFilterOptions(name);
+        Page<SecurityGroupDto> securityGroupDtoPage = securityGroupService.getAll(pageable, securityGroupFilters);
         return securityGroupService.getAll();
+    }
+
+    private List<SecurityGroupFilter> extractSecurityGroupFilterOptions(String name) {
+        List<SecurityGroupFilter> securityGroupFilters = new ArrayList<>();
+        if (name != null) {
+            securityGroupFilters.add(new SecurityGroupFilter(SecurityGroupFilterOption.NAME, name, false));
+        }
+        return securityGroupFilters;
     }
 
     @DeleteMapping("/{uuid}")

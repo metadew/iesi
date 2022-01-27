@@ -2,9 +2,10 @@ package io.metadew.iesi.datatypes.template;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
@@ -195,31 +196,35 @@ class TemplateServiceTest {
                 .thenReturn(new LookupResult("value2", null, null));
 
 
-        InMemoryDatasetImplementationService datasetHandler = InMemoryDatasetImplementationService.getInstance();
-        InMemoryDatasetImplementationService datasetHandlerSpy = Mockito.spy(datasetHandler);
-        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandlerSpy);
+        DatabaseDatasetImplementationService databaseDatasetImplementationService = DatabaseDatasetImplementationService.getInstance();
+        DatabaseDatasetImplementationService databaseDatasetImplementationServiceSpy = Mockito.spy(databaseDatasetImplementationService);
+        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", databaseDatasetImplementationServiceSpy);
 
-        InMemoryDatasetImplementation dataset1 = mock(InMemoryDatasetImplementation.class);
-        InMemoryDatasetImplementation dataset2 = mock(InMemoryDatasetImplementation.class);
+        // Allow spy to be picked up
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
+
+        DatabaseDatasetImplementation dataset1 = mock(DatabaseDatasetImplementation.class);
+        DatabaseDatasetImplementation dataset2 = mock(DatabaseDatasetImplementation.class);
         Mockito
                 .doReturn(Optional.of(new Text("test")))
-                .when(datasetHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
+                .when(databaseDatasetImplementationServiceSpy).getDataItem(dataset1, "key1", executionRuntime);
         Mockito
                 .doReturn(Optional.of(new Text("value2")))
-                .when(datasetHandlerSpy).getDataItem(dataset1, "key2", executionRuntime);
+                .when(databaseDatasetImplementationServiceSpy).getDataItem(dataset1, "key2", executionRuntime);
         Mockito
                 .doReturn(Optional.of(new Text("test")))
-                .when(datasetHandlerSpy).getDataItem(dataset2, "key3", executionRuntime);
+                .when(databaseDatasetImplementationServiceSpy).getDataItem(dataset2, "key3", executionRuntime);
         Mockito
                 .doReturn(Optional.of(dataset1))
-                .when(datasetHandlerSpy).getDataItem(dataset2, "key4", executionRuntime);
+                .when(databaseDatasetImplementationServiceSpy).getDataItem(dataset2, "key4", executionRuntime);
 
         assertThat(TemplateService.getInstance().matches(dataset1, template1, executionRuntime))
                 .isTrue();
         assertThat(TemplateService.getInstance().matches(dataset2, template2, executionRuntime))
                 .isTrue();
 
-        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
+        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
 }

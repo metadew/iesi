@@ -6,12 +6,15 @@ import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
@@ -23,7 +26,7 @@ import io.metadew.iesi.server.rest.dataset.dto.DatasetPostDto;
 import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoService;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationPostDto;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationPostDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -57,14 +60,14 @@ public class DatasetController {
     private final IDatasetService datasetService;
     private final PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
     private final IDatasetDtoService datasetDtoService;
-    private final IDatasetImplementationService datasetImplementationService;
+    private final IDatabaseDatasetImplementationService datasetImplementationService;
     private final IesiSecurityChecker iesiSecurityChecker;
 
 
     @Autowired
     public DatasetController(DatasetDtoModelAssembler datasetDtoModelAssembler,
                              IDatasetService datasetService,
-                             IDatasetImplementationService datasetImplementationService,
+                             IDatabaseDatasetImplementationService datasetImplementationService,
                              PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,
                              IDatasetDtoService datasetDtoService,
                              IesiSecurityChecker iesiSecurityChecker) {
@@ -150,7 +153,7 @@ public class DatasetController {
                 datasetPostDto.getImplementations().stream()
                         .map(datasetImplementationDto -> {
                             UUID datasetImplementationUuid = UUID.randomUUID();
-                            return new InMemoryDatasetImplementation(
+                            return new DatabaseDatasetImplementation(
                                     new DatasetImplementationKey(datasetImplementationUuid),
                                     new DatasetKey(datasetUuid),
                                     datasetName,
@@ -160,9 +163,9 @@ public class DatasetController {
                                                     new DatasetImplementationKey(datasetImplementationUuid),
                                                     datasetImplementationLabelDto.getLabel()))
                                             .collect(Collectors.toSet()),
-                                    ((InMemoryDatasetImplementationPostDto) datasetImplementationDto).getKeyValues().stream()
-                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new InMemoryDatasetImplementationKeyValue(
-                                                    new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                    ((DatabaseDatasetImplementationPostDto) datasetImplementationDto).getKeyValues().stream()
+                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new DatabaseDatasetImplementationKeyValue(
+                                                    new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                                     new DatasetImplementationKey(datasetImplementationUuid),
                                                     inMemoryDatasetImplementationKeyValuePostDto.getKey(),
                                                     inMemoryDatasetImplementationKeyValuePostDto.getValue()
@@ -186,10 +189,11 @@ public class DatasetController {
             if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(), IESIPrivilege.DATASET_MODIFY.getPrivilege(), dataset.get().getSecurityGroupName())) {
                 throw new AccessDeniedException("User is not allowed to create dataset implementation in the dataset : " + dataset.get().getName() + " and ID " + uuid);
             }
+
             DatasetImplementation datasetImplementation;
-            if (datasetImplementationPostDto instanceof InMemoryDatasetImplementationPostDto) {
+            if (datasetImplementationPostDto instanceof DatabaseDatasetImplementationPostDto) {
                 UUID datasetImplementationUuid = UUID.randomUUID();
-                datasetImplementation = new InMemoryDatasetImplementation(
+                datasetImplementation = new DatabaseDatasetImplementation(
                         new DatasetImplementationKey(datasetImplementationUuid),
                         new DatasetKey(uuid),
                         dataset.get().getName(),
@@ -200,9 +204,9 @@ public class DatasetController {
                                         datasetImplementationLabelDto.getLabel()
                                 ))
                                 .collect(Collectors.toSet()),
-                        ((InMemoryDatasetImplementationPostDto) datasetImplementationPostDto).getKeyValues().stream()
-                                .map(keyValue -> new InMemoryDatasetImplementationKeyValue(
-                                        new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                        ((DatabaseDatasetImplementationPostDto) datasetImplementationPostDto).getKeyValues().stream()
+                                .map(keyValue -> new DatabaseDatasetImplementationKeyValue(
+                                        new DatabaseDatasetImplementationKeyValueKey(),
                                         new DatasetImplementationKey(datasetImplementationUuid),
                                         keyValue.getKey(),
                                         keyValue.getValue()))
@@ -213,7 +217,7 @@ public class DatasetController {
                         "Please specify the correct type of DatasetImplementation");
             }
 
-            datasetImplementationService.create(datasetImplementation);
+            datasetImplementationService.create((DatabaseDatasetImplementation) datasetImplementation);
             return datasetService.get(new DatasetKey(uuid))
                     .map(datasetDtoModelAssembler::toModel)
                     .map(ResponseEntity::ok)
@@ -241,7 +245,7 @@ public class DatasetController {
                 datasetPutDto.getImplementations().stream()
                         .map(datasetImplementationDto -> {
                             UUID datasetImplementationUuid = UUID.randomUUID();
-                            return new InMemoryDatasetImplementation(
+                            return new DatabaseDatasetImplementation(
                                     new DatasetImplementationKey(datasetImplementationUuid),
                                     new DatasetKey(uuid),
                                     datasetPutDto.getName(),
@@ -251,9 +255,9 @@ public class DatasetController {
                                                     new DatasetImplementationKey(datasetImplementationUuid),
                                                     datasetImplementationLabelDto.getLabel()))
                                             .collect(Collectors.toSet()),
-                                    ((InMemoryDatasetImplementationPostDto) datasetImplementationDto).getKeyValues().stream()
-                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new InMemoryDatasetImplementationKeyValue(
-                                                    new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                                    ((DatabaseDatasetImplementationPostDto) datasetImplementationDto).getKeyValues().stream()
+                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new DatabaseDatasetImplementationKeyValue(
+                                                    new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
                                                     new DatasetImplementationKey(datasetImplementationUuid),
                                                     inMemoryDatasetImplementationKeyValuePostDto.getKey(),
                                                     inMemoryDatasetImplementationKeyValuePostDto.getValue()

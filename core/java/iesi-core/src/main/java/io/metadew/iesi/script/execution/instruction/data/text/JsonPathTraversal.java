@@ -1,6 +1,8 @@
 package io.metadew.iesi.script.execution.instruction.data.text;
 
-import com.jayway.jsonpath.JsonPath;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 import lombok.extern.log4j.Log4j2;
 
@@ -13,7 +15,9 @@ public class JsonPathTraversal implements DataInstruction {
     private static final String TEXT = "text";
     private static final String JSON_PATH = "jsonPath";
 
-    private static final Pattern PATTERN = Pattern.compile("\\s*(?<" + TEXT + ">.+?)\\s*,\\s*\\.(?<" + JSON_PATH + ">.+)");
+    private static final Pattern PATTERN = Pattern.compile(
+            "\\s*(?<" + TEXT + ">.+)\\s*" +
+            ",\\s*(?<" + JSON_PATH + ">.+)");
 
     @Override
     public String getKeyword() {
@@ -28,10 +32,12 @@ public class JsonPathTraversal implements DataInstruction {
             try {
                 String text = inputParameter.group(TEXT);
                 String jsonPath = inputParameter.group(JSON_PATH);
-                String result = JsonPath.read(text, "$." + jsonPath).toString();
-                return result;
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(text);
+                return jsonNode.at(jsonPath).asText();
             }
-            catch (RuntimeException e) {
+            catch (JsonProcessingException e) {
                 log.error(e.getMessage());
                 throw new IllegalArgumentException(String.format("%s %s:%s", e.getMessage(), this.getKeyword(), parameters));
             }

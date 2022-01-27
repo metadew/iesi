@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
+package io.metadew.iesi.server.rest.dataset.implementation.database;
 
 
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
@@ -16,13 +16,13 @@ import java.util.UUID;
 @ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class InMemoryDatasetImplementationDto extends DatasetImplementationDto {
+public class DatabaseDatasetImplementationDto extends DatasetImplementationDto {
 
-    private Set<InMemoryDatasetImplementationKeyValueDto> keyValues;
+    private Set<DatabaseDatasetImplementationKeyValueDto> keyValues;
 
     @Builder
-    public InMemoryDatasetImplementationDto(UUID uuid, Set<DatasetImplementationLabelDto> labels, Set<InMemoryDatasetImplementationKeyValueDto> keyValues) {
-        super(uuid, DatasetImplementationType.IN_MEMORY.value(), labels);
+    public DatabaseDatasetImplementationDto(UUID uuid, Set<DatasetImplementationLabelDto> labels, Set<DatabaseDatasetImplementationKeyValueDto> keyValues) {
+        super(uuid, DatasetImplementationType.DATABASE.value(), labels);
         this.keyValues = keyValues;
     }
 

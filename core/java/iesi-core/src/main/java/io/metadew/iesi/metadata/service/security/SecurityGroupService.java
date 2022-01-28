@@ -30,7 +30,7 @@ public class SecurityGroupService {
             SecurityGroup publicSecurityGroup = SecurityGroup.builder()
                     .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
                     .name("PUBLIC")
-                    .teamKeys(new HashSet<>())
+                    .teams(new HashSet<>())
                     .securedObjects(new HashSet<>())
                     .build();
             addSecurityGroup(publicSecurityGroup);

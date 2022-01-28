@@ -30,34 +30,29 @@ public class XMLPathTraversal implements DataInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        Matcher inputParameter = PATTERN.matcher(parameters);
+        Matcher inputParameter = PATTERN.matcher(parameters.replaceAll(">[\\s\r\n]*<", "><"));
 
         if (inputParameter.find()) {
             String text = inputParameter.group(TEXT);
             String xmlPath = inputParameter.group(XML_PATH);
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = null;
+            DocumentBuilder builder;
 
-            try
-            {
+            try {
                 builder = factory.newDocumentBuilder();
                 Document doc = builder.parse(new InputSource(new StringReader(text)));
 
                 XPath xPath = XPathFactory.newInstance().newXPath();
                 String result = (String) xPath.compile(xmlPath).evaluate(doc, XPathConstants.STRING);
                 return result;
-            }
-            catch (SAXParseException e) {
+            } catch (SAXParseException e) {
                 throw new IllegalArgumentException(String.format("%s %s:%s", e.getMessage(), this.getKeyword(), parameters));
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 throw new RuntimeException(String.format("%s %s:%s", e.getMessage(), this.getKeyword(), parameters));
             }
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
         }
     }

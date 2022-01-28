@@ -74,4 +74,18 @@ public class XMLPathTraversalTest {
 
         assertThrows(IllegalArgumentException.class, () -> xmlPathTraversal.generateOutput(xmlString + "," + xmlPath));
     }
+
+    @Test
+    void xmlPathWithSpacesAndBreakLines() {
+        XMLPathTraversal xmlPathTraversal = new XMLPathTraversal();
+        String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:CustomerExamAnswersResponse xmlns=\"http://schemas.dvsys.dv.be/entity/agkp/person/v1.0\" xmlns:ns2=\"http://schemas.dvsys.dv.be/interface/agkp/person/management/v1.0\">     <ExamId>1</ExamId>     <CustomerPSI>42</CustomerPSI>     <NrOfAttempts>1</NrOfAttempts>     <ExamResult>passed</ExamResult>     \n" +
+                "    <ExamResultId>750</ExamResultId> \n" +
+                "   </ns2:CustomerExamAnswersResponse>\n" +
+                "\n";
+        String xmlPath = "/CustomerExamAnswersResponse/ExamResult";
+
+        String result = xmlPathTraversal.generateOutput(xmlString + "," + xmlPath);
+
+        assertEquals("passed", result);
+    }
 }

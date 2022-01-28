@@ -4,8 +4,11 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.server.rest.dataset.FilterService;
+import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @ConditionalOnWebApplication
-public class SecurityGroupDtoRepository implements ISecurityGroupDtoRepository {
+public class SecurityGroupDtoRepository extends PaginatedRepository implements ISecurityGroupDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
@@ -62,7 +65,9 @@ public class SecurityGroupDtoRepository implements ISecurityGroupDtoRepository {
                 "security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
                 "security_group_teams.team_id as security_group_teams_team_id, " +
                 "teams.id as team_id, teams.TEAM_NAME as team_name " +
-                " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                " FROM (" + getBaseQUery(pageable, securityGroupFilters) + ") base_security_groups " +
+                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                "ON base_security_groups.id = security_groups.id " +
                 " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
                 " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID" +
                 " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
@@ -73,6 +78,8 @@ public class SecurityGroupDtoRepository implements ISecurityGroupDtoRepository {
         return "select distinct security_groups.id, security_groups.name " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
                 getWhereClause(securityGroupFilters) +
+                getOrderByClause(pageable) +
+                getLimitAndOffsetClause(pageable);
 
 
     }
@@ -94,23 +101,39 @@ public class SecurityGroupDtoRepository implements ISecurityGroupDtoRepository {
     private String getOrderByClause(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) return " ORDER BY security_groups.id";
         List<String> sorting = pageable.getSort().stream().map(order -> {
-            if (order.getProperty().equals("NAME")) {
-                return "security_groups.name " + order.getDirection();
-            } else {
-                return null;
-            }
-        })
+                    if (order.getProperty().equals("NAME")) {
+                        return "security_groups.name " + order.getDirection();
+                    } else {
+                        return null;
+                    }
+                })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList())
+                .collect(Collectors.toList());
+        if (sorting.isEmpty()) {
+            sorting.add("ORDER BY security_groups.id");
+        }
+
+        return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 
-    public Set<SecurityGroupDto> getAll(Pageable pageable, List<SecurityGroupFilter> securityGroupFilters){
+    private long getRowSize(List<SecurityGroupFilter> securityGroupFilters) throws SQLException {
+        String query = "select count(*) as row_count from (select distinct security_groups.id " +
+                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                getWhereClause(securityGroupFilters) +
+                ");";
+        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+        cachedRowSet.next();
+        return cachedRowSet.getLong("row_count");
+    }
+
+    public Page<SecurityGroupDto> getAll(Pageable pageable, List<SecurityGroupFilter> securityGroupFilters) {
         try {
             String query = getFetchAllQuery(pageable, securityGroupFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
                     query,
                     "reader");
-            return new HashSet<>(new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet));
+            Set<SecurityGroupDto> securityGroupDtos = new HashSet<>(new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet));
+            return new PageImpl<>(new ArrayList<>(securityGroupDtos),pageable, getRowSize(securityGroupFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -128,7 +151,7 @@ public class SecurityGroupDtoRepository implements ISecurityGroupDtoRepository {
         }
     }
 
-    public Optional<SecurityGroupDto> get(UUID id){
+    public Optional<SecurityGroupDto> get(UUID id) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
                     MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.getStringForSQL(id)),

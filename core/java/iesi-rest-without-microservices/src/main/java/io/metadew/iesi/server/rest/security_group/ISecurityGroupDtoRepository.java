@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.security_group;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -13,6 +14,6 @@ public interface ISecurityGroupDtoRepository {
 
     Optional<SecurityGroupDto> get(UUID id);
 
-    Set<SecurityGroupDto> getAll(Pageable pageable, List<SecurityGroupFilter> securityGroupFilters);
+    Page<SecurityGroupDto> getAll(Pageable pageable, List<SecurityGroupFilter> securityGroupFilters);
 
 }

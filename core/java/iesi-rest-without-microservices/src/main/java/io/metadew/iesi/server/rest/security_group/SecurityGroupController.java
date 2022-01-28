@@ -8,6 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,9 +29,20 @@ public class SecurityGroupController {
     public static final String PUBLIC_GROUP_NAME = "PUBLIC";
 
     private final ISecurityGroupService securityGroupService;
+    private final ISecurityGroupPutDtoService securityGroupPutDtoService;
+    private final PagedResourcesAssembler<SecurityGroupDto> securityGroupDtoPagedResourceAssembler;
+    private final SecurityGroupDtoResourceAssembler securityGroupDtoResourceAssembler;
 
-    public SecurityGroupController(ISecurityGroupService securityGroupService) {
+    public SecurityGroupController(
+            ISecurityGroupService securityGroupService,
+            ISecurityGroupPutDtoService securityGroupPutDtoService,
+            PagedResourcesAssembler securityGroupDtoPagedResourceAssembler,
+            SecurityGroupDtoResourceAssembler securityGroupDtoResourceAssembler
+    ) {
         this.securityGroupService = securityGroupService;
+        this.securityGroupPutDtoService = securityGroupPutDtoService;
+        this.securityGroupDtoPagedResourceAssembler = securityGroupDtoPagedResourceAssembler;
+        this.securityGroupDtoResourceAssembler = securityGroupDtoResourceAssembler;
     }
 
     @PostConstruct
@@ -39,7 +52,7 @@ public class SecurityGroupController {
             SecurityGroup publicSecurityGroup = SecurityGroup.builder()
                     .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
                     .name(PUBLIC_GROUP_NAME)
-                    .teamKeys(new HashSet<>())
+                    .teams(new HashSet<>())
                     .securedObjects(new HashSet<>())
                     .build();
             securityGroupService.addSecurityGroup(publicSecurityGroup);
@@ -52,7 +65,7 @@ public class SecurityGroupController {
         SecurityGroup securityGroup = SecurityGroup.builder()
                 .metadataKey(new SecurityGroupKey(securityGroupPostDto.getId()))
                 .name(securityGroupPostDto.getName())
-                .teamKeys(new HashSet<>())
+                .teams(new HashSet<>())
                 .securedObjects(new HashSet<>())
                 .build();
         securityGroupService.addSecurityGroup(securityGroup);
@@ -81,24 +94,17 @@ public class SecurityGroupController {
         }
     }
 
-    @GetMapping("/{uuid}")
+    @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('GROUPS_READ')")
-    public ResponseEntity<SecurityGroupDto> fetch(@PathVariable UUID uuid) {
+    public ResponseEntity<SecurityGroupDto> get(@PathVariable String name) {
         return ResponseEntity
-                .of(securityGroupService.get(uuid));
+                .of(securityGroupService.get(name));
     }
 
     @PutMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('GROUPS_WRITE')")
     public ResponseEntity<SecurityGroupDto> update(@PathVariable UUID uuid, @RequestBody SecurityGroupPutDto securityGroupPutDto) {
-        SecurityGroup securityGroup = SecurityGroup.builder()
-                .metadataKey(new SecurityGroupKey(securityGroupPutDto.getId()))
-                .name(securityGroupPutDto.getName())
-                .securedObjects(new HashSet<>())
-                .teamKeys(securityGroupPutDto.getTeams().stream()
-                        .map(securityGroupTeamPutDto -> new TeamKey(securityGroupPutDto.getId()))
-                        .collect(Collectors.toSet()))
-                .build();
+        SecurityGroup securityGroup = securityGroupPutDtoService.convertToEntity(securityGroupPutDto);
         securityGroupService.update(securityGroup);
         return ResponseEntity
                 .of(securityGroupService.get(uuid));
@@ -106,10 +112,15 @@ public class SecurityGroupController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('GROUPS_READ')")
-    public Set<SecurityGroupDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
+    public PagedModel<SecurityGroupDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
         List<SecurityGroupFilter> securityGroupFilters = extractSecurityGroupFilterOptions(name);
         Page<SecurityGroupDto> securityGroupDtoPage = securityGroupService.getAll(pageable, securityGroupFilters);
-        return securityGroupService.getAll();
+
+        if (securityGroupDtoPage.hasContent()) {
+            return securityGroupDtoPagedResourceAssembler.toModel(securityGroupDtoPage, securityGroupDtoResourceAssembler::toModel);
+        }
+
+        return (PagedModel<SecurityGroupDto>) securityGroupDtoPagedResourceAssembler.toEmptyModel(securityGroupDtoPage, SecurityGroupDto.class);
     }
 
     private List<SecurityGroupFilter> extractSecurityGroupFilterOptions(String name) {

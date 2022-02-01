@@ -52,7 +52,7 @@ public class SecurityGroupController {
             SecurityGroup publicSecurityGroup = SecurityGroup.builder()
                     .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
                     .name(PUBLIC_GROUP_NAME)
-                    .teams(new HashSet<>())
+                    .teamKeys(new HashSet<>())
                     .securedObjects(new HashSet<>())
                     .build();
             securityGroupService.addSecurityGroup(publicSecurityGroup);
@@ -65,18 +65,18 @@ public class SecurityGroupController {
         SecurityGroup securityGroup = SecurityGroup.builder()
                 .metadataKey(new SecurityGroupKey(securityGroupPostDto.getId()))
                 .name(securityGroupPostDto.getName())
-                .teams(new HashSet<>())
+                .teamKeys(new HashSet<>())
                 .securedObjects(new HashSet<>())
                 .build();
         securityGroupService.addSecurityGroup(securityGroup);
         return ResponseEntity.of(securityGroupService.get(securityGroup.getMetadataKey().getUuid()));
     }
 
-    @PostMapping("/{uuid}/teams")
+    @PostMapping("/{uuid}/teams/{team-uuid}")
     @PreAuthorize("hasPrivilege('GROUPS_WRITE')")
-    public ResponseEntity<SecurityGroupDto> addTeam(@PathVariable UUID uuid, @RequestBody SecurityGroupTeamPutDto securityGroupTeamPutDto) {
+    public ResponseEntity<SecurityGroupDto> addTeam(@PathVariable UUID uuid, @PathVariable("team-uuid") UUID teamUuid) {
         if (securityGroupService.exists(new SecurityGroupKey(uuid))) {
-            securityGroupService.addTeam(new SecurityGroupKey(uuid), new TeamKey(securityGroupTeamPutDto.getId()));
+            securityGroupService.addTeam(new SecurityGroupKey(uuid), new TeamKey(teamUuid));
             return ResponseEntity.of(securityGroupService.get(uuid));
         } else {
             throw new MetadataDoesNotExistException(new SecurityGroupKey(uuid));

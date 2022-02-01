@@ -1,7 +1,10 @@
 package io.metadew.iesi.server.rest.security_group;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.user.Team;
+import io.metadew.iesi.metadata.definition.user.TeamKey;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -32,11 +35,13 @@ public class SecurityGroupDtoResourceAssembler extends RepresentationModelAssemb
         return new SecurityGroupDto(
                 securityGroup.getMetadataKey().getUuid(),
                 securityGroup.getName(),
-                securityGroup.getTeams().stream().map(this::convertToDto).collect(Collectors.toSet()),
+                securityGroup.getTeamKeys().stream().map(this::convertToDto).collect(Collectors.toSet()),
                 new HashSet<>());
     }
 
-    private SecurityGroupTeamDto convertToDto(Team team) {
+    private SecurityGroupTeamDto convertToDto(TeamKey teamKey) {
+        Team team = TeamConfiguration.getInstance().get(teamKey)
+                .orElseThrow(() -> new MetadataDoesNotExistException(teamKey));
         return new SecurityGroupTeamDto(
                 team.getMetadataKey().getUuid(),
                 team.getTeamName()

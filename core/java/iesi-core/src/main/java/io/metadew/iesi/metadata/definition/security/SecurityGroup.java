@@ -17,14 +17,14 @@ import java.util.Set;
 public class SecurityGroup extends Metadata<SecurityGroupKey> {
 
     private String name;
-    private Set<Team> teams;
+    private Set<TeamKey> teamKeys;
     private Set<MetadataKey> securedObjects;
 
     @Builder
-    public SecurityGroup(SecurityGroupKey metadataKey, String name, Set<Team> teams, Set<MetadataKey> securedObjects) {
+    public SecurityGroup(SecurityGroupKey metadataKey, String name, Set<TeamKey> teamKeys, Set<MetadataKey> securedObjects) {
         super(metadataKey);
         this.name = name;
-        this.teams = teams;
+        this.teamKeys = teamKeys;
         this.securedObjects = securedObjects;
     }
 

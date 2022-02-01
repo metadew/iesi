@@ -8,4 +8,6 @@ public enum SecurityGroupFilterOption {
     SecurityGroupFilterOption(String keyword) {
         this.keyword = keyword;
     }
+
+    public String keyword() { return keyword; }
 }

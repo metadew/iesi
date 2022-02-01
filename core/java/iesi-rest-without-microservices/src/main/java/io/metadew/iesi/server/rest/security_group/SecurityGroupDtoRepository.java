@@ -45,15 +45,6 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
             " ON teams.ID = security_group_teams.TEAM_ID " +
             " WHERE security_groups.NAME={0};";
 
-    private static final String FETCH_ALL_QUERY = "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
-            "security_group_teams.team_id as security_group_teams_team_id, " +
-            "teams.id as team_id, teams.TEAM_NAME as team_name " +
-            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
-            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID" +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
-            " ON teams.ID = security_group_teams.TEAM_ID;";
-
     @Autowired
     public SecurityGroupDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
@@ -95,13 +86,13 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
-        return filterStatements;
+        return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
 
     private String getOrderByClause(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) return " ORDER BY security_groups.id";
         List<String> sorting = pageable.getSort().stream().map(order -> {
-                    if (order.getProperty().equals("NAME")) {
+                    if (order.getProperty().equalsIgnoreCase("NAME")) {
                         return "security_groups.name " + order.getDirection();
                     } else {
                         return null;

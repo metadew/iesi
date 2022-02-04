@@ -16,7 +16,7 @@ class HttpHeaderDefinitionServiceTest {
     void isHeaderTrueTest() {
         assertThat(HttpHeaderDefinitionService.getInstance().isHeader(ComponentParameter.builder()
                 .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
-                .value("content-type, application/json")
+                .value("content-type=\"application/json\"")
                 .build())
         ).isTrue();
     }
@@ -25,7 +25,7 @@ class HttpHeaderDefinitionServiceTest {
     void isHeaderFalseTest() {
         assertThat(HttpHeaderDefinitionService.getInstance().isHeader(ComponentParameter.builder()
                 .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "notheader.1"))
-                .value("content-type, application/json")
+                .value("content-type=\"application/json\"")
                 .build())
         ).isFalse();
     }
@@ -49,6 +49,33 @@ class HttpHeaderDefinitionServiceTest {
     }
 
     @Test
+    void convertTestSimpleSeparatorInsideQuotes() {
+        assertThat(HttpHeaderDefinitionService.getInstance().convert(ComponentParameter.builder()
+                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
+                .value("Authorization=\"BasicdGVzdF9hcGk6dGVzdF9hcGkwMDE=\"")
+                .build())
+        ).isEqualTo(new HttpHeaderDefinition("Authorization", "BasicdGVzdF9hcGk6dGVzdF9hcGkwMDE="));
+    }
+
+    @Test
+    void convertWithSpaces() {
+        assertThat(HttpHeaderDefinitionService.getInstance().convert(ComponentParameter.builder()
+                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
+                .value("Authorization=\"Basic dGVzdF9hcGk6dGVzdF9hcGkwMDE=\"")
+                .build())
+        ).isEqualTo(new HttpHeaderDefinition("Authorization", "Basic dGVzdF9hcGk6dGVzdF9hcGkwMDE="));
+    }
+
+    @Test
+    void convertTestMultipleSeparatorInsideQuotes() {
+        assertThat(HttpHeaderDefinitionService.getInstance().convert(ComponentParameter.builder()
+                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
+                .value("Authorization=\"=BasicdGVzdF9hcG==k6dGVzdF9=hcGkwMDE=\"")
+                .build())
+        ).isEqualTo(new HttpHeaderDefinition("Authorization", "=BasicdGVzdF9hcG==k6dGVzdF9=hcGkwMDE="));
+    }
+
+    @Test
     void convertTestNoKeyValueSeparator() {
         Throwable exception = assertThrows(KeyValuePairException.class, () -> HttpHeaderDefinitionService.getInstance().convert(ComponentParameter.builder()
                 .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
@@ -58,12 +85,23 @@ class HttpHeaderDefinitionServiceTest {
     }
 
     @Test
-    void convertTestMultipleKeyValueSeparator() {
+    void convertTestMultipleKeyValueSeparatorBegin() {
         Throwable exception = assertThrows(KeyValuePairException.class, () -> HttpHeaderDefinitionService.getInstance().convert(ComponentParameter.builder()
                 .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
                 .value("content-type===\"application/json\"")
                 .build()));
-        assertThat(exception.getMessage()).isEqualTo("The parameter content-type===\"application/json\" should contain one key value pair, please remove additional separator character.");
+        assertThat(exception.getMessage())
+                .isEqualTo("The parameter content-type===\"application/json\" should contain only one key-value separator, please remove additional separators");
+    }
+
+    @Test
+    void convertTestMultipleKeyValueSeparatorEnd() {
+        Throwable exception = assertThrows(KeyValuePairException.class, () -> HttpHeaderDefinitionService.getInstance().convert(ComponentParameter.builder()
+                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
+                .value("content-type=\"application/json\"Accept=\"application/xml\"")
+                .build()));
+        assertThat(exception.getMessage())
+                .isEqualTo("The parameter content-type=\"application/json\"Accept=\"application/xml\" should contain only one key-value separator, please remove additional separators");
     }
 
     @Test
@@ -82,6 +120,16 @@ class HttpHeaderDefinitionServiceTest {
                 .value("content-type=\"application/json")
                 .build()));
         assertThat(exception.getMessage()).isEqualTo("The value \"application/json is not provided correctly, please use quotes");
+    }
+
+    @Test
+    void convertTestMultipleHeaderDefinition() {
+        Throwable exception = assertThrows(KeyValuePairException.class, () -> HttpHeaderDefinitionService.getInstance().convert(ComponentParameter.builder()
+                .componentParameterKey(new ComponentParameterKey(new ComponentKey("id", 1L), "header.1"))
+                .value("content-type=\"application/json\", accept=\"application/json;version=2.0\"")
+                .build()));
+        assertThat(exception.getMessage())
+                .isEqualTo("The parameter content-type=\"application/json\", accept=\"application/json;version=2.0\" should not contains comma outside header value");
     }
 
 }

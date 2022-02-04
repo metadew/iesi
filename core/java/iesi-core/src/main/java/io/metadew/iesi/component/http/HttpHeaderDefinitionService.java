@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -32,18 +34,27 @@ public class HttpHeaderDefinitionService implements IHttpHeaderDefinitionService
         String key;
         String value;
 
+        Pattern patternComma = Pattern.compile("(,)(?=(?:[^\"]|\"[^\"]*\")*$)"); //Checks if comma exists outside quotes
+        Matcher matcher = patternComma.matcher(httpHeader);
+        Pattern patternEquals = Pattern.compile("(=)(?=(?:[^\"]|\"[^\"]*\")*$)");
+
         if (!httpHeader.contains("=")) {
             throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=\"value\" >.", httpHeader));
         }
 
-        keyValue = Arrays.stream(httpHeader.split("(?<!\".{0,255}[^\"])=|=(?![^\"].*\")")).collect(Collectors.toList());
-
-        if (keyValue.size() > 2) {
-            throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", httpHeader));
+        if (matcher.find()) {
+            throw new KeyValuePairException(String.format("The parameter %s should not contains comma outside header value", httpHeader));
         }
+
+        keyValue = Arrays.stream(httpHeader.split("=", 2)).collect(Collectors.toList());
 
         key = keyValue.get(0);
         value = keyValue.get(1);
+
+        Matcher matcherEquals = patternEquals.matcher(value);
+        if (matcherEquals.find()) {
+            throw new KeyValuePairException(String.format("The parameter %s should contain only one key-value separator, please remove additional separators", httpHeader));
+        }
 
         if (!(value.startsWith("\"") && value.endsWith("\""))) {
             throw new QuoteCharException(String.format("The value %s is not provided correctly, please use quotes", value));

@@ -142,7 +142,12 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (dataType == null || dataType instanceof Null) {
             return new ArrayList<>();
         } else if (dataType instanceof Text) {
-            List<String> tokens = Arrays.stream(dataType.toString().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)).collect(Collectors.toList());
+            if (((Text) dataType).getString().trim().isEmpty()) {
+                return new ArrayList<>();
+            }
+            List<String> tokens = Arrays.stream(((Text) dataType).getString().trim()
+                    .split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1))
+                    .collect(Collectors.toList());
             return tokens
                     .stream().map(this::buildHttpHeader).collect(Collectors.toList());
         } else if (dataType instanceof DatasetImplementation) {

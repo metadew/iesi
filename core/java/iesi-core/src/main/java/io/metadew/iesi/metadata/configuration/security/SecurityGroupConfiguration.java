@@ -6,7 +6,6 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
 import lombok.extern.log4j.Log4j2;
 
@@ -52,7 +51,7 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
             " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID" +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
             "ON security_group_teams.TEAM_ID = teams.ID" +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
             "ON roles.TEAM_ID = teams.ID;";
 
     private static String deleteSingleQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() +
@@ -116,7 +115,6 @@ public class SecurityGroupConfiguration extends Configuration<SecurityGroup, Sec
     public List<SecurityGroup> getAll() {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(fetchAllQuery, "reader");
-            System.out.println("COUCOU");
             return new SecurityGroupListResultSetExtractor().extractData(cachedRowSet);
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -16,8 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/security-groups")
@@ -36,7 +38,7 @@ public class SecurityGroupController {
     public SecurityGroupController(
             ISecurityGroupService securityGroupService,
             ISecurityGroupPutDtoService securityGroupPutDtoService,
-            PagedResourcesAssembler securityGroupDtoPagedResourceAssembler,
+            PagedResourcesAssembler<SecurityGroupDto> securityGroupDtoPagedResourceAssembler,
             SecurityGroupDtoResourceAssembler securityGroupDtoResourceAssembler
     ) {
         this.securityGroupService = securityGroupService;

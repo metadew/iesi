@@ -350,8 +350,6 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
                 createQuery.append("\t");
             }
 
-            System.out.println("CREATE QUERY : " + createQuery);
-
             createQuery.append(toQueryString(database, field.getValue()));
             /*
              * TODO create comment syntax inside subclasses returning stringbuilder rather

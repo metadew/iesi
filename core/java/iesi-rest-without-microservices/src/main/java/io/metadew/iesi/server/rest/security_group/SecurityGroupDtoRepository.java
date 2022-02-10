@@ -122,7 +122,7 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
                     query,
                     "reader");
             List<SecurityGroupDto> securityGroupDtos = new ArrayList<>(new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet));
-            return new PageImpl<>(securityGroupDtos,pageable, getRowSize(securityGroupFilters));
+            return new PageImpl<>(securityGroupDtos, pageable, getRowSize(securityGroupFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

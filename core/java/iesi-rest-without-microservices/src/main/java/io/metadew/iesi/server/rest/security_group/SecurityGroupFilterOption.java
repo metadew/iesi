@@ -9,5 +9,7 @@ public enum SecurityGroupFilterOption {
         this.keyword = keyword;
     }
 
-    public String keyword() { return keyword; }
+    public String keyword() {
+        return keyword;
+    }
 }

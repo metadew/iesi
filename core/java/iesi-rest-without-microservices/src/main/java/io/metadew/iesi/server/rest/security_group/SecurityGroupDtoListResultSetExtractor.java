@@ -1,11 +1,8 @@
 package io.metadew.iesi.server.rest.security_group;
 
-import io.metadew.iesi.metadata.definition.user.TeamKey;
-
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SecurityGroupDtoListResultSetExtractor {
 

@@ -9,8 +9,10 @@ import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes._null.NullService;
 import io.metadew.iesi.datatypes.array.ArrayService;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -45,6 +47,8 @@ public class DataTypeHandler {
         dataTypeServiceMap.put(new ClassStringPair(TextService.getInstance().keyword(), TextService.getInstance().appliesTo()), TextService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(TemplateService.getInstance().keyword(), TemplateService.getInstance().appliesTo()), TemplateService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(DatasetImplementationHandler.getInstance().keyword(), DatasetImplementationHandler.getInstance().appliesTo()), DatasetImplementationHandler.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(DatabaseDatasetImplementationService.getInstance().keyword(), DatabaseDatasetImplementationService.getInstance().appliesTo()), DatabaseDatasetImplementationService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(InMemoryDatasetImplementationService.getInstance().keyword(), InMemoryDatasetImplementationService.getInstance().appliesTo()), InMemoryDatasetImplementationService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(NullService.getInstance().keyword(), NullService.getInstance().appliesTo()), NullService.getInstance());
     }
@@ -141,20 +145,20 @@ public class DataTypeHandler {
         return instructionArguments;
     }
 
-    public DataType resolve(InMemoryDatasetImplementation inMemoryDatasetImplementation, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) {
+    public DataType resolve(DatasetImplementation datasetImplementation, String key, JsonNode jsonNode, ExecutionRuntime executionRuntime) {
         if (jsonNode.getNodeType().equals(JsonNodeType.ARRAY)) {
-            return ArrayService.getInstance().resolve(inMemoryDatasetImplementation, key, (ArrayNode) jsonNode, executionRuntime);
+            return ArrayService.getInstance().resolve(datasetImplementation, key, (ArrayNode) jsonNode, executionRuntime);
         } else if (jsonNode.getNodeType().equals(JsonNodeType.NULL)) {
             return new Null();
         } else if (jsonNode.isValueNode()) {
             return TextService.getInstance().resolve((ValueNode) jsonNode);
         }
         if (jsonNode.getNodeType().equals(JsonNodeType.OBJECT)) {
-            return InMemoryDatasetImplementationService.getInstance().resolve(inMemoryDatasetImplementation, key, (ObjectNode) jsonNode, executionRuntime);
+            return DatasetImplementationHandler.getInstance().resolve(datasetImplementation, key, (ObjectNode) jsonNode, executionRuntime);
         } else {
             log.warn(MessageFormat.format("dataset.json.unknownnode=cannot decipher json node of type {0}", jsonNode.getNodeType().toString()));
         }
-        return inMemoryDatasetImplementation;
+        return datasetImplementation;
     }
 
     @RequiredArgsConstructor

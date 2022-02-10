@@ -10,8 +10,8 @@ import io.metadew.iesi.connection.http.response.HttpResponseService;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -22,6 +22,7 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private static final String QUERY_PARAMETERS_KEY = "queryParameters";
 
     private HttpRequest httpRequest;
-    private InMemoryDatasetImplementation outputDataset;
+    private DatasetImplementation outputDataset;
     private ProxyConnection proxyConnection;
     private List<String> expectedStatusCodes;
 
@@ -141,17 +142,19 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (dataType == null || dataType instanceof Null) {
             return new ArrayList<>();
         } else if (dataType instanceof Text) {
-            return Arrays.stream(dataType.toString().split(","))
-                    .map(this::buildHttpHeader).collect(Collectors.toList());
-        } else if (dataType instanceof InMemoryDatasetImplementation) {
-            return InMemoryDatasetImplementationService
-                    .getInstance()
-                    .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
-                            .getExecutionRuntime()).entrySet().stream()
-                    .map(dataItem -> new HttpHeader(dataItem.getKey(), dataItem.getValue().toString()))
-                    .collect(
-                            Collectors.toList()
-                    );
+            if (((Text) dataType).getString().trim().isEmpty()) {
+                return new ArrayList<>();
+            }
+            List<String> tokens = Arrays.stream(((Text) dataType).getString().trim()
+                    .split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1))
+                    .collect(Collectors.toList());
+            return tokens
+                    .stream().map(this::buildHttpHeader).collect(Collectors.toList());
+        } else if (dataType instanceof DatasetImplementation) {
+            return DatasetImplementationHandler.getInstance()
+                    .getDataItems((DatasetImplementation) dataType, getExecutionControl().getExecutionRuntime())
+                    .entrySet().stream().map(dataItem -> new HttpHeader(dataItem.getKey(), dataItem.getValue().toString()))
+                    .collect(Collectors.toList());
         } else {
             log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for headers"),
                     dataType.getClass()));
@@ -165,15 +168,11 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else if (dataType instanceof Text) {
             return Arrays.stream(dataType.toString().split(","))
                     .map(this::buildHttpQueryParameter).collect(Collectors.toList());
-        } else if (dataType instanceof InMemoryDatasetImplementation) {
-            return InMemoryDatasetImplementationService
-                    .getInstance()
-                    .getDataItems((InMemoryDatasetImplementation) dataType, getExecutionControl()
-                            .getExecutionRuntime()).entrySet().stream()
-                    .map(dataItem -> new HttpQueryParameter(dataItem.getKey(), dataItem.getValue().toString()))
-                    .collect(
-                            Collectors.toList()
-                    );
+        } else if (dataType instanceof DatasetImplementation) {
+            return DatasetImplementationHandler.getInstance()
+                    .getDataItems((DatasetImplementation) dataType, getExecutionControl().getExecutionRuntime())
+                    .entrySet().stream().map(dataItem -> new HttpQueryParameter(dataItem.getKey(), dataItem.getValue().toString()))
+                    .collect(Collectors.toList());
         } else {
             log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for queryParameters"),
                     dataType.getClass()));
@@ -182,18 +181,27 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private HttpHeader buildHttpHeader(String header) {
-        String[] keyValues;
+        List<String> keyValue;
+        String key;
+        String value;
 
         if (!header.contains("=")) {
-            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=value >.", header));
+            throw new KeyValuePairException(String.format("The parameter %s should contain key value pair separated by the equals character < key=\"value\" >.", header));
         }
 
-        keyValues = header.split("=");
-        if (keyValues.length > 2) {
+        keyValue = Arrays.stream(header.split("=", 2)).collect(Collectors.toList());
+        if (keyValue.size() > 2) {
             throw new KeyValuePairException(String.format("The parameter %s should contain one key value pair, please remove additional separator character.", header));
         }
 
-        return new HttpHeader(keyValues[0], keyValues[1]);
+        key = keyValue.get(0);
+        value = keyValue.get(1);
+
+        if (!(value.startsWith("\"") && value.endsWith("\""))) {
+            throw new QuoteCharException(String.format("The value %s is not provided correctly, please use quotes", value));
+        }
+
+        return new HttpHeader(key, StringUtils.substringBetween(value, "\"", "\""));
     }
 
     private HttpQueryParameter buildHttpQueryParameter(String queryParameter) {
@@ -256,26 +264,26 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     }
 
     private void outputResponse(HttpResponse httpResponse) throws IOException {
-        Optional<InMemoryDatasetImplementation> outputDataset = getOutputDataset();
+        Optional<DatasetImplementation> outputDataset = getOutputDataset();
         if (outputDataset.isPresent()) {
-            if (!InMemoryDatasetImplementationService.getInstance().isEmpty(outputDataset.get())) {
+            if (!DatasetImplementationHandler.getInstance().isEmpty(outputDataset.get())) {
                 log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
-                InMemoryDatasetImplementationService.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
+                DatasetImplementationHandler.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
             }
             HttpResponseService.getInstance().writeToDataset(httpResponse, getOutputDataset().get(), getExecutionControl().getExecutionRuntime());
         }
         HttpResponseService.getInstance().traceOutput(httpResponse, getActionExecution().getActionControl());
     }
 
-    private InMemoryDatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
+    private DatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
         if (outputDatasetReferenceName == null || outputDatasetReferenceName instanceof Null) {
             return null;
         } else if (outputDatasetReferenceName instanceof Text) {
             return getExecutionControl().getExecutionRuntime()
                     .getDataset(((Text) outputDatasetReferenceName).getString())
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
-        } else if (outputDatasetReferenceName instanceof InMemoryDatasetImplementation) {
-            return (InMemoryDatasetImplementation) outputDatasetReferenceName;
+        } else if (outputDatasetReferenceName instanceof DatasetImplementation) {
+            return (DatasetImplementation) outputDatasetReferenceName;
         } else {
             log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
                     outputDatasetReferenceName.getClass()));
@@ -369,7 +377,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    protected Optional<InMemoryDatasetImplementation> getOutputDataset() {
+    protected Optional<DatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 

@@ -2,14 +2,17 @@ package io.metadew.iesi.server.rest.dataset.implementation.inmemory;
 
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDtoModelAssembler;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationKeyValueDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
 @DirtiesContext
-class InMemoryDatasetImplementationDtoModelAssemblerTest {
+class DatabaseDatasetImplementationDtoModelAssemblerTest {
 
     @Autowired
-    private InMemoryDatasetImplementationDtoModelAssembler inMemoryDatasetImplementationDtoModelAssembler;
+    private DatabaseDatasetImplementationDtoModelAssembler databaseDatasetImplementationDtoModelAssembler;
 
 
     @Test
@@ -42,20 +45,20 @@ class InMemoryDatasetImplementationDtoModelAssemblerTest {
         UUID inMemoryDatasetImplementationKeyValue1Uuid = UUID.randomUUID();
         UUID inMemoryDatasetImplementationKeyValue2Uuid = UUID.randomUUID();
 
-        assertThat(inMemoryDatasetImplementationDtoModelAssembler.toModel(
-                InMemoryDatasetImplementation.builder()
+        assertThat(databaseDatasetImplementationDtoModelAssembler.toModel(
+                DatabaseDatasetImplementation.builder()
                         .metadataKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                         .datasetKey(new DatasetKey(datasetUuid))
                         .name("dataset")
                         .keyValues(Stream.of(
-                                InMemoryDatasetImplementationKeyValue.builder()
-                                        .metadataKey(new InMemoryDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue1Uuid))
+                                DatabaseDatasetImplementationKeyValue.builder()
+                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue1Uuid))
                                         .datasetImplementationKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                                         .key("key1")
                                         .value("value1")
                                         .build(),
-                                InMemoryDatasetImplementationKeyValue.builder()
-                                        .metadataKey(new InMemoryDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue2Uuid))
+                                DatabaseDatasetImplementationKeyValue.builder()
+                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue2Uuid))
                                         .datasetImplementationKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                                         .key("key2")
                                         .value("value2")
@@ -74,15 +77,15 @@ class InMemoryDatasetImplementationDtoModelAssemblerTest {
                                         .build()
                         ).collect(Collectors.toSet()))
                         .build())
-        ).isEqualTo(InMemoryDatasetImplementationDto.builder()
+        ).isEqualTo(DatabaseDatasetImplementationDto.builder()
                 .uuid(inMemoryDatasetImplementationUuid)
                 .keyValues(Stream.of(
-                        InMemoryDatasetImplementationKeyValueDto.builder()
+                        DatabaseDatasetImplementationKeyValueDto.builder()
                                 .uuid(inMemoryDatasetImplementationKeyValue1Uuid)
                                 .key("key1")
                                 .value("value1")
                                 .build(),
-                        InMemoryDatasetImplementationKeyValueDto.builder()
+                        DatabaseDatasetImplementationKeyValueDto.builder()
                                 .uuid(inMemoryDatasetImplementationKeyValue2Uuid)
                                 .key("key2")
                                 .value("value2")

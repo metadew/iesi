@@ -71,8 +71,6 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
                 getWhereClause(securityGroupFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
-
-
     }
 
     private String getWhereClause(List<SecurityGroupFilter> securityGroupFilters) {
@@ -123,8 +121,8 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
                     query,
                     "reader");
-            Set<SecurityGroupDto> securityGroupDtos = new HashSet<>(new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet));
-            return new PageImpl<>(new ArrayList<>(securityGroupDtos),pageable, getRowSize(securityGroupFilters));
+            List<SecurityGroupDto> securityGroupDtos = new ArrayList<>(new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet));
+            return new PageImpl<>(securityGroupDtos,pageable, getRowSize(securityGroupFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

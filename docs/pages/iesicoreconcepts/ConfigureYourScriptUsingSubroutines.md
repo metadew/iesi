@@ -40,7 +40,7 @@ Subroutines can also be **nested**, containing subroutines in subroutines (e.g. 
 |            |List instructions|Generating and formatting of list values|
 |            |Math instructions|Generating and formatting of math formulas|
 |            |Text instructions|Generating and formatting of string - xml - json responses|
-|**Variable**|                 |All instrucitons related to fetching of framework variables
+|**Variable**|                 |All instructions related to fetching of framework variables
 
 
 --part below = obsolete!

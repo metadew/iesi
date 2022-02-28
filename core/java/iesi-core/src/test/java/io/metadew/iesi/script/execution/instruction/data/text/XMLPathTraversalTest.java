@@ -41,6 +41,48 @@ public class XMLPathTraversalTest {
     }
 
     @Test
+    void xmlPathWithSpacesAndBreakLines() {
+        XMLPathTraversal xmlPathTraversal = new XMLPathTraversal();
+        String xmlString = "<Tutorials> \n <Tutorial>\n<title>Guava</title>\n<description>Introduction to Guava</description>\n\n</Tutorial>\n\n</Tutorials>";
+        String xmlPathTitle = "/Tutorials/Tutorial[1]/title";
+        String xmmPathDescription = "/Tutorials/Tutorial[1]/description";
+
+        assertEquals("Guava", xmlPathTraversal.generateOutput(xmlString + "," + xmlPathTitle));
+        assertEquals("Introduction to Guava", xmlPathTraversal.generateOutput(xmlString + "," + xmmPathDescription));
+    }
+
+    @Test
+    void xmlPathWithCommaInsideFirstArgument() {
+        XMLPathTraversal xmlPathTraversal = new XMLPathTraversal();
+        String xmlString = "<Tutorials> \n <Tutorial>\n<title>Guava</title>\n<description>Introduction to Guava,</description>\n</Tutorial>\n</Tutorials>";
+        String xmlPathTitle = "/Tutorials/Tutorial[1]/title";
+        String xlmPathDescription = "/Tutorials/Tutorial[1]/description";
+
+        assertEquals("Guava", xmlPathTraversal.generateOutput(xmlString + "," + xmlPathTitle));
+        assertEquals("Introduction to Guava,", xmlPathTraversal.generateOutput(xmlString + "," + xlmPathDescription));
+    }
+
+    @Test
+    void xmlPathWithMultipleCommaInsideFirstArgument() {
+        XMLPathTraversal xmlPathTraversal = new XMLPathTraversal();
+        String xmlString = "<Tutorials> \n <Tutorial>\n<title>Guava,</title>\n<description>,Introduct,ion to Guava,</description>\n</Tutorial>\n</Tutorials>";
+        String xmlPathTitle = "/Tutorials/Tutorial[1]/title";
+        String xlmPathDescription = "/Tutorials/Tutorial[1]/description";
+
+        assertEquals("Guava,", xmlPathTraversal.generateOutput(xmlString + "," + xmlPathTitle));
+        assertEquals(",Introduct,ion to Guava,", xmlPathTraversal.generateOutput(xmlString + "," + xlmPathDescription));
+    }
+
+    @Test
+    void xmlPathWithCommaInsideSecondtArgument() {
+        XMLPathTraversal xmlPathTraversal = new XMLPathTraversal();
+        String xmlString = "<Tutorials> \n <Tutorial>\n<title>Guava</title>\n<description>Introduction to Guava</description>\n</Tutorial>\n</Tutorials>";
+        String xmlPathTitle = "/Tutorials/Tutorial[1]/title,1";
+
+        assertThrows(IllegalArgumentException.class, () -> xmlPathTraversal.generateOutput(xmlString + xmlPathTitle));
+    }
+
+    @Test
     void xmlPathMissingCommaBetweenParametersShouldThrowException() {
         XMLPathTraversal xmlPathTraversal = new XMLPathTraversal();
         String xmlString = "<?xml version=\"1.0\"?><Tutorials><Tutorial><title>Guava</title><description>Introduction to Guava</description></Tutorial></Tutorials>";
@@ -73,19 +115,5 @@ public class XMLPathTraversalTest {
         String xmlPath = "/Tutorials/Tutorial[1]/title";
 
         assertThrows(IllegalArgumentException.class, () -> xmlPathTraversal.generateOutput(xmlString + "," + xmlPath));
-    }
-
-    @Test
-    void xmlPathWithSpacesAndBreakLines() {
-        XMLPathTraversal xmlPathTraversal = new XMLPathTraversal();
-        String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:CustomerExamAnswersResponse xmlns=\"http://schemas.dvsys.dv.be/entity/agkp/person/v1.0\" xmlns:ns2=\"http://schemas.dvsys.dv.be/interface/agkp/person/management/v1.0\">     <ExamId>1</ExamId>     <CustomerPSI>42</CustomerPSI>     <NrOfAttempts>1</NrOfAttempts>     <ExamResult>passed</ExamResult>     \n" +
-                "    <ExamResultId>750</ExamResultId> \n" +
-                "   </ns2:CustomerExamAnswersResponse>\n" +
-                "\n";
-        String xmlPath = "/CustomerExamAnswersResponse/ExamResult";
-
-        String result = xmlPathTraversal.generateOutput(xmlString + "," + xmlPath);
-
-        assertEquals("passed", result);
     }
 }

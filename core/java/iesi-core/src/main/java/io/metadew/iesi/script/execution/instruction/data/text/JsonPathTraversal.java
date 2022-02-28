@@ -16,7 +16,7 @@ public class JsonPathTraversal implements DataInstruction {
     private static final String JSON_PATH = "jsonPath";
 
     private static final Pattern PATTERN = Pattern.compile(
-            "\\s*(?<" + TEXT + ">.+)\\s*" +
+            "\\s*(?<" + TEXT + ">[\\s\\S]+)\\s*" +
             ",\\s*(?<" + JSON_PATH + ">.+)");
 
     @Override

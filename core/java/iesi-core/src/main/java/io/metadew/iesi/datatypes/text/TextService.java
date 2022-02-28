@@ -35,7 +35,7 @@ public class TextService implements IDataTypeService<Text> {
 
     public Text resolve(String input, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Text", input));
-        return new Text(executionRuntime.resolveVariables(input));
+        return new Text(executionRuntime.resolveVariables(input).replaceAll("<!(.*?[\\{\\}]*[\\S\\s]*.*?[\\S\\s]*?)!>", "$1"));
     }
 
 
@@ -45,7 +45,7 @@ public class TextService implements IDataTypeService<Text> {
         } else if (_this.getString() == null || other.getString() == null) {
             return false;
         } else {
-            return _this.getString().equals(other.getString());
+            return _this.getString().replaceAll("\\s+","").equals(other.getString().replaceAll("\\s+",""));
         }
     }
 

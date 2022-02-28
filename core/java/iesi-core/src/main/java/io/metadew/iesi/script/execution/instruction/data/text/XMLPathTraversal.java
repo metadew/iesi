@@ -21,7 +21,7 @@ public class XMLPathTraversal implements DataInstruction {
     private static final String TEXT = "text";
     private static final String XML_PATH = "xmlPath";
 
-    private static final Pattern PATTERN = Pattern.compile("\\s*(?<" + TEXT + ">.+?)\\s*,\\s*(?<" + XML_PATH + ">.+)");
+    private static final Pattern PATTERN = Pattern.compile("(?<" + TEXT + ">[\\s\\S]+),(?<" + XML_PATH + ">.+)");
 
     @Override
     public String getKeyword() {
@@ -30,7 +30,7 @@ public class XMLPathTraversal implements DataInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        Matcher inputParameter = PATTERN.matcher(parameters.replaceAll(">[\\s\r\n]*<", "><"));
+        Matcher inputParameter = PATTERN.matcher(parameters);
 
         if (inputParameter.find()) {
             String text = inputParameter.group(TEXT);

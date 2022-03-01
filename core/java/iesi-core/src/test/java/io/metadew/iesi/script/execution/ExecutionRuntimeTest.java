@@ -219,17 +219,6 @@ public class ExecutionRuntimeTest {
         when(datasetImplementationHandlerSpy.getDataItem(any(DatasetImplementation.class), eq("location"), any(ExecutionRuntime.class)))
                 .thenReturn(Optional.of(new Text("Nowhere")));
 
-
-        /*
-        String instruction = "My name is : {{*text.replace(\"placeholder Doe\", \"placeholder\", \"Jane\")}}, " +
-                "my phone number is: {{=dataset(FeatureTestPhoneNumber, phoneNumber)}}{{*math.add(2,3)}}, " +
-                "my location is : {{*text.jsonpath({{=dataset(FeatureTestLocation, location)}})}}";
-
-         */
-
-
-        // assertThat(lookupResult.getValue()).isEqualTo("My name is Jane Doe, my phone number is: +32-478-67-55, my location is : Nowhere");
-
         String instruction = "My name is : {{*text.replace(\"placeholder Doe\", \"placeholder\", \"Jane\")}}, My phone number is : {{*text.replace(\"04 92 16 09 04\", \" \", \"-\")}}";
         LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
         assertThat(lookupResult.getValue()).isEqualTo("My name is : Jane Doe, My phone number is : 04-92-16-09-04");
@@ -239,19 +228,28 @@ public class ExecutionRuntimeTest {
     void simpleinstruction() {
         ExecutionRuntime executionRuntime = new ExecutionRuntime(executionControl, "12", scriptExecutionInitializationParameters);
 
-        String instruction =  "TEXT = {{*math.add(4,5)}}";
+        String instruction = "TEXT = {{*math.add(4,5)}}";
         LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
 
         assertThat(lookupResult.getValue()).isEqualTo("TEXT = 9");
     }
 
     @Test
-    void ignoringconceptswithmultipleignores() {
+    void ignoringConceptWithMultipleIgnores() {
         ExecutionRuntime executionRuntime = new ExecutionRuntime(executionControl, "13", scriptExecutionInitializationParameters);
 
-        String instruction =  "TEXT = {{*text.substring(<!{{hamza!>,1,5)}}{{*text.substring(hamza<!}}!>,4,7)}}{{*text.substring(hamza,1,3)}}";
-        LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
+        String instruction = "TEXT = {{*text.substring(<!{{hamza!>,1,5)}}{{*text.substring(hamza<!}}!>,4,7)}}{{*text.substring(hamza,1,3)}}";
 
+        LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
         assertThat(lookupResult.getValue()).isEqualTo("TEXT = {{hamza}}ham");
+    }
+
+    @Test
+    void ignoringConceptWithRandomMultipleIgnores() {
+        ExecutionRuntime executionRuntime = new ExecutionRuntime(executionControl, "14", scriptExecutionInitializationParameters);
+        String instruction = "[ \"Hello\", \"{{*text.replace(\"Hello<!}}!> World\", \"Hello\", \"<!{{!>World<!}}!>\")}}, \"WithBrackets<!}}!>, \"WithBrackets<!{{!> ]";
+
+        LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
+        assertThat(lookupResult.getValue()).isEqualTo("[ \"Hello\", \"{{World}}}} World, \"WithBrackets<!}}!>, \"WithBrackets<!{{!> ]");
     }
 }

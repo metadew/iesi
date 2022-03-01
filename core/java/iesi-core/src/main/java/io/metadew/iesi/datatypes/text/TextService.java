@@ -7,11 +7,14 @@ import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 public class TextService implements IDataTypeService<Text> {
 
     private static TextService INSTANCE;
+    private final Pattern ESCAPE_CONCEPT_PATTERNS = Pattern.compile("<!(.*?[\\\\{\\\\}]*[\\S\\s]*?.*?[\\S\\s]*?)!>");
 
     public synchronized static TextService getInstance() {
         if (INSTANCE == null) {
@@ -35,7 +38,14 @@ public class TextService implements IDataTypeService<Text> {
 
     public Text resolve(String input, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Text", input));
-        return new Text(executionRuntime.resolveVariables(input).replaceAll("<!(.*?[\\{\\}]*[\\S\\s]*.*?[\\S\\s]*?)!>", "$1"));
+        String resolvedVariable = executionRuntime.resolveVariables(input);
+        Matcher matcher = ESCAPE_CONCEPT_PATTERNS.matcher(resolvedVariable);
+
+        while (matcher.find()) {
+            resolvedVariable = resolvedVariable.replaceAll("<!(.*?[\\\\{\\\\}]*[\\S\\s]*?.*?[\\S\\s]*?)!>", "$1");
+            matcher = ESCAPE_CONCEPT_PATTERNS.matcher(resolvedVariable);
+        }
+        return new Text(resolvedVariable);
     }
 
 
@@ -45,7 +55,7 @@ public class TextService implements IDataTypeService<Text> {
         } else if (_this.getString() == null || other.getString() == null) {
             return false;
         } else {
-            return _this.getString().replaceAll("\\s+","").equals(other.getString().replaceAll("\\s+",""));
+            return _this.getString().replaceAll("\\s+", "").equals(other.getString().replaceAll("\\s+", ""));
         }
     }
 

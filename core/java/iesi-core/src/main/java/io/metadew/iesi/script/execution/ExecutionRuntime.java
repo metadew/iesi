@@ -60,8 +60,6 @@ public class ExecutionRuntime {
     private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
     private final Pattern CONCEPT_LOOKUP_PATTERN = Pattern
             .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\^\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">[\\s\\S]+)?\\}\\}\\s*");
-    private final Pattern CONCEPT_LOOKUP_PATTERN_NO_WHITESPACE = Pattern
-            .compile("\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\^\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">[\\s\\S]+)?\\}\\}\\s*");
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -339,6 +337,38 @@ public class ExecutionRuntime {
         return input;
     }
 
+    public int resolveEscapmentLookup(String input, String lookupConceptKey, int conceptLookupIndex) {
+        String ignoreLookupConceptStartKey = "<!";
+        String ignoreLookupConceptStopKey = "!>";
+
+        int ignoreLookupConceptStartIndex = input.lastIndexOf(ignoreLookupConceptStartKey, conceptLookupIndex);
+        int nextIgnoreLookupConceptStartIndex = input.indexOf(ignoreLookupConceptStartKey, conceptLookupIndex);
+        int ignoreLookupConceptStopIndex = input.indexOf(ignoreLookupConceptStopKey, conceptLookupIndex);
+        int previousIgnoreLookupConceptStopIndex = input.lastIndexOf(ignoreLookupConceptStopKey, conceptLookupIndex);
+
+        while (ignoreLookupConceptStartIndex > -1 && ignoreLookupConceptStopIndex > -1 && conceptLookupIndex > ignoreLookupConceptStartIndex && conceptLookupIndex < ignoreLookupConceptStopIndex) {
+            if (nextIgnoreLookupConceptStartIndex > -1 && previousIgnoreLookupConceptStopIndex > -1) {
+                if (ignoreLookupConceptStartIndex > previousIgnoreLookupConceptStopIndex && ignoreLookupConceptStopIndex < nextIgnoreLookupConceptStartIndex) {
+                    conceptLookupIndex = input.indexOf(lookupConceptKey, ignoreLookupConceptStopIndex);
+                    ignoreLookupConceptStartIndex = input.lastIndexOf(ignoreLookupConceptStartKey, conceptLookupIndex);
+                    nextIgnoreLookupConceptStartIndex = input.indexOf(ignoreLookupConceptStartKey, conceptLookupIndex);
+                    ignoreLookupConceptStopIndex = input.indexOf(ignoreLookupConceptStopKey, conceptLookupIndex);
+                    previousIgnoreLookupConceptStopIndex = input.lastIndexOf(ignoreLookupConceptStopKey, conceptLookupIndex);
+                } else {
+                    break;
+                }
+            } else {
+                conceptLookupIndex = input.indexOf(lookupConceptKey, ignoreLookupConceptStopIndex);
+                ignoreLookupConceptStartIndex = input.lastIndexOf(ignoreLookupConceptStartKey, conceptLookupIndex);
+                nextIgnoreLookupConceptStartIndex = input.indexOf(ignoreLookupConceptStartKey, conceptLookupIndex);
+                ignoreLookupConceptStopIndex = input.indexOf(ignoreLookupConceptStopKey, conceptLookupIndex);
+                previousIgnoreLookupConceptStopIndex = input.lastIndexOf(ignoreLookupConceptStopKey, conceptLookupIndex);
+            }
+        }
+
+        return conceptLookupIndex;
+    }
+
     /*
      * New function or concept lookups
      * Work in progress
@@ -351,50 +381,27 @@ public class ExecutionRuntime {
         // TODO: move to Antler
         String lookupConceptStartKey = "{{";
         String lookupConceptStopKey = "}}";
-        String ignoreLookupConceptStartKey = "<!";
-        String ignoreLookupConceptStopKey = "!>";
 
         int lookupConceptStartIndex;
         int lookupConceptStopIndex = 0;
         int nextLookupConceptStartIndex;
-        int ignoreLookupConceptStartIndex;
-        int ignoreLookupConceptStopIndex;
 
         while (input.indexOf(lookupConceptStartKey, lookupConceptStopIndex) != -1) {
-            lookupConceptStartIndex = input.indexOf(lookupConceptStartKey, lookupConceptStopIndex);
-            ignoreLookupConceptStartIndex = input.indexOf(ignoreLookupConceptStartKey, lookupConceptStopIndex);
-            ignoreLookupConceptStopIndex = input.indexOf(ignoreLookupConceptStopKey, lookupConceptStopIndex);
+            lookupConceptStartIndex = resolveEscapmentLookup(input, lookupConceptStartKey, input.indexOf(lookupConceptStartKey, lookupConceptStopIndex));
 
-            if (input.indexOf(lookupConceptStopKey, lookupConceptStartIndex) == -1 && ignoreLookupConceptStartIndex < 0 && ignoreLookupConceptStopIndex < 0) {
+            if (lookupConceptStartIndex < 0) {
+                lookupResult.setValue(input);
+                return lookupResult;
+            }
+
+            lookupConceptStopIndex = resolveEscapmentLookup(input, lookupConceptStopKey, input.indexOf(lookupConceptStopKey, lookupConceptStartIndex));
+            if (input.indexOf(lookupConceptStopKey, lookupConceptStartIndex) == -1) {
                 LOGGER.warn(MessageFormat.format("concept.lookup.resolve.error=error during concept lookup resolvement of {0}. Concept lookup instruction not properly closed.", input));
                 lookupResult.setValue(input);
                 return lookupResult;
             }
 
-            while (lookupConceptStartIndex > ignoreLookupConceptStartIndex && lookupConceptStartIndex < ignoreLookupConceptStopIndex) {
-                lookupConceptStartIndex = input.indexOf(lookupConceptStartKey, ignoreLookupConceptStopIndex);
-                ignoreLookupConceptStartIndex = input.indexOf(ignoreLookupConceptStartKey, ignoreLookupConceptStopIndex);
-                ignoreLookupConceptStopIndex = input.indexOf(ignoreLookupConceptStopKey, ignoreLookupConceptStartIndex);
-
-                if (lookupConceptStartIndex < 0) {
-                    lookupResult.setValue(input);
-                    return lookupResult;
-                }
-            }
-            lookupConceptStopIndex = input.indexOf(lookupConceptStopKey, lookupConceptStartIndex);
-            nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, lookupConceptStartIndex + lookupConceptStartKey.length());
-
-            while (nextLookupConceptStartIndex > ignoreLookupConceptStartIndex && nextLookupConceptStartIndex < ignoreLookupConceptStopIndex) {
-                nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, ignoreLookupConceptStopIndex);
-                ignoreLookupConceptStartIndex = input.indexOf(ignoreLookupConceptStartKey, ignoreLookupConceptStopIndex);
-                ignoreLookupConceptStopIndex = input.indexOf(ignoreLookupConceptStopKey, ignoreLookupConceptStartIndex);
-            }
-
-            while (lookupConceptStopIndex > ignoreLookupConceptStartIndex && lookupConceptStopIndex < ignoreLookupConceptStopIndex) {
-                lookupConceptStopIndex = input.indexOf(lookupConceptStopKey, ignoreLookupConceptStopIndex);
-                ignoreLookupConceptStartIndex = input.indexOf(ignoreLookupConceptStartKey, ignoreLookupConceptStopIndex);
-                ignoreLookupConceptStopIndex = input.indexOf(ignoreLookupConceptStopKey, ignoreLookupConceptStartIndex);
-            }
+            nextLookupConceptStartIndex = resolveEscapmentLookup(input, lookupConceptStartKey, input.indexOf(lookupConceptStartKey, lookupConceptStartIndex + lookupConceptStartKey.length()));
 
             while (nextLookupConceptStartIndex > 0 && nextLookupConceptStartIndex < lookupConceptStopIndex) {
                 lookupConceptStopIndex = input.indexOf(lookupConceptStopKey, lookupConceptStopIndex + lookupConceptStopKey.length());
@@ -406,16 +413,11 @@ public class ExecutionRuntime {
                 nextLookupConceptStartIndex = input.indexOf(lookupConceptStartKey, nextLookupConceptStartIndex + lookupConceptStartKey.length());
             }
 
-            /*
-            if (lookupConceptStopIndex < input.length()) {
-                lookupConceptStopIndex = input.lastIndexOf(lookupConceptStopKey);
-            }
-            */
-
             String resolvement = executeConceptLookup(input.substring(lookupConceptStartIndex, lookupConceptStopIndex + lookupConceptStopKey.length())).getValue();
             input = input.substring(0, lookupConceptStartIndex) +
                     resolvement +
                     input.substring(lookupConceptStopIndex + lookupConceptStopKey.length());
+
             lookupConceptStopIndex = lookupConceptStartIndex + resolvement.length();
         }
         LOGGER.debug(MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input));
@@ -443,8 +445,14 @@ public class ExecutionRuntime {
 
             List<String> instructionArguments = splitInstructionArguments(instructionArgumentsString);
             String instructionArgumentsResolved = instructionArguments.stream()
-                    .map(instructionArgument -> resolveConceptLookup(instructionArgument).getValue())
-                    .collect(Collectors.joining(","));
+                    .map(instructionArgument -> {
+                        Matcher matcher = CONCEPT_LOOKUP_PATTERN.matcher(instructionArgument);
+                        if (!matcher.find()) {
+                            instructionArgument = instructionArgument.replaceAll("([\\{\\{]{2}|[\\}\\}]{2})", "<!$1!>");
+                        }
+                        return resolveConceptLookup(instructionArgument).getValue();
+                    })
+                    .collect(Collectors.joining(", "));
 
             LOGGER.debug(MessageFormat.format("concept.lookup.resolve.instruction.parameters=resolved instructions parameters to {0}", instructionArgumentsResolved));
 
@@ -504,8 +512,8 @@ public class ExecutionRuntime {
             // only simple arguments left or a simple argument before a function argument
             else if (instructionStartIndex == -1 || instructionStartIndex > argumentSeparatorIndex) {
                 String[] splittedInstructionArguments = instructionArgumentsString.split(argumentSeparator, 2);
-                instructionArguments.add(splittedInstructionArguments[0]);
-                instructionArgumentsString = splittedInstructionArguments[1];
+                instructionArguments.add(splittedInstructionArguments[0].trim());
+                instructionArgumentsString = splittedInstructionArguments[1].trim();
             }
             // function argument before one or more other arguments
             else {
@@ -517,11 +525,11 @@ public class ExecutionRuntime {
                 }
                 argumentSeparatorIndex = instructionArgumentsString.indexOf(argumentSeparator, instructionStopIndex + 1);
                 if (argumentSeparatorIndex == -1) {
-                    instructionArguments.add(instructionArgumentsString);
+                    instructionArguments.add(instructionArgumentsString.trim());
                     break;
                 } else {
                     instructionArguments.add(instructionArgumentsString.substring(0, argumentSeparatorIndex));
-                    instructionArgumentsString = instructionArgumentsString.substring(argumentSeparatorIndex + 1);
+                    instructionArgumentsString = instructionArgumentsString.substring(argumentSeparatorIndex + 1).trim();
                 }
             }
         }
@@ -548,13 +556,13 @@ public class ExecutionRuntime {
         }
     }
 
-    protected String generateDataInstruction(String context, String input) {
+    private String generateDataInstruction(String context, String input) {
         LOGGER.debug("concept.lookup.resolve.instruction=executing data creation " + context + " for " + input);
         DataInstruction dataInstruction = dataInstructions.get(context);
         if (dataInstruction == null) {
             throw new IllegalArgumentException(MessageFormat.format("No data instruction named {0} found.", context));
         } else {
-            return dataInstruction.generateOutput(input);
+            return dataInstruction.generateOutput(input).replaceAll("([\\{\\{]{2}|[\\}\\}]{2})", "<!$1!>");
         }
     }
 

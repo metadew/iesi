@@ -1,5 +1,9 @@
 package io.metadew.iesi.script.execution.instruction.data.text;
 
+import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 
 import java.text.MessageFormat;
@@ -8,6 +12,12 @@ import java.util.regex.Pattern;
 
 
 public class TextSubstring implements DataInstruction {
+
+    private final ExecutionRuntime executionRuntime;
+
+    public TextSubstring(ExecutionRuntime executionRuntime) {
+        this.executionRuntime = executionRuntime;
+    }
 
     private final static String FIRST_OPERATOR = "text";
     private final static String SECOND_OPERATOR = "start";
@@ -20,8 +30,12 @@ public class TextSubstring implements DataInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        Matcher inputParameterMatcher = THREE_ARGUMENTS_PATTERN.matcher(parameters);
-        Matcher inputParameterMatcherTwoArguments = TWO_ARGUMENTS_PATTERN.matcher(parameters);
+        DataType resolvedParameters = DataTypeHandler.getInstance().resolve(parameters, executionRuntime);
+        if (!(resolvedParameters instanceof Text)) {
+            throw new IllegalArgumentException(MessageFormat.format("text cannot be a type of", resolvedParameters.getClass()));
+        }
+        Matcher inputParameterMatcher = THREE_ARGUMENTS_PATTERN.matcher(((Text) resolvedParameters).getString());
+        Matcher inputParameterMatcherTwoArguments = TWO_ARGUMENTS_PATTERN.matcher(((Text) resolvedParameters).getString());
 
         if (inputParameterMatcher.find()) {
             String text = inputParameterMatcher.group(FIRST_OPERATOR);

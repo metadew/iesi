@@ -337,6 +337,9 @@ public class ExecutionRuntime {
         return input;
     }
 
+    /*
+        In development, to optimize
+     */
     public int resolveEscapmentLookup(String input, String lookupConceptKey, int conceptLookupIndex) {
         String ignoreLookupConceptStartKey = "<!";
         String ignoreLookupConceptStopKey = "!>";
@@ -417,7 +420,6 @@ public class ExecutionRuntime {
             input = input.substring(0, lookupConceptStartIndex) +
                     resolvement +
                     input.substring(lookupConceptStopIndex + lookupConceptStopKey.length());
-
             lookupConceptStopIndex = lookupConceptStartIndex + resolvement.length();
         }
         LOGGER.debug(MessageFormat.format("concept.lookup.resolve.result={0}:{1}", lookupResult.getInputValue(), input));

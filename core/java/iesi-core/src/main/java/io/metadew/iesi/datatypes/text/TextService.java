@@ -42,7 +42,7 @@ public class TextService implements IDataTypeService<Text> {
         Matcher matcher = ESCAPE_CONCEPT_PATTERNS.matcher(resolvedVariable);
 
         while (matcher.find()) {
-            resolvedVariable = resolvedVariable.replaceAll("<!(.*?[\\\\{\\\\}]*[\\S\\s]*?.*?[\\S\\s]*?)!>", "$1");
+            resolvedVariable = resolvedVariable.replaceAll(ESCAPE_CONCEPT_PATTERNS.pattern(), "$1");
             matcher = ESCAPE_CONCEPT_PATTERNS.matcher(resolvedVariable);
         }
         return new Text(resolvedVariable);

@@ -4,14 +4,15 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationJsonComponent;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationType;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.*;
+import io.metadew.iesi.datatypes.dataset.implementation.*;
+import io.metadew.iesi.datatypes.dataset.implementation.database.*;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelJsonComponent;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 
@@ -58,14 +59,33 @@ public class DatasetJsonComponent {
                 }
 
                 String type = implementationNode.get(DatasetImplementationJsonComponent.Field.TYPE_KEY.value()).asText();
-                if (type.equalsIgnoreCase(DatasetImplementationType.IN_MEMORY.value())) {
+                if (type.equalsIgnoreCase(DatasetImplementationType.DATABASE.value())) {
+                    Set<DatabaseDatasetImplementationKeyValue> keyValues = new HashSet<>();
+                    for (JsonNode keyValueNode : implementationNode.get(DatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
+                        keyValues.add(DatabaseDatasetImplementationKeyValue.builder()
+                                .metadataKey(new DatabaseDatasetImplementationKeyValueKey())
+                                .datasetImplementationKey(datasetImplementationKey)
+                                .key(keyValueNode.get(DatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
+                                .value(keyValueNode.get(DatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText())
+                                .build());
+                    }
+                    datasetImplementations.add(
+                            DatabaseDatasetImplementation.builder()
+                                    .metadataKey(datasetImplementationKey)
+                                    .datasetKey(datasetKey)
+                                    .name(name)
+                                    .datasetImplementationLabels(datasetImplementationLabels)
+                                    .keyValues(keyValues)
+                                    .build()
+                    );
+                } else if (type.equalsIgnoreCase(DatasetImplementationType.IN_MEMORY.value())) {
                     Set<InMemoryDatasetImplementationKeyValue> keyValues = new HashSet<>();
-                    for (JsonNode keyValueNode : implementationNode.get(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
+                    for (JsonNode keyValueNode : implementationNode.get(DatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value())) {
                         keyValues.add(InMemoryDatasetImplementationKeyValue.builder()
                                 .metadataKey(new InMemoryDatasetImplementationKeyValueKey())
                                 .datasetImplementationKey(datasetImplementationKey)
-                                .key(keyValueNode.get(InMemoryDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
-                                .value(keyValueNode.get(InMemoryDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText())
+                                .key(keyValueNode.get(DatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value()).asText())
+                                .value(new Text(keyValueNode.get(DatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value()).asText()))
                                 .build());
                     }
                     datasetImplementations.add(
@@ -77,7 +97,8 @@ public class DatasetJsonComponent {
                                     .keyValues(keyValues)
                                     .build()
                     );
-                } else {
+                }
+                else {
                     throw new RuntimeException("Cannot create DatasetImplementation of type " + type);
                 }
             }
@@ -110,18 +131,27 @@ public class DatasetJsonComponent {
                 }
                 jsonGenerator.writeEndArray();
 
-                if (datasetImplementation instanceof InMemoryDatasetImplementation) {
-                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.IN_MEMORY.value());
-                    jsonGenerator.writeArrayFieldStart(InMemoryDatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
-                    for (InMemoryDatasetImplementationKeyValue inMemoryDatasetImplementationKeyValue : ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues()) {
+                if (datasetImplementation instanceof DatabaseDatasetImplementation) {
+                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.DATABASE.value());
+                    jsonGenerator.writeArrayFieldStart(DatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
+                    for (DatabaseDatasetImplementationKeyValue datasetImplementationKeyValue : ((DatabaseDatasetImplementation) datasetImplementation).getKeyValues()) {
                         jsonGenerator.writeStartObject();
-                        jsonGenerator.writeStringField(InMemoryDatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), inMemoryDatasetImplementationKeyValue.getKey());
-                        jsonGenerator.writeStringField(InMemoryDatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), inMemoryDatasetImplementationKeyValue.getValue());
+                        jsonGenerator.writeStringField(DatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), datasetImplementationKeyValue.getKey());
+                        jsonGenerator.writeStringField(DatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), datasetImplementationKeyValue.getValue());
                         jsonGenerator.writeEndObject();
                     }
                     jsonGenerator.writeEndArray();
-                } else {
-                    // TODO
+                } else if (datasetImplementation instanceof InMemoryDatasetImplementation) {
+                    jsonGenerator.writeStringField(DatasetImplementationJsonComponent.Field.TYPE_KEY.value(), DatasetImplementationType.IN_MEMORY.value());
+                    jsonGenerator.writeArrayFieldStart(DatasetImplementationJsonComponent.Field.KEY_VALUES_KEY.value());
+                    for (InMemoryDatasetImplementationKeyValue datasetImplementationKeyValue : ((InMemoryDatasetImplementation) datasetImplementation).getKeyValues()) {
+                        jsonGenerator.writeStringField(DatasetImplementationKeyValueJsonComponent.Field.KEY_KEY.value(), datasetImplementationKeyValue.getKey());
+                        jsonGenerator.writeStringField(DatasetImplementationKeyValueJsonComponent.Field.VALUE_KEY.value(), datasetImplementationKeyValue.getValue().toString());
+                        jsonGenerator.writeEndObject();
+                    }
+                }
+                else {
+                    throw new RuntimeException("dataset implementation type is not correct");
                 }
                 jsonGenerator.writeEndObject();
             }

@@ -17,7 +17,7 @@ iesi:
           baseUrl:
             description: all endpoints hosted at the host start with this specific endpoint
             type: string
-            mandatory: true
+            mandatory: false
             encrypted: false
           tls:
             description: Whether or not the connection to the host is encrypted using TLS
@@ -414,6 +414,34 @@ iesi:
             type: string
             mandatory: true
             encrypted: true
+      db.generic:
+        description: Generic Database connection
+        parameters:
+          connectionURL:
+            description: The connection URL for the instance
+            type: string
+            mandatory: true
+            encrypted: false
+          schema:
+            description: The schema name in the catalog to connect to
+            type: string
+            mandatory: false
+            encrypted: false
+          user:
+            description: The user name to connect to the database
+            type: string
+            mandatory: false
+            encrypted: false
+          password:
+            description: The encrypted password to connect to the database
+            type: string
+            mandatory: false
+            encrypted: true
+          initSql:
+            description: connectionInitSql query
+            type: string
+            mandatory: false
+            encrypted: false
       fwk.alias:
         description: Connection alias only to be used for impersonation
         parameters:

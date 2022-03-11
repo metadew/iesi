@@ -36,7 +36,7 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
     @Override
     public Optional<ActionResult> get(ActionResultKey actionResultKey) {
         try {
-            String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
+            String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS, ACTION_TYP_NM from "
                     + getMetadataRepository().getTableNameByLabel("ActionResults")
                     + " where RUN_ID = " + SQLTools.getStringForSQL(actionResultKey.getRunId()) + " and PRC_ID = " + SQLTools.getStringForSQL(actionResultKey.getProcessId())
                     + " and ACTION_ID = " + SQLTools.getStringForSQL(actionResultKey.getActionId()) + ";";
@@ -53,7 +53,8 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                     cachedRowSet.getString("ENV_NM"),
                     ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+                    SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS")),
+                    cachedRowSet.getString("ACTION_TYP_NM")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -63,7 +64,7 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
     public List<ActionResult> getAll() {
         try {
             List<ActionResult> scriptResults = new ArrayList<>();
-            String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS from "
+            String query = "select RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS, ACTION_TYP_NM from "
                     + getMetadataRepository().getTableNameByLabel("ActionResults") + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -76,7 +77,8 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                         cachedRowSet.getString("ENV_NM"),
                         ScriptRunStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("STRT_TMS")),
-                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS"))));
+                        SQLTools.getLocalDatetimeFromSql(cachedRowSet.getString("END_TMS")),
+                        cachedRowSet.getString("ACTION_TYP_NM")));
             }
             return scriptResults;
         } catch (SQLException e) {
@@ -109,7 +111,7 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
     private String insertStatement(ActionResult actionResult) {
         return "INSERT INTO "
                 + getMetadataRepository().getTableNameByLabel("ActionResults")
-                + " (RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS) VALUES ("
+                + " (RUN_ID, PRC_ID, SCRIPT_PRC_ID, ACTION_ID, ACTION_NM, ENV_NM, ST_NM, STRT_TMS, END_TMS, ACTION_TYP_NM) VALUES ("
                 + SQLTools.getStringForSQL(actionResult.getMetadataKey().getRunId()) + ","
                 + SQLTools.getStringForSQL(actionResult.getMetadataKey().getProcessId()) + ","
                 + SQLTools.getStringForSQL(actionResult.getScriptProcessId()) + ","
@@ -118,7 +120,8 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                 + SQLTools.getStringForSQL(actionResult.getEnvironment()) + ","
                 + SQLTools.getStringForSQL(actionResult.getStatus().value()) + ","
                 + SQLTools.getStringForSQL(actionResult.getStartTimestamp()) + ","
-                + SQLTools.getStringForSQL(actionResult.getEndTimestamp()) + ");";
+                + SQLTools.getStringForSQL(actionResult.getEndTimestamp()) + ","
+                + SQLTools.getStringForSQL(actionResult.getActionTypeName()) + ");";
     }
 
     @Override
@@ -136,10 +139,10 @@ public class ActionResultConfiguration extends Configuration<ActionResult, Actio
                 "ENV_NM = " + SQLTools.getStringForSQL(actionResult.getEnvironment()) + "," +
                 "ST_NM = " + SQLTools.getStringForSQL(actionResult.getStatus().value()) + "," +
                 "STRT_TMS = " + SQLTools.getStringForSQL(actionResult.getStartTimestamp()) + "," +
-                "END_TMS = " + SQLTools.getStringForSQL(actionResult.getEndTimestamp()) +
+                "END_TMS = " + SQLTools.getStringForSQL(actionResult.getEndTimestamp()) + "," +
+                "ACTION_TYP_NM = " + SQLTools.getStringForSQL(actionResult.getActionTypeName()) +
                 "WHERE RUN_ID = " + SQLTools.getStringForSQL(actionResult.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.getStringForSQL(actionResult.getMetadataKey().getProcessId()) + ";";
-
 
     }
 }

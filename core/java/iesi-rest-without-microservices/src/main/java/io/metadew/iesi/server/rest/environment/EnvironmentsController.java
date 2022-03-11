@@ -9,10 +9,16 @@ import io.metadew.iesi.server.rest.connection.ConnectionService;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDto;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDtoResourceAssembler;
+import io.metadew.iesi.server.rest.environment.dto.IEnvironmentDtoService;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,40 +26,52 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static io.metadew.iesi.server.rest.helper.Filter.distinctByKey;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@Tag(name = "environments", description = "Everything about environments")
 @RequestMapping("/environments")
+@ConditionalOnWebApplication
 public class EnvironmentsController {
 
     private EnvironmentService environmentService;
     private ConnectionService connectionService;
     private EnvironmentDtoResourceAssembler environmentDtoResourceAssembler;
     private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
+    private IEnvironmentDtoService environmentDtoService;
+    private PagedResourcesAssembler<EnvironmentDto> environmentDtoPagedResourcesAssembler;
 
     @Autowired
     EnvironmentsController(EnvironmentService environmentService, ConnectionService connectionService,
-                           EnvironmentDtoResourceAssembler environmentDtoResourceAssembler, ConnectionDtoResourceAssembler connectionDtoResourceAssembler) {
+                           EnvironmentDtoResourceAssembler environmentDtoResourceAssembler, ConnectionDtoResourceAssembler connectionDtoResourceAssembler,
+                           IEnvironmentDtoService environmentDtoService, PagedResourcesAssembler<EnvironmentDto> environmentDtoPagedResourcesAssembler ) {
         this.environmentService = environmentService;
         this.connectionService = connectionService;
         this.environmentDtoResourceAssembler = environmentDtoResourceAssembler;
         this.connectionDtoResourceAssembler = connectionDtoResourceAssembler;
+        this.environmentDtoService = environmentDtoService;
+        this.environmentDtoPagedResourcesAssembler = environmentDtoPagedResourcesAssembler;
     }
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
+    public PagedModel<EnvironmentDto> getAll(Pageable pageable) {
+        Page<EnvironmentDto> environmentDtoPage = environmentDtoService.getAll(pageable);
+
+        if (environmentDtoPage.hasContent())
+            return environmentDtoPagedResourcesAssembler.toModel(environmentDtoPage, environmentDtoResourceAssembler::toModel);
+        return (PagedModel<EnvironmentDto>) environmentDtoPagedResourcesAssembler.toEmptyModel(environmentDtoPage, EnvironmentDto.class);
+    }
+
+    @GetMapping("/list")
+    @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
     public HalMultipleEmbeddedResource<EnvironmentDto> getAll() {
-        List<Environment> environments = environmentService.getAll();
-        return new HalMultipleEmbeddedResource<>(
-                environments.stream().filter(distinctByKey(Environment::getName))
-                        .map(environment -> environmentDtoResourceAssembler.toModel(environment))
-                        .collect(Collectors.toList()));
+        Page<EnvironmentDto> environmentDtoPage = environmentDtoService.getAll(Pageable.unpaged());
+        HalMultipleEmbeddedResource<EnvironmentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
+        environmentDtoPage.getContent().forEach(halMultipleEmbeddedResource::embedResource);
+        return halMultipleEmbeddedResource;
     }
 
     @GetMapping("/{name}")

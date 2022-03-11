@@ -2,8 +2,8 @@ package io.metadew.iesi.metadata.definition.execution;
 
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import lombok.Builder;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +11,10 @@ import java.util.Set;
 
 public class AuthenticatedExecutionRequest extends ExecutionRequest {
 
+    @Setter
     private String userID;
+
+    @Setter
     private String username;
 
     @Builder
@@ -29,7 +32,7 @@ public class AuthenticatedExecutionRequest extends ExecutionRequest {
                                          Set<ExecutionRequestLabel> executionRequestLabels,
                                          String userID,
                                          String username
-                                         ) {
+    ) {
         super(executionRequestKey,
                 // securityGroupKey,
                 // securityGroupName,

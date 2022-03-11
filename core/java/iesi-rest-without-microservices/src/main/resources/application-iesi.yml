@@ -9,9 +9,18 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '.'
+  home: ./iesi/core/java/iesi-core
   security:
     enabled: true
     jwt:
       secret: secret
       expiry-date: 10
+  workers:
+    - path: '.'
+      timeout: 30
+  master:
+    path: '.'
+    host: 'http://localhost:8080'
+    credentials:
+      user: admin
+      password: admin

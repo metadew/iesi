@@ -53,8 +53,8 @@ class UserDtoRepositoryTest {
         Map<String, Object> teamInfo = TeamBuilder.generateTeam(1, 1, 2, new HashSet<>());
         teamConfiguration.insert((Team) teamInfo.get("team"));
         Team team = (Team) teamInfo.get("team");
-        Map<String, Object> user1Info = UserBuilder.generateUser("user1", team.getRoles(), team.getTeamName());
-        Map<String, Object> user2Info = UserBuilder.generateUser("user2", team.getRoles(), team.getTeamName());
+        Map<String, Object> user1Info = UserBuilder.generateUser("user1", team.getRoles(), team.getTeamName(), new HashSet<>());
+        Map<String, Object> user2Info = UserBuilder.generateUser("user2", team.getRoles(), team.getTeamName(), new HashSet<>());
         userConfiguration.insert((User) user1Info.get("user"));
         userConfiguration.insert((User) user2Info.get("user"));
         Pageable pageable = PageRequest.of(0, 3);
@@ -70,8 +70,8 @@ class UserDtoRepositoryTest {
         Map<String, Object> teamInfo = TeamBuilder.generateTeam(1, 1, 2, new HashSet<>());
         teamConfiguration.insert((Team) teamInfo.get("team"));
         Team team = (Team) teamInfo.get("team");
-        Map<String, Object> user1Info = UserBuilder.generateUser("filter", team.getRoles(), team.getTeamName());
-        Map<String, Object> user2Info = UserBuilder.generateUser("user", team.getRoles(), team.getTeamName());
+        Map<String, Object> user1Info = UserBuilder.generateUser("filter", team.getRoles(), team.getTeamName(), new HashSet<>());
+        Map<String, Object> user2Info = UserBuilder.generateUser("user", team.getRoles(), team.getTeamName(), new HashSet<>());
         userConfiguration.insert((User) user1Info.get("user"));
         userConfiguration.insert((User) user2Info.get("user"));
         Pageable pageable = PageRequest.of(0, 2);

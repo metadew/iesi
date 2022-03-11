@@ -2,7 +2,6 @@ package io.metadew.iesi.script.action.wfa;
 
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
-import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -33,8 +32,8 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
 
     private long startTime;
 
-    private final int defaultWaitInterval = 1000;
-    private final int defaultTimeoutInterval = -1;
+    private static final int DEFAULT_WAIT_INTERVAL = 5;
+    private static final int DEFAULT_TIMEOUT_INTERVAL = 60;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -47,27 +46,27 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
 
     private int convertWaitInterval(DataType waitInterval) {
         if (waitInterval == null) {
-            return defaultWaitInterval;
+            return DEFAULT_WAIT_INTERVAL * 1000;
         }
         if (waitInterval instanceof Text) {
-            return Integer.parseInt(waitInterval.toString());
+            return Integer.parseInt(waitInterval.toString()) * 1000;
         } else {
             LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for wait interval",
                     waitInterval.getClass()));
-            return defaultWaitInterval;
+            return DEFAULT_WAIT_INTERVAL * 1000;
         }
     }
 
     private int convertTimeoutInterval(DataType timeoutInterval) {
         if (timeoutInterval == null) {
-            return defaultTimeoutInterval;
+            return DEFAULT_TIMEOUT_INTERVAL;
         }
         if (timeoutInterval instanceof Text) {
             return Integer.parseInt(timeoutInterval.toString());
         } else {
             LOGGER.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for timeout interval",
                     timeoutInterval.getClass()));
-            return defaultTimeoutInterval;
+            return DEFAULT_TIMEOUT_INTERVAL;
         }
     }
 
@@ -87,32 +86,19 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         Database database = DatabaseHandler.getInstance().getDatabase(connection);
 
         // Run the action
-        int i = 1;
-        long wait = waitInterval * 1000;
-        if (wait <= 0)
-            wait = 1000;
-        boolean checkTimeout = false;
-        long timeout = timeoutInterval * 1000;
-        long timeoutCounter = 0;
-        if (timeout > 0)
-            checkTimeout = true;
-
-        boolean done = false;
+        boolean done;
         LocalDateTime start = LocalDateTime.now();
-        while (i == 1) {
-            if (this.doneWaiting(database, query, hasResult, setRuntimeVariables)) {
+        while (true) {
+            if (doneWaiting(database, query, hasResult, setRuntimeVariables)) {
                 done = true;
+                break;
+            } else if (LocalDateTime.now().isAfter(start.plus(timeoutInterval, ChronoUnit.SECONDS))) {
+                done = false;
                 break;
             }
 
-            if (checkTimeout) {
-                timeoutCounter += wait;
-                if (timeoutCounter >= timeout)
-                    break;
-            }
-
             try {
-                Thread.sleep(wait);
+                Thread.sleep(waitInterval);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
@@ -185,21 +171,14 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
     }
 
     private boolean doneWaiting(Database database, String query, boolean hasResult, boolean setRuntimeVariables) throws SQLException {
-        CachedRowSet crs;
-        crs = DatabaseHandler.getInstance().executeQuery(database, query);
-        if (SQLTools.getRowCount(crs) > 0) {
-            if (hasResult) {
-                this.setRuntimeVariable(crs, setRuntimeVariables);
-                return true;
-            } else {
-                return false;
-            }
+        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
+        if (crs.size() > 0 && hasResult) {
+            this.setRuntimeVariable(crs, setRuntimeVariables);
+            return true;
+        } else if (crs.size() == 0 && !hasResult) {
+            return true;
         } else {
-            if (!hasResult) {
-                return true;
-            } else {
-                return false;
-            }
+            return false;
         }
     }
 

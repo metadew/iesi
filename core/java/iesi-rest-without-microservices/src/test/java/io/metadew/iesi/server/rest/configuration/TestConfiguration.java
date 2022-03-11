@@ -15,14 +15,6 @@ public class TestConfiguration {
     @Order(0)
     @DependsOn("frameworkInstance")
     public MetadataRepositoryConfiguration metadataRepositoryConfiguration() {
-//        for (MetadataRepository metadataRepository : MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()) {
-//            try {
-//                metadataRepository.dropAllTables();
-//            } catch (RuntimeException e) {
-//                log.info(e.getMessage());
-//            }
-//            metadataRepository.createAllTables();
-//        }
         return MetadataRepositoryConfiguration.getInstance();
     }
 }

@@ -4,7 +4,8 @@ public class DatasetImplementationJsonComponent {
 
     public enum Field {
         LABELS_KEY("labels"),
-        TYPE_KEY("type");
+        TYPE_KEY("type"),
+        KEY_VALUES_KEY("key_values");
 
         private final String label;
 

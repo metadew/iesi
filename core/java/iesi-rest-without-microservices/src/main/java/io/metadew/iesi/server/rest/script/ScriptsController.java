@@ -10,8 +10,8 @@ import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import io.metadew.iesi.server.rest.script.dto.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -36,8 +36,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@Tag(name = "scripts", description = "Everything about scripts")
 @RequestMapping("/scripts")
+@ConditionalOnWebApplication
 public class ScriptsController {
 
     private final IScriptService scriptService;

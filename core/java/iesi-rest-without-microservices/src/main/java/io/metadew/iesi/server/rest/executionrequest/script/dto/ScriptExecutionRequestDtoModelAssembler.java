@@ -6,12 +6,14 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.execution.script.ScriptNameExecutionRequest;
 import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnWebApplication
 public class ScriptExecutionRequestDtoModelAssembler extends RepresentationModelAssemblerSupport<ScriptExecutionRequest, ScriptExecutionRequestDto> {
 
 
@@ -31,7 +33,6 @@ public class ScriptExecutionRequestDtoModelAssembler extends RepresentationModel
                     scriptExecutionRequest.getMetadataKey().getId(),
                     scriptExecutionRequest.getExecutionRequestKey().getId(),
                     scriptExecutionRequest.getEnvironment(),
-                    scriptExecutionRequest.isExit(),
                     scriptExecutionRequest.getImpersonations().stream()
                             .map(this::convertToDto).collect(Collectors.toSet()),
                     scriptExecutionRequest.getParameters().stream()

@@ -16,8 +16,8 @@ import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import io.metadew.iesi.server.rest.executionrequest.script.dto.ScriptExecutionRequestDto;
 import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -30,6 +30,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,8 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@Tag(name = "execution requests", description = "Everything about execution requests")
 @RequestMapping("/execution-requests")
+@ConditionalOnWebApplication
 public class ExecutionRequestController {
 
     private final ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler;
@@ -47,19 +48,24 @@ public class ExecutionRequestController {
     private final PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage;
     private final IesiSecurityChecker iesiSecurityChecker;
     private final ScriptConfiguration scriptConfiguration;
+    private final Clock clock;
     private final UserDtoRepository userDtoRepository;
 
 
     @Autowired
     ExecutionRequestController(ExecutionRequestService executionRequestService,
                                ExecutionRequestDtoModelAssembler executionRequestDtoModelAssembler,
-                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage, IesiSecurityChecker iesiSecurityChecker,
-                               ScriptConfiguration scriptConfiguration, UserDtoRepository userDtoRepository) {
+                               PagedResourcesAssembler<ExecutionRequestDto> executionRequestDtoResourceAssemblerPage,
+                               IesiSecurityChecker iesiSecurityChecker,
+                               Clock clock,
+                               ScriptConfiguration scriptConfiguration,
+                               UserDtoRepository userDtoRepository) {
         this.executionRequestService = executionRequestService;
         this.executionRequestDtoModelAssembler = executionRequestDtoModelAssembler;
         this.executionRequestDtoResourceAssemblerPage = executionRequestDtoResourceAssemblerPage;
         this.iesiSecurityChecker = iesiSecurityChecker;
         this.scriptConfiguration = scriptConfiguration;
+        this.clock = clock;
         this.userDtoRepository = userDtoRepository;
     }
 
@@ -70,8 +76,10 @@ public class ExecutionRequestController {
                                                   @RequestParam(required = false, name = "script") String script,
                                                   @RequestParam(required = false, name = "version") String version,
                                                   @RequestParam(required = false, name = "environment") String environment,
-                                                  @RequestParam(required = false, name = "label") String labelKeyCombination) {
-        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination);
+                                                  @RequestParam(required = false, name = "label") String labelKeyCombination,
+                                                  @RequestParam(required = false, name = "run-id") String runId,
+                                                  @RequestParam(required = false, name = "run-status") String runStatus) {
+        List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination, runId, runStatus);
         Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService
                 .getAll(SecurityContextHolder.getContext().getAuthentication(), pageable, executionRequestFilters);
         if (executionRequestDtoPage.hasContent())
@@ -79,7 +87,7 @@ public class ExecutionRequestController {
         return (PagedModel<ExecutionRequestDto>) executionRequestDtoResourceAssemblerPage.toEmptyModel(executionRequestDtoPage, ExecutionRequestDto.class);
     }
 
-    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination) {
+    private List<ExecutionRequestFilter> extractScriptFilterOptions(String name, String version, String environment, String labelKeyCombination, String runId, String runStatus) {
         List<ExecutionRequestFilter> executionRequestFilters = new ArrayList<>();
         if (name != null) {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.NAME, name, false));
@@ -92,6 +100,12 @@ public class ExecutionRequestController {
         }
         if (version != null) {
             executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.VERSION, version, true));
+        }
+        if (runId != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.RUN_ID, runId, false));
+        }
+        if (runStatus != null) {
+            executionRequestFilters.add(new ExecutionRequestFilter(ExecutionRequestFilterOption.STATUS, runStatus, true));
         }
         return executionRequestFilters;
     }
@@ -139,7 +153,7 @@ public class ExecutionRequestController {
                         .map(scriptExecutionRequestPostDto -> scriptExecutionRequestPostDto.convertToEntity(newExecutionRequestId))
                         .collect(Collectors.toList()))
                 .executionRequestStatus(ExecutionRequestStatus.NEW)
-                .requestTimestamp(LocalDateTime.now())
+                .requestTimestamp(LocalDateTime.now(clock))
                 .build();
 
         ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(authenticatedExecutionRequest);

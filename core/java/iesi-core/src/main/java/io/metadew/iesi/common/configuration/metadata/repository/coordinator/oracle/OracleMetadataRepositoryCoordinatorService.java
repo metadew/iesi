@@ -38,16 +38,14 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
             databases.put("owner", oracleDatabase);
             databases.put("writer", oracleDatabase);
             databases.put("reader", oracleDatabase);
-        }
-        if (oracleRepositoryCoordinatorDefinition.getWriter() != null) {
+        } else if (oracleRepositoryCoordinatorDefinition.getWriter() != null) {
             OracleDatabaseConnection h2DatabaseConnection = getDatabaseConnection(oracleRepositoryCoordinatorDefinition,
                     oracleRepositoryCoordinatorDefinition.getWriter());
             OracleDatabase h2Database = new OracleDatabase(h2DatabaseConnection);
             oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(h2Database::setSchema);
             databases.put("writer", h2Database);
             databases.put("reader", h2Database);
-        }
-        if (oracleRepositoryCoordinatorDefinition.getReader() != null) {
+        } else if (oracleRepositoryCoordinatorDefinition.getReader() != null) {
             OracleDatabaseConnection h2DatabaseConnection = getDatabaseConnection(oracleRepositoryCoordinatorDefinition,
                     oracleRepositoryCoordinatorDefinition.getReader());
             OracleDatabase h2Database = new OracleDatabase(h2DatabaseConnection);

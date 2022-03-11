@@ -9,8 +9,8 @@ import java.security.NoSuchAlgorithmException;
 
 public interface IHttpRequestService {
 
-    public HttpResponse send(HttpRequest httpRequest) throws IOException, KeyManagementException, NoSuchAlgorithmException;
+    HttpResponse send(HttpRequest httpRequest) throws IOException, KeyManagementException, NoSuchAlgorithmException;
 
-    public HttpResponse send(HttpRequest httpRequest, ProxyConnection proxyConnection) throws IOException, KeyManagementException, NoSuchAlgorithmException;
+    HttpResponse send(HttpRequest httpRequest, ProxyConnection proxyConnection) throws IOException, KeyManagementException, NoSuchAlgorithmException;
 
 }

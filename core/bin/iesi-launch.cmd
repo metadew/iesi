@@ -5,6 +5,6 @@ setLocal EnableDelayedExpansion
 call set LIB_DIR="%CD%\..\lib"
 cd !LIB_DIR!
 
-java -cp %LIB_DIR%\* io.metadew.iesi.launch.ScriptLauncher %*
+java -Dspring.main.web-application-type=NONE -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest.jar -launch %*
 
 cd !CURRENT_DIR!

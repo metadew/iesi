@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.action.fwk;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.Iteration;
 import io.metadew.iesi.script.action.ActionTypeExecution;
@@ -60,7 +61,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private boolean convertIterationInterrupt(DataType iterationInterrupt) {
         // TODO: remove if different class for every iteration variable
-        if (iterationInterrupt == null) {
+        if (iterationInterrupt == null || iterationInterrupt instanceof Null) {
             return false;
         } else if (iterationInterrupt instanceof Text) {
             return iterationInterrupt.toString().equalsIgnoreCase("y");
@@ -73,7 +74,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationCondition(DataType iterationCondition) {
         // TODO: remove if different class for every iteration variable
-        if (iterationCondition == null) {
+        if (iterationCondition == null || iterationCondition instanceof Null) {
             return null;
         } else if (iterationCondition instanceof Text) {
             return iterationCondition.toString();
@@ -86,7 +87,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationStep(DataType iterationStep) {
         // TODO: remove if different class for every iteration variable
-        if (iterationStep == null) {
+        if (iterationStep == null || iterationStep instanceof Null) {
             return null;
         } else if (iterationStep instanceof Text) {
             return iterationStep.toString();
@@ -99,7 +100,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationTo(DataType iterationTo) {
         // TODO: remove if different class for every iteration variable
-        if (iterationTo == null) {
+        if (iterationTo == null || iterationTo instanceof Null) {
             return null;
         } else if (iterationTo instanceof Text) {
             return iterationTo.toString();
@@ -112,7 +113,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationFrom(DataType iterationFrom) {
         // TODO: remove if different class for every iteration variable
-        if (iterationFrom == null) {
+        if (iterationFrom == null || iterationFrom instanceof Null) {
             return null;
         } else if (iterationFrom instanceof Text) {
             return iterationFrom.toString();
@@ -125,7 +126,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationValues(DataType iterationValues) {
         // TODO: remove if different class for every iteration variable
-        if (iterationValues == null) {
+        if (iterationValues == null || iterationValues instanceof Null) {
             return null;
         } else if (iterationValues instanceof Text) {
             return iterationValues.toString();
@@ -138,7 +139,7 @@ public class FwkSetIteration extends ActionTypeExecution {
 
     private String convertIterationList(DataType iterationList) {
         // TODO: remove if different class for every iteration variable
-        if (iterationList == null) {
+        if (iterationList == null || iterationList instanceof Null) {
             return null;
         } else if (iterationList instanceof Text) {
             return iterationList.toString();

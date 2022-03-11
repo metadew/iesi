@@ -81,11 +81,10 @@ class ExecutionRequestControllerTest {
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .environment("test")
-                                .exit(false)
                                 .impersonations(new HashSet<>())
                                 .parameters(new HashSet<>())
                                 .build()
-                ).collect(Collectors.toSet()))
+                ).collect(Collectors.toList()))
                 .context("context")
                 .description("description")
                 .email("email")
@@ -135,7 +134,6 @@ class ExecutionRequestControllerTest {
                         .scriptName("script1")
                         .scriptVersion(1L)
                         .environment("test")
-                        .exit(false)
                         .impersonations(new HashSet<>())
                         .parameters(new HashSet<>())
                         .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)
@@ -145,9 +143,9 @@ class ExecutionRequestControllerTest {
                 .requestTimestamp(requestTimestamp)
                 .build();
 
-        when(executionRequestService.createExecutionRequest(argThat(executionRequest -> equalsWithoutUuid(executionRequest, expectedAuthenticatedExecutionRequest))))
-                .thenReturn(expectedAuthenticatedExecutionRequest);
 
+        when(executionRequestService.createExecutionRequest((ExecutionRequest) argThat(executionRequest -> equalsWithoutUuid((ExecutionRequest) executionRequest, expectedAuthenticatedExecutionRequest))))
+                .thenReturn(expectedAuthenticatedExecutionRequest);
         // Perform test method
         ExecutionRequestDto executionRequestDto1 = executionRequestController.post(executionRequestPostDto);
 
@@ -175,7 +173,6 @@ class ExecutionRequestControllerTest {
                                 .scriptName("script1")
                                 .scriptVersion(1L)
                                 .environment("test")
-                                .exit(false)
                                 .impersonations(new HashSet<>())
                                 .parameters(new HashSet<>())
                                 .scriptExecutionRequestStatus(ScriptExecutionRequestStatus.NEW)

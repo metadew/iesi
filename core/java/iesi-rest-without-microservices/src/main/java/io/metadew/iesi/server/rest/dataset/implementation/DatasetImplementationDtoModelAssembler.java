@@ -1,27 +1,29 @@
 package io.metadew.iesi.server.rest.dataset.implementation;
 
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDtoModelAssembler;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDtoModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnWebApplication
 public class DatasetImplementationDtoModelAssembler extends RepresentationModelAssemblerSupport<DatasetImplementation, DatasetImplementationDto> {
 
-    private final InMemoryDatasetImplementationDtoModelAssembler inMemoryDatasetImplementationDtoModelAssembler;
+    private final DatabaseDatasetImplementationDtoModelAssembler databaseDatasetImplementationDtoModelAssembler;
 
     @Autowired
-    public DatasetImplementationDtoModelAssembler(InMemoryDatasetImplementationDtoModelAssembler inMemoryDatasetImplementationDtoModelAssembler) {
+    public DatasetImplementationDtoModelAssembler(DatabaseDatasetImplementationDtoModelAssembler databaseDatasetImplementationDtoModelAssembler) {
         super(DatasetImplementationController.class, DatasetImplementationDto.class);
-        this.inMemoryDatasetImplementationDtoModelAssembler = inMemoryDatasetImplementationDtoModelAssembler;
+        this.databaseDatasetImplementationDtoModelAssembler = databaseDatasetImplementationDtoModelAssembler;
     }
 
     @Override
     public DatasetImplementationDto toModel(DatasetImplementation datasetImplementation) {
-        if (datasetImplementation instanceof InMemoryDatasetImplementation) {
-            return inMemoryDatasetImplementationDtoModelAssembler.toModel((InMemoryDatasetImplementation) datasetImplementation);
+        if (datasetImplementation instanceof DatabaseDatasetImplementation) {
+            return databaseDatasetImplementationDtoModelAssembler.toModel((DatabaseDatasetImplementation) datasetImplementation);
         } else {
             throw new RuntimeException();
         }

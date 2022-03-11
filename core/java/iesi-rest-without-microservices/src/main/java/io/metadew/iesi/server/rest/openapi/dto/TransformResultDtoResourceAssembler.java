@@ -4,12 +4,14 @@ import io.metadew.iesi.openapi.TransformResult;
 import io.metadew.iesi.server.rest.component.dto.ComponentDtoResourceAssembler;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
 import io.metadew.iesi.server.rest.openapi.OpenAPIController;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnWebApplication
 public class TransformResultDtoResourceAssembler extends RepresentationModelAssemblerSupport<TransformResult, TransformResultDto> {
 
     ComponentDtoResourceAssembler componentDtoResourceAssembler;
@@ -28,8 +30,7 @@ public class TransformResultDtoResourceAssembler extends RepresentationModelAsse
 
     private TransformResultDto convertToDto(TransformResult transformResult) {
         return new TransformResultDto(
-                transformResult.getConnections().stream()
-                        .map(connection -> connectionDtoResourceAssembler.toModel(connection)).collect(Collectors.toList()),
+                connectionDtoResourceAssembler.toModel(transformResult.getConnections()),
                 transformResult.getComponents().stream()
                         .map(component -> componentDtoResourceAssembler.toModel(component)).collect(Collectors.toList()),
                 transformResult.getTitle(),

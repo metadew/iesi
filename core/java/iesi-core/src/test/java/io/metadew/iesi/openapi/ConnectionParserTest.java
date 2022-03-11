@@ -1,13 +1,22 @@
 package io.metadew.iesi.openapi;
 
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,8 +27,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConnectionParserTest {
 
+    @BeforeAll
+    static void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
+    }
+
     @Test
-    public void parse() throws MalformedURLException {
+    void parse() throws MalformedURLException {
+        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
+        SecurityGroupConfiguration.getInstance().insert(
+                new SecurityGroup(
+                        securityGroupKey,
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>()
+                )
+        );
         Info info = new Info()
                 .version("1")
                 .title("Documentation")
@@ -54,9 +95,11 @@ public class ConnectionParserTest {
                 "env0",
                 "baseUrl",
                 ConnectionParser.getInstance().getBaseUrl(address).orElse(""));
-        List<ConnectionParameter> connectionParameters = Arrays.asList(baseUrl, host,tls);
+        List<ConnectionParameter> connectionParameters = Arrays.asList(baseUrl, host, tls);
         Connection connection = new Connection(
                 "Documentation",
+                securityGroupKey,
+                "PUBLIC",
                 "http",
                 "Documentation description",
                 "env0",
@@ -113,6 +156,7 @@ public class ConnectionParserTest {
         assertThat(ConnectionParser.getInstance().getHost(new URL("https://petstore3.swagger.io/api/v3/")))
                 .isEqualTo("petstore3.swagger.io");
     }
+
     @Test
     public void getHostWithoutBaseUrl() throws MalformedURLException {
         assertThat(ConnectionParser.getInstance().getHost(new URL("https://petstore3.swagger.io")))

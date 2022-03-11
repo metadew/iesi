@@ -8,8 +8,8 @@ import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.impersonation.dto.ImpersonationDto;
 import io.metadew.iesi.server.rest.impersonation.dto.ImpersonatonDtoResourceAssembler;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,8 +24,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@Tag(name = "impersonations", description = "Everything about impersonations")
 @RequestMapping("/impersonations")
+@ConditionalOnWebApplication
 public class ImpersonationController {
 
     private ImpersonationService impersonationService;

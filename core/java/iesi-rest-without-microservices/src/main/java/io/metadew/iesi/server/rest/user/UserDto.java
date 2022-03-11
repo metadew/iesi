@@ -1,12 +1,13 @@
 package io.metadew.iesi.server.rest.user;
 
-import io.metadew.iesi.server.rest.dataset.DatasetDto;
+import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.Set;
 import java.util.UUID;
+
 
 @Data
 @EqualsAndHashCode(callSuper = false)

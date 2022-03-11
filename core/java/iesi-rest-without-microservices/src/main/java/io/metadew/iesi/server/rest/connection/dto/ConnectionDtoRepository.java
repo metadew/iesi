@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.connection.dto;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import io.metadew.iesi.server.rest.connection.ConnectionFilter;
 import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
 import io.metadew.iesi.server.rest.dataset.FilterService;
@@ -10,9 +11,11 @@ import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Repository
+@ConditionalOnWebApplication
 public class ConnectionDtoRepository extends PaginatedRepository implements IConnectionDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
@@ -33,10 +37,10 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         this.filterService = filterService;
     }
 
-    private String getFetchAllQuery(Pageable pageable, List<ConnectionFilter> connectionFilters) {
-        return "select connections.CONN_NM, connections.CONN_TYP_NM, connections.CONN_DSC, " +
+    private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ConnectionFilter> connectionFilters) {
+        return "select connections.CONN_NM, connections.SECURITY_GROUP_NM, connections.CONN_TYP_NM, connections.CONN_DSC, " +
                 "parameters.CONN_PAR_NM, " + "parameters.CONN_PAR_VAL, environments.ENV_NM " +
-                "FROM (" + getBaseQuery(pageable, connectionFilters) + ") base_connections " +
+                "FROM (" + getBaseQuery(authentication, pageable, connectionFilters) + ") base_connections " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 "on base_connections.CONN_NM = connections.CONN_NM " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() + " parameters " +
@@ -47,19 +51,19 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
                 ";";
     }
 
-    private String getBaseQuery(Pageable pageable, List<ConnectionFilter> connectionFilters) {
+    private String getBaseQuery(Authentication authentication, Pageable pageable, List<ConnectionFilter> connectionFilters) {
         return "select distinct connections.CONN_NM " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
-                getWhereClause(connectionFilters) +
+                getWhereClause(authentication, connectionFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
     }
 
     @Override
-    public Page<ConnectionDto> getAll(Pageable pageable, List<ConnectionFilter> connectionFilters) {
+    public Page<ConnectionDto> getAll(Authentication authentication, Pageable pageable, List<ConnectionFilter> connectionFilters) {
         try {
             Map<String, ConnectionDtoBuilder> connectionDtoBuilders = new LinkedHashMap<>();
-            String query = getFetchAllQuery(pageable, connectionFilters);
+            String query = getFetchAllQuery(authentication, pageable, connectionFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, connectionDtoBuilders);
@@ -67,20 +71,21 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
             List<ConnectionDto> connectionDtoList = connectionDtoBuilders.values().stream()
                     .map(ConnectionDtoBuilder::build)
                     .collect(Collectors.toList());
-            return new PageImpl<>(connectionDtoList, pageable, getRowSize(connectionFilters));
+
+            return new PageImpl<>(connectionDtoList, pageable, getRowSize(authentication, connectionFilters));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Optional<ConnectionDto> getByName(String name) {
+    public Optional<ConnectionDto> getByName(Authentication authentication, String name) {
         try {
             Map<String, ConnectionDtoBuilder> connectionDtoBuilders = new HashMap<>();
             List<ConnectionFilter> connectionFilters = Stream.of(
                     new ConnectionFilter(ConnectionFilterOption.NAME, name, true)
             ).collect(Collectors.toList());
-            String query = getFetchAllQuery(Pageable.unpaged(), connectionFilters);
+            String query = getFetchAllQuery(authentication, Pageable.unpaged(), connectionFilters);
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, connectionDtoBuilders);
@@ -91,10 +96,10 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         }
     }
 
-    private long getRowSize(List<ConnectionFilter> connectionFilters) throws SQLException {
+    private long getRowSize(Authentication authentication, List<ConnectionFilter> connectionFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct connections.CONN_NM " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
-                getWhereClause(connectionFilters) +
+                getWhereClause(authentication, connectionFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
@@ -104,12 +109,12 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
     private String getOrderByClause(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) return " ORDER BY connections.CONN_NM ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
-            if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "connections.CONN_NM" + " " + order.getDirection();
-            } else {
-                return null;
-            }
-        })
+                    if (order.getProperty().equalsIgnoreCase("NAME")) {
+                        return "connections.CONN_NM" + " " + order.getDirection();
+                    } else {
+                        return null;
+                    }
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
@@ -118,7 +123,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 
-    private String getWhereClause(List<ConnectionFilter> componentFilters) {
+    private String getWhereClause(Authentication authentication, List<ConnectionFilter> componentFilters) {
         String filterStatements = componentFilters.stream()
                 .map(componentFilter -> {
                     if (componentFilter.getFilterOption().equals(ConnectionFilterOption.NAME)) {
@@ -129,6 +134,18 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
+        if (authentication != null) {
+            Set<String> securityGroups = authentication.getAuthorities().stream()
+                    .filter(authority -> authority instanceof IESIGrantedAuthority)
+                    .map(authority -> (IESIGrantedAuthority) authority)
+                    .map(iesiGrantedAuthority -> iesiGrantedAuthority.getSecurityGroupName())
+                    .map(SQLTools::getStringForSQL)
+                    .collect(Collectors.toSet());
+            filterStatements = filterStatements +
+                    (filterStatements.isEmpty()
+                            ? "" : " and ") +
+                    " connections.SECURITY_GROUP_NM IN (" + String.join(", ", securityGroups) + ") ";
+        }
 
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
     }
@@ -146,6 +163,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
     private ConnectionDtoBuilder mapConnectionDto(CachedRowSet cachedRowSet) throws SQLException {
         return new ConnectionDtoBuilder(
                 cachedRowSet.getString("CONN_NM"),
+                cachedRowSet.getString("SECURITY_GROUP_NM"),
                 cachedRowSet.getString("CONN_TYP_NM"),
                 cachedRowSet.getString("CONN_DSC"),
                 new HashMap<>()
@@ -191,6 +209,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
     @Getter
     private static class ConnectionDtoBuilder {
         private final String name;
+        private final String securityGroupName;
         private final String type;
         private final String description;
         private final Map<String, ConnectionEnvironmentBuilder> environments;
@@ -198,6 +217,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         public ConnectionDto build() {
             return new ConnectionDto(
                     name,
+                    securityGroupName,
                     type,
                     description,
                     new HashSet<>(environments.values().stream().map(ConnectionEnvironmentBuilder::build).collect(Collectors.toList()))

@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.server.rest.environment.EnvironmentsController;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
+@ConditionalOnWebApplication
 public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssemblerSupport<Environment, EnvironmentDto> {
 
     private final ModelMapper modelMapper;
@@ -42,5 +44,9 @@ public  class EnvironmentDtoResourceAssembler extends RepresentationModelAssembl
 
     private EnvironmentParameterDto convertToDto(EnvironmentParameter environmentParameter) {
         return new EnvironmentParameterDto(environmentParameter.getName(), environmentParameter.getValue());
+    }
+
+    public EnvironmentDto toModel(EnvironmentDto environmentDto){
+        return environmentDto;
     }
 }

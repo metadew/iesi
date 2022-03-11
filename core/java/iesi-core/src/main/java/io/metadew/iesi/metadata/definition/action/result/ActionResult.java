@@ -15,9 +15,10 @@ public class ActionResult extends Metadata<ActionResultKey> {
 	private ScriptRunStatus status;
 	private LocalDateTime startTimestamp;
 	private LocalDateTime endTimestamp;
+	private String actionTypeName;
 
 	public ActionResult(String runId, Long processId, String actionId, Long scriptProcessId,  String actionName, String environment,
-						ScriptRunStatus status, LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
+						ScriptRunStatus status, LocalDateTime startTimestamp, LocalDateTime endTimestamp, String actionTypeName) {
 		super(new ActionResultKey(runId, processId, actionId));
 		this.scriptProcessId = scriptProcessId;
 		this.actionName = actionName;
@@ -25,11 +26,12 @@ public class ActionResult extends Metadata<ActionResultKey> {
 		this.status = status;
 		this.startTimestamp = startTimestamp;
 		this.endTimestamp = endTimestamp;
+		this.actionTypeName = actionTypeName;
 	}
 
 	@Builder
 	public ActionResult(ActionResultKey actionResultKey, Long scriptProcessId, String actionName, String environment, ScriptRunStatus status,
-						LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
+						LocalDateTime startTimestamp, LocalDateTime endTimestamp, String actionTypeName) {
 		super(actionResultKey);
 		this.scriptProcessId = scriptProcessId;
 		this.actionName = actionName;
@@ -37,6 +39,7 @@ public class ActionResult extends Metadata<ActionResultKey> {
 		this.status = status;
 		this.startTimestamp = startTimestamp;
 		this.endTimestamp = endTimestamp;
+		this.actionTypeName = actionTypeName;
 	}
 
 	// Getters and Setters
@@ -71,4 +74,6 @@ public class ActionResult extends Metadata<ActionResultKey> {
 	public Long getScriptProcessId() {
 		return scriptProcessId;
 	}
+
+	public String getActionTypeName(){ return actionTypeName; }
 }

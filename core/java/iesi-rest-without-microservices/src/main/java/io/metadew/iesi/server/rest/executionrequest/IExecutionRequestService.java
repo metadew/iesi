@@ -1,8 +1,8 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
+import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -17,6 +17,8 @@ public interface IExecutionRequestService {
     Optional<ExecutionRequestDto> getById(Authentication authentication, String id);
 
     ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest);
+
+    ExecutionRequest createExecutionRequest(ExecutionRequestPostDto executionRequestPostDto);
 
     void deleteAll();
 

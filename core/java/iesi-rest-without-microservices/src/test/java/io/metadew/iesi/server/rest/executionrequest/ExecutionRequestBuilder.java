@@ -76,7 +76,6 @@ public class ExecutionRequestBuilder {
                                     info.put(String.format("scriptExecutionRequest%d%dUUID", executionRequestIndex, scriptExecutionRequestIndex), scriptExecutionRequestUUID);
                                     ScriptNameExecutionRequest scriptNameExecutionRequest = ScriptNameExecutionRequest.builder()
                                             .environment(environment)
-                                            .exit(false)
                                             .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
                                             .scriptExecutionRequestKey(new ScriptExecutionRequestKey(scriptExecutionRequestUUID.toString()))
                                             .impersonations(
@@ -134,7 +133,7 @@ public class ExecutionRequestBuilder {
                 ).collect(Collectors.toList()))
                 .parameters(new ArrayList<>())
                 .name(scriptName)
-                .version(new ScriptVersion(scriptName, scriptVersion, "description"))
+                .version(new ScriptVersion(scriptName, scriptVersion, "description", "username", LocalDateTime.now().toString(), null, null))
                 .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                 .securityGroupName(scriptSecurityGroup)
                 .build();
@@ -167,7 +166,6 @@ public class ExecutionRequestBuilder {
                                 .map(scriptExecutionRequestIndex -> {
                                             ScriptExecutionRequestDto scriptExecutionRequestDto = ScriptExecutionRequestDto.builder()
                                                     .environment(environment)
-                                                    .exit(false)
                                                     .executionRequestId(executionRequestId.toString())
                                                     .scriptExecutionRequestId(info.get(String.format("scriptExecutionRequest%d%dUUID", executionRequestIndex, scriptExecutionRequestIndex)).toString())
                                                     .scriptName(scriptName)

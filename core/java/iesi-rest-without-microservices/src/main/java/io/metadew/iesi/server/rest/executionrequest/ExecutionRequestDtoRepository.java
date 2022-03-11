@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 
 @Repository
 @Log4j2
+@ConditionalOnWebApplication
 public class ExecutionRequestDtoRepository extends PaginatedRepository implements IExecutionRequestDtoRepository {
 
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
@@ -44,7 +46,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "auth_execution_requests.REQUEST_ID as exe_req_auth,  auth_execution_requests.USER_ID as exe_req_user_id, auth_execution_requests.USERNAME as exe_req_username, " +
                 "non_auth_execution_requests.REQUEST_ID as exe_req_non_auth, " +
                 "execution_request_labels.ID as exe_req_label_id, execution_request_labels.NAME as exe_req_label_name, execution_request_labels.VALUE as exe_req_label_value, " +
-                "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.EXIT as script_exe_req_exit, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
+                "script_execution_requests.SCRPT_REQUEST_ID as script_exe_req_id, script_execution_requests.ENVIRONMENT as script_exe_req_env, script_execution_requests.ST_NM script_exe_req_st, " +
                 "file_script_execution_requests.SCRPT_FILENAME as script_exe_req_file_name, " +
                 "name_script_execution_requests.SCRPT_NAME as script_exe_req_name_name, name_script_execution_requests.SCRPT_VRS as script_exe_req_name_vrs, " +
                 "scripts.SECURITY_GROUP_NAME as script_security_group_name, " +
@@ -93,6 +95,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -112,7 +116,12 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.LABEL)) {
                         return " execution_request_labels.NAME = '" + executionRequestFilter.getValue().split(":")[0] +
                                 "' and execution_request_labels.VALUE " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue().split(":")[1] + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
-                    } else {
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.RUN_ID)) {
+                        return " script_executions.RUN_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.STATUS)) {
+                        return " script_executions.ST_NM " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    }
+                    else {
                         return null;
                     }
                 }
@@ -175,6 +184,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
+                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
@@ -267,7 +278,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     cachedRowSet.getString("script_exe_req_id"),
                     cachedRowSet.getString("exe_req_id"),
                     cachedRowSet.getString("script_exe_req_env"),
-                    SQLTools.getBooleanFromSql(cachedRowSet.getString("script_exe_req_exit")),
                     new HashMap<>(),
                     new HashMap<>(),
                     ScriptExecutionRequestStatus.valueOf(cachedRowSet.getString("script_exe_req_st")),
@@ -415,7 +425,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         private String scriptExecutionRequestId;
         private String executionRequestId;
         private String environment;
-        private boolean exit;
         private Map<String, ScriptExecutionRequestImpersonationDto> impersonations;
         public Map<String, ScriptExecutionRequestParameterDto> parameters;
         private ScriptExecutionRequestStatus scriptExecutionRequestStatus;
@@ -432,7 +441,6 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     scriptExecutionRequestId,
                     executionRequestId,
                     environment,
-                    exit,
                     new HashSet<>(impersonations.values()),
                     new HashSet<>(parameters.values()),
                     scriptExecutionRequestStatus,

@@ -7,6 +7,17 @@ import io.metadew.iesi.connection.http.HttpConnectionService;
 import io.metadew.iesi.connection.http.request.HttpGetRequest;
 import io.metadew.iesi.connection.http.request.HttpPostRequest;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
+import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.definition.component.Component;
+import io.metadew.iesi.metadata.definition.component.ComponentParameter;
+import io.metadew.iesi.metadata.definition.component.ComponentVersion;
+import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
+import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
+import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.definition.connection.Connection;
+import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.*;
 import org.apache.http.client.methods.HttpGet;
@@ -18,10 +29,13 @@ import org.powermock.reflect.Whitebox;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 class HttpComponentServiceTest {
@@ -171,6 +185,263 @@ class HttpComponentServiceTest {
         Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", (HttpConnectionService) null);
         Whitebox.setInternalState(HttpHeaderService.class, "INSTANCE", (HttpHeaderService) null);
         Whitebox.setInternalState(HttpQueryParameterService.class, "INSTANCE", (HttpQueryParameterService) null);
+    }
+
+    @Test
+    void getAndTraceTestRightNameAndVersion() {
+        HttpComponentService httpComponentService = HttpComponentService.getInstance();
+        HttpComponentService httpComponentServiceSpy = Mockito.spy(httpComponentService);
+        ActionExecution actionExecution = mock(ActionExecution.class);
+        ExecutionControl executionControl = mock(ExecutionControl.class);
+        long componentVersion1 = 0L;
+        long componentVersion2 = 1L;
+
+        when(actionExecution.getExecutionControl()).thenReturn(executionControl);
+        when(executionControl.getProcessId()).thenReturn(1L);
+        when(executionControl.getRunId()).thenReturn("1");
+        when(executionControl.getEnvName()).thenReturn("env0");
+
+        Mockito.doReturn("/pet").when(httpComponentServiceSpy).resolveEndpoint(anyString(), any(ActionExecution.class));
+        Mockito.doReturn("GET").when(httpComponentServiceSpy).resolveType(anyString(), any(ActionExecution.class));
+
+        HttpComponent httpComponent1 = new HttpComponent(
+                "component1",
+                componentVersion1,
+                "description",
+                new HttpConnection(
+                        "connectionName",
+                        "description",
+                        "env0",
+                        "http://test.com",
+                        "/api",
+                        8080,
+                        false
+                ),
+                "/pet",
+                "GET",
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+
+        ConnectionConfiguration.getInstance().insert(new Connection(
+                "connectionName",
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http",
+                "description",
+                "env0",
+                Stream.of(
+                        new ConnectionParameter("connectionName", "env0", "host", "http://test.com"),
+                        new ConnectionParameter("connectionName", "env0", "port", "8080"),
+                        new ConnectionParameter("connectionName", "env0", "baseUrl", "/api"),
+                        new ConnectionParameter("connectionName", "env0", "tls", "N")
+                ).collect(Collectors.toList())
+
+        ));
+        ComponentConfiguration.getInstance().insert(new Component(
+                new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http.request",
+                "component1",
+                "description",
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion1), "description"),
+                Stream.of(
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("/pet").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("GET").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("connectionName").build()
+                ).collect(Collectors.toList()),
+                new ArrayList<>()
+        ));
+        ComponentConfiguration.getInstance().insert(new Component(
+                new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http.request",
+                "component1",
+                "description",
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion2), "description"),
+                Stream.of(
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("/pet").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("PUT").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("connectionName").build()
+                ).collect(Collectors.toList()),
+                new ArrayList<>()
+        ));
+
+        assertThat(httpComponentServiceSpy.getAndTrace("component1", actionExecution, "request", 0L)).isEqualTo(httpComponent1);
+    }
+
+    @Test
+    void getAndTraceTestNameAndUnknownVersion() {
+        HttpComponentService httpComponentService = HttpComponentService.getInstance();
+        HttpComponentService httpComponentServiceSpy = Mockito.spy(httpComponentService);
+        ActionExecution actionExecution = mock(ActionExecution.class);
+        ExecutionControl executionControl = mock(ExecutionControl.class);
+        Long componentVersion1 = 0L;
+        Long componentVersion2 = 1L;
+
+        when(actionExecution.getExecutionControl()).thenReturn(executionControl);
+        when(executionControl.getProcessId()).thenReturn(1L);
+        when(executionControl.getRunId()).thenReturn("1");
+        when(executionControl.getEnvName()).thenReturn("env0");
+
+        Mockito.doReturn("/pet").when(httpComponentServiceSpy).resolveEndpoint(anyString(), any(ActionExecution.class));
+        Mockito.doReturn("GET").when(httpComponentServiceSpy).resolveType(anyString(), any(ActionExecution.class));
+
+        ConnectionConfiguration.getInstance().insert(new Connection(
+                "connectionName",
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http",
+                "description",
+                "env0",
+                Stream.of(
+                        new ConnectionParameter("connectionName", "env0", "host", "http://test.com"),
+                        new ConnectionParameter("connectionName", "env0", "port", "8080"),
+                        new ConnectionParameter("connectionName", "env0", "baseUrl", "/api"),
+                        new ConnectionParameter("connectionName", "env0", "tls", "N")
+                ).collect(Collectors.toList())
+
+        ));
+        ComponentConfiguration.getInstance().insert(new Component(
+                new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http.request",
+                "component1",
+                "description",
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion1), "description"),
+                Stream.of(
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("/pet").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("GET").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("connectionName").build()
+                ).collect(Collectors.toList()),
+                new ArrayList<>()
+        ));
+        ComponentConfiguration.getInstance().insert(new Component(
+                new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http.request",
+                "component1",
+                "description",
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion2), "description"),
+                Stream.of(
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("/pet").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("PUT").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("connectionName").build()
+                ).collect(Collectors.toList()),
+                new ArrayList<>()
+        ));
+
+        assertThatThrownBy(() -> {
+            httpComponentServiceSpy.getAndTrace("component1", actionExecution, "request", 3L);
+        }).isInstanceOf(RuntimeException.class).hasMessage("Could not find http component with name component1 and version 3");
+    }
+
+    @Test
+    void getAndTraceTestNameAndNoVersion() {
+        HttpComponentService httpComponentService = HttpComponentService.getInstance();
+        HttpComponentService httpComponentServiceSpy = Mockito.spy(httpComponentService);
+        ActionExecution actionExecution = mock(ActionExecution.class);
+        ExecutionControl executionControl = mock(ExecutionControl.class);
+        Long componentVersion1 = 0L;
+        Long componentVersion2 = 2L;
+        Long componentVersion3 = 3L;
+
+        HttpComponent httpComponent3 = new HttpComponent(
+                "component1",
+                componentVersion3,
+                "description",
+                new HttpConnection(
+                        "connectionName",
+                        "description",
+                        "env0",
+                        "http://test.com",
+                        "/api",
+                        8080,
+                        false
+                ),
+                "/pet",
+                "POST",
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+
+
+        when(actionExecution.getExecutionControl()).thenReturn(executionControl);
+        when(executionControl.getProcessId()).thenReturn(1L);
+        when(executionControl.getRunId()).thenReturn("1");
+        when(executionControl.getEnvName()).thenReturn("env0");
+
+        Mockito.doReturn("/pet").when(httpComponentServiceSpy).resolveEndpoint(anyString(), any(ActionExecution.class));
+        Mockito.doReturn("POST").when(httpComponentServiceSpy).resolveType(anyString(), any(ActionExecution.class));
+
+        ConnectionConfiguration.getInstance().insert(new Connection(
+                "connectionName",
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http",
+                "description",
+                "env0",
+                Stream.of(
+                        new ConnectionParameter("connectionName", "env0", "host", "http://test.com"),
+                        new ConnectionParameter("connectionName", "env0", "port", "8080"),
+                        new ConnectionParameter("connectionName", "env0", "baseUrl", "/api"),
+                        new ConnectionParameter("connectionName", "env0", "tls", "N")
+                ).collect(Collectors.toList())
+
+        ));
+
+        ComponentConfiguration.getInstance().insert(new Component(
+                new ComponentKey("component1", componentVersion1),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http.request",
+                "component1",
+                "description",
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion1), "description"),
+                Stream.of(
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("/pet").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("GET").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion1)).build()).value("connectionName").build()
+                ).collect(Collectors.toList()),
+                new ArrayList<>()
+        ));
+        ComponentConfiguration.getInstance().insert(new Component(
+                new ComponentKey("component1", componentVersion2),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http.request",
+                "component1",
+                "description",
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion2), "description"),
+                Stream.of(
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("/pet").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("PUT").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion2)).build()).value("connectionName").build()
+                ).collect(Collectors.toList()),
+                new ArrayList<>()
+        ));
+
+        ComponentConfiguration.getInstance().insert(new Component(
+                new ComponentKey("component1", componentVersion3),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "http.request",
+                "component1",
+                "description",
+                new ComponentVersion(new ComponentVersionKey("component1", componentVersion3), "description"),
+                Stream.of(
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("endpoint").componentKey(new ComponentKey("component1", componentVersion3)).build()).value("/pet").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("type").componentKey(new ComponentKey("component1", componentVersion3)).build()).value("PUT").build(),
+                        ComponentParameter.builder().componentParameterKey(ComponentParameterKey.builder().parameterName("connection").componentKey(new ComponentKey("component1", componentVersion3)).build()).value("connectionName").build()
+                ).collect(Collectors.toList()),
+                new ArrayList<>()
+        ));
+
+        assertThat(httpComponentServiceSpy.getAndTrace("component1", actionExecution, "request")).isEqualTo(httpComponent3);
     }
 
     @Disabled

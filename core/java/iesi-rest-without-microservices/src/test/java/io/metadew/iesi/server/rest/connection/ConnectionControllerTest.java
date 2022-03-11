@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -54,11 +55,10 @@ class ConnectionControllerTest {
 
     @Test
     void getAllNoResult() throws Exception {
-        // Mock Service
         Pageable pageable = PageRequest.of(0, 20);
         List<ConnectionDto> connectionDtoList = new ArrayList<>();
         Page<ConnectionDto> page = new PageImpl<>(connectionDtoList, pageable, 1);
-        given(connectionDtoService.getAll(eq(pageable), eq(new ArrayList<>())))
+        given(connectionDtoService.getAll(any(), eq(pageable), eq(new ArrayList<>())))
                 .willReturn(page);
 
         mvc.perform(get("/connections").contentType(MediaType.APPLICATION_JSON))
@@ -87,11 +87,10 @@ class ConnectionControllerTest {
         Page<ConnectionDto> page2 = new PageImpl<>(componentDtoList2, pageable2, 3);
         Page<ConnectionDto> page3 = new PageImpl<>(componentDtoList3, pageable3, 3);
 
-        given(connectionDtoService.getAll(eq(pageable1), eq(new ArrayList<>())))
+        given(connectionDtoService.getAll(any(), eq(pageable1), eq(new ArrayList<>())))
                 .willReturn(page1);
         mvc.perform(get("/connections?page=0&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto1.getName())))
@@ -100,10 +99,9 @@ class ConnectionControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) connectionDtoTotalList.size() / componentDtoList1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
-        given(connectionDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
+        given(connectionDtoService.getAll(any(), eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
         mvc.perform(get("/connections?page=1&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto2.getName())))
@@ -112,10 +110,9 @@ class ConnectionControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) connectionDtoTotalList.size() / componentDtoList2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(connectionDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
+        given(connectionDtoService.getAll(any(), eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
         mvc.perform(get("/connections?page=2&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto3.getName())))
@@ -143,10 +140,9 @@ class ConnectionControllerTest {
         Page<ConnectionDto> page2 = new PageImpl<>(connectionDtoList2, pageable2, 3);
         Page<ConnectionDto> page3 = new PageImpl<>(connectionDtoList3, pageable3, 3);
 
-        given(connectionDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
+        given(connectionDtoService.getAll(any(), eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/connections?page=0&size=1&sort=name").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto1.getName())))
@@ -155,10 +151,9 @@ class ConnectionControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) connectionDtoTotalList.size() / connectionDtoList1.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
-        given(connectionDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
+        given(connectionDtoService.getAll(any(), eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
         mvc.perform(get("/connections?page=1&size=1&sort=name").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto2.getName())))
@@ -167,10 +162,9 @@ class ConnectionControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) connectionDtoTotalList.size() / connectionDtoList2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(connectionDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
+        given(connectionDtoService.getAll(any(), eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
         mvc.perform(get("/connections?page=2&size=1&sort=name").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto3.getName())))
@@ -194,15 +188,14 @@ class ConnectionControllerTest {
         List<ConnectionDto> componentDtoList2 = Stream.of(connectionDto2).collect(Collectors.toList());
         List<ConnectionDto> componentDtoList3 = Stream.of(connectionDto3).collect(Collectors.toList());
         List<ConnectionDto> connectionDtoTotalList = Stream.of(connectionDto1, connectionDto2, connectionDto3).collect(Collectors.toList());
-        // Here Script are given in the Desc Order
+
         Page<ConnectionDto> page1 = new PageImpl<>(componentDtoList1, pageable1, 3);
         Page<ConnectionDto> page2 = new PageImpl<>(componentDtoList2, pageable2, 3);
         Page<ConnectionDto> page3 = new PageImpl<>(componentDtoList3, pageable3, 3);
 
-        given(connectionDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
+        given(connectionDtoService.getAll(any(), eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/connections?page=0&size=1&sort=name,desc").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto1.getName())))
@@ -211,10 +204,9 @@ class ConnectionControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) connectionDtoTotalList.size() / componentDtoList3.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable1.getPageNumber())));
 
-        given(connectionDtoService.getAll(eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
+        given(connectionDtoService.getAll(any(), eq(pageable2), eq(new ArrayList<>()))).willReturn(page2);
         mvc.perform(get("/connections?page=1&size=1&sort=name,desc").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto2.getName())))
@@ -223,10 +215,9 @@ class ConnectionControllerTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) connectionDtoTotalList.size() / componentDtoList2.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable2.getPageNumber())));
 
-        given(connectionDtoService.getAll(eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
+        given(connectionDtoService.getAll(any(), eq(pageable3), eq(new ArrayList<>()))).willReturn(page3);
         mvc.perform(get("/connections?page=2&size=1&sort=name,desc").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto3.getName())))
@@ -246,13 +237,11 @@ class ConnectionControllerTest {
         Pageable pageable1 = PageRequest.of(0, size, sortDefault);
         List<ConnectionDto> connectionDtoList = Stream.of(connectionDto1, connectionDto2, connectionDto3).collect(Collectors.toList());
         List<ConnectionDto> connectionDtoTotalList = Stream.of(connectionDto1, connectionDto2, connectionDto3).collect(Collectors.toList());
-        // Here Script are given in the Desc Order
         Page<ConnectionDto> page1 = new PageImpl<>(connectionDtoList, pageable1, 3);
 
-        given(connectionDtoService.getAll(eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
+        given(connectionDtoService.getAll(any(), eq(pageable1), eq(new ArrayList<>()))).willReturn(page1);
         mvc.perform(get("/connections?page=0&size=3&sort=name").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$._embedded.connectionDtoList[0].name", is(connectionDto1.getName())))
@@ -269,11 +258,10 @@ class ConnectionControllerTest {
         String name = "connectionNameTest";
         ConnectionDto connectionDto1 = ConnectionDtoBuilder.simpleConnectionDto(name);
 
-        given(connectionDtoService.getByName(eq(name))).willReturn(Optional.of(connectionDto1));
+        given(connectionDtoService.getByName(any(), eq(name))).willReturn(Optional.of(connectionDto1));
 
         mvc.perform(get("/connections/" + name + "?page=0&size=1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // Check Json format and data
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$").isMap())
                 .andExpect(jsonPath("$.name", is(name)))
@@ -284,17 +272,12 @@ class ConnectionControllerTest {
 
     @Test
     void getByName404() throws Exception {
-        // Mock Service
         String name = "nameTest";
         Optional<ConnectionDto> optionalConnectionDto = Optional.empty();
-        given(connectionDtoService.getByName(eq(name)))
+        given(connectionDtoService.getByName(any(), eq(name)))
                 .willReturn(optionalConnectionDto);
 
         mvc.perform(get("/connections/" + name + "/0").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
-
-
-
-
 }

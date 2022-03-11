@@ -2,17 +2,22 @@ package io.metadew.iesi.script.action.data;
 
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
@@ -47,7 +52,6 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     public void prepareAction() {
-
         referenceName = convertDatasetReferenceName(getParameterResolvedValue(NAME_KEY));
         datasetName = convertDatasetName(getParameterResolvedValue(DATASET_KEY));
         datasetType = convertDatasetType(getParameterResolvedValue(TYPE_KEY));
@@ -55,12 +59,16 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws IOException {
+        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC")
+                .orElseThrow(() -> new RuntimeException("As the dataset doesn't exist, tried to create new one with the security group PUBLIC, but the group doesn't exist"));
         DatasetKey datasetKey = DatasetConfiguration.getInstance()
                 .getIdByName(datasetName)
                 .orElseGet(() -> {
                     log.warn(MessageFormat.format("Dataset {0} does not exists. Creating dataset now.", datasetName));
                     Dataset newDataset = Dataset.builder()
                             .metadataKey(new DatasetKey())
+                            .securityGroupKey(securityGroup.getMetadataKey())
+                            .securityGroupName(securityGroup.getName())
                             .name(datasetName)
                             .datasetImplementations(new HashSet<>())
                             .build();
@@ -72,24 +80,38 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                 .map(datasetLabel -> getExecutionControl().getExecutionRuntime().resolveVariables(datasetLabel))
                 .collect(Collectors.toList());
 
-        InMemoryDatasetImplementation inMemoryDatasetImplementation = InMemoryDatasetImplementationService.getInstance()
-                .getDatasetImplementation(datasetKey, resolvedDatasetLabels)
-                .orElseGet(() -> {
-                    log.warn(MessageFormat.format("DatasetImplementation {0}-{1} does not exists. Creating dataset implementation now", datasetName, resolvedDatasetLabels));
-                    DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
-                    InMemoryDatasetImplementation newInMemoryDatasetImplementation = new InMemoryDatasetImplementation(
-                            datasetImplementationKey,
-                            datasetKey,
-                            datasetName,
-                            resolvedDatasetLabels.stream()
-                                    .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
-                                    .collect(Collectors.toSet()),
-                            new HashSet<>());
-                    DatasetImplementationConfiguration.getInstance().insert(newInMemoryDatasetImplementation);
-                    return newInMemoryDatasetImplementation;
-                });
+        DatasetImplementation datasetImplementation;
+        if (datasetType != null && datasetType.equals("database")) {
+            datasetImplementation = DatabaseDatasetImplementationService.getInstance()
+                    .getDatasetImplementation(datasetKey, resolvedDatasetLabels)
+                    .orElseGet(() -> {
+                        log.warn(MessageFormat.format("DatasetImplementation {0}-{1} does not exists. Creating dataset implementation now", datasetName, resolvedDatasetLabels));
+                        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
+                        DatabaseDatasetImplementation newDatabaseDatasetImplementation = new DatabaseDatasetImplementation(
+                                datasetImplementationKey,
+                                datasetKey,
+                                datasetName,
+                                resolvedDatasetLabels.stream()
+                                        .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
+                                        .collect(Collectors.toSet()),
+                                new HashSet<>());
+                        DatasetImplementationConfiguration.getInstance().insert(newDatabaseDatasetImplementation);
+                        return newDatabaseDatasetImplementation;
+                    });
+        } else if (datasetType != null && datasetType.equals("in_memory")) {
+            DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
+            datasetImplementation = new InMemoryDatasetImplementation(datasetImplementationKey,
+                    datasetKey,
+                    datasetName,
+                    resolvedDatasetLabels.stream()
+                            .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
+                            .collect(Collectors.toSet()),
+                    new HashSet<>());
+        } else {
+            throw new RuntimeException(String.format("{0} is not recognized dataset type"));
+        }
         getExecutionControl().getExecutionRuntime()
-                .setKeyValueDataset(referenceName, inMemoryDatasetImplementation);
+                .setKeyValueDataset(referenceName, datasetImplementation);
         return true;
     }
 
@@ -127,8 +149,8 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     private String convertDatasetType(DataType datasetType) {
-        if (datasetType == null) {
-            return "";
+        if (datasetType == null || datasetType instanceof Null) {
+            return "in_memory";
         }
         if (!(datasetType instanceof Text)) {
             log.warn(MessageFormat.format("{0} does not accept {1} as type for dataset type",

@@ -5,11 +5,10 @@ import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.TeamService;
-import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,11 +29,10 @@ import java.util.UUID;
 
 
 @RestController
-@Tag(name = "users", description = "Everything about users")
 @RequestMapping("/users")
 @Log4j2
-// the team controller should be created first as it needs to check if the 'iesi' team is already created.
 @DependsOn("teamsController")
+@ConditionalOnWebApplication
 public class UserController {
 
     private static final String ADMIN_USERNAME = "admin";
@@ -44,18 +42,22 @@ public class UserController {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final TeamService teamService;
-    private final UserService userService;
-    private final UserDtoService userDtoService;
+    private final IUserService userService;
     private final UserDtoModelAssembler userDtoModelAssembler;
     private final PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
 
-    public UserController(AuthenticationManager authenticationManager, JwtService jwtService, PasswordEncoder passwordEncoder, TeamService teamService, UserService userService, UserDtoService userDtoService, UserDtoModelAssembler userDtoModelAssembler, PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler) {
+    public UserController(AuthenticationManager authenticationManager,
+                          JwtService jwtService,
+                          PasswordEncoder passwordEncoder,
+                          TeamService teamService,
+                          IUserService userService,
+                          UserDtoModelAssembler userDtoModelAssembler,
+                          PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.teamService = teamService;
         this.userService = userService;
-        this.userDtoService = userDtoService;
         this.userDtoModelAssembler = userDtoModelAssembler;
         this.userDtoPagedResourcesAssembler = userDtoPagedResourcesAssembler;
     }
@@ -100,6 +102,8 @@ public class UserController {
     @PostMapping("/login")
     public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
         log.trace("authenticating " + authenticationRequest.getUsername());
+        // authenticationManager will load the user details (containing the encrypted password) using the IesiUserDetailManager
+        // and will match the password based on the provided password
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         return jwtService.generateAuthenticationResponse(authentication);
     }
@@ -120,7 +124,7 @@ public class UserController {
                 false,
                 new HashSet<>());
         userService.addUser(user);
-        Optional<UserDto> userDto = userDtoService.get(user.getMetadataKey().getUuid());
+        Optional<UserDto> userDto = userService.get(user.getMetadataKey().getUuid());
         return userDto
                 .<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.badRequest().build());
@@ -130,14 +134,14 @@ public class UserController {
     @PreAuthorize("hasPrivilege('USERS_READ')")
     public ResponseEntity<UserDto> fetch(@PathVariable UUID uuid) {
         return ResponseEntity
-                .of(userDtoService.get(uuid));
+                .of(userService.get(uuid));
     }
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('USERS_READ')")
     public PagedModel<UserDto> fetchAll(Pageable pageable,
-                                 @RequestParam(required = false, name = "username") String username) {
-        Page<UserDto> userDtoPage = userDtoService.getAll(pageable,
+                                        @RequestParam(required = false, name = "username") String username) {
+        Page<UserDto> userDtoPage = userService.getAll(pageable,
                 new UserFiltersBuilder()
                         .username(username)
                         .build());
@@ -146,7 +150,6 @@ public class UserController {
         return (PagedModel<UserDto>) userDtoPagedResourcesAssembler.toEmptyModel(userDtoPage, UserDto.class);
 
     }
-
 
 
 }

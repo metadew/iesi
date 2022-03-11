@@ -5,7 +5,7 @@ import io.metadew.iesi.connection.http.entity._default.DefaultHttpResponseEntity
 import io.metadew.iesi.connection.http.entity.json.ApplicationJsonHttpResponseEntityService;
 import io.metadew.iesi.connection.http.entity.plain.TextPlainHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.script.execution.ActionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
@@ -20,15 +20,8 @@ import java.util.List;
 @Log4j2
 public class HttpResponseEntityHandler implements IHttpResponseEntityHandler {
 
-    private static HttpResponseEntityHandler INSTANCE;
+    private static HttpResponseEntityHandler instance;
     private final List<IHttpResponseEntityService> httpResponseEntityServices;
-
-    public synchronized static HttpResponseEntityHandler getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpResponseEntityHandler();
-        }
-        return INSTANCE;
-    }
 
     private HttpResponseEntityHandler() {
         httpResponseEntityServices = new ArrayList<>();
@@ -37,13 +30,20 @@ public class HttpResponseEntityHandler implements IHttpResponseEntityHandler {
         httpResponseEntityServices.add(DefaultHttpResponseEntityService.getInstance());
     }
 
-    @SuppressWarnings("unchecked")
-    public void writeToDataset(HttpResponseEntityStrategy httpResponseEntityStrategy, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
+    public static synchronized HttpResponseEntityHandler getInstance() {
+        if (instance == null) {
+            instance = new HttpResponseEntityHandler();
+        }
+        return instance;
+    }
+
+    @Override
+    public void writeToDataset(HttpResponseEntityStrategy httpResponseEntityStrategy, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         getHttpResponseEntityService(httpResponseEntityStrategy).writeToDataset(httpResponseEntityStrategy, dataset, key, executionRuntime);
     }
 
     @Override
-    public void writeToDataset(HttpResponse httpResponse, InMemoryDatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
+    public void writeToDataset(HttpResponse httpResponse, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         if (httpResponse.getHeaders().stream()
                 .filter(header -> header.getName().equals(HttpHeaders.CONTENT_TYPE))
                 .count() > 1) {

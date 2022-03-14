@@ -1,5 +1,7 @@
 package io.metadew.iesi.server.rest.dataset;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
@@ -19,6 +21,7 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
 import io.metadew.iesi.server.rest.dataset.dto.DatasetDtoModelAssembler;
@@ -30,13 +33,13 @@ import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatas
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,6 +65,7 @@ public class DatasetController {
     private final IDatasetDtoService datasetDtoService;
     private final IDatabaseDatasetImplementationService datasetImplementationService;
     private final IesiSecurityChecker iesiSecurityChecker;
+    private final ObjectMapper objectMapper;
 
 
     @Autowired
@@ -70,13 +74,15 @@ public class DatasetController {
                              IDatabaseDatasetImplementationService datasetImplementationService,
                              PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,
                              IDatasetDtoService datasetDtoService,
-                             IesiSecurityChecker iesiSecurityChecker) {
+                             IesiSecurityChecker iesiSecurityChecker,
+                             ObjectMapper objectMapper) {
         this.datasetDtoModelAssembler = datasetDtoModelAssembler;
         this.datasetService = datasetService;
         this.datasetImplementationService = datasetImplementationService;
         this.datasetDtoPagedResourcesAssembler = datasetPagedResourcesAssembler;
         this.datasetDtoService = datasetDtoService;
         this.iesiSecurityChecker = iesiSecurityChecker;
+        this.objectMapper = objectMapper;
     }
 
     @SuppressWarnings("unchecked")
@@ -128,6 +134,29 @@ public class DatasetController {
 
         return datasetDtoService.fetchImplementationByUuid(datasetImplementationUuid)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new DatasetImplementationKey(datasetImplementationUuid)));
+    }
+
+    @GetMapping("/{name}/download")
+    @PreAuthorize("hasPrivilege('DATASETS_READ')")
+    public ResponseEntity<Resource> getFile(@PathVariable String name) {
+        Dataset dataset = datasetService.getByName(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset " + name + " does not exist"));
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+                .filename(String.format("dataset_%s.json", name))
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentDisposition(contentDisposition);
+
+        try {
+            String jsonString = objectMapper.writeValueAsString(dataset);
+            byte[] data = jsonString.getBytes();
+            ByteArrayResource resource = new ByteArrayResource(data);
+
+            return ResponseEntity.ok().headers(httpHeaders).contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
 

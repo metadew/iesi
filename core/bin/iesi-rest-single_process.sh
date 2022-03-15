@@ -6,6 +6,6 @@ lib_dir=$absolute_dir/../rest
 
 cd $lib_dir
 
-java -Dlog4j.configurationFile=log4j2.xml -jar iesi-rest.jar
+java -Dlog4j.configurationFile=log4j2.xml -Dspring.profiles.active=single_process -jar iesi-rest.jar
 
 cd $calling_dir

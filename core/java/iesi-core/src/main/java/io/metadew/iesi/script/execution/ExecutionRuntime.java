@@ -238,6 +238,9 @@ public class ExecutionRuntime {
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);
             closePos = temp.indexOf(variable_char, openPos + 1);
+            if (openPos < 0 || closePos < 0) {
+                return input;
+            }
             midBit = temp.substring(openPos + 1, closePos);
 
             // Replace
@@ -317,6 +320,9 @@ public class ExecutionRuntime {
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);
             closePos = temp.indexOf(variable_char, openPos + 1);
+            if (openPos < 0 || closePos < 0) {
+                return input;
+            }
             final String midBit = temp.substring(openPos + 1, closePos);
 
             // Try to find a configuration value

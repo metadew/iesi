@@ -81,6 +81,7 @@ public class DataTypeHandler {
 
     @SuppressWarnings("unchecked")
     public boolean equals(DataType _this, DataType other, ExecutionRuntime executionRuntime) {
+        System.out.println("EXEPECTED TYPE OF DATATYPE : " + _this.getClass() + " ACTUAL TYPE OF DATATYPE : " + other.getClass());
         return getDataTypeService(_this.getClass()).equals(_this, other, executionRuntime);
     }
 

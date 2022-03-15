@@ -1,64 +1,6 @@
 iesi:
   metadata:
     connection-types:
-      db.bigquery:
-        description: Google BigQuery Connection
-        parameters:
-          host:
-            description: The host name of the server
-            type: string
-            mandatory: true
-            encrypted: false
-          port:
-            description: The port number for connecting to the host
-            type: number
-            mandatory: true
-            encrypted: false
-          project:
-            description: The name of the Google Cloud project
-            type: string
-            mandatory: true
-            encrypted: false
-          dataset:
-            description: The name of the dataset
-            type: string
-            mandatory: true
-            encrypted: false
-          authMode:
-            description: The authentication mode that specifies the type of authentication used by the driver
-            type: string
-            mandatory: true
-            encrypted: false
-          serviceAccount:
-            description: authValue=service - Google service account email address
-            type: string
-            mandatory: false
-            encrypted: false
-          keyPath:
-            description: authValue=service - Full path to the key file that is used to authenticate the service account email address
-            type: string
-            mandatory: false
-            encrypted: false
-          accessToken:
-            description: authValue=token - Access token
-            type: string
-            mandatory: false
-            encrypted: true
-          refreshToken:
-            description: authValue=token - Refresh token
-            type: string
-            mandatory: false
-            encrypted: true
-          clientId:
-            description: authValue=token - Client ID
-            type: string
-            mandatory: false
-            encrypted: false
-          clientSecret:
-            description: authValue=token - Client secret
-            type: string
-            mandatory: false
-            encrypted: true
       http:
         description: Connection to a server exposing HTTP endpoints
         parameters:
@@ -370,6 +312,16 @@ iesi:
             type: string
             mandatory: false
             encrypted: false
+          schema:
+            description: The schema name to connect to the database
+            type: string
+            mandatory: true
+            encrypted: false
+          mode:
+            description: 'what connection mode is chosen: service or tns'
+            type: string
+            mandatory: true
+            encrypted: false
       db.postgresql:
         description: Postgresql Database Connection
         parameters:
@@ -439,7 +391,7 @@ iesi:
             type: string
             mandatory: true
             encrypted: false
-          filefalseame:
+          filename:
             description: The file name of the the database
             type: string
             mandatory: true

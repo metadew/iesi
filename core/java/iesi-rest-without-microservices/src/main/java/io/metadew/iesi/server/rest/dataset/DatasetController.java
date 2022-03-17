@@ -7,21 +7,16 @@ import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
 import io.metadew.iesi.server.rest.dataset.dto.DatasetDtoModelAssembler;
@@ -31,6 +26,7 @@ import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationD
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationPostDto;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.io.ByteArrayResource;
@@ -45,8 +41,11 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -169,43 +168,26 @@ public class DatasetController {
                     "Dataset " + datasetPostDto.getName() + " already exists");
         }
 
-        String datasetName = datasetPostDto.getName();
-        UUID datasetUuid = UUID.randomUUID();
-
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(datasetPostDto.getSecurityGroupName())
-                .orElseThrow(() -> new RuntimeException("Could not find security group with name + " + datasetPostDto.getSecurityGroupName()));
-        Dataset newDataset = new Dataset(
-                new DatasetKey(datasetUuid),
-                securityGroup.getMetadataKey(),
-                securityGroup.getName(),
-                datasetPostDto.getName(),
-                datasetPostDto.getImplementations().stream()
-                        .map(datasetImplementationDto -> {
-                            UUID datasetImplementationUuid = UUID.randomUUID();
-                            return new DatabaseDatasetImplementation(
-                                    new DatasetImplementationKey(datasetImplementationUuid),
-                                    new DatasetKey(datasetUuid),
-                                    datasetName,
-                                    datasetImplementationDto.getLabels().stream()
-                                            .map(datasetImplementationLabelDto -> new DatasetImplementationLabel(
-                                                    new DatasetImplementationLabelKey(UUID.randomUUID()),
-                                                    new DatasetImplementationKey(datasetImplementationUuid),
-                                                    datasetImplementationLabelDto.getLabel()))
-                                            .collect(Collectors.toSet()),
-                                    ((DatabaseDatasetImplementationPostDto) datasetImplementationDto).getKeyValues().stream()
-                                            .map(inMemoryDatasetImplementationKeyValuePostDto -> new DatabaseDatasetImplementationKeyValue(
-                                                    new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
-                                                    new DatasetImplementationKey(datasetImplementationUuid),
-                                                    inMemoryDatasetImplementationKeyValuePostDto.getKey(),
-                                                    inMemoryDatasetImplementationKeyValuePostDto.getValue()
-                                            ))
-                                            .collect(Collectors.toSet())
-                            );
-                        })
-                        .collect(Collectors.toSet())
-        );
+        Dataset newDataset = datasetDtoService.convertToEntity(datasetPostDto);
         datasetService.create(newDataset);
         return ResponseEntity.ok(datasetDtoModelAssembler.toModel(newDataset));
+    }
+
+    @PostMapping(value= "/import", consumes = "multipart/form-data")
+    public ResponseEntity<List<DatasetDto>> importDataset(@RequestParam(value = "file") MultipartFile multipartFile)  {
+        try {
+            String textPlain = new String(multipartFile.getBytes());
+            List<Dataset> datasets = datasetService.importDatasets(textPlain);
+            return ResponseEntity.ok(datasetDtoModelAssembler.toModel(datasets));
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("Cannot process the given file:%s", multipartFile.getOriginalFilename()));
+        }
+    }
+
+    @PostMapping(value = "/import", consumes = { MediaType.TEXT_PLAIN_VALUE })
+    public ResponseEntity<List<DatasetDto>> importDataset(@RequestBody String textPlain) {
+        List<Dataset> datasets = datasetService.importDatasets(textPlain);
+        return ResponseEntity.ok(datasetDtoModelAssembler.toModel(datasets));
     }
 
     @SuppressWarnings("unchecked")

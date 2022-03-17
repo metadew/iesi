@@ -13,8 +13,10 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelJsonComponent;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -25,6 +27,7 @@ public class DatasetJsonComponent {
     public enum Field {
         TYPE("dataset"),
         NAME_KEY("name"),
+        SECURITY_GROUP_NAME_KEY("securityGroupName"),
         IMPLEMENTATIONS_KEY("implementations");
 
         private final String label;
@@ -46,6 +49,10 @@ public class DatasetJsonComponent {
             DatasetKey datasetKey = DatasetConfiguration.getInstance().getByName(name)
                     .map(Metadata::getMetadataKey)
                     .orElse(new DatasetKey());
+            String securityGroupName = node.get(Field.SECURITY_GROUP_NAME_KEY.value()).asText();
+            SecurityGroupKey securityGroupKey = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
+                    .map(Metadata::getMetadataKey)
+                    .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
             Set<DatasetImplementation> datasetImplementations = new HashSet<>();
             for (JsonNode implementationNode : node.get(Field.IMPLEMENTATIONS_KEY.value())) {
                 Set<DatasetImplementationLabel> datasetImplementationLabels = new HashSet<>();
@@ -105,6 +112,8 @@ public class DatasetJsonComponent {
             return Dataset.builder()
                     .metadataKey(datasetKey)
                     .name(name)
+                    .securityGroupKey(securityGroupKey)
+                    .securityGroupName(securityGroupName)
                     .datasetImplementations(datasetImplementations)
                     .build();
         }

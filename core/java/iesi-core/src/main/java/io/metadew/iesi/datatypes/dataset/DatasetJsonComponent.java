@@ -20,6 +20,8 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public class DatasetJsonComponent {
@@ -45,14 +47,15 @@ public class DatasetJsonComponent {
         @Override
         public Dataset deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            String name = node.get(Field.NAME_KEY.value()).asText();
+            String name = Optional.ofNullable(node.get(Field.NAME_KEY.value())).map(JsonNode::asText)
+                    .orElseThrow(() -> new RuntimeException("Name field is a mandatory parameter"));
             DatasetKey datasetKey = DatasetConfiguration.getInstance().getByName(name)
                     .map(Metadata::getMetadataKey)
                     .orElse(new DatasetKey());
-            String securityGroupName = node.get(Field.SECURITY_GROUP_NAME_KEY.value()).asText();
+            String securityGroupName = Optional.ofNullable(node.get(Field.SECURITY_GROUP_NAME_KEY.value())).map(JsonNode::asText).orElse("PUBLIC");
             SecurityGroupKey securityGroupKey = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
                     .map(Metadata::getMetadataKey)
-                    .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
+                    .orElseThrow(() -> new RuntimeException("Could not find security group with name " + securityGroupName));
             Set<DatasetImplementation> datasetImplementations = new HashSet<>();
             for (JsonNode implementationNode : node.get(Field.IMPLEMENTATIONS_KEY.value())) {
                 Set<DatasetImplementationLabel> datasetImplementationLabels = new HashSet<>();

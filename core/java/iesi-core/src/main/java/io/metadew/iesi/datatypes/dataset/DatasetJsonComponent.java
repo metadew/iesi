@@ -45,7 +45,7 @@ public class DatasetJsonComponent {
 
     public static class Deserializer extends JsonDeserializer<Dataset> {
         @Override
-        public Dataset deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public Dataset deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             String name = Optional.ofNullable(node.get(Field.NAME_KEY.value())).map(JsonNode::asText)
                     .orElseThrow(() -> new RuntimeException("Name field is a mandatory parameter"));

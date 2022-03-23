@@ -1,189 +1,123 @@
 package io.metadew.iesi.metadata.operation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.metadata.configuration.DataObjectConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.Buffer;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Log4j2
 public class DataObjectOperation {
-
     private Path inputFile;
+    private String inputString;
     private List<DataObject> dataObjects;
     private DataObject dataObject;
     private DataObjectConfiguration dataObjectConfiguration;
 
-    // Constructors
-    public DataObjectOperation() {
-    }
-
-    public DataObjectOperation(String inputFile) {
-        this(Paths.get(inputFile));
-    }
-
     public DataObjectOperation(Path inputFile) {
         this.inputFile = inputFile;
-        if (FileTools.getFileExtension(inputFile.toFile()).equalsIgnoreCase("json")) {
-            this.parseFile();
-        } else {
-            this.parseYamlFile();
+        parse();
+    }
+
+    public DataObjectOperation(String inputString) {
+        this.inputString = inputString;
+        parse();
+    }
+
+    public void parse() {
+        try {
+            if (inputString == null && inputFile != null) {
+                inputString = Files.readString(inputFile);
+                if (FileTools.getFileExtension(inputFile.toFile()).equals("json")) {
+                    this.parseJSON();
+                    return;
+                }
+                this.parseYAML();
+                return;
+            } else if (inputString != null && inputFile == null) {
+                if (inputString.trim().startsWith("{") || inputString.trim().startsWith("[")) {
+                    this.parseJSON();
+                    return;
+                }
+                this.parseYAML();
+                return;
+            }
+            log.warn("No valid format found for the provided metadata");
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (JSONException e) {
+            this.parseYAML();
         }
     }
 
-//	public DataObjectOperation(String inputFile) {
-//		this.setInputFile(inputFile);
-//		File file = new File(inputFile);
-//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-//			this.parseFile();
-//		} else {
-//			this.parseYamlFile();
-//		}
-//		this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects));
-//	}
-
-//	public DataObjectOperation(MetadataRepository metadataRepositories, String inputFile) {
-//		this.setInputFile(inputFile);
-//		File file = new File(inputFile);
-//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-//			this.parseFile();
-//		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
-//			this.parseYamlFile();
-//		}
-//		this.setMetadataRepositories(new ArrayList<>());
-//		this.getMetadataRepositories().add(metadataRepositories);
-//		this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects, metadataRepositories));
-//
-//	}
-
-//	public DataObjectOperation(List<MetadataRepository> metadataRepositoryConfigurationList, String inputFile) {
-//		this.setMetadataRepositories(metadataRepositoryConfigurationList);
-//		this.setInputFile(inputFile);
-//		File file = new File(inputFile);
-//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-//			this.parseFile();
-//		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
-//			this.parseYamlFile();
-//		}
-//
-//	}
 
     // Methods
-    public void parseFile() {
-        // Define input file
-        BufferedReader bufferedReader = null;
+    public void parseJSON() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        boolean jsonArray = true;
         try {
-            bufferedReader = new BufferedReader(new FileReader(inputFile.toFile()));
-            String readLine = "";
-            boolean jsonArray = true;
+            new JSONArray(inputString);
+        } catch (JSONException e) {
+            jsonArray = false;
+        }
 
-            while ((readLine = bufferedReader.readLine()) != null) {
-                if (readLine.trim().toLowerCase().startsWith("[") && (!readLine.trim().equalsIgnoreCase(""))) {
-                    jsonArray = true;
-                    break;
-                } else if (!readLine.trim().equalsIgnoreCase("")) {
-                    jsonArray = false;
-                    break;
-                }
-            }
-
-            ObjectMapper objectMapper = new ObjectMapper();
+        try {
             if (jsonArray) {
-                dataObjects = objectMapper.readValue(inputFile.toFile(), new TypeReference<List<DataObject>>() {
-                });
+                dataObjects = objectMapper.readValue(inputString, new TypeReference<List<DataObject>>() {});
             } else {
-                dataObject = objectMapper.readValue(inputFile.toFile(), new TypeReference<DataObject>() {
-                });
-                dataObjects = new ArrayList<>();
-                dataObjects.add(dataObject);
+                dataObject = objectMapper.readValue(inputString, new TypeReference<DataObject>() {});
+                dataObjects = Stream.of(dataObject).collect(Collectors.toList());
             }
-            bufferedReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 
-    public void parseYamlFile() {
-        // Define input file
-        BufferedReader bufferedReader = null;
+    public void parseYAML() {
+        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(inputString));
+        String line;
         try {
-            bufferedReader = new BufferedReader(new FileReader(inputFile.toFile()));
-            String readLine = "";
-            boolean yamlArray = true;
-            int i = 0;
-            while ((readLine = bufferedReader.readLine()) != null) {
-                if (readLine.trim().toLowerCase().startsWith("---") && (!readLine.trim().equalsIgnoreCase(""))) {
-                    // TODO add support for multiple documents in file
-
-                    i++;
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.trim().toLowerCase().startsWith("---")) {
+                    // TODO: add support for multiple documents in file
                     continue;
-                } else if (i == 1) {
-                    if (readLine.trim().toLowerCase().startsWith("-") && (!readLine.trim().equalsIgnoreCase(""))) {
-                        yamlArray = true;
-                        break;
-                    } else if (!readLine.trim().equalsIgnoreCase("")) {
-                        yamlArray = false;
-                        break;
-                    }
-                } else if (!readLine.trim().equalsIgnoreCase("")) {
-                    yamlArray = false;
+                } else if (line.trim().toLowerCase().startsWith("-")) {
+                    dataObjects = objectMapper.readValue(inputString, new TypeReference<List<DataObject>>() {});
+                    break;
+                } else {
+                    dataObject = objectMapper.readValue(inputString, new TypeReference<DataObject>() {});
+                    dataObjects = Stream.of(dataObject).collect(Collectors.toList());
                     break;
                 }
             }
-            bufferedReader.close();
-
-            dataObjects = new ArrayList<>();
-            ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-            if (yamlArray) {
-                // dataObjects = objectMapper.readValue(file, new
-                // TypeReference<List<DataObject>>() { }));
-
-                // Work around for reading arrays immediate if from start
-                bufferedReader = new BufferedReader(new FileReader(inputFile.toFile()));
-                readLine = "";
-                StringBuilder dataObjectRead = null;
-
-                while ((readLine = bufferedReader.readLine()) != null) {
-                    if (readLine.trim().toLowerCase().startsWith("---") && (!readLine.trim().equalsIgnoreCase(""))) {
-                        continue;
-                    } else if (readLine.trim().toLowerCase().startsWith("-") && (!readLine.trim().equalsIgnoreCase(""))) {
-                        if (dataObjectRead != null) {
-                            DataObject dataObject = objectMapper.readValue(dataObjectRead.toString(), new TypeReference<DataObject>() {
-                            });
-                            dataObjects.add(dataObject);
-                        }
-                        dataObjectRead = new StringBuilder();
-                        dataObjectRead.append("---");
-                        dataObjectRead.append("\n");
-                        dataObjectRead.append(readLine.replace("- ", ""));
-                    } else {
-                        dataObjectRead.append("\n");
-                        dataObjectRead.append(readLine.substring(2));
-                    }
-                }
-
-            } else {
-                dataObject = objectMapper.readValue(inputFile.toFile(), new TypeReference<DataObject>() {
-                });
-                dataObjects = new ArrayList<>();
-                dataObjects.add(dataObject);
-            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         } finally {
             try {
                 bufferedReader.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
             }
         }
     }

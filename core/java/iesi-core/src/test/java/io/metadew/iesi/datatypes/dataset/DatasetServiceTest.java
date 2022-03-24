@@ -1,233 +1,142 @@
-//package io.metadew.iesi.datatypes.dataset;
-//
-//import io.metadew.iesi.datatypes.DataType;
-//import io.metadew.iesi.datatypes.array.Array;
-//import io.metadew.iesi.datatypes.text.Text;
-//import io.metadew.iesi.script.execution.ExecutionRuntime;
-//import org.junit.jupiter.api.AfterAll;
-//import org.junit.jupiter.api.BeforeAll;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.Mockito;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.powermock.reflect.Whitebox;
-//
-//import java.util.AbstractMap;
-//import java.util.Map;
-//import java.util.Optional;
-//import java.util.stream.Collectors;
-//import java.util.stream.Stream;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.mockito.Mockito.mock;
-//
-//@ExtendWith(MockitoExtension.class)
-//class DatasetServiceTest {
-//
-//    private static DatasetHandler datasetHandlerSpy;
-//
-//    @BeforeAll
-//    static void setup() {
-//        DatasetHandler datasetHandler = DatasetHandler.getInstance();
-//        datasetHandlerSpy = Mockito.spy(datasetHandler);
-//        Whitebox.setInternalState(DatasetHandler.class, "INSTANCE", datasetHandlerSpy);
-//    }
-//
-//    @AfterAll
-//    static void destroy() {
-//        Whitebox.setInternalState(DatasetHandler.class, "INSTANCE", (DatasetHandler) null);
-//    }
-//
-//    @Test
-//    void equalsEqualsTest() {
-//        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-//        KeyValueDataset dataset1 = mock(KeyValueDataset.class);
-//        KeyValueDataset dataset2 = mock(KeyValueDataset.class);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("value1")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value2")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Array(Stream.of(new Text("value3")).collect(Collectors.toList())))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset1, executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value1")))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value2")))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key2", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Array(Stream.of(new Text("value3")).collect(Collectors.toList()))))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key3", executionRuntime);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("value1")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value2")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Array(Stream.of(new Text("value3")).collect(Collectors.toList())))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset2, executionRuntime);
-//
-//        Mockito
-//                .doReturn(Optional.of(new Text("value1")))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key1", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value2")))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key2", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Array(Stream.of(new Text("value3")).collect(Collectors.toList()))))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key3", executionRuntime);
-//
-//        assertThat(KeyValueDatasetService.getInstance().equals(dataset1, dataset2, executionRuntime))
-//                .isTrue();
-//    }
-//
-//    @Test
-//    void equalsNotEqualsValueTest() {
-//        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-//        KeyValueDataset dataset1 = mock(KeyValueDataset.class);
-//        KeyValueDataset dataset2 = mock(KeyValueDataset.class);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("value1")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value2")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Array(Stream.of(new Text("value3")).collect(Collectors.toList())))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset1, executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value1")))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value2")))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key2", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Array(Stream.of(new Text("value3")).collect(Collectors.toList()))))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key3", executionRuntime);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("value1")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value3")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Array(Stream.of(new Text("value3")).collect(Collectors.toList())))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset2, executionRuntime);
-//
-//        Mockito
-//                .doReturn(Optional.of(new Text("value1")))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key1", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value3")))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key2", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Array(Stream.of(new Text("value3")).collect(Collectors.toList()))))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key3", executionRuntime);
-//
-//        assertThat(KeyValueDatasetService.getInstance().equals(dataset1, dataset2, executionRuntime))
-//                .isFalse();
-//    }
-//
-//
-//    @Test
-//    void equalsNotEqualsTooFewKeysTest() {
-//        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-//        KeyValueDataset dataset1 = mock(KeyValueDataset.class);
-//        KeyValueDataset dataset2 = mock(KeyValueDataset.class);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("value1")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value2")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Array(Stream.of(new Text("value3")).collect(Collectors.toList())))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset1, executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value1")))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value2")))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key2", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Array(Stream.of(new Text("value3")).collect(Collectors.toList()))))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key3", executionRuntime);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("value1")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Array(Stream.of(new Text("value3")).collect(Collectors.toList())))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset2, executionRuntime);
-//
-//        Mockito
-//                .doReturn(Optional.of(new Text("value1")))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key1", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Array(Stream.of(new Text("value3")).collect(Collectors.toList()))))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key3", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.empty())
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key2", executionRuntime);
-//
-//        assertThat(KeyValueDatasetService.getInstance().equals(dataset1, dataset2, executionRuntime))
-//                .isFalse();
-//    }
-//
-//
-//    @Test
-//    void equalsNotEqualsTooManyKeysTest() {
-//        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-//        KeyValueDataset dataset1 = mock(KeyValueDataset.class);
-//        KeyValueDataset dataset2 = mock(KeyValueDataset.class);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("value1")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value2")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Array(Stream.of(new Text("value3")).collect(Collectors.toList())))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset1, executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value1")))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value2")))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key2", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Array(Stream.of(new Text("value3")).collect(Collectors.toList()))))
-//                .when(datasetHandlerSpy).getDataItem(dataset1, "key3", executionRuntime);
-//        Mockito
-//                .doReturn(Stream.of(
-//                        new AbstractMap.SimpleEntry<String, DataType>("key1", new Text("value1")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key2", new Text("value2")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key4", new Text("value3")),
-//                        new AbstractMap.SimpleEntry<String, DataType>("key3", new Array(Stream.of(new Text("value3")).collect(Collectors.toList())))
-//                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-//                .when(datasetHandlerSpy).getDataItems(dataset2, executionRuntime);
-//
-//        Mockito
-//                .doReturn(Optional.of(new Text("value1")))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key1", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value2")))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key2", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Text("value3")))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key4", executionRuntime);
-//        Mockito
-//                .doReturn(Optional.of(new Array(Stream.of(new Text("value3")).collect(Collectors.toList()))))
-//                .when(datasetHandlerSpy).getDataItem(dataset2, "key3", executionRuntime);
-//
-//        assertThat(KeyValueDatasetService.getInstance().equals(dataset1, dataset2, executionRuntime))
-//                .isFalse();
-//    }
-//
-//
-//    @Test
-//    void equalsEqualsNullsTest() {
-//        ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-//        KeyValueDataset dataset1 = mock(KeyValueDataset.class);
-//
-//        assertThat(KeyValueDatasetService.getInstance().equals(null, null, executionRuntime))
-//                .isTrue();
-//        assertThat(KeyValueDatasetService.getInstance().equals(null, dataset1, executionRuntime))
-//                .isFalse();
-//        assertThat(KeyValueDatasetService.getInstance().equals(dataset1, null, executionRuntime))
-//                .isFalse();
-//    }
-//
-//
-//}
+package io.metadew.iesi.datatypes.dataset;
+
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
+import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.metadata.repository.MetadataRepository;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class DatasetServiceTest {
+
+    SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
+
+    @BeforeEach
+    void prepare() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()
+                .forEach(MetadataRepository::createAllTables);
+
+        SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(securityGroupKey, "PUBLIC", new HashSet<>(), new HashSet<>()));
+    }
+
+    @AfterEach
+    void clearDatabase() {
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::cleanAllTables);
+    }
+
+    @AfterAll
+    static void teardown() {
+        Configuration.getInstance();
+        MetadataRepositoryConfiguration.getInstance()
+                .getMetadataRepositories()
+                .forEach(MetadataRepository::dropAllTables);
+    }
+
+    @Test
+    void importDatasetsTestJson() {
+        try {
+            String filePath = getClass().getClassLoader().getResource("io.metadew.iesi.datatypes.dataset/dataset_single.json").getFile();
+            String jsonContent = Files.readString(Path.of(filePath));
+            DatasetKey datasetKey = new DatasetKey();
+            DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
+            Dataset expectedDataset = null;
+            Dataset dataset = new Dataset(
+                    datasetKey,
+                    securityGroupKey,
+                    "PUBLIC",
+                    "CreateEnvironment",
+                    Stream.of(new DatabaseDatasetImplementation(
+                            datasetImplementationKey,
+                            datasetKey,
+                            "CreateEnvironment",
+                            Stream.of(
+                                    new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, "input"),
+                                    new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, "tst")
+                            ).collect(Collectors.toSet()),
+                            Stream.of(
+                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "protocol.version.major", "1"),
+                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "status.code", "200"),
+                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "protocol", "http")
+                            ).collect(Collectors.toSet())
+                    )).collect(Collectors.toSet())
+            );
+
+            List<Dataset> datasets = DatasetService.getInstance().importDatasets(jsonContent);
+            List<Dataset> expectedDatasets = Stream.of(dataset).collect(Collectors.toList());
+
+            expectedDataset = expectedDatasets.stream().findFirst().get();
+
+            assertThat(datasets).isNotEmpty();
+            assertThat(dataset.getName()).isEqualTo(expectedDataset.getName());
+            assertThat(dataset.getDatasetImplementations()).isEqualTo(expectedDataset.getDatasetImplementations());
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Test
+    void importDatasetsTestYaml() {
+        try {
+            String filePath = getClass().getClassLoader().getResource("io.metadew.iesi.datatypes.dataset/dataset_single.json").getFile();
+            String jsonContent = Files.readString(Path.of(filePath));
+            DatasetKey datasetKey = new DatasetKey();
+            DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
+            Dataset expectedDataset = null;
+            Dataset dataset = new Dataset(
+                    datasetKey,
+                    securityGroupKey,
+                    "PUBLIC",
+                    "CreateEnvironment",
+                    Stream.of(new DatabaseDatasetImplementation(
+                            datasetImplementationKey,
+                            datasetKey,
+                            "CreateEnvironment",
+                            Stream.of(
+                                    new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, "input"),
+                                    new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, "tst")
+                            ).collect(Collectors.toSet()),
+                            Stream.of(
+                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "protocol.version.major", "1"),
+                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "status.code", "200"),
+                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "protocol", "http")
+                            ).collect(Collectors.toSet())
+                    )).collect(Collectors.toSet())
+            );
+
+            List<Dataset> datasets = DatasetService.getInstance().importDatasets(jsonContent);
+            List<Dataset> expectedDatasets = Stream.of(dataset).collect(Collectors.toList());
+
+            expectedDataset = expectedDatasets.stream().findFirst().get();
+
+            assertThat(datasets).isNotEmpty();
+            assertThat(dataset.getName()).isEqualTo(expectedDataset.getName());
+            assertThat(dataset.getDatasetImplementations()).isEqualTo(expectedDataset.getDatasetImplementations());
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+}

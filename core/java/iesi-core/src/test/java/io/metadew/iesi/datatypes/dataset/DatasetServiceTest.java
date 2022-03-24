@@ -97,46 +97,4 @@ class DatasetServiceTest {
             throw new RuntimeException(e.getMessage());
         }
     }
-
-    @Test
-    void importDatasetsTestYaml() {
-        try {
-            String filePath = getClass().getClassLoader().getResource("io.metadew.iesi.datatypes.dataset/dataset_single.json").getFile();
-            String jsonContent = Files.readString(Path.of(filePath));
-            DatasetKey datasetKey = new DatasetKey();
-            DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
-            Dataset expectedDataset = null;
-            Dataset dataset = new Dataset(
-                    datasetKey,
-                    securityGroupKey,
-                    "PUBLIC",
-                    "CreateEnvironment",
-                    Stream.of(new DatabaseDatasetImplementation(
-                            datasetImplementationKey,
-                            datasetKey,
-                            "CreateEnvironment",
-                            Stream.of(
-                                    new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, "input"),
-                                    new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, "tst")
-                            ).collect(Collectors.toSet()),
-                            Stream.of(
-                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "protocol.version.major", "1"),
-                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "status.code", "200"),
-                                    new DatabaseDatasetImplementationKeyValue(new DatabaseDatasetImplementationKeyValueKey(), datasetImplementationKey, "protocol", "http")
-                            ).collect(Collectors.toSet())
-                    )).collect(Collectors.toSet())
-            );
-
-            List<Dataset> datasets = DatasetService.getInstance().importDatasets(jsonContent);
-            List<Dataset> expectedDatasets = Stream.of(dataset).collect(Collectors.toList());
-
-            expectedDataset = expectedDatasets.stream().findFirst().get();
-
-            assertThat(datasets).isNotEmpty();
-            assertThat(dataset.getName()).isEqualTo(expectedDataset.getName());
-            assertThat(dataset.getDatasetImplementations()).isEqualTo(expectedDataset.getDatasetImplementations());
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
 }

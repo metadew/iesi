@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.script;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
@@ -25,9 +26,11 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -177,14 +180,31 @@ public class ScriptsController {
     @PostMapping("")
     @PreAuthorize("hasPrivilege('SCRIPTS_WRITE', #scriptPostDto.securityGroupName)")
     public ScriptDto post(@Valid @RequestBody ScriptPostDto scriptPostDto) {
-        scriptService.createScript(scriptPostDto);
+        scriptService.createScript(scriptPostDtoService.convertToEntity(scriptPostDto));
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<ScriptDto>> importScripts(@RequestParam(value = "file")MultipartFile multipartFile) {
+        try {
+            String textPlain = new String(multipartFile.getBytes());
+            List<Script> scripts = scriptService.importScripts(textPlain);
+            return ResponseEntity.ok(scriptDtoModelAssembler.toModel(scripts));
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("Cannot process the given file:%s", multipartFile.getOriginalFilename()));
+        }
+    }
+
+    @PostMapping(value = "import", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<List<ScriptDto>> importScripts(@RequestBody String textPlain) {
+        List<Script> scripts = scriptService.importScripts(textPlain);
+        return ResponseEntity.ok(scriptDtoModelAssembler.toModel(scripts));
     }
 
     @PutMapping("")
     @PreAuthorize("hasPrivilege('SCRIPTS_WRITE', #scriptDtos.![securityGroupName])")
     public HalMultipleEmbeddedResource<ScriptPostDto> putAll(@Valid @RequestBody List<ScriptPostDto> scriptDtos) {
-        scriptService.updateScripts(scriptDtos);
+        scriptService.updateScripts(scriptPostDtoService.convertToEntities(scriptDtos));
         HalMultipleEmbeddedResource<ScriptPostDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         for (ScriptPostDto scriptPostDto : scriptDtos) {
             halMultipleEmbeddedResource.embedResource(scriptPostDto);
@@ -203,7 +223,7 @@ public class ScriptsController {
                          @RequestBody ScriptPostDto scriptPostDto) {
         if (!scriptPostDto.getName().equals(name)) throw new DataBadRequestException(name);
         if (scriptPostDto.getVersion().getNumber() != version) throw new DataBadRequestException(version);
-        scriptService.updateScript(scriptPostDto);
+        scriptService.updateScript(scriptPostDtoService.convertToEntity(scriptPostDto));
         return scriptDtoModelAssembler.toModel(scriptPostDtoService.convertToEntity(scriptPostDto));
     }
 

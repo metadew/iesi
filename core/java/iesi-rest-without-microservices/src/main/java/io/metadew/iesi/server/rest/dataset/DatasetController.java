@@ -173,8 +173,8 @@ public class DatasetController {
         return ResponseEntity.ok(datasetDtoModelAssembler.toModel(newDataset));
     }
 
-    @PostMapping(value= "/import", consumes = "multipart/form-data")
-    public ResponseEntity<List<DatasetDto>> importDataset(@RequestParam(value = "file") MultipartFile multipartFile)  {
+    @PostMapping(value= "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<DatasetDto>> importDatasets(@RequestParam(value = "file") MultipartFile multipartFile)  {
         try {
             String textPlain = new String(multipartFile.getBytes());
             List<Dataset> datasets = datasetService.importDatasets(textPlain);
@@ -184,8 +184,8 @@ public class DatasetController {
         }
     }
 
-    @PostMapping(value = "/import", consumes = { MediaType.TEXT_PLAIN_VALUE })
-    public ResponseEntity<List<DatasetDto>> importDataset(@RequestBody String textPlain) {
+    @PostMapping(value = "/import", consumes = MediaType.TEXT_PLAIN_VALUE )
+    public ResponseEntity<List<DatasetDto>> importDatasets(@RequestBody String textPlain) {
         List<Dataset> datasets = datasetService.importDatasets(textPlain);
         return ResponseEntity.ok(datasetDtoModelAssembler.toModel(datasets));
     }

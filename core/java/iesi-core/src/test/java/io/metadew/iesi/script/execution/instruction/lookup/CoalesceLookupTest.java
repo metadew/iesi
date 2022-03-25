@@ -53,6 +53,7 @@ class CoalesceLookupTest {
         when(executionRuntime.resolveConceptLookup(""))
                 .thenReturn(new LookupResult("", null, null));
 
+        System.out.println("test");
         CoalesceLookup coalesceLookup = new CoalesceLookup(executionRuntime);
         assertThat(coalesceLookup.generateOutput("test"))
                 .isEqualTo("test");

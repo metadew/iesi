@@ -19,24 +19,40 @@ import java.util.Optional;
 public class SecurityGroupConfiguration extends Configuration<SecurityGroup, SecurityGroupKey> {
 
     private static String fetchSingleQuery = "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
-            "security_group_teams.team_id as security_group_teams_team_id " +
+            "security_group_teams.team_id as security_group_teams_team_id, " +
+            "teams.team_name as team_name " +
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
-            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
+            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID" +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
+            "ON security_group_teams.TEAM_ID = teams.ID " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+            "ON roles.TEAM_ID = teams.ID " +
             " WHERE security_groups.ID={0};";
 
     private static String fetchByNameQuery = "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
-            "security_group_teams.team_id as security_group_teams_team_id " +
+            "security_group_teams.team_id as security_group_teams_team_id, " +
+            "teams.team_name as team_name " +
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
-            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
+            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID" +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
+            "ON security_group_teams.TEAM_ID = teams.ID " +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+            "ON roles.TEAM_ID = teams.ID " +
             " WHERE security_groups.NAME={0};";
 
     private static String fetchAllQuery = "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
-            "security_group_teams.team_id as security_group_teams_team_id " +
+            "security_group_teams.team_id as security_group_teams_team_id, " +
+            "teams.team_name as team_name " +
+
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
             " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
-            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID;";
+            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID" +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
+            "ON security_group_teams.TEAM_ID = teams.ID" +
+            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+            "ON roles.TEAM_ID = teams.ID;";
 
     private static String deleteSingleQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() +
             " WHERE ID={0};";

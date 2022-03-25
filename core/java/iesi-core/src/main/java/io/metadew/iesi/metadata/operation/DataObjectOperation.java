@@ -47,7 +47,7 @@ public class DataObjectOperation {
     public void parse() {
         try {
             if (inputString == null && inputFile != null) {
-                inputString = Files.readString(inputFile);
+                inputString = new String(Files.readAllBytes(inputFile));
                 if (FileTools.getFileExtension(inputFile.toFile()).equals("json")) {
                     this.parseJSON();
                     return;

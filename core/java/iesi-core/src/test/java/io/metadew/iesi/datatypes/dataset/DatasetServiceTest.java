@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -60,7 +60,7 @@ class DatasetServiceTest {
     void importDatasetsTestJson() {
         try {
             String filePath = getClass().getClassLoader().getResource("io.metadew.iesi.datatypes.dataset/dataset_single.json").getFile();
-            String jsonContent = Files.readString(Path.of(filePath));
+            String jsonContent = new String(Files.readAllBytes(Paths.get(filePath)));
             DatasetKey datasetKey = new DatasetKey();
             DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey();
             Dataset expectedDataset = null;

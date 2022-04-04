@@ -70,6 +70,20 @@ class EnvironmentDtoRepositoryTest {
     }
 
     @Test
+    void getAllSortedCaseTest() {
+        Environment environment1 = createEnvironment("a");
+        Environment environment2 = createEnvironment("Z");
+        environmentConfiguration.insert(environment1);
+        environmentConfiguration.insert(environment2);
+        EnvironmentDto environmentDto1 = environmentDtoResourceAssembler.toModel(environment1);
+        EnvironmentDto environmentDto2 = environmentDtoResourceAssembler.toModel(environment2);
+        Pageable pageableASC = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
+        Pageable pageableDESC = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
+
+        assertThat(environmentDtoRepository.getAll(pageableASC)).containsExactly(environmentDto1, environmentDto2);
+        assertThat(environmentDtoRepository.getAll(pageableDESC)).containsExactly(environmentDto2, environmentDto1);
+    }
+    @Test
     void getAllPaginatedAllInclusiveTest() {
         Environment environment1 = createEnvironment("iesi-dev");
         Environment environment2 = createEnvironment("iesi-sit");

@@ -139,12 +139,12 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY component_designs.COMP_ID ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY component_designs.COMP_ID COLLATE NOCASE ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "component_designs.COMP_NM" + " " + order.getDirection();
+                        return "component_designs.COMP_NM" + " COLLATE NOCASE " + order.getDirection();
                     } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
-                        return "versions.COMP_VRS_NB" + " " + order.getDirection();
+                        return "versions.COMP_VRS_NB" + " COLLATE NOCASE " + order.getDirection();
                     } else {
                         return null;
                     }
@@ -152,7 +152,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            sorting.add("ORDER BY component_designs.COMP_ID");
+            sorting.add("ORDER BY component_designs.COMP_ID COLLATE NOCASE ASC");
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

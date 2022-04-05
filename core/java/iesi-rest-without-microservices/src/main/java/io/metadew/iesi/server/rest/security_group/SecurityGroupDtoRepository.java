@@ -91,7 +91,7 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
         if (pageable.getSort().isUnsorted()) return " ORDER BY security_groups.id";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "security_groups.name " + order.getDirection();
+                        return "security_groups.name " + " COLLATE NOCASE " + order.getDirection();
                     } else {
                         return null;
                     }

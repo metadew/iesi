@@ -127,7 +127,7 @@ public class TeamDtoRepository extends PaginatedRepository implements ITeamDtoRe
         if (pageable.getSort().isUnsorted()) return " ORDER BY teams.id";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "teams.team_name " + " COLLATE NOCASE " + order.getDirection();
+                        return "lower(teams.team_name) " + order.getDirection();
                     } else {
                         return null;
                     }

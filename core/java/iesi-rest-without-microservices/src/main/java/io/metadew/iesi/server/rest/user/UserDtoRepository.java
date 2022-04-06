@@ -110,10 +110,10 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY users.username COLLATE NOCASE ASC ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY lower(users.username) ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("USERNAME")) {
-                        return "users.username" + " COLLATE NOCASE " + order.getDirection();
+                        return "lower(users.username)" + order.getDirection();
                     } else {
                         return null;
                     }
@@ -121,7 +121,7 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            sorting.add("users.username COLLATE NOCASE");
+            sorting.add("lower(users.username) ASC");
         }
 
         return " ORDER BY " + String.join(", ", sorting) + " ";

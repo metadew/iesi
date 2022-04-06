@@ -21,11 +21,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -105,7 +107,9 @@ public class TeamsController {
     @PostMapping("")
     @PreAuthorize("hasPrivilege('TEAMS_WRITE')")
     public ResponseEntity<TeamDto> create(@RequestBody TeamPostDto teamPostDto) {
-        TeamKey teamKey = new TeamKey(UUID.randomUUID());
+        if (teamService.exists(teamPostDto.getTeamName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Team name " + teamPostDto.getTeamName() + " is already taken");
+        }
         Team team = teamService.convertToEntity(teamPostDto);
         teamService.addTeam(team);
         return ResponseEntity.of(teamService.get(team.getMetadataKey().getUuid()));

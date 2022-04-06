@@ -8,6 +8,7 @@ import io.metadew.iesi.common.configuration.metadata.policies.definitions.script
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -28,12 +29,12 @@ public class MetadataPolicyConfiguration {
 
     private MetadataPolicyConfiguration() {
         if (containsConfiguration()) {
+            ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> frameworkSettingsConfiguration = (Map<String, Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
                     .get(MetadataConfiguration.configurationKey))
                     .get(policiesKey);
-            scriptsPolicyDefinitions = (List<ScriptPolicyDefinition>) frameworkSettingsConfiguration.get("scripts");
-            executionRequestsPolicyDefinitions = (List<ExecutionRequestPolicyDefinition>) frameworkSettingsConfiguration.get("execution-requets");
 
+            scriptsPolicyDefinitions = Arrays.asList(objectMapper.convertValue(frameworkSettingsConfiguration.get("scripts"), ScriptPolicyDefinition[].class));
         }
     }
 

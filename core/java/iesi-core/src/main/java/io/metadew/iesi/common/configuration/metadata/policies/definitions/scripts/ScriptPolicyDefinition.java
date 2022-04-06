@@ -5,9 +5,9 @@ import io.metadew.iesi.common.configuration.metadata.policies.definitions.Policy
 import java.util.List;
 
 public class ScriptPolicyDefinition extends PolicyDefinition {
-    private List<ScriptLabelPolicy> scriptLabelPolicies;
+    private List<ScriptLabelPolicy> labels;
 
-    public List<ScriptLabelPolicy> getScriptLabelPolicies() {
-        return scriptLabelPolicies;
+    public List<ScriptLabelPolicy> getLabels() {
+        return labels;
     }
 }

@@ -32,24 +32,5 @@ class ConfigurationTest {
         GuardConfiguration guardConfiguration = GuardConfiguration.getInstance();
 
         assertTrue(true);
-
-        ScriptKey scriptKey = new ScriptKey(IdentifierTools.getScriptIdentifier("script"), 0L);
-
-        Script script = new Script(
-                scriptKey,
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "script",
-                "description",
-                new ScriptVersion(new ScriptVersionKey(scriptKey), "", "", "", "", ""),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>()
-        );
-
-        MetadataPolicyConfiguration.getInstance().getScriptsPolicyDefinitions().forEach(scriptPolicyDefinition -> {
-            scriptPolicyDefinition.getScriptLabelPolicies().forEach(scriptLabelPolicy -> scriptLabelPolicy.verify(script.getLabels()));
-        });
-
     }
 }

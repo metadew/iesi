@@ -2,6 +2,12 @@ package io.metadew.iesi.common.configuration.metadata.policies.definitions.execu
 
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyDefinition;
 
-public class ExecutionRequestPolicyDefinition extends PolicyDefinition {
+import java.util.List;
 
+public class ExecutionRequestPolicyDefinition extends PolicyDefinition {
+    private List<ExecutionRequestLabelPolicy> labels;
+
+    public List<ExecutionRequestLabelPolicy> getLabels() {
+        return labels;
+    }
 }

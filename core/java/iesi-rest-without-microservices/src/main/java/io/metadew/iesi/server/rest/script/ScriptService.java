@@ -34,12 +34,17 @@ public class ScriptService implements IScriptService {
     private ScriptConfiguration scriptConfiguration;
     private ScriptDesignAuditConfiguration scriptDesignAuditConfiguration;
     private IScriptDesignAuditService scriptDesignAuditPostDtoService;
+    private List<ScriptPolicyDefinition> scriptPolicyDefinitions;
 
     private ScriptService(ScriptConfiguration scriptConfiguration,
-                          ScriptDesignAuditConfiguration scriptDesignAuditConfiguration, IScriptDesignAuditService scriptDesignAuditPostDtoService) {
+                          ScriptDesignAuditConfiguration scriptDesignAuditConfiguration,
+                          IScriptDesignAuditService scriptDesignAuditPostDtoService,
+                          MetadataPolicyConfiguration metadataPolicyConfiguration
+    ) {
         this.scriptConfiguration = scriptConfiguration;
         this.scriptDesignAuditConfiguration = scriptDesignAuditConfiguration;
         this.scriptDesignAuditPostDtoService = scriptDesignAuditPostDtoService;
+        this.scriptPolicyDefinitions = metadataPolicyConfiguration.getScriptsPolicyDefinitions();
     }
 
     public List<Script> getAll() {
@@ -55,13 +60,14 @@ public class ScriptService implements IScriptService {
     }
 
     public void createScript(Script script) {
-        MetadataPolicyConfiguration.getInstance().getScriptsPolicyDefinitions().forEach(scriptPolicyDefinition -> {
+        scriptPolicyDefinitions.forEach(scriptPolicyDefinition -> {
             scriptPolicyDefinition.getLabels().forEach(scriptLabelPolicy -> {
                 if (!scriptLabelPolicy.verify(script.getLabels())) {
                     throw new PolicyVerificationException(String.format(
-                            "%s does not contain mandatory label: %s",
+                            "%s does not contain the mandatory label \"%s\" defined in the policy \"%s\"",
                             script.getName(),
-                            scriptLabelPolicy.getName()
+                            scriptLabelPolicy.getName(),
+                            scriptPolicyDefinition.getName()
                     ));
                 }
             });

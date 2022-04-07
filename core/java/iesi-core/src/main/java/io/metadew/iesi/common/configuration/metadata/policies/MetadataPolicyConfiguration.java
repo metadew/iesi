@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.executionRequests.ExecutionRequestPolicyDefinition;
+import io.metadew.iesi.common.configuration.metadata.policies.definitions.scripts.ScriptLabelPolicy;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.scripts.ScriptPolicyDefinition;
 import lombok.extern.log4j.Log4j2;
 
@@ -35,6 +36,7 @@ public class MetadataPolicyConfiguration {
                     .get(policiesKey);
 
             scriptsPolicyDefinitions = Arrays.asList(objectMapper.convertValue(frameworkSettingsConfiguration.get("scripts"), ScriptPolicyDefinition[].class));
+            executionRequestsPolicyDefinitions = Arrays.asList(objectMapper.convertValue(frameworkSettingsConfiguration.get("execution-requets"), ExecutionRequestPolicyDefinition[].class));
         }
     }
 

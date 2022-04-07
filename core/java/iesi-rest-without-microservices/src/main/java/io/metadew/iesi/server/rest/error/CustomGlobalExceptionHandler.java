@@ -84,7 +84,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     @ResponseBody
     public Map<String, String> handleException(PolicyVerificationException e) {
         Map<String, String> errMessages = new HashMap<>();
-        errMessages.put("errorCode", "500");
+        errMessages.put("errorCode", "400");
         errMessages.put("message", e.getMessage());
         return errMessages;
     }

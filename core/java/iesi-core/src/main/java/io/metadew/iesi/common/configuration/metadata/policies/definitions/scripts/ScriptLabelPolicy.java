@@ -10,12 +10,11 @@ public class ScriptLabelPolicy implements Policy<List<ScriptLabel>> {
 
     @Override
     public boolean verify(List<ScriptLabel> scriptLabels) {
-        for (ScriptLabel scriptLabel : scriptLabels) {
-            if (scriptLabel.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
+        ScriptLabel scriptLabelFound = scriptLabels.stream()
+                .filter(scriptLabel -> scriptLabel.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+        return scriptLabelFound != null;
     }
 
     public String getName() {

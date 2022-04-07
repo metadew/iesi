@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.configuration;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
+import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetService;
@@ -290,6 +291,12 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ScriptExecutorService scriptExecutorService() {
         return ScriptExecutorService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public MetadataPolicyConfiguration metadataPolicyConfiguration() {
+        return MetadataPolicyConfiguration.getInstance();
     }
 
 }

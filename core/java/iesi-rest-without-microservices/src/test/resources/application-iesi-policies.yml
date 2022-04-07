@@ -8,7 +8,7 @@ iesi:
             - name: label_2
         - name: policy_2
           labels:
-            - name: label_2
+            - name: label_3
       execution-requets:
         - name: policy_1
           labels:
@@ -16,4 +16,4 @@ iesi:
             - name: label_2
         - name: policy_2
           labels:
-            - name: label_2
+            - name: label_3

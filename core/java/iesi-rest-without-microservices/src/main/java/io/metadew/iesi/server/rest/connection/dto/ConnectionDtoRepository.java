@@ -107,7 +107,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY connections.CONN_NM COLLATE NOCASE ASC ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY connections.CONN_NM ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
                         return "lower(connections.CONN_NM)" + order.getDirection();

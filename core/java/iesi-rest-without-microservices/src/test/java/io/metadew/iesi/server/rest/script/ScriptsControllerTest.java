@@ -1,6 +1,5 @@
 package io.metadew.iesi.server.rest.script;
 
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
@@ -22,7 +21,7 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDtoService;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDtoService;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,7 +35,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

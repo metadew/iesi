@@ -152,7 +152,7 @@ public class ScriptsController {
     public ResponseEntity<Resource> getFile(@PathVariable String name,
                                             @PathVariable Long version) throws IOException {
 
-        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(null, name, version, new ArrayList<>())
+        Script scriptDto = scriptService.getByNameAndVersion(name, version)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
 
         if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(),

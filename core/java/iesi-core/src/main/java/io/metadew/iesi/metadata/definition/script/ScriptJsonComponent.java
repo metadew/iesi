@@ -157,6 +157,7 @@ public class ScriptJsonComponent {
     public static class Serializer extends JsonSerializer<Script> {
         @Override
         public void serialize(Script script, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            System.out.println("SCRIPT : " + script);
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField(MetadataJsonComponent.Field.TYPE_KEY.value(), ScriptJsonComponent.Field.TYPE.value());
 
@@ -169,7 +170,6 @@ public class ScriptJsonComponent {
             // write version
             ScriptVersion scriptVersion = script.getVersion();
             jsonGenerator.writeObjectFieldStart(Field.VERSION_KEY.value());
-            jsonGenerator.writeStartObject();
             jsonGenerator.writeNumberField(ScriptVersionJsonComponent.Field.NUMBER_KEY.value(), scriptVersion.getNumber());
             jsonGenerator.writeStringField(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value(), scriptVersion.getDescription());
             jsonGenerator.writeEndObject();
@@ -208,8 +208,10 @@ public class ScriptJsonComponent {
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_STOP_KEY.value(), scriptAction.getErrorStop() ? "Y" : "N");
                 jsonGenerator.writeNumberField(ActionJsonComponent.Field.RETRIES_KEY.value(), scriptAction.getRetries());
 
+                jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
                 // write action parameters
                 for (ActionParameter actionParameter : scriptAction.getParameters()) {
+                    jsonGenerator.writeStartObject();
                     jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), actionParameter.getMetadataKey().getParameterName());
                     jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value(), actionParameter.getValue());
                     jsonGenerator.writeEndObject();

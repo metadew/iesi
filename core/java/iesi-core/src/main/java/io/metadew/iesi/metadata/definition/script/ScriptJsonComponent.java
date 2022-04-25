@@ -31,11 +31,14 @@ public class ScriptJsonComponent {
 
     public enum Field {
         TYPE("script"),
+        DATA_KEY("data"),
         ID_KEY("id"),
         TYPE_KEY("type"),
         NAME_KEY("name"),
+        VALUE_KEY("value"),
         DESCRIPTION_KEY("description"),
         VERSION_KEY("version"),
+        VERSION_NUMBER_KEY("number"),
         PARAMETERS_KEY("parameters"),
         ACTIONS_KEY("actions"),
         LABELS_KEY("labels");
@@ -158,58 +161,54 @@ public class ScriptJsonComponent {
         @Override
         public void serialize(Script script, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField(MetadataJsonComponent.Field.TYPE_KEY.value(), ScriptJsonComponent.Field.TYPE.value());
 
-            jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
+            jsonGenerator.writeStringField(Field.TYPE_KEY.value(), Field.TYPE.value());
 
-            jsonGenerator.writeStringField(Field.ID_KEY.value(), script.getMetadataKey().getScriptId());
+            jsonGenerator.writeObjectFieldStart(Field.DATA_KEY.value());
             jsonGenerator.writeStringField(Field.NAME_KEY.value(), script.getName());
             jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), script.getDescription());
+            jsonGenerator.writeStringField(SecurityGroupJsonComponent.Field.SECURITY_GROUP_NAME.value(), script.getSecurityGroupName());
 
-            // write version
-            ScriptVersion scriptVersion = script.getVersion();
             jsonGenerator.writeObjectFieldStart(Field.VERSION_KEY.value());
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeNumberField(ScriptVersionJsonComponent.Field.NUMBER_KEY.value(), scriptVersion.getNumber());
-            jsonGenerator.writeStringField(ScriptVersionJsonComponent.Field.DESCRIPTION_KEY.value(), scriptVersion.getDescription());
+            jsonGenerator.writeNumberField(Field.VERSION_NUMBER_KEY.value(), script.getVersion().getNumber());
+            jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), script.getVersion().getDescription());
             jsonGenerator.writeEndObject();
 
             jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
-            for (ScriptParameter scriptParameter : script.getParameters()) {
+            for (ScriptParameter parameter : script.getParameters()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField(ScriptParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), scriptParameter.getMetadataKey().getParameterName());
-                jsonGenerator.writeStringField(ScriptParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value(), scriptParameter.getValue());
+                jsonGenerator.writeStringField(Field.NAME_KEY.value(), parameter.getMetadataKey().getParameterName());
+                jsonGenerator.writeStringField(Field.VALUE_KEY.value(), parameter.getValue());
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();
+
 
             jsonGenerator.writeArrayFieldStart(Field.LABELS_KEY.value());
-            for (ScriptLabel scriptLabel : script.getLabels()) {
+            for (ScriptLabel label : script.getLabels()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField(ScriptLabelJsonComponent.Field.NAME_KEY.value(), scriptLabel.getName());
-                jsonGenerator.writeStringField(ScriptLabelJsonComponent.Field.VALUE.value(), scriptLabel.getValue());
+                jsonGenerator.writeStringField(Field.NAME_KEY.value(), label.getName());
+                jsonGenerator.writeStringField(Field.VALUE_KEY.value(), label.getValue());
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();
 
-            // write actions
             jsonGenerator.writeArrayFieldStart(Field.ACTIONS_KEY.value());
-            for (Action scriptAction : script.getActions()) {
+            for (Action action : script.getActions()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.ID_KEY.value(), scriptAction.getMetadataKey().getActionId());
-                jsonGenerator.writeNumberField(ActionJsonComponent.Field.NUMBER_KEY.value(), scriptAction.getNumber());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.TYPE_KEY.value(), scriptAction.getType());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.NAME_KEY.value(), scriptAction.getName());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.DESCRIPTION_KEY.value(), scriptAction.getDescription());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.COMPONENT_KEY.value(), scriptAction.getComponent());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.CONDITION_KEY.value(), scriptAction.getCondition());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.ITERATION_KEY.value(), scriptAction.getIteration());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_EXPECTED_KEY.value(), scriptAction.getErrorExpected() ? "Y" : "N");
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_STOP_KEY.value(), scriptAction.getErrorStop() ? "Y" : "N");
-                jsonGenerator.writeNumberField(ActionJsonComponent.Field.RETRIES_KEY.value(), scriptAction.getRetries());
+                jsonGenerator.writeNumberField(ActionJsonComponent.Field.NUMBER_KEY.value(), action.getNumber());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.TYPE_KEY.value(), action.getType());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.NAME_KEY.value(), action.getName());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.DESCRIPTION_KEY.value(), action.getDescription());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.COMPONENT_KEY.value(), action.getComponent());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.CONDITION_KEY.value(), action.getCondition());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.ITERATION_KEY.value(), action.getIteration());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_EXPECTED_KEY.value(), action.getErrorExpected() ? "Y" : "N");
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_STOP_KEY.value(), action.getErrorStop() ? "Y": "N");
 
-                // write action parameters
-                for (ActionParameter actionParameter : scriptAction.getParameters()) {
+                jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
+                for (ActionParameter actionParameter : action.getParameters()) {
+                    jsonGenerator.writeStartObject();
                     jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_NAME_KEY.value(), actionParameter.getMetadataKey().getParameterName());
                     jsonGenerator.writeStringField(ActionParameterJsonComponent.Field.PARAMETER_VALUE_KEY.value(), actionParameter.getValue());
                     jsonGenerator.writeEndObject();
@@ -218,8 +217,12 @@ public class ScriptJsonComponent {
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();
+
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
+
+
+
         }
     }
 }

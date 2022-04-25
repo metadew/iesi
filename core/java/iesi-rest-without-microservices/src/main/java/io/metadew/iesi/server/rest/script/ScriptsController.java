@@ -152,12 +152,12 @@ public class ScriptsController {
     public ResponseEntity<Resource> getFile(@PathVariable String name,
                                             @PathVariable Long version) throws IOException {
 
-        ScriptDto scriptDto = scriptDtoService.getByNameAndVersion(null, name, version, new ArrayList<>())
+        Script script = scriptService.getByNameAndVersion(name, version)
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptKey(IdentifierTools.getScriptIdentifier(name), version)));
 
         if (!iesiSecurityChecker.hasPrivilege(SecurityContextHolder.getContext().getAuthentication(),
                 IESIPrivilege.SCRIPTS_READ.getPrivilege(),
-                scriptDto.getSecurityGroupName())
+                script.getSecurityGroupName())
         ) {
             throw new AccessDeniedException("User is not allowed to view this script");
         }
@@ -168,7 +168,7 @@ public class ScriptsController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentDisposition(contentDisposition);
 
-        String jsonString = objectMapper.writeValueAsString(scriptDto);
+        String jsonString = objectMapper.writeValueAsString(script);
 
         byte[] data = jsonString.getBytes();
         ByteArrayResource resource = new ByteArrayResource(data);

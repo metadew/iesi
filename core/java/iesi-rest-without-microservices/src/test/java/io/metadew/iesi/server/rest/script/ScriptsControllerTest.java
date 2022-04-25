@@ -1,7 +1,9 @@
 package io.metadew.iesi.server.rest.script;
 
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
 import io.metadew.iesi.server.rest.builder.script.ScriptDtoBuilder;
 import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
@@ -20,7 +22,7 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDtoService;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDtoService;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,9 +36,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,6 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @DirtiesContext
 class ScriptsControllerTest {
+
 
     @Autowired
     private MockMvc mvc;
@@ -444,7 +445,13 @@ class ScriptsControllerTest {
             authorities = {"SCRIPTS_READ@PUBLIC"})
     void getByNameAndVersionFile() throws Exception {
         ScriptBuilder scriptBuilder = new ScriptBuilder("nameTest", 0);
-        Optional<Script> optionalScript = Optional.of(scriptBuilder.name("nameTest").securityGroupName("PUBLIC").build());
+        Script script = scriptBuilder
+                .name("nameTest")
+                .securityGroupName("PUBLIC")
+                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
+                .build();
+        Optional<Script> optionalScript = Optional.of(script);
+
         given(scriptService.getByNameAndVersion( "nameTest", 0))
                 .willReturn(optionalScript);
 

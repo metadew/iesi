@@ -200,6 +200,7 @@ public class ScriptJsonComponent {
                 jsonGenerator.writeNumberField(ActionJsonComponent.Field.NUMBER_KEY.value(), action.getNumber());
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.TYPE_KEY.value(), action.getType());
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.NAME_KEY.value(), action.getName());
+
                 if (action.getDescription() == null || action.getDescription().equals("null")) {
                     jsonGenerator.writeStringField(ActionJsonComponent.Field.DESCRIPTION_KEY.value(), "");
                 } else {
@@ -221,9 +222,13 @@ public class ScriptJsonComponent {
                     jsonGenerator.writeStringField(ActionJsonComponent.Field.ITERATION_KEY.value(), action.getIteration());
                 }
 
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.DESCRIPTION_KEY.value(), action.getDescription());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.COMPONENT_KEY.value(), action.getComponent());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.CONDITION_KEY.value(), action.getCondition());
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.ITERATION_KEY.value(), action.getIteration());
                 jsonGenerator.writeNumberField(ActionJsonComponent.Field.RETRIES_KEY.value(), action.getRetries());
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_EXPECTED_KEY.value(), action.getErrorExpected() ? "Y" : "N");
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_STOP_KEY.value(), action.getErrorStop() ? "Y" : "N");
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_STOP_KEY.value(), action.getErrorStop() ? "Y": "N");
 
                 jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
                 for (ActionParameter actionParameter : action.getParameters()) {
@@ -236,8 +241,12 @@ public class ScriptJsonComponent {
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();
+
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
+
+
+
         }
     }
 }

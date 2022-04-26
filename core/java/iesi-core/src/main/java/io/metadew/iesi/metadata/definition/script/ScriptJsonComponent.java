@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.node.NullNode;
 import io.metadew.iesi.metadata.definition.Metadata;
-import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionJsonComponent;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -74,6 +74,7 @@ public class ScriptJsonComponent {
 
             JsonNode versionNode = node.get(Field.VERSION_KEY.value());
             long versionNumber;
+
             if (versionNode != null) {
                 versionNumber = versionNode.get(ScriptVersionJsonComponent.Field.NUMBER_KEY.value()).asLong();
                 scriptVersion = new ScriptVersion(
@@ -126,9 +127,9 @@ public class ScriptJsonComponent {
                         scriptActionNode.get(ActionJsonComponent.Field.TYPE_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.NAME_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.DESCRIPTION_KEY.value()).asText(),
-                        scriptActionNode.get(ActionJsonComponent.Field.COMPONENT_KEY.value()) == null ? "" : scriptActionNode.get(ActionJsonComponent.Field.COMPONENT_KEY.value()).asText(),
-                        scriptActionNode.get(ActionJsonComponent.Field.CONDITION_KEY.value()) == null ? "" : scriptActionNode.get(ActionJsonComponent.Field.CONDITION_KEY.value()).asText(),
-                        scriptActionNode.get(ActionJsonComponent.Field.ITERATION_KEY.value()) == null ? "" : scriptActionNode.get(ActionJsonComponent.Field.ITERATION_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.COMPONENT_KEY.value()) instanceof NullNode ? "" : scriptActionNode.get(ActionJsonComponent.Field.COMPONENT_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.CONDITION_KEY.value()) instanceof NullNode ? "" : scriptActionNode.get(ActionJsonComponent.Field.CONDITION_KEY.value()).asText(),
+                        scriptActionNode.get(ActionJsonComponent.Field.ITERATION_KEY.value()) instanceof NullNode ? "" : scriptActionNode.get(ActionJsonComponent.Field.ITERATION_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.ERROR_EXPECTED_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.ERROR_STOP_KEY.value()).asText(),
                         scriptActionNode.get(ActionJsonComponent.Field.RETRIES_KEY.value()) == null ? "0" : scriptActionNode.get(ActionJsonComponent.Field.RETRIES_KEY.value()).asText(),
@@ -199,12 +200,30 @@ public class ScriptJsonComponent {
                 jsonGenerator.writeNumberField(ActionJsonComponent.Field.NUMBER_KEY.value(), action.getNumber());
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.TYPE_KEY.value(), action.getType());
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.NAME_KEY.value(), action.getName());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.DESCRIPTION_KEY.value(), action.getDescription());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.COMPONENT_KEY.value(), action.getComponent());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.CONDITION_KEY.value(), action.getCondition());
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.ITERATION_KEY.value(), action.getIteration());
+                if (action.getDescription() == null || action.getDescription().equals("null")) {
+                    jsonGenerator.writeStringField(ActionJsonComponent.Field.DESCRIPTION_KEY.value(), "");
+                } else {
+                    jsonGenerator.writeStringField(ActionJsonComponent.Field.DESCRIPTION_KEY.value(), action.getDescription());
+                }
+                if (action.getComponent() == null || action.getComponent().equals("null")) {
+                    jsonGenerator.writeStringField(ActionJsonComponent.Field.COMPONENT_KEY.value(), "");
+                } else {
+                    jsonGenerator.writeStringField(ActionJsonComponent.Field.COMPONENT_KEY.value(), action.getComponent());
+                }
+                if (action.getCondition() == null || action.getCondition().equals("null")) {
+                    jsonGenerator.writeStringField(ActionJsonComponent.Field.CONDITION_KEY.value(), "");
+                } else {
+                    jsonGenerator.writeStringField(ActionJsonComponent.Field.CONDITION_KEY.value(), action.getCondition());
+                }
+                if (action.getIteration() == null || action.getIteration().equals("null")) {
+                    jsonGenerator.writeStringField(ActionJsonComponent.Field.ITERATION_KEY.value(), "");
+                } else {
+                    jsonGenerator.writeStringField(ActionJsonComponent.Field.ITERATION_KEY.value(), action.getIteration());
+                }
+
+                jsonGenerator.writeNumberField(ActionJsonComponent.Field.RETRIES_KEY.value(), action.getRetries());
                 jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_EXPECTED_KEY.value(), action.getErrorExpected() ? "Y" : "N");
-                jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_STOP_KEY.value(), action.getErrorStop() ? "Y": "N");
+                jsonGenerator.writeStringField(ActionJsonComponent.Field.ERROR_STOP_KEY.value(), action.getErrorStop() ? "Y" : "N");
 
                 jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());
                 for (ActionParameter actionParameter : action.getParameters()) {
@@ -217,12 +236,8 @@ public class ScriptJsonComponent {
                 jsonGenerator.writeEndObject();
             }
             jsonGenerator.writeEndArray();
-
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
-
-
-
         }
     }
 }

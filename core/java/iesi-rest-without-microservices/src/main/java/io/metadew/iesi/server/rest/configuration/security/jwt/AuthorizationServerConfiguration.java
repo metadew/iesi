@@ -15,6 +15,9 @@ import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
@@ -49,7 +52,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setTokenEnhancer(accessTokenConverter());
         defaultTokenServices.setReuseRefreshToken(false);
-        defaultTokenServices.setAccessTokenValiditySeconds(120);
+        defaultTokenServices.setAccessTokenValiditySeconds(5);
         defaultTokenServices.setRefreshTokenValiditySeconds(24000);
         return defaultTokenServices;
     }
@@ -90,7 +93,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .scopes("read-write")
                 .resourceIds("oauth2-resource")
                 .redirectUris("http://localhost:8081/login")
-                .accessTokenValiditySeconds(120)
+                .accessTokenValiditySeconds(5)
                 .refreshTokenValiditySeconds(24000);
     }
 

@@ -33,9 +33,9 @@ public class IesiCorsFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("FRAMEWORK CRYPTO : " + FrameworkCrypto.getInstance());
-        log.info("CLIENT_ID REQUEST : " + request.getParameter("client_id") + " | " + frameworkCrypto.encrypt(request.getParameter("client_id")));
-        log.info("CLIENT_SECRET REQUEST : " + request.getParameter("client_secret")  + " | " + frameworkCrypto.encrypt(request.getParameter("client_secret")));
+        //log.info("FRAMEWORK CRYPTO : " + FrameworkCrypto.getInstance());
+        //log.info("CLIENT_ID REQUEST : " + request.getParameter("client_id") + " | " + frameworkCrypto.encrypt(request.getParameter("client_id")));
+        //log.info("CLIENT_SECRET REQUEST : " + request.getParameter("client_secret")  + " | " + frameworkCrypto.encrypt(request.getParameter("client_secret")));
         CorsConfiguration corsConfiguration = this.configSource.getCorsConfiguration(request);
         boolean isValid = this.processor.processRequest(corsConfiguration, request, response);
         if (isValid && !CorsUtils.isPreFlightRequest(request)) {

@@ -16,13 +16,13 @@ Subroutine Syntax: {% raw %} {{*list.size(X)}} {% endraw %}
   <X>: listname or listreference
 
 Example 1:
-{% raw %} {{*list.size({{=dataset(OutputDataset,list)}})}} {% endraw %}
+{% raw %}{{*list.size({{=dataset(OutputDataset,list)}})}}{% endraw %}
 
 Example 1 Output:
 5
 
 Example 2:
-{% raw %} {{*list.size(listReference)}} {% endraw %}
+{% raw %}{{*list.size(listReference)}}{% endraw %}
 
 Example 2 Output:
 5

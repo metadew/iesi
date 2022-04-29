@@ -16,10 +16,10 @@ This page contains all information on generating and formatting of math formulas
 ### math.add
 ```
 Description: Formula to perform an addition
-Subroutine Syntax: {{*math.add(X,Y)}}
+Subroutine Syntax: {% raw %}{{*math.add(X,Y)}}{% endraw %}
 
 Example:
-{{*math.add(1,1)}}
+{% raw %}{{*math.add(1,1)}}{% endraw %}
 
 Example Output:
 2
@@ -27,10 +27,10 @@ Example Output:
 ### math.divide
 ```
 Description: Formula to perform a division
-Subroutine Syntax: {{*math.divide(X,Y)}}
+Subroutine Syntax: {% raw %}{{*math.divide(X,Y)}}{% endraw %}
 
 Example:
-{{*math.divide(4,2)}}
+{% raw %}{{*math.divide(4,2)}}{% endraw %}
 
 Example Output:
 2.00
@@ -38,10 +38,10 @@ Example Output:
 ### math.power
 ```
 Description: Formula to perform an exponentiation
-Subroutine Syntax: {{*math.power(X,Y)}}
+Subroutine Syntax: {% raw %}{{*math.power(X,Y)}}{% endraw %}
 
 Example:
-{{*math.power(3,2)}}
+{% raw %}{{*math.power(3,2)}}{% endraw %}
 
 Example Output:
 9
@@ -49,10 +49,10 @@ Example Output:
 ### math.multiply
 ```
 Description: Formula to perform a mutiplication
-Subroutine Syntax: {{*math.multiply(X,Y)}}
+Subroutine Syntax: {% raw %}{{*math.multiply(X,Y)}}{% endraw %}
 
 Example:
-{{*math.multiply(3,4)}}
+{% raw %}{{*math.multiply(3,4)}}{% endraw %}
 
 Example Output:
 12
@@ -60,10 +60,10 @@ Example Output:
 ### math.substract
 ```
 Description: Formula to perform a substraction
-Subroutine Syntax: {{*math.substract(X,Y)}}
+Subroutine Syntax: {% raw %}{{*math.substract(X,Y)}}{% endraw %}
 
 Example:
-{{*math.substract(12,4)}}
+{% raw %}{{*math.substract(12,4)}}{% endraw %}
 
 Example Output:
 8

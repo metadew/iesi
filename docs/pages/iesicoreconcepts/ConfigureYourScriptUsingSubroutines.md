@@ -1,5 +1,5 @@
 {% include navigation.html %}
-# Configure your script - Using Subroutines
+# Configure your script - Using Subroutines/Instructions
 ## What are subroutines/instructions?
 Subroutines is a capability to **define reusable snippets of code** that can be used as **part of action parameter values**. In that way, a similar piece of configuration needs to be defined only once and can be reused many times. It can be compared to a **spreadsheet function**. As a user, you need to know the function name and what it does, not how it works in the background.
 
@@ -40,7 +40,7 @@ Subroutines can also be **nested**, containing subroutines in subroutines (e.g. 
 |            |List instructions|Generating and formatting of list values|
 |            |Math instructions|Generating and formatting of math formulas|
 |            |Text instructions|Generating and formatting of string - xml - json responses|
-|**Variable**|                 |All instructions related to fetching of framework variables
+|[**Variable**](/{{site.repository}}/pages/iesicoreconcepts/Instructions/variableinstruction.html)|                 |All instructions related to fetching of framework variables
 
 
 --part below = obsolete!

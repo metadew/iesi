@@ -17,12 +17,12 @@ Inventory location: a default inventory of example data is available in app/meta
 ### belgium.nationalRegisterNumber
 ```
 Description: Get a Belgian national register number conform to the standard format
-Subroutine Syntax: {{*belgium.nationalRegisterNumber(X,Y)}}
+Subroutine Syntax: {% raw %}{{*belgium.nationalRegisterNumber(X,Y)}}{% endraw %}
   <X>: date of birth in ddMMYYYY format
   <Y>: gender (1 = male - 2= female)
 
 Example:
-{{*belgium.nationalRegisterNumber(30111995,1)}}
+{% raw %}{{*belgium.nationalRegisterNumber(30111995,1)}}{% endraw %}
 
 Example Output:
 95113058307
@@ -30,11 +30,11 @@ Example Output:
 ### person.email
 ```
 Description: Generates a random email address
-Subroutine Syntax: {{*person.email()}}
+Subroutine Syntax: {% raw %}{{*person.email()}}{% endraw %}
 Inventory Location: app/metadata/gen
 
 Example:
-{{*person.email()}}
+{% raw %}{{*person.email()}}{% endraw %}
 
 Example Output:
 test@tester.com
@@ -42,11 +42,11 @@ test@tester.com
 ### person.firstname
 ```
 Description: Generates a random firstname
-Subroutine Syntax: {{*person.firstname()}}
+Subroutine Syntax: {% raw %}{{*person.firstname()}}{% endraw %}
 Inventory Location: app/metadata/gen
 
 Example:
-{{*person.firstname()}}
+{% raw %}{{*person.firstname()}}{% endraw %}
 
 Example Output:
 Jane
@@ -54,11 +54,11 @@ Jane
 ### person.lastname
 ```
 Description: Generates a random lastname
-Subroutine Syntax: {{*person.lastname()}}
+Subroutine Syntax: {% raw %}{{*person.lastname()}}{% endraw %}
 Inventory Location: app/metadata/gen
 
 Example:
-{{*person.lastname()}}
+{% raw %}{{*person.lastname()}}{% endraw %}
 
 Example Output:
 Doe
@@ -66,11 +66,11 @@ Doe
 ### person.phonenumber
 ```
 Description: Generates a random phonenumber
-Subroutine Syntax: {{*person.phonenumber()}}
+Subroutine Syntax: {% raw %}{{*person.phonenumber()}}{% endraw %}
 Inventory Location: app/metadata/gen
 
 Example:
-{{*person.phonenumber()}}
+{% raw %}{{*person.phonenumber()}}{% endraw %}
 
 Example Output:
 712345684

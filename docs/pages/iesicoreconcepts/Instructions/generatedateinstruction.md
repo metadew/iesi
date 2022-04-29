@@ -17,10 +17,10 @@ This page contains all information on generating and formatting of date values
 ### date.between
 ```
 Description: Get a random date between a defined range in format ddMMyyyy
-Subroutine Syntax: {{*date.between(ddMMyyyy,ddMMyyyyy)}}
+Subroutine Syntax: \{\{*date.between(ddMMyyyy,ddMMyyyyy)\}\}
 
 Example:
-{{*date.between(30111995,01012000)}}
+\{\{*date.between(30111995,01012000)\}\}
 
 Example Output:
 16101996
@@ -28,7 +28,7 @@ Example Output:
 ### date.format
 ```
 Description: Format a date
-Subroutine Syntax: {{*date.format(X,Y)}}
+Subroutine Syntax: \{\{*date.format(X,Y)\}\}
   <X>: original format
   <Y>: new format
 

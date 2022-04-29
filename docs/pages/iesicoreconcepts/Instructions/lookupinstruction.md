@@ -16,12 +16,12 @@ This page contains all information on the data look-up instruction(s).
 ### connection
 ```
 Description: Lookup connection parameter value
-Subroutine Syntax: {{=connection(X,Y)}}
+Subroutine Syntax: {% raw %}{{=connection(X,Y)}}{% endraw %}
   <X>: connection name
   <Y>: connection parameter
 
 Example:
-{{=connection(petsTutorial,port)}}
+{% raw %}{{=connection(petsTutorial,port)}}{% endraw %}
 
 Example Output:
 8800
@@ -29,13 +29,13 @@ Example Output:
 ### dataset
 ```
 Description: Lookup dataset parameter values
-Subroutine Syntax: {{=dataset(X,Y)}}
+Subroutine Syntax: {% raw %}{{=dataset(X,Y)}}{% endraw %}
   <X>: dataset name
   <Y>: dataset parameter
 
 Example:
-{{=dataset(datasetInput,firstname)}}
-{{=dataset(datasetOutput,firstname)}}
+{% raw %}{{=dataset(datasetInput,firstname)}}{% endraw %}
+{% raw %}{{=dataset(datasetOutput,firstname)}}{% endraw %}
 
 Example Output:
 Jane
@@ -43,12 +43,12 @@ Jane
 ### environment
 ```
 Description: Lookup an environment parameter value
-Subroutine Syntax: {{=environment(X,Y)}}
+Subroutine Syntax: {% raw %}{{=environment(X,Y)}}{% endraw %}
   <X>: environment name
   <Y>: environment parameter
 
 Example:
-{{=environment(variableTest,envName)}}
+{% raw %}{{=environment(variableTest,envName)}}{% endraw %}
 
 Example Output:
 Test
@@ -56,11 +56,11 @@ Test
 ### file
 ```
 Description: Lookup file content
-Subroutine Syntax: {{=file(X)}}
+Subroutine Syntax: {% raw %}{{=file(X)}}{% endraw %}
   <X>: file name
 
 Example:
-{{=file(test)}}
+{% raw %}{{=file(test)}}{% endraw %}
 
 Example Output:
 [test]
@@ -68,19 +68,19 @@ Example Output:
 ### coalesce
 ```
 Description: Lookup variable value when provided, otherwise, take default value
-Subroutine Syntax: {{=coalesce(X,Y)}}
+Subroutine Syntax: {% raw %}{{=coalesce(X,Y)}}{% endraw %}
   <X>: variable name
   <Y>: default value
 
 Example 1:
-{{=coalesce(#city#,BRUSSEL)}}
+{% raw %}{{=coalesce(#city#,BRUSSEL)}}{% endraw %}
 With parameter value for <city>=[empty]
 
 Example 1 Output:
 BRUSSEL
 
 Example 2:
-{{=coalesce(#city#,BRUSSEL)}}
+{% raw %}{{=coalesce(#city#,BRUSSEL)}}{% endraw %}
 With parameter value for <city>=NAMEN
 
 Example 2 Output:

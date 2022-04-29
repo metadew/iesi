@@ -13,19 +13,19 @@ This page contains all information on generating and formatting of number values
 ### number.between
 ```
 Description: Generates a random number in defined range
-Subroutine Syntax: {{*number.between(X,Y,Z)}}
+Subroutine Syntax: {% raw %}{{*number.between(X,Y,Z)}}
   <X>: start range
   <Y>: end range
   <Z>: decimals (optional)
 
 Example 1:
-{{*number.between(1,10)}}
+{% raw %}{{*number.between(1,10)}}{% endraw %}
 
 Example 1 Output:
 4,14785689487523
 
 Example 2:
-{{*number.between(1,10,0)}}
+{% raw %}{{*number.between(1,10,0)}}{% endraw %}
 
 Example 2 Output:
 5
@@ -33,12 +33,12 @@ Example 2 Output:
 ### number.format
 ```
 Description: Formats a number definition
-Subroutine Syntax: {{*number.format(X,Y)}}
+Subroutine Syntax: {% raw %}{{*number.format(X,Y)}}{% endraw %}
   <X>: number
   <Y>: format
 
 Example:
-{{*number.format(1,"0.00")}}
+{% raw %}{{*number.format(1,"0.00")}}{% endraw %}
 
 Example Output:
 1.00

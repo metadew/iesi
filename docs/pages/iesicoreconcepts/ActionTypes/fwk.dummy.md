@@ -10,7 +10,7 @@ This actiontype is a dummy for adding a placeholder step
 
 |Parameter|Description|Type|Mandatory|Encrypted|
 |---------|-----------|----|---------|---------|
-None
+|None|
 
 
 ## Example

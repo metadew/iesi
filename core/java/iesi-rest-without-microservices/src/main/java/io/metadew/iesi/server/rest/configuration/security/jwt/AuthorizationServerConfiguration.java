@@ -1,9 +1,9 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -11,12 +11,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.*;
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @EnableAuthorizationServer
@@ -26,6 +26,15 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder bcryptPasswordEncoder;
     private final IesiUserAuthenticationConverter iesiUserAuthenticationConverter;
+
+    @Value("${iesi.security.jwt.access-token-validity}")
+    private int accessTokenValidityInSeconds;
+    @Value("${iesi.security.jwt.refresh-token-validity}")
+    private int refreshTokenValidityInSeconds;
+    @Value("${iesi.security.client_id}")
+    private String clientId;
+    @Value("${iesi.security.client_secret}")
+    private String clientSecret;
 
 
     public AuthorizationServerConfiguration(
@@ -52,8 +61,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setTokenEnhancer(accessTokenConverter());
         defaultTokenServices.setReuseRefreshToken(false);
-        defaultTokenServices.setAccessTokenValiditySeconds(5);
-        defaultTokenServices.setRefreshTokenValiditySeconds(24000);
+        defaultTokenServices.setAccessTokenValiditySeconds(accessTokenValidityInSeconds);
+        defaultTokenServices.setRefreshTokenValiditySeconds(refreshTokenValidityInSeconds);
         return defaultTokenServices;
     }
 
@@ -87,14 +96,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
                 .inMemory()
-                .withClient("iesi").secret(bcryptPasswordEncoder.encode("iesi"))
+                .withClient(clientId).secret(bcryptPasswordEncoder.encode(clientSecret))
                 .authorizedGrantTypes("password", "refresh_token")
                 .authorities("CLIENT")
                 .scopes("read-write")
                 .resourceIds("oauth2-resource")
                 .redirectUris("http://localhost:8081/login")
-                .accessTokenValiditySeconds(5)
-                .refreshTokenValiditySeconds(24000);
+                .accessTokenValiditySeconds(accessTokenValidityInSeconds)
+                .refreshTokenValiditySeconds(refreshTokenValidityInSeconds);
     }
 
 }

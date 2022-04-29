@@ -1,9 +1,8 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.server.rest.configuration.IesiHttpServletRequestWrapper;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.cors.*;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,13 +32,25 @@ public class IesiCorsFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //log.info("FRAMEWORK CRYPTO : " + FrameworkCrypto.getInstance());
-        //log.info("CLIENT_ID REQUEST : " + request.getParameter("client_id") + " | " + frameworkCrypto.encrypt(request.getParameter("client_id")));
-        //log.info("CLIENT_SECRET REQUEST : " + request.getParameter("client_secret")  + " | " + frameworkCrypto.encrypt(request.getParameter("client_secret")));
-        CorsConfiguration corsConfiguration = this.configSource.getCorsConfiguration(request);
-        boolean isValid = this.processor.processRequest(corsConfiguration, request, response);
-        if (isValid && !CorsUtils.isPreFlightRequest(request)) {
-            filterChain.doFilter(request, response);
+        IesiHttpServletRequestWrapper iesiHttpServletRequestWrapper = new IesiHttpServletRequestWrapper(request);
+        if (request.getRequestURI().equals("/api/oauth/token")) {
+            iesiHttpServletRequestWrapper.addParameter("client_id", frameworkCrypto.decryptIfNeeded(request.getParameter("client_id")));
+            iesiHttpServletRequestWrapper.addParameter("client_secret", frameworkCrypto.decryptIfNeeded(request.getParameter("client_secret")));
+            if (request.getParameter("grant_type").equals("password")) {
+                iesiHttpServletRequestWrapper.addParameter("grant_type", "password");
+                iesiHttpServletRequestWrapper.addParameter("username", request.getParameter("username"));
+                iesiHttpServletRequestWrapper.addParameter("password", request.getParameter("password"));
+            } else if (request.getParameter("grant_type").equals("refresh_token")) {
+                iesiHttpServletRequestWrapper.addParameter("grant_type", "refresh_token");
+                iesiHttpServletRequestWrapper.addParameter("refresh_token", request.getParameter("refresh_token"));
+            }
+
+        }
+
+        CorsConfiguration corsConfiguration = this.configSource.getCorsConfiguration(iesiHttpServletRequestWrapper);
+        boolean isValid = this.processor.processRequest(corsConfiguration, iesiHttpServletRequestWrapper, response);
+        if (isValid && !CorsUtils.isPreFlightRequest(iesiHttpServletRequestWrapper)) {
+            filterChain.doFilter(iesiHttpServletRequestWrapper, response);
         }
     }
 

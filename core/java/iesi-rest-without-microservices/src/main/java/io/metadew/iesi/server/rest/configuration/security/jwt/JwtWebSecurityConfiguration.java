@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
+import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,32 +30,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @ConditionalOnWebApplication
 public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private IesiUserDetailsManager iesiUserDetailsManager;
-    private PasswordEncoder passwordEncoder;
-    private JWTAuthenticationFilter jwtAuthenticationFilter;
-    @Value("${iesi.security.enabled:false}")
-    private boolean enableSecurity;
+    private final IesiUserDetailsManager iesiUserDetailsManager;
 
     @Autowired
-    public void setJwtAuthenticationFilter(JWTAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
-
-    @Autowired
-    public void setCustomUserDetailsManager(IesiUserDetailsManager iesiUserDetailsManager) {
+    public JwtWebSecurityConfiguration(IesiUserDetailsManager iesiUserDetailsManager) {
         this.iesiUserDetailsManager = iesiUserDetailsManager;
     }
 
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(iesiUserDetailsManager)
-                .passwordEncoder(passwordEncoder);
+    @Bean
+    public PasswordEncoder bcryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -63,51 +48,22 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(iesiUserDetailsManager).passwordEncoder(bcryptPasswordEncoder());
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        if (enableSecurity) {
-            log.info("IESI REST endpoint security enabled");
-            http
-                    .cors().and()
-                    .csrf().disable()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .authorizeRequests()
-                    .mvcMatchers("/actuator/health").permitAll()
-                    .mvcMatchers("/users/login").permitAll()
-                    .anyRequest().authenticated()
-                    .and()
-                    .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
-        } else {
-            log.info("IESI REST endpoint security disabled");
-            http
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .cors().and()
-                    .csrf().disable()
-                    .authorizeRequests().anyRequest().permitAll();
-        }
+    public void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .cors().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .mvcMatchers("/oauth/authorize", "/oauth/token", "/error**").permitAll()
+                .and()
+                .authorizeRequests()
+                .anyRequest().authenticated();
     }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration(); //.applyPermitDefaultValues();
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.setMaxAge(1800L);
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.addAllowedMethod(HttpMethod.GET);
-        corsConfiguration.addAllowedMethod(HttpMethod.HEAD);
-        corsConfiguration.addAllowedMethod(HttpMethod.POST);
-        corsConfiguration.addAllowedMethod(HttpMethod.PUT);
-        corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
-    }
-
 }

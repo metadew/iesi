@@ -41,18 +41,15 @@ import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
 import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 
-@org.springframework.context.annotation.Configuration
+@Configuration
 @Log4j2
 public class IesiConfiguration {
 
@@ -290,26 +287,6 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ScriptExecutorService scriptExecutorService() {
         return ScriptExecutorService.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public LdapContextSource contextSource() {
-        LdapContextSource contextSource = new LdapContextSource();
-        contextSource.setUrl("ldaps://belwired.net:636");
-        contextSource.setBase("OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net");
-        /*contextSource.setBase((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.partitionSuffix"));*/
-        contextSource.setUserDn("CN=cnkhatth,OU=Privileged,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net");
-        contextSource.setPassword("F2E6u!hep8v!Qa");
-        contextSource.afterPropertiesSet();
-        /*contextSource.setPassword((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.password"));*/
-        return contextSource;
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public LdapTemplate ldapTemplate() {
-        return new LdapTemplate(contextSource());
     }
 
 }

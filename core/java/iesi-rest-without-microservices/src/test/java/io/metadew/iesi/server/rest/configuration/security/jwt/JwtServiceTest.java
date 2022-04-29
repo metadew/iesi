@@ -43,9 +43,6 @@ class JwtServiceTest {
     @MockBean
     private IUserService userService;
 
-    @Autowired
-    private JwtService jwtService;
-
     @MockBean
     private Clock clock;
 

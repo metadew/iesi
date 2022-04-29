@@ -23,9 +23,12 @@ spring:
 iesi:
   security:
     enabled: true
+    client_id: iesi
+    client_secret: tBKjN9Sy2TBgahGd
     jwt:
       secret: secret
-      expiry-date: 3600
+      access-token-validity: 1800
+      refresh-token-validity: 86400
   debug: true
 
 management:

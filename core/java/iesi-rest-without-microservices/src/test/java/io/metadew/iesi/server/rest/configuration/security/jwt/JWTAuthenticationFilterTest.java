@@ -3,6 +3,7 @@ package io.metadew.iesi.server.rest.configuration.security.jwt;
 import com.jayway.jsonpath.JsonPath;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,8 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ActiveProfiles({"test", "http"})
 @DirtiesContext
+@Disabled
 class JWTAuthenticationFilterTest {
 
+    /*
     @Autowired
     private JWTAuthenticationFilter jwtAuthenticationFilter;
 
@@ -86,4 +89,6 @@ class JWTAuthenticationFilterTest {
         assertThat(json).startsWith("The Token has expired ");
         assertThat(status).isEqualTo(401);
     }
+
+     */
 }

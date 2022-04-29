@@ -28,7 +28,6 @@ class ScriptExecutionRequestDtoTest {
                 new ScriptExecutionRequestKey(scriptExecutionRequestId),
                 new ExecutionRequestKey(executionRequestId),
                 "tst",
-                true,
                 Stream.of(new ScriptExecutionRequestImpersonation(
                                 new ScriptExecutionRequestImpersonationKey(DigestUtils.sha256Hex(scriptExecutionRequestId + "name1")),
                                 new ScriptExecutionRequestKey(scriptExecutionRequestId),
@@ -56,7 +55,6 @@ class ScriptExecutionRequestDtoTest {
                 scriptExecutionRequestId,
                 executionRequestId,
                 "tst",
-                true,
                 Stream.of(
                         new ScriptExecutionRequestImpersonationDto("name1"),
                         new ScriptExecutionRequestImpersonationDto("name2")

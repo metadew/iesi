@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -80,6 +81,26 @@ class UserDtoRepositoryTest {
                 userDtoRepository.getAll(pageable, new UserFiltersBuilder().username("filter").build()))
                 .hasSize(1)
                 .contains((UserDto) user1Info.get("userDto"));
+    }
+
+    @Test
+    void getAllSortedCaseTest() {
+        Map<String, Object> teamInfo = TeamBuilder.generateTeam(1, 1, 2, new HashSet<>());
+        Team team = (Team) teamInfo.get("team");
+        teamConfiguration.insert((Team) teamInfo.get("team"));
+        Map<String, Object> user1Info = UserBuilder.generateUser("a", team.getRoles(), team.getTeamName(), new HashSet<>());
+        Map<String, Object> user2Info = UserBuilder.generateUser("Z", team.getRoles(), team.getTeamName(), new HashSet<>());
+        userConfiguration.insert((User) user1Info.get("user"));
+        userConfiguration.insert((User) user2Info.get("user"));
+
+        UserDto user1Dto = (UserDto) user1Info.get("userDto");
+        UserDto user2Dto = (UserDto) user2Info.get("userDto");
+
+        Pageable pageableASC = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "username"));
+        Pageable pageableDESC = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "username"));
+
+        assertThat(userDtoRepository.getAll(pageableASC, new HashSet<>())).containsExactly(user1Dto, user2Dto);
+        assertThat(userDtoRepository.getAll(pageableDESC, new HashSet<>())).containsExactly(user2Dto, user1Dto);
     }
 
 }

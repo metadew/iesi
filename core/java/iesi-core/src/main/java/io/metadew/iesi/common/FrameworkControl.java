@@ -26,6 +26,11 @@ public class FrameworkControl {
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);
             closePos = temp.indexOf(variable_char, openPos + 1);
+
+            if (openPos < 0 || closePos < 0) {
+                return input;
+            }
+
             midBit = temp.substring(openPos + 1, closePos);
 
             // Replacing the value if found

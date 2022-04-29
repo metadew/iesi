@@ -103,7 +103,7 @@ public class ComponentsController {
             componentService.createComponent(componentDto);
             return componentDtoResourceAssembler.toModel(componentDtoService.convertToEntity(componentDto));
         } catch (MetadataAlreadyExistsException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Component " + componentDto.getName() + " already exists");
         }
     }

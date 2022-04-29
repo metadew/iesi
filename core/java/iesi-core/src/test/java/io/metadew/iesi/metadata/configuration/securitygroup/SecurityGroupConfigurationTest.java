@@ -28,9 +28,7 @@ class SecurityGroupConfigurationTest {
 
 
     private TeamKey teamKey1;
-    private Team team1;
     private TeamKey teamKey2;
-    private Team team2;
 
     @BeforeAll
     static void prepare() {
@@ -61,16 +59,7 @@ class SecurityGroupConfigurationTest {
         securityGroupKey2 = new SecurityGroupKey(UUID.randomUUID());
         teamKey1 = new TeamKey(UUID.randomUUID());
         teamKey2 = new TeamKey(UUID.randomUUID());
-        team1 = Team.builder()
-                .teamKey(teamKey1)
-                .teamName("team1")
-                .securityGroupKeys(Stream.of(securityGroupKey1, securityGroupKey2).collect(Collectors.toSet()))
-                .build();
-        team2 = Team.builder()
-                .teamKey(teamKey2)
-                .teamName("team2")
-                .securityGroupKeys(Stream.of(securityGroupKey2).collect(Collectors.toSet()))
-                .build();
+
         securityGroup1 = SecurityGroup.builder()
                 .metadataKey(securityGroupKey1)
                 .name("group1")

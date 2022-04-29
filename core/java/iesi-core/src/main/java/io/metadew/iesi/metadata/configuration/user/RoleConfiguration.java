@@ -138,10 +138,10 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
                         SQLTools.getStringForSQL(metadata.getTeamKey().getUuid()),
                         SQLTools.getStringForSQL(metadata.getName()));
         getMetadataRepository().executeUpdate(insertStatement);
-        for (UserKey userKey : metadata.getUserKeys()) {
+        for (User user : metadata.getUsers()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertUserRoleQuery,
-                            SQLTools.getStringForSQL(userKey.getUuid()),
+                            SQLTools.getStringForSQL(user.getMetadataKey().getUuid()),
                             SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()))
             );
         }
@@ -169,10 +169,10 @@ public class RoleConfiguration extends Configuration<Role, RoleKey> {
 
         String deleteUserRolesStatement = MessageFormat.format(deleteUserRolesByRoleIdQuery, SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
         getMetadataRepository().executeUpdate(deleteUserRolesStatement);
-        for (UserKey userKey : metadata.getUserKeys()) {
+        for (User user : metadata.getUsers()) {
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertUserRoleQuery,
-                            SQLTools.getStringForSQL(userKey.getUuid()),
+                            SQLTools.getStringForSQL(user.getMetadataKey().getUuid()),
                             SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()))
             );
         }

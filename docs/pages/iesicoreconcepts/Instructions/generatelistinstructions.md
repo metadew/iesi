@@ -12,7 +12,7 @@ This page contains all information on generating and formatting of list values
 ### list.size
 ```
 Description: Generates a random number in defined range
-Subroutine Syntax: \\{{*list.size(X)}}
+Subroutine Syntax: <!-- {% raw %} --> {{*list.size(X)}} <!-- {% endraw %} -->
   <X>: listname or listreference
 
 Example 1:
@@ -27,3 +27,8 @@ Example 2:
 Example 2 Output:
 5
 ```
+
+
+<!-- {% raw %} -->
+something with curlky brackets like { this } and { that }
+<!-- {% endraw %} -->

@@ -68,7 +68,7 @@ data:
     - name: "name"
       value : "test"
     - name: "value"
-      value : "{{*date.today()}}"
+      value : "{% raw %}{{*date.today()}}{% endraw %}"
 ```
 ```yaml
 ---
@@ -89,7 +89,7 @@ data:
     errorStop: "N"
     parameters:
     - name: "message"
-      value : "{{*date.today()}}"
+      value : "{% raw %}{{*date.today()}}{% endraw %}"
     - name: "onScreen"
       value : "Y"
 ```

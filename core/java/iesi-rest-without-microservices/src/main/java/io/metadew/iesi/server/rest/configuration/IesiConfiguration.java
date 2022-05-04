@@ -43,6 +43,8 @@ import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -287,6 +289,26 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public ScriptExecutorService scriptExecutorService() {
         return ScriptExecutorService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public LdapContextSource contextSource() {
+        LdapContextSource contextSource = new LdapContextSource();
+        contextSource.setUrl("ldap://localhost:10389");
+        contextSource.setBase("dc=example,dc=com");
+        /*contextSource.setBase((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.partitionSuffix"));*/
+        contextSource.setUserDn("cn=khatth,ou=users,dc=example,dc=com");
+        contextSource.setPassword("khatth");
+        contextSource.afterPropertiesSet();
+        /*contextSource.setPassword((String) Configuration.getInstance().getMandatoryProperty("iesi.ldap.password"));*/
+        return contextSource;
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public LdapTemplate ldapTemplate() {
+        return new LdapTemplate(contextSource());
     }
 
 }

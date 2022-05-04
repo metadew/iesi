@@ -8,9 +8,9 @@ springdoc:
   version: '0.3.0'
 spring:
   ldap:
-    url: ldaps://belwired.net:636
-    base: DC=belwired,DC=net
-    username: CN=cagetat,OU=Applications,OU=Users,OU=Default,OU=IAM-10-Default,DC=belwired,DC=net
+    url: ldap://localhost:10389
+    base: DC=example,DC=com
+    username: CN=khatth,OU=test,DC=example,DC=com
     password: hErebih0Nlph99
     base-environment:
       com.sun.jndi.ldap.connect.timeout: 500

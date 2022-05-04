@@ -1,27 +1,23 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
-import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
+import io.metadew.iesi.server.rest.configuration.security.providers.IesiProviderManager;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
+import io.metadew.iesi.server.rest.configuration.security.providers.LdapAuthenticationProvider;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @EnableWebSecurity
 @Configuration
@@ -31,10 +27,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final IesiUserDetailsManager iesiUserDetailsManager;
+    private final LdapAuthenticationProvider ldapAuthenticationProvider;
 
     @Autowired
-    public JwtWebSecurityConfiguration(IesiUserDetailsManager iesiUserDetailsManager) {
+    public JwtWebSecurityConfiguration(IesiUserDetailsManager iesiUserDetailsManager, LdapAuthenticationProvider ldapAuthenticationProvider) {
         this.iesiUserDetailsManager = iesiUserDetailsManager;
+        this.ldapAuthenticationProvider = ldapAuthenticationProvider;
     }
 
     @Bean
@@ -44,13 +42,13 @@ public class JwtWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+    public AuthenticationManager authenticationManager() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
+        daoAuthenticationProvider.setUserDetailsService(iesiUserDetailsManager);
+        daoAuthenticationProvider.setPasswordEncoder(bcryptPasswordEncoder());
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(iesiUserDetailsManager).passwordEncoder(bcryptPasswordEncoder());
+        return new IesiProviderManager(Arrays.asList(daoAuthenticationProvider, ldapAuthenticationProvider));
     }
 
     @Override

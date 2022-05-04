@@ -4,13 +4,22 @@ server:
 spring:
   profiles:
     active: http
+  ldap:
+    url: ldaps://localhost:10389
+    base: DC=example,DC=com
+    username: CN=khatth,OU=test,DC=example,DC=com
+    password: hErebih0Nlph99
+    base-environment:
+      com.sun.jndi.ldap.connect.timeout: 500
 
 iesi:
   security:
-    enabled: true
+    client_id: iesi
+    client_secret: tBKjN9Sy2TBgahGd
     jwt:
       secret: secret
-      expiry-date: 10
+      access-token-validity: 1800
+      refresh-token-validity: 86400
   debug: true
 
 management:

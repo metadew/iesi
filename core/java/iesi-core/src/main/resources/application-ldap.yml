@@ -1,0 +1,20 @@
+iesi:
+  server:
+    url: ldap://localhost:10389
+    base: dc=example,dc=com
+  authentication:
+    users:
+      user-authenticate-attribute: cn
+      user-search-base-dn: ou=users
+      user-search-attribute: cn
+    groups:
+      group-search-base-dn: ou=groups
+      group-search-attribute: cn
+    admin:
+      dn: cn=khatth,ou=users,dc=example,dc=com
+      password: khatth
+  groups-mapping:
+    - iesi-name: PUBLIC
+      ad-name: All
+    - iesi-name: A
+      as-name: 1

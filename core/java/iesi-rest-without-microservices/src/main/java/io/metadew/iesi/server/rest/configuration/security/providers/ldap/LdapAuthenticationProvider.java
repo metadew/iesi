@@ -1,24 +1,17 @@
-package io.metadew.iesi.server.rest.configuration.security.providers;
+package io.metadew.iesi.server.rest.configuration.security.providers.ldap;
 
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
-import io.metadew.iesi.metadata.configuration.user.RoleConfiguration;
-import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.user.Privilege;
 import io.metadew.iesi.metadata.definition.user.Role;
 import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.service.user.RoleService;
-import io.metadew.iesi.server.rest.configuration.ldap.LdapAuthentication;
-import io.metadew.iesi.server.rest.configuration.ldap.LdapGroupMapping;
 import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
-import io.metadew.iesi.server.rest.security_group.SecurityGroupService;
 import io.metadew.iesi.server.rest.user.ldap.LdapGroup;
 import io.metadew.iesi.server.rest.user.ldap.LdapUser;
 import io.metadew.iesi.server.rest.user.team.TeamService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -40,28 +33,25 @@ import java.util.Set;
 @Component
 public class LdapAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
-    private LdapContextSource ldapContextSource;
-
-    @Autowired
-    private LdapTemplate ldapTemplate;
-
+    private final LdapContextSource ldapContextSource;
+    private final LdapTemplate ldapTemplate;
     private final LdapAuthentication ldapAuthentication;
     private final LdapGroupMapping ldapGroupMapping;
-    private final SecurityGroupService securityGroupConfiguration;
     private final TeamService teamConfiguration;
     private final RoleService roleConfiguration;
 
     public LdapAuthenticationProvider(
+            LdapContextSource ldapContextSource,
+            LdapTemplate ldapTemplate,
             LdapAuthentication ldapAuthentication,
             LdapGroupMapping ldapGroupMapping,
-            SecurityGroupService securityGroupConfiguration,
             TeamService teamConfiguration,
             RoleService roleConfiguration
     ) {
+        this.ldapContextSource = ldapContextSource;
+        this.ldapTemplate = ldapTemplate;
         this.ldapAuthentication = ldapAuthentication;
         this.ldapGroupMapping = ldapGroupMapping;
-        this.securityGroupConfiguration = securityGroupConfiguration;
         this.teamConfiguration = teamConfiguration;
         this.roleConfiguration = roleConfiguration;
     }
@@ -71,10 +61,6 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
         LdapUser user = authenticate(authentication.getName(), authentication.getCredentials().toString())
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", authentication.getName())));
 
-        user.setGroups(getUserGroups(user.getDn()));
-
-        log.info("USER AUTHENTICATED: " + user);
-
         Set<IESIGrantedAuthority> grantedAuthorities = generateIesiAuthorities(user);
 
         return new UsernamePasswordAuthenticationToken(
@@ -82,21 +68,6 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
                 authentication.getCredentials(),
                 grantedAuthorities
         );
-    }
-
-    private List<LdapGroup> getUserGroups(String userDn) {
-        String groupSearchBase = ldapGroupMapping.getGroupSearchBaseDn();
-        String groupSearchAttribute = ldapGroupMapping.getGroupSearchAttribute();
-        String groupMemberAttribute = ldapGroupMapping.getGroupMemberAttribute();
-
-        String searchFilter = String.format("%s=%s", groupMemberAttribute, userDn);
-
-        return ldapTemplate.search(
-                groupSearchBase,
-                searchFilter,
-                new IesiLdapContextMappers.GroupMapper(groupSearchAttribute, ldapContextSource.getBaseLdapPathAsString())
-        );
-
     }
 
     private Optional<LdapUser> authenticate(String username, String password) {
@@ -120,16 +91,23 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
         return ldapTemplate.search(
                         userBaseDn,
                         searchFilter.encode(),
-                        new IesiLdapContextMappers.UserMapper(ldapContextSource.getBaseLdapPathAsString()))
+                        new IesiLdapContextMappers.UserMapper(ldapContextSource.getBaseLdapPathAsString(), userDn -> {
+                            String groupSearchBase = ldapGroupMapping.getGroupSearchBaseDn();
+                            String groupSearchAttribute = ldapGroupMapping.getGroupSearchAttribute();
+                            String groupMemberAttribute = ldapGroupMapping.getGroupMemberAttribute();
+
+                            String searchFilter1 = String.format("%s=%s", groupMemberAttribute, userDn);
+
+                            return ldapTemplate.search(
+                                    groupSearchBase,
+                                    searchFilter1,
+                                    new IesiLdapContextMappers.GroupMapper(groupSearchAttribute, ldapContextSource.getBaseLdapPathAsString())
+                            );
+                        }))
                 .stream()
                 .findFirst();
     }
 
-
-    @Override
-    public boolean supports(Class<?> authentication) {
-        return authentication.equals(UsernamePasswordAuthenticationToken.class);
-    }
 
     private Set<IESIGrantedAuthority> generateIesiAuthorities(LdapUser user) {
         HashSet<IESIGrantedAuthority> iesiGrantedAuthorities = new HashSet<>();
@@ -191,7 +169,9 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
         return Optional.empty();
     }
 
-    private IesiUserDetails generateIesiDetails() {
-        return null;
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
+
 }

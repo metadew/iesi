@@ -1,13 +1,14 @@
 package io.metadew.iesi.server.rest.configuration;
 
-import io.metadew.iesi.server.rest.configuration.ldap.LdapAuthentication;
-import io.metadew.iesi.server.rest.configuration.ldap.LdapGroupMapping;
-import io.metadew.iesi.server.rest.configuration.ldap.LdapServer;
+import io.metadew.iesi.server.rest.configuration.security.providers.ldap.*;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.LdapContextSource;
 
 @Data
 @Configuration
@@ -32,5 +33,21 @@ public class IesiLdapConfiguration {
         return new LdapGroupMapping();
     }
 
+    @Bean
+    public LdapContextSource contextSource(LdapServer ldapServer, LdapAuthentication ldapAuthentication) {
+        LdapContextSource contextSource = new LdapContextSource();
+        contextSource.setUrl(ldapServer.getUrl());
+        contextSource.setBase(ldapServer.getBase());
+        contextSource.setUserDn(ldapAuthentication.getAdmin().getDn());
+        contextSource.setPassword(ldapAuthentication.getAdmin().getPassword());
+        contextSource.afterPropertiesSet();
+        return contextSource;
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public LdapTemplate ldapTemplate(LdapServer ldapServer, LdapAuthentication ldapAuthentication) {
+        return new LdapTemplate(contextSource(ldapServer, ldapAuthentication));
+    }
 
 }

@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.configuration.security.providers;
+package io.metadew.iesi.server.rest.configuration.security.providers.ldap;
 
 import io.metadew.iesi.server.rest.user.ldap.LdapGroup;
 import io.metadew.iesi.server.rest.user.ldap.LdapUser;
@@ -33,12 +33,14 @@ public class IesiLdapContextMappers {
     @AllArgsConstructor
     public static class UserMapper implements ContextMapper<LdapUser> {
         private String baseLdap;
+        private LdapUserGroupPopulator ldapUserGroupPopulator;
 
         @Override
         public LdapUser mapFromContext(Object o) throws NamingException {
             DirContextAdapter context = (DirContextAdapter) o;
             return new LdapUser(
-                    context.getDn().toString().concat("," + baseLdap)
+                    context.getDn().toString().concat("," + baseLdap),
+                    ldapUserGroupPopulator
             );
         }
     }

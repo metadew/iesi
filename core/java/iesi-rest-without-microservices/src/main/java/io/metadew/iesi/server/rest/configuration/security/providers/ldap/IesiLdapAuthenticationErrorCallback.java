@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.configuration.security.providers;
+package io.metadew.iesi.server.rest.configuration.security.providers.ldap;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.ldap.NamingException;

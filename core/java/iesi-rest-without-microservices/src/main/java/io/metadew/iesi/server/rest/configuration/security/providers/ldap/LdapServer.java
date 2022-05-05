@@ -1,4 +1,4 @@
-package io.metadew.iesi.server.rest.configuration.ldap;
+package io.metadew.iesi.server.rest.configuration.security.providers.ldap;
 
 import lombok.Data;
 

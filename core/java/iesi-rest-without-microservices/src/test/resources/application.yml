@@ -8,9 +8,12 @@ spring:
 iesi:
   security:
     enabled: true
+    client_id: test
+    client_secret: test
     jwt:
       secret: secret
-      expiry-date: 10
+      access-token-validity: 1800
+      refresh-token-validity: 86400
   debug: true
 
 management:

@@ -45,7 +45,6 @@ public class IesiLdapConfiguration {
     }
 
     @Bean
-    @DependsOn("frameworkInstance")
     public LdapTemplate ldapTemplate(LdapServer ldapServer, LdapAuthentication ldapAuthentication) {
         return new LdapTemplate(contextSource(ldapServer, ldapAuthentication));
     }

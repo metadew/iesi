@@ -38,26 +38,24 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
     private final LdapAuthentication ldapAuthentication;
     private final LdapGroupMapping ldapGroupMapping;
     private final TeamService teamConfiguration;
-    private final RoleService roleConfiguration;
 
     public LdapAuthenticationProvider(
             LdapContextSource ldapContextSource,
             LdapTemplate ldapTemplate,
             LdapAuthentication ldapAuthentication,
             LdapGroupMapping ldapGroupMapping,
-            TeamService teamConfiguration,
-            RoleService roleConfiguration
+            TeamService teamConfiguration
     ) {
         this.ldapContextSource = ldapContextSource;
         this.ldapTemplate = ldapTemplate;
         this.ldapAuthentication = ldapAuthentication;
         this.ldapGroupMapping = ldapGroupMapping;
         this.teamConfiguration = teamConfiguration;
-        this.roleConfiguration = roleConfiguration;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        log.info("Authentication: " + authentication.getPrincipal());
         LdapUser user = authenticate(authentication.getName(), authentication.getCredentials().toString())
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", authentication.getName())));
 
@@ -133,23 +131,25 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
                         ));
                     }
                 }
+                return iesiGrantedAuthorities;
             }
         }
-        return iesiGrantedAuthorities;
+
+        return new HashSet<>();
     }
 
     private Optional<Set<Privilege>> getPrivilegeFromAdRole(List<LdapGroup> groups, String adGroupTeamName, Team iesiTeam) {
-        String adGroupAbsoluteName;
+        String adGroupName;
         String adRole;
 
-        List<Role> iesiRoles;
+        Set<Role> iesiRoles;
         Set<Privilege> iesiPrivileges;
 
         for (LdapGroup group : groups) {
-            adGroupAbsoluteName = group.getCn();
-            if (adGroupAbsoluteName.contains(adGroupTeamName)) {
-                iesiRoles = roleConfiguration.getByTeamId(iesiTeam.getMetadataKey());
-                adRole = adGroupAbsoluteName.substring(0, adGroupAbsoluteName.lastIndexOf(adGroupTeamName));
+            adGroupName = group.getCn();
+            if (adGroupName.contains(adGroupTeamName)) {
+                iesiRoles = iesiTeam.getRoles();
+                adRole = adGroupName.substring(0, adGroupName.lastIndexOf(adGroupTeamName));
                 iesiPrivileges = getIesiPrivileges(adRole, iesiRoles)
                         .orElseThrow(() -> new MetadataDoesNotExistException(String.format("The role %s defined in your Active Directory does not exist on the team %s linked to %S", adRole, adGroupTeamName, iesiTeam.getTeamName())));
 
@@ -160,7 +160,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
         return Optional.empty();
     }
 
-    private Optional<Set<Privilege>> getIesiPrivileges(String adRole, List<Role> iesiRoles) {
+    private Optional<Set<Privilege>> getIesiPrivileges(String adRole, Set<Role> iesiRoles) {
         for (Role role : iesiRoles) {
             if (role.getName().equalsIgnoreCase(adRole)) {
                 return Optional.of(role.getPrivileges());

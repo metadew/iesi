@@ -8,9 +8,4 @@ import lombok.Data;
 public class LdapGroup {
     private final String dn;
     private final String cn;
-
-    @Override
-    public String toString() {
-        return "${dn:" + dn + "}" + "${cn:" + cn + "}";
-    }
 }

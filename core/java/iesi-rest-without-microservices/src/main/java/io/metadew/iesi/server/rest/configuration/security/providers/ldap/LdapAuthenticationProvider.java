@@ -5,9 +5,7 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.user.Privilege;
 import io.metadew.iesi.metadata.definition.user.Role;
 import io.metadew.iesi.metadata.definition.user.Team;
-import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
-import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
 import io.metadew.iesi.server.rest.user.ldap.LdapGroup;
 import io.metadew.iesi.server.rest.user.ldap.LdapUser;
 import io.metadew.iesi.server.rest.user.team.TeamService;
@@ -37,6 +35,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
     private final LdapTemplate ldapTemplate;
     private final LdapAuthentication ldapAuthentication;
     private final LdapGroupMapping ldapGroupMapping;
+    private final LdapRoleMapping ldapRoleMapping;
     private final TeamService teamConfiguration;
 
     public LdapAuthenticationProvider(
@@ -44,12 +43,14 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
             LdapTemplate ldapTemplate,
             LdapAuthentication ldapAuthentication,
             LdapGroupMapping ldapGroupMapping,
+            LdapRoleMapping ldapRoleMapping,
             TeamService teamConfiguration
     ) {
         this.ldapContextSource = ldapContextSource;
         this.ldapTemplate = ldapTemplate;
         this.ldapAuthentication = ldapAuthentication;
         this.ldapGroupMapping = ldapGroupMapping;
+        this.ldapRoleMapping = ldapRoleMapping;
         this.teamConfiguration = teamConfiguration;
     }
 
@@ -109,17 +110,13 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
 
     private Set<IESIGrantedAuthority> generateIesiAuthorities(LdapUser user) {
         HashSet<IESIGrantedAuthority> iesiGrantedAuthorities = new HashSet<>();
-        String iesiTeamName;
-        Optional<Set<Privilege>> iesiPrivileges;
 
-        for (LdapGroupMapping.MappingPair mappingPair : ldapGroupMapping.getMappingPairs()) {
-            iesiTeamName = mappingPair.getIesiName();
-
-            String finalIesiGroupTeamName = iesiTeamName;
+        for (MappingPair mappingPair : ldapGroupMapping.getMappingPairs()) {
+            String iesiTeamName = mappingPair.getIesiName();
             Team iesiTeam = teamConfiguration.getRawTeam(iesiTeamName)
-                    .orElseThrow(() -> new MetadataDoesNotExistException(String.format("The team %s defined in the ldap configuration does not exist", finalIesiGroupTeamName)));
-            iesiPrivileges = getPrivilegeFromAdRole(user.getGroups(), mappingPair.getAdName(), iesiTeam);
+                    .orElseThrow(() -> new MetadataDoesNotExistException(String.format("The team %s defined in the ldap configuration does not exist", iesiTeamName)));
 
+            Optional<Set<Privilege>> iesiPrivileges = getPrivilegeFromAdRole(user.getGroups(), mappingPair.getAdName(), iesiTeam);
 
             if (iesiPrivileges.isPresent()) {
                 Set<SecurityGroup> securityGroups = teamConfiguration.getSecurityGroups(iesiTeam.getMetadataKey());
@@ -131,33 +128,30 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
                         ));
                     }
                 }
-                return iesiGrantedAuthorities;
             }
         }
 
-        return new HashSet<>();
+        return iesiGrantedAuthorities;
     }
 
     private Optional<Set<Privilege>> getPrivilegeFromAdRole(List<LdapGroup> groups, String adGroupTeamName, Team iesiTeam) {
-        String adGroupName;
-        String adRole;
-
-        Set<Role> iesiRoles;
-        Set<Privilege> iesiPrivileges;
+        Set<Privilege> iesiPrivileges = new HashSet<>();
 
         for (LdapGroup group : groups) {
-            adGroupName = group.getCn();
+            String adGroupName = group.getCn();
             if (adGroupName.contains(adGroupTeamName)) {
-                iesiRoles = iesiTeam.getRoles();
-                adRole = adGroupName.substring(0, adGroupName.lastIndexOf(adGroupTeamName));
-                iesiPrivileges = getIesiPrivileges(adRole, iesiRoles)
-                        .orElseThrow(() -> new MetadataDoesNotExistException(String.format("The role %s defined in your Active Directory does not exist on the team %s linked to %S", adRole, adGroupTeamName, iesiTeam.getTeamName())));
-
-                return Optional.of(iesiPrivileges);
+                Set<Role> iesiRoles = iesiTeam.getRoles();
+                String adRole = adGroupName.substring(0, adGroupName.lastIndexOf(adGroupTeamName));
+                MappingPair mappingPair = ldapRoleMapping.getMappingPairs().stream()
+                        .filter(p -> p.getAdName().equals(adRole))
+                        .findFirst()
+                        .orElseGet(() -> new MappingPair(adRole, adRole));
+                iesiPrivileges.addAll(getIesiPrivileges(mappingPair.getIesiName(), iesiRoles)
+                        .orElseThrow(() -> new MetadataDoesNotExistException(String.format("The role %s defined in your Active Directory does not exist on the team %s linked to %S", adRole, adGroupTeamName, iesiTeam.getTeamName()))));
             }
         }
 
-        return Optional.empty();
+        return iesiPrivileges.isEmpty() ? Optional.empty() : Optional.of(iesiPrivileges);
     }
 
     private Optional<Set<Privilege>> getIesiPrivileges(String adRole, Set<Role> iesiRoles) {

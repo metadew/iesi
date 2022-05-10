@@ -5,9 +5,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class LdapGroupMapping {
-    private String groupSearchBaseDn;
-    private String groupSearchAttribute;
-    private String groupMemberAttribute;
+public class LdapRoleMapping {
     private List<MappingPair> mappingPairs;
 }

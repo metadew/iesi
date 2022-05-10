@@ -14,39 +14,123 @@ objectclass: top
 objectclass: organizationalUnit
 ou: people
 
-dn: uid=admin,ou=people,dc=test,dc=com
+dn: uid=adminAD,ou=people,dc=test,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
 objectclass: inetOrgPerson
 cn: Admin
 sn: Admin
-uid: admin
+uid: adminAD
 userPassword: admin
 
-dn: uid=reader,ou=people,dc=test,dc=com
+dn: uid=readerAD,ou=people,dc=test,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
 objectclass: inetOrgPerson
-cn: Reader
-sn: Reader
-uid: reader
+cn: ReaderAD
+sn: ReaderAD
+uid: readerAD
 userPassword: reader
 
-dn: cn=Reader1,ou=groups,dc=test,dc=com
+dn: uid=executorAD,ou=people,dc=test,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: ExecutorAD
+sn: ExecutorAD
+uid: executorAD
+userPassword: executor
+
+dn: uid=technical_engineerAD,ou=people,dc=test,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Technical_engineerAD
+sn: technical_engineerAD
+uid: technical_engineerAD
+userPassword: technical_engineer
+
+dn: uid=test_engineerAD,ou=people,dc=test,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Test_engineerAD
+sn: test_engineerAD
+uid: test_engineerAD
+userPassword: test_engineer
+
+dn: uid=trainerAD,ou=people,dc=test,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: TrainerAD
+sn: trainerAD
+uid: trainerAD
+userPassword: trainer
+
+dn: cn=ViewerAll,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: reader1
-ou: Reader1
-uniqueMember: uid=reader,ou=people,dc=test,dc=com
+cn: viewerAll
+ou: ViewerAll
+uniqueMember: uid=readerAD,ou=people,dc=test,dc=com
+
+dn: cn=ExecutorAll,ou=groups,dc=test,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: executorAll
+ou: ExecutorAll
+uniqueMember: uid=executorAD,ou=people,dc=test,dc=com
+
+dn: cn=TestEngineerAll,ou=groups,dc=test,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: testEngineerAll
+ou: TestEngineerAll
+uniqueMember: uid=test_engineerAD,ou=people,dc=test,dc=com
+
+dn: cn=TechnicalEngineerAll,ou=groups,dc=test,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: technicalEngineerAll
+ou: TechnicalEngineerAll
+uniqueMember: uid=technical_engineerAD,ou=people,dc=test,dc=com
 
 dn: cn=AdminAll,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
 cn: adminAll
-ou: AdminAll
-uniqueMember: uid=admin,ou=people,dc=test,dc=com
+ou: adminAll
+uniqueMember: uid=adminAD,ou=people,dc=test,dc=com
+
+dn: cn=SysadminAll,ou=groups,dc=test,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: sysadminAll
+ou: SysadminAll
+uniqueMember: uid=adminAD,ou=people,dc=test,dc=com
+
+dn: cn=Admin1,ou=groups,dc=test,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: admin1
+ou: Admin1
+uniqueMember: uid=trainerAD,ou=people,dc=test,dc=com
+
+dn: cn=TestEngineer2,ou=groups,dc=test,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: testEngineer2
+ou: TestEnginer2
+uniqueMember: uid=trainerAD,ou=people,dc=test,dc=com
+
+
 
 
 

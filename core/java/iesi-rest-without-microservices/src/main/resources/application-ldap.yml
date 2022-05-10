@@ -18,3 +18,9 @@ groups-mapping:
       ad-name: All
     - iesi-name: B
       ad-name: 1
+roles-mapping:
+  mapping-pairs:
+    - iesi-name: TEST_ENGINEER
+      ad-name: testEngineer
+    - iesi-name: TECHNICAL_ENGINEER
+      ad-name: technicalEngineer

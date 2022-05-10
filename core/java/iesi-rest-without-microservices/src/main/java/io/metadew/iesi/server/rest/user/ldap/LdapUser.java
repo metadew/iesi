@@ -16,9 +16,4 @@ public class LdapUser {
         this.dn = dn;
         this.groups = ldapUserGroupPopulator.populate(dn);
     }
-
-    @Override
-    public String toString() {
-        return "${dn:" + dn + "}" + "${groups:" + groups + "}";
-    }
 }

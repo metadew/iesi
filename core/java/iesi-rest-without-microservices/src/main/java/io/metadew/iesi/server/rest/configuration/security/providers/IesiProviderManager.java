@@ -7,17 +7,16 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.log.LogMessage;
 import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.SpringSecurityMessageSource;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 @Log4j2
@@ -125,7 +124,7 @@ public class IesiProviderManager implements AuthenticationManager, MessageSource
             }
             catch (AuthenticationException ex) {
                 lastException = ex;
-                if (ex instanceof BadCredentialsException) {
+                if (ex instanceof BadCredentialsException && provider instanceof DaoAuthenticationProvider) {
                     throw ex;
                 }
             }

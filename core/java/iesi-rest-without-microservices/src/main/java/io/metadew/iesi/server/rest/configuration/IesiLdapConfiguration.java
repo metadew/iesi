@@ -34,6 +34,10 @@ public class IesiLdapConfiguration {
     }
 
     @Bean
+    @ConfigurationProperties(prefix = "roles-mapping")
+    public LdapRoleMapping ldapRoleMapping() { return new LdapRoleMapping(); }
+
+    @Bean
     public LdapContextSource contextSource(LdapServer ldapServer, LdapAuthentication ldapAuthentication) {
         LdapContextSource contextSource = new LdapContextSource();
         contextSource.setUrl(ldapServer.getUrl());

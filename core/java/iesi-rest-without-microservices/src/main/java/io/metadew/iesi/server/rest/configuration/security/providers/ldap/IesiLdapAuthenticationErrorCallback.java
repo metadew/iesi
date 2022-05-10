@@ -10,7 +10,7 @@ public class IesiLdapAuthenticationErrorCallback implements AuthenticationErrorC
     @Override
     public void execute(Exception e) {
         log.warn(String.format("Cannot authenticate LDAP user: %S", ((NamingException) e).getExplanation()));
-        if (e.getMessage().contains("error code 49 - INVALID_CREDENTIALS")) {
+        if (e.getMessage().contains("the provided password was incorrect")) {
             throw new BadCredentialsException("Bad credentials");
         }
     }

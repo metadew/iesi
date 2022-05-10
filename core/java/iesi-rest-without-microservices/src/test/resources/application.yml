@@ -2,6 +2,14 @@ server:
   servlet:
     context-path: /api
 spring:
+  ldap:
+    embedded:
+      port: 8389
+      ldif: classpath:ldap.ldif
+      base-dn: dc=test,dc=com
+  #      credential:
+  #        username: 'uid=admin'
+  #        password: secret
   profiles:
     active: http
 

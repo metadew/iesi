@@ -4,18 +4,10 @@ server:
 spring:
   profiles:
     active: http
-  ldap:
-    server:
-      url: 'ldap://localhost:8389/dc=test,dc=com'
-    embedded:
-      port: '8389'
-      ldif: 'classpath:ldap.ldif'
-      base-dn: dc=test,dc=com
-
 
 iesi:
   security:
-    enabled: false
+    enabled: true
     client_id: test
     client_secret: test
     jwt:

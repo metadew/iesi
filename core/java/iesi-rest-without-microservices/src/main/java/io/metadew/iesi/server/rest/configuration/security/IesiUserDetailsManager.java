@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @Component
 @DependsOn("metadataRepositoryConfiguration")
 @Log4j2
-@ConditionalOnWebApplication
 public class IesiUserDetailsManager implements UserDetailsManager {
 
     private final IUserService userService;
@@ -36,6 +35,8 @@ public class IesiUserDetailsManager implements UserDetailsManager {
         User rawUser = userService
                 .getRawUser(name)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + name + " not found"));
+
+        System.out.println("RAW USER : " + rawUser);
 
         return new IesiUserDetails(rawUser, getGrantedAuthorities(name));
     }

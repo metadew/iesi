@@ -31,6 +31,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidGrantExcepti
 import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -49,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @ActiveProfiles({"http", "test"})
 @AutoConfigureMockMvc
+@DirtiesContext
 public class AuthenticationTest {
 
     @Autowired

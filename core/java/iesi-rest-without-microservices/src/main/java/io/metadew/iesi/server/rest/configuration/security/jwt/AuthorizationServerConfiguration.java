@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder bcryptPasswordEncoder;
     private final IesiUserAuthenticationConverter iesiUserAuthenticationConverter;
+    private final FrameworkCrypto frameworkCrypto;
 
     @Value("${iesi.security.jwt.access-token-validity}")
     private int accessTokenValidityInSeconds;
@@ -41,12 +43,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
             IesiUserDetailsManager iesiUserDetailsManager,
             AuthenticationManager authenticationManager,
             PasswordEncoder bcryptPasswordEncoder,
-            IesiUserAuthenticationConverter iesiUserAuthenticationConverter
+            IesiUserAuthenticationConverter iesiUserAuthenticationConverter,
+            FrameworkCrypto frameworkCrypto
     ) {
         this.iesiUserDetailsManager = iesiUserDetailsManager;
         this.authenticationManager = authenticationManager;
         this.bcryptPasswordEncoder = bcryptPasswordEncoder;
         this.iesiUserAuthenticationConverter = iesiUserAuthenticationConverter;
+        this.frameworkCrypto = frameworkCrypto;
     }
 
     @Bean
@@ -96,7 +100,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
                 .inMemory()
-                .withClient(clientId).secret(bcryptPasswordEncoder.encode(clientSecret))
+                .withClient(clientId).secret(bcryptPasswordEncoder.encode(frameworkCrypto.decryptIfNeeded(clientSecret)))
                 .authorizedGrantTypes("password", "refresh_token")
                 .authorities("CLIENT")
                 .scopes("read-write")

@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,13 +12,16 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class IesiCorsConfiguration {
 
+    @Value("${server.servlet.cors.allowed-origin}")
+    private String allowedOrigin;
+
     @Bean
     public FilterRegistrationBean customCorsFilter() {
         UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedOrigin(allowedOrigin);
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
 

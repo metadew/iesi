@@ -1,6 +1,8 @@
 server:
   servlet:
     context-path: /api
+    cors:
+      allowed-origin: 'http://localhost:3000'
   error:
     whitelabel:
       enabled: false
@@ -17,7 +19,7 @@ iesi:
   security:
     enabled: true
     client_id: iesi
-    client_secret: tBKjN9Sy2TBgahGd
+    client_secret: iesi
     jwt:
       secret: secret
       access-token-validity: 1800
@@ -29,9 +31,6 @@ management:
     web:
       exposure:
         include: health, httptrace, metrics, mappings
-  health:
-    ldap:
-      enabled: false
   trace:
     http:
       include: request-headers,response-headers,cookie-headers,principal,time-taken,authorization-header,remote-address,session-id

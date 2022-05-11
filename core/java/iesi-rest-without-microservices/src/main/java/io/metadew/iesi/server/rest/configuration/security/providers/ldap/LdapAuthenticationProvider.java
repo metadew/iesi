@@ -56,7 +56,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.info("Authentication: " + authentication.getPrincipal());
+        log.trace(String.format("Trying to authenticate %s through LDAP", authentication.getName()));
         LdapUser user = authenticate(authentication.getName(), authentication.getCredentials().toString())
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", authentication.getName())));
 

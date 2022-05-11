@@ -79,38 +79,6 @@ public class AuthenticationTest {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @BeforeEach
-    void beforeEach() {
-        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.nameUUIDFromBytes("TRAINING".getBytes(StandardCharsets.UTF_8)));
-        SecurityGroupKey securityGroupKey1 = new SecurityGroupKey(UUID.nameUUIDFromBytes("PRIVATE".getBytes(StandardCharsets.UTF_8)));
-
-        securityGroupService.addSecurityGroup(new SecurityGroup(
-                securityGroupKey,
-                "TRAINING",
-                new HashSet<>(),
-                new HashSet<>()
-        ));
-
-        securityGroupService.addSecurityGroup(new SecurityGroup(
-                securityGroupKey1,
-                "PRIVATE",
-                new HashSet<>(),
-                new HashSet<>()
-        ));
-
-        createTeam("training", securityGroupKey);
-        createTeam("private", securityGroupKey1);
-    }
-
-    @AfterEach
-    void AfterEach() {
-        teamService.delete("training");
-        teamService.delete("private");
-        securityGroupService.delete(new SecurityGroupKey(UUID.nameUUIDFromBytes("TRAINING".getBytes(StandardCharsets.UTF_8))));
-        securityGroupService.delete(new SecurityGroupKey(UUID.nameUUIDFromBytes("PRIVATE".getBytes(StandardCharsets.UTF_8))));
-    }
-
-
     @Test
     void getSuccessfulTokenWithIesiUser() throws Exception {
         OAuth2AccessToken accessToken = tokenEndpoint.postAccessToken(

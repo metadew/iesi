@@ -1,8 +1,6 @@
 server:
   servlet:
     context-path: /api
-    cors:
-      allowed-origin: 'http://localhost:3000'
   error:
     whitelabel:
       enabled: false
@@ -18,6 +16,8 @@ spring:
 iesi:
   security:
     enabled: true
+    cors:
+      allowed-origin: 'http://localhost:3000'
     client_id: iesi
     client_secret: iesi
     jwt:

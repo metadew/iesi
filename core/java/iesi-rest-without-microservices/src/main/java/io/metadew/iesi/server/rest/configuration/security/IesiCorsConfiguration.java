@@ -7,12 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class IesiCorsConfiguration {
 
-    @Value("${server.servlet.cors.allowed-origin}")
+    @Value("${iesi.security.cors.allowed-origin}")
     private String allowedOrigin;
 
     @Bean

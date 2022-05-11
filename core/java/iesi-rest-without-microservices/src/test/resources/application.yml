@@ -16,6 +16,8 @@ spring:
 iesi:
   security:
     enabled: true
+    cors:
+      allowed-origin: "*"
     client_id: test
     client_secret: test
     jwt:

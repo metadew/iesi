@@ -62,6 +62,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
 
         Set<IESIGrantedAuthority> grantedAuthorities = generateIesiAuthorities(user);
 
+        log.trace("Populated the groups to the user, returning the authentication token.");
         return new UsernamePasswordAuthenticationToken(
                 authentication.getPrincipal(),
                 authentication.getCredentials(),
@@ -96,6 +97,8 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
                             String groupMemberAttribute = ldapGroupMapping.getGroupMemberAttribute();
 
                             String searchFilter1 = String.format("%s=%s", groupMemberAttribute, userDn);
+
+                            log.trace(String.format("User %s found on the Active Directory, populate the AD groups into IESI groups", userDn));
 
                             return ldapTemplate.search(
                                     groupSearchBase,

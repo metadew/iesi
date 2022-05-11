@@ -32,7 +32,8 @@ public class IesiUserDetailsManager implements UserDetailsManager {
     @Override
     public IesiUserDetails loadUserByUsername(String name) {
         System.out.println("USER SERVICE : " + userService);
-        System.out.println("DATAA : " + userService.getAll());
+        System.out.println("USERNAME: " + name);
+        System.out.println("DATAA : " + userService.getRawUser(name));
         User rawUser = userService
                 .getRawUser(name)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + name + " not found"));

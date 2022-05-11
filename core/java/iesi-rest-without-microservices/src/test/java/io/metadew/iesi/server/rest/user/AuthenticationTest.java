@@ -13,6 +13,7 @@ import io.metadew.iesi.server.rest.security_group.SecurityGroupService;
 import io.metadew.iesi.server.rest.user.team.TeamPostDto;
 import io.metadew.iesi.server.rest.user.team.TeamService;
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles({"http", "test"})
 @AutoConfigureMockMvc
 @DirtiesContext
-@Ignore
+@Disabled
 public class AuthenticationTest {
 
     @Autowired

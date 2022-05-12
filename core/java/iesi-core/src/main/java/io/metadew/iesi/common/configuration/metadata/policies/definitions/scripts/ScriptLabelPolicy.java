@@ -2,9 +2,16 @@ package io.metadew.iesi.common.configuration.metadata.policies.definitions.scrip
 
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.Policy;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ScriptLabelPolicy implements Policy<List<ScriptLabel>> {
     private String name;
 
@@ -15,9 +22,5 @@ public class ScriptLabelPolicy implements Policy<List<ScriptLabel>> {
                 .findFirst()
                 .orElse(null);
         return scriptLabelFound != null;
-    }
-
-    public String getName() {
-        return name;
     }
 }

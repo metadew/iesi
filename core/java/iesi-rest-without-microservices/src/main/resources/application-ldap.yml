@@ -17,7 +17,7 @@ groups-mapping:
     - iesi-name: iesi
       ad-name: All
     - iesi-name: B
-      ad-name: Resource1
+      ad-name: 1
 roles-mapping:
   mapping-pairs:
     - iesi-name: TEST_ENGINEER

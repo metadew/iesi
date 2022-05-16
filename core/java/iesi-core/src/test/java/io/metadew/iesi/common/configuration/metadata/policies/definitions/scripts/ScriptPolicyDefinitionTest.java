@@ -2,10 +2,8 @@ package io.metadew.iesi.common.configuration.metadata.policies.definitions.scrip
 
 
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
-import io.metadew.iesi.metadata.configuration.script.ScriptBuilder;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
@@ -19,7 +17,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.Assert.assertThat;
 
 class ScriptPolicyDefinitionTest {
 

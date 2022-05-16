@@ -1,36 +1,26 @@
-server:
-  servlet:
-    context-path: /api
-    cors:
-      allowed-origin: 'http://localhost:3000'
-  error:
-    whitelabel:
-      enabled: false
-springdoc:
-  version: '0.3.0'
-spring:
-  profiles:
-    active: http
-  data:
-    web:
-      pageable:
-        one-indexed-parameters: true #Allow the UI to query page 1 instead of 0
 iesi:
+  guard:
+    authenticate: N
+  #  script:
+  #    execution:
+  #       runtime: ''
+  server:
+    #    mode: off
+    mode: standalone
+    threads:
+      timeout: 30
+  home: '.'
   security:
     enabled: true
-    client_id: iesi
-    client_secret: iesi
     jwt:
       secret: secret
-      access-token-validity: 1800
-      refresh-token-validity: 86400
-  debug: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, httptrace, metrics, mappings
-  trace:
-    http:
-      include: request-headers,response-headers,cookie-headers,principal,time-taken,authorization-header,remote-address,session-id
+      expiry-date: 10
+  workers:
+    - path: '.'
+      timeout: 30
+  master:
+    path: '.'
+    host: 'http://localhost:8080'
+    credentials:
+      user: admin
+      password: admin

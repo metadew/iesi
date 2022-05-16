@@ -1,0 +1,19 @@
+iesi:
+  metadata:
+    policies:
+      scripts:
+        - name: policy_1
+          labels:
+            - name: label_1
+            - name: label_2
+        - name: policy_2
+          labels:
+            - name: label_3
+      execution-requests:
+        - name: policy_1
+          labels:
+            - name: label_1
+            - name: label_2
+        - name: policy_2
+          labels:
+            - name: label_3

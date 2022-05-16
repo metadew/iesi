@@ -21,7 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertThat;
 
-public class ScriptPolicyDefinitionTest {
+class ScriptPolicyDefinitionTest {
 
     @BeforeAll
     static void beforeAll() {
@@ -58,6 +58,7 @@ public class ScriptPolicyDefinitionTest {
                 scriptLabelPolicy1, scriptLabelPolicy2, scriptLabelPolicy3
         ).collect(Collectors.toList()));
         scriptPolicyDefinition.setName("policy-definition");
+
         Script script = Script.builder()
                 .name("script")
                 .labels(Stream.of(new ScriptLabel(
@@ -74,16 +75,21 @@ public class ScriptPolicyDefinitionTest {
                                 new ScriptLabelKey("mylabel3"),
                                 new ScriptKey("script-id", 0L),
                                 "mylabel3",
+                                "mylabel-value"),
+                        new ScriptLabel(
+                                new ScriptLabelKey("mylabel3"),
+                                new ScriptKey("script-id", 0L),
+                                "mylabel4",
                                 "mylabel-value")
 
-                        ).collect(Collectors.toList()))
+                ).collect(Collectors.toList()))
                 .build();
 
         assertThatCode(() -> scriptPolicyDefinition.verify(script)).doesNotThrowAnyException();
     }
 
     @Test
-    void scriptAlignsWithMultipleMultipleDefinitionAndOneLabelPolicy() {
+    void scriptAlignsWithMultipleDefinitionAndOneLabelPolicy() {
         ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel");
         ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2");
 
@@ -118,7 +124,7 @@ public class ScriptPolicyDefinitionTest {
     }
 
     @Test
-    void scriptAlignsWithMultipleMultipleDefinitionsAndMultipleLabelPolicies() {
+    void scriptAlignsWithMultipleDefinitionsAndMultipleLabelPolicies() {
         ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel");
         ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2");
         ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3");

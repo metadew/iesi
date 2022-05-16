@@ -2,12 +2,19 @@ package io.metadew.iesi.common.configuration.metadata.policies.definitions.execu
 
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.Policy;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExecutionRequestLabelPolicy implements Policy<List<ExecutionRequestLabel>> {
     private String name;
+
     @Override
     public boolean verify(List<ExecutionRequestLabel> executionRequestLabels) {
         ExecutionRequestLabel executionRequestLabelFound = executionRequestLabels.stream()
@@ -15,9 +22,5 @@ public class ExecutionRequestLabelPolicy implements Policy<List<ExecutionRequest
                 .findFirst()
                 .orElse(null);
         return executionRequestLabelFound != null;
-    }
-
-    public String getName() {
-        return name;
     }
 }

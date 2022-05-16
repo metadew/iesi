@@ -36,7 +36,7 @@ public class MetadataPolicyConfiguration {
                     .get(POLICIES);
 
             scriptsPolicyDefinitions = Arrays.asList(objectMapper.convertValue(frameworkSettingsConfiguration.get("scripts"), ScriptPolicyDefinition[].class));
-            executionRequestsPolicyDefinitions = Arrays.asList(objectMapper.convertValue(frameworkSettingsConfiguration.get("execution-requets"), ExecutionRequestPolicyDefinition[].class));
+            executionRequestsPolicyDefinitions = Arrays.asList(objectMapper.convertValue(frameworkSettingsConfiguration.get("execution-requests"), ExecutionRequestPolicyDefinition[].class));
         }
     }
 

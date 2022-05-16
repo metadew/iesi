@@ -9,7 +9,7 @@ iesi:
         - name: policy_2
           labels:
             - name: label_3
-      execution-requets:
+      execution-requests:
         - name: policy_1
           labels:
             - name: label_1

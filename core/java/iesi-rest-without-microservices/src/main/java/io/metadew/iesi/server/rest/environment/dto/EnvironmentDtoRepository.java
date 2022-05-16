@@ -76,10 +76,10 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY environments.ENV_NM ASC ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY lower(environments.ENV_NM) ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
             if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "environments.ENV_NM" + " " + order.getDirection();
+                return "lower(environments.ENV_NM)" + order.getDirection();
             } else {
                 return null;
             }
@@ -87,7 +87,7 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ORDER BY environments.ENV_NM ASC";
+            return " ORDER BY lower(environments.ENV_NM) ASC";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

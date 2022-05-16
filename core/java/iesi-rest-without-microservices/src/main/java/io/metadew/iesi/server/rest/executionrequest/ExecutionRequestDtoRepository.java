@@ -152,7 +152,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         List<String> sorting = pageable.getSort().stream().map(order -> {
             // add further sort on the ScriptAndScriptVersionTable here
             if (order.getProperty().equalsIgnoreCase("SCRIPT")) {
-                return "name_script_execution_requests.SCRPT_NAME " + order.getDirection();
+                return "lower(name_script_execution_requests.SCRPT_NAME) " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("REQUEST_TIMESTAMP")) {
                 return "execution_requests.REQUEST_TMS " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {

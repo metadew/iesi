@@ -38,7 +38,7 @@ public class ExecutionRequestService implements IExecutionRequestService {
     private final ExecutionRequestExecutorService executionRequestExecutorService;
     private final ExecutionRequestDtoRepository executionRequestDtoRepository;
     private final UserDtoRepository userDtoRepository;
-    private final List<ExecutionRequestPolicyDefinition> executionRequestPolicyDefinitions;
+    private final MetadataPolicyConfiguration metadataPolicyConfiguration;
 
     private ExecutionRequestService(
             ExecutionRequestConfiguration executionRequestConfiguration,
@@ -51,7 +51,7 @@ public class ExecutionRequestService implements IExecutionRequestService {
         this.executionRequestExecutorService = executionRequestExecutorService;
         this.executionRequestDtoRepository = executionRequestDtoRepository;
         this.userDtoRepository = userDtoRepository;
-        this.executionRequestPolicyDefinitions = metadataPolicyConfiguration.getExecutionRequestsPolicyDefinitions();
+        this.metadataPolicyConfiguration = metadataPolicyConfiguration;
     }
 
 
@@ -71,19 +71,7 @@ public class ExecutionRequestService implements IExecutionRequestService {
     }
 
     public ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest) {
-        executionRequestPolicyDefinitions.forEach(executionRequestPolicyDefinition -> {
-            executionRequestPolicyDefinition.getLabels().forEach(executionRequestLabelPolicy -> {
-                if (!executionRequestLabelPolicy.verify(new ArrayList<>(executionRequest.getExecutionRequestLabels()))) {
-                    throw new PolicyVerificationException(
-                            String.format("%s does not contain the mandatory label \"%s\" defined in the policy \"%s\"",
-                                    executionRequest.getName(),
-                                    executionRequestLabelPolicy.getName(),
-                                    executionRequestPolicyDefinition.getName()
-                            ));
-                }
-            });
-        });
-
+        metadataPolicyConfiguration.verifyExecutionRequestPolicies(executionRequest);
         executionRequestConfiguration.insert(executionRequest);
         executionRequestExecutorService.execute(executionRequest);
         return executionRequest;

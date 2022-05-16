@@ -19,6 +19,7 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.script.audit.IScriptDesignAuditService;
+import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,6 +58,9 @@ public class ScriptServiceTest {
     @Autowired
     private ScriptService scriptService;
 
+    @SpyBean
+    private ScriptDesignAuditService scriptDesignAuditServiceSpy;
+
     @BeforeEach
     void beforeEach() {
         metadataRepositoryConfiguration.clearAllTables();
@@ -63,10 +68,6 @@ public class ScriptServiceTest {
 
     @Test
     void createScriptRightPolicy() throws NoSuchFieldException {
-        IScriptDesignAuditService scriptDesignAuditService = Mockito.mock(IScriptDesignAuditService.class);
-        IScriptDesignAuditService scriptDesignAuditServiceSpy = Mockito.spy(scriptDesignAuditService);
-
-        FieldSetter.setField(scriptService, scriptService.getClass().getDeclaredField("scriptDesignAuditPostDtoService"), scriptDesignAuditServiceSpy);
 
         SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
         ScriptBuilder scriptBuilder = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script"), 1L);

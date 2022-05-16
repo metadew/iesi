@@ -9,7 +9,6 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,10 +24,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,7 +67,7 @@ class ExecutionRequestServiceTest {
     @Test
     void createExecutionRequestWrongPolicyTest() {
         ExecutionRequest executionRequest = buildExecutionRequest();
-        executionRequest.setExecutionRequestLabels( Stream.of(
+        executionRequest.setExecutionRequestLabels(Stream.of(
                 new ExecutionRequestLabel(
                         new ExecutionRequestLabelKey("id"),
                         new ExecutionRequestKey("id"),

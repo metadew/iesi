@@ -3,8 +3,6 @@ package io.metadew.iesi.common.configuration.metadata.policies;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
-import io.metadew.iesi.common.configuration.metadata.policies.definitions.executionRequests.ExecutionRequestLabelPolicy;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.executionRequests.ExecutionRequestPolicyDefinition;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.scripts.ScriptPolicyDefinition;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;

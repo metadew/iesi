@@ -3,7 +3,10 @@ package io.metadew.iesi.common.configuration.metadata.policies.definitions.scrip
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyDefinition;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
 import io.metadew.iesi.metadata.definition.script.Script;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 

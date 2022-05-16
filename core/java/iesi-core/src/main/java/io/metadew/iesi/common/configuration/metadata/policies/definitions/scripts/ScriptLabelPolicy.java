@@ -4,7 +4,6 @@ import io.metadew.iesi.common.configuration.metadata.policies.definitions.Policy
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;

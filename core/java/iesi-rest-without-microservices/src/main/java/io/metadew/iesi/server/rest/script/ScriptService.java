@@ -1,22 +1,16 @@
 package io.metadew.iesi.server.rest.script;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.internal.ws.policy.PolicyException;
 import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
-import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
-import io.metadew.iesi.common.configuration.metadata.policies.definitions.scripts.ScriptPolicyDefinition;
 import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.script.audit.IScriptDesignAuditService;
-import io.metadew.iesi.server.rest.script.dto.IScriptPostDtoService;
-import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;

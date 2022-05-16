@@ -2,7 +2,6 @@ package io.metadew.iesi.common.configuration.metadata.policies.definitions.execu
 
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyDefinition;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
-import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;

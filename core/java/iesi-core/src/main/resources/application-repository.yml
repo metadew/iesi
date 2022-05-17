@@ -10,7 +10,7 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
-          type: sqlite
+          type: sqlitei
           file: ./repository.db3
 
 #          type: h2

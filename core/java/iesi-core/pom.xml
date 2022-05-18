@@ -6,7 +6,7 @@
 
     <groupId>io.metadew</groupId>
     <artifactId>iesi-core</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
     <name>io.metadew:iesi-core</name>
     <description>IESI Core artifact</description>
     <url>https://metadew.github.io/metadew/</url>

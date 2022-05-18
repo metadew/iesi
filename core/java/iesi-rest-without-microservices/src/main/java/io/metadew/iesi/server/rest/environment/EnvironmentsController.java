@@ -48,6 +48,7 @@ public class EnvironmentsController {
     private EnvironmentDtoResourceAssembler environmentDtoResourceAssembler;
     private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
     private IEnvironmentDtoService environmentDtoService;
+
     private PagedResourcesAssembler<EnvironmentDto> environmentDtoPagedResourcesAssembler;
 
     @Autowired

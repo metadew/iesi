@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKe
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +29,7 @@ public class ExecutionRequestPolicyDefinitionTest {
 
     @Test
     void alignsWithOneDefinitionAndOneLabelPolicy() {
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel");
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel", false);
         ExecutionRequestPolicyDefinition executionRequestPolicyDefinition = new ExecutionRequestPolicyDefinition(Stream.of(executionRequestLabelPolicy).collect(Collectors.toList()));
         executionRequestPolicyDefinition.setName("policy-definition");
 
@@ -47,9 +48,9 @@ public class ExecutionRequestPolicyDefinitionTest {
 
     @Test
     void alignsWithOneDefinitionAndMultipleLabelPolicies() {
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel2");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel3");
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel2", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel3", false);
 
 
         ExecutionRequestPolicyDefinition executionRequestPolicyDefinition = new ExecutionRequestPolicyDefinition(Stream.of(
@@ -88,8 +89,8 @@ public class ExecutionRequestPolicyDefinitionTest {
 
     @Test
     void alignsWithMultipleDefinitionsAndOneLabelPolicy() {
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel2");
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel2", false);
 
 
         ExecutionRequestPolicyDefinition executionRequestPolicyDefinition1 = new ExecutionRequestPolicyDefinition(Stream.of(executionRequestLabelPolicy).collect(Collectors.toList()));
@@ -137,9 +138,9 @@ public class ExecutionRequestPolicyDefinitionTest {
 
     @Test
     void alignsWithMultipleDefinitionsAndMultipleLabelPolicies() {
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel2");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel3");
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel2", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel3", false);
 
         ExecutionRequestPolicyDefinition executionRequestPolicyDefinition1 = new ExecutionRequestPolicyDefinition(Stream.of(
                 executionRequestLabelPolicy, executionRequestLabelPolicy1).collect(Collectors.toList()));
@@ -188,7 +189,7 @@ public class ExecutionRequestPolicyDefinitionTest {
 
     @Test
     void doesNotAlignWithOnePolicyDefinitionAndOneLabelPolicy() {
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel");
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel", false);
         ExecutionRequestPolicyDefinition executionRequestPolicyDefinition = new ExecutionRequestPolicyDefinition(Stream.of(
                 executionRequestLabelPolicy).collect(Collectors.toList()));
         executionRequestPolicyDefinition.setName("policy-definition");
@@ -222,9 +223,9 @@ public class ExecutionRequestPolicyDefinitionTest {
 
     @Test
     void doesNotAlignWithOnePolicyDefinitionAndMultipleLabelPolicies() {
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel2");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy3 = new ExecutionRequestLabelPolicy("mylabel3");
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel2", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy3 = new ExecutionRequestLabelPolicy("mylabel3", false);
 
         ExecutionRequestPolicyDefinition executionRequestPolicyDefinition = new ExecutionRequestPolicyDefinition(Stream.of(
                 executionRequestLabelPolicy1, executionRequestLabelPolicy2, executionRequestLabelPolicy3).collect(Collectors.toList()));
@@ -259,8 +260,8 @@ public class ExecutionRequestPolicyDefinitionTest {
 
     @Test
     void doesNotAlignWithMultiplePolicyDefinitionAndOneLabelPolicy() {
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel2");
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel2", false);
 
         ExecutionRequestPolicyDefinition executionRequestPolicyDefinition1 = new ExecutionRequestPolicyDefinition(Stream.of(
                 executionRequestLabelPolicy1).collect(Collectors.toList()));
@@ -304,9 +305,9 @@ public class ExecutionRequestPolicyDefinitionTest {
 
     @Test
     void doesNotAlignWithMultiplePolicyDefinitionAndMultipleLabelPolicies() {
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel2");
-        ExecutionRequestLabelPolicy executionRequestLabelPolicy3 = new ExecutionRequestLabelPolicy("mylabel3");
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy1 = new ExecutionRequestLabelPolicy("mylabel", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy2 = new ExecutionRequestLabelPolicy("mylabel2", false);
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy3 = new ExecutionRequestLabelPolicy("mylabel3", false);
 
         ExecutionRequestPolicyDefinition executionRequestPolicyDefinition1 = new ExecutionRequestPolicyDefinition(Stream.of(
                 executionRequestLabelPolicy1, executionRequestLabelPolicy2).collect(Collectors.toList()));
@@ -346,5 +347,19 @@ public class ExecutionRequestPolicyDefinitionTest {
         }))
                 .isInstanceOf(PolicyVerificationException.class)
                 .hasMessage("executionRequest does not contain the mandatory label \"mylabel2\" defined in the policy \"policy-definition\"");
+    }
+
+    @Test
+    void alignsWithDisabledLabelPolicy() {
+        ExecutionRequestLabelPolicy executionRequestLabelPolicy = new ExecutionRequestLabelPolicy("mylabel", true);
+        ExecutionRequestPolicyDefinition executionRequestPolicyDefinition = new ExecutionRequestPolicyDefinition(Stream.of(executionRequestLabelPolicy).collect(Collectors.toList()));
+        executionRequestPolicyDefinition.setName("policy-definition");
+
+        ExecutionRequest executionRequest = NonAuthenticatedExecutionRequest.builder()
+                .name("script")
+                .executionRequestLabels(new HashSet<>())
+                .build();
+
+        assertThatCode(() -> executionRequestPolicyDefinition.verify(executionRequest)).doesNotThrowAnyException();
     }
 }

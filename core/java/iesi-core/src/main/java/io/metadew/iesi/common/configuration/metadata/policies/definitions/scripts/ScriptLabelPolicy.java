@@ -13,9 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 public class ScriptLabelPolicy implements Policy<List<ScriptLabel>> {
     private String name;
+    private boolean disabled;
 
     @Override
     public boolean verify(List<ScriptLabel> scriptLabels) {
+        if (disabled) {
+            return true;
+        }
         ScriptLabel scriptLabelFound = scriptLabels.stream()
                 .filter(scriptLabel -> scriptLabel.getName().equals(name))
                 .findFirst()

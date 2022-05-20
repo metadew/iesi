@@ -96,6 +96,35 @@ public class ScriptServiceTest {
     }
 
     @Test
+    void createScriptDisabledPolicy() throws NoSuchFieldException {
+
+        SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
+        ScriptBuilder scriptBuilder = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script"), 1L);
+        Script script = scriptBuilder.securityGroupName("PUBLIC").build();
+
+        script.setLabels(Stream.of(
+                        new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), script.getMetadataKey(), "label_1", "test"),
+                        new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), script.getMetadataKey(), "label_2", "test"),
+                        new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), script.getMetadataKey(), "label_3", "test")
+                ).collect(Collectors.toList())
+        );
+
+        Mockito.doReturn(new ScriptDesignAudit(
+                new ScriptDesignAuditKey(UUID.randomUUID()),
+                "username",
+                "userid",
+                ScriptDesignAuditAction.CREATE,
+                "scriptid",
+                "scriptname",
+                1L,
+                "PUBLIC",
+                "timestamp"
+        )).when(scriptDesignAuditServiceSpy).convertToScriptAudit(ArgumentMatchers.any(), ArgumentMatchers.any());
+
+        assertThatCode(() -> scriptService.createScript(script)).doesNotThrowAnyException();
+    }
+
+    @Test
     void createScriptWrongPolicy() {
         SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
         ScriptBuilder scriptBuilder = new ScriptBuilder(IdentifierTools.getScriptIdentifier("scriptname"), 1L);

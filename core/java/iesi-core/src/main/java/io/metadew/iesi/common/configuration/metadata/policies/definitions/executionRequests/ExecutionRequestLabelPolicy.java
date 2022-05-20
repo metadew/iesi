@@ -13,9 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 public class ExecutionRequestLabelPolicy implements Policy<List<ExecutionRequestLabel>> {
     private String name;
+    private boolean disabled;
 
     @Override
     public boolean verify(List<ExecutionRequestLabel> executionRequestLabels) {
+        if (disabled) {
+            return true;
+        }
         ExecutionRequestLabel executionRequestLabelFound = executionRequestLabels.stream()
                 .filter(executionRequestLabel -> executionRequestLabel.getName().equals(name))
                 .findFirst()

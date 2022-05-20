@@ -9,6 +9,10 @@ iesi:
         - name: policy_2
           labels:
             - name: label_3
+        - name: disabled_policy
+          labels:
+            - name: disabled_policy_label
+              disabled: true
       execution-requests:
         - name: policy_1
           labels:
@@ -17,3 +21,8 @@ iesi:
         - name: policy_2
           labels:
             - name: label_3
+        - name: disabled_policy
+          labels:
+            - name: disabled_policy_label
+              disabled: true
+

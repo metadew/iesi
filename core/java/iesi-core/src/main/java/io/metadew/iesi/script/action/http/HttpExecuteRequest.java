@@ -13,8 +13,17 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.design.ActionParameterDesignTrace;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
+import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
+import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
+import io.metadew.iesi.metadata.service.action.ActionParameterTraceService;
+import io.metadew.iesi.script.action.ActionParameterResolvement;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ActionPerformanceLogger;
@@ -36,6 +45,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Log4j2
@@ -75,10 +85,47 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         HttpComponent httpComponent;
         if (componentVersion == null) {
             httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
+            ActionParameterDesignTrace actionParameterDesignTrace = new ActionParameterDesignTrace(
+                    getExecutionControl().getRunId(),
+                    getActionExecution().getProcessId(),
+                    getActionExecution().getAction().getMetadataKey().getActionId(),
+                    new ActionParameter(
+                            new ActionParameterKey(
+                                    getScriptExecution().getScript().getMetadataKey().getScriptId(),
+                                    getScriptExecution().getScript().getMetadataKey().getScriptVersion(),
+                                    getActionExecution().getAction().getMetadataKey().getActionId(),
+                                    REQUEST_VERSION
+                            ),
+                            ""
+                    ));
+
+            if (!ActionParameterDesignTraceConfiguration.getInstance().get(actionParameterDesignTrace.getMetadataKey()).isPresent()) {
+                ActionParameterDesignTraceConfiguration.getInstance().insert(actionParameterDesignTrace);
+                ActionParameterTraceService.getInstance().trace(
+                        getActionExecution(),
+                        REQUEST_VERSION,
+                        new Text(httpComponent.getVersion().toString())
+                );
+            } else {
+                getActionParameterResolvements().removeIf(o -> o.getActionParameter().getMetadataKey().getParameterName().equals(REQUEST_VERSION));
+                getActionParameterResolvements().add(
+                        new ActionParameterResolvement(
+                                new ActionParameter(
+                                        new ActionParameterKey(
+                                                getScriptExecution().getScript().getMetadataKey().getScriptId(),
+                                                getScriptExecution().getScript().getMetadataKey().getScriptVersion(),
+                                                getActionExecution().getAction().getMetadataKey().getActionId(),
+                                                REQUEST_VERSION
+                                        ),
+                                        ""
+                                ),
+                                new Text(httpComponent.getVersion().toString())
+                        )
+                );
+            }
         } else {
             httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
         }
-
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
 
@@ -146,7 +193,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
                 return new ArrayList<>();
             }
             List<String> tokens = Arrays.stream(((Text) dataType).getString().trim()
-                    .split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1))
+                            .split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1))
                     .collect(Collectors.toList());
             return tokens
                     .stream().map(this::buildHttpHeader).collect(Collectors.toList());

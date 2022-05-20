@@ -129,6 +129,7 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
     public void update(ActionParameterTrace actionParameterTrace) {
         LOGGER.trace(MessageFormat.format("Updating ActionParameterTrace {0}.", actionParameterTrace.getMetadataKey().toString()));
         String updateStatement = updateStatement(actionParameterTrace);
+        System.out.println("UPDATE STATEMENT : " + updateStatement);
         getMetadataRepository().executeUpdate(updateStatement);
     }
 

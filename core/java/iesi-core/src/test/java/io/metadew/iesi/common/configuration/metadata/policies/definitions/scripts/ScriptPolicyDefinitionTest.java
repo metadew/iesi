@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +29,7 @@ class ScriptPolicyDefinitionTest {
 
     @Test
     void scriptAlignsWithOneDefinitionAndOneLabelPolicy() {
-        ScriptLabelPolicy scriptLabelPolicy = new ScriptLabelPolicy("mylabel");
+        ScriptLabelPolicy scriptLabelPolicy = new ScriptLabelPolicy("mylabel", false);
         ScriptPolicyDefinition scriptPolicyDefinition = new ScriptPolicyDefinition(Stream.of(scriptLabelPolicy).collect(Collectors.toList()));
         scriptPolicyDefinition.setName("policy-definition");
 
@@ -47,9 +48,9 @@ class ScriptPolicyDefinitionTest {
 
     @Test
     void scriptAlignsWithOneDefinitionAndMultipleLabelPolicies() {
-        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel");
-        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2");
-        ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3");
+        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel", false);
+        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2", false);
+        ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3", false);
 
         ScriptPolicyDefinition scriptPolicyDefinition = new ScriptPolicyDefinition(Stream.of(
                 scriptLabelPolicy1, scriptLabelPolicy2, scriptLabelPolicy3
@@ -87,8 +88,8 @@ class ScriptPolicyDefinitionTest {
 
     @Test
     void scriptAlignsWithMultipleDefinitionAndOneLabelPolicy() {
-        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel");
-        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2");
+        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel", false);
+        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2", false);
 
         ScriptPolicyDefinition scriptPolicyDefinition1 = new ScriptPolicyDefinition(Stream.of(scriptLabelPolicy1).collect(Collectors.toList()));
         ScriptPolicyDefinition scriptPolicyDefinition2 = new ScriptPolicyDefinition(Stream.of(scriptLabelPolicy2).collect(Collectors.toList()));
@@ -122,9 +123,9 @@ class ScriptPolicyDefinitionTest {
 
     @Test
     void scriptAlignsWithMultipleDefinitionsAndMultipleLabelPolicies() {
-        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel");
-        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2");
-        ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3");
+        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel", false);
+        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2", false);
+        ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3", false);
 
         ScriptPolicyDefinition scriptPolicyDefinition1 = new ScriptPolicyDefinition(
                 Stream.of(scriptLabelPolicy1, scriptLabelPolicy2).collect(Collectors.toList()));
@@ -165,7 +166,7 @@ class ScriptPolicyDefinitionTest {
 
     @Test
     void scriptDoesNotAlignWithOnePolicyDefinitionAndOneLabelPolicy() {
-        ScriptLabelPolicy scriptLabelPolicy = new ScriptLabelPolicy("mylabel");
+        ScriptLabelPolicy scriptLabelPolicy = new ScriptLabelPolicy("mylabel", false);
         ScriptPolicyDefinition scriptPolicyDefinition = new ScriptPolicyDefinition(Stream.of(scriptLabelPolicy).collect(Collectors.toList()));
         scriptPolicyDefinition.setName("policy-definition");
 
@@ -186,9 +187,9 @@ class ScriptPolicyDefinitionTest {
 
     @Test
     void scriptDoesNotAlignWithOneDefinitionAndMultipleLabelPolicies() {
-        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel");
-        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2");
-        ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3");
+        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel", false);
+        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2", false);
+        ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3", false);
 
         ScriptPolicyDefinition scriptPolicyDefinition = new ScriptPolicyDefinition(Stream.of(
                 scriptLabelPolicy1, scriptLabelPolicy2, scriptLabelPolicy3
@@ -222,8 +223,8 @@ class ScriptPolicyDefinitionTest {
 
     @Test
     void scriptDoesNotAlignsWithMultipleDefinitionsAndOneLabelPolicy() {
-        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel");
-        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2");
+        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel", false);
+        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2", false);
 
         ScriptPolicyDefinition scriptPolicyDefinition1 = new ScriptPolicyDefinition(Stream.of(scriptLabelPolicy1).collect(Collectors.toList()));
         ScriptPolicyDefinition scriptPolicyDefinition2 = new ScriptPolicyDefinition(Stream.of(scriptLabelPolicy2).collect(Collectors.toList()));
@@ -259,9 +260,9 @@ class ScriptPolicyDefinitionTest {
 
     @Test
     void scriptDoesNotAlignsWithMultipleMultipleDefinitionsAndMultipleLabelPolicies() {
-        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel");
-        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2");
-        ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3");
+        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel", false);
+        ScriptLabelPolicy scriptLabelPolicy2 = new ScriptLabelPolicy("mylabel2", false);
+        ScriptLabelPolicy scriptLabelPolicy3 = new ScriptLabelPolicy("mylabel3", false);
 
         ScriptPolicyDefinition scriptPolicyDefinition1 = new ScriptPolicyDefinition(
                 Stream.of(scriptLabelPolicy1, scriptLabelPolicy2).collect(Collectors.toList()));
@@ -300,5 +301,21 @@ class ScriptPolicyDefinitionTest {
         })
                 .isInstanceOf(PolicyVerificationException.class)
                 .hasMessage("script does not contain the mandatory label \"mylabel3\" defined in the policy \"policy-definition2\"");
+    }
+
+    @Test
+    void alignWithDisabledLabelPolicy() {
+        ScriptLabelPolicy scriptLabelPolicy1 = new ScriptLabelPolicy("mylabel", true);
+
+        ScriptPolicyDefinition scriptPolicyDefinition = new ScriptPolicyDefinition(
+                Stream.of(scriptLabelPolicy1).collect(Collectors.toList()));
+        scriptPolicyDefinition.setName("policy-definition");
+
+        Script script = Script.builder()
+                .name("script")
+                .labels(new ArrayList<>())
+                .build();
+
+        assertThatCode(() -> scriptPolicyDefinition.verify(script)).doesNotThrowAnyException();
     }
 }

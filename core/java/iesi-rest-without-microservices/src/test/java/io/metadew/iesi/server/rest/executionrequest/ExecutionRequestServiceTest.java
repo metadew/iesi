@@ -93,6 +93,19 @@ class ExecutionRequestServiceTest {
                 .hasMessage("name does not contain the mandatory label \"label_3\" defined in the policy \"policy_2\"");
     }
 
+    @Test
+    void createExecutionRequestDisabledPolicyTest() throws NoSuchFieldException {
+        ExecutionRequestConfiguration executionRequestConfiguration = Mockito.mock(ExecutionRequestConfiguration.class);
+        ExecutionRequestConfiguration executionRequestConfigurationSpy = Mockito.spy(executionRequestConfiguration);
+        ExecutionRequest executionRequest = buildExecutionRequest();
+
+        FieldSetter.setField(executionRequestService, executionRequestService.getClass().getDeclaredField("executionRequestConfiguration"), executionRequestConfigurationSpy);
+
+        Mockito.doNothing().when(executionRequestConfigurationSpy).insert(ArgumentMatchers.any(ExecutionRequest.class));
+
+        assertThatCode(() -> executionRequestService.createExecutionRequest(executionRequest)).doesNotThrowAnyException();
+    }
+
     private ExecutionRequest buildExecutionRequest() {
         return new AuthenticatedExecutionRequest(
                 new ExecutionRequestKey("id"),

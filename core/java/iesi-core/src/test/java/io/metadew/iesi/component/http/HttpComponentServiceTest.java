@@ -9,6 +9,8 @@ import io.metadew.iesi.connection.http.request.HttpPostRequest;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
@@ -17,6 +19,8 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.*;
@@ -346,6 +350,18 @@ class HttpComponentServiceTest {
         HttpComponentService httpComponentServiceSpy = Mockito.spy(httpComponentService);
         ActionExecution actionExecution = mock(ActionExecution.class);
         ExecutionControl executionControl = mock(ExecutionControl.class);
+        ScriptExecution scriptExecution = mock(ScriptExecution.class);
+
+        ScriptKey scriptKey = new ScriptKey("1", 1L);
+
+        Script script = Script.builder()
+                .scriptKey(scriptKey)
+                .build();
+        Action action = Action.builder()
+                .actionKey(new ActionKey(scriptKey, "1"))
+                .retries("0")
+                .build();
+
         Long componentVersion1 = 0L;
         Long componentVersion2 = 2L;
         Long componentVersion3 = 3L;
@@ -371,9 +387,12 @@ class HttpComponentServiceTest {
 
 
         when(actionExecution.getExecutionControl()).thenReturn(executionControl);
+        when(actionExecution.getScriptExecution()).thenReturn(scriptExecution);
         when(executionControl.getProcessId()).thenReturn(1L);
         when(executionControl.getRunId()).thenReturn("1");
         when(executionControl.getEnvName()).thenReturn("env0");
+        when(scriptExecution.getScript()).thenReturn(script);
+        when(actionExecution.getAction()).thenReturn(action);
 
         Mockito.doReturn("/pet").when(httpComponentServiceSpy).resolveEndpoint(anyString(), any(ActionExecution.class));
         Mockito.doReturn("POST").when(httpComponentServiceSpy).resolveType(anyString(), any(ActionExecution.class));
@@ -441,7 +460,7 @@ class HttpComponentServiceTest {
                 new ArrayList<>()
         ));
 
-        assertThat(httpComponentServiceSpy.getAndTrace("component1", actionExecution, "request")).isEqualTo(httpComponent3);
+        assertThat(httpComponentServiceSpy.getAndTrace("component1", actionExecution, "request", "requestVersion")).isEqualTo(httpComponent3);
     }
 
     @Disabled

@@ -13,14 +13,8 @@ import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.definition.action.ActionParameter;
-import io.metadew.iesi.metadata.definition.action.design.ActionParameterDesignTrace;
-import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
-import io.metadew.iesi.metadata.service.action.ActionParameterTraceService;
-import io.metadew.iesi.script.action.ActionParameterResolvement;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ActionPerformanceLogger;
@@ -80,8 +74,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         Long componentVersion = convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION));
         HttpComponent httpComponent;
         if (componentVersion == null) {
-            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
-            updateRequestVersionLog(httpComponent.getVersion());
+            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, REQUEST_VERSION);
         } else {
             httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
         }
@@ -380,47 +373,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             log.warn(MessageFormat.format("Status code of response {0} is not member of success status codes (1XX, 2XX, 3XX).",
                     httpResponse.getStatusLine().getStatusCode()));
             getActionExecution().getActionControl().increaseErrorCount();
-        }
-    }
-
-    private void updateRequestVersionLog(Long componentVersion) {
-        ActionParameterDesignTrace actionParameterDesignTrace = new ActionParameterDesignTrace(
-                getExecutionControl().getRunId(),
-                getActionExecution().getProcessId(),
-                getActionExecution().getAction().getMetadataKey().getActionId(),
-                new ActionParameter(
-                        new ActionParameterKey(
-                                getScriptExecution().getScript().getMetadataKey().getScriptId(),
-                                getScriptExecution().getScript().getMetadataKey().getScriptVersion(),
-                                getActionExecution().getAction().getMetadataKey().getActionId(),
-                                REQUEST_VERSION
-                        ),
-                        ""
-                ));
-
-        if (!ActionParameterDesignTraceConfiguration.getInstance().get(actionParameterDesignTrace.getMetadataKey()).isPresent()) {
-            ActionParameterDesignTraceConfiguration.getInstance().insert(actionParameterDesignTrace);
-            ActionParameterTraceService.getInstance().trace(
-                    getActionExecution(),
-                    REQUEST_VERSION,
-                    new Text(componentVersion.toString())
-            );
-        } else {
-            getActionParameterResolvements().removeIf(o -> o.getActionParameter().getMetadataKey().getParameterName().equals(REQUEST_VERSION));
-            getActionParameterResolvements().add(
-                    new ActionParameterResolvement(
-                            new ActionParameter(
-                                    new ActionParameterKey(
-                                            getScriptExecution().getScript().getMetadataKey().getScriptId(),
-                                            getScriptExecution().getScript().getMetadataKey().getScriptVersion(),
-                                            getActionExecution().getAction().getMetadataKey().getActionId(),
-                                            REQUEST_VERSION
-                                    ),
-                                    ""
-                            ),
-                            new Text(componentVersion.toString())
-                    )
-            );
         }
     }
 

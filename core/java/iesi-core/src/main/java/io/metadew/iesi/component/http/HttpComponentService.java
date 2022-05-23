@@ -8,9 +8,15 @@ import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
+import io.metadew.iesi.metadata.definition.action.ActionParameter;
+import io.metadew.iesi.metadata.definition.action.design.ActionParameterDesignTrace;
+import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.definition.component.Component;
+import io.metadew.iesi.metadata.service.action.ActionParameterTraceService;
 import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
+import io.metadew.iesi.script.action.http.HttpExecuteRequest;
 import io.metadew.iesi.script.execution.ActionExecution;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.entity.ContentType;
@@ -78,10 +84,11 @@ public class HttpComponentService implements IHttpComponentService {
     }
 
     @Override
-    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName) {
+    public HttpComponent getAndTrace(String httpComponentReferenceName, ActionExecution actionExecution, String actionParameterName, String componentVersionParameterName) {
         Component component = ComponentConfiguration.getInstance().getByNameAndLatestVersion(httpComponentReferenceName)
                 .orElseThrow(() -> new RuntimeException("Could not find http component with name " + httpComponentReferenceName));
         HttpComponentDefinition httpComponentDefinition = HttpComponentDefinitionService.getInstance().convertAndTrace(component, actionExecution, actionParameterName);
+        traceEmptyVersion(actionExecution, componentVersionParameterName, httpComponentDefinition.getVersion());
         return convertAndTrace(httpComponentDefinition, actionExecution, actionParameterName);
     }
 
@@ -151,4 +158,34 @@ public class HttpComponentService implements IHttpComponentService {
         }
     }
 
+    public void traceEmptyVersion(ActionExecution actionExecution, String actionParameterName, Long version) {
+        ActionParameter actionParameter = new ActionParameter(
+                new ActionParameterKey(
+                        actionExecution.getScriptExecution().getScript().getMetadataKey().getScriptId(),
+                        actionExecution.getScriptExecution().getScript().getMetadataKey().getScriptVersion(),
+                        actionExecution.getAction().getMetadataKey().getActionId(),
+                        actionParameterName
+                ),
+                ""
+        );
+
+        ActionParameterDesignTrace actionParameterDesignTrace = new ActionParameterDesignTrace(
+                actionExecution.getExecutionControl().getRunId(),
+                actionExecution.getProcessId(),
+                actionExecution.getAction().getMetadataKey().getActionId(),
+                actionParameter
+        );
+
+        if (!ActionParameterDesignTraceConfiguration.getInstance().get(actionParameterDesignTrace.getMetadataKey()).isPresent()) {
+            ActionParameterDesignTraceConfiguration.getInstance().insert(actionParameterDesignTrace);
+            ActionParameterTraceService.getInstance().trace(
+                    actionExecution,
+                    actionParameter.getMetadataKey().getParameterName(),
+                    new Text(version.toString())
+            );
+        } else {
+            ((HttpExecuteRequest) actionExecution.getActionTypeExecution())
+                    .replaceParameterResolvedValue(actionParameter, version.toString());
+        }
+    }
 }

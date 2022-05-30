@@ -2,6 +2,15 @@ package io.metadew.iesi.server.rest.environment.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
+import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
+import io.metadew.iesi.server.rest.connection.ConnectionFilter;
+import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
+import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
+import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoRepository;
+import io.metadew.iesi.server.rest.dataset.FilterService;
+import io.metadew.iesi.server.rest.environment.EnvironmentFilter;
+import io.metadew.iesi.server.rest.environment.EnvironmentFilterOption;
 import io.metadew.iesi.server.rest.helper.PaginatedRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,12 +19,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 @ConditionalOnWebApplication
@@ -24,24 +35,68 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final String ENVIRONMENT_TABLE_LABEL = "Environments";
     private final String ENVIRONMENT_PARAMETER_TABLE_LABEL = "EnvironmentParameters";
-
+    private final FilterService filterService;
 
     @Autowired
-    public EnvironmentDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+    public EnvironmentDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.filterService = filterService;
     }
 
-    private String getFetchAllQuery(Pageable pageable){
+    private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<EnvironmentFilter> environmentFilters) {
         return "select environments.ENV_NM, environments.ENV_DSC, " +
                 "parameters.ENV_PAR_NM, parameters.ENV_PAR_VAL " +
-                "FROM (" + getBaseQuery(pageable) + ") base_environments " +
+                "FROM (" + getBaseQuery(authentication, pageable, environmentFilters) + ") base_environments " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
                 "on base_environments.ENV_NM = environments.ENV_NM " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_PARAMETER_TABLE_LABEL).getName() + " parameters " +
                 "on environments.ENV_NM = parameters.ENV_NM " +
-                getOrderByClause(pageable);
+                getOrderByClause(pageable) +
+                ";";
+    }
+    private String getBaseQuery(Authentication authentication, Pageable pageable, List<EnvironmentFilter> environmentFilters) {
+        return "select distinct environments.ENV_NM " +
+                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
+                getWhereClause(authentication, environmentFilters) +
+                getOrderByClause(pageable) +
+                getLimitAndOffsetClause(pageable);
     }
 
+    @Override
+    public Optional<EnvironmentDto> getByName(Authentication authentication, String name) {
+        try {
+            Map<String, EnvironmentDtoRepository.EnvironmentDtoBuilder> environmentDtoBuilder = new HashMap<>();
+            List<EnvironmentFilter> environmentFilters = Stream.of(
+                    new EnvironmentFilter(EnvironmentFilterOption.NAME, name, true)
+            ).collect(Collectors.toList());
+            String query = getFetchAllQuery(authentication, Pageable.unpaged(), environmentFilters);
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                mapRow(cachedRowSet, environmentDtoBuilder);
+            }
+            return environmentDtoBuilder.values().stream().findFirst().map(EnvironmentDtoRepository.EnvironmentDtoBuilder::build);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getWhereClause(Authentication authentication, List<EnvironmentFilter> environmentFilters) {
+        String filterStatements = environmentFilters.stream()
+                .map(environmentFilter -> {
+                    if (environmentFilter.getFilterOption().equals(EnvironmentFilterOption.NAME)) {
+                        return filterService.getStringCondition("environments.ENV_NM", environmentFilter);
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" and "));
+        
+
+        return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
+    }
+
+    /*
     private String getBaseQuery(Pageable pageable){
         return "select distinct environments.ENV_NM " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
@@ -65,11 +120,39 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
         }catch (SQLException e){
             throw new RuntimeException(e);
         }
+    }*/
+    @Override
+    public Page<EnvironmentDto> getAll(Authentication authentication, Pageable pageable, List<EnvironmentFilter> environmentFilters) {
+        try {
+            Map<String, EnvironmentDtoRepository.EnvironmentDtoBuilder> environmentDtoBuilder = new LinkedHashMap<>();
+            String query = getFetchAllQuery(authentication, pageable, environmentFilters);
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
+            while (cachedRowSet.next()) {
+                mapRow(cachedRowSet, environmentDtoBuilder);
+            }
+            List<EnvironmentDto> environmentDtoList = environmentDtoBuilder.values().stream()
+                    .map(EnvironmentDtoRepository.EnvironmentDtoBuilder::build)
+                    .collect(Collectors.toList());
+
+            return new PageImpl<>(environmentDtoList, pageable, getRowSize(authentication, environmentFilters));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private long getRowSize() throws SQLException {
+    /*private long getRowSize() throws SQLException {
         String query = "select count(*) as row_count from (select distinct environments.ENV_NM " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " + ");";
+        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
+        cachedRowSet.next();
+        return cachedRowSet.getLong("row_count");
+    }*/
+
+    private long getRowSize(Authentication authentication, List<EnvironmentFilter> environmentFilters) throws SQLException {
+        String query = "select count(*) as row_count from (select distinct environments.ENV_NM " +
+                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
+                getWhereClause(authentication, environmentFilters) +
+                ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

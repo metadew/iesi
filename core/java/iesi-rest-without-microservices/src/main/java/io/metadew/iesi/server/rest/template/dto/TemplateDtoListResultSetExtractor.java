@@ -88,7 +88,7 @@ public class TemplateDtoListResultSetExtractor {
 
         @Override
         public MatcherDto build() {
-            return new MatcherDto("any", getKey(), new MatcherAnyDto());
+            return new MatcherDto(getKey(), new MatcherAnyDto());
         }
     }
 
@@ -103,7 +103,7 @@ public class TemplateDtoListResultSetExtractor {
 
         @Override
         public MatcherDto build() {
-            return new MatcherDto("fixed", getKey(), new MatcherFixedDto(getValue()));
+            return new MatcherDto(getKey(), new MatcherFixedDto(getValue()));
         }
     }
 
@@ -120,7 +120,7 @@ public class TemplateDtoListResultSetExtractor {
 
         @Override
         public MatcherDto build() {
-            return new MatcherDto("template", getKey(), new MatcherTemplateDto(getTemplateName(), getTemplateVersion()));
+            return new MatcherDto(getKey(), new MatcherTemplateDto(getTemplateName(), getTemplateVersion()));
         }
     }
 

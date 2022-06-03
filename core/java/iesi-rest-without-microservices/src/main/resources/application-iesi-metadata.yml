@@ -819,7 +819,6 @@ iesi:
             type: NUMBER
             length: 0
             nullable: false
-            unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5

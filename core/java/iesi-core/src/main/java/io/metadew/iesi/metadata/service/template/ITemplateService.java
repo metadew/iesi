@@ -10,24 +10,24 @@ import java.util.Optional;
 
 public interface ITemplateService {
 
-    public List<Template> getAll();
+    List<Template> getAll();
 
-    public boolean exists(TemplateKey templateKey);
+    boolean exists(TemplateKey templateKey);
 
-    public boolean exists(String templateName);
+    boolean exists(String templateName);
 
-    public void addUser(Template template);
+    void insert(Template template);
 
-    public Optional<Template> get(TemplateKey templateKey);
+    Optional<Template> get(TemplateKey templateKey);
 
-    public Optional<Template> get(String templatename, long version);
+    Optional<Template> get(String templatename, long version);
 
-    public void update(Template template);
+    void update(Template template);
 
-    public void delete(TemplateKey templateKey);
+    void delete(TemplateKey templateKey);
 
-    public void delete(String name, long version);
+    void delete(String name, long version);
 
-    public boolean matches(DataType dataType, Template template, ExecutionRuntime executionRuntime);
+    boolean matches(DataType dataType, Template template, ExecutionRuntime executionRuntime);
 
 }

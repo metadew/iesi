@@ -15,6 +15,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDataset
 import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.in.memory.IInMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.metadata.configuration.action.design.ActionDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
@@ -36,6 +37,7 @@ import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguratio
 import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
+import io.metadew.iesi.metadata.service.template.ITemplateService;
 import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
@@ -164,6 +166,12 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public IDatasetService datasetService() {
         return DatasetService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ITemplateService templateService() {
+        return TemplateService.getInstance();
     }
 
     @Bean

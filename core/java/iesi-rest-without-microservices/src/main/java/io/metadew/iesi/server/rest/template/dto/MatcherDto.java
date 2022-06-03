@@ -8,7 +8,6 @@ import org.springframework.hateoas.RepresentationModel;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MatcherDto extends RepresentationModel<MatcherDto> {
-    private String type;
     private String key;
-    private MatcherValueDto matcherValueDto;
+    private MatcherValueDto matcherValue;
 }

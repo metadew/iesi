@@ -131,7 +131,7 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
         return TemplateConfiguration.getInstance().exists(templateName);
     }
 
-    public void addUser(Template template) {
+    public void insert(Template template) {
         TemplateConfiguration.getInstance().insert(template);
     }
 

@@ -6,15 +6,11 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.server.rest.template.TemplateController;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class TemplateDtoResourceAssembler extends RepresentationModelAssemblerSupport<Template, TemplateDto> {
@@ -47,11 +43,11 @@ public class TemplateDtoResourceAssembler extends RepresentationModelAssemblerSu
 
     private MatcherDto convertToDto(Matcher matcher) {
         if (matcher.getMatcherValue() instanceof MatcherAnyValue) {
-            return new MatcherDto("any", matcher.getKey(), new MatcherAnyDto());
+            return new MatcherDto(matcher.getKey(), new MatcherAnyDto());
         } else if (matcher.getMatcherValue() instanceof MatcherFixedValue) {
-            return new MatcherDto("fixed", matcher.getKey(), new MatcherFixedDto(((MatcherFixedValue) matcher.getMatcherValue()).getValue()));
+            return new MatcherDto(matcher.getKey(), new MatcherFixedDto(((MatcherFixedValue) matcher.getMatcherValue()).getValue()));
         } else if (matcher.getMatcherValue() instanceof MatcherTemplate) {
-            return new MatcherDto("template", matcher.getKey(), new MatcherTemplateDto(((MatcherTemplate) matcher.getMatcherValue()).getTemplateName(), ((MatcherTemplate) matcher.getMatcherValue()).getTemplateVersion()));
+            return new MatcherDto(matcher.getKey(), new MatcherTemplateDto(((MatcherTemplate) matcher.getMatcherValue()).getTemplateName(), ((MatcherTemplate) matcher.getMatcherValue()).getTemplateVersion()));
         }
         return null;
     }

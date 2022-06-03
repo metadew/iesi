@@ -18,13 +18,15 @@ import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 @ConditionalOnWebApplication
 @Log4j2
-public class TemplateDtoRepository extends PaginatedRepository implements  ITemplateDtoRepository {
+public class TemplateDtoRepository extends PaginatedRepository implements ITemplateDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
@@ -37,21 +39,37 @@ public class TemplateDtoRepository extends PaginatedRepository implements  ITemp
     @Override
     public Page<TemplateDto> getAll(Authentication authentication, Pageable pageable, boolean onlyLatestVersion, Set<TemplateFilter> templateFilters) {
         try {
-            log.info(getFetchAllQuery(authentication, pageable, onlyLatestVersion, templateFilters));
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
                     getFetchAllQuery(authentication, pageable, onlyLatestVersion, templateFilters),
                     "reader");
             List<TemplateDto> templateDtos = new TemplateDtoListResultSetExtractor().extractData(cachedRowSet);
-            log.info("TEMPLATE DTOS: " + templateDtos);
             return new PageImpl<>(templateDtos, pageable, getRowSize(authentication, templateFilters, onlyLatestVersion));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
+    public Optional<TemplateDto> getByName(Authentication authentication, String name, long version) {
+        try {
+            Set<TemplateFilter> templateFilters = Stream.of(
+                    new TemplateFilter(TemplateFilterOption.NAME, name, true),
+                    new TemplateFilter(TemplateFilterOption.VERSION, Long.toString(version), true)
+            ).collect(Collectors.toSet());
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
+                    getFetchAllQuery(authentication, Pageable.unpaged(),false, templateFilters),
+                    "reader"
+            );
+            return new TemplateDtoListResultSetExtractor().extractData(cachedRowSet)
+                    .stream().findFirst();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, boolean onlyLatestVersion, Set<TemplateFilter> templateFilters) {
-        return  "SELECT t.ID as template_id, t.NAME as template_name, t.DESCRIPTION as template_description, t.VERSION as template_version, " +
+        return "SELECT t.ID as template_id, t.NAME as template_name, t.DESCRIPTION as template_description, t.VERSION as template_version, " +
                 "m.KEY as matcher_key, " +
                 "CASE " +
                 "WHEN mva.ID IS NOT NULL THEN 'any' " +
@@ -69,7 +87,7 @@ public class TemplateDtoRepository extends PaginatedRepository implements  ITemp
                 "ON t.ID = m.TEMPLATE_ID " +
                 "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " mv " +
                 "ON m.ID = mv.MATCHER_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AnyMatcherValues").getName()  + " mva " +
+                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AnyMatcherValues").getName() + " mva " +
                 "ON mva.ID = mv.ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " mvf " +
                 "ON mvf.ID = mv.ID " +
@@ -78,7 +96,7 @@ public class TemplateDtoRepository extends PaginatedRepository implements  ITemp
     }
 
     private String getBaseQuery(Authentication authentication, Pageable pageable, boolean onlyLatestVersion, Set<TemplateFilter> templateFilters) {
-        return  "SELECT distinct templates.ID, templates.NAME, templates.VERSION " +
+        return "SELECT distinct templates.ID, templates.NAME, templates.VERSION " +
                 "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " templates " +
                 getWhereClause(authentication, templateFilters, onlyLatestVersion) +
                 getOrderByClause(pageable) +
@@ -90,6 +108,8 @@ public class TemplateDtoRepository extends PaginatedRepository implements  ITemp
                 .map(templateFilter -> {
                     if (templateFilter.getFilterOption().equals(TemplateFilterOption.NAME)) {
                         return filterService.getStringCondition("templates.NAME", templateFilter);
+                    } else if (templateFilter.getFilterOption().equals(TemplateFilterOption.VERSION)) {
+                        return filterService.getStringCondition("templates.VERSION", templateFilter);
                     } else {
                         return null;
                     }
@@ -106,12 +126,12 @@ public class TemplateDtoRepository extends PaginatedRepository implements  ITemp
     private String getOrderByClause(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) return " ORDER BY templates.ID ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
-            if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "lower(templates.NAME) " + order.getDirection();
-            } else {
-                return null;
-            }
-        })
+                    if (order.getProperty().equalsIgnoreCase("NAME")) {
+                        return "lower(templates.NAME) " + order.getDirection();
+                    } else {
+                        return null;
+                    }
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 

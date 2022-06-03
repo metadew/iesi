@@ -10,7 +10,7 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
          type: sqlite
-         file: ./repository.db3
+         file: /home/hkhattabi/metadew/iesi/core/java/iesi-core/repository.db3
 #          type: h2
 #          mode: embedded
 #          file:

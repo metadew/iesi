@@ -14,6 +14,7 @@ import java.util.UUID;
 @Builder
 @Relation(value = "template", collectionRelation = "templates")
 public class TemplateDto extends RepresentationModel<TemplateDto> {
+    private UUID uuid;
     private String name;
     private Long version;
     private String description;

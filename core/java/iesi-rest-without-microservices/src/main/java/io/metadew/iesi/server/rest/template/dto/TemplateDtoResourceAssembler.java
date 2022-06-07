@@ -31,6 +31,7 @@ public class TemplateDtoResourceAssembler extends RepresentationModelAssemblerSu
 
     private TemplateDto convertToDto(Template template) {
         return new TemplateDto(
+                template.getMetadataKey().getId(),
                 template.getName(),
                 template.getVersion(),
                 template.getDescription(),

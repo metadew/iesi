@@ -1,10 +1,16 @@
 package io.metadew.iesi.server.rest.template;
 
 import io.metadew.iesi.datatypes.template.TemplateService;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.template.Template;
+import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.service.template.ITemplateService;
+import io.metadew.iesi.metadata.tools.IdentifierTools;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.template.dto.ITemplateDtoService;
 import io.metadew.iesi.server.rest.template.dto.TemplateDto;
 import io.metadew.iesi.server.rest.template.dto.TemplateDtoResourceAssembler;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,14 +23,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/templates")
 @ConditionalOnWebApplication
+@Log4j2
 public class TemplateController {
 
     private final ITemplateDtoService templateDtoService;
@@ -86,6 +90,34 @@ public class TemplateController {
         return ResponseEntity.ok(templateDto);
     }
 
+    @PutMapping("/{name}/{version}")
+    public TemplateDto put(@PathVariable String name, @PathVariable long version, @RequestBody TemplateDto templateDto) {
+        if (!templateDto.getName().equals(name)) throw new DataBadRequestException(name);
+        if (templateDto.getVersion() != version) throw new DataBadRequestException(version);
+
+        if (!templateService.get(name, version).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The template %s with version %s does not exist", name, version));
+        }
+
+        Template template = templateDtoService.convertToEntity(templateDto);
+
+        templateService.update(template);
+        return templateDto;
+    }
+
+    @DeleteMapping("/{name}/{version}")
+    public ResponseEntity<?> delete(@PathVariable String name, @PathVariable long version) {
+        if (!templateService.get(name, version).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The template %s with version %s does not exist", name, version));
+        }
+
+        templateService.delete(new TemplateKey(IdentifierTools.getTemplateIdentifier(name, version)));
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+
     private boolean extractLastVersion(String version) {
         return version != null && version.equalsIgnoreCase("latest");
     }
@@ -98,4 +130,6 @@ public class TemplateController {
 
         return templateFilters;
     }
+
+
 }

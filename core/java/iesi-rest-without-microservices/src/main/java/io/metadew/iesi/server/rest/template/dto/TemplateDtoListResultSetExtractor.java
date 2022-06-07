@@ -62,6 +62,7 @@ public class TemplateDtoListResultSetExtractor {
 
         public TemplateDto build() {
             return new TemplateDto(
+                    uuid,
                     name,
                     version,
                     description,

@@ -92,12 +92,14 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " mvf " +
                 "ON mvf.ID = mv.ID " +
                 "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " mvt " +
-                "ON mvt.ID = mv.ID; ";
+                "ON mvt.ID = mv.ID " +
+                getOrderByClause(pageable) +
+                ";";
     }
 
     private String getBaseQuery(Authentication authentication, Pageable pageable, boolean onlyLatestVersion, Set<TemplateFilter> templateFilters) {
-        return "SELECT distinct templates.ID, templates.NAME, templates.VERSION " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " templates " +
+        return "SELECT distinct t.ID, t.NAME, t.VERSION " +
+                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " t " +
                 getWhereClause(authentication, templateFilters, onlyLatestVersion) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -107,9 +109,9 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
         String filterStatements = templateFilters.stream()
                 .map(templateFilter -> {
                     if (templateFilter.getFilterOption().equals(TemplateFilterOption.NAME)) {
-                        return filterService.getStringCondition("templates.NAME", templateFilter);
+                        return filterService.getStringCondition("t.NAME", templateFilter);
                     } else if (templateFilter.getFilterOption().equals(TemplateFilterOption.VERSION)) {
-                        return filterService.getStringCondition("templates.VERSION", templateFilter);
+                        return filterService.getStringCondition("t.VERSION", templateFilter);
                     } else {
                         return null;
                     }
@@ -124,10 +126,10 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY templates.ID ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY t.ID ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "lower(templates.NAME) " + order.getDirection();
+                        return "lower(t.NAME) " + order.getDirection();
                     } else {
                         return null;
                     }
@@ -136,14 +138,14 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
                 .collect(Collectors.toList());
 
         if (sorting.isEmpty()) {
-            return " ORDER BY lower(templates.NAME) ASC";
+            return " ORDER BY lower(t.NAME) ASC";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 
     private long getRowSize(Authentication authentication, Set<TemplateFilter> templateFilters, boolean onlyLatestVersion) throws SQLException {
         String query = "select count(*) as row_count from " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " templates " +
+                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " t " +
                 getWhereClause(authentication, templateFilters, onlyLatestVersion) + ";";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();

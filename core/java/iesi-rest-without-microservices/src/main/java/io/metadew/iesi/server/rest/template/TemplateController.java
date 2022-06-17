@@ -86,6 +86,9 @@ public class TemplateController {
 
     @PostMapping("")
     public ResponseEntity<TemplateDto> create(@RequestBody TemplateDto templateDto) {
+        if (templateService.get(templateDto.getName(), templateDto.getVersion()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The template %s with version %s already exists", templateDto.getName(), templateDto.getVersion()));
+        }
         templateService.insert(templateDtoService.convertToEntity(templateDto));
         return ResponseEntity.ok(templateDto);
     }

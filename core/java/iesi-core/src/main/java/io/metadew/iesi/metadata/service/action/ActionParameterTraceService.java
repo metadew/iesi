@@ -3,7 +3,7 @@ package io.metadew.iesi.metadata.service.action;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
@@ -72,16 +72,8 @@ public class ActionParameterTraceService {
             actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), ((Text) value).getString()));
         } else if (value instanceof Array) {
             actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), value.toString()));
-//            int counter = 0;
-//            for (DataType element : ((Array) value).getList()) {
-//                actionParameterTraces.addAll(getActionParameterTraces(actionExecution, key + counter, element));
-//                counter++;
-//            }
-        } else if (value instanceof InMemoryDatasetImplementation) {
+        } else if (value instanceof DatasetImplementation) {
             actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), value.toString()));
-//            for (Map.Entry<String, DataType> datasetItem : DatasetHandler.getInstance().getDataItems((Dataset) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
-//                actionParameterTraces.addAll(getActionParameterTraces(actionExecution, key + datasetItem.getKey(), datasetItem.getValue()));
-//            }
         } else if (value instanceof Template) {
             actionParameterTraces.add(new ActionParameterTrace(new ActionParameterTraceKey(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), key), value.toString()));
         } else {

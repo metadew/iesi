@@ -4,9 +4,9 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.Configuration;
@@ -123,13 +123,16 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
             "where datasets.ID={0} and dataset_impls.ID in ({1});";
 
-    private static final String GET_BY_LABELS_SUB_QUERY = "SELECT dataset_impl_labels.DATASET_IMPL_ID FROM " +
-            MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
-            " GROUP BY dataset_impl_labels.DATASET_IMPL_ID" +
-            " HAVING COUNT(*) = %s AND COUNT(" +
-            " CASE dataset_impl_labels.VALUE %s ELSE 1 END) = 0";
+    private static final String GET_BY_LABEL_SET_VALUE_SUB_QUERY = "SELECT " +
+            "dataset_impl_labels.DATASET_IMPL_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+            "WHERE dataset_impl_labels.VALUE = {0}";
 
-    private static final String GET_BY_LABELS_CASE_SUB_QUERY = "WHEN %s THEN NULL";
+    private static final String GET_BY_LABEL_SET_COUNT_SUB_QUERY = "SELECT " +
+            "dataset_impl_labels.DATASET_IMPL_ID " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+            "GROUP BY dataset_impl_labels.DATASET_IMPL_ID " +
+            "HAVING COUNT(DISTINCT dataset_impl_labels.VALUE) = {0}";
 
     private static final String INSERT_QUERY = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() +
             " (ID, DATASET_ID) " +
@@ -144,7 +147,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
             "VALUES ({0});";
 
     private static final String INSERT_IN_MEMORY_DATASET_IMPLEMENTATION_KEY_VALUE_QUERY = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " (ID, IMPL_MEM_ID, \"KEY\", VALUE) " +
+            " (ID, IMPL_MEM_ID, KEY, VALUE) " +
             "VALUES ({0}, {1}, {2}, {3});";
 
     private static final String DELETE_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() +
@@ -186,11 +189,10 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     public boolean exists(String name, List<String> labels) {
         try {
-            String labelCaseQuery = labels.stream().map(label -> String.format(GET_BY_LABELS_CASE_SUB_QUERY, SQLTools.getStringForSQL(label)))
-                    .collect(Collectors.joining(" "));
-            String labelSetQuery = String.format(GET_BY_LABELS_SUB_QUERY,
-                    SQLTools.getStringForSQL(labels.size()),
-                    labelCaseQuery);
+            String labelSetQuery = labels.stream()
+                    .map(s -> MessageFormat.format(GET_BY_LABEL_SET_VALUE_SUB_QUERY, SQLTools.getStringForSQL(s)))
+                    .collect(Collectors.joining(" intersect "));
+            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(GET_BY_LABEL_SET_COUNT_SUB_QUERY, SQLTools.getStringForSQL(labels.size()));
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(EXISTS_BY_NAME_AND_LABELS_QUERY,
@@ -239,12 +241,10 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     public Optional<DatasetImplementation> getByNameAndLabels(String name, List<String> labels) {
         try {
             Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
-
-            String labelCaseQuery = labels.stream().map(label -> String.format(GET_BY_LABELS_CASE_SUB_QUERY, SQLTools.getStringForSQL(label)))
-                    .collect(Collectors.joining(" "));
-            String labelSetQuery = String.format(GET_BY_LABELS_SUB_QUERY,
-                    SQLTools.getStringForSQL(labels.size()),
-                    labelCaseQuery);
+            String labelSetQuery = labels.stream()
+                    .map(s -> MessageFormat.format(GET_BY_LABEL_SET_VALUE_SUB_QUERY, SQLTools.getStringForSQL(s)))
+                    .collect(Collectors.joining(" intersect "));
+            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(GET_BY_LABEL_SET_COUNT_SUB_QUERY, SQLTools.getStringForSQL(labels.size()));
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(SELECT_BY_NAME_AND_LABELS_QUERY,
@@ -264,12 +264,10 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     public Optional<DatasetImplementation> getByDatasetIdAndLabels(DatasetKey datasetKey, List<String> labels) {
         try {
             Map<String, DatasetImplementationBuilder> datasetImplementationBuilderMap = new LinkedHashMap<>();
-
-            String labelCaseQuery = labels.stream().map(label -> String.format(GET_BY_LABELS_CASE_SUB_QUERY, SQLTools.getStringForSQL(label)))
-                    .collect(Collectors.joining(" "));
-            String labelSetQuery = String.format(GET_BY_LABELS_SUB_QUERY,
-                    SQLTools.getStringForSQL(labels.size()),
-                    labelCaseQuery);
+            String labelSetQuery = labels.stream()
+                    .map(s -> MessageFormat.format(GET_BY_LABEL_SET_VALUE_SUB_QUERY, SQLTools.getStringForSQL(s)))
+                    .collect(Collectors.joining(" intersect "));
+            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(GET_BY_LABEL_SET_COUNT_SUB_QUERY, SQLTools.getStringForSQL(labels.size()));
 
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
                     MessageFormat.format(
@@ -341,7 +339,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     @Override
     public void insert(DatasetImplementation metadata) {
-        if (metadata instanceof InMemoryDatasetImplementation) {
+        if (metadata instanceof DatabaseDatasetImplementation) {
             getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_QUERY,
                     SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()),
                     SQLTools.getStringForSQL(metadata.getDatasetKey().getUuid())));
@@ -351,7 +349,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                             SQLTools.getStringForSQL(datasetImplementationLabel.getMetadataKey().getUuid()),
                             SQLTools.getStringForSQL(datasetImplementationLabel.getDatasetImplementationKey().getUuid()),
                             SQLTools.getStringForSQL(datasetImplementationLabel.getValue()))));
-            ((InMemoryDatasetImplementation) metadata).getKeyValues().forEach(inMemoryDatasetImplementationKeyValue ->
+            ((DatabaseDatasetImplementation) metadata).getKeyValues().forEach(inMemoryDatasetImplementationKeyValue ->
                     getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_IN_MEMORY_DATASET_IMPLEMENTATION_KEY_VALUE_QUERY,
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getMetadataKey().getUuid()),
                             SQLTools.getStringForSQL(inMemoryDatasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
@@ -375,8 +373,8 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
                 datasetImplementationBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
             }
             String type = mapType(cachedRowSet);
-            if (type.equalsIgnoreCase("in_memory")) {
-                mapInMemoryDatasetImplementation(cachedRowSet, (InMemoryDatasetImplementationBuilder) datasetImplementationBuilder);
+            if (type.equalsIgnoreCase("database")) {
+                mapInMemoryDatasetImplementation(cachedRowSet, (DatabaseDatasetImplementationBuilder) datasetImplementationBuilder);
             } else {
                 log.warn("no type found for dataset implementation");
             }
@@ -384,15 +382,15 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
         }
     }
 
-    private void mapInMemoryDatasetImplementation(CachedRowSet cachedRowSet, InMemoryDatasetImplementationBuilder inMemoryDatasetImplementationBuilder) throws SQLException {
+    private void mapInMemoryDatasetImplementation(CachedRowSet cachedRowSet, DatabaseDatasetImplementationBuilder databaseDatasetImplementationBuilder) throws SQLException {
         String inMemoryKeyValueId = cachedRowSet.getString("dataset_in_mem_impl_kv_id");
-        if (inMemoryKeyValueId != null && inMemoryDatasetImplementationBuilder.getKeyValues().get(inMemoryKeyValueId) == null) {
+        if (inMemoryKeyValueId != null && databaseDatasetImplementationBuilder.getKeyValues().get(inMemoryKeyValueId) == null) {
             String key = cachedRowSet.getString("dataset_in_mem_impl_kvs_key");
             String clobValue = SQLTools.getStringFromSQLClob(cachedRowSet, "dataset_in_mem_impl_kvs_value");
 
-            inMemoryDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
-                    new InMemoryDatasetImplementationKeyValue(
-                            new InMemoryDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
+            databaseDatasetImplementationBuilder.getKeyValues().put(inMemoryKeyValueId,
+                    new DatabaseDatasetImplementationKeyValue(
+                            new DatabaseDatasetImplementationKeyValueKey(UUID.fromString(inMemoryKeyValueId)),
                             new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_in_mem_impl_kv_impl_id"))),
                             key,
                             clobValue)
@@ -403,7 +401,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private DatasetImplementationBuilder extractDatasetImplementationBuilderMapRow(CachedRowSet cachedRowSet) throws SQLException {
         // "dataset_impls.ID as dataset_impl_id, dataset_impls.DATASET_ID as dataset_impl_dataset_id, " +
         String type = mapType(cachedRowSet);
-        if (type.equalsIgnoreCase("in_memory")) {
+        if (type.equalsIgnoreCase("database")) {
             return extractInMemoryDatasetImplementation(cachedRowSet);
         } else {
             throw new RuntimeException("cannot create dataset implementation for type " + type);
@@ -413,7 +411,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
     private String mapType(CachedRowSet cachedRowSet) throws SQLException {
         // "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
         if (cachedRowSet.getString("dataset_in_mem_impl_id") != null) {
-            return "in_memory";
+            return "database";
         } else {
             throw new RuntimeException("cannot determine the type of dataset_implementation");
         }
@@ -437,7 +435,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
         // "dataset_impls.ID as dataset_impl_id, dataset_impls.DATASET_ID as dataset_impl_dataset_id, " +
         // "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, dataset_impls.DATASET_ID as dataset_impl_dataset_id, " +
         // "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-        return new InMemoryDatasetImplementationBuilder(
+        return new DatabaseDatasetImplementationBuilder(
                 new DatasetImplementationKey(UUID.fromString(cachedRowSet.getString("dataset_impl_id"))),
                 new DatasetKey(UUID.fromString(cachedRowSet.getString("dataset_id"))),
                 cachedRowSet.getString("dataset_name"),
@@ -463,18 +461,18 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     @Getter
     @ToString(callSuper = true)
-    private class InMemoryDatasetImplementationBuilder extends DatasetImplementationBuilder {
+    private class DatabaseDatasetImplementationBuilder extends DatasetImplementationBuilder {
 
-        private Map<String, InMemoryDatasetImplementationKeyValue> keyValues;
+        private Map<String, DatabaseDatasetImplementationKeyValue> keyValues;
 
-        public InMemoryDatasetImplementationBuilder(DatasetImplementationKey datasetImplementationKey, DatasetKey datasetKey, String name, Map<String, DatasetImplementationLabel> executionRequestLabels, Map<String, InMemoryDatasetImplementationKeyValue> keyValues) {
+        public DatabaseDatasetImplementationBuilder(DatasetImplementationKey datasetImplementationKey, DatasetKey datasetKey, String name, Map<String, DatasetImplementationLabel> executionRequestLabels, Map<String, DatabaseDatasetImplementationKeyValue> keyValues) {
             super(datasetImplementationKey, datasetKey, name, executionRequestLabels);
             this.keyValues = keyValues;
         }
 
         @Override
         public DatasetImplementation build() {
-            return new InMemoryDatasetImplementation(
+            return new DatabaseDatasetImplementation(
                     getDatasetImplementationKey(),
                     getDatasetKey(),
                     getName(),

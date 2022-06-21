@@ -6,13 +6,11 @@ iesi:
       # each category should define its own type and definition
       - categories:
           - general
-
+        instance:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
          type: sqlite
          file: ./repository.db3
-
-
 #          type: h2
 #          mode: embedded
 #          file:
@@ -64,6 +62,22 @@ iesi:
 #          host: 
 #          name: 
 #          port: 
+#          reader: 
+#          schema: 
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: mysql
+#          host:
+#          name:
+#          port:
 #          schema:
 #          owner:
 #            user:

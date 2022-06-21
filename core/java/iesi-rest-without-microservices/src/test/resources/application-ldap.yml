@@ -1,0 +1,28 @@
+server:
+  url: ldap://localhost:8389
+  base: dc=test,dc=com
+authentication:
+  users:
+    user-authenticate-attribute: uid
+    user-search-attribute: uid
+    user-search-base-dn: ou=people
+  admin:
+    dn: uid=adminAD,ou=people,dc=test,dc=com
+    password: admin
+groups-mapping:
+  group-search-base-dn: ou=groups
+  group-search-attribute: cn
+  group-member-attribute: uniqueMember
+  mapping-pairs:
+    - iesi-name: iesi
+      ad-name: All
+    - iesi-name: training
+      ad-name: 1
+    - iesi-name: private
+      ad-name: 2
+roles-mapping:
+  mapping-pairs:
+    - iesi-name: TEST_ENGINEER
+      ad-name: testEngineer
+    - iesi-name: TECHNICAL_ENGINEER
+      ad-name: technicalEngineer

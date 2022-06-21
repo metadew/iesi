@@ -42,6 +42,7 @@ Next to environments, also connections need to be defined. Each system that the 
 Connection types are **reusable configuration blocks** for which each type **allows the framework to connect to specific technology** and **requires a different set of input parameters.**
 
 The connections types can be divied into multiple categories:
+
 Prefix|Category
 ------|--------
 db|Database connectivity

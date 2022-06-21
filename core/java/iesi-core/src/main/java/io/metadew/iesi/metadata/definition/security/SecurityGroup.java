@@ -2,6 +2,7 @@ package io.metadew.iesi.metadata.definition.security;
 
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
+import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
 import lombok.Builder;
 import lombok.Data;

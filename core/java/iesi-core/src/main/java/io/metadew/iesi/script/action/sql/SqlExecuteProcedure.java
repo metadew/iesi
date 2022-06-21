@@ -4,7 +4,7 @@ import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -59,7 +59,7 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         // TODO Retrieve config from a file
 
         if (!outputDatasetReferenceName.isEmpty()) {
-            Optional<InMemoryDatasetImplementation> dataset = getExecutionControl().getExecutionRuntime().getDataset(outputDatasetReferenceName);
+            Optional<DatasetImplementation> dataset = getExecutionControl().getExecutionRuntime().getDataset(outputDatasetReferenceName);
 
             // Perform the action
             //SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), !appendOutput);

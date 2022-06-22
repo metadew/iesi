@@ -2,15 +2,15 @@ package io.metadew.iesi.server.rest.dataset.implementation;
 
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationKeyValueDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,19 +44,19 @@ class DatasetImplementationDtoModelAssemblerTest {
         UUID inMemoryDatasetImplementationKeyValue2Uuid = UUID.randomUUID();
 
         assertThat(datasetImplementationDtoModelAssembler.toModel(
-                DatabaseDatasetImplementation.builder()
+                InMemoryDatasetImplementation.builder()
                         .metadataKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                         .datasetKey(new DatasetKey(datasetUuid))
                         .name("dataset")
                         .keyValues(Stream.of(
-                                DatabaseDatasetImplementationKeyValue.builder()
-                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue1Uuid))
+                                InMemoryDatasetImplementationKeyValue.builder()
+                                        .metadataKey(new InMemoryDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue1Uuid))
                                         .datasetImplementationKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                                         .key("key1")
                                         .value("value1")
                                         .build(),
-                                DatabaseDatasetImplementationKeyValue.builder()
-                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue2Uuid))
+                                InMemoryDatasetImplementationKeyValue.builder()
+                                        .metadataKey(new InMemoryDatasetImplementationKeyValueKey(inMemoryDatasetImplementationKeyValue2Uuid))
                                         .datasetImplementationKey(new DatasetImplementationKey(inMemoryDatasetImplementationUuid))
                                         .key("key2")
                                         .value("value2")
@@ -75,15 +75,15 @@ class DatasetImplementationDtoModelAssemblerTest {
                                         .build()
                         ).collect(Collectors.toSet()))
                         .build())
-        ).isEqualTo(DatabaseDatasetImplementationDto.builder()
+        ).isEqualTo(InMemoryDatasetImplementationDto.builder()
                 .uuid(inMemoryDatasetImplementationUuid)
                 .keyValues(Stream.of(
-                        DatabaseDatasetImplementationKeyValueDto.builder()
+                        InMemoryDatasetImplementationKeyValueDto.builder()
                                 .uuid(inMemoryDatasetImplementationKeyValue1Uuid)
                                 .key("key1")
                                 .value("value1")
                                 .build(),
-                        DatabaseDatasetImplementationKeyValueDto.builder()
+                        InMemoryDatasetImplementationKeyValueDto.builder()
                                 .uuid(inMemoryDatasetImplementationKeyValue2Uuid)
                                 .key("key2")
                                 .value("value2")

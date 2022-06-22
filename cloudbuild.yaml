@@ -1,0 +1,51 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '--no-cache'
+      - '-t'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - .
+      - '-f'
+      - Dockerfile
+    id: Build
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+    id: Push
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: 'bash'
+    secretEnv: [ 'DATABASE_CONNECTION_URL', 'DATABASE_PASSWORD', 'DATABASE_TYPE', 'DATABASE_USER', 'DATABASE_CONNECTION_NAME' ]
+    args:
+      - '-c'
+      - 'gcloud run services update $_SERVICE_NAME --platform=managed --image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS --region=$_DEPLOY_REGION --set-env-vars "DATABASE_CONNECTION_URL=$$DATABASE_CONNECTION_URL" --set-env-vars "DATABASE_PASSWORD=$$DATABASE_PASSWORD" --set-env-vars "DATABASE_TYPE=$$DATABASE_TYPE" --set-env-vars "DATABASE_USER=$$DATABASE_USER" --set-env-vars INSTANCE_CONNECTION_NAME="acn-fotg-gcp:europe-west1:acn-mysql" --add-cloudsql-instances acn-fotg-gcp:europe-west1:acn-mysql --quiet'
+    id: Deploy
+images:
+  - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+options:
+  substitutionOption: ALLOW_LOOSE
+substitutions:
+  _SERVICE_NAME: iesi-backend
+  _DEPLOY_REGION: europe-west1
+  _GCR_HOSTNAME: eu.gcr.io
+  _PLATFORM: managed
+  _LABELS: gcb-trigger-id=79e6bc7b-0132-4d83-a03e-7345f147482d
+  _TRIGGER_ID: 79e6bc7b-0132-4d83-a03e-7345f147482d
+tags:
+  - gcp-cloud-build-deploy-cloud-run
+  - gcp-cloud-build-deploy-cloud-run-managed
+  - iesi-backend
+availableSecrets:
+  secretManager:
+    - versionName: projects/acn-fotg-gcp/secrets/iesi-database-connection-url/versions/latest
+      env: 'DATABASE_CONNECTION_URL'
+    - versionName: projects/acn-fotg-gcp/secrets/iesi-database-password/versions/latest
+      env: 'DATABASE_PASSWORD'
+    - versionName: projects/acn-fotg-gcp/secrets/iesi-database-type/versions/latest
+      env: 'DATABASE_TYPE'
+    - versionName: projects/acn-fotg-gcp/secrets/iesi-database-user/versions/latest
+      env: 'DATABASE_USER'
+    - versionName: projects/acn-fotg-gcp/secrets/iesi-database-connection-name/versions/latest
+      env: 'DATABASE_CONNECTION_NAME'
+timeout: 1200s

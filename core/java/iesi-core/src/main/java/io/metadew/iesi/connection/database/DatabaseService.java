@@ -364,12 +364,12 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         }
         getPrimaryKeyConstraints(database, table)
                 .ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
-        getUniqueConstraints(table)
-                .ifPresent(primaryKeysConstraint -> createQuery.append(",\n").append(primaryKeysConstraint));
+        getUniqueConstraints(database, table)
+                .ifPresent(uniqueConstraint -> createQuery.append(",\n").append(uniqueConstraint));
 
         createQuery.append("\n);\n");
         createQuery.append(createQueryExtras(database));
-        // createQuery.append(fieldComments).append("\n\n");
+
 
         return createQuery.toString();
     }
@@ -381,18 +381,21 @@ public abstract class DatabaseService<T extends Database> implements IDatabaseSe
         if (primaryKeyMetadataFields.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + String.join(", ", primaryKeyMetadataFields.keySet()) + ")");
+            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + String.join(", ", primaryKeyMetadataFields.keySet().stream()
+                    .map(s -> fieldNameToQueryString(database, s))
+                    .collect(Collectors.toSet())) + ")");
         }
     }
 
-    public Optional<String> getUniqueConstraints(MetadataTable metadataTable) {
+    public Optional<String> getUniqueConstraints(T database, MetadataTable metadataTable) {
         Map<String, MetadataField> primaryKeyMetadataFields = metadataTable.getFields().entrySet().stream()
                 .filter(entry -> entry.getValue().isUnique())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         if (primaryKeyMetadataFields.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of("CONSTRAINT uc_" + metadataTable.getName() + " UNIQUE  (" + String.join(", ", primaryKeyMetadataFields.keySet()) + ")");
+            return Optional.of("CONSTRAINT uc_" + metadataTable.getName() + " UNIQUE  (" + String.join(", ", primaryKeyMetadataFields.keySet().stream()
+                    .map(s -> fieldNameToQueryString(database, s)).collect(Collectors.toSet())) + ")");
         }
     }
 

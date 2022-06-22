@@ -1,18 +1,12 @@
 package io.metadew.iesi.script.execution.instruction.data.text;
 
-import io.metadew.iesi.datatypes.DataType;
-import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 
-import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextReplace implements DataInstruction {
 
-    private final ExecutionRuntime executionRuntime;
     private final static String FIRST_OPERATOR = "text";
     private final static String SECOND_OPERATOR = "characterToBeReplaced";
     private final static String THIRD_OPERATOR = "replacementCharacter";
@@ -21,19 +15,11 @@ public class TextReplace implements DataInstruction {
 
     private final static Pattern TWO_ARGUMENTS_PATTERN = Pattern.compile("\\s*\"(?<" + FIRST_OPERATOR + ">.+)\"\\s*,\\s*\"(?<" + SECOND_OPERATOR + ">.+)\"\\s*");
 
-    public TextReplace(ExecutionRuntime executionRuntime) {
-        this.executionRuntime = executionRuntime;
-    }
-
     @Override
     public String generateOutput(String parameters) {
-        DataType resolvedParameters = DataTypeHandler.getInstance().resolve(parameters, executionRuntime);
-        if (!(resolvedParameters instanceof Text)) {
-            throw new IllegalArgumentException(MessageFormat.format("text cannot be a type of", resolvedParameters.getClass()));
-        }
 
-        Matcher inputParameterMatcher = THREE_ARGUMENTS_PATTERN.matcher(((Text) resolvedParameters).getString());
-        Matcher inputParameterMatcherTwoArguments = TWO_ARGUMENTS_PATTERN.matcher(((Text) resolvedParameters).getString());
+        Matcher inputParameterMatcher = THREE_ARGUMENTS_PATTERN.matcher(parameters);
+        Matcher inputParameterMatcherTwoArguments = TWO_ARGUMENTS_PATTERN.matcher(parameters);
 
         if (inputParameterMatcher.find()) {
             String text = inputParameterMatcher.group(FIRST_OPERATOR);
@@ -47,7 +33,7 @@ public class TextReplace implements DataInstruction {
             text = text.replace(characterToBeReplaced, "");
             return text;
         } else {
-            throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), resolvedParameters));
+            throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), parameters));
         }
     }
 

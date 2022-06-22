@@ -135,9 +135,9 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         List<String> sorting = pageable.getSort().stream().map(order -> {
             // add further sort on the ScriptAndScriptVersionTable here
             if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "lower(script_designs.SCRIPT_NM)" + order.getDirection();
+                return "script_designs.SCRIPT_NM" + " " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
-                return "versions.SCRIPT_VRS_NB" + order.getDirection();
+                return "versions.SCRIPT_VRS_NB" + " " + order.getDirection();
             } else {
                 return null;
             }
@@ -184,7 +184,7 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
                 "on script_designs.SCRIPT_ID = script_labels.SCRIPT_ID and versions.SCRIPT_VRS_NB = script_labels.SCRIPT_VRS_NB " +
                 getWhereClause(authentication, scriptFilters, onlyLatestVersions) +
-                ");";
+                ") filtered_scripts;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

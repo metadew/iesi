@@ -21,7 +21,7 @@ public class TeamDtoListResultSetExtractor {
     //            "security_groups.ID as security_group_id, security_groups.NAME as security_group_name, " +
 
     public List<TeamDto> extractData(CachedRowSet rs) throws SQLException {
-        Map<UUID, TeamDtoBuilder> teamsMap = new LinkedHashMap<>();
+        Map<UUID, TeamDtoBuilder> teamsMap = new HashMap<>();
         while (rs.next()) {
             UUID uuid = UUID.fromString(rs.getString("team_id"));
             TeamDtoBuilder teamDtoBuilder = teamsMap.computeIfAbsent(

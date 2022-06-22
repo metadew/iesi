@@ -5,7 +5,7 @@ import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.IDatasetImplementationService;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
@@ -15,7 +15,7 @@ import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
 import io.metadew.iesi.server.rest.dataset.dto.DatasetDtoModelAssembler;
 import io.metadew.iesi.server.rest.dataset.dto.DatasetPostDto;
 import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoService;
-import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +63,7 @@ class DatasetsControllerSecurityTest {
     private IDatasetService datasetService;
 
     @MockBean
-    private IDatabaseDatasetImplementationService datasetImplementationService;
+    private IDatasetImplementationService datasetImplementationService;
 
     @MockBean
     private PagedResourcesAssembler<DatasetDto> datasetDtoPagedResourcesAssembler;
@@ -204,7 +204,7 @@ class DatasetsControllerSecurityTest {
     void testGetImplementationByUUIDReadPrivilege() {
         UUID datasetUuid = UUID.randomUUID();
         UUID datasetImplementationUuid = UUID.randomUUID();
-        DatabaseDatasetImplementationDto inMemoryDatasetImplementationDto = DatabaseDatasetImplementationDto.builder().uuid(datasetImplementationUuid).build();
+        InMemoryDatasetImplementationDto inMemoryDatasetImplementationDto = InMemoryDatasetImplementationDto.builder().uuid(datasetImplementationUuid).build();
         when(datasetService.get(new DatasetKey(datasetUuid))).thenReturn(Optional.of(Dataset.builder().securityGroupName("PUBLIC").build()));
         when(datasetDtoService
                 .fetchImplementationByUuid(datasetImplementationUuid))
@@ -221,8 +221,9 @@ class DatasetsControllerSecurityTest {
         when(datasetService.get(new DatasetKey(datasetUuid))).thenReturn(Optional.of(Dataset.builder().securityGroupName("PRIVATE").build()));
         when(datasetDtoService
                 .fetchImplementationByUuid(datasetImplementationUuid))
-                .thenReturn(Optional.of(new DatabaseDatasetImplementationDto()));
+                .thenReturn(Optional.of(new InMemoryDatasetImplementationDto()));
         assertThatThrownBy(() -> datasetController.getImplementationByUuid(datasetUuid, datasetImplementationUuid)).isInstanceOf(AccessDeniedException.class);
+
     }
 
     @Test

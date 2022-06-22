@@ -2,8 +2,8 @@ package io.metadew.iesi.server.rest.dataset.implementation;
 
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationKeyValueDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,23 +23,20 @@ public class DatasetImplementationDtoListResultSetExtractor {
     public List<DatasetImplementationDto> extractData(CachedRowSet rs) throws SQLException {
         Map<UUID, DatasetImplementationDtoBuilder> datasetBuilderMap = new LinkedHashMap<>();
         while (rs.next()) {
-            if (rs.getString("dataset_impl_id") != null) {
-                UUID datasetImplementationId = UUID.fromString(rs.getString("dataset_impl_id"));
-                DatasetImplementationDtoBuilder datasetImplementationBuilder = datasetBuilderMap.get(datasetImplementationId);
-                if (datasetImplementationBuilder == null) {
-                    datasetImplementationBuilder = extractDatasetImplementationBuilderMapRow(rs);
-                    datasetBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
-                }
-                String type = mapType(rs);
-                if (type.equalsIgnoreCase(IN_MEMORY_DATASET_IMPLEMENTATION_TYPE)) {
-                    mapInMemoryDatasetImplementationDto(rs, (InMemoryDatasetImplementationDtoBuilder) datasetImplementationBuilder);
-                } else {
-                    log.warn("no type found for dataset implementation");
-                }
-                mapDatasetImplementationLabel(rs, datasetImplementationBuilder);
+            UUID datasetImplementationId = UUID.fromString(rs.getString("dataset_impl_id"));
+            DatasetImplementationDtoBuilder datasetImplementationBuilder = datasetBuilderMap.get(datasetImplementationId);
+            if (datasetImplementationBuilder == null) {
+                datasetImplementationBuilder = extractDatasetImplementationBuilderMapRow(rs);
+                datasetBuilderMap.put(datasetImplementationId, datasetImplementationBuilder);
             }
+            String type = mapType(rs);
+            if (type.equalsIgnoreCase(IN_MEMORY_DATASET_IMPLEMENTATION_TYPE)) {
+                mapInMemoryDatasetImplementationDto(rs, (InMemoryDatasetImplementationDtoBuilder) datasetImplementationBuilder);
+            } else {
+                log.warn("no type found for dataset implementation");
+            }
+            mapDatasetImplementationLabel(rs, datasetImplementationBuilder);
         }
-
         return datasetBuilderMap.values().stream()
                 .map(DatasetImplementationDtoBuilder::build)
                 .collect(Collectors.toList());
@@ -63,7 +60,7 @@ public class DatasetImplementationDtoListResultSetExtractor {
             String key = rs.getString("dataset_in_mem_impl_kvs_key");
             String clobValue = SQLTools.getStringFromSQLClob(rs, "dataset_in_mem_impl_kvs_value");
             datasetImplementationBuilder.getKeyValues().put(UUID.fromString(inMemoryKeyValueId),
-                    new DatabaseDatasetImplementationKeyValueDto(
+                    new InMemoryDatasetImplementationKeyValueDto(
                             UUID.fromString(inMemoryKeyValueId),
                             key,
                             clobValue)
@@ -114,16 +111,16 @@ public class DatasetImplementationDtoListResultSetExtractor {
     @ToString(callSuper = true)
     private static class InMemoryDatasetImplementationDtoBuilder extends DatasetImplementationDtoBuilder {
 
-        private final Map<UUID, DatabaseDatasetImplementationKeyValueDto> keyValues;
+        private final Map<UUID, InMemoryDatasetImplementationKeyValueDto> keyValues;
 
-        public InMemoryDatasetImplementationDtoBuilder(UUID uuid, Map<UUID, DatasetImplementationLabelDto> datasetImplementationLabels, Map<UUID, DatabaseDatasetImplementationKeyValueDto> keyValues) {
+        public InMemoryDatasetImplementationDtoBuilder(UUID uuid, Map<UUID, DatasetImplementationLabelDto> datasetImplementationLabels, Map<UUID, InMemoryDatasetImplementationKeyValueDto> keyValues) {
             super(uuid, datasetImplementationLabels);
             this.keyValues = keyValues;
         }
 
         @Override
         public DatasetImplementationDto build() {
-            return new DatabaseDatasetImplementationDto(
+            return new InMemoryDatasetImplementationDto(
                     getUuid(),
                     new HashSet<>(getDatasetImplementationLabels().values()),
                     new HashSet<>(getKeyValues().values()));

@@ -62,7 +62,7 @@ public class RoleService {
         return Role.builder()
                 .metadataKey(roleKey)
                 .teamKey(teamKey)
-                .users(new HashSet<>())
+                .userKeys(new HashSet<>())
                 .name(iesiRole.getName())
                 .privileges(
                         iesiRole.getIesiPrivileges().stream().map(

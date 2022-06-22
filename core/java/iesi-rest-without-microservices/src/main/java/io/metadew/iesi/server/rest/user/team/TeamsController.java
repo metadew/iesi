@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.user.team;
 
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
@@ -12,25 +13,21 @@ import io.metadew.iesi.server.rest.security_group.SecurityGroupController;
 import io.metadew.iesi.server.rest.user.role.RolePostDto;
 import io.metadew.iesi.server.rest.user.role.RolePutDto;
 import io.metadew.iesi.server.rest.user.role.RoleUserPutDto;
-import io.metadew.iesi.server.rest.user.team.dto.TeamDtoResourceAssembler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,9 +40,6 @@ import java.util.stream.Stream;
 public class TeamsController {
 
     private final ITeamService teamService;
-    private final ITeamPutDtoService teamPutDtoService;
-    private final TeamDtoResourceAssembler teamDtoResourceAssembler;
-    private final PagedResourcesAssembler<TeamDto> teamDtoPagedResourcesAssembler;
     private final RoleService roleService;
     private final UserService userService;
     private final SecurityGroupService securityGroupService;
@@ -56,19 +50,8 @@ public class TeamsController {
             IESIPrivilege.SECURITY_GROUP_MODIFY.getPrivilege()
     ).collect(Collectors.toSet());
 
-    public TeamsController(
-            ITeamService teamService,
-            ITeamPutDtoService teamPutDtoService,
-            TeamDtoResourceAssembler teamDtoResourceAssembler,
-            PagedResourcesAssembler<TeamDto> teamDtoPagedResourcesAssembler,
-            RoleService roleService,
-            UserService userService,
-            SecurityGroupService securityGroupService,
-            IesiSecurityChecker iesiSecurityChecker) {
-        this.teamService = teamService;
-        this.teamPutDtoService = teamPutDtoService;
-        this.teamDtoResourceAssembler = teamDtoResourceAssembler;
-        this.teamDtoPagedResourcesAssembler = teamDtoPagedResourcesAssembler;
+    public TeamsController(TeamService teamService, ITeamService teamDtoService, RoleService roleService, UserService userService, SecurityGroupService securityGroupService, IesiSecurityChecker iesiSecurityChecker) {
+        this.teamService = teamDtoService;
         this.roleService = roleService;
         this.userService = userService;
         this.securityGroupService = securityGroupService;
@@ -83,7 +66,7 @@ public class TeamsController {
             Team team = Team.builder()
                     .teamKey(teamKey)
                     .teamName(IESI_GROUP_NAME)
-                    .securityGroups(new HashSet<>())
+                    .securityGroupKeys(new HashSet<>())
                     .roles(
                             Stream.of(
                                     roleService.convertDefaultRole(IESIRole.SYS_ADMIN, teamKey),
@@ -96,7 +79,7 @@ public class TeamsController {
                     .build();
             Optional<SecurityGroup> publicSecurityGroup = securityGroupService.get(SecurityGroupController.PUBLIC_GROUP_NAME);
             if (publicSecurityGroup.isPresent()) {
-                team.getSecurityGroups().add(publicSecurityGroup.get());
+                team.getSecurityGroupKeys().add(publicSecurityGroup.get().getMetadataKey());
                 teamService.addTeam(team);
             } else {
                 log.warn(String.format("Unable to find security group %s. The team %s will not be created", SecurityGroupController.PUBLIC_GROUP_NAME, IESI_GROUP_NAME));
@@ -107,10 +90,20 @@ public class TeamsController {
     @PostMapping("")
     @PreAuthorize("hasPrivilege('TEAMS_WRITE')")
     public ResponseEntity<TeamDto> create(@RequestBody TeamPostDto teamPostDto) {
-        if (teamService.exists(teamPostDto.getTeamName())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Team name " + teamPostDto.getTeamName() + " is already taken");
-        }
-        Team team = teamService.convertToEntity(teamPostDto);
+        TeamKey teamKey = new TeamKey(UUID.randomUUID());
+        Team team = Team.builder()
+                .teamKey(teamKey)
+                .teamName(teamPostDto.getTeamName())
+                .securityGroupKeys(new HashSet<>())
+                .roles(
+                        Stream.of(
+                                roleService.convertDefaultRole(IESIRole.ADMIN, teamKey),
+                                roleService.convertDefaultRole(IESIRole.TECHNICAL_ENGINEER, teamKey),
+                                roleService.convertDefaultRole(IESIRole.TEST_ENGINEER, teamKey),
+                                roleService.convertDefaultRole(IESIRole.EXECUTOR, teamKey),
+                                roleService.convertDefaultRole(IESIRole.VIEWER, teamKey)
+                        ).collect(Collectors.toSet()))
+                .build();
         teamService.addTeam(team);
         return ResponseEntity.of(teamService.get(team.getMetadataKey().getUuid()));
     }
@@ -125,11 +118,11 @@ public class TeamsController {
                 .noneMatch(privilegeDto -> SYS_ADMIN_ONLY_PRIVILEGES.contains(privilegeDto.getPrivilege()));
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('TEAMS_READ')")
-    public ResponseEntity<TeamDto> get(@PathVariable String name) {
+    public ResponseEntity<TeamDto> fetch(@PathVariable UUID uuid) {
         return ResponseEntity
-                .of(teamService.get(name));
+                .of(teamService.get(uuid));
     }
 
     @PutMapping("/{uuid}")
@@ -139,7 +132,36 @@ public class TeamsController {
             ResponseEntity.badRequest().body("Cannot add sys admin privileges to a role");
         }
 
-        Team team = teamPutDtoService.convertToEntity(teamPutDto);
+        Team team = Team.builder()
+                .teamKey(new TeamKey(teamPutDto.getId()))
+                .teamName(teamPutDto.getTeamName())
+                .securityGroupKeys(
+                        teamPutDto.getSecurityGroupIds().stream()
+                                .map(SecurityGroupKey::new)
+                                .collect(Collectors.toSet())
+                )
+                .roles(
+                        teamPutDto.getRoles().stream()
+                                .map(role -> Role.builder()
+                                        .metadataKey(new RoleKey(role.getId()))
+                                        .name(role.getName())
+                                        .teamKey(new TeamKey(teamPutDto.getId()))
+                                        .privileges(
+                                                role.getPrivileges().stream()
+                                                        .map(privilege -> Privilege.builder()
+                                                                .privilegeKey(new PrivilegeKey(privilege.getUuid()))
+                                                                .roleKey(new RoleKey(role.getId()))
+                                                                .privilege(privilege.getPrivilege())
+                                                                .build()
+                                                        ).collect(Collectors.toSet()))
+                                        .userKeys(
+                                                role.getUsers().stream()
+                                                        .map(UserKey::new)
+                                                        .collect(Collectors.toSet())
+                                        )
+                                        .build()
+                                ).collect(Collectors.toSet()))
+                .build();
         teamService.update(team);
         return ResponseEntity
                 .of(teamService.get(uuid));
@@ -147,22 +169,8 @@ public class TeamsController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('TEAMS_READ')")
-    public PagedModel<TeamDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
-        List<TeamFilter> teamFilters = extractTeamFilterOptions(name);
-        Page<TeamDto> teamDtoPage = teamService.getAll(pageable, teamFilters);
-
-        if (teamDtoPage.hasContent()) {
-            return teamDtoPagedResourcesAssembler.toModel(teamDtoPage, teamDtoResourceAssembler::toModel);
-        }
-        return (PagedModel<TeamDto>) teamDtoPagedResourcesAssembler.toEmptyModel(teamDtoPage, TeamDto.class);
-    }
-
-    private List<TeamFilter> extractTeamFilterOptions(String name) {
-        List<TeamFilter> teamFilters = new ArrayList<>();
-        if (name != null) {
-            teamFilters.add(new TeamFilter(TeamFilterOption.NAME, name, false));
-        }
-        return teamFilters;
+    public Set<TeamDto> fetchAll() {
+        return teamService.getAll();
     }
 
     @DeleteMapping("/{uuid}")
@@ -183,7 +191,7 @@ public class TeamsController {
                 .metadataKey(roleKey)
                 .teamKey(new TeamKey(uuid))
                 .name(rolePostDto.getName())
-                .users(new HashSet<>())
+                .userKeys(new HashSet<>())
                 .privileges(rolePostDto.getPrivileges().stream()
                         .map(privilegePostDto -> Privilege.builder()
                                 .privilegeKey(new PrivilegeKey(UUID.randomUUID()))

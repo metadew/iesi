@@ -2,7 +2,6 @@ package io.metadew.iesi.common.configuration.metadata.repository;
 
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorHandler;
 import io.metadew.iesi.metadata.repository.*;
-import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -30,28 +29,28 @@ public class MetadataRepositoryService implements IMetadataRepositoryService {
         List<MetadataRepository> metadataRepositories = new ArrayList<>();
         for (String category : metadataRepositoryDefinition.getCategories()) {
             if (category.equalsIgnoreCase("general")) {
-                RepositoryCoordinator repositoryCoordinator = MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator());
+                // Make all repositories
                 metadataRepositories.add(new DesignMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        repositoryCoordinator));
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
                 metadataRepositories.add(new ConnectivityMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        repositoryCoordinator));
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
                 metadataRepositories.add(new ControlMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        repositoryCoordinator));
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
                 metadataRepositories.add(new TraceMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        repositoryCoordinator));
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
                 metadataRepositories.add(new ResultMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        repositoryCoordinator));
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
                 metadataRepositories.add(new ExecutionServerMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        repositoryCoordinator));
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
                 metadataRepositories.add(new DataMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        repositoryCoordinator));
+                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("design")) {
                 metadataRepositories.add(new DesignMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),

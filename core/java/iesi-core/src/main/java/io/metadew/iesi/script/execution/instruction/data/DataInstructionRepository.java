@@ -11,7 +11,9 @@ import io.metadew.iesi.script.execution.instruction.data.person.PersonEmail;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonFirstName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonLastName;
 import io.metadew.iesi.script.execution.instruction.data.person.PersonPhoneNumber;
-import io.metadew.iesi.script.execution.instruction.data.text.*;
+import io.metadew.iesi.script.execution.instruction.data.text.RandomUUID;
+import io.metadew.iesi.script.execution.instruction.data.text.TextReplace;
+import io.metadew.iesi.script.execution.instruction.data.text.TextSubstring;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeFormat;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeNow;
 import io.metadew.iesi.script.execution.instruction.data.time.TimeTravel;
@@ -54,26 +56,23 @@ public class DataInstructionRepository {
         NumberBetween numberBetween = new NumberBetween();
         dataInstructions.put(numberBetween.getKeyword(), numberBetween);
 
-        TextSubstring textSubstring = new TextSubstring(executionRuntime);
+        TextSubstring textSubstring = new TextSubstring();
         dataInstructions.put(textSubstring.getKeyword(), textSubstring);
 
         ListSize listSize = new ListSize(executionRuntime);
         dataInstructions.put(listSize.getKeyword(), listSize);
 
-        TextReplace textReplace = new TextReplace(executionRuntime);
+        TextReplace textReplace = new TextReplace();
         dataInstructions.put(textReplace.getKeyword(), textReplace);
 
         NumberFormat numberFormat = new NumberFormat();
         dataInstructions.put(numberFormat.getKeyword(), numberFormat);
-
+      
         RandomUUID uuid = new RandomUUID();
         dataInstructions.put(uuid.getKeyword(), uuid);
 
         Addition addition = new Addition();
         dataInstructions.put(addition.getKeyword(), addition);
-
-        JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
-        dataInstructions.put(jsonPathTraversal.getKeyword(), jsonPathTraversal);
 
         Substraction substraction = new Substraction();
         dataInstructions.put(substraction.getKeyword(), substraction);
@@ -83,9 +82,6 @@ public class DataInstructionRepository {
 
         Exponentiation exponentiation = new Exponentiation();
         dataInstructions.put(exponentiation.getKeyword(), exponentiation);
-
-        XMLPathTraversal xmlPathTraversal = new XMLPathTraversal(executionRuntime);
-        dataInstructions.put(xmlPathTraversal.getKeyword(), xmlPathTraversal);
 
         Multiplication multiplication = new Multiplication();
         dataInstructions.put(multiplication.getKeyword(), multiplication);

@@ -6,20 +6,16 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/security-groups")
@@ -31,20 +27,9 @@ public class SecurityGroupController {
     public static final String PUBLIC_GROUP_NAME = "PUBLIC";
 
     private final ISecurityGroupService securityGroupService;
-    private final ISecurityGroupPutDtoService securityGroupPutDtoService;
-    private final PagedResourcesAssembler<SecurityGroupDto> securityGroupDtoPagedResourceAssembler;
-    private final SecurityGroupDtoResourceAssembler securityGroupDtoResourceAssembler;
 
-    public SecurityGroupController(
-            ISecurityGroupService securityGroupService,
-            ISecurityGroupPutDtoService securityGroupPutDtoService,
-            PagedResourcesAssembler<SecurityGroupDto> securityGroupDtoPagedResourceAssembler,
-            SecurityGroupDtoResourceAssembler securityGroupDtoResourceAssembler
-    ) {
+    public SecurityGroupController(ISecurityGroupService securityGroupService) {
         this.securityGroupService = securityGroupService;
-        this.securityGroupPutDtoService = securityGroupPutDtoService;
-        this.securityGroupDtoPagedResourceAssembler = securityGroupDtoPagedResourceAssembler;
-        this.securityGroupDtoResourceAssembler = securityGroupDtoResourceAssembler;
     }
 
     @PostConstruct
@@ -74,11 +59,11 @@ public class SecurityGroupController {
         return ResponseEntity.of(securityGroupService.get(securityGroup.getMetadataKey().getUuid()));
     }
 
-    @PostMapping("/{uuid}/teams/{team-uuid}")
+    @PostMapping("/{uuid}/teams")
     @PreAuthorize("hasPrivilege('GROUPS_WRITE')")
-    public ResponseEntity<SecurityGroupDto> addTeam(@PathVariable UUID uuid, @PathVariable("team-uuid") UUID teamUuid) {
+    public ResponseEntity<SecurityGroupDto> addTeam(@PathVariable UUID uuid, @RequestBody SecurityGroupTeamPutDto securityGroupTeamPutDto) {
         if (securityGroupService.exists(new SecurityGroupKey(uuid))) {
-            securityGroupService.addTeam(new SecurityGroupKey(uuid), new TeamKey(teamUuid));
+            securityGroupService.addTeam(new SecurityGroupKey(uuid), new TeamKey(securityGroupTeamPutDto.getId()));
             return ResponseEntity.of(securityGroupService.get(uuid));
         } else {
             throw new MetadataDoesNotExistException(new SecurityGroupKey(uuid));
@@ -96,17 +81,24 @@ public class SecurityGroupController {
         }
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('GROUPS_READ')")
-    public ResponseEntity<SecurityGroupDto> get(@PathVariable String name) {
+    public ResponseEntity<SecurityGroupDto> fetch(@PathVariable UUID uuid) {
         return ResponseEntity
-                .of(securityGroupService.get(name));
+                .of(securityGroupService.get(uuid));
     }
 
     @PutMapping("/{uuid}")
     @PreAuthorize("hasPrivilege('GROUPS_WRITE')")
     public ResponseEntity<SecurityGroupDto> update(@PathVariable UUID uuid, @RequestBody SecurityGroupPutDto securityGroupPutDto) {
-        SecurityGroup securityGroup = securityGroupPutDtoService.convertToEntity(securityGroupPutDto);
+        SecurityGroup securityGroup = SecurityGroup.builder()
+                .metadataKey(new SecurityGroupKey(securityGroupPutDto.getId()))
+                .name(securityGroupPutDto.getName())
+                .securedObjects(new HashSet<>())
+                .teamKeys(securityGroupPutDto.getTeams().stream()
+                        .map(securityGroupTeamPutDto -> new TeamKey(securityGroupPutDto.getId()))
+                        .collect(Collectors.toSet()))
+                .build();
         securityGroupService.update(securityGroup);
         return ResponseEntity
                 .of(securityGroupService.get(uuid));
@@ -114,23 +106,8 @@ public class SecurityGroupController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('GROUPS_READ')")
-    public PagedModel<SecurityGroupDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
-        List<SecurityGroupFilter> securityGroupFilters = extractSecurityGroupFilterOptions(name);
-        Page<SecurityGroupDto> securityGroupDtoPage = securityGroupService.getAll(pageable, securityGroupFilters);
-
-        if (securityGroupDtoPage.hasContent()) {
-            return securityGroupDtoPagedResourceAssembler.toModel(securityGroupDtoPage, securityGroupDtoResourceAssembler::toModel);
-        }
-
-        return (PagedModel<SecurityGroupDto>) securityGroupDtoPagedResourceAssembler.toEmptyModel(securityGroupDtoPage, SecurityGroupDto.class);
-    }
-
-    private List<SecurityGroupFilter> extractSecurityGroupFilterOptions(String name) {
-        List<SecurityGroupFilter> securityGroupFilters = new ArrayList<>();
-        if (name != null) {
-            securityGroupFilters.add(new SecurityGroupFilter(SecurityGroupFilterOption.NAME, name, false));
-        }
-        return securityGroupFilters;
+    public Set<SecurityGroupDto> fetchAll() {
+        return securityGroupService.getAll();
     }
 
     @DeleteMapping("/{uuid}")

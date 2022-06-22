@@ -1,9 +1,18 @@
 package io.metadew.iesi.connection.database;
 
 import io.metadew.iesi.connection.database.oracle.OracleDatabaseConnectionService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 
 public class OracleDatabaseConnectionServiceTest {
 
@@ -16,6 +25,7 @@ public class OracleDatabaseConnectionServiceTest {
                 .isEqualTo("SELECT script.SCRIPT_ID, script.SCRIPT_DSC  OFFSET 77 ROWS FETCH NEXT 10 ROWS ONLY ");
         assertThat(OracleDatabaseConnectionService.getInstance().refactorLimitAndOffset(query2))
                 .isEqualTo("SELECT script.SCRIPT_ID, script.SCRIPT_DSC  OFFSET 77 ROWS FETCH NEXT 10 ROWS ONLY  Select script.SCRIPT_ID offset 23");
+        ;
 
     }
 

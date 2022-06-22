@@ -42,8 +42,7 @@ public class UserService implements IUserService {
     }
 
     public Page<UserDto> getAll(Pageable pageable, Set<UserFilter> userFilters) {
-        Page<UserDto> page = userDtoRepository.getAll(pageable, userFilters);
-        return page;
+        return userDtoRepository.getAll(pageable, userFilters);
     }
 
     @Override

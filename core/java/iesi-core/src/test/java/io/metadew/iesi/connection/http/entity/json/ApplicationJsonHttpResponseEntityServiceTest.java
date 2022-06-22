@@ -1,10 +1,10 @@
 package io.metadew.iesi.connection.http.entity.json;
 
+import com.fasterxml.jackson.databind.node.MissingNode;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.http.Consts;
@@ -25,8 +25,8 @@ class ApplicationJsonHttpResponseEntityServiceTest {
     @Test
     void writeToDatasetTest() throws IOException {
         // Setup
-        DatasetImplementationHandler datasetHandler = mock(DatasetImplementationHandler.class);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", datasetHandler);
+        InMemoryDatasetImplementationService datasetHandler = mock(InMemoryDatasetImplementationService.class);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
@@ -36,7 +36,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
                 .thenReturn(Optional.of(new String("{\"test\":\"test\"}".getBytes(Consts.ASCII), Consts.ASCII).getBytes(Consts.ASCII)));
         when(httpEntity.getContentType())
                 .thenReturn(new BasicHeader("Content-Type", Consts.ASCII.toString()));
-        DatabaseDatasetImplementation dataset = mock(DatabaseDatasetImplementation.class);
+        InMemoryDatasetImplementation dataset = mock(InMemoryDatasetImplementation.class);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
 
         when(dataTypeHandler
@@ -47,22 +47,22 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         verify(datasetHandler, times(1)).setDataItem(dataset, "key", new Text("test"));
 
         // Clean up
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
     void writeToDatasetNoCharsetTest() throws IOException {
         // Setup
-        DatasetImplementationHandler datasetHandler = mock(DatasetImplementationHandler.class);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", datasetHandler);
+        InMemoryDatasetImplementationService datasetHandler = mock(InMemoryDatasetImplementationService.class);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
         HttpResponse httpResponse = mock(HttpResponse.class);
         when(httpResponse.getEntityContent())
                 .thenReturn(Optional.of(new String("{\"test\":\"test\"}".getBytes(Consts.UTF_8), Consts.UTF_8).getBytes(Consts.UTF_8)));
-        DatabaseDatasetImplementation dataset = mock(DatabaseDatasetImplementation.class);
+        InMemoryDatasetImplementation dataset = mock(InMemoryDatasetImplementation.class);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
 
         when(dataTypeHandler
@@ -73,15 +73,15 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         verify(datasetHandler, times(1)).setDataItem(dataset, "key", new Text("test"));
 
         // Clean up
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
     void writeToDatasetInvalidJsonTest() throws IOException {
         // Setup
-        DatabaseDatasetImplementationService datasetHandler = mock(DatabaseDatasetImplementationService.class);
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", datasetHandler);
+        InMemoryDatasetImplementationService datasetHandler = mock(InMemoryDatasetImplementationService.class);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", datasetHandler);
         DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
@@ -91,7 +91,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
                 .thenReturn(Optional.of(new String("".getBytes(Consts.UTF_8), Consts.UTF_8).getBytes(Consts.UTF_8)));
         when(httpEntity.getContentType())
                 .thenReturn(new BasicHeader("Content-Type", Consts.UTF_8.toString()));
-        DatabaseDatasetImplementation dataset = mock(DatabaseDatasetImplementation.class);
+        InMemoryDatasetImplementation dataset = mock(InMemoryDatasetImplementation.class);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
 
         // Test
@@ -99,7 +99,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         verify(dataTypeHandler, times(0)).resolve(eq(dataset), eq("key"), any(), eq(executionRuntime));
         verify(datasetHandler, times(0)).setDataItem(dataset, "key", new Text("test"));
         // Clean up
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
+        Whitebox.setInternalState(InMemoryDatasetImplementationService.class, "instance", (InMemoryDatasetImplementationService) null);
         Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 

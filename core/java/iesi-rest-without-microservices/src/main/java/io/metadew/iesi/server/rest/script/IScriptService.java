@@ -8,22 +8,22 @@ import java.util.Optional;
 
 public interface IScriptService {
 
-    List<Script> getAll();
+    public List<Script> getAll();
 
-    List<Script> getByName(String name);
+    public List<Script> getByName(String name);
 
-    Optional<Script> getByNameAndVersion(String name, long version);
+    public Optional<Script> getByNameAndVersion(String name, long version);
 
-    void createScript(Script script);
-    List<Script> importScripts(String textPlain);
+    public void createScript(ScriptPostDto scriptDto);
 
-    void updateScript(Script script);
+    public void updateScript(ScriptPostDto scriptPostDto);
 
-    void updateScripts(List<Script> scripts);
+    public void updateScripts(List<ScriptPostDto> scriptPostDtos);
 
-    void deleteAll();
+    public void deleteAll();
 
-    void deleteByName(String name);
+    public void deleteByName(String name);
 
-    void deleteByNameAndVersion(String name, long version);
+    public void deleteByNameAndVersion(String name, long version);
+
 }

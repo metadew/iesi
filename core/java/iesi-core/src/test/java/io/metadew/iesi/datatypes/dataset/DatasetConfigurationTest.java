@@ -3,9 +3,9 @@ package io.metadew.iesi.datatypes.dataset;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -230,7 +230,7 @@ class DatasetConfigurationTest {
         dataset.getDatasetImplementations().clear();
         UUID datasetImplementationUuid = UUID.randomUUID();
         dataset.getDatasetImplementations().add(
-                new DatabaseDatasetImplementation(
+                new InMemoryDatasetImplementation(
                         new DatasetImplementationKey(datasetImplementationUuid),
                         dataset.getMetadataKey(),
                         dataset.getName(),
@@ -242,8 +242,8 @@ class DatasetConfigurationTest {
                                         .build()
                         ).collect(Collectors.toSet()),
                         Stream.of(
-                                DatabaseDatasetImplementationKeyValue.builder()
-                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()))
+                                InMemoryDatasetImplementationKeyValue.builder()
+                                        .metadataKey(new InMemoryDatasetImplementationKeyValueKey(UUID.randomUUID()))
                                         .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUuid))
                                         .key("key1")
                                         .value("Value1")

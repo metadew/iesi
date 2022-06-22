@@ -16,7 +16,6 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 
@@ -101,7 +100,7 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
         //DatabaseTools.getDatabase("io.metadew.iesi.connection.database.sqlite.SqliteDatabase");
 
         ObjectMapper objectMapper = new ObjectMapper();
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(Paths.get(inputFile));
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(inputFile);
 
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);

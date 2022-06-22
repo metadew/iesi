@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.dataset.dto;
 
 
-import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.server.rest.dataset.DatasetFilter;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import org.springframework.data.domain.Page;
@@ -21,5 +20,4 @@ public interface IDatasetDtoService {
 
     Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid);
 
-    Dataset convertToEntity(DatasetPostDto datasetPostDto);
 }

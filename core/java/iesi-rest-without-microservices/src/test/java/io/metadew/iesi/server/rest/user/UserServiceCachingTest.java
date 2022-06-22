@@ -270,7 +270,7 @@ class UserServiceCachingTest {
         userService.get("user2");
         userService.get(userUuid2);
         userService.addRole(user1.getMetadataKey(), Role.builder()
-                .users(new HashSet<>())
+                .userKeys(new HashSet<>())
                 .privileges(new HashSet<>())
                 .metadataKey(new RoleKey(UUID.randomUUID()))
                 .teamKey(new TeamKey(UUID.randomUUID()))
@@ -311,7 +311,7 @@ class UserServiceCachingTest {
         userService.get("user2");
         userService.get(userUuid2);
         userService.removeRole(user1, Role.builder()
-                .users(new HashSet<>())
+                .userKeys(new HashSet<>())
                 .privileges(new HashSet<>())
                 .metadataKey(new RoleKey(UUID.randomUUID()))
                 .teamKey(new TeamKey(UUID.randomUUID()))
@@ -354,7 +354,7 @@ class UserServiceCachingTest {
                 .teamKey(new TeamKey(UUID.randomUUID()))
                 .teamName("team")
                 .roles(new HashSet<>())
-                .securityGroups(new HashSet<>())
+                .securityGroupKeys(new HashSet<>())
                 .build());
         userService.get("user1");
         userService.get(userUuid1);
@@ -466,7 +466,7 @@ class UserServiceCachingTest {
                 .teamKey(new TeamKey(teamUuid))
                 .name("role")
                 .privileges(new HashSet<>())
-                .users(new HashSet<>())
+                .userKeys(new HashSet<>())
                 .build());
         userService.get("user1");
         userService.get(userUuid1);

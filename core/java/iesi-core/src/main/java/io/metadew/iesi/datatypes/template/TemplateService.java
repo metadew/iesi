@@ -3,8 +3,8 @@ package io.metadew.iesi.datatypes.template;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
 import io.metadew.iesi.metadata.definition.template.Template;
@@ -157,16 +157,16 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
 
     @Override
     public boolean matches(DataType dataType, Template template, ExecutionRuntime executionRuntime) {
-        if (dataType instanceof DatasetImplementation) {
+        if (dataType instanceof InMemoryDatasetImplementation) {
             for (Matcher matcher : template.getMatchers()) {
                 log.debug("validating " + matcher.toString() + " of template " + template.toString());
-                if (!DatasetImplementationHandler.getInstance().getDataItem((DatasetImplementation) dataType, matcher.getKey(), executionRuntime)
+                if (!InMemoryDatasetImplementationService.getInstance().getDataItem((InMemoryDatasetImplementation) dataType, matcher.getKey(), executionRuntime)
                         .map(dataItem -> MatcherValueHandler.getInstance().matches(matcher.getMatcherValue(), dataItem, executionRuntime))
                         .orElse(false)) {
-                    if (!DatasetImplementationHandler.getInstance().getDataItem((DatasetImplementation) dataType, matcher.getKey(), executionRuntime).isPresent()) {
+                    if (!InMemoryDatasetImplementationService.getInstance().getDataItem((InMemoryDatasetImplementation) dataType, matcher.getKey(), executionRuntime).isPresent()) {
                         log.warn("Dataset " + dataType.toString() + " does not contain item with key " + matcher.getKey());
                     } else {
-                        log.warn(DatasetImplementationHandler.getInstance().getDataItem((DatasetImplementation) dataType, matcher.getKey(), executionRuntime).get().toString() + " does not match " + matcher.getMatcherValue().toString());
+                        log.warn(InMemoryDatasetImplementationService.getInstance().getDataItem((InMemoryDatasetImplementation) dataType, matcher.getKey(), executionRuntime).get().toString() + " does not match " + matcher.getMatcherValue().toString());
                     }
                     return false;
                 }

@@ -301,7 +301,7 @@ public class AssemblyExecution {
                 List<DataObject> confInitObjects = new ArrayList<>();
                 for (final File inputConf : inputConfs) {
                     // Read configuration
-                    DataObjectOperation inputInitObjectOperation = new DataObjectOperation(Paths.get(inputConf.getAbsolutePath()));
+                    DataObjectOperation inputInitObjectOperation = new DataObjectOperation(inputConf.getAbsolutePath());
 
                     ObjectMapper inputObjectMapper = new ObjectMapper();
                     confInitObjects.addAll(inputInitObjectOperation.getDataObjects());
@@ -330,7 +330,7 @@ public class AssemblyExecution {
                 for (final File inputDef : inputDefTables) {
                     // Read configuration
                     LOGGER.debug("reading metadata definition " + inputDef.getName());
-                    DataObjectOperation inputDataObjectOperation = new DataObjectOperation(Paths.get(inputDef.getAbsolutePath()));
+                    DataObjectOperation inputDataObjectOperation = new DataObjectOperation(inputDef.getAbsolutePath());
 
                     ObjectMapper inputObjectMapper = new ObjectMapper();
                     defTableDataObjects.addAll(inputDataObjectOperation.getDataObjects());
@@ -349,7 +349,7 @@ public class AssemblyExecution {
                 List<DataObject> defObjectDataObjects = new ArrayList<>();
                 for (final File inputDef : inputDefObjects) {
                     // Read configuration
-                    DataObjectOperation inputDataObjectOperation = new DataObjectOperation(Paths.get(inputDef.getAbsolutePath()));
+                    DataObjectOperation inputDataObjectOperation = new DataObjectOperation(inputDef.getAbsolutePath());
 
                     ObjectMapper inputObjectMapper = new ObjectMapper();
                     defObjectDataObjects.addAll(inputDataObjectOperation.getDataObjects());
@@ -379,7 +379,7 @@ public class AssemblyExecution {
                 List<DataObject> confDataObjects = new ArrayList<>();
                 for (final File inputConf : inputConfs) {
                     // Read configuration
-                    DataObjectOperation inputDataObjectOperation = new DataObjectOperation(Paths.get(inputConf.getAbsolutePath()));
+                    DataObjectOperation inputDataObjectOperation = new DataObjectOperation(inputConf.getAbsolutePath());
 
                     ObjectMapper inputObjectMapper = new ObjectMapper();
                     confDataObjects.addAll(inputDataObjectOperation.getDataObjects());

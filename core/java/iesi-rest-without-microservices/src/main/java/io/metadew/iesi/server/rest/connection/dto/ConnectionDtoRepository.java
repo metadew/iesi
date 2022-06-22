@@ -100,7 +100,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         String query = "select count(*) as row_count from (select distinct connections.CONN_NM " +
                 "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 getWhereClause(authentication, connectionFilters) +
-                ");";
+                ") filtered_components;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
@@ -110,7 +110,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         if (pageable.getSort().isUnsorted()) return " ORDER BY connections.CONN_NM ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "lower(connections.CONN_NM)" + order.getDirection();
+                        return "connections.CONN_NM" + " " + order.getDirection();
                     } else {
                         return null;
                     }
@@ -118,7 +118,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ORDER BY lower(connections.CONN_NM) ASC";
+            return " ORDER BY connections.CONN_NM ASC";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

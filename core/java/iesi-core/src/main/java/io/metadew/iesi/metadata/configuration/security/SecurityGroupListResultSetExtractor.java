@@ -34,6 +34,7 @@ public class SecurityGroupListResultSetExtractor {
     }
 
     private void addTeam(SecurityGroup securityGroup, CachedRowSet cachedRowSet) throws SQLException {
+        //            "security_group_teams.team_id as security_group_teams_team_id
         if (cachedRowSet.getString("security_group_teams_team_id") != null) {
             securityGroup.getTeamKeys().add(new TeamKey(UUID.fromString(cachedRowSet.getString("security_group_teams_team_id"))));
         }

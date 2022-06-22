@@ -69,17 +69,17 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
 
     private long getRowSize() throws SQLException {
         String query = "select count(*) as row_count from (select distinct environments.ENV_NM " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " + ");";
+                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " AS environments " + ") AS environments;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY lower(environments.ENV_NM) ASC ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY environments.ENV_NM ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
             if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "lower(environments.ENV_NM)" + order.getDirection();
+                return "environments.ENV_NM" + " " + order.getDirection();
             } else {
                 return null;
             }
@@ -87,7 +87,7 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ORDER BY lower(environments.ENV_NM) ASC";
+            return " ORDER BY environments.ENV_NM ASC";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

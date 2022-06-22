@@ -2713,7 +2713,7 @@ iesi:
             order: 5
             type: STRING
             length: 255
-            nullable: true
+            nullable: false
             defaultTimestamp:
             primaryKey: true
           STRT_TMS:

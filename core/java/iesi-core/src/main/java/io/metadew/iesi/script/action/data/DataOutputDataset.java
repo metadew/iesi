@@ -4,10 +4,8 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -43,14 +41,14 @@ public class DataOutputDataset extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws InterruptedException, IOException {
-        DatabaseDatasetImplementation dataset = DatabaseDatasetImplementationService.getInstance()
+        InMemoryDatasetImplementation dataset = InMemoryDatasetImplementationService.getInstance()
                 .getDatasetImplementation(
                         convertDatasetName(getParameterResolvedValue(DATASET_NAME_KEY)),
                         convertDatasetLabels(getParameterResolvedValue(DATASET_LABELS_KEY),
                                 getExecutionControl().getExecutionRuntime()))
                 .orElseThrow(() -> new RuntimeException("Could not find dataset with " + convertDatasetName(getParameterResolvedValue(DATASET_NAME_KEY)) + " " + convertDatasetLabels(getParameterResolvedValue(DATASET_LABELS_KEY), getExecutionControl().getExecutionRuntime())));
         boolean onScreen = convertOnScreen(getParameterResolvedValue(DATASET_ON_SCREEN_KEY));
-        DatabaseDatasetImplementationService.getInstance().getDataItems(dataset, getExecutionControl().getExecutionRuntime())
+        InMemoryDatasetImplementationService.getInstance().getDataItems(dataset, getExecutionControl().getExecutionRuntime())
                 .forEach((key, value) -> log.info(MessageFormat.format("{0}:{1}", key, value)));
 
         getActionExecution().getActionControl().increaseSuccessCount();

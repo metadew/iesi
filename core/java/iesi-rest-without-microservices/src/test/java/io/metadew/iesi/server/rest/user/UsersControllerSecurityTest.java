@@ -141,8 +141,8 @@ class UsersControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetByUuidNoUserRead() {
-        String username = "user";
-        assertThatThrownBy(() -> userController.fetch(username))
+        UUID uuid = UUID.randomUUID();
+        assertThatThrownBy(() -> userController.fetch(uuid))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -162,7 +162,7 @@ class UsersControllerSecurityTest {
                                 false,
                                 new HashSet<>())
                 ));
-        userController.fetch("user");
+        userController.fetch(uuid);
     }
 
     // create components
@@ -211,7 +211,6 @@ class UsersControllerSecurityTest {
         UserPostDto userPostDto = UserPostDto.builder()
                 .username("username")
                 .password("password")
-                .repeatedPassword("password")
                 .build();
         when(userDtoService.get((UUID) any()))
                 .thenReturn(Optional.of(

@@ -6,9 +6,9 @@ import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
@@ -19,8 +19,8 @@ import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
 import io.metadew.iesi.server.rest.dataset.dto.IDatasetDtoRepository;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationDto;
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationLabelDto;
-import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationDto;
-import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationKeyValueDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationDto;
+import io.metadew.iesi.server.rest.dataset.implementation.inmemory.InMemoryDatasetImplementationKeyValueDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -65,45 +64,6 @@ class DatasetDtoRepositoryTest {
     @AfterEach
     void cleanup() {
         metadataRepositoryConfiguration.clearAllTables();
-    }
-
-    @Test
-    void getAllSortedCaseTest() {
-        Dataset dataset1 = Dataset.builder()
-                .metadataKey(new DatasetKey(UUID.randomUUID()))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
-                .name("a")
-                .datasetImplementations(new HashSet<>())
-                .build();
-        DatasetDto dataset1Dto = DatasetDto.builder()
-                .uuid(dataset1.getMetadataKey().getUuid())
-                .name("a")
-                .securityGroupName("PUBLIC")
-                .implementations(new HashSet<>())
-                .build();
-        Dataset dataset2 = Dataset.builder()
-                .metadataKey(new DatasetKey(UUID.randomUUID()))
-                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
-                .securityGroupName("PUBLIC")
-                .name("Z")
-                .datasetImplementations(new HashSet<>())
-                .build();
-        DatasetDto dataset2Dto = DatasetDto.builder()
-                .uuid(dataset2.getMetadataKey().getUuid())
-                .name("Z")
-                .securityGroupName("PUBLIC")
-                .implementations(new HashSet<>())
-                .build();
-
-        datasetConfiguration.insert(dataset1);
-        datasetConfiguration.insert(dataset2);
-
-        Pageable pageableASC = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
-        Pageable pageableDESC = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
-
-        assertThat(datasetDtoRepository.fetchAll(null, pageableASC, new HashSet<>())).containsExactly(dataset1Dto, dataset2Dto);
-        assertThat(datasetDtoRepository.fetchAll(null, pageableDESC, new HashSet<>())).containsExactly(dataset2Dto, dataset1Dto);
     }
 
     @Test
@@ -536,7 +496,7 @@ class DatasetDtoRepositoryTest {
                                 .map(implementationIndex -> {
                                     UUID datasetImplementationUUID = UUID.randomUUID();
                                     info.put(String.format("datasetImplementation%dUUID", implementationIndex), datasetImplementationUUID);
-                                    DatasetImplementation datasetImplementation = DatabaseDatasetImplementation.builder()
+                                    DatasetImplementation datasetImplementation = InMemoryDatasetImplementation.builder()
                                             .metadataKey(new DatasetImplementationKey(datasetImplementationUUID))
                                             .datasetKey(new DatasetKey(datasetUUID))
                                             .name(String.format("dataset%d", datasetIndex))
@@ -558,8 +518,8 @@ class DatasetDtoRepositoryTest {
                                                                 UUID datasetImplementationKeyValueUUID = UUID.randomUUID();
                                                                 info.put(String.format("datasetImplementation%dKeyValue%dUUID", implementationIndex, keyValueIndex), datasetImplementationKeyValueUUID);
 
-                                                                return DatabaseDatasetImplementationKeyValue.builder()
-                                                                        .metadataKey(new DatabaseDatasetImplementationKeyValueKey(datasetImplementationKeyValueUUID))
+                                                                return InMemoryDatasetImplementationKeyValue.builder()
+                                                                        .metadataKey(new InMemoryDatasetImplementationKeyValueKey(datasetImplementationKeyValueUUID))
                                                                         .datasetImplementationKey(new DatasetImplementationKey(datasetImplementationUUID))
                                                                         .key(String.format("key%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
                                                                         .value(String.format("value%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
@@ -582,7 +542,7 @@ class DatasetDtoRepositoryTest {
                         IntStream.range(0, implementationCount).boxed()
                                 .map(implementationIndex -> {
                                     UUID datasetImplementationUUID = (UUID) info.get(String.format("datasetImplementation%dUUID", implementationIndex));
-                                    DatabaseDatasetImplementationDto databaseDatasetImplementationDto = DatabaseDatasetImplementationDto.builder()
+                                    InMemoryDatasetImplementationDto inMemoryDatasetImplementationDto = InMemoryDatasetImplementationDto.builder()
                                             .uuid(datasetImplementationUUID)
                                             .labels(
                                                     IntStream.range(0, labelCount).boxed()
@@ -598,7 +558,7 @@ class DatasetDtoRepositoryTest {
                                                     IntStream.range(0, keyValueCount).boxed()
                                                             .map(keyValueIndex -> {
                                                                 UUID datasetImplementationKeyValueUUID = (UUID) info.get(String.format("datasetImplementation%dKeyValue%dUUID", implementationIndex, keyValueIndex));
-                                                                return DatabaseDatasetImplementationKeyValueDto.builder()
+                                                                return InMemoryDatasetImplementationKeyValueDto.builder()
                                                                         .uuid(datasetImplementationKeyValueUUID)
                                                                         .key(String.format("key%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
                                                                         .value(String.format("value%d%d%d", datasetIndex, implementationIndex, keyValueIndex))
@@ -606,8 +566,8 @@ class DatasetDtoRepositoryTest {
                                                             }).collect(Collectors.toSet())
                                             )
                                             .build();
-                                    info.put(String.format("datasetImplementationDto%d", implementationIndex), databaseDatasetImplementationDto);
-                                    return databaseDatasetImplementationDto;
+                                    info.put(String.format("datasetImplementationDto%d", implementationIndex), inMemoryDatasetImplementationDto);
+                                    return inMemoryDatasetImplementationDto;
                                 })
                                 .map(DatasetImplementationDto::getUuid)
                                 .collect(Collectors.toSet()))

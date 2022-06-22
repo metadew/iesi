@@ -1,17 +1,17 @@
 package io.metadew.iesi.server.rest.user.team;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import io.metadew.iesi.server.rest.user.UserDto;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ITeamDtoRepository {
 
-    Optional<TeamDto> get(String teamName);
+    public Optional<TeamDto> get(String teamName);
 
-    Optional<TeamDto> get(UUID uuid);
+    public Optional<TeamDto> get(UUID uuid);
 
-    Page<TeamDto> getAll(Pageable pageable, List<TeamFilter> teamFilters);
+    public Set<TeamDto> getAll();
+
 }

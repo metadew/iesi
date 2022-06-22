@@ -3,9 +3,10 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValue;
@@ -16,6 +17,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -63,8 +66,8 @@ public class ActionControl {
                 logOutputPerDatatype(key + counter + ".", element);
                 counter++;
             }
-        } else if (value instanceof DatasetImplementation) {
-            for (Map.Entry<String, DataType> datasetItem : DatasetImplementationHandler.getInstance().getDataItems((DatasetImplementation) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
+        } else if (value instanceof InMemoryDatasetImplementation) {
+            for (Map.Entry<String, DataType> datasetItem : InMemoryDatasetImplementationService.getInstance().getDataItems((InMemoryDatasetImplementation) value, actionExecution.getExecutionControl().getExecutionRuntime()).entrySet()) {
                 logOutputPerDatatype(key + datasetItem.getKey() + ".", datasetItem.getValue());
             }
         } else if (value instanceof Template) {

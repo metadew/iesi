@@ -3,17 +3,15 @@ package io.metadew.iesi.server.rest.user.team;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
-import io.metadew.iesi.metadata.service.user.IESIRole;
 import io.metadew.iesi.metadata.service.user.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class TeamService implements ITeamService {
@@ -40,8 +38,8 @@ public class TeamService implements ITeamService {
         return teamDtoRepository.get(uuid);
     }
 
-    public Page<TeamDto> getAll(Pageable pageable, List<TeamFilter> teamFilters) {
-        return teamDtoRepository.getAll(pageable, teamFilters);
+    public Set<TeamDto> getAll() {
+        return teamDtoRepository.getAll();
     }
 
     @Override
@@ -136,24 +134,6 @@ public class TeamService implements ITeamService {
     @CacheEvict(value = "users", allEntries = true)
     public void addUserToRole(TeamKey teamKey, RoleKey roleKey, UserKey userKey) {
         roleService.addUser(roleKey, userKey);
-    }
-
-    @Override
-    public Team convertToEntity(TeamPostDto teamPostDto) {
-        TeamKey teamKey = new TeamKey(UUID.randomUUID());
-        return Team.builder()
-                .teamKey(teamKey)
-                .teamName(teamPostDto.getTeamName())
-                .securityGroups(new HashSet<>())
-                .roles(
-                        Stream.of(
-                                roleService.convertDefaultRole(IESIRole.ADMIN, teamKey),
-                                roleService.convertDefaultRole(IESIRole.TECHNICAL_ENGINEER, teamKey),
-                                roleService.convertDefaultRole(IESIRole.TEST_ENGINEER, teamKey),
-                                roleService.convertDefaultRole(IESIRole.EXECUTOR, teamKey),
-                                roleService.convertDefaultRole(IESIRole.VIEWER, teamKey)
-                        ).collect(Collectors.toSet()))
-                .build();
     }
 
 }

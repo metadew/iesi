@@ -5,6 +5,7 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandler;
 
 import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.serial.SerialClob;
 import java.io.*;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -38,14 +39,13 @@ public final class SQLTools {
         StringBuilder sb = new StringBuilder();
         try {
             Reader reader = clob.getCharacterStream();
-            char[] cbuf = new char[2048];
             if (reader == null) {
                 return null;
             }
             BufferedReader br = new BufferedReader(reader);
-            int line;
-            while (-1 != (line = br.read(cbuf, 0, cbuf.length))) {
-                sb.append(cbuf, 0, line);
+            String line;
+            while (null != (line = br.readLine())) {
+                sb.append(line);
             }
             br.close();
         } catch (SQLException | IOException e) {

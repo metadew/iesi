@@ -5,7 +5,6 @@ import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
-import java.nio.file.Paths;
 import java.util.Optional;
 
 /**
@@ -21,7 +20,7 @@ public class JsonInputOperation {
 
     public JsonInputOperation(String fileName) {
         this.setFileName(fileName);
-        this.setDataObjectOperation(new DataObjectOperation(Paths.get(this.getFileName())));
+        this.setDataObjectOperation(new DataObjectOperation(this.getFileName()));
     }
 
     public Optional<Script> getScript() {

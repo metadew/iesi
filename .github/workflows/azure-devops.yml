@@ -1,0 +1,22 @@
+name: build_iesi_core_and_rest
+
+# Run this workflow every time a commit is pushed to main or a pull request is opened against main
+on:
+  push:
+    branches:
+      - develop 
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: Call Azure Pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure Pipelines Action
+        uses: Azure/pipelines@v1
+        with:
+          azure-devops-project-url: https://dev.azure.com/IESI/IESI
+          azure-pipeline-name: 'Multi Stage'
+          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}

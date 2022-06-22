@@ -1,0 +1,86 @@
+# configurations related to the metadata repository
+iesi:
+  metadata:
+    repository:
+      # category can be: general, design, connectivity, trace, result.
+      # each category should define its own type and definition
+      - categories:
+          - general
+        # instance:
+
+        # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
+        coordinator:
+          type: $DATABASE_TYPE
+          schema: IESI
+          connection: '$DATABASE_CONNECTION_URL'
+          owner:
+            user: '$DATABASE_USER'
+            password: '$DATABASE_PASSWORD'
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: mssql
+#          database: 
+#          host: 
+#          port: 
+#          schema: 
+#          name: 
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: netezza
+#          host: 
+#          name: 
+#          port: 
+#          schema: 
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: postgresql
+#          host: 
+#          name: 
+#          port: 
+#          reader: 
+#          schema: 
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: mysql
+#          host:
+#          name:
+#          port:
+#          schema:
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:

@@ -57,7 +57,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
             log.info("Executing " + scriptExecutionRequest.toString());
             try {
                 ScriptExecutionWorker scriptExecutionWorker = selectScriptExecutionWorker(scriptExecutionRequest);
-                executeScriptExecutionRequest(scriptExecutionWorker, scriptExecutionRequest);
+                executeScriptExecutionRequest(scriptExecutionWorker, scriptExecutionRequest, executionRequest.isDebugMode());
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
@@ -70,7 +70,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
         return scriptExecutionWorkers.get();
     }
 
-    private void executeScriptExecutionRequest(ScriptExecutionWorker scriptExecutionWorker, ScriptExecutionRequest scriptExecutionRequest) throws IOException, InterruptedException {
+    private void executeScriptExecutionRequest(ScriptExecutionWorker scriptExecutionWorker, ScriptExecutionRequest scriptExecutionRequest, boolean debugMode) throws IOException, InterruptedException {
         boolean isWindows = System.getProperty("os.name")
                 .toLowerCase().startsWith("windows");
         ProcessBuilder builder = new ProcessBuilder();
@@ -78,13 +78,17 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
             builder.command(
                     "bin/iesi-execute.cmd",
                     "-scriptExecutionRequestKey",
-                    scriptExecutionRequest.getMetadataKey().getId()
+                    scriptExecutionRequest.getMetadataKey().getId(),
+                    "-debugMode",
+                    debugMode ? "Y" : "N"
             );
         } else {
             builder.command(
                     "./bin/iesi-execute.sh",
                     "-scriptExecutionRequestKey",
-                    scriptExecutionRequest.getMetadataKey().getId()
+                    scriptExecutionRequest.getMetadataKey().getId(),
+                    "-debugMode",
+                    debugMode ? "Y" : "N"
             );
         }
         builder.directory(scriptExecutionWorker.getPath().toFile());

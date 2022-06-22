@@ -9,17 +9,17 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '.'
+  home: '/home/hkhattabi/metadew/instances/0.8.0/IESI'
   security:
     enabled: true
     jwt:
       secret: secret
       expiry-date: 10
   workers:
-    - path: '.'
+    - path: '/home/hkhattabi/metadew/instances/0.8.0/IESI'
       timeout: 30
   master:
-    path: '.'
+    path: '/home/hkhattabi/metadew/instances/0.8.0/IESI'
     host: 'http://localhost:8080'
     credentials:
       user: admin

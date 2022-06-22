@@ -93,7 +93,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
         }
         builder.directory(scriptExecutionWorker.getPath().toFile());
         Process process = builder.start();
-        StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), log::info);
+        StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), process.getErrorStream(), log::info);
         Executors.newSingleThreadExecutor().submit(streamGobbler);
         // TODO: what to do when failed
         boolean exited = process.waitFor(scriptExecutionWorker.getTimeoutInMinutes(), TimeUnit.MINUTES);
@@ -106,16 +106,42 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
 
     private static class StreamGobbler implements Runnable {
         private final InputStream inputStream;
+        private final InputStream inputErrorStream;
         private final Consumer<String> consumer;
 
-        public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
+        public StreamGobbler(InputStream inputStream, InputStream errorStream, Consumer<String> consumer) {
             this.inputStream = inputStream;
+            this.inputErrorStream = errorStream;
             this.consumer = consumer;
         }
 
         @Override
         public void run() {
-            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
+            try (
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    BufferedReader bufferedErrorReader = new BufferedReader(new InputStreamReader(inputErrorStream))
+            ) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    consumer.accept(line);
+                }
+                line = bufferedErrorReader.readLine();
+
+                if (line != null) {
+                    consumer.accept(line);
+                    bufferedErrorReader.close();
+                    throw new RuntimeException(line);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+            /*
+            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach((line) -> {
+                System.out.println("EOH");
+                System.out.println(line);
+            });
+
+             */
         }
     }
 

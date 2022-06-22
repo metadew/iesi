@@ -4,7 +4,6 @@ package io.metadew.iesi.metadata.service.user;
 import io.metadew.iesi.metadata.configuration.user.RoleConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,6 @@ public class RoleService {
     public List<Role> getAll() {
         return RoleConfiguration.getInstance().getAll();
     }
-    public List<Role> getByTeamId(TeamKey teamKey) { return RoleConfiguration.getInstance().getByTeamId(teamKey);}
 
     public boolean exists(RoleKey roleKey) {
         return RoleConfiguration.getInstance().exists(roleKey);

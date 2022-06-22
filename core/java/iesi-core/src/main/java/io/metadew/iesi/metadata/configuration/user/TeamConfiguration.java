@@ -22,7 +22,7 @@ public class TeamConfiguration extends Configuration<Team, TeamKey> {
 
     private static String fetchIdByNameQuery = "select teams.ID as team_id" +
             " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams" +
-            " WHERE TEAM_NAME={0};";
+            " WHERE NAME={0};";
     private static String fetchSingleQuery = "select teams.ID as team_id, teams.TEAM_NAME as team_name, " +
             "roles.id as role_id, roles.team_id as role_team_id, roles.role_name as role_role_name, " +
             "privileges.id as privilege_id, privileges.role_id as privilege_role_id, privileges.privilege as privilege_privilege, " +

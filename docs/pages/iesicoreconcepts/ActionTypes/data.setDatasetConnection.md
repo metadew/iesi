@@ -53,5 +53,5 @@ This actiontype defines a dataset connection that can be used in any next action
     - name: "dataset"
       value : "sepatransfer"
     - name: "labels"
-      value : "{% raw %}{{$run.id}}{% endraw %},output"
+      value : "{{$run.id}},output"
 ```

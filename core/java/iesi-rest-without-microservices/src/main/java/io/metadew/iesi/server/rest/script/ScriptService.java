@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.script;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
 import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Metadata;
@@ -11,6 +10,8 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.script.audit.IScriptDesignAuditService;
+import io.metadew.iesi.server.rest.script.dto.IScriptPostDtoService;
+import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
@@ -28,17 +29,12 @@ public class ScriptService implements IScriptService {
     private ScriptConfiguration scriptConfiguration;
     private ScriptDesignAuditConfiguration scriptDesignAuditConfiguration;
     private IScriptDesignAuditService scriptDesignAuditPostDtoService;
-    private MetadataPolicyConfiguration metadataPolicyConfiguration;
 
     private ScriptService(ScriptConfiguration scriptConfiguration,
-                          ScriptDesignAuditConfiguration scriptDesignAuditConfiguration,
-                          IScriptDesignAuditService scriptDesignAuditPostDtoService,
-                          MetadataPolicyConfiguration metadataPolicyConfiguration
-    ) {
+                          ScriptDesignAuditConfiguration scriptDesignAuditConfiguration, IScriptDesignAuditService scriptDesignAuditPostDtoService) {
         this.scriptConfiguration = scriptConfiguration;
         this.scriptDesignAuditConfiguration = scriptDesignAuditConfiguration;
         this.scriptDesignAuditPostDtoService = scriptDesignAuditPostDtoService;
-        this.metadataPolicyConfiguration = metadataPolicyConfiguration;
     }
 
     public List<Script> getAll() {
@@ -54,7 +50,6 @@ public class ScriptService implements IScriptService {
     }
 
     public void createScript(Script script) {
-        metadataPolicyConfiguration.verifyScriptPolicies(script);
         scriptConfiguration.insert(script);
         scriptDesignAuditConfiguration.insert(scriptDesignAuditPostDtoService.convertToScriptAudit(script, ScriptDesignAuditAction.CREATE));
     }

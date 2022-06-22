@@ -6,6 +6,7 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
+import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,6 +50,8 @@ class UsersControllerSecurityTest {
 
     @MockBean
     private AuthenticationManager authenticationManager;
+    @MockBean
+    private JwtService jwtService;
     @MockBean
     private PasswordEncoder passwordEncoder;
     @MockBean

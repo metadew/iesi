@@ -17,8 +17,4 @@ public class MetadataDoesNotExistException extends RuntimeException {
         this(metadata.getMetadataKey());
     }
 
-    public MetadataDoesNotExistException(String message) {
-        super(message);
-    }
-
 }

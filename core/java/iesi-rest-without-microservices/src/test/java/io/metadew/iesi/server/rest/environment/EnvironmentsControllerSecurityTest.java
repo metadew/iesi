@@ -13,7 +13,6 @@ import io.metadew.iesi.server.rest.environment.EnvironmentService;
 import io.metadew.iesi.server.rest.environment.EnvironmentsController;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDto;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDtoResourceAssembler;
-import io.metadew.iesi.server.rest.environment.dto.EnvironmentDtoService;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentParameterDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -22,16 +21,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -59,9 +55,6 @@ class EnvironmentsControllerSecurityTest {
     private EnvironmentService environmentService;
 
     @MockBean
-    private EnvironmentDtoService environmentDtoService;
-
-    @MockBean
     private EnvironmentDtoResourceAssembler environmentDtoResourceAssembler;
 
     @MockBean
@@ -71,10 +64,11 @@ class EnvironmentsControllerSecurityTest {
     private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
 
     @Test
-    void testGetAllNoUser() {
-        assertThatThrownBy(() -> environmentsController.getAll(Pageable.unpaged(), ""))
+    void testGetAllNoUser() throws Exception {
+        assertThatThrownBy(() -> environmentsController.getAll())
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
+
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_WRITE@PUBLIC",
@@ -102,18 +96,16 @@ class EnvironmentsControllerSecurityTest {
                     "GROUPS_READ@PUBLIC",
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
-    void testGetAllNoConnectionReadPrivilege() {
-        assertThatThrownBy(() -> environmentsController.getAll(Pageable.unpaged(), ""))
+    void testGetAllNoEnvironmentReadPrivilege() throws Exception {
+        assertThatThrownBy(() -> environmentsController.getAll(Pageable.unpaged()))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
     @WithIesiUser(username = "spring",
             authorities = {"ENVIRONMENTS_READ@PUBLIC"})
-    void testGetConnectionReadPrivilege() {
-        when(environmentDtoService.getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
-                .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
-        environmentsController.getAll(Pageable.unpaged(), null);
+    void testGetEnvironmentReadPrivilege() throws Exception {
+        environmentsController.getAll();
     }
 
     @Test

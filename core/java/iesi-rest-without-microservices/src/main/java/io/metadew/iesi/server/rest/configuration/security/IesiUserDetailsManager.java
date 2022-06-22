@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.server.rest.user.IUserService;
 import io.metadew.iesi.server.rest.user.UserDto;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Component
 @DependsOn("metadataRepositoryConfiguration")
 @Log4j2
+@ConditionalOnWebApplication
 public class IesiUserDetailsManager implements UserDetailsManager {
 
     private final IUserService userService;
@@ -97,10 +99,10 @@ public class IesiUserDetailsManager implements UserDetailsManager {
         userService.update(user);
 
         SecurityContextHolder.getContext().setAuthentication(
-                createNewAuthentication(currentUser));
+                createNewAuthentication(currentUser, newPassword));
     }
 
-    private Authentication createNewAuthentication(Authentication currentAuth) {
+    private Authentication createNewAuthentication(Authentication currentAuth, String newPassword) {
         UserDetails user = loadUserByUsername(currentAuth.getName());
 
         UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(

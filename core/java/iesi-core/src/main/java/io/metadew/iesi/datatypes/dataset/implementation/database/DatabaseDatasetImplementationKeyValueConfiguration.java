@@ -43,7 +43,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
             "where dataset_in_mem_impl_kvs.IMPL_MEM_ID={0} and dataset_in_mem_impl_kvs.KEY={1};";
 
     private static final String INSERT_QUERY = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " (ID, IMPL_MEM_ID, \"KEY\", VALUE) " +
+            " (ID, IMPL_MEM_ID, KEY, VALUE) " +
             "VALUES ({0}, {1}, {2}, {3});";
 
     private static final String DELETE_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
@@ -53,7 +53,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
             " WHERE IMPL_MEM_ID={0};";
 
     private static String UPDATE_QUERY = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " SET IMPL_MEM_ID = {0}, \"KEY\" ={1}, VALUE = {2}" +
+            " SET IMPL_MEM_ID = {0}, KEY ={1}, VALUE = {2}" +
             " WHERE ID = {3};";
 
     private static DatabaseDatasetImplementationKeyValueConfiguration instance;

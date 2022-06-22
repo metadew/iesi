@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Log4j2
-@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=false"})
+@SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ContextConfiguration(classes = {TestConfiguration.class, MethodSecurityConfiguration.class})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @AutoConfigureMockMvc
@@ -72,6 +72,7 @@ class ExecutionRequestControllerMvcTest {
     }
 
     @Test
+    @WithMockUser(username = "spring")
     void getAllNoResult() throws Exception {
         Pageable pageable = PageRequest.of(0, 20);
         List<ExecutionRequestDto> executionRequestDtoList = new ArrayList<>();
@@ -87,6 +88,7 @@ class ExecutionRequestControllerMvcTest {
     }
 
     @Test
+    @WithMockUser(username = "spring")
     void getAllResultWithPagination() throws Exception {
         ExecutionRequestDto executionRequest1 = ExecutionRequestDto.builder()
                 .executionRequestId("newExecutionRequestId")

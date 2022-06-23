@@ -47,7 +47,7 @@ public class UserDtoListResultSetExtractor {
         }
     }
 
-    private void addRole(UserDtoBuilder userDtoBuilder, CachedRowSet cachedRowSet) throws SQLException {;
+    private void addRole(UserDtoBuilder userDtoBuilder, CachedRowSet cachedRowSet) throws SQLException {
         if (cachedRowSet.getString("role_id") != null) {
             UserRoleDtoBuilder userRoleDtoBuilder = userDtoBuilder.getRoles().computeIfAbsent(
                     UUID.fromString(cachedRowSet.getString("role_id")),

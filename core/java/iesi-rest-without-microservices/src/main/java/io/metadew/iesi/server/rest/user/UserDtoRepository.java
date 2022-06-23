@@ -15,7 +15,10 @@ import org.springframework.stereotype.Repository;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
@@ -110,21 +113,15 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY users.username COLLATE NOCASE ASC ";
-        List<String> sorting = pageable.getSort().stream().map(order -> {
-                    if (order.getProperty().equalsIgnoreCase("USERNAME")) {
-                        return "users.username" + " COLLATE NOCASE " + order.getDirection();
-                    } else {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        if (sorting.isEmpty()) {
-            sorting.add("users.username COLLATE NOCASE");
+        if (pageable.isUnpaged()) {
+            return " ";
         }
-
-        return " ORDER BY " + String.join(", ", sorting) + " ";
+        if (pageable.getSort().isUnsorted()) {
+            // set default ordering for pagination to last loaded
+            return " ORDER BY users.LOAD_TMS ASC ";
+        } else {
+            return " ";
+        }
     }
 
     private String getWhereClause(Set<UserFilter> datasetFilters) {

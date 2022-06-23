@@ -156,20 +156,15 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY datasets.NAME COLLATE NOCASE ASC ";
-        List<String> sorting = pageable.getSort().stream().map(order -> {
-                    if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "datasets.NAME " + " COLLATE NOCASE " + order.getDirection();
-                    } else {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        if (sorting.isEmpty()) {
-            return " ORDER BY datasets.NAME COLATTE NOCASE ASC";
+        if (pageable.isUnpaged()) {
+            return " ";
         }
-        return " ORDER BY " + String.join(", ", sorting) + " ";
+        if (pageable.getSort().isUnsorted()) {
+            // set default ordering for pagination to last loaded
+            return " ORDER BY datasets.LOAD_TMS ASC ";
+        } else {
+            return " ";
+        }
     }
 
     private long getRowSize(Authentication authentication, Set<DatasetFilter> datasetFilters) throws SQLException {

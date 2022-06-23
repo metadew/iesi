@@ -135,9 +135,9 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         List<String> sorting = pageable.getSort().stream().map(order -> {
             // add further sort on the ScriptAndScriptVersionTable here
             if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "script_designs.SCRIPT_NM" + " COLLATE NOCASE " + order.getDirection();
+                return "script_designs.SCRIPT_NM" + " " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
-                return "versions.SCRIPT_VRS_NB" + " COLLATE NOCASE " + order.getDirection();
+                return "versions.SCRIPT_VRS_NB" + " " + order.getDirection();
             } else {
                 return null;
             }

@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 @Component
@@ -36,6 +38,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
     private final LdapAuthentication ldapAuthentication;
     private final LdapGroupMapping ldapGroupMapping;
     private final LdapRoleMapping ldapRoleMapping;
+    private final LdapServer ldapServer;
     private final TeamService teamConfiguration;
 
     public LdapAuthenticationProvider(
@@ -44,6 +47,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
             LdapAuthentication ldapAuthentication,
             LdapGroupMapping ldapGroupMapping,
             LdapRoleMapping ldapRoleMapping,
+            LdapServer ldapServer,
             TeamService teamConfiguration
     ) {
         this.ldapContextSource = ldapContextSource;
@@ -51,12 +55,18 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
         this.ldapAuthentication = ldapAuthentication;
         this.ldapGroupMapping = ldapGroupMapping;
         this.ldapRoleMapping = ldapRoleMapping;
+        this.ldapServer = ldapServer;
         this.teamConfiguration = teamConfiguration;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.trace(String.format("Trying to authenticate %s through LDAP", authentication.getName()));
+        log.info(ldapServer.isDisabled());
+        if (ldapServer.isDisabled()) {
+            log.warn("LDAP authentication is disabled, skipping the process.");
+            return null;
+        }
         LdapUser user = authenticate(authentication.getName(), authentication.getCredentials().toString())
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", authentication.getName())));
 
@@ -141,10 +151,18 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
         Set<Privilege> iesiPrivileges = new HashSet<>();
 
         for (LdapGroup group : groups) {
-            String adGroupName = group.getCn();
+            if (!group.getCn().contains(ldapGroupMapping.getPrefix())) {
+                throw new RuntimeException(String.format("The AD group does not contain the prefix %s mentioned in your configuration", ldapGroupMapping.getPrefix()));
+            }
+            String adGroupName = group.getCn().substring(ldapGroupMapping.getPrefix().length());
+            log.info(adGroupName);
             if (adGroupName.contains(adGroupTeamName)) {
                 Set<Role> iesiRoles = iesiTeam.getRoles();
-                String adRole = adGroupName.substring(0, adGroupName.lastIndexOf(adGroupTeamName));
+                /*log.info(ldapGroupMapping.getPrefix().length());
+                log.info(adGroupName.indexOf(adGroupTeamName));
+                log.info("AD GROUP TEAM NAME: " + adGroupName);
+                log.info("INDEX OF AD GROUP TEAM NAME: " + adGroupName.indexOf(adGroupTeamName));*/
+                String adRole = adGroupName.substring(0, adGroupName.indexOf(adGroupTeamName));
                 MappingPair mappingPair = ldapRoleMapping.getMappingPairs().stream()
                         .filter(p -> p.getAdName().equals(adRole))
                         .findFirst()

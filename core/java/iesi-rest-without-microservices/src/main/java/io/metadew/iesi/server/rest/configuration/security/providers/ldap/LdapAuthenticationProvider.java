@@ -26,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Log4j2
 @Component
@@ -158,10 +156,6 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
             log.info(adGroupName);
             if (adGroupName.contains(adGroupTeamName)) {
                 Set<Role> iesiRoles = iesiTeam.getRoles();
-                /*log.info(ldapGroupMapping.getPrefix().length());
-                log.info(adGroupName.indexOf(adGroupTeamName));
-                log.info("AD GROUP TEAM NAME: " + adGroupName);
-                log.info("INDEX OF AD GROUP TEAM NAME: " + adGroupName.indexOf(adGroupTeamName));*/
                 String adRole = adGroupName.substring(0, adGroupName.indexOf(adGroupTeamName));
                 MappingPair mappingPair = ldapRoleMapping.getMappingPairs().stream()
                         .filter(p -> p.getAdName().equals(adRole))

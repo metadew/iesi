@@ -9,17 +9,17 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '.'
+  home: '$IESI_HOME'
   security:
     enabled: true
     jwt:
       secret: secret
       expiry-date: 10
   workers:
-    - path: '.'
+    - path: '$IESI_WORKER_PATH'
       timeout: 30
   master:
-    path: '.'
+    path: '$IESI_MASTER_PATH'
     host: 'http://localhost:8080'
     credentials:
       user: admin

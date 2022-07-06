@@ -9,5 +9,6 @@ public class LdapGroupMapping {
     private String groupSearchBaseDn;
     private String groupSearchAttribute;
     private String groupMemberAttribute;
+    private String prefix;
     private List<MappingPair> mappingPairs;
 }

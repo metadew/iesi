@@ -40,7 +40,10 @@ public enum IESIRole {
                     SECURITY_GROUP_READ,
                     // Datasets
                     DATASET_MODIFY,
-                    DATASET_READ
+                    DATASET_READ,
+                    // Templates
+                    TEMPLATES_MODIFY,
+                    TEMPLATES_READ
             ).collect(Collectors.toSet())),
     TECHNICAL_ENGINEER("TECHNICAL_ENGINEER",
             Stream.of(
@@ -64,7 +67,10 @@ public enum IESIRole {
                     TEAMS_READ,
                     SECURITY_GROUP_READ,
                     // Datasets
-                    DATASET_READ
+                    DATASET_READ,
+                    // Templates
+                    TEMPLATES_READ,
+                    TEMPLATES_MODIFY
             ).collect(Collectors.toSet())),
     TEST_ENGINEER("TEST_ENGINEER",
             Stream.of(

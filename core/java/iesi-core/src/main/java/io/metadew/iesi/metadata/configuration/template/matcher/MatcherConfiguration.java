@@ -49,11 +49,11 @@ public class MatcherConfiguration extends Configuration<Matcher, MatcherKey> {
     }
 
     public void deleteByTemplateId(TemplateKey templateKey) {
+        MatcherValueConfiguration.getInstance().deleteByTemplateId(templateKey);
         getMetadataRepository().executeUpdate(
                 MessageFormat.format(deleteMatchersByTemplateIdQuery,
                         SQLTools.getStringForSQL(templateKey.getId())
                 ));
-        MatcherValueConfiguration.getInstance().deleteByTemplateId(templateKey);
     }
 
 

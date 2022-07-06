@@ -41,6 +41,7 @@ public enum IESIRole {
                     // Datasets
                     DATASET_MODIFY,
                     DATASET_READ,
+                    // Templates
                     TEMPLATES_MODIFY,
                     TEMPLATES_READ
             ).collect(Collectors.toSet())),

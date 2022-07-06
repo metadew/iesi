@@ -14,7 +14,7 @@ public interface ITemplateService {
 
     boolean exists(TemplateKey templateKey);
 
-    boolean exists(String templateName);
+    boolean exists(String templateName, Long version);
 
     void insert(Template template);
 

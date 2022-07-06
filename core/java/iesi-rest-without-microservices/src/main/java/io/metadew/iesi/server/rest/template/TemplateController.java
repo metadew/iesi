@@ -1,7 +1,5 @@
 package io.metadew.iesi.server.rest.template;
 
-import io.metadew.iesi.datatypes.template.TemplateService;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.service.template.ITemplateService;
@@ -18,12 +16,14 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import javax.validation.Valid;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/templates")
@@ -85,7 +85,7 @@ public class TemplateController {
     }
 
     @PostMapping("")
-    public ResponseEntity<TemplateDto> create(@RequestBody TemplateDto templateDto) {
+    public ResponseEntity<TemplateDto> create(@Valid @RequestBody TemplateDto templateDto) {
         if (templateService.get(templateDto.getName(), templateDto.getVersion()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The template %s with version %s already exists", templateDto.getName(), templateDto.getVersion()));
         }

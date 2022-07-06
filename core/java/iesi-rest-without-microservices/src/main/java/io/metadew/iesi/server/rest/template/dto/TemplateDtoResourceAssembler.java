@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.server.rest.template.TemplateController;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnWebApplication
 public class TemplateDtoResourceAssembler extends RepresentationModelAssemblerSupport<Template, TemplateDto> {
 
     public TemplateDtoResourceAssembler() {
@@ -21,7 +23,6 @@ public class TemplateDtoResourceAssembler extends RepresentationModelAssemblerSu
 
     @Override
     public TemplateDto toModel(Template template) {
-        TemplateDto templateDto = convertToDto(template);
         return null;
     }
 
@@ -33,8 +34,8 @@ public class TemplateDtoResourceAssembler extends RepresentationModelAssemblerSu
         return new TemplateDto(
                 template.getMetadataKey().getId(),
                 template.getName(),
-                template.getVersion(),
                 template.getDescription(),
+                template.getVersion(),
                 template.getMatchers().stream()
                         .map(this::convertToDto)
                         .filter(Objects::nonNull)

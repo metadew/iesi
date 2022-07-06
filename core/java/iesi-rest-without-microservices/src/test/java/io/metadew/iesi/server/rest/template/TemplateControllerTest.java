@@ -7,12 +7,10 @@ import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
-import io.metadew.iesi.server.rest.script.dto.ScriptDto;
 import io.metadew.iesi.server.rest.template.dto.TemplateDto;
 import io.metadew.iesi.server.rest.template.dto.TemplateDtoRepository;
 import io.metadew.iesi.server.rest.template.dto.TemplateDtoResourceAssembler;
 import io.metadew.iesi.server.rest.template.dto.TemplateDtoService;
-import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,27 +19,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(TemplateController.class)
@@ -77,9 +71,9 @@ public class TemplateControllerTest {
 
     @Test
     void getAllPagination() throws Exception {
-        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto("template1", 1L);
-        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto("template2", 2L);
-        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto("template2", 2L);
+        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(), "template1", 1L);
+        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(), "template2", 2L);
+        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(), "template2", 2L);
         int size = 1;
         Pageable pageable1 = PageRequest.of(0, size);
         Pageable pageable2 = PageRequest.of(0, size);
@@ -131,9 +125,9 @@ public class TemplateControllerTest {
 
     @Test
     void getAllPaginationOrderedByNameDefaultOrdering() throws Exception {
-        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto("template1", 0L);
-        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto("template2", 0L);
-        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto("template3", 0L);
+        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template1", 0L);
+        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template2", 0L);
+        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template3", 0L);
         int size = 1;
         Sort sortDefaultAsc = Sort.by(Sort.DEFAULT_DIRECTION, "name");
         Pageable pageable1 = PageRequest.of(0, size, sortDefaultAsc);
@@ -186,9 +180,9 @@ public class TemplateControllerTest {
 
     @Test
     void getAllPaginationOrderedByNameAsc() throws Exception {
-        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto("template1", 0L);
-        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto("template2", 0L);
-        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto("template3", 0L);
+        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template1", 0L);
+        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template2", 0L);
+        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template3", 0L);
         int size = 1;
         Sort sortAsc = Sort.by(Sort.Direction.ASC, "name");
         Pageable pageable1 = PageRequest.of(0, size, sortAsc);
@@ -238,9 +232,9 @@ public class TemplateControllerTest {
 
     @Test
     void getAllPaginationOrderedByNameDesc() throws Exception {
-        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto("template1", 0L);
-        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto("template2", 0L);
-        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto("template3", 0L);
+        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template1", 0L);
+        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template2", 0L);
+        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template3", 0L);
         int size = 1;
         Sort sortDesc = Sort.by(Sort.Direction.DESC, "name");
         Pageable pageable1 = PageRequest.of(0, size, sortDesc);
@@ -291,9 +285,9 @@ public class TemplateControllerTest {
 
     @Test
     void getAllPaginationSizeEqualAllOrderedByNameDesc() throws Exception {
-        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto("template1", 0L);
-        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto("template2", 0L);
-        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto("template3", 0L);
+        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template1", 0L);
+        TemplateDto templateDto2 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template2", 0L);
+        TemplateDto templateDto3 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(),"template3", 0L);
         int size = 3;
         Sort sortDefault = Sort.by(Sort.DEFAULT_DIRECTION, "name");
         Pageable pageable1 = PageRequest.of(0, size, sortDefault);
@@ -320,7 +314,7 @@ public class TemplateControllerTest {
         authorities = { "TEMPLATES_READ@PUBLIC"})
     void getByName() throws Exception {
         String name = "templateNameTest";
-        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto(name, 0L);
+        TemplateDto templateDto1 = TemplateDtoBuilder.simpleTemplateDto(UUID.randomUUID(), name, 0L);
 
         given(templateDtoService.fetchByName(any(), eq(name), eq(templateDto1.getVersion())))
                 .willReturn(Optional.of(templateDto1));

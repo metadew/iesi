@@ -1,10 +1,9 @@
 package io.metadew.iesi.server.rest.template.dto;
 
-import io.metadew.iesi.metadata.definition.template.TemplateKey;
+import io.metadew.iesi.connection.tools.SQLTools;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.relational.core.sql.SQL;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -42,7 +41,7 @@ public class TemplateDtoListResultSetExtractor {
         if (rs.getString("matcherValue_type").equals("any")) {
             templateDtoBuilder.getMatcherDtoBuilders().add(new TemplateMatcherAnyValueDtoBuilder(rs.getString("matcher_key")));
         } else if (rs.getString("matcherValue_type").equals("fixed")) {
-            templateDtoBuilder.getMatcherDtoBuilders().add(new TemplateMatcherFixedValueDtoBuilder(rs.getString("matcher_key"), rs.getString("matcherValue_fixedValue")));
+            templateDtoBuilder.getMatcherDtoBuilders().add(new TemplateMatcherFixedValueDtoBuilder(rs.getString("matcher_key"), SQLTools.getStringFromSQLClob(rs, "matcherValue_fixedValue")));
         } else if (rs.getString("matcherValue_type").equals("template")) {
             templateDtoBuilder.getMatcherDtoBuilders().add(new TemplateMatcherTemplateValueDtoBuilder(rs.getString("matcher_key"), rs.getString("matcherValue_templateName"), rs.getLong("matcherValue_templateVersion")));
         }
@@ -64,8 +63,8 @@ public class TemplateDtoListResultSetExtractor {
             return new TemplateDto(
                     uuid,
                     name,
-                    version,
                     description,
+                    version,
                     matcherDtoBuilders.stream()
                             .map(TemplateMatcherDtoBuilder::build)
                             .collect(Collectors.toSet())

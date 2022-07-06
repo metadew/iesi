@@ -8,7 +8,6 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
-import io.metadew.iesi.metadata.service.template.ITemplateService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.template.TemplateFilter;
 import lombok.extern.log4j.Log4j2;
@@ -28,11 +27,9 @@ import java.util.stream.Collectors;
 public class TemplateDtoService implements ITemplateDtoService {
 
     private final ITemplateDtoRepository templateDtoRepository;
-    private final ITemplateService templateService;
 
-    public TemplateDtoService(ITemplateDtoRepository templateDtoRepository, ITemplateService templateService) {
+    public TemplateDtoService(ITemplateDtoRepository templateDtoRepository) {
         this.templateDtoRepository = templateDtoRepository;
-        this.templateService = templateService;
     }
 
     @Override

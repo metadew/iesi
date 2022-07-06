@@ -1,5 +1,4 @@
-package io.metadew.iesi.server.rest.dataset.dto;
-
+package io.metadew.iesi.server.rest.template.dto;
 
 import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
 import lombok.*;
@@ -13,12 +12,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Relation(value = "dataset", collectionRelation = "datasets")
-public class DatasetDto extends NoEmptyLinksRepresentationModel<DatasetDto> {
-
+@Relation(value = "template", collectionRelation = "templates")
+public class TemplateDto extends NoEmptyLinksRepresentationModel<TemplateDto> {
     private UUID uuid;
     private String name;
-    private String securityGroupName;
-    private Set<UUID> implementations;
+    private String description;
+    private Long version;
+    private Set<MatcherDto> matchers;
 }
-

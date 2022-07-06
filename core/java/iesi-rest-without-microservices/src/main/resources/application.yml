@@ -25,7 +25,6 @@ iesi:
       access-token-validity: 1800
       refresh-token-validity: 86400
   debug: true
-
 management:
   endpoints:
     web:

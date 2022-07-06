@@ -56,7 +56,7 @@ jobs:
           name: Build, package and install the Core
           command: |
             cd ~/repo/core/java/iesi-core
-            mvn clean install -Dmaven.deploy.skip=true
+            mvn clean install -Dmaven.deploy.skip=true -Dgpg.skip
       - run:
           name: Save test results
           command: |

@@ -105,7 +105,7 @@ jobs:
             cd ~/repo/core/java/iesi-rest-without-microservices
             mvn project-info-reports:dependencies
             cd ~/repo/core/java/iesi-core/target
-            java -cp iesi-core-0.8.0-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.8.0 
+            java -cp iesi-core-0.8.0-SNAPSHOT-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.8.0-SNAPSHOT
             cd ~/sandbox/0.8.0/assembly
             chmod ug+x bin/*.sh
             zip -r iesi-dist-v0.8.0.zip ./*

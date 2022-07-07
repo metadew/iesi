@@ -109,7 +109,7 @@ jobs:
             cd ~/sandbox/0.8.0-SNAPSHOT/assembly
             chmod ug+x bin/*.sh
             zip -r iesi-dist-v0.8.0-SNAPSHOT.zip ./*
-            mv iesi-dist-v0.8.0.zip ..
+            mv iesi-dist-v0.8.0-SNAPSHOT.zip ..
             tar -czvf iesi-dist-v0.8.0-SNAPSHOT.tar.gz ./* 
             mv iesi-dist-v0.8.0-SNAPSHOT.tar.gz ..
       - store_artifacts:

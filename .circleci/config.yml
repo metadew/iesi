@@ -106,14 +106,14 @@ jobs:
             mvn project-info-reports:dependencies
             cd ~/repo/core/java/iesi-core/target
             java -cp iesi-core-0.8.0-SNAPSHOT-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.8.0-SNAPSHOT
-            cd ~/sandbox/0.8.0/assembly
+            cd ~/sandbox/0.8.0-SNAPSHOT/assembly
             chmod ug+x bin/*.sh
-            zip -r iesi-dist-v0.8.0.zip ./*
+            zip -r iesi-dist-v0.8.0-SNAPSHOT.zip ./*
             mv iesi-dist-v0.8.0.zip ..
-            tar -czvf iesi-dist-v0.8.0.tar.gz ./* 
-            mv iesi-dist-v0.8.0.tar.gz ..
+            tar -czvf iesi-dist-v0.8.0-SNAPSHOT.tar.gz ./* 
+            mv iesi-dist-v0.8.0-SNAPSHOT.tar.gz ..
       - store_artifacts:
-          path: ~/sandbox/0.8.0/iesi-dist-v0.8.0.zip
+          path: ~/sandbox/0.8.0/iesi-dist-v0.8.0-SNAPSHOT.zip
 
       - store_artifacts:
-          path: ~/sandbox/0.8.0/iesi-dist-v0.8.0.tar.gz
+          path: ~/sandbox/0.8.0/iesi-dist-v0.8.0-SNAPSHOT.tar.gz

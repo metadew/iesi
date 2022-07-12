@@ -13,7 +13,7 @@ public class UserDtoModelAssembler extends RepresentationModelAssemblerSupport<U
 
 
     @Autowired
-    public UserDtoModelAssembler(DatasetImplementationDtoModelAssembler datasetImplementationDtoModelAssembler) {
+    public UserDtoModelAssembler() {
         super(UserController.class, UserDto.class);
     }
 

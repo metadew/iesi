@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import javax.websocket.server.PathParam;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,20 +41,17 @@ public class UserController {
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
 
-    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final TeamService teamService;
     private final IUserService userService;
     private final UserDtoModelAssembler userDtoModelAssembler;
     private final PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
 
-    public UserController(AuthenticationManager authenticationManager,
-                          PasswordEncoder passwordEncoder,
+    public UserController(PasswordEncoder passwordEncoder,
                           TeamService teamService,
                           IUserService userService,
                           UserDtoModelAssembler userDtoModelAssembler,
                           PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler) {
-        this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.teamService = teamService;
         this.userService = userService;
@@ -100,7 +98,7 @@ public class UserController {
 
     @PostMapping("/create")
     @PreAuthorize("hasPrivilege('USERS_WRITE')")
-    public ResponseEntity<Object> create(@RequestBody UserPostDto userPostDto) {
+    public ResponseEntity<UserDto> create(@RequestBody UserPostDto userPostDto) {
         if (userService.exists(userPostDto.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username " + userPostDto.getUsername() + " is already taken");
         }
@@ -118,9 +116,35 @@ public class UserController {
                 new HashSet<>());
         userService.addUser(user);
         Optional<UserDto> userDto = userService.get(user.getMetadataKey().getUuid());
-        return userDto
-                .<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+
+        return ResponseEntity.of(userDto);
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<UserDto> update(@PathVariable UUID uuid, @RequestBody UserPostDto userPostDto) {
+
+        if (!userService.exists(new UserKey(uuid))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user does not exist");
+        } else if (userService.exists(userPostDto.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The username is already taken");
+        } else if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The repeated password does not match the password provided");
+        }
+
+        User user = new User(
+                new UserKey(uuid),
+                userPostDto.getUsername(),
+                passwordEncoder.encode(userPostDto.getPassword()),
+                true,
+                false,
+                false,
+                false,
+                new HashSet<>()
+        );
+
+        userService.update(user);
+
+        return ResponseEntity.ok(userDtoModelAssembler.toModel(user));
     }
 
     @GetMapping("/{name}")
@@ -141,8 +165,5 @@ public class UserController {
         if (userDtoPage.hasContent())
             return userDtoPagedResourcesAssembler.toModel(userDtoPage, userDtoModelAssembler::toModel);
         return (PagedModel<UserDto>) userDtoPagedResourcesAssembler.toEmptyModel(userDtoPage, UserDto.class);
-
     }
-
-
 }

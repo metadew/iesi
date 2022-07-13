@@ -1,10 +1,14 @@
 package io.metadew.iesi.server.rest.user;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.user.Role;
 import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.TeamService;
+import io.metadew.iesi.server.rest.error.DataBadRequestException;
+import io.metadew.iesi.server.rest.error.PasswordsMisMatchException;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -99,11 +103,11 @@ public class UserController {
     @PostMapping("/create")
     @PreAuthorize("hasPrivilege('USERS_WRITE')")
     public ResponseEntity<UserDto> create(@RequestBody UserPostDto userPostDto) {
-        if (userService.exists(userPostDto.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username " + userPostDto.getUsername() + " is already taken");
-        }
         if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The repeated password does not match the password provided");
+            throw new PasswordsMisMatchException();
+        }
+        if (userService.exists(userPostDto.getUsername())) {
+            throw new MetadataAlreadyExistsException("Username " + userPostDto.getUsername() + " is already taken");
         }
         User user = new User(
                 new UserKey(UUID.randomUUID()),
@@ -123,28 +127,33 @@ public class UserController {
     @PutMapping("/{uuid}")
     public ResponseEntity<UserDto> update(@PathVariable UUID uuid, @RequestBody UserPostDto userPostDto) {
 
-        if (!userService.exists(new UserKey(uuid))) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user does not exist");
-        } else if (userService.exists(userPostDto.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The username is already taken");
-        } else if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The repeated password does not match the password provided");
+        if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
+            throw new PasswordsMisMatchException();
         }
 
-        User user = new User(
-                new UserKey(uuid),
+        User user = userService.getRawUser(new UserKey(uuid))
+                .orElseThrow(() -> new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist"));
+
+        if (userService.exists(userPostDto.getUsername())) {
+            throw new MetadataAlreadyExistsException(userPostDto.getUsername());
+        }
+
+
+        User updatedUser = new User(
+                user.getMetadataKey(),
                 userPostDto.getUsername(),
                 passwordEncoder.encode(userPostDto.getPassword()),
-                true,
-                false,
-                false,
-                false,
-                new HashSet<>()
+                user.isEnabled(),
+                user.isExpired(),
+                user.isCredentialsExpired(),
+                user.isLocked(),
+                user.getRoleKeys()
         );
 
-        userService.update(user);
+        userService.update(updatedUser);
+        Optional<UserDto> userDto = userService.get(updatedUser.getMetadataKey().getUuid());
 
-        return ResponseEntity.ok(userDtoModelAssembler.toModel(user));
+        return ResponseEntity.of(userDto);
     }
 
     @GetMapping("/{name}")

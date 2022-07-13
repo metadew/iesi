@@ -28,6 +28,7 @@ public interface IUserService {
     void addUser(User user);
 
     Optional<User> getRawUser(String username);
+    Optional<User> getRawUser(UserKey userKey);
 
     void update(User user);
 

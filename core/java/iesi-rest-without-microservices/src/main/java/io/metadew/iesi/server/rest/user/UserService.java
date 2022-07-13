@@ -71,6 +71,11 @@ public class UserService implements IUserService {
         return rawUserService.get(username);
     }
 
+    @Override
+    public Optional<User> getRawUser(UserKey userKey) {
+        return rawUserService.get(userKey);
+    }
+
     // If the name of a user is modified, the wrong record is evicted and the old, stale record
     // stays in the cache
     @Override

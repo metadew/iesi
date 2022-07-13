@@ -55,7 +55,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @AutoConfigureMockMvc
 @DirtiesContext
 @Disabled
-public class AuthenticationTest {
+class AuthenticationTest {
 
     @Autowired
     private TokenEndpoint tokenEndpoint;

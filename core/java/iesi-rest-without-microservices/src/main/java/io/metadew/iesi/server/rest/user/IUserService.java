@@ -32,6 +32,8 @@ public interface IUserService {
 
     void update(User user);
 
+    void updatePassword(String password, UUID uuid);
+
     void delete(UserKey userKey);
 
     void delete(String username);

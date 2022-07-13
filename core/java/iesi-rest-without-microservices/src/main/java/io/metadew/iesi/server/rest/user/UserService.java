@@ -87,6 +87,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void updatePassword(String password, UUID uuid) {
+        rawUserService.updatePassword(password, new UserKey(uuid));
+    }
+
+    @Override
     @CacheEvict(value = "users", allEntries = true)
     public void delete(UserKey userKey) {
         rawUserService.delete(userKey);

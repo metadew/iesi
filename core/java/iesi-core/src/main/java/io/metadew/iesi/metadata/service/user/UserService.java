@@ -56,6 +56,10 @@ public class UserService {
         UserConfiguration.getInstance().update(user);
     }
 
+    public void updatePassword(String password, UserKey userKey) {
+        UserConfiguration.getInstance().updatePassword(password, userKey);
+    }
+
     public void delete(UserKey userKey) {
         UserConfiguration.getInstance().delete(userKey);
     }

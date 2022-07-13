@@ -103,7 +103,7 @@ public class UserController {
     @PostMapping("/create")
     @PreAuthorize("hasPrivilege('USERS_WRITE')")
     public ResponseEntity<UserDto> create(@RequestBody UserPostDto userPostDto) {
-        if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
+        if (!userPostDto.getPassword().getPassword().equals(userPostDto.getPassword().getRepeatedPassword())) {
             throw new PasswordsMisMatchException();
         }
         if (userService.exists(userPostDto.getUsername())) {
@@ -112,7 +112,7 @@ public class UserController {
         User user = new User(
                 new UserKey(UUID.randomUUID()),
                 userPostDto.getUsername(),
-                passwordEncoder.encode(userPostDto.getPassword()),
+                passwordEncoder.encode(userPostDto.getPassword().getPassword()),
                 true,
                 false,
                 false,
@@ -124,13 +124,22 @@ public class UserController {
         return ResponseEntity.of(userDto);
     }
 
-    @PutMapping("/{uuid}")
-    public ResponseEntity<UserDto> update(@PathVariable UUID uuid, @RequestBody UserPostDto userPostDto) {
-
-        if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
+    @PutMapping("/{uuid}/password")
+    public ResponseEntity<UserDto> updatePassword(@PathVariable UUID uuid, @RequestBody PasswordPostDto passwordPostDto) {
+        if (!passwordPostDto.getPassword().equals(passwordPostDto.getRepeatedPassword())) {
             throw new PasswordsMisMatchException();
         }
+        if (!userService.exists(new UserKey(uuid))) {
+            throw new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist");
+        }
 
+        userService.updatePassword(passwordEncoder.encode(passwordPostDto.getPassword()), uuid);
+
+        return ResponseEntity.of(userService.get(uuid));
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<UserDto> update(@PathVariable UUID uuid, @RequestBody UserPostDto userPostDto) {
         User user = userService.getRawUser(new UserKey(uuid))
                 .orElseThrow(() -> new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist"));
 
@@ -142,7 +151,7 @@ public class UserController {
         User updatedUser = new User(
                 user.getMetadataKey(),
                 userPostDto.getUsername(),
-                passwordEncoder.encode(userPostDto.getPassword()),
+                user.getPassword(),
                 user.isEnabled(),
                 user.isExpired(),
                 user.isCredentialsExpired(),

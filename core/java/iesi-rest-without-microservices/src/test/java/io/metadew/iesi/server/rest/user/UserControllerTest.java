@@ -67,8 +67,7 @@ class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         UserPostDto userPostDto = new UserPostDto(
                 "user1",
-                "password1",
-                "password1"
+                new PasswordPostDto("password1","password1")
         );
         UserDto user = new UserDto(
                 UUID.randomUUID(),
@@ -97,8 +96,7 @@ class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         UserPostDto userPostDto = new UserPostDto(
                 "user1",
-                "password1",
-                "password1"
+                new PasswordPostDto("password1","password1")
         );
 
         String userPostDtoString = objectMapper.writeValueAsString(userPostDto);
@@ -116,8 +114,7 @@ class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         UserPostDto userPostDto = new UserPostDto(
                 "user1",
-                "password1",
-                "password2"
+                new PasswordPostDto("password1","password1")
         );
         UserDto user = new UserDto(
                 UUID.randomUUID(),
@@ -145,8 +142,7 @@ class UserControllerTest {
         UUID userUuid = UUID.randomUUID();
         UserPostDto userPostDto = new UserPostDto(
                 "user2",
-                "password1",
-                "password1"
+                new PasswordPostDto("password1","password1")
         );
 
         User user = new User(
@@ -191,8 +187,7 @@ class UserControllerTest {
         UUID userUuid = UUID.randomUUID();
         UserPostDto userPostDto = new UserPostDto(
                 "user2",
-                "password1",
-                "password1"
+                new PasswordPostDto("password1","password1")
         );
 
         String userPostDtoString = objectMapper.writeValueAsString(userPostDto);
@@ -207,14 +202,14 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.errorCode", is("404")))
                 .andExpect(jsonPath("$.message", is("The user with the id \"" + userUuid + "\" does not exist")));
     }
+
     @Test
     void updatePasswordsMisMatch() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         UUID userUuid = UUID.randomUUID();
         UserPostDto userPostDto = new UserPostDto(
                 "user2",
-                "password1",
-                "password2"
+                new PasswordPostDto("password1","password1")
         );
 
         String userPostDtoString = objectMapper.writeValueAsString(userPostDto);

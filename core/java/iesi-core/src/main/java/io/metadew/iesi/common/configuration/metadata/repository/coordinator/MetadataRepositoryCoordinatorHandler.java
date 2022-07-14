@@ -50,4 +50,7 @@ public class MetadataRepositoryCoordinatorHandler implements IMetadataRepository
         return metadataRepositoryCoordinatorServiceMap.get(metadataRepositoryCoordinatorDefinition.getClass()).getDatabaseConnection(metadataRepositoryCoordinatorDefinition, metadataRepositoryCoordinatorProfileDefinition);
     }
 
+    public IMetadataRepositoryCoordinatorService getCoordinatorService(Class<MetadataRepositoryCoordinatorDefinition> metadataRepositoryCoordinatorDefinitionClass) {
+        return metadataRepositoryCoordinatorServiceMap.get(metadataRepositoryCoordinatorDefinitionClass);
+    }
 }

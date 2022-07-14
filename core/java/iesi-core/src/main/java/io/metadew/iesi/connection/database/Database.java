@@ -26,7 +26,7 @@ public abstract class Database {
     private HikariDataSource connectionPool;
 
     public Database(DatabaseConnection databaseConnection) {
-        this(databaseConnection, false);
+        this(databaseConnection, true);
     }
 
     public Database(DatabaseConnection databaseConnection, boolean eagerConnectionPoolCreation) {

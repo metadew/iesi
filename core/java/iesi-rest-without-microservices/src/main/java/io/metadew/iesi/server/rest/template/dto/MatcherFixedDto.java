@@ -1,8 +1,6 @@
 package io.metadew.iesi.server.rest.template.dto;
 
 import lombok.*;
-import org.codehaus.jackson.annotate.JsonTypeName;
-import org.springframework.stereotype.Service;
 
 @Data
 @EqualsAndHashCode(callSuper = false)

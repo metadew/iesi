@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Data
 public class IesiUserDetails implements UserDetails {
+
     private final User user;
     private final Collection<? extends IESIGrantedAuthority> grantedAuthorities;
 

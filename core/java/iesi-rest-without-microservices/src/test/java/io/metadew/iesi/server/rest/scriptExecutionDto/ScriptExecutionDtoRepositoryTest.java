@@ -173,9 +173,5 @@ class ScriptExecutionDtoRepositoryTest {
                 });
 
         scriptLabelDesignTraceConfiguration.insert((ScriptLabelDesignTrace) scriptExecutionMap.get("scriptLabelDesignTrace"));
-
-        System.out.println("scriptExecutions: " + scriptExecutionDtoRepository.getAll(null));
-        // assertThat(scriptExecutionDtoRepository.getAll())
-        //        .containsOnly((ScriptExecutionDto) scriptExecutionMap.get("scriptExecutionDto"));
     }
 }

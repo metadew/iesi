@@ -7,4 +7,4 @@ do
   esac
 done
 
-docker run -v /home/hkhattabi/test_prod:/opt/iesi/logs --rm -d -it  --network=host --name iesi -p $port:8080 iesi
+docker run -v /home/hkhattabi/test_prod:/opt/iesi/logs --rm -d -it  --network my-network --name iesi -p $port:8080 iesi

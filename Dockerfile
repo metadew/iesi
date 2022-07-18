@@ -18,17 +18,17 @@ ADD licenses $APP/licenses
 ADD LICENSE $APP/LICENSE
 
 
-RUN --mount=type=cache,target=/root/.m2 mvn install:install-file -Dfile=build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
-RUN --mount=type=cache,target=/root/.m2 mvn install:install-file -Dfile=build/ext/artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
-RUN --mount=type=cache,target=/root/.m2 mvn install:install-file -Dfile=build/ext/artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
-RUN --mount=type=cache,target=/root/.m2 mvn install:install-file -Dfile=build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar
-RUN --mount=type=cache,target=/root/.m2 mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
 WORKDIR $APP/core/java/iesi-core
-RUN --mount=type=cache,target=/root/.m2 mvn versions:set -DnewVersion=0.8.0
-RUN --mount=type=cache,target=/root/.m2 mvn -P dependencies clean install project-info-reports:dependencies -Dmaven.test.skip=true -Dmaven.deploy.skip=true -Dgpg.skip
+RUN mvn versions:set -DnewVersion=0.8.0
+RUN mvn -P dependencies clean install project-info-reports:dependencies -Dmaven.test.skip=true -Dmaven.deploy.skip=true -Dgpg.skip
 WORKDIR $APP/core/java/iesi-rest-without-microservices
-RUN --mount=type=cache,target=/root/.m2 mvn versions:set -DnewVersion=0.8.0
-RUN --mount=type=cache,target=/root/.m2 mvn clean install project-info-reports:dependencies -Diesi-rest.version=0.8.0 -Dmaven.test.skip=true
+RUN mvn versions:set -DnewVersion=0.8.0
+RUN mvn clean install project-info-reports:dependencies -Diesi-rest.version=0.8.0 -Dmaven.test.skip=true
 WORKDIR $APP/core/java/iesi-core/target
 RUN java -cp iesi-core-0.8.0-jar-with-dependencies.jar io.metadew.iesi.launch.AssemblyLauncher -repository /app -sandbox /app/sandbox -instance assembly -version 0.8.0
 WORKDIR /app/sandbox/0.8.0/assembly
@@ -43,11 +43,11 @@ COPY --from=staging /app/docker/application.yml.template /opt/iesi/conf/applicat
 COPY --from=staging /app/docker/application-repository.yml.template /opt/iesi/conf/application-repository.yml
 
 ENV DATABASE_TYPE oracle
-ENV DATABASE_CONNECTION_URL jdbc:oracle:thin:@tcp://localhost:1521/XEPDB1
-ENV DATABASE_SCHEMA IESI_TEST
-ENV DATABASE_INIT_SQL alter session set nls_timestamp_format=\'YYYY-MM-DD\\\"T\\\" HH24:MI:SS:FF\' current_schema=IESI_TEST
-ENV DATABASE_USER IESI_TEST
-ENV DATABASE_PASSWORD IESI_TEST
+ENV DATABASE_CONNECTION_URL jdbc:oracle:thin:@tcp://oracle-db:1521/XEPDB1
+ENV DATABASE_SCHEMA IESI_DEV
+ENV DATABASE_INIT_SQL alter session set nls_timestamp_format=\'YYYY-MM-DD\\\"T\\\" HH24:MI:SS:FF\' current_schema=IESI_DEV
+ENV DATABASE_USER IESI_DEV
+ENV DATABASE_PASSWORD IESI_DEV
 
 ENV IESI_HOME /opt/iesi
 ENV IESI_WORKER_PATH /opt/iesi

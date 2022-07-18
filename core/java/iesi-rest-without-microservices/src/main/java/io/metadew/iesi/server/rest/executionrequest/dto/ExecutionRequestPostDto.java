@@ -26,6 +26,7 @@ public class ExecutionRequestPostDto extends RepresentationModel<ExecutionReques
     private String scope;
     private String context;
     private String email;
+    private boolean debugMode;
     private List<ScriptExecutionRequestPostDto> scriptExecutionRequests = new ArrayList<>();
     private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();
 

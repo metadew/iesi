@@ -57,7 +57,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
             log.info("Executing " + scriptExecutionRequest.toString());
             try {
                 ScriptExecutionWorker scriptExecutionWorker = selectScriptExecutionWorker(scriptExecutionRequest);
-                executeScriptExecutionRequest(scriptExecutionWorker, scriptExecutionRequest);
+                executeScriptExecutionRequest(scriptExecutionWorker, scriptExecutionRequest, executionRequest.isDebugMode());
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
@@ -70,7 +70,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
         return scriptExecutionWorkers.get();
     }
 
-    private void executeScriptExecutionRequest(ScriptExecutionWorker scriptExecutionWorker, ScriptExecutionRequest scriptExecutionRequest) throws IOException, InterruptedException {
+    private void executeScriptExecutionRequest(ScriptExecutionWorker scriptExecutionWorker, ScriptExecutionRequest scriptExecutionRequest, boolean debugMode) throws IOException, InterruptedException {
         boolean isWindows = System.getProperty("os.name")
                 .toLowerCase().startsWith("windows");
         ProcessBuilder builder = new ProcessBuilder();
@@ -78,13 +78,17 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
             builder.command(
                     "bin/iesi-execute.cmd",
                     "-scriptExecutionRequestKey",
-                    scriptExecutionRequest.getMetadataKey().getId()
+                    scriptExecutionRequest.getMetadataKey().getId(),
+                    "-debugMode",
+                    debugMode ? "Y" : "N"
             );
         } else {
             builder.command(
                     "./bin/iesi-execute.sh",
                     "-scriptExecutionRequestKey",
-                    scriptExecutionRequest.getMetadataKey().getId()
+                    scriptExecutionRequest.getMetadataKey().getId(),
+                    "-debugMode",
+                    debugMode ? "Y" : "N"
             );
         }
         builder.directory(scriptExecutionWorker.getPath().toFile());
@@ -102,33 +106,34 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
 
     private static class StreamGobbler implements Runnable {
         private final InputStream inputStream;
-        private final InputStream errorInputStream;
+        private final InputStream inputErrorStream;
         private final Consumer<String> consumer;
 
-        public StreamGobbler(InputStream inputStream, InputStream errorInputStream, Consumer<String> consumer) {
+        public StreamGobbler(InputStream inputStream, InputStream errorStream, Consumer<String> consumer) {
             this.inputStream = inputStream;
-            this.errorInputStream = errorInputStream;
+            this.inputErrorStream = errorStream;
             this.consumer = consumer;
         }
 
         @Override
         public void run() {
-            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+            try (
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    BufferedReader bufferedErrorReader = new BufferedReader(new InputStreamReader(inputErrorStream))
+            ) {
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
                     consumer.accept(line);
                 }
-            } catch (IOException ioException) {
-                log.error("ERROR : " + ioException.getMessage());
-            }
+                line = bufferedErrorReader.readLine();
 
-            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorInputStream))) {
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
+                if (line != null) {
                     consumer.accept(line);
+                    bufferedErrorReader.close();
+                    throw new RuntimeException(line);
                 }
-            } catch (IOException ioException) {
-                log.error("ERROR : " + ioException.getMessage());
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage());
             }
         }
     }

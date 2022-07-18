@@ -18,6 +18,6 @@ for i in *.jar; do
 done
 cd $lib_dir
 
-java -Dlog4j.configurationFile=$lib_dir/log4j2.xml -cp $classpath io.metadew.iesi.launch.ExecutionLauncher "$@"
+java -cp $classpath io.metadew.iesi.launch.ExecutionLauncher "$@"
 
 cd $calling_dir

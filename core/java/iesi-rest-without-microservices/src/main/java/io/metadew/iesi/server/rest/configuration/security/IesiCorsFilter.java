@@ -44,7 +44,6 @@ public class IesiCorsFilter extends OncePerRequestFilter {
                 iesiHttpServletRequestWrapper.addParameter("grant_type", "refresh_token");
                 iesiHttpServletRequestWrapper.addParameter("refresh_token", request.getParameter("refresh_token"));
             }
-
         }
 
         CorsConfiguration corsConfiguration = this.configSource.getCorsConfiguration(iesiHttpServletRequestWrapper);

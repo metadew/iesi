@@ -365,7 +365,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.2.1</version>
                 <executions>

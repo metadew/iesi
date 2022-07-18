@@ -28,17 +28,20 @@ public class MatcherValueConfiguration extends Configuration<MatcherValue, Match
     private static final String deleteMatcherAnyValuesByTemplateQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AnyMatcherValues").getName() + " where id in (select any_matcher_value.id " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " template " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " matcher on template.id=matcher.template_id " +
-            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AnyMatcherValues").getName() + " any_matcher_value on matcher.id=any_matcher_value.id " +
+            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " matcherValue on matcher.id=matcherValue.matcher_id " +
+            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AnyMatcherValues").getName() + " any_matcher_value on matcherValue.id=any_matcher_value.id " +
             "WHERE template.id={0});";
     private static final String deleteMatcherFixedValuesByTemplateQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " where id in (select fixed_matcher_value.id " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " template " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " matcher on template.id=matcher.template_id " +
-            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " fixed_matcher_value on matcher.id=fixed_matcher_value.id " +
+            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " matcherValue on matcher.id=matcherValue.matcher_id " +
+            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " fixed_matcher_value on matcherValue.id=fixed_matcher_value.id " +
             "WHERE template.id={0});";
     private static final String deleteMatcherTemplateValuesByTemplateQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " where id in (select template_matcher_value.id " +
             "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " template " +
             "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " matcher on template.id=matcher.template_id " +
-            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " template_matcher_value on matcher.id=template_matcher_value.id " +
+            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " matcherValue on matcher.id=matcherValue.matcher_id " +
+            "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " template_matcher_value on matcherValue.id=template_matcher_value.id " +
             "WHERE template.id={0});";
 
     public synchronized static MatcherValueConfiguration getInstance() {
@@ -74,7 +77,6 @@ public class MatcherValueConfiguration extends Configuration<MatcherValue, Match
                     MessageFormat.format(insertMatcherAnyValueQuery,
                             SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId())));
         } else if (matcherValue instanceof MatcherFixedValue) {
-
             getMetadataRepository().executeUpdate(
                     MessageFormat.format(insertMatcherFixedValueQuery,
                             SQLTools.getStringForSQL(matcherValue.getMetadataKey().getId()),

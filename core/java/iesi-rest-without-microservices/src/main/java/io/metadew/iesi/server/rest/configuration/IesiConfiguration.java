@@ -4,7 +4,9 @@ import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.guard.GuardConfiguration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetService;
 import io.metadew.iesi.datatypes.dataset.IDatasetService;
@@ -15,6 +17,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDataset
 import io.metadew.iesi.datatypes.dataset.implementation.database.IDatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.in.memory.IInMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.metadata.configuration.action.design.ActionDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
@@ -35,20 +38,24 @@ import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputCo
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
+import io.metadew.iesi.metadata.repository.DataMetadataRepository;
+import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
+import io.metadew.iesi.metadata.service.template.ITemplateService;
 import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
 import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.text.MessageFormat;
 
@@ -164,6 +171,12 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public IDatasetService datasetService() {
         return DatasetService.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    public ITemplateService templateService() {
+        return TemplateService.getInstance();
     }
 
     @Bean
@@ -296,6 +309,17 @@ public class IesiConfiguration {
     @DependsOn("frameworkInstance")
     public MetadataPolicyConfiguration metadataPolicyConfiguration() {
         return MetadataPolicyConfiguration.getInstance();
+    }
+
+    @Bean
+    @DependsOn("frameworkInstance")
+    @Profile("!test")
+    public DataSource dataSource() {
+        MetadataRepositoryConfiguration metadataRepositoryConfiguration = MetadataRepositoryConfiguration.getInstance();
+        DataMetadataRepository dataMetadataRepository = metadataRepositoryConfiguration.getDataMetadataRepository();
+        RepositoryCoordinator repositoryCoordinator = dataMetadataRepository.getRepositoryCoordinator();
+        Database database = repositoryCoordinator.getDatabases().get("owner");
+        return database.getConnectionPool();
     }
 
 }

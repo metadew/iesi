@@ -1,4 +1,5 @@
 server:
+  disabled: false
   url: ldap://localhost:10389
   base: dc=example,dc=com
 authentication:
@@ -13,6 +14,7 @@ groups-mapping:
   group-search-base-dn: ou=groups
   group-search-attribute: cn
   group-member-attribute: uniqueMember
+  prefix: ''
   mapping-pairs:
     - iesi-name: iesi
       ad-name: All

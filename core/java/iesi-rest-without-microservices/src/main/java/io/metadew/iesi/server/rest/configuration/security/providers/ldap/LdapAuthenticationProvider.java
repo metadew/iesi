@@ -60,7 +60,6 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.trace(String.format("Trying to authenticate %s through LDAP", authentication.getName()));
-        log.info(ldapServer.isDisabled());
         if (ldapServer.isDisabled()) {
             log.warn("LDAP authentication is disabled, skipping the process.");
             return null;

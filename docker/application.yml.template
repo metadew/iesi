@@ -1,0 +1,26 @@
+iesi:
+  guard:
+    authenticate: N
+  #  script:
+  #    execution:
+  #       runtime: ''
+  server:
+    #    mode: off
+    mode: standalone
+    threads:
+      timeout: 30
+  home: '$IESI_HOME'
+  security:
+    enabled: true
+    jwt:
+      secret: secret
+      expiry-date: 10
+  workers:
+    - path: '$IESI_WORKER_PATH'
+      timeout: 30
+  master:
+    path: '$IESI_MASTER_PATH'
+    host: 'http://localhost:8080'
+    credentials:
+      user: admin
+      password: admin

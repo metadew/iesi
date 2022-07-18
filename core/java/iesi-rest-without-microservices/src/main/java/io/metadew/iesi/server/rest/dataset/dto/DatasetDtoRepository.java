@@ -40,7 +40,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
 
     public Page<DatasetDto> fetchAll(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
         try {
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(
                     getFetchAllQuery(authentication, pageable, datasetFilters),
                     "reader");
             return new PageImpl<>(new DatasetDtoListResultSetExtractor().extractData(cachedRowSet),
@@ -53,7 +53,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
 
     public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid) {
         try {
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(
                     MessageFormat.format(getFetchImplementationsByDatasetIdQuery(),
                             SQLTools.getStringForSQL(datasetUuid)),
                     "reader");
@@ -66,7 +66,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
 
     public Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid) {
         try {
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(
                     MessageFormat.format(getFetchImplementationByIdQuery(),
                             SQLTools.getStringForSQL(uuid)),
                     "reader");
@@ -176,7 +176,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
         String query = "select count(*) as row_count from " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
                 getWhereClause(authentication, datasetFilters) + ";";
-        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
     }

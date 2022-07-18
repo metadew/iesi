@@ -74,11 +74,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         Long componentVersion = convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION));
         HttpComponent httpComponent;
         if (componentVersion == null) {
-            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY);
+            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, REQUEST_VERSION);
         } else {
             httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
         }
-
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
 
@@ -146,7 +145,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
                 return new ArrayList<>();
             }
             List<String> tokens = Arrays.stream(((Text) dataType).getString().trim()
-                    .split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1))
+                            .split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1))
                     .collect(Collectors.toList());
             return tokens
                     .stream().map(this::buildHttpHeader).collect(Collectors.toList());

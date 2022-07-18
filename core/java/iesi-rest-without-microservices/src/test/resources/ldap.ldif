@@ -74,59 +74,59 @@ sn: trainerAD
 uid: trainerAD
 userPassword: trainer
 
-dn: cn=ViewerAll,ou=groups,dc=test,dc=com
+dn: cn=MYGROUP.GROUPS.ViewerAll,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: viewerAll
+cn: MYGROUP.GROUPS.viewerAll
 ou: ViewerAll
 uniqueMember: uid=readerAD,ou=people,dc=test,dc=com
 
-dn: cn=ExecutorAll,ou=groups,dc=test,dc=com
+dn: cn=MYGROUP.GROUPS.ExecutorAll,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: executorAll
+cn: MYGROUP.GROUPS.executorAll
 ou: ExecutorAll
 uniqueMember: uid=executorAD,ou=people,dc=test,dc=com
 
-dn: cn=TestEngineerAll,ou=groups,dc=test,dc=com
+dn: cn=MYGROUP.GROUPS.TestEngineerAll,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: testEngineerAll
+cn: MYGROUP.GROUPS.testEngineerAll
 ou: TestEngineerAll
 uniqueMember: uid=test_engineerAD,ou=people,dc=test,dc=com
 
-dn: cn=TechnicalEngineerAll,ou=groups,dc=test,dc=com
+dn: cn=MYGROUP.GROUPS.TechnicalEngineerAll,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: technicalEngineerAll
+cn: MYGROUP.GROUPS.technicalEngineerAll
 ou: TechnicalEngineerAll
 uniqueMember: uid=technical_engineerAD,ou=people,dc=test,dc=com
 
-dn: cn=AdminAll,ou=groups,dc=test,dc=com
+dn: cn=MYGROUP.GROUPS.AdminAll,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: adminAll
+cn: MYGROUP.GROUPS.adminAll
 ou: adminAll
 uniqueMember: uid=adminAD,ou=people,dc=test,dc=com
 
-dn: cn=SysadminAll,ou=groups,dc=test,dc=com
+dn: cn=MYGROUP.GROUPS.SysadminAll,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: sysadminAll
+cn: MYGROUP.GROUPS.sysadminAll
 ou: SysadminAll
 uniqueMember: uid=adminAD,ou=people,dc=test,dc=com
 
-dn: cn=Admin1,ou=groups,dc=test,dc=com
+dn: cn=MYGROUP.GROUPS.Admin1,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: admin1
+cn: MYGROUP.GROUPS.admin1
 ou: Admin1
 uniqueMember: uid=trainerAD,ou=people,dc=test,dc=com
 
-dn: cn=TestEngineer2,ou=groups,dc=test,dc=com
+dn: cn=MYGROUP.GROUPS.TestEngineer2,ou=groups,dc=test,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
-cn: testEngineer2
+cn: MYGROUP.GROUPS.testEngineer2
 ou: TestEnginer2
 uniqueMember: uid=trainerAD,ou=people,dc=test,dc=com
 

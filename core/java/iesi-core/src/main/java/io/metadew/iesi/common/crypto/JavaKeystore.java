@@ -16,14 +16,14 @@ import java.security.spec.InvalidKeySpecException;
 
 /**
  * Command line to create a Keystore:
- * For example, to store the sensitive encryption key <c7c1e47391154a6a> in the <mypass> alias in the keystore named <myks.p12> located on your Desktop
- * protected with the password <foobar>, do the following:
+ * For example, to store the sensitive encryption key "c7c1e47391154a6a" in the "mypass" alias in the keystore named "myks.p12" located on your Desktop
+ * protected with the password "foobar", do the following:
  *
  * keytool -importpass -storetype pkcs12 -alias mypass -keystore C:\\user.dir\\Desktop\\myks.p12
- * Enter keystore password: <foobar>
- * Re-enter new password: <foobar>
- * Enter the password to be stored: <c7c1e47391154a6a>
- * Re-enter password: <c7c1e47391154a6a>
+ * Enter keystore password: "foobar"
+ * Re-enter new password: "foobar"
+ * Enter the password to be stored: "c7c1e47391154a6a"
+ * Re-enter password: "c7c1e47391154a6a"
  */
 
 public class JavaKeystore {

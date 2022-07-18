@@ -40,7 +40,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
                 scriptExecutionWorkersInfo.stream()
                         .map(scriptExecutionWorkerInfo -> new ScriptExecutionWorker(
                                 Paths.get((String) scriptExecutionWorkerInfo.get("path")),
-                                        (Integer) scriptExecutionWorkerInfo.get("timeout"))
+                                (Integer) scriptExecutionWorkerInfo.get("timeout"))
                         )
                         .collect(Collectors.toSet()),
                 ScriptExecutionWorker.class);
@@ -135,13 +135,6 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
             } catch (IOException e) {
                 throw new RuntimeException(e.getMessage());
             }
-            /*
-            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach((line) -> {
-                System.out.println("EOH");
-                System.out.println(line);
-            });
-
-             */
         }
     }
 

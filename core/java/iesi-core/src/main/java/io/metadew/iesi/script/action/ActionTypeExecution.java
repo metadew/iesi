@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.action;
 
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
@@ -12,7 +13,10 @@ import lombok.Getter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Getter
 public abstract class ActionTypeExecution {
@@ -83,6 +87,16 @@ public abstract class ActionTypeExecution {
                 .findFirst()
                 .map(ActionParameterResolvement::getResolvedValue)
                 .orElse(null);
+    }
+
+    public void replaceParameterResolvedValue(ActionParameter actionParameter, String newValue) {
+        actionParameterResolvements.removeIf(o -> o.getActionParameter().getMetadataKey().getParameterName().equals(actionParameter.getMetadataKey().getParameterName()));
+        actionParameterResolvements.add(
+                new ActionParameterResolvement(
+                        actionParameter,
+                        new Text(newValue)
+                )
+        );
     }
 
 }

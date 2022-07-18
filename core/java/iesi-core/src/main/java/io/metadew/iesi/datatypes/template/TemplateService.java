@@ -6,6 +6,7 @@ import io.metadew.iesi.datatypes.IDataTypeService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
@@ -127,11 +128,14 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
         return TemplateConfiguration.getInstance().exists(templateKey);
     }
 
-    public boolean exists(String templateName) {
-        return TemplateConfiguration.getInstance().exists(templateName);
+    public boolean exists(String templateName, Long version) {
+        return TemplateConfiguration.getInstance().exists(templateName, version);
     }
 
-    public void addUser(Template template) {
+    public void insert(Template template) {
+        if (exists(template.getName(), template.getVersion())) {
+            throw new MetadataDoesNotExistException(String.format("Template with name %s and version %s already exists", template.getName(), template.getVersion()));
+        }
         TemplateConfiguration.getInstance().insert(template);
     }
 
@@ -139,11 +143,14 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
         return TemplateConfiguration.getInstance().get(templateKey);
     }
 
-    public Optional<Template> get(String templatename, long version) {
-        return TemplateConfiguration.getInstance().getByNameAndVersion(templatename, version);
+    public Optional<Template> get(String templateName, long version) {
+        return TemplateConfiguration.getInstance().getByNameAndVersion(templateName, version);
     }
 
     public void update(Template template) {
+        if (!exists(template.getName(), template.getVersion())) {
+            throw new MetadataDoesNotExistException(String.format("Template with name %s and version %s does not exist", template.getName(), template.getVersion()));
+        }
         TemplateConfiguration.getInstance().update(template);
     }
 

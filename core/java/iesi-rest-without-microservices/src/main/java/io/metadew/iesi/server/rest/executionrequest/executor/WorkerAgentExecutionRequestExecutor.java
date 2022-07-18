@@ -40,7 +40,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
                 scriptExecutionWorkersInfo.stream()
                         .map(scriptExecutionWorkerInfo -> new ScriptExecutionWorker(
                                 Paths.get((String) scriptExecutionWorkerInfo.get("path")),
-                                        (Integer) scriptExecutionWorkerInfo.get("timeout"))
+                                (Integer) scriptExecutionWorkerInfo.get("timeout"))
                         )
                         .collect(Collectors.toSet()),
                 ScriptExecutionWorker.class);
@@ -89,7 +89,7 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
         }
         builder.directory(scriptExecutionWorker.getPath().toFile());
         Process process = builder.start();
-        StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), log::info);
+        StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), process.getErrorStream(), log::info);
         Executors.newSingleThreadExecutor().submit(streamGobbler);
         // TODO: what to do when failed
         boolean exited = process.waitFor(scriptExecutionWorker.getTimeoutInMinutes(), TimeUnit.MINUTES);
@@ -102,16 +102,34 @@ abstract class WorkerAgentExecutionRequestExecutor<T extends ExecutionRequest> e
 
     private static class StreamGobbler implements Runnable {
         private final InputStream inputStream;
+        private final InputStream errorInputStream;
         private final Consumer<String> consumer;
 
-        public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
+        public StreamGobbler(InputStream inputStream, InputStream errorInputStream, Consumer<String> consumer) {
             this.inputStream = inputStream;
+            this.errorInputStream = errorInputStream;
             this.consumer = consumer;
         }
 
         @Override
         public void run() {
-            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    consumer.accept(line);
+                }
+            } catch (IOException ioException) {
+                log.error("ERROR : " + ioException.getMessage());
+            }
+
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorInputStream))) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    consumer.accept(line);
+                }
+            } catch (IOException ioException) {
+                log.error("ERROR : " + ioException.getMessage());
+            }
         }
     }
 

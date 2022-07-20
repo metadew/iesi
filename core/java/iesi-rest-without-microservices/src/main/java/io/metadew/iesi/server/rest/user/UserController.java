@@ -103,7 +103,7 @@ public class UserController {
     @PostMapping("/create")
     @PreAuthorize("hasPrivilege('USERS_WRITE')")
     public ResponseEntity<UserDto> create(@RequestBody UserPostDto userPostDto) {
-        if (!userPostDto.getPassword().getPassword().equals(userPostDto.getPassword().getRepeatedPassword())) {
+        if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
             throw new PasswordsMisMatchException();
         }
         if (userService.exists(userPostDto.getUsername())) {
@@ -112,7 +112,7 @@ public class UserController {
         User user = new User(
                 new UserKey(UUID.randomUUID()),
                 userPostDto.getUsername(),
-                passwordEncoder.encode(userPostDto.getPassword().getPassword()),
+                passwordEncoder.encode(userPostDto.getPassword()),
                 true,
                 false,
                 false,
@@ -126,14 +126,14 @@ public class UserController {
 
     @PutMapping("/{uuid}/password")
     public ResponseEntity<UserDto> updatePassword(@PathVariable UUID uuid, @RequestBody PasswordPostDto passwordPostDto) {
-        if (!passwordPostDto.getPassword().equals(passwordPostDto.getRepeatedPassword())) {
+        if (!passwordPostDto.getValue().equals(passwordPostDto.getRepeatedPassword())) {
             throw new PasswordsMisMatchException();
         }
         if (!userService.exists(new UserKey(uuid))) {
             throw new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist");
         }
 
-        userService.updatePassword(passwordEncoder.encode(passwordPostDto.getPassword()), uuid);
+        userService.updatePassword(passwordEncoder.encode(passwordPostDto.getValue()), uuid);
 
         return ResponseEntity.of(userService.get(uuid));
     }

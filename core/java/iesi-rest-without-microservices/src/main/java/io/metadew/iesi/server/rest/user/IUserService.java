@@ -15,8 +15,6 @@ public interface IUserService {
 
     Optional<UserDto> get(UUID uuid);
 
-    Optional<UUID> getUuidByName(String username);
-
     Page<UserDto> getAll(Pageable pageable, Set<UserFilter> userFilters);
 
     List<User> getAll();

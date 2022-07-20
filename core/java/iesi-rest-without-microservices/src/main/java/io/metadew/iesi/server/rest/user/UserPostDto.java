@@ -10,6 +10,7 @@ import lombok.*;
 public class UserPostDto {
 
     private String username;
-    private PasswordPostDto password;
+    private String password;
+    private String repeatedPassword;
 
 }

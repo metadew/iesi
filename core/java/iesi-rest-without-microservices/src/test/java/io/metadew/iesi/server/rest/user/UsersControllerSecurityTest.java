@@ -195,7 +195,8 @@ class UsersControllerSecurityTest {
     void testCreateNoUsersWrite() {
         UserPostDto userPostDto = UserPostDto.builder()
                 .username("username")
-                .password(new PasswordPostDto("password", "password"))
+                .password("password")
+                .repeatedPassword("password")
                 .build();
         assertThatThrownBy(() -> userController.create(userPostDto))
                 .isInstanceOf(AccessDeniedException.class);
@@ -207,7 +208,8 @@ class UsersControllerSecurityTest {
     void testCreateDatasetsWrite() {
         UserPostDto userPostDto = UserPostDto.builder()
                 .username("username")
-                .password(new PasswordPostDto("password", "password"))
+                .password("password")
+                .repeatedPassword("password")
                 .build();
         when(userDtoService.get((UUID) any()))
                 .thenReturn(Optional.of(

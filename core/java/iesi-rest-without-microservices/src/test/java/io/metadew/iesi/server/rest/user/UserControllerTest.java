@@ -67,7 +67,8 @@ class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         UserPostDto userPostDto = new UserPostDto(
                 "user1",
-                new PasswordPostDto("password1","password1")
+                "password",
+                "password"
         );
         UserDto user = new UserDto(
                 UUID.randomUUID(),
@@ -96,7 +97,8 @@ class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         UserPostDto userPostDto = new UserPostDto(
                 "user1",
-                new PasswordPostDto("password1","password1")
+                "password",
+                "password"
         );
 
         String userPostDtoString = objectMapper.writeValueAsString(userPostDto);
@@ -114,7 +116,8 @@ class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         UserPostDto userPostDto = new UserPostDto(
                 "user1",
-                new PasswordPostDto("password1","password1")
+                "password",
+                "password"
         );
         UserDto user = new UserDto(
                 UUID.randomUUID(),
@@ -142,7 +145,8 @@ class UserControllerTest {
         UUID userUuid = UUID.randomUUID();
         UserPostDto userPostDto = new UserPostDto(
                 "user2",
-                new PasswordPostDto("password1","password1")
+                "password",
+                "password"
         );
 
         User user = new User(
@@ -187,7 +191,8 @@ class UserControllerTest {
         UUID userUuid = UUID.randomUUID();
         UserPostDto userPostDto = new UserPostDto(
                 "user2",
-                new PasswordPostDto("password1","password1")
+                "password",
+                "password"
         );
 
         String userPostDtoString = objectMapper.writeValueAsString(userPostDto);
@@ -209,7 +214,8 @@ class UserControllerTest {
         UUID userUuid = UUID.randomUUID();
         UserPostDto userPostDto = new UserPostDto(
                 "user2",
-                new PasswordPostDto("password1","password1")
+                "password",
+                "password"
         );
 
         String userPostDtoString = objectMapper.writeValueAsString(userPostDto);

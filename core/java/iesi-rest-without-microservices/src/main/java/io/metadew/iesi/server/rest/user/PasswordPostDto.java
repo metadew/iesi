@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PasswordPostDto {
-    private String password;
+    private String value;
     private String repeatedPassword;
 }

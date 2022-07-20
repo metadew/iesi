@@ -40,7 +40,10 @@ import java.util.stream.Stream;
 public class ExecutionRequestDtoRepository extends PaginatedRepository implements IExecutionRequestDtoRepository {
 
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
-        return "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
+        return "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, " +
+                "execution_requests.REQUEST_DSC as exe_req_desc, execution_requests.NOTIF_EMAIL as exe_req_email, execution_requests.SCOPE_NM as exe_req_scope, " +
+                "execution_requests.CONTEXT_NM as exe_req_context, execution_requests.ST_NM as exec_req_status, " +
+                "execution_requests.DEBUG_MODE as exe_req_debug_mode, " +
                 // " execution_requests.SECURITY_GROUP_ID as exe_req_security_group_id, execution_requests.SECURITY_GROUP_NAME as exe_req_security_group_name, " +
                 //"auth_execution_requests.REQUEST_ID as exe_req_auth, auth_execution_requests.SPACE_NM as exe_req_auth_space, auth_execution_requests.USER_NM as exe_req_auth_user, auth_execution_requests.USER_PASSWORD as exe_req_auth_pass, " +
                 "auth_execution_requests.REQUEST_ID as exe_req_auth,  auth_execution_requests.USER_ID as exe_req_user_id, auth_execution_requests.USERNAME as exe_req_username, " +
@@ -373,6 +376,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 cachedRowSet.getString("exe_req_email"),
                 cachedRowSet.getString("exe_req_user_id"),
                 cachedRowSet.getString("exe_req_username"),
+                SQLTools.getBooleanFromSql(cachedRowSet.getString("exe_req_debug_mode")),
                 ExecutionRequestStatus.valueOf(cachedRowSet.getString("exec_req_status")),
                 new HashMap<>(),
                 new HashMap<>()
@@ -394,6 +398,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         private String email;
         private String userId;
         private String username;
+        private boolean debugMode;
         private ExecutionRequestStatus executionRequestStatus;
         private Map<String, ScriptExecutionRequestBuilder> scriptExecutionRequests;
         public Map<String, ExecutionRequestLabelDto> executionRequestLabels;
@@ -411,6 +416,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                     email,
                     userId,
                     username,
+                    debugMode,
                     executionRequestStatus,
                     scriptExecutionRequests.values().stream()
                             .map(ScriptExecutionRequestBuilder::build)

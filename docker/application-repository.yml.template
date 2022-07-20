@@ -6,12 +6,40 @@ iesi:
       # each category should define its own type and definition
       - categories:
           - general
-        instance:
+
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
-          type: sqlite
-          file: ./repository.db3
+          type: $DATABASE_TYPE
+          connection: $DATABASE_CONNECTION_URL
+          schema: $DATABASE_SCHEMA
+          init_sql: "$DATABASE_INIT_SQL"
+          owner:
+            user: $DATABASE_USER
+            password: $DATABASE_PASSWORD
+
+#          type: h2
+#          mode: memory
+#          database: test
+#          owner:
+#            user: test
+#            password: test
+
+
+#          type: oracle
+#          schema:
+#          connection: jdbc://test
+#          owner:
+#            user: owner
+#            password: owner
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+
 #          type: h2
 #          mode: embedded
 #          file:
@@ -29,11 +57,11 @@ iesi:
 #            password:
 
 #          type: mssql
-#          database: 
-#          host: 
-#          port: 
-#          schema: 
-#          name: 
+#          database:
+#          host:
+#          port:
+#          schema:
+#          name:
 #          owner:
 #            user:
 #            password:
@@ -45,10 +73,10 @@ iesi:
 #            password:
 
 #          type: netezza
-#          host: 
-#          name: 
-#          port: 
-#          schema: 
+#          host:
+#          name:
+#          port:
+#          schema:
 #          owner:
 #            user:
 #            password:
@@ -60,11 +88,10 @@ iesi:
 #            password:
 
 #          type: postgresql
-#          host: 
-#          name: 
-#          port: 
-#          reader: 
-#          schema: 
+#          host:
+#          name:
+#          port:
+#          schema:
 #          owner:
 #            user:
 #            password:

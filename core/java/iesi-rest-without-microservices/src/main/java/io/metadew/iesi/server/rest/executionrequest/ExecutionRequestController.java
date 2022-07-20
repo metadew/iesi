@@ -154,6 +154,7 @@ public class ExecutionRequestController {
                         .collect(Collectors.toList()))
                 .executionRequestStatus(ExecutionRequestStatus.NEW)
                 .requestTimestamp(LocalDateTime.now(clock))
+                .debugMode(executionRequestPostDto.isDebugMode())
                 .build();
 
         ExecutionRequest executionRequest = executionRequestService.createExecutionRequest(authenticatedExecutionRequest);

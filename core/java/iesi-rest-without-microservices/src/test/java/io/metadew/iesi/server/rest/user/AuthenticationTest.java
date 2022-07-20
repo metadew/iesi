@@ -1,7 +1,6 @@
 package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
@@ -12,12 +11,11 @@ import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
+import io.metadew.iesi.server.rest.configuration.security.TestAuthorizationServerConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.jwt.IesiUserAuthenticationConverter;
 import io.metadew.iesi.server.rest.security_group.SecurityGroupService;
 import io.metadew.iesi.server.rest.user.team.TeamPostDto;
 import io.metadew.iesi.server.rest.user.team.TeamService;
-import org.junit.Ignore;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,16 +44,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@SpringBootTest(classes = { Application.class, TestConfiguration.class },
+@SpringBootTest(classes = { Application.class, TestConfiguration.class, TestAuthorizationServerConfiguration.class },
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @ActiveProfiles({"http", "test"})
 @AutoConfigureMockMvc
 @DirtiesContext
 @Disabled
-class AuthenticationTest {
+public class AuthenticationTest {
 
     @Autowired
     private TokenEndpoint tokenEndpoint;
@@ -81,11 +79,6 @@ class AuthenticationTest {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @BeforeEach
-    void beforeEach() {
-        metadataRepositoryConfiguration.clearAllTables();
-    }
-
     @Test
     void getSuccessfulTokenWithIesiUser() throws Exception {
         OAuth2AccessToken accessToken = tokenEndpoint.postAccessToken(
@@ -103,7 +96,6 @@ class AuthenticationTest {
         assertThat(accessToken.getScope()).containsOnly("read-write");
         assertThat(accessToken.getAdditionalInformation().get("jti")).isNotNull();
     }
-
 
     @Test
     void getSuccessfulTokenWithADUser() throws Exception {
@@ -178,8 +170,6 @@ class AuthenticationTest {
 
     @Test
     void checkSameIESIAndADReaderRole() throws HttpRequestMethodNotSupportedException {
-        createUserWithRole("reader", "VIEWER", "iesi");
-
 
         OAuth2AccessToken accessTokenIESI = tokenEndpoint.postAccessToken(
                 generatePrincipal("test", "test"),
@@ -205,12 +195,7 @@ class AuthenticationTest {
 
     @Test
     void checkSameIESIAndADExecutorRole() throws HttpRequestMethodNotSupportedException {
-        SecurityGroup securityGroup = createSecurityGroup();
-        createTeam("iesi", securityGroup.getMetadataKey());
-        createTeam("training", securityGroup.getMetadataKey());
-        createTeam("private", securityGroup.getMetadataKey());
         createUserWithRole("executor", "EXECUTOR", "iesi");
-
 
 
         OAuth2AccessToken accessTokenIESI = tokenEndpoint.postAccessToken(
@@ -367,19 +352,6 @@ class AuthenticationTest {
         return parameters;
     }
 
-    private SecurityGroup createSecurityGroup() {
-        SecurityGroup securityGroup = new SecurityGroup(
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                new HashSet<>(),
-                new HashSet<>()
-        );
-
-        SecurityGroupConfiguration.getInstance().insert(securityGroup);
-
-        return securityGroup;
-    }
-
     private UserKey createUserWithRole(String username, String role, String teamName) {
         UserKey userKey = new UserKey(UUID.randomUUID());
         userService.addUser(new User(
@@ -417,5 +389,18 @@ class AuthenticationTest {
         teamService.addTeam(team);
 
         teamService.addSecurityGroup(team.getMetadataKey(), securityGroupKey);
+    }
+
+    private SecurityGroupKey createSecurityGroup(String name) {
+        SecurityGroup securityGroup = new SecurityGroup(
+                new SecurityGroupKey(UUID.randomUUID()),
+                name,
+                new HashSet<>(),
+                new HashSet<>()
+        );
+
+        SecurityGroupConfiguration.getInstance().insert(securityGroup);
+
+        return securityGroup.getMetadataKey();
     }
 }

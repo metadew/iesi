@@ -118,7 +118,6 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" and "));
-        System.out.println("REPO LATEST VERSION: " + onlyLatestVersion);
         if (onlyLatestVersion) {
             filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") +
                     " (t.NAME, t.VERSION) in (select templates.NAME, max(templates.VERSION) " +

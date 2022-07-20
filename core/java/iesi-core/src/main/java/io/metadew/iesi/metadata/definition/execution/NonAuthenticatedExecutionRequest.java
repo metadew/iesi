@@ -21,6 +21,7 @@ public class NonAuthenticatedExecutionRequest extends ExecutionRequest {
                                             String email,
                                             String scope,
                                             String context,
+                                            boolean debugMode,
                                             ExecutionRequestStatus executionRequestStatus,
                                             List<ScriptExecutionRequest> scriptExecutionRequests,
                                             Set<ExecutionRequestLabel> executionRequestLabels) {
@@ -33,6 +34,7 @@ public class NonAuthenticatedExecutionRequest extends ExecutionRequest {
                 email,
                 scope,
                 context,
+                debugMode,
                 executionRequestStatus,
                 scriptExecutionRequests,
                 executionRequestLabels);

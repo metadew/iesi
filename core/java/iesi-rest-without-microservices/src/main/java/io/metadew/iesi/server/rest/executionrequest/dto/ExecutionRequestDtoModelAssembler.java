@@ -62,7 +62,7 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
                     executionRequest.getRequestTimestamp(),
                     executionRequest.getName(), executionRequest.getDescription(), executionRequest.getScope(),
                     executionRequest.getContext(), executionRequest.getEmail(),
-                    null, null,
+                    null, null, executionRequest.isDebugMode(),
                     executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
                             .map(scriptExecutionRequestDtoModelAssembler::toModel)
@@ -78,6 +78,7 @@ public class ExecutionRequestDtoModelAssembler extends RepresentationModelAssemb
                     executionRequest.getContext(), executionRequest.getEmail(),
                     ((AuthenticatedExecutionRequest) executionRequest).getUserID(),
                     ((AuthenticatedExecutionRequest) executionRequest).getUsername(),
+                    executionRequest.isDebugMode(),
                     executionRequest.getExecutionRequestStatus(),
                     executionRequest.getScriptExecutionRequests().stream()
                             .map(scriptExecutionRequestDtoModelAssembler::toModel)

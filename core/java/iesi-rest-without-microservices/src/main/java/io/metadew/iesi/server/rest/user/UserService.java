@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.metadata.definition.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -80,8 +81,8 @@ public class UserService implements IUserService {
     // stays in the cache
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "users", key = "#user.metadataKey.uuid"),
-            @CacheEvict(value = "users", key = "#user.username")})
+            @CacheEvict(value = "users", allEntries = true)
+    })
     public void update(User user) {
         rawUserService.update(user);
     }

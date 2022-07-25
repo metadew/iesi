@@ -7,29 +7,23 @@ import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.TeamService;
-import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.error.PasswordsMisMatchException;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
-import javax.websocket.server.PathParam;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
@@ -119,13 +113,12 @@ public class UserController {
                 false,
                 new HashSet<>());
         userService.addUser(user);
-        Optional<UserDto> userDto = userService.get(user.getMetadataKey().getUuid());
 
-        return ResponseEntity.of(userDto);
+        return ResponseEntity.ok(userDtoModelAssembler.toModel(user));
     }
 
     @PutMapping("/{uuid}/password")
-    public ResponseEntity<UserDto> updatePassword(@PathVariable UUID uuid, @RequestBody PasswordPostDto passwordPostDto) {
+    public HttpEntity<?> updatePassword(@PathVariable UUID uuid, @RequestBody PasswordPostDto passwordPostDto) {
         if (!passwordPostDto.getValue().equals(passwordPostDto.getRepeatedPassword())) {
             throw new PasswordsMisMatchException();
         }
@@ -135,34 +128,33 @@ public class UserController {
 
         userService.updatePassword(passwordEncoder.encode(passwordPostDto.getValue()), uuid);
 
-        return ResponseEntity.of(userService.get(uuid));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<UserDto> update(@PathVariable UUID uuid, @RequestBody UserPostDto userPostDto) {
+    public ResponseEntity<UserDto> update(@PathVariable UUID uuid, @RequestBody UserPutDto userPutDto) {
         User user = userService.getRawUser(new UserKey(uuid))
                 .orElseThrow(() -> new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist"));
 
-        if (userService.exists(userPostDto.getUsername())) {
-            throw new MetadataAlreadyExistsException(userPostDto.getUsername());
+        if (userService.exists(userPutDto.getUsername())) {
+            throw new MetadataAlreadyExistsException(userPutDto.getUsername());
         }
 
 
         User updatedUser = new User(
                 user.getMetadataKey(),
-                userPostDto.getUsername(),
+                userPutDto.getUsername(),
                 user.getPassword(),
-                user.isEnabled(),
-                user.isExpired(),
-                user.isCredentialsExpired(),
-                user.isLocked(),
+                userPutDto.isEnabled(),
+                userPutDto.isExpired(),
+                userPutDto.isCredentialsExpired(),
+                userPutDto.isLocked(),
                 user.getRoleKeys()
         );
 
         userService.update(updatedUser);
-        Optional<UserDto> userDto = userService.get(updatedUser.getMetadataKey().getUuid());
 
-        return ResponseEntity.of(userDto);
+        return ResponseEntity.ok(userDtoModelAssembler.toModel(updatedUser));
     }
 
     @GetMapping("/{name}")

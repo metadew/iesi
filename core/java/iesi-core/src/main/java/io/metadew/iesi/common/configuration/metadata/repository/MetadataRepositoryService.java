@@ -1,6 +1,8 @@
 package io.metadew.iesi.common.configuration.metadata.repository;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorHandler;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.metadata.repository.*;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 
@@ -12,6 +14,7 @@ public class MetadataRepositoryService implements IMetadataRepositoryService {
 
 
     private static MetadataRepositoryService INSTANCE;
+    private final MetadataRepositoryCoordinatorHandler metadataRepositoryCoordinatorHandler = SpringContext.getBean(MetadataRepositoryCoordinatorHandler.class);
 
     public synchronized static MetadataRepositoryService getInstance() {
         if (INSTANCE == null) {
@@ -30,7 +33,7 @@ public class MetadataRepositoryService implements IMetadataRepositoryService {
         List<MetadataRepository> metadataRepositories = new ArrayList<>();
         for (String category : metadataRepositoryDefinition.getCategories()) {
             if (category.equalsIgnoreCase("general")) {
-                RepositoryCoordinator repositoryCoordinator = MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator());
+                RepositoryCoordinator repositoryCoordinator = metadataRepositoryCoordinatorHandler.convert(metadataRepositoryDefinition.getCoordinator());
                 metadataRepositories.add(new DesignMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
                         repositoryCoordinator));
@@ -55,31 +58,31 @@ public class MetadataRepositoryService implements IMetadataRepositoryService {
             } else if (category.equalsIgnoreCase("design")) {
                 metadataRepositories.add(new DesignMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+                        metadataRepositoryCoordinatorHandler.convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("data")) {
                 metadataRepositories.add(new DataMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+                        metadataRepositoryCoordinatorHandler.convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("connectivity")) {
                 metadataRepositories.add(new ConnectivityMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+                        metadataRepositoryCoordinatorHandler.convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("control")) {
                 metadataRepositories.add(new ControlMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+                        metadataRepositoryCoordinatorHandler.convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("trace")) {
                 metadataRepositories.add(new TraceMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+                        metadataRepositoryCoordinatorHandler.convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("result")) {
                 metadataRepositories.add(new ResultMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+                        metadataRepositoryCoordinatorHandler.convert(metadataRepositoryDefinition.getCoordinator())));
             } else if (category.equalsIgnoreCase("execution")) {
                 metadataRepositories.add(new ExecutionServerMetadataRepository(
                         metadataRepositoryDefinition.getInstance(),
-                        MetadataRepositoryCoordinatorHandler.getInstance().convert(metadataRepositoryDefinition.getCoordinator())));
+                        metadataRepositoryCoordinatorHandler.convert(metadataRepositoryDefinition.getCoordinator())));
             } else {
                 throw new RuntimeException(MessageFormat.format("No Metadata repository can be created for {0}", category));
             }

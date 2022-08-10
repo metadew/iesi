@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.teradata;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.DatabaseService;
 import io.metadew.iesi.connection.database.IDatabaseService;
@@ -19,6 +20,8 @@ public class TeradataDatabaseService extends DatabaseService<TeradataDatabase> i
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public synchronized static TeradataDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new TeradataDatabaseService();
@@ -30,20 +33,20 @@ public class TeradataDatabaseService extends DatabaseService<TeradataDatabase> i
 
     @Override
     public TeradataDatabase getDatabase(Connection connection) {
-        String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
+        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
         TeradataDatabaseConnection teradataDatabaseConnection;
-        if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             teradataDatabaseConnection = new TeradataDatabaseConnection(
-                    DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword);
             return new TeradataDatabase(teradataDatabaseConnection);
         }
 
-        String hostName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, portKey));
-        String databaseName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, databaseKey);
+        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
+        String databaseName = databaseHandler.getMandatoryParameterWithKey(connection, databaseKey);
 
         teradataDatabaseConnection = new TeradataDatabaseConnection(hostName, port, databaseName, userName, userPassword);
         return new TeradataDatabase(teradataDatabaseConnection);

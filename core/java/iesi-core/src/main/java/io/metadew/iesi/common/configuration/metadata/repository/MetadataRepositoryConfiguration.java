@@ -1,6 +1,7 @@
 package io.metadew.iesi.common.configuration.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.metadata.objects.MetadataObjectsConfiguration;
@@ -23,6 +24,8 @@ public class MetadataRepositoryConfiguration {
     private List<MetadataRepositoryDefinition> metadataRepositoryDefinitions;
     @Getter
     private List<MetadataRepository> metadataRepositories;
+
+    private Configuration configuration = SpringContext.getBean(Configuration.class);
 
     public synchronized static MetadataRepositoryConfiguration getInstance() {
         if (INSTANCE == null) {
@@ -102,7 +105,7 @@ public class MetadataRepositoryConfiguration {
 
     @SuppressWarnings("unchecked")
     private void loadConfigurations() {
-        List<Object> frameworkSettingConfigurations = (List<Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
+        List<Object> frameworkSettingConfigurations = (List<Object>) ((Map<String, Object>) configuration.getProperties()
                 .get(MetadataConfiguration.configurationKey))
                 .get(repositoryTableKey);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -113,10 +116,10 @@ public class MetadataRepositoryConfiguration {
 
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
-                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(repositoryTableKey) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(repositoryTableKey) instanceof List;
+        return configuration.getProperties().containsKey(MetadataConfiguration.configurationKey) &&
+                (configuration.getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).containsKey(repositoryTableKey) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).get(repositoryTableKey) instanceof List;
     }
 
     public void createAllTables() {

@@ -58,8 +58,8 @@ public class MetadataLauncher {
         // Define the exit behaviour
         boolean exit = !line.hasOption("exit") || line.getOptionValue("exit").equalsIgnoreCase("y") || line.getOptionValue("exit").equalsIgnoreCase("true");
 
-        Configuration.getInstance();
-        FrameworkCrypto.getInstance();
+        // Configuration.getInstance();
+        // FrameworkCrypto.getInstance();
         // FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("metadata", "")));
 
         MetadataRepositoryOperation metadataRepositoryOperation = new MetadataRepositoryOperation();

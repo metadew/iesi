@@ -1,6 +1,7 @@
 package io.metadew.iesi.script.action.ddl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.tools.FileTools;
@@ -28,6 +29,8 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
         private static final String TYPE_KEY = "type";
         private static final String OUTPUT_PATH_KEY = "outputPath";
         private static final String OUTPUT_FILE_KEY = "outputFile";
+
+        private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
 
 
     public DdlGenerateFromFile(ExecutionControl executionControl,
@@ -105,7 +108,7 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
 
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-            FileTools.appendToFile(outputFile, "", DatabaseHandler.getInstance().getCreateStatement(database, metadataTable, "IESI_"));
+            FileTools.appendToFile(outputFile, "", databaseHandler.getCreateStatement(database, metadataTable, "IESI_"));
         }
 
         this.getActionExecution().getActionControl().increaseSuccessCount();

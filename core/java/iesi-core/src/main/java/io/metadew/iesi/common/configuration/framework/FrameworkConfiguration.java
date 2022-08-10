@@ -1,6 +1,7 @@
 package io.metadew.iesi.common.configuration.framework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,6 +21,8 @@ public class FrameworkConfiguration {
     private Map<String, FrameworkSetting> frameworkSettings;
     private Map<String, FrameworkFolder> frameworkFolders;
 
+    Configuration configuration = SpringContext.getBean(Configuration.class);
+
     public synchronized static FrameworkConfiguration getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new FrameworkConfiguration();
@@ -30,7 +33,7 @@ public class FrameworkConfiguration {
     private FrameworkConfiguration() {
         frameworkSettings = new HashMap<>();
         frameworkFolders = new HashMap<>();
-        if (!Configuration.getInstance().getProperties().containsKey(configurationKey) || !(Configuration.getInstance().getProperties().get(configurationKey) instanceof Map)) {
+        if (!configuration.getProperties().containsKey(configurationKey) || !(configuration.getProperties().get(configurationKey) instanceof Map)) {
             log.warn("no framework configuration found on system variable, classpath or filesystem");
         } else {
             loadSettingConfigurations();
@@ -40,10 +43,10 @@ public class FrameworkConfiguration {
 
     @SuppressWarnings("unchecked")
     private void loadSettingConfigurations() {
-        if (!((Map<String, Object>) Configuration.getInstance().getProperties().get(configurationKey)).containsKey(settingConfigurationKey)) {
+        if (!((Map<String, Object>) configuration.getProperties().get(configurationKey)).containsKey(settingConfigurationKey)) {
             log.warn("no framework setting configuration found on system variable, classpath or filesystem");
         } else {
-            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
+            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) configuration.getProperties()
                     .get(configurationKey))
                     .get(settingConfigurationKey);
             ObjectMapper objectMapper = new ObjectMapper();
@@ -55,10 +58,10 @@ public class FrameworkConfiguration {
 
     @SuppressWarnings("unchecked")
     private void loadFolderConfigurations() {
-        if (!((Map<String, Object>) Configuration.getInstance().getProperties().get(configurationKey)).containsKey(folderConfigurationKey)) {
+        if (!((Map<String, Object>) configuration.getProperties().get(configurationKey)).containsKey(folderConfigurationKey)) {
             log.warn("no framework folder configuration found on system variable, classpath or filesystem");
         } else {
-            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
+            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) configuration.getProperties()
                     .get(configurationKey))
                     .get(folderConfigurationKey);
             ObjectMapper objectMapper = new ObjectMapper();

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.sql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
@@ -22,6 +23,8 @@ public class SqlExecuteStatement extends ActionTypeExecution {
     private static final String CONNECTION_NAME_KEY = "connection";
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public SqlExecuteStatement(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -37,7 +40,7 @@ public class SqlExecuteStatement extends ActionTypeExecution {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Database database = databaseHandler.getDatabase(connection);
 
         // Run the action
         // Make sure the SQL statement is ended with a ;
@@ -45,7 +48,7 @@ public class SqlExecuteStatement extends ActionTypeExecution {
             sqlStatement = sqlStatement + ";";
         }
 
-        DatabaseHandler.getInstance().executeUpdate(database, sqlStatement);
+        databaseHandler.executeUpdate(database, sqlStatement);
 
         // Evaluate result
 //        actionExecution.getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());

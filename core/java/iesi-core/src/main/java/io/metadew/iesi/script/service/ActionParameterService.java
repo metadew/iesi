@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.service;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class ActionParameterService {
 
     private static ActionParameterService instance;
+    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public static synchronized ActionParameterService getInstance() {
         if (instance == null) {
@@ -45,7 +47,7 @@ public class ActionParameterService {
         // perform lookup again after cross concept lookup
         resolvedInputValue = executionRuntime.resolveVariables(actionExecution, resolvedInputValue);
         log.debug(String.format("action.param.resolved=%s:%s", actionParameter.getMetadataKey().getParameterName(), resolvedInputValue));
-        String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
+        String decryptedInputValue = frameworkCrypto.resolve(resolvedInputValue);
 
         // Impersonate
 //        if (actionTypeParameter.isImpersonate()) {

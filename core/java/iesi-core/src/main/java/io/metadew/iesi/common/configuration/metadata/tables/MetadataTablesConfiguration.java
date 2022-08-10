@@ -1,6 +1,7 @@
 package io.metadew.iesi.common.configuration.metadata.tables;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.MetadataTable;
@@ -17,6 +18,7 @@ public class MetadataTablesConfiguration {
     private static final String metadataTableKey = "tables";
 
     private List<MetadataTable> metadataTables;
+    Configuration configuration = SpringContext.getBean(Configuration.class);
 
     public synchronized static MetadataTablesConfiguration getInstance() {
         if (INSTANCE == null) {
@@ -30,7 +32,7 @@ public class MetadataTablesConfiguration {
         metadataTables = new ArrayList<>();
         if (containsConfiguration()) {
             List<Object> frameworkSettingConfigurations =
-                    (List<Object>) ((Map<String, Object>) Configuration.getInstance()
+                    (List<Object>) ((Map<String, Object>) configuration
                             .getProperties()
                             .get(MetadataConfiguration.configurationKey))
                             .get(metadataTableKey);
@@ -53,10 +55,10 @@ public class MetadataTablesConfiguration {
 
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
-                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(metadataTableKey) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(metadataTableKey) instanceof List;
+        return configuration.getProperties().containsKey(MetadataConfiguration.configurationKey) &&
+                (configuration.getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).containsKey(metadataTableKey) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).get(metadataTableKey) instanceof List;
     }
 
     public List<MetadataTable> getMetadataTables() {

@@ -1,6 +1,8 @@
 package io.metadew.iesi.script.action.fho;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
@@ -34,6 +36,10 @@ public class FhoCreateFolder extends ActionTypeExecution {
     private static final String CONNECTION_NAME_KEY = "connection";
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
+
+    private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
+
     public FhoCreateFolder(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -45,7 +51,7 @@ public class FhoCreateFolder extends ActionTypeExecution {
         String path = convertPath(getParameterResolvedValue(FOLDER_PATH_KEY));
         String folder = convertFolder(getParameterResolvedValue(FOLDER_NAME_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
-        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
+        boolean isOnLocalhost = hostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
@@ -65,7 +71,7 @@ public class FhoCreateFolder extends ActionTypeExecution {
             Connection connection = ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
-            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
+            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
             String subjectFolderPath = "";
             if (path.isEmpty()) {

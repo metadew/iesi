@@ -1,5 +1,6 @@
 package io.metadew.iesi.component.http;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.http.HttpConnectionService;
 import io.metadew.iesi.connection.http.request.HttpRequest;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 public class HttpComponentService implements IHttpComponentService {
 
     private static HttpComponentService instance;
+    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public static synchronized HttpComponentService getInstance() {
         if (instance == null) {
@@ -129,7 +131,7 @@ public class HttpComponentService implements IHttpComponentService {
         String resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, actionResolvedValue);
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
-        String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
+        String decryptedInputValue = frameworkCrypto.resolve(resolvedInputValue);
         return convertEndpointDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 
@@ -138,7 +140,7 @@ public class HttpComponentService implements IHttpComponentService {
         String resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, actionResolvedValue);
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
-        String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
+        String decryptedInputValue = frameworkCrypto.resolve(resolvedInputValue);
         return convertTypeDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 

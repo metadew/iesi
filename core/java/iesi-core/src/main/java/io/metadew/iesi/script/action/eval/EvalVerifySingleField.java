@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.eval;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
@@ -31,6 +32,8 @@ public class EvalVerifySingleField extends ActionTypeExecution {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     // Local
     private String sqlSuccess;
 
@@ -59,7 +62,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
 
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Database database = databaseHandler.getDatabase(connection);
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, checkName, checkValue);
         long successTotal = 0;
@@ -67,7 +70,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         CachedRowSet crs;
 
         // Success
-        crs = DatabaseHandler.getInstance().executeQuery(database, this.getSqlSuccess());
+        crs = databaseHandler.executeQuery(database, this.getSqlSuccess());
         while (crs.next()) {
             successTotal = crs.getLong("RES_SUC");
         }
@@ -75,7 +78,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        crs = DatabaseHandler.getInstance().executeQuery(database, this.getSqlError());
+        crs = databaseHandler.executeQuery(database, this.getSqlError());
         while (crs.next()) {
             errorTotal = crs.getLong("RES_ERR");
         }

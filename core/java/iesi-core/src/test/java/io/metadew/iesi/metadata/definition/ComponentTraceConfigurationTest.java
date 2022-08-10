@@ -24,7 +24,7 @@ public class ComponentTraceConfigurationTest {
 
     @BeforeAll
     static void prepare() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
@@ -39,7 +39,7 @@ public class ComponentTraceConfigurationTest {
 
     @AfterAll
     static void teardown() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);

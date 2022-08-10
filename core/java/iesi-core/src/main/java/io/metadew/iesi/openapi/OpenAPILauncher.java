@@ -22,8 +22,8 @@ public class OpenAPILauncher {
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
 
-        Configuration.getInstance();
-        FrameworkCrypto.getInstance();
+        // Configuration.getInstance();
+        // FrameworkCrypto.getInstance();
 
         TransformResult transformResult = OpenAPIGenerator.getInstance().transformFromFile(line.getOptionValue(SOURCE));
         OpenAPIGenerator.getInstance().generate(transformResult, line.getOptionValue(TARGET),line.hasOption(LOAD));

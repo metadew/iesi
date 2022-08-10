@@ -29,7 +29,7 @@ class ComponentParameterConfigurationTest {
 
     @BeforeAll
     static void prepare() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
@@ -44,7 +44,7 @@ class ComponentParameterConfigurationTest {
 
     @AfterAll
     static void teardown() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);

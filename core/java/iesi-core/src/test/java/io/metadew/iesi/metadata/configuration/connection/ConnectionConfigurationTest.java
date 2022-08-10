@@ -28,7 +28,7 @@ class ConnectionConfigurationTest {
 
     @BeforeAll
     static void prepare() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
@@ -43,7 +43,7 @@ class ConnectionConfigurationTest {
 
     @AfterAll
     static void teardown() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);

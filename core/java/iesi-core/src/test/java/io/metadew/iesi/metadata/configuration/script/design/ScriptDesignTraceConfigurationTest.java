@@ -18,7 +18,7 @@ class ScriptDesignTraceConfigurationTest {
 
     @BeforeAll
     static void prepare() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
@@ -33,7 +33,7 @@ class ScriptDesignTraceConfigurationTest {
 
     @AfterAll
     static void teardown() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);

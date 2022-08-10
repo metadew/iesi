@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.mssql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
@@ -20,6 +21,8 @@ public class MssqlDatabaseService extends SchemaDatabaseService<MssqlDatabase> i
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public synchronized static MssqlDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MssqlDatabaseService();
@@ -33,13 +36,13 @@ public class MssqlDatabaseService extends SchemaDatabaseService<MssqlDatabase> i
 
     @Override
     public MssqlDatabase getDatabase(Connection connection) {
-        String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
+        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
         MssqlDatabaseConnection mssqlDatabaseConnection;
-        if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             mssqlDatabaseConnection = new MssqlDatabaseConnection(
-                    DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     null,
@@ -47,9 +50,9 @@ public class MssqlDatabaseService extends SchemaDatabaseService<MssqlDatabase> i
             return new MssqlDatabase(mssqlDatabaseConnection, schemaName);
         }
 
-        String hostName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, portKey));
-        String databaseName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, databaseKey);
+        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
+        String databaseName = databaseHandler.getMandatoryParameterWithKey(connection, databaseKey);
 
         mssqlDatabaseConnection = new MssqlDatabaseConnection(hostName,
                 port,

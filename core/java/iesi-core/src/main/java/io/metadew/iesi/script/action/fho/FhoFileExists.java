@@ -1,7 +1,9 @@
 package io.metadew.iesi.script.action.fho;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.HostConnection;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.connection.tools.HostConnectionTools;
@@ -35,6 +37,10 @@ public class FhoFileExists extends ActionTypeExecution {
     private static final String CONNECTION_NAME_KEY = "connection";
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
+    private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
+
+
     public FhoFileExists(ExecutionControl executionControl,
                          ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -47,7 +53,7 @@ public class FhoFileExists extends ActionTypeExecution {
         String path = convertPath(getParameterResolvedValue(FILE_PATH_KEY));
         String fileName = convertFile(getParameterResolvedValue(FILE_NAME_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
-        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
+        boolean isOnLocalhost = hostConnectionTools.isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         String subjectFilePath = "";
@@ -81,7 +87,7 @@ public class FhoFileExists extends ActionTypeExecution {
             Connection connection = ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
-            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
+            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
             for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
                     FilenameUtils.separatorsToUnix(file.getParent()), FilenameUtils.separatorsToUnix(file.getName()), false)) {

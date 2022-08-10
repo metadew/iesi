@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes._null.NullService;
@@ -35,6 +36,8 @@ public class DataTypeHandler {
 
     private static DataTypeHandler instance;
 
+    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
+
     public static synchronized DataTypeHandler getInstance() {
         if (instance == null) {
             instance = new DataTypeHandler();
@@ -63,7 +66,7 @@ public class DataTypeHandler {
 
         input = executionRuntime.resolveVariables(input);
         input = executionRuntime.resolveConceptLookup(input).getValue();
-        input = FrameworkCrypto.getInstance().resolve(input);
+        input = frameworkCrypto.resolve(input);
 
         log.trace(MessageFormat.format("resolving {0} for datatype", input));
         if (input.startsWith(DATATYPE_START_CHARACTERS) && input.endsWith(DATATYPE_STOP_CHARACTERS)) {

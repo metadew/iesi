@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.configuration;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.h2.H2Database;
 import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
@@ -24,6 +25,8 @@ public class IterationConfiguration {
     private final static String PRC_ITERATION_EXEC = "PRC_ITERATION_EXEC";
     private final static int RUNTIME_VAR_VALUE_MAX_LENGTH = 4000;
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     // Constructors
     public IterationConfiguration(String runCacheFolderName, ExecutionControl executionControl)  {
         this.executionControl = executionControl;
@@ -39,25 +42,25 @@ public class IterationConfiguration {
                 + "PRC_ID INT NOT NULL," + "LIST_ID INT NOT NULL," + "LIST_NM VARCHAR(200) NOT NULL,"
                 + "SET_ID INT NOT NULL," + "SET_NM VARCHAR(200) NOT NULL," + "ORDER_NB INT NOT NULL,"
                 + "VAR_NM VARCHAR(200) NOT NULL," + "VAR_VAL VARCHAR("+RUNTIME_VAR_VALUE_MAX_LENGTH+")" + ")";
-        DatabaseHandler.getInstance().executeUpdate(database, query);
+        databaseHandler.executeUpdate(database, query);
     }
 
     // Methods
     public void cleanIterationVariables(String runId)  {
         String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + "";
-        DatabaseHandler.getInstance().executeUpdate(database, query);
+        databaseHandler.executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, long processId)  {
         String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + " and PRC_ID = "
                 + processId;
-        DatabaseHandler.getInstance().executeUpdate(database, query);
+        databaseHandler.executeUpdate(database, query);
     }
 
     public void cleanIterationVariables(String runId, String iterationList)  {
         String query = "delete from " + PRC_ITERATION_EXEC + " where RUN_ID = " + SQLTools.getStringForSQL(runId) + " and LIST_NM = "
                 + SQLTools.getStringForSQL(iterationList) + ";";
-        DatabaseHandler.getInstance().executeUpdate(database, query);
+        databaseHandler.executeUpdate(database, query);
     }
 
 
@@ -163,14 +166,14 @@ public class IterationConfiguration {
                 + SQLTools.getStringForSQL(order) + ","
                 + SQLTools.getStringForSQL(name) + ","
                 + SQLTools.getStringForSQL(value) + ");";
-        DatabaseHandler.getInstance().executeUpdate(database , query);
+        databaseHandler.executeUpdate(database , query);
 
     }
 
     public IterationInstance hasNext(String runId, long orderNumber)  {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
                 + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.getStringForSQL(runId) + " and order_nb = " + SQLTools.getStringForSQL(orderNumber);
-        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
+        CachedRowSet crs = databaseHandler.executeQuery(database, query);
         IterationInstance iterationInstance = new IterationInstance();
         try {
             while (crs.next()) {
@@ -202,7 +205,7 @@ public class IterationConfiguration {
         String query = "select run_id, prc_id, list_id, list_nm, set_id, set_nm, order_nb, var_nm, var_val from "
                 + PRC_ITERATION_EXEC + " where run_id = " + SQLTools.getStringForSQL(runId) + " and list_nm = " + SQLTools.getStringForSQL(listName)
                 + " and order_nb = " + SQLTools.getStringForSQL(orderNumber) + ";";
-        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
+        CachedRowSet crs = databaseHandler.executeQuery(database, query);
         IterationInstance iterationInstance = new IterationInstance();
         int items = 0;
         try {

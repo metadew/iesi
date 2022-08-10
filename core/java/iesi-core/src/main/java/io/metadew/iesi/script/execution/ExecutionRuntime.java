@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.r.RWorkspace;
@@ -55,6 +56,7 @@ public class ExecutionRuntime {
     private HashMap<String, VariableInstruction> variableInstructions;
     private HashMap<String, LookupInstruction> lookupInstructions;
 
+    private final FrameworkControl frameworkControl = SpringContext.getBean(FrameworkControl.class);
     private final String INSTRUCTION_TYPE_KEY = "instructionType";
     private final String INSTRUCTION_KEYWORD_KEY = "instructionKeyword";
     private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
@@ -62,6 +64,7 @@ public class ExecutionRuntime {
             .compile("\\s*\\{\\{(?<" + INSTRUCTION_TYPE_KEY + ">[\\^\\*=\\$!])(?<" + INSTRUCTION_KEYWORD_KEY + ">[\\w\\.]+)(?<" + INSTRUCTION_ARGUMENTS_KEY + ">[\\s\\S]+)?\\}\\}\\s*");
 
     private static final Logger LOGGER = LogManager.getLogger();
+
 
     public ExecutionRuntime(ExecutionControl executionControl,
                             String runId,
@@ -198,7 +201,7 @@ public class ExecutionRuntime {
         String result = "";
 
         // First level: settings
-        result = FrameworkControl.getInstance().resolveConfiguration(input);
+        result = frameworkControl.resolveConfiguration(input);
 
         // Second level: runtime variables
         result = this.resolveRuntimeVariables(result);
@@ -215,7 +218,7 @@ public class ExecutionRuntime {
         String result;
 
         // First level: settings
-        result = FrameworkControl.getInstance().resolveConfiguration(input);
+        result = frameworkControl.resolveConfiguration(input);
 
         // Second: Action attributes
         result = this.resolveConfiguration(actionExecution, result);

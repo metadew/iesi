@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -38,6 +39,9 @@ public class ExecutionControl {
 
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
     private final ActionDesignTraceService actionDesignTraceService;
+    private final Configuration configuration = SpringContext.getBean(Configuration.class);
+    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
+
     private ExecutionRuntime executionRuntime;
     private String runId;
     private String envName;
@@ -48,6 +52,8 @@ public class ExecutionControl {
     private Long lastProcessId;
 
     private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
+
+
 
     public ExecutionControl(ScriptExecutionInitializationParameters scriptExecutionInitializationParameters) throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -62,8 +68,8 @@ public class ExecutionControl {
     @SuppressWarnings("unchecked")
     private void initializeExecutionRuntime(String runId, ScriptExecutionInitializationParameters scriptExecutionInitializationParameters) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        if (Configuration.getInstance().getProperty("iesi.script.execution.runtime").isPresent()) {
-            Class classRef = Class.forName((String) Configuration.getInstance().getProperty("iesi.script.execution.runtime").get());
+        if (configuration.getProperty("iesi.script.execution.runtime").isPresent()) {
+            Class classRef = Class.forName((String) configuration.getProperty("iesi.script.execution.runtime").get());
             Class[] initParams = {ExecutionControl.class, String.class, ScriptExecutionInitializationParameters.class};
             Constructor constructor = classRef.getConstructor(initParams);
             this.executionRuntime = (ExecutionRuntime) constructor.newInstance(this, runId, scriptExecutionInitializationParameters);
@@ -249,7 +255,7 @@ public class ExecutionControl {
 
     public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, String outputValue) {
         // Redact any encrypted values
-        outputValue = FrameworkCrypto.getInstance().redact(outputValue);
+        outputValue = frameworkCrypto.redact(outputValue);
         ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getMetadataKey().getScriptId(), outputValue);
         ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
     }

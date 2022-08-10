@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.presto;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
@@ -20,6 +21,8 @@ public class PrestoDatabaseService extends SchemaDatabaseService<PrestoDatabase>
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public synchronized static PrestoDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new PrestoDatabaseService();
@@ -31,22 +34,22 @@ public class PrestoDatabaseService extends SchemaDatabaseService<PrestoDatabase>
 
     @Override
     public PrestoDatabase getDatabase(Connection connection) {
-        String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
+        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
         PrestoDatabaseConnection prestoDatabaseConnection;
-        if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             prestoDatabaseConnection = new PrestoDatabaseConnection(
-                    DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     schemaName);
             return new PrestoDatabase(prestoDatabaseConnection, schemaName);
         }
 
-        String hostName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection,portKey));
-        String catalogName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, catalogNameKey);
+        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection,portKey));
+        String catalogName = databaseHandler.getMandatoryParameterWithKey(connection, catalogNameKey);
 
         prestoDatabaseConnection = new PrestoDatabaseConnection(
                 hostName,

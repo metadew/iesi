@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkControl;
 
 import java.io.BufferedReader;
@@ -8,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class FileLookup implements LookupInstruction {
+
+    private final FrameworkControl frameworkControl = SpringContext.getBean(FrameworkControl.class);
 
     public FileLookup() {
     }
@@ -26,7 +29,7 @@ public class FileLookup implements LookupInstruction {
             bufferedReader = new BufferedReader(new FileReader(file));
             String readLine = "";
             while ((readLine = bufferedReader.readLine()) != null) {
-                output += FrameworkControl.getInstance().resolveConfiguration(readLine);
+                output += frameworkControl.resolveConfiguration(readLine);
                 output += "\n";
             }
             bufferedReader.close();

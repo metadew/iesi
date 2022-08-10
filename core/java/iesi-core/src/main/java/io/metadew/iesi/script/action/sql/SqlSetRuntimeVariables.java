@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.sql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
@@ -24,6 +25,8 @@ public class SqlSetRuntimeVariables extends ActionTypeExecution {
     private static final String QUERY_KEY = "query";
     private static final String CONNECTION_KEY = "connection";
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public SqlSetRuntimeVariables(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
@@ -39,9 +42,9 @@ public class SqlSetRuntimeVariables extends ActionTypeExecution {
         Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName + " for env " + getExecutionControl().getEnvName()));
 
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Database database = databaseHandler.getDatabase(connection);
         // Run the action
-        CachedRowSet sqlResultSet = DatabaseHandler.getInstance().executeQuery(database, query);
+        CachedRowSet sqlResultSet = databaseHandler.executeQuery(database, query);
         this.getExecutionControl().getExecutionRuntime().setRuntimeVariables(getActionExecution(), sqlResultSet);
         getActionExecution().getActionControl().increaseSuccessCount();
         return true;

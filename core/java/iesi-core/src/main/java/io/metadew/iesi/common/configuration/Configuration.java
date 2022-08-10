@@ -2,8 +2,10 @@ package io.metadew.iesi.common.configuration;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.DependsOn;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,22 +15,18 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.MessageFormat;
 import java.util.*;
 
+@org.springframework.context.annotation.Configuration
+@DependsOn("springContext")
 @Log4j2
 @Getter
 public class Configuration {
 
     private static final String iesiKeyword = "iesi";
-    private static Configuration INSTANCE;
     private Map<String, Object> properties;
 
-    public synchronized static Configuration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Configuration();
-        }
-        return INSTANCE;
-    }
 
-    private Configuration() {
+    @PostConstruct
+    private void postConstruct() {
         properties = new HashMap<>();
         loadClasspathFiles();
         log.debug("configuration after classpath loading: " + properties);

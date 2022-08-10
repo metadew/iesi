@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.drill;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
@@ -23,6 +24,8 @@ public class DrillDatabaseService extends SchemaDatabaseService<DrillDatabase> i
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public synchronized static DrillDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new DrillDatabaseService();
@@ -34,24 +37,24 @@ public class DrillDatabaseService extends SchemaDatabaseService<DrillDatabase> i
 
     @Override
     public DrillDatabase getDatabase(Connection connection) {
-        String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
+        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
         DrillDatabaseConnection drillDatabaseConnection;
-        if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             drillDatabaseConnection = new DrillDatabaseConnection(
-                    DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     schemaName);
             return new DrillDatabase(drillDatabaseConnection, schemaName);
         }
 
-        String connectionMode = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, connectionModeKey);
-        String clusterName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, clusterNamesKey);
-        String directoryName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, directoryNameKey);
-        String clusterId = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, clusterIdKey);
-        String triesParameter = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, triesParameterKey);
+        String connectionMode = databaseHandler.getMandatoryParameterWithKey(connection, connectionModeKey);
+        String clusterName = databaseHandler.getMandatoryParameterWithKey(connection, clusterNamesKey);
+        String directoryName = databaseHandler.getMandatoryParameterWithKey(connection, directoryNameKey);
+        String clusterId = databaseHandler.getMandatoryParameterWithKey(connection, clusterIdKey);
+        String triesParameter = databaseHandler.getMandatoryParameterWithKey(connection, triesParameterKey);
 
         drillDatabaseConnection = new DrillDatabaseConnection(connectionMode,
                 clusterName,

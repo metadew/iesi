@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.fho;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.operation.FileTransferService;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransferResult;
 import io.metadew.iesi.connection.tools.HostConnectionTools;
@@ -27,6 +28,9 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
     private static final String TARGET_CONNECTION_NAME = "targetConnection";
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
+    private final FileTransferService fileTransferService = SpringContext.getBean(FileTransferService.class);
+
     public FhoExecuteFileTransfer(ExecutionControl executionControl,
                                   ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -43,9 +47,9 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
         String targetConnectionName = convertTargetConnection(getParameterResolvedValue(TARGET_CONNECTION_NAME));
         // Check if source or target are localhost
         // TODO check the creation of the sourceConnections
-        boolean sourceIsOnLocalHost = HostConnectionTools.isOnLocalhost(
+        boolean sourceIsOnLocalHost = hostConnectionTools.isOnLocalhost(
                 sourceConnectionName, this.getExecutionControl().getEnvName());
-        boolean targetIsOnLocalHost = HostConnectionTools.isOnLocalhost(
+        boolean targetIsOnLocalHost = hostConnectionTools.isOnLocalhost(
                 targetConnectionName, this.getExecutionControl().getEnvName());
 
         // Run the action
@@ -54,19 +58,19 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
             Connection targetConnection = ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))));
-            fileTransferResult = FileTransferService.getInstance().transferLocalToRemote(sourceFilePath,
+            fileTransferResult = fileTransferService.transferLocalToRemote(sourceFilePath,
                     sourceFileName, targetFilePath, targetFileName, targetConnection);
         } else if (!sourceIsOnLocalHost && targetIsOnLocalHost) {
             Connection sourceConnection = ConnectionConfiguration.getInstance()
                     .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))));
 
-            fileTransferResult = FileTransferService.getInstance().transferRemoteToLocal(sourceFilePath,
+            fileTransferResult = fileTransferService.transferRemoteToLocal(sourceFilePath,
                     sourceFileName, sourceConnection, targetFilePath,
                     targetFileName);
         } else if (sourceIsOnLocalHost && targetIsOnLocalHost) {
 
-            fileTransferResult = FileTransferService.getInstance().transferLocalToLocal(sourceFilePath,
+            fileTransferResult = fileTransferService.transferLocalToLocal(sourceFilePath,
                     sourceFileName, targetFilePath, targetFileName);
         } else {
             throw new RuntimeException("Method not supported yet");

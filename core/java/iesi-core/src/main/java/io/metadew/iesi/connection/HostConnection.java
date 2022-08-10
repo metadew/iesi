@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection;
 
 import com.jcraft.jsch.*;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkRuntime;
 import io.metadew.iesi.connection.host.LinuxHostUserInfo;
 import io.metadew.iesi.connection.host.ShellCommandResult;
@@ -35,6 +36,8 @@ public class HostConnection {
     private String outputReturnCode;
     private String outputRuntimeVariablesOutput;
     private List<String> systemOutputKeywordList;
+
+    private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
 
     // Session management
     // private Session[] sessions;
@@ -270,7 +273,7 @@ public class HostConnection {
                         Connection connection = ConnectionConfiguration.getInstance()
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(finalJumphostConnection, shellCommandSettings.getEnvironment()))));
-                        hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
+                        hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }
@@ -420,7 +423,7 @@ public class HostConnection {
                         Connection connection = ConnectionConfiguration.getInstance()
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .get();
-                        hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
+                        hostConnection = connectionOperation.getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }

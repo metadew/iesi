@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.sqlite;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class SqliteMetadataRepositoryCoordinatorService implements IMetadataRepositoryCoordinatorService<SQLiteMetadataRepositoryCoordinatorDefinition, SqliteDatabaseConnection> {
 
     private static SqliteMetadataRepositoryCoordinatorService INSTANCE;
+    private final FrameworkControl frameworkControl = SpringContext.getBean(FrameworkControl.class);
 
     public synchronized static SqliteMetadataRepositoryCoordinatorService getInstance() {
         if (INSTANCE == null) {
@@ -42,13 +44,13 @@ public class SqliteMetadataRepositoryCoordinatorService implements IMetadataRepo
     public SqliteDatabaseConnection getDatabaseConnection(SQLiteMetadataRepositoryCoordinatorDefinition sqLiteRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
         if (sqLiteRepositoryCoordinatorDefinition.getConnection().isPresent()) {
             return new SqliteDatabaseConnection(
-                    FrameworkControl.getInstance().resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getConnection().get()),
+                    frameworkControl.resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getConnection().get()),
                     "",
                     "",
                     sqLiteRepositoryCoordinatorDefinition.getInitSql());
         } else {
             return new SqliteDatabaseConnection(
-                    FrameworkControl.getInstance().resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getFile()),
+                    frameworkControl.resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getFile()),
                     sqLiteRepositoryCoordinatorDefinition.getInitSql());
         }
     }

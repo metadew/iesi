@@ -61,12 +61,18 @@ import java.text.MessageFormat;
 
 @Configuration
 @Log4j2
+@DependsOn("configuration")
 public class IesiConfiguration {
 
+    private final io.metadew.iesi.common.configuration.Configuration configuration;
+
+    public IesiConfiguration(io.metadew.iesi.common.configuration.Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+
     @Bean
-    @Order(0)
     public FrameworkInstance frameworkInstance() throws IOException {
-        io.metadew.iesi.common.configuration.Configuration.getInstance();
         MetadataConfiguration.getInstance();
         return FrameworkInstance.getInstance();
     }
@@ -272,7 +278,7 @@ public class IesiConfiguration {
     @Bean
     @DependsOn("frameworkInstance")
     public ThreadPoolTaskExecutor executionRequestTaskExecutor() {
-        int threadSize = io.metadew.iesi.common.configuration.Configuration.getInstance()
+        int threadSize = configuration
                 .getProperty("iesi.server.threads.size")
                 .map(Integer.class::cast)
                 .orElse(4);
@@ -284,18 +290,6 @@ public class IesiConfiguration {
         executor.setThreadNamePrefix("executionRequestTaskExecutor-");
         executor.initialize();
         return executor;
-    }
-
-    @Bean("iesiProperties")
-    @DependsOn("frameworkInstance")
-    public io.metadew.iesi.common.configuration.Configuration iesiProperties() {
-        return io.metadew.iesi.common.configuration.Configuration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public FrameworkCrypto frameworkCrypto(){
-        return FrameworkCrypto.getInstance();
     }
 
     @Bean

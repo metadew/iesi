@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.bigquery;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
@@ -26,6 +27,8 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
     private final static String clientSecretKey = "clientSecret";
     private final static String schemaKey = "dataset";
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public synchronized static BigqueryDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new BigqueryDatabaseService();
@@ -42,22 +45,22 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
 
     @Override
     public BigqueryDatabase getDatabase(Connection connection) {
-        String schemaName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
+        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
 
         BigqueryDatabaseConnection bigqueryDatabaseConnection;
 
         //ConnectionUrl has been provided
-        if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             bigqueryDatabaseConnection = new BigqueryDatabaseConnection(
-                    DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get());
+                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get());
             return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
         }
 
         //Individual parameters have been provided
-        String host = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, portKey));
-        String project = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, projectKey);
-        String authMode = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, authModeKey);
+        String host = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
+        String project = databaseHandler.getMandatoryParameterWithKey(connection, projectKey);
+        String authMode = databaseHandler.getMandatoryParameterWithKey(connection, authModeKey);
 
         switch (authMode) {
             case "service":
@@ -65,8 +68,8 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
                                 host,
                                 port,
                                 project,
-                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, serviceAccountKey),
-                                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, keyPathKey));
+                                databaseHandler.getMandatoryParameterWithKey(connection, serviceAccountKey),
+                                databaseHandler.getMandatoryParameterWithKey(connection, keyPathKey));
                 return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
             case "user":
                 bigqueryDatabaseConnection = new UserBigqueryDatabaseConnection(
@@ -79,10 +82,10 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
                                 host,
                                 port,
                                 project,
-                                DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, accessTokenKey).orElse(null),
-                                DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, refreshTokenKey).orElse(null),
-                                DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, clientIdKey).orElse(null),
-                                DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, clientSecretKey).orElse(null));
+                                databaseHandler.getOptionalParameterWithKey(connection, accessTokenKey).orElse(null),
+                                databaseHandler.getOptionalParameterWithKey(connection, refreshTokenKey).orElse(null),
+                                databaseHandler.getOptionalParameterWithKey(connection, clientIdKey).orElse(null),
+                                databaseHandler.getOptionalParameterWithKey(connection, clientSecretKey).orElse(null));
                 return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
             case "default":
                 bigqueryDatabaseConnection = new DefaultBigqueryDatabaseConnection(

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.sql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.tools.SQLTools;
@@ -26,6 +27,8 @@ public class SqlEvaluateResult extends ActionTypeExecution {
     private static final String CONNECTION_NAME_KEY = "connection";
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public SqlEvaluateResult(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -42,11 +45,11 @@ public class SqlEvaluateResult extends ActionTypeExecution {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Database database = databaseHandler.getDatabase(connection);
 
         // Run the action
         CachedRowSet crs;
-        crs = DatabaseHandler.getInstance().executeQuery(database, query);
+        crs = databaseHandler.executeQuery(database, query);
         int rowCount = SQLTools.getRowCount(crs);
         this.getActionExecution().getActionControl().logOutput("count", Integer.toString(rowCount));
 

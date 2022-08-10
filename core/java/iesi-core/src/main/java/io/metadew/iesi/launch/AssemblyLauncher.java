@@ -73,9 +73,9 @@ public class AssemblyLauncher {
         }
 
         // FWK init
-        Configuration.getInstance();
-        FrameworkCrypto.getInstance();
-        FrameworkControl.getInstance();
+        // Configuration.getInstance();
+        // FrameworkCrypto.getInstance();
+        // FrameworkControl.getInstance();
 
 //        AssemblyExecution assemblyExecution = new AssemblyExecution(repository, development, sandbox, instance,
 //                version, configuration, applyConfiguration, testAssembly, distribution);

@@ -1,5 +1,6 @@
 package io.metadew.iesi.component.http;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -11,6 +12,7 @@ import java.text.MessageFormat;
 public class HttpHeaderService implements IHttpHeaderService {
 
     private static HttpHeaderService INSTANCE;
+    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public synchronized static HttpHeaderService getInstance() {
         if (INSTANCE == null) {
@@ -32,7 +34,7 @@ public class HttpHeaderService implements IHttpHeaderService {
         String resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, actionResolvedValue);
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
-        String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
+        String decryptedInputValue = frameworkCrypto.resolve(resolvedInputValue);
         return convertHeaderDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 

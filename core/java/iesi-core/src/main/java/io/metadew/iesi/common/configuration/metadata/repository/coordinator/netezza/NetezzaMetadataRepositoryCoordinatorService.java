@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.netezza;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRepositoryCoordinatorService<NetezzaMetadataRepositoryCoordinatorDefinition, NetezzaDatabaseConnection> {
 
     private static NetezzaMetadataRepositoryCoordinatorService INSTANCE;
+    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public synchronized static NetezzaMetadataRepositoryCoordinatorService getInstance() {
         if (INSTANCE == null) {
@@ -63,7 +65,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
             netezzaDatabaseConnection = new NetezzaDatabaseConnection(
                     netezzaRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     netezzaRepositoryCoordinatorDefinition.getInitSql());
             netezzaRepositoryCoordinatorDefinition.getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
         } else {
@@ -72,7 +74,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
                     netezzaRepositoryCoordinatorDefinition.getPort(),
                     netezzaRepositoryCoordinatorDefinition.getDatabase(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     netezzaRepositoryCoordinatorDefinition.getInitSql()
             );
             netezzaRepositoryCoordinatorDefinition.getSchema().ifPresent(netezzaDatabaseConnection::setSchema);

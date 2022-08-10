@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.sql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
@@ -30,6 +31,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     private static final String APPEND_OUTPUT_KEY = "appendOutput";
     private static final String OUTPUT_DATASET_KEY = "outputDataset";
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
 
     public SqlExecuteQuery(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -95,7 +97,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Database database = databaseHandler.getDatabase(connection);
 
         // Run the action
         // Make sure the SQL statement is ended with a ;
@@ -107,7 +109,7 @@ public class SqlExecuteQuery extends ActionTypeExecution {
 
         Optional<DatasetImplementation> dataset = this.getExecutionControl().getExecutionRuntime()
                 .getDataset(outputDatasetReferenceName);
-        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
+        CachedRowSet crs = databaseHandler.executeQuery(database, query);
         this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
         // TODO resolve for files and resolve inside
         if (dataset.isPresent()) {

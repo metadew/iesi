@@ -1,6 +1,7 @@
 package io.metadew.iesi.common.configuration.metadata.componenttypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.component.ComponentType;
@@ -17,6 +18,7 @@ public class MetadataComponentTypesConfiguration {
     private static final String actionsKey = "component-types";
 
     private Map<String, ComponentType> componentTypeMap;
+    private Configuration configuration = SpringContext.getBean(Configuration.class);
 
     public synchronized static MetadataComponentTypesConfiguration getInstance() {
         if (INSTANCE == null) {
@@ -29,7 +31,7 @@ public class MetadataComponentTypesConfiguration {
     private MetadataComponentTypesConfiguration() {
         componentTypeMap = new HashMap<>();
         if (containsConfiguration()) {
-            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
+            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) configuration.getProperties()
                     .get(MetadataConfiguration.configurationKey))
                     .get(actionsKey);
             ObjectMapper objectMapper = new ObjectMapper();
@@ -52,9 +54,9 @@ public class MetadataComponentTypesConfiguration {
 
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
-                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(actionsKey) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(actionsKey) instanceof Map;
+        return configuration.getProperties().containsKey(MetadataConfiguration.configurationKey) &&
+                (configuration.getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).containsKey(actionsKey) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).get(actionsKey) instanceof Map;
     }
 }

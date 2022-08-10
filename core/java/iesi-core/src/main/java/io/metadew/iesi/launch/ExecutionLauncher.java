@@ -1,5 +1,6 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
@@ -25,6 +26,8 @@ import java.util.Optional;
 @Log4j2
 public class ExecutionLauncher {
 
+    private static Configuration configuration = SpringContext.getBean(Configuration.class);
+
     public static void main(String[] args) throws ParseException, IOException {
         ThreadContext.clearAll();
 
@@ -44,7 +47,7 @@ public class ExecutionLauncher {
         }
 
         if (line.hasOption("debugMode") && line.getOptionValue("debugMode").equalsIgnoreCase("Y")) {
-            String log4j2File = (Configuration.getInstance().getProperty("iesi.home").orElse("")) + "/lib/log4j2.xml";
+            String log4j2File = (configuration.getProperty("iesi.home").orElse("")) + "/lib/log4j2.xml";
             if (new File(log4j2File).exists()) {
                 Configurator.initialize(null, log4j2File);
             } else {

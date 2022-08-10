@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = { "io.metadew.iesi"})
 @EnableAsync
 @Log4j2
 public class Application {

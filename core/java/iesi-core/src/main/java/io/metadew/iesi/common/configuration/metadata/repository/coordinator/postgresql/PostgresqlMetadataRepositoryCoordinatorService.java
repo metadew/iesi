@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.postgresql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadataRepositoryCoordinatorService<PostgresqlMetadataRepositoryCoordinatorDefinition, PostgresqlDatabaseConnection> {
 
     private static PostgresqlMetadataRepositoryCoordinatorService INSTANCE;
+    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public synchronized static PostgresqlMetadataRepositoryCoordinatorService getInstance() {
         if (INSTANCE == null) {
@@ -62,7 +64,7 @@ public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadata
             return new PostgresqlDatabaseConnection(
                     postgresqlRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     postgresqlRepositoryCoordinatorDefinition.getInitSql(),
                     postgresqlRepositoryCoordinatorDefinition.getSchema().orElse(null));
         } else {
@@ -72,7 +74,7 @@ public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadata
                     postgresqlRepositoryCoordinatorDefinition.getDatabase(),
                     postgresqlRepositoryCoordinatorDefinition.getSchema().orElse(null),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     postgresqlRepositoryCoordinatorDefinition.getInitSql()
             );
         }

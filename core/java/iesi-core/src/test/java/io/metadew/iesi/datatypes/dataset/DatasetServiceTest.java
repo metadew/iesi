@@ -34,7 +34,7 @@ class DatasetServiceTest {
 
     @BeforeEach
     void prepare() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
 
@@ -50,7 +50,7 @@ class DatasetServiceTest {
 
     @AfterAll
     static void teardown() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         MetadataRepositoryConfiguration.getInstance()
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);

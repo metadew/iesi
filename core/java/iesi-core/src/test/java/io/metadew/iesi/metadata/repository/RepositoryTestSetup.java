@@ -7,12 +7,12 @@ public class RepositoryTestSetup {
 
 
     public static DesignMetadataRepository getDesignMetadataRepository() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         return MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository();
     }
 
     public static ConnectivityMetadataRepository getConnectivityMetadataRepository() {
-        Configuration.getInstance();
+        // Configuration.getInstance();
         return MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository();
     }
 

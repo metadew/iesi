@@ -2,6 +2,7 @@ package io.metadew.iesi.connection.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
@@ -25,9 +26,11 @@ import java.util.stream.Collectors;
 @Log4j2
 public abstract class DatabaseService<T extends Database> implements IDatabaseService<T> {
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     public Connection getConnection(T database) throws SQLException {
         if (database.getConnectionPool() == null) {
-            database.setConnectionPool(DatabaseHandler.getInstance().createConnectionPool(database, database.getDatabaseConnection()));
+            database.setConnectionPool(databaseHandler.createConnectionPool(database, database.getDatabaseConnection()));
         }
         return database.getConnectionPool().getConnection();
     }

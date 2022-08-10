@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
 import io.metadew.iesi.common.configuration.metadata.componenttypes.MetadataComponentTypesConfiguration;
@@ -17,6 +18,8 @@ public class MetadataConfiguration {
 
     private static MetadataConfiguration INSTANCE;
     public static final String configurationKey = "metadata";
+
+    Configuration configuration = SpringContext.getBean(Configuration.class);
 
     public synchronized static MetadataConfiguration getInstance() {
         if (INSTANCE == null) {
@@ -41,8 +44,8 @@ public class MetadataConfiguration {
 
 
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
-                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map);
+        return configuration.getProperties().containsKey(MetadataConfiguration.configurationKey) &&
+                (configuration.getProperties().get(MetadataConfiguration.configurationKey) instanceof Map);
     }
 
 }

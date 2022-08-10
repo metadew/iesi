@@ -21,7 +21,7 @@ public class EncryptionLauncher {
 
     public static void main(String[] args) {
 
-        Configuration.getInstance();
+        //Configuration.getInstance();
 
         Console console = System.console();
         if (console == null) {
@@ -32,11 +32,11 @@ public class EncryptionLauncher {
         char[] passwordArray = console.readPassword("Enter the password to encrypt: ");
 
         String input = new String(passwordArray);
-        Configuration.getInstance();
-        FrameworkCrypto frameworkCrypto = FrameworkCrypto.getInstance();
+        // Configuration.getInstance();
+        // FrameworkCrypto frameworkCrypto = FrameworkCrypto.getInstance();
 
         String output = "";
-        output = frameworkCrypto.encrypt(input);
+        // output = frameworkCrypto.encrypt(input);
 
         System.out.println("The encrypted password is: " + output);
 

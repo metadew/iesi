@@ -1,12 +1,12 @@
 package io.metadew.iesi.script.action.socket;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -45,6 +45,8 @@ public class SocketTransmitMessage extends ActionTypeExecution {
     private SocketConnection socket;
     private DatasetImplementation outputDataset;
     private Integer timeout;
+
+    private Configuration configuration = SpringContext.getBean(Configuration.class);
 
     public SocketTransmitMessage(ExecutionControl executionControl,
                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -128,7 +130,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
             LocalDateTime endDateTime;
             if (timeout == null) {
                 endDateTime = LocalDateTime.now()
-                        .plus((Integer) Configuration.getInstance().getMandatoryProperty("iesi.actions.socket.transmitMessage.timeout.default"),
+                        .plus((Integer) configuration.getMandatoryProperty("iesi.actions.socket.transmitMessage.timeout.default"),
                                 ChronoUnit.SECONDS);
             } else {
                 endDateTime = LocalDateTime.now().plus(timeout, ChronoUnit.SECONDS);

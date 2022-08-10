@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.generic;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.DatabaseService;
 import io.metadew.iesi.connection.database.IDatabaseService;
@@ -18,6 +19,8 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
     private static final String INIT_SQL = "initSql";
     private static GenericDatabaseService instance;
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     private GenericDatabaseService() {
     }
 
@@ -30,11 +33,11 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public GenericDatabase getDatabase(Connection connection) {
-        Optional<String> username = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, USER_KEY);
-        Optional<String> password = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, PASSWORD_KEY);
-        Optional<String> schema = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, SCHEMA_KEY);
-        String connectionURL = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, CONNECTION_URL_KEY);
-        Optional<String> initSql = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, INIT_SQL);
+        Optional<String> username = databaseHandler.getOptionalParameterWithKey(connection, USER_KEY);
+        Optional<String> password = databaseHandler.getOptionalParameterWithKey(connection, PASSWORD_KEY);
+        Optional<String> schema = databaseHandler.getOptionalParameterWithKey(connection, SCHEMA_KEY);
+        String connectionURL = databaseHandler.getMandatoryParameterWithKey(connection, CONNECTION_URL_KEY);
+        Optional<String> initSql = databaseHandler.getOptionalParameterWithKey(connection, INIT_SQL);
 
         GenericDatabaseConnection genericDatabaseConnection = new GenericDatabaseConnection(
                 connectionURL,

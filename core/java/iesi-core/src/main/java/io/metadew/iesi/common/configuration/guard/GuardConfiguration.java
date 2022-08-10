@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.guard;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -16,6 +17,7 @@ public class GuardConfiguration {
     private static final String guardKey = "guard";
 
     private Map<String, String> guardSettingsMap;
+    Configuration configuration = SpringContext.getBean(Configuration.class);
 
     public synchronized static GuardConfiguration getInstance() {
         if (INSTANCE == null) {
@@ -28,7 +30,7 @@ public class GuardConfiguration {
     private GuardConfiguration() {
         guardSettingsMap = new HashMap<>();
         if (containsConfiguration()) {
-            guardSettingsMap = (Map<String, String>) Configuration.getInstance().getProperties()
+            guardSettingsMap = (Map<String, String>) configuration.getProperties()
                     .get(guardKey);
         } else {
             log.warn("no guard configuration found on system variable, classpath or filesystem");
@@ -37,8 +39,8 @@ public class GuardConfiguration {
 
 
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(GuardConfiguration.guardKey) &&
-                (Configuration.getInstance().getProperties().get(GuardConfiguration.guardKey) instanceof Map);
+        return configuration.getProperties().containsKey(GuardConfiguration.guardKey) &&
+                (configuration.getProperties().get(GuardConfiguration.guardKey) instanceof Map);
     }
 
     public Optional<String> getGuardSetting(String guardSetting) {

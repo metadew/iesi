@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.repository.coordinator;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
@@ -13,31 +14,32 @@ import java.util.Map;
 public class RepositoryCoordinator {
 
     private Map<String, Database> databases;
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
 
     public RepositoryCoordinator(Map<String, Database> databases) {
         this.databases = databases;
     }
 
     public String getAllTablesQuery(String pattern) {
-        return DatabaseHandler.getInstance().getAllTablesQuery(databases.get("reader"), pattern);
+        return databaseHandler.getAllTablesQuery(databases.get("reader"), pattern);
     }
 
     public CachedRowSet executeQuery(String query, String logonType) {
         CachedRowSet crs;
-        crs = DatabaseHandler.getInstance().executeQuery(this.databases.get(logonType), query);
+        crs = databaseHandler.executeQuery(this.databases.get(logonType), query);
         return crs;
     }
 
     public void executeUpdate(String query) {
-        DatabaseHandler.getInstance().executeUpdate(this.databases.get("writer"), query);
+        databaseHandler.executeUpdate(this.databases.get("writer"), query);
     }
 
     public void executeBatch(List<String> queries) {
-        DatabaseHandler.getInstance().executeBatch(this.databases.get("writer"), queries);
+        databaseHandler.executeBatch(this.databases.get("writer"), queries);
     }
 
     public void executeScript(String fileName, String logonType) {
-        SqlScriptResult dcSQLScriptResult = DatabaseHandler.getInstance().executeScript(this.databases.get(logonType), fileName);
+        SqlScriptResult dcSQLScriptResult = databaseHandler.executeScript(this.databases.get(logonType), fileName);
 
         if (dcSQLScriptResult.getReturnCode() != 0) {
             throw new RuntimeException("Error executing SQL script");
@@ -45,7 +47,7 @@ public class RepositoryCoordinator {
     }
 
     public void executeScript(InputStream inputStream, String logonType) {
-        SqlScriptResult dcSQLScriptResult = DatabaseHandler.getInstance().executeScript(this.databases.get(logonType), inputStream);
+        SqlScriptResult dcSQLScriptResult = databaseHandler.executeScript(this.databases.get(logonType), inputStream);
 
         if (dcSQLScriptResult.getReturnCode() != 0) {
             throw new RuntimeException("Error executing SQL script");
@@ -53,23 +55,23 @@ public class RepositoryCoordinator {
     }
 
     public void cleanTable(MetadataTable table) {
-        DatabaseHandler.getInstance().cleanTable(this.databases.get("writer"), table);
+        databaseHandler.cleanTable(this.databases.get("writer"), table);
     }
 
     public void dropTable(MetadataTable table) {
-        DatabaseHandler.getInstance().dropTable(this.databases.get("owner"), table);
+        databaseHandler.dropTable(this.databases.get("owner"), table);
     }
 
     public void createTable(MetadataTable table) {
-        DatabaseHandler.getInstance().createTable(this.databases.get("owner"), table);
+        databaseHandler.createTable(this.databases.get("owner"), table);
     }
 
     public String getCreateStatement(MetadataTable table) {
-        return DatabaseHandler.getInstance().getCreateStatement(this.databases.get("reader"), table);
+        return databaseHandler.getCreateStatement(this.databases.get("reader"), table);
     }
 
     public String getDropStatement(MetadataTable table) {
-        return DatabaseHandler.getInstance().getDropStatement(this.databases.get("reader"), table);
+        return databaseHandler.getDropStatement(this.databases.get("reader"), table);
     }
 
     public Map<String, Database> getDatabases() {
@@ -78,7 +80,7 @@ public class RepositoryCoordinator {
 
     public void shutdown() {
         for (Database database : databases.values()) {
-            DatabaseHandler.getInstance()
+            databaseHandler
                     .shutdown(database);
         }
     }

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.cli;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
@@ -33,6 +34,9 @@ public class CliExecuteCommand extends ActionTypeExecution {
     private static final String CONNECTION_NAME_KEY = "connection";
     private static final String SYSTEM_OUTPUT_NAME_KEY = "output";
 
+    private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
+    private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
+
     public CliExecuteCommand(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -50,7 +54,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         String settingRuntimeVariablesPrefix = convertSetRuntimeVariablesPrefix(getParameterResolvedValue(SET_RUN_VAR_PREFIX_KEY));
         String settingRuntimeVariablesMode = convertSetRuntimeVariablesMode(getParameterResolvedValue(SET_RUN_VAR_MODE_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
-        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
+        boolean isOnLocalhost = hostConnectionTools.isOnLocalhost(
                 connectionName, getExecutionControl().getEnvName());
         HostConnection hostConnection;
         if (connectionName.isEmpty() || connectionName.equalsIgnoreCase("localhost")) {
@@ -59,7 +63,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
             Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection definition for {} in environment {}",
                             connectionName, getExecutionControl().getEnvName())));
-            hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
+            hostConnection = connectionOperation.getHostConnection(connection);
         }
 
 

@@ -1,34 +1,32 @@
 package io.metadew.iesi.common.configuration.metadata.tables;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Log4j2
+@org.springframework.context.annotation.Configuration
 public class MetadataTablesConfiguration {
 
-    private static MetadataTablesConfiguration INSTANCE;
     private static final String metadataTableKey = "tables";
 
     private List<MetadataTable> metadataTables;
-    Configuration configuration = SpringContext.getBean(Configuration.class);
+    private final Configuration configuration;
 
-    public synchronized static MetadataTablesConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataTablesConfiguration();
-        }
-        return INSTANCE;
+    public MetadataTablesConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @SuppressWarnings("unchecked")
-    private MetadataTablesConfiguration() {
+    @PostConstruct
+    private void postConstruct() {
         metadataTables = new ArrayList<>();
         if (containsConfiguration()) {
             List<Object> frameworkSettingConfigurations =

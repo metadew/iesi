@@ -38,6 +38,7 @@ public class HostConnection {
     private List<String> systemOutputKeywordList;
 
     private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     // Session management
     // private Session[] sessions;
@@ -270,7 +271,7 @@ public class HostConnection {
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
                         String finalJumphostConnection = jumphostConnection;
-                        Connection connection = ConnectionConfiguration.getInstance()
+                        Connection connection = connectionConfiguration
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(finalJumphostConnection, shellCommandSettings.getEnvironment()))));
                         hostConnection = connectionOperation.getHostConnection(connection);
@@ -420,7 +421,7 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
-                        Connection connection = ConnectionConfiguration.getInstance()
+                        Connection connection = connectionConfiguration
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .get();
                         hostConnection = connectionOperation.getHostConnection(connection);

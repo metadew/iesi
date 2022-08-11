@@ -5,35 +5,32 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 @Log4j2
 public class DatasetService implements IDatasetService {
-    private static DatasetService INSTANCE;
 
-    public synchronized static DatasetService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DatasetService();
-        }
-        return INSTANCE;
-    }
+    private final DatasetConfiguration datasetConfiguration;
 
-    private DatasetService() {
+    public DatasetService(DatasetConfiguration datasetConfiguration) {
+        this.datasetConfiguration = datasetConfiguration;
     }
 
 
     @Override
     public boolean exists(DatasetKey datasetKey) {
-        return DatasetConfiguration.getInstance().exists(datasetKey);
+        return datasetConfiguration.exists(datasetKey);
     }
 
     @Override
     public boolean exists(String name) {
-        return DatasetConfiguration.getInstance().existsByName(name);
+        return datasetConfiguration.existsByName(name);
     }
 
     @Override
@@ -41,22 +38,22 @@ public class DatasetService implements IDatasetService {
         if (!exists(datasetKey)) {
             throw new MetadataDoesNotExistException(datasetKey);
         }
-        return DatasetConfiguration.getInstance().get(datasetKey);
+        return datasetConfiguration.get(datasetKey);
     }
 
     @Override
     public List<Dataset> getAll() {
-        return DatasetConfiguration.getInstance().getAll();
+        return datasetConfiguration.getAll();
     }
 
     @Override
     public Optional<Dataset> getByName(String name) {
-        return DatasetConfiguration.getInstance().getByName(name);
+        return datasetConfiguration.getByName(name);
     }
 
     @Override
     public void create(Dataset dataset) {
-        DatasetConfiguration.getInstance().insert(dataset);
+        datasetConfiguration.insert(dataset);
     }
 
     @Override
@@ -66,7 +63,7 @@ public class DatasetService implements IDatasetService {
 
         return dataObjectOperation.getDataObjects().stream().map((dataObject) -> {
             Dataset dataset = (Dataset) objectMapper.convertValue(dataObject, Metadata.class);
-            if (DatasetConfiguration.getInstance().exists(dataset.getMetadataKey())) {
+            if (datasetConfiguration.exists(dataset.getMetadataKey())) {
                 log.info(MessageFormat.format("dataset {0} already exists in data repository. Updating to new definition", dataset.getName()));
                 this.update(dataset);
             }  else {
@@ -83,11 +80,11 @@ public class DatasetService implements IDatasetService {
 
     @Override
     public void delete(DatasetKey datasetKey) {
-        DatasetConfiguration.getInstance().delete(datasetKey);
+        datasetConfiguration.delete(datasetKey);
     }
 
     @Override
     public void update(Dataset dataset) {
-        DatasetConfiguration.getInstance().update(dataset);
+        datasetConfiguration.update(dataset);
     }
 }

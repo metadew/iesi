@@ -1,6 +1,5 @@
 package io.metadew.iesi.connection.operation;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.ArtifactoryConnection;
@@ -24,10 +23,15 @@ import java.util.Map;
 public class ConnectionOperation {
 
     private final FrameworkControl frameworkControl;
-    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
+    private final FrameworkCrypto frameworkCrypto;
+    private final ConnectionTypeConfiguration connectionTypeConfiguration;
 
-    public ConnectionOperation(FrameworkControl frameworkControl) {
+    public ConnectionOperation(FrameworkControl frameworkControl,
+                               FrameworkCrypto frameworkCrypto,
+                               ConnectionTypeConfiguration connectionTypeConfiguration) {
         this.frameworkControl = frameworkControl;
+        this.frameworkCrypto = frameworkCrypto;
+        this.connectionTypeConfiguration = connectionTypeConfiguration;
     }
 
     public HostConnection getHostConnection(Connection connection) {
@@ -273,7 +277,6 @@ public class ConnectionOperation {
     }
 
     public ConnectionType getConnectionType(String connectionTypeName) {
-        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
         return connectionTypeConfiguration.getConnectionType(connectionTypeName);
     }
 

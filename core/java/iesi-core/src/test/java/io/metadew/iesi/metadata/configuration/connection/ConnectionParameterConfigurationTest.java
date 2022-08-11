@@ -1,7 +1,9 @@
 package io.metadew.iesi.metadata.configuration.connection;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.environment.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -9,6 +11,8 @@ import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
@@ -17,6 +21,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ConnectionParameterConfiguration.class})
 class ConnectionParameterConfigurationTest {
 
     private ConnectionParameter connectionParameter11;
@@ -25,25 +30,28 @@ class ConnectionParameterConfigurationTest {
     private ConnectionParameter connectionParameter2;
     private ConnectionParameter connectionParameter3;
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    private ConnectionParameterConfiguration connectionParameterConfiguration;
+
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -67,161 +75,161 @@ class ConnectionParameterConfigurationTest {
 
     @Test
     void connectionParameterNotExistsTest() {
-        assertFalse(ConnectionParameterConfiguration.getInstance().exists(connectionParameter11));
+        assertFalse(connectionParameterConfiguration.exists(connectionParameter11));
     }
 
     @Test
     void connectionParameterExistsTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
-        assertTrue(ConnectionParameterConfiguration.getInstance().exists(connectionParameter11.getMetadataKey()));
+        connectionParameterConfiguration.insert(connectionParameter11);
+        assertTrue(connectionParameterConfiguration.exists(connectionParameter11.getMetadataKey()));
     }
 
     @Test
     void connectionParameterInsertTest() {
-        assertEquals(0, ConnectionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(0, connectionParameterConfiguration.getAll().size());
 
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
+        connectionParameterConfiguration.insert(connectionParameter11);
 
-        assertEquals(1, ConnectionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(1, connectionParameterConfiguration.getAll().size());
 
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter11.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals(connectionParameter11, fetchedConnectionParameter.get());
     }
 
     @Test
     void connectionParameterInsertAlreadyExistsTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
-        assertThrows(MetadataAlreadyExistsException.class,() -> ConnectionParameterConfiguration.getInstance().insert(connectionParameter11));
+        connectionParameterConfiguration.insert(connectionParameter11);
+        assertThrows(MetadataAlreadyExistsException.class,() -> connectionParameterConfiguration.insert(connectionParameter11));
     }
 
     @Test
     void connectionParameterDeleteOnlyTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
-        assertEquals(1, ConnectionParameterConfiguration.getInstance().getAll().size());
+        connectionParameterConfiguration.insert(connectionParameter11);
+        assertEquals(1, connectionParameterConfiguration.getAll().size());
 
-        ConnectionParameterConfiguration.getInstance().delete(connectionParameter11.getMetadataKey());
+        connectionParameterConfiguration.delete(connectionParameter11.getMetadataKey());
 
-        assertEquals(0, ConnectionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(0, connectionParameterConfiguration.getAll().size());
     }
 
     @Test
     void connectionParameterDeleteMultiplePerConnectionEnvTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter12);
-        assertEquals(2, ConnectionParameterConfiguration.getInstance().getAll().size());
+        connectionParameterConfiguration.insert(connectionParameter11);
+        connectionParameterConfiguration.insert(connectionParameter12);
+        assertEquals(2, connectionParameterConfiguration.getAll().size());
 
-        ConnectionParameterConfiguration.getInstance().delete(connectionParameter11.getMetadataKey());
+        connectionParameterConfiguration.delete(connectionParameter11.getMetadataKey());
 
-        assertEquals(1, ConnectionParameterConfiguration.getInstance().getAll().size());
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter12.getMetadataKey());
+        assertEquals(1, connectionParameterConfiguration.getAll().size());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter12.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals(connectionParameter12, fetchedConnectionParameter.get());
     }
 
     @Test
     void connectionParameterDeleteMultiplePerConnectionTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter2);
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter3);
-        assertEquals(2, ConnectionParameterConfiguration.getInstance().getAll().size());
+        connectionParameterConfiguration.insert(connectionParameter2);
+        connectionParameterConfiguration.insert(connectionParameter3);
+        assertEquals(2, connectionParameterConfiguration.getAll().size());
 
-        ConnectionParameterConfiguration.getInstance().delete(connectionParameter2.getMetadataKey());
+        connectionParameterConfiguration.delete(connectionParameter2.getMetadataKey());
 
-        assertEquals(1, ConnectionParameterConfiguration.getInstance().getAll().size());
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter3.getMetadataKey());
+        assertEquals(1, connectionParameterConfiguration.getAll().size());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter3.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals(connectionParameter3, fetchedConnectionParameter.get());
     }
 
     @Test
     void connectionParameterDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class,() -> ConnectionParameterConfiguration.getInstance().delete(connectionParameter11.getMetadataKey()));
+        assertThrows(MetadataDoesNotExistException.class,() -> connectionParameterConfiguration.delete(connectionParameter11.getMetadataKey()));
     }
 
     @Test
     void connectionParameterGetOnlyTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
+        connectionParameterConfiguration.insert(connectionParameter11);
 
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter11.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals(connectionParameter11, fetchedConnectionParameter.get());
     }
 
     @Test
     void connectionParameterGetMultiplePerConnectionEnvTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter12);
+        connectionParameterConfiguration.insert(connectionParameter11);
+        connectionParameterConfiguration.insert(connectionParameter12);
 
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter11.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals(connectionParameter11, fetchedConnectionParameter.get());
     }
 
     @Test
     void connectionParameterGetMultiplePerConnectionTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter2);
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter3);
+        connectionParameterConfiguration.insert(connectionParameter2);
+        connectionParameterConfiguration.insert(connectionParameter3);
 
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter2.getMetadataKey());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter2.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals(connectionParameter2, fetchedConnectionParameter.get());
     }
 
     @Test
     void connectionParameterGetNotExistsTest(){
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter2.getMetadataKey());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter2.getMetadataKey());
         assertFalse(fetchedConnectionParameter.isPresent());
     }
 
     @Test
     void connectionParameterUpdateSingleTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
+        connectionParameterConfiguration.insert(connectionParameter11);
 
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter11.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals("parameter value", fetchedConnectionParameter.get().getValue());
 
         connectionParameter11.setValue("dummy");
-        ConnectionParameterConfiguration.getInstance().update(connectionParameter11);
+        connectionParameterConfiguration.update(connectionParameter11);
 
 
-        fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
+        fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter11.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals("dummy", fetchedConnectionParameter.get().getValue());
     }
 
     @Test
     void connectionParameterUpdateMultiplePerConnectionEnvTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter11);
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter12);
+        connectionParameterConfiguration.insert(connectionParameter11);
+        connectionParameterConfiguration.insert(connectionParameter12);
 
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter11.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals("parameter value", fetchedConnectionParameter.get().getValue());
 
         connectionParameter11.setValue("dummy");
-        ConnectionParameterConfiguration.getInstance().update(connectionParameter11);
+        connectionParameterConfiguration.update(connectionParameter11);
 
 
-        fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter11.getMetadataKey());
+        fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter11.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals("dummy", fetchedConnectionParameter.get().getValue());
     }
 
     @Test
     void connectionParameterUpdateMultiplePerConnectionTest() {
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter2);
-        ConnectionParameterConfiguration.getInstance().insert(connectionParameter3);
+        connectionParameterConfiguration.insert(connectionParameter2);
+        connectionParameterConfiguration.insert(connectionParameter3);
 
-        Optional<ConnectionParameter> fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter2.getMetadataKey());
+        Optional<ConnectionParameter> fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter2.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals("parameter value", fetchedConnectionParameter.get().getValue());
 
         connectionParameter2.setValue("dummy");
-        ConnectionParameterConfiguration.getInstance().update(connectionParameter2);
+        connectionParameterConfiguration.update(connectionParameter2);
 
 
-        fetchedConnectionParameter = ConnectionParameterConfiguration.getInstance().get(connectionParameter2.getMetadataKey());
+        fetchedConnectionParameter = connectionParameterConfiguration.get(connectionParameter2.getMetadataKey());
         assertTrue(fetchedConnectionParameter.isPresent());
         assertEquals("dummy", fetchedConnectionParameter.get().getValue());
     }

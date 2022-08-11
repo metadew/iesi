@@ -2,12 +2,6 @@ package io.metadew.iesi.server.rest.environment.dto;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
-import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
-import io.metadew.iesi.server.rest.connection.ConnectionFilter;
-import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoRepository;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.environment.EnvironmentFilter;
 import io.metadew.iesi.server.rest.environment.EnvironmentFilterOption;
@@ -32,14 +26,19 @@ import java.util.stream.Stream;
 @ConditionalOnWebApplication
 public class EnvironmentDtoRepository extends PaginatedRepository implements IEnvironmentDtoRepository {
 
-    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final String ENVIRONMENT_TABLE_LABEL = "Environments";
     private final String ENVIRONMENT_PARAMETER_TABLE_LABEL = "EnvironmentParameters";
+
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
     private final FilterService filterService;
 
     @Autowired
-    public EnvironmentDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
+    public EnvironmentDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                                    MetadataTablesConfiguration metadataTablesConfiguration,
+                                    FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
         this.filterService = filterService;
     }
 
@@ -47,16 +46,16 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
         return "select environments.ENV_NM, environments.ENV_DSC, " +
                 "parameters.ENV_PAR_NM, parameters.ENV_PAR_VAL " +
                 "FROM (" + getBaseQuery(authentication, pageable, environmentFilters) + ") base_environments " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
                 "on base_environments.ENV_NM = environments.ENV_NM " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_PARAMETER_TABLE_LABEL).getName() + " parameters " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel(ENVIRONMENT_PARAMETER_TABLE_LABEL).getName() + " parameters " +
                 "on environments.ENV_NM = parameters.ENV_NM " +
                 getOrderByClause(pageable) +
                 ";";
     }
     private String getBaseQuery(Authentication authentication, Pageable pageable, List<EnvironmentFilter> environmentFilters) {
         return "select distinct environments.ENV_NM " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
                 getWhereClause(authentication, environmentFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -99,7 +98,7 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
     /*
     private String getBaseQuery(Pageable pageable){
         return "select distinct environments.ENV_NM " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
     }
@@ -140,17 +139,9 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
         }
     }
 
-    /*private long getRowSize() throws SQLException {
-        String query = "select count(*) as row_count from (select distinct environments.ENV_NM " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " + ");";
-        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
-        cachedRowSet.next();
-        return cachedRowSet.getLong("row_count");
-    }*/
-
     private long getRowSize(Authentication authentication, List<EnvironmentFilter> environmentFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct environments.ENV_NM " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
                 getWhereClause(authentication, environmentFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");

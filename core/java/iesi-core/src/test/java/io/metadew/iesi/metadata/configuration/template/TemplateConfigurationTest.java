@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.template;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.template.Template;
@@ -12,6 +13,8 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplat
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -21,6 +24,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, TemplateConfiguration.class})
 class TemplateConfigurationTest {
 
     private Template template1;
@@ -29,17 +33,23 @@ class TemplateConfigurationTest {
     private Template template2;
     private UUID templateUuid2;
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private TemplateConfiguration templateConfiguration;
+
     @BeforeAll
     static void prepare() {
         // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
@@ -47,7 +57,7 @@ class TemplateConfigurationTest {
     @AfterAll
     static void teardown() {
         // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -124,56 +134,57 @@ class TemplateConfigurationTest {
 
     @Test
     void testGetAllEmpty() throws SQLException {
-        assertThat(TemplateConfiguration.getInstance().getAll())
+        templateConfiguration.getAll();
+        assertThat(templateConfiguration.getAll())
                 .isEmpty();
     }
 
     @Test
     void testGetAll() throws SQLException {
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template2);
-        assertThat(TemplateConfiguration.getInstance().getAll())
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template2);
+        assertThat(templateConfiguration.getAll())
                 .containsOnly(template1, template2);
     }
 
     @Test
     void testGetByTemplateId() {
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template2);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template2);
 
-        assertThat(TemplateConfiguration.getInstance().get(template1.getMetadataKey()))
+        assertThat(templateConfiguration.get(template1.getMetadataKey()))
                 .hasValue(template1);
-        assertThat(TemplateConfiguration.getInstance().get(template2.getMetadataKey()))
+        assertThat(templateConfiguration.get(template2.getMetadataKey()))
                 .hasValue(template2);
     }
 
     @Test
     void testGetByTemplateIdEmpty() {
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template1);
 
-        assertThat(TemplateConfiguration.getInstance().get(TemplateKey.builder().id(UUID.randomUUID()).build()))
+        assertThat(templateConfiguration.get(TemplateKey.builder().id(UUID.randomUUID()).build()))
                 .isEmpty();
     }
 
     @Test
     void testInsert() {
-        TemplateConfiguration.getInstance().insert(template1);
+        templateConfiguration.insert(template1);
 
-        assertThat(TemplateConfiguration.getInstance().get(template1.getMetadataKey()))
+        assertThat(templateConfiguration.get(template1.getMetadataKey()))
                 .hasValue(template1);
     }
 
     @Test
     void testInsertAlreadyExists() {
-        TemplateConfiguration.getInstance().insert(template1);
+        templateConfiguration.insert(template1);
 
-        assertThatThrownBy(() -> TemplateConfiguration.getInstance().insert(template1))
+        assertThatThrownBy(() -> templateConfiguration.insert(template1))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     void testUpdate() {
-        TemplateConfiguration.getInstance().insert(template1);
+        templateConfiguration.insert(template1);
         MatcherKey matcherKey = MatcherKey.builder().id(UUID.randomUUID()).build();
         template1.setMatchers(Stream.of(
                 Matcher.builder()
@@ -187,9 +198,9 @@ class TemplateConfigurationTest {
                                 .build())
                         .build()
         ).collect(Collectors.toList()));
-        TemplateConfiguration.getInstance().update(template1);
+        templateConfiguration.update(template1);
 
-        assertThat(TemplateConfiguration.getInstance().get(template1.getMetadataKey()))
+        assertThat(templateConfiguration.get(template1.getMetadataKey()))
                 .hasValue(template1);
     }
 

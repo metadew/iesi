@@ -1,5 +1,7 @@
 package io.metadew.iesi.script.operation;
 
+import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.subroutine.SubroutineConfiguration;
 import io.metadew.iesi.metadata.definition.subroutine.Subroutine;
 
@@ -18,6 +20,8 @@ public class SubroutineOperation {
     private String name;
     private Subroutine subroutine;
     private ArrayList<String> subroutineTypeList = null;
+
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration = SpringContext.getBean(MetadataRepositoryConfiguration.class);
 
     // Constructors
     public SubroutineOperation(String input) {
@@ -105,7 +109,7 @@ public class SubroutineOperation {
 
     public void setValid(boolean valid) {
         if (valid) {
-            SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration();
+            SubroutineConfiguration subroutineConfiguration = new SubroutineConfiguration(metadataRepositoryConfiguration);
             this.setSubroutine(subroutineConfiguration.getSubroutine(this.getName()));
 
             if (this.getSubroutine().getName() == null) {

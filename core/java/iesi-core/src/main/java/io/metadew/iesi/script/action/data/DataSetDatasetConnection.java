@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.data;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes._null.Null;
@@ -16,6 +17,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatase
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.script.action.ActionTypeExecution;
@@ -46,6 +48,10 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     private String datasetType;
     private List<String> datasetLabels;
 
+    private final SecurityGroupConfiguration securityGroupConfiguration = SpringContext.getBean(SecurityGroupConfiguration.class);
+    private final DatasetConfiguration datasetConfiguration = SpringContext.getBean(DatasetConfiguration.class);
+    private final DatasetImplementationConfiguration datasetImplementationConfiguration = SpringContext.getBean(DatasetImplementationConfiguration.class);
+
     public DataSetDatasetConnection(ExecutionControl executionControl,
                                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -59,9 +65,9 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws IOException {
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC")
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName("PUBLIC")
                 .orElseThrow(() -> new RuntimeException("As the dataset doesn't exist, tried to create new one with the security group PUBLIC, but the group doesn't exist"));
-        DatasetKey datasetKey = DatasetConfiguration.getInstance()
+        DatasetKey datasetKey = datasetConfiguration
                 .getIdByName(datasetName)
                 .orElseGet(() -> {
                     log.warn(MessageFormat.format("Dataset {0} does not exists. Creating dataset now.", datasetName));
@@ -72,7 +78,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                             .name(datasetName)
                             .datasetImplementations(new HashSet<>())
                             .build();
-                    DatasetConfiguration.getInstance().insert(newDataset);
+                    datasetConfiguration.insert(newDataset);
                     return newDataset.getMetadataKey();
                 });
 
@@ -95,7 +101,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                                         .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
                                         .collect(Collectors.toSet()),
                                 new HashSet<>());
-                        DatasetImplementationConfiguration.getInstance().insert(newDatabaseDatasetImplementation);
+                        datasetImplementationConfiguration.insert(newDatabaseDatasetImplementation);
                         return newDatabaseDatasetImplementation;
                     });
         } else if (datasetType != null && datasetType.equals("in_memory")) {

@@ -1,37 +1,36 @@
 package io.metadew.iesi.common.configuration.metadata.actiontypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.action.type.ActionType;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
+@org.springframework.context.annotation.Configuration
 public class MetadataActionTypesConfiguration {
 
-    private static MetadataActionTypesConfiguration INSTANCE;
+
     private static final String actionsKey = "action-types";
-
     private Map<String, ActionType> actionTypeMap;
-    Configuration configuration = SpringContext.getBean(Configuration.class);
 
-    public synchronized static MetadataActionTypesConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataActionTypesConfiguration();
-        }
-        return INSTANCE;
+    private final Configuration configuration;
+
+    public MetadataActionTypesConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @SuppressWarnings("unchecked")
-    private MetadataActionTypesConfiguration() {
+    @PostConstruct
+    private void postConstruct(Configuration configuration) {
         actionTypeMap = new HashMap<>();
         if (containsConfiguration()) {
-            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) configuration.getProperties()
+            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) this.configuration.getProperties()
                     .get(MetadataConfiguration.configurationKey))
                     .get(actionsKey);
             ObjectMapper objectMapper = new ObjectMapper();
@@ -40,7 +39,6 @@ public class MetadataActionTypesConfiguration {
             }
         } else {
             log.warn("no action type configurations found on system variable, classpath or filesystem");
-
         }
     }
 

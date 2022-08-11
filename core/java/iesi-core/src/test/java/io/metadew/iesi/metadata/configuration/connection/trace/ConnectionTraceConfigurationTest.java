@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.connection.trace;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTrace;
@@ -7,6 +8,8 @@ import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTraceKey;
 import io.metadew.iesi.metadata.definition.connection.trace.http.HttpConnectionTrace;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -14,6 +17,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ConnectionTraceConfiguration.class })
 class ConnectionTraceConfigurationTest {
 
     private ConnectionTrace connectionTrace1;
@@ -21,25 +25,29 @@ class ConnectionTraceConfigurationTest {
     private ConnectionTrace connectionTrace2;
     private ConnectionTraceKey connectionTraceKey2;
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private ConnectionTraceConfiguration connectionTraceConfiguration;
+
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -79,56 +87,56 @@ class ConnectionTraceConfigurationTest {
 
     @Test
     void testGetAllEmpty() throws SQLException {
-        assertThat(ConnectionTraceConfiguration.getInstance().getAll())
+        assertThat(connectionTraceConfiguration.getAll())
                 .isEmpty();
     }
 
     @Test
     void testGetAll() throws SQLException {
-        ConnectionTraceConfiguration.getInstance().insert(connectionTrace1);
-        ConnectionTraceConfiguration.getInstance().insert(connectionTrace2);
-        assertThat(ConnectionTraceConfiguration.getInstance().getAll())
+        connectionTraceConfiguration.insert(connectionTrace1);
+        connectionTraceConfiguration.insert(connectionTrace2);
+        assertThat(connectionTraceConfiguration.getAll())
                 .containsOnly(connectionTrace1, connectionTrace2);
     }
 
     @Test
     void testGetById() {
-        ConnectionTraceConfiguration.getInstance().insert(connectionTrace1);
-        ConnectionTraceConfiguration.getInstance().insert(connectionTrace2);
+        connectionTraceConfiguration.insert(connectionTrace1);
+        connectionTraceConfiguration.insert(connectionTrace2);
 
-        assertThat(ConnectionTraceConfiguration.getInstance().get(connectionTrace1.getMetadataKey()))
+        assertThat(connectionTraceConfiguration.get(connectionTrace1.getMetadataKey()))
                 .hasValue(connectionTrace1);
-        assertThat(ConnectionTraceConfiguration.getInstance().get(connectionTrace2.getMetadataKey()))
+        assertThat(connectionTraceConfiguration.get(connectionTrace2.getMetadataKey()))
                 .hasValue(connectionTrace2);
     }
 
     @Test
     void testGetByIdEmpty() {
-        ConnectionTraceConfiguration.getInstance().insert(connectionTrace1);
+        connectionTraceConfiguration.insert(connectionTrace1);
 
-        assertThat(ConnectionTraceConfiguration.getInstance().get(new ConnectionTraceKey(UUID.randomUUID())))
+        assertThat(connectionTraceConfiguration.get(new ConnectionTraceKey(UUID.randomUUID())))
                 .isEmpty();
     }
 
     @Test
     void testInsert() {
-        ConnectionTraceConfiguration.getInstance().insert(connectionTrace1);
+        connectionTraceConfiguration.insert(connectionTrace1);
 
-        assertThat(ConnectionTraceConfiguration.getInstance().get(connectionTrace1.getMetadataKey()))
+        assertThat(connectionTraceConfiguration.get(connectionTrace1.getMetadataKey()))
                 .hasValue(connectionTrace1);
     }
 
     @Test
     void testInsertAlreadyExists() {
-        ConnectionTraceConfiguration.getInstance().insert(connectionTrace1);
+        connectionTraceConfiguration.insert(connectionTrace1);
 
-        assertThatThrownBy(() -> ConnectionTraceConfiguration.getInstance().insert(connectionTrace1))
+        assertThatThrownBy(() -> connectionTraceConfiguration.insert(connectionTrace1))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     void testUpdate() {
-        ConnectionTraceConfiguration.getInstance().insert(connectionTrace1);
+        connectionTraceConfiguration.insert(connectionTrace1);
         connectionTrace1 = HttpConnectionTrace.builder()
                 .metadataKey(connectionTraceKey1)
                 .runId("runId1")
@@ -142,9 +150,9 @@ class ConnectionTraceConfigurationTest {
                 .baseUrl("baseUrl2")
                 .tls(true)
                 .build();
-        ConnectionTraceConfiguration.getInstance().update(connectionTrace1);
+        connectionTraceConfiguration.update(connectionTrace1);
 
-        assertThat(ConnectionTraceConfiguration.getInstance().get(connectionTrace1.getMetadataKey()))
+        assertThat(connectionTraceConfiguration.get(connectionTrace1.getMetadataKey()))
                 .hasValue(connectionTrace1);
     }
 

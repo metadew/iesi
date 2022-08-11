@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.definition;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.component.trace.ComponentTraceConfiguration;
@@ -7,6 +8,8 @@ import io.metadew.iesi.metadata.definition.component.trace.*;
 import io.metadew.iesi.metadata.definition.component.trace.http.*;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ComponentTraceConfiguration.class })
 public class ComponentTraceConfigurationTest {
 
 
@@ -22,25 +26,29 @@ public class ComponentTraceConfigurationTest {
     private UUID componentUuid;
     private UUID componentUuid2;
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private ComponentTraceConfiguration componentTraceConfiguration;
+
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -145,23 +153,23 @@ public class ComponentTraceConfigurationTest {
 
     @Test
     void testGetAllEmpty() {
-        assertThat(ComponentTraceConfiguration.getInstance().getAll())
+        assertThat(componentTraceConfiguration.getAll())
                 .isEmpty();
     }
 
     @Test
     void testInsert() {
-        ComponentTraceConfiguration.getInstance().insert(httpComponentTrace);
-        assertThat(ComponentTraceConfiguration.getInstance().get(httpComponentTrace.getMetadataKey()))
+        componentTraceConfiguration.insert(httpComponentTrace);
+        assertThat(componentTraceConfiguration.get(httpComponentTrace.getMetadataKey()))
                 .hasValue(httpComponentTrace);
         assertThat(httpComponentTrace.getRunId()).isEqualTo("testRunid");
     }
 
     @Test
     void testGetAll() {
-        ComponentTraceConfiguration.getInstance().insert(httpComponentTrace);
-        ComponentTraceConfiguration.getInstance().insert(httpComponentTrace2);
-        assertThat(ComponentTraceConfiguration.getInstance().getAll())
+        componentTraceConfiguration.insert(httpComponentTrace);
+        componentTraceConfiguration.insert(httpComponentTrace2);
+        assertThat(componentTraceConfiguration.getAll())
                 .containsOnly(httpComponentTrace, httpComponentTrace2);
     }
 }

@@ -48,10 +48,7 @@ import io.metadew.iesi.metadata.service.user.UserService;
 import io.metadew.iesi.openapi.OpenAPIGenerator;
 import io.metadew.iesi.runtime.script.ScriptExecutorService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -70,126 +67,12 @@ public class IesiConfiguration {
         this.configuration = configuration;
     }
 
-
-    @Bean
-    public FrameworkInstance frameworkInstance() throws IOException {
-        MetadataConfiguration.getInstance();
-        return FrameworkInstance.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ConnectionConfiguration connectionConfiguration() {
-        return ConnectionConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public EnvironmentConfiguration environmentConfiguration() {
-        return EnvironmentConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ImpersonationConfiguration impersonationConfiguration() {
-        return ImpersonationConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ScriptConfiguration scriptConfiguration() {
-        return ScriptConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ScriptResultConfiguration scriptResultConfiguration() {
-        return ScriptResultConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration() {
-        return ScriptExecutionRequestConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ScriptExecutionConfiguration scriptExecutionConfiguration() {
-        return ScriptExecutionConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public UserConfiguration userConfiguration() {
-        return UserConfiguration.getInstance();
-    }
-
-    @Bean("rawUserService")
-    @DependsOn("frameworkInstance")
-    public UserService userService() {
-        return UserService.getInstance();
-    }
-
-    @Bean("rawTeamService")
-    @DependsOn("frameworkInstance")
-    public TeamService teamService() {
-        return TeamService.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public RoleService roleService() {
-        return RoleService.getInstance();
-    }
-
-    @Bean("rawSecurityGroupService")
-    @DependsOn("frameworkInstance")
-    public SecurityGroupService securityGroupService() {
-        return SecurityGroupService.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public TeamConfiguration teamConfiguration() {
-        return TeamConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public SecurityGroupConfiguration securityGroupConfiguration() {
-        return SecurityGroupConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ComponentConfiguration componentConfiguration() {
-        return ComponentConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public DatasetConfiguration datasetConfiguration() {
-        return DatasetConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public IDatasetService datasetService() {
-        return DatasetService.getInstance();
-    }
-
     @Bean
     @DependsOn("frameworkInstance")
     public ITemplateService templateService() {
         return TemplateService.getInstance();
     }
 
-    @Bean
-    @DependsOn("frameworkInstance")
-    public DatasetImplementationConfiguration datasetImplementationConfiguration() {
-        return DatasetImplementationConfiguration.getInstance();
-    }
 
     @Bean
     @DependsOn("frameworkInstance")
@@ -209,65 +92,6 @@ public class IesiConfiguration {
         return DatasetImplementationHandler.getInstance();
     }
 
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ExecutionRequestConfiguration executionRequestConfiguration() {
-        return ExecutionRequestConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ScriptResultOutputConfiguration scriptResultOutputConfiguration() {
-        return ScriptResultOutputConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ActionResultConfiguration actionResultConfiguration() {
-        return ActionResultConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ActionResultOutputConfiguration actionResultOutputConfiguration() {
-        return ActionResultOutputConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ActionDesignTraceConfiguration actionDesignTraceConfiguration() {
-        return ActionDesignTraceConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration() {
-        return ActionParameterDesignTraceConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ActionParameterTraceConfiguration actionParameterTraceConfiguration() {
-        return ActionParameterTraceConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ScriptLabelDesignTraceConfiguration scriptLabelDesignTraceConfiguration() {
-        return ScriptLabelDesignTraceConfiguration.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public OpenAPIGenerator openAPIGenerator() {
-        return OpenAPIGenerator.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public ScriptDesignAuditConfiguration scriptDesignAuditConfiguration(){
-        return ScriptDesignAuditConfiguration.getInstance();
-    }
 
     @Bean
     @DependsOn("frameworkInstance")
@@ -293,27 +117,12 @@ public class IesiConfiguration {
     }
 
     @Bean
-    @Profile("single_process")
-    @DependsOn("frameworkInstance")
-    public ScriptExecutorService scriptExecutorService() {
-        return ScriptExecutorService.getInstance();
-    }
-
-    @Bean
-    @DependsOn("frameworkInstance")
-    public MetadataPolicyConfiguration metadataPolicyConfiguration() {
-        return MetadataPolicyConfiguration.getInstance();
-    }
-
-    @Bean
     @DependsOn("frameworkInstance")
     @Profile("!test")
-    public DataSource dataSource() {
-        MetadataRepositoryConfiguration metadataRepositoryConfiguration = MetadataRepositoryConfiguration.getInstance();
+    public DataSource dataSource(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
         DataMetadataRepository dataMetadataRepository = metadataRepositoryConfiguration.getDataMetadataRepository();
         RepositoryCoordinator repositoryCoordinator = dataMetadataRepository.getRepositoryCoordinator();
         Database database = repositoryCoordinator.getDatabases().get("owner");
         return database.getConnectionPool();
     }
-
 }

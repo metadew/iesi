@@ -38,7 +38,8 @@ import java.util.UUID;
 public class ExecutionControl {
 
     private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
-    private final ActionDesignTraceService actionDesignTraceService;
+    private final ActionDesignTraceService actionDesignTraceService = SpringContext.getBean(ActionDesignTraceService.class);
+    private final ScriptDesignTraceService scriptDesignTraceService = SpringContext.getBean(ScriptDesignTraceService.class);
     private final Configuration configuration = SpringContext.getBean(Configuration.class);
     private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
@@ -47,18 +48,15 @@ public class ExecutionControl {
     private String envName;
     private boolean actionErrorStop = false;
     private boolean scriptExit = false;
-    private ScriptDesignTraceService scriptDesignTraceService;
+
 
     private Long lastProcessId;
 
     private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
 
 
-
     public ExecutionControl(ScriptExecutionInitializationParameters scriptExecutionInitializationParameters) throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
-        this.scriptDesignTraceService = new ScriptDesignTraceService();
-        this.actionDesignTraceService = new ActionDesignTraceService();
         initializeRunId();
         initializeExecutionRuntime(runId, scriptExecutionInitializationParameters);
         this.lastProcessId = -1L;
@@ -81,7 +79,7 @@ public class ExecutionControl {
     public void setEnvironment(ActionExecution actionExecution, String environmentName) {
         this.envName = environmentName;
 
-        EnvironmentParameterConfiguration.getInstance()
+        SpringContext.getBean(EnvironmentParameterConfiguration.class)
                 .getByEnvironment(new EnvironmentKey(environmentName))
                 .forEach(environmentParameter -> executionRuntime.setRuntimeVariable(
                         actionExecution,
@@ -108,9 +106,8 @@ public class ExecutionControl {
                 LocalDateTime.now(),
                 null
         );
-        ScriptResultConfiguration.getInstance().insert(scriptResult);
 
-
+        SpringContext.getBean(ScriptResultConfiguration.class).insert(scriptResult);
         // Trace the design of the script
         scriptDesignTraceService.trace(scriptExecution);
     }
@@ -129,7 +126,7 @@ public class ExecutionControl {
                 null,
                 actionExecution.getAction().getType()
         );
-        ActionResultConfiguration.getInstance().insert(actionResult);
+        SpringContext.getBean(ActionResultConfiguration.class).insert(actionResult);
     }
 
     public void logSkip(ActionExecution actionExecution) {
@@ -145,7 +142,7 @@ public class ExecutionControl {
                 null,
                 actionExecution.getAction().getType()
         );
-        ActionResultConfiguration.getInstance().insert(actionResult);
+        SpringContext.getBean(ActionResultConfiguration.class).insert(actionResult);
 
         this.logMessage("action.status=" + ScriptRunStatus.SKIPPED.value(), Level.INFO);
 
@@ -172,13 +169,13 @@ public class ExecutionControl {
     }
 
     public ScriptRunStatus logEnd(ScriptExecution scriptExecution) {
-        ScriptResult scriptResult = ScriptResultConfiguration.getInstance().get(new ScriptResultKey(runId, scriptExecution.getProcessId()))
+        ScriptResult scriptResult = SpringContext.getBean(ScriptResultConfiguration.class).get(new ScriptResultKey(runId, scriptExecution.getProcessId()))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptResultKey(runId, scriptExecution.getProcessId())));
         ScriptRunStatus status = getStatus(scriptExecution);
         logMessage("script.status=" + status.value(), Level.INFO);
         scriptResult.setStatus(status);
         scriptResult.setEndTimestamp(LocalDateTime.now());
-        ScriptResultConfiguration.getInstance().update(scriptResult);
+        SpringContext.getBean(ScriptResultConfiguration.class).update(scriptResult);
 
         String output = scriptExecution.getExecutionControl().getExecutionRuntime().resolveVariables("#output#");
         if (output != null && !output.isEmpty()) {
@@ -197,13 +194,13 @@ public class ExecutionControl {
     }
 
     public void logEnd(ActionExecution actionExecution, ScriptExecution scriptExecution) {
-        ActionResult actionResult = ActionResultConfiguration.getInstance().get(new ActionResultKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId()))
+        ActionResult actionResult = SpringContext.getBean(ActionResultConfiguration.class).get(new ActionResultKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId()))
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ScriptResultKey(runId, scriptExecution.getProcessId())));
 
         ScriptRunStatus status = getStatus(actionExecution, scriptExecution);
         actionResult.setStatus(status);
         actionResult.setEndTimestamp(LocalDateTime.now());
-        ActionResultConfiguration.getInstance().update(actionResult);
+        SpringContext.getBean(ActionResultConfiguration.class).update(actionResult);
 
     }
 
@@ -257,14 +254,15 @@ public class ExecutionControl {
         // Redact any encrypted values
         outputValue = frameworkCrypto.redact(outputValue);
         ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getMetadataKey().getScriptId(), outputValue);
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
+
+        SpringContext.getBean(ScriptResultOutputConfiguration.class).insert(scriptResultOutput);
     }
 
     public void logExecutionOutput(ActionExecution actionExecution, String outputName, String outputValue) {
         ActionResultOutput actionResultOutput = new ActionResultOutput(
                 new ActionResultOutputKey(runId, actionExecution.getProcessId(), actionExecution.getAction().getMetadataKey().getActionId(), outputName),
                 outputValue);
-        ActionResultOutputConfiguration.getInstance().insert(actionResultOutput);
+        SpringContext.getBean(ActionResultOutputConfiguration.class).insert(actionResultOutput);
     }
 
     // Log message

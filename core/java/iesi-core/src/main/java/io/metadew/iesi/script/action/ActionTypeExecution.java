@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
@@ -25,6 +26,7 @@ public abstract class ActionTypeExecution {
     private final ScriptExecution scriptExecution;
     private final ActionExecution actionExecution;
     private final List<ActionParameterResolvement> actionParameterResolvements = new ArrayList<>();
+    private final ActionTypeParameterConfiguration actionTypeParameterConfiguration = SpringContext.getBean(ActionTypeParameterConfiguration.class);
 
     protected ActionTypeExecution(ExecutionControl executionControl,
                         ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -34,7 +36,7 @@ public abstract class ActionTypeExecution {
     }
 
     public void resolveParameters() {
-        for (Map.Entry<String, ActionTypeParameter> actionTypeParameter : ActionTypeParameterConfiguration.getInstance().getActionTypeParameters(getKeyword()).entrySet()) {
+        for (Map.Entry<String, ActionTypeParameter> actionTypeParameter : actionTypeParameterConfiguration.getActionTypeParameters(getKeyword()).entrySet()) {
             Optional<ActionParameter> actionParameter = getActionExecution().getAction().getParameters().stream()
                     // TODO: go to equals instead of equals ignore case
                     .filter(actionParameterElement -> actionParameterElement.getMetadataKey().getParameterName().equalsIgnoreCase(actionTypeParameter.getKey()))

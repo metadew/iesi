@@ -38,6 +38,7 @@ public class FhoFolderExists extends ActionTypeExecution {
 
     private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
     private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public FhoFolderExists(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -83,7 +84,7 @@ public class FhoFolderExists extends ActionTypeExecution {
                 }
             }
         } else {
-            Connection connection = ConnectionConfiguration.getInstance()
+            Connection connection = connectionConfiguration
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);

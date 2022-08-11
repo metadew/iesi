@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.http;
 
+import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
@@ -12,6 +13,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,11 +25,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest(classes = {Configuration.class, HttpConnectionService.class, ConnectionConfiguration.class })
 class HttpConnectionServiceTest {
+
+    @Autowired
+    private HttpConnectionService httpConnectionService;
+
+    @SpyBean
+    private ConnectionConfiguration connectionConfigurationSpy;
 
     @Test
     void getBaseUrlTest() {
-        Assertions.assertThat(HttpConnectionService.getInstance().getBaseUri(new HttpConnection(
+        Assertions.assertThat(httpConnectionService.getBaseUri(new HttpConnection(
                 "referenceName",
                 "description",
                 "test",
@@ -34,7 +45,7 @@ class HttpConnectionServiceTest {
                 8080,
                 true
         ))).isEqualTo("https://host.com:8080/baseUrl");
-        assertThat(HttpConnectionService.getInstance().getBaseUri(new HttpConnection(
+        assertThat(httpConnectionService.getBaseUri(new HttpConnection(
                 "referenceName",
                 "description",
                 "test",
@@ -47,7 +58,7 @@ class HttpConnectionServiceTest {
 
     @Test
     void getBaseUrlNoPortTest() {
-        assertThat(HttpConnectionService.getInstance().getBaseUri(new HttpConnection(
+        assertThat(httpConnectionService.getBaseUri(new HttpConnection(
                 "referenceName",
                 "description",
                 "test",
@@ -60,7 +71,7 @@ class HttpConnectionServiceTest {
 
     @Test
     void getBaseUrlNoBaseUrlTest() {
-        assertThat(HttpConnectionService.getInstance().getBaseUri(new HttpConnection(
+        assertThat(httpConnectionService.getBaseUri(new HttpConnection(
                 "referenceName",
                 "description",
                 "test",
@@ -114,10 +125,6 @@ class HttpConnectionServiceTest {
                                 .collect(Collectors.toList()))
                 .build();
 
-        ConnectionConfiguration connectionConfiguration = ConnectionConfiguration.getInstance();
-        ConnectionConfiguration connectionConfigurationSpy = Mockito.spy(connectionConfiguration);
-        Whitebox.setInternalState(ConnectionConfiguration.class, "INSTANCE", connectionConfigurationSpy);
-
         doReturn(Optional.of(connection))
                 .when(connectionConfigurationSpy)
                 .get(new ConnectionKey("connection1", new EnvironmentKey("test")));
@@ -128,18 +135,12 @@ class HttpConnectionServiceTest {
         when(actionExecution.getExecutionControl())
                 .thenReturn(executionControl);
 
-        assertThat(HttpConnectionService.getInstance().get("connection1", actionExecution))
+        assertThat(httpConnectionService.get("connection1", actionExecution))
                 .isEqualTo(new HttpConnection("connection1", "description", "test", "host", "baseUrl", 1, true));
-
-        Whitebox.setInternalState(ConnectionConfiguration.class, "INSTANCE", (ConnectionConfiguration) null);
     }
 
     @Test
     void getTestNotFound() {
-        ConnectionConfiguration connectionConfiguration = ConnectionConfiguration.getInstance();
-        ConnectionConfiguration connectionConfigurationSpy = Mockito.spy(connectionConfiguration);
-        Whitebox.setInternalState(ConnectionConfiguration.class, "INSTANCE", connectionConfigurationSpy);
-
         doReturn(Optional.empty())
                 .when(connectionConfigurationSpy)
                 .get(new ConnectionKey("connection1", new EnvironmentKey("test")));
@@ -150,11 +151,9 @@ class HttpConnectionServiceTest {
         when(actionExecution.getExecutionControl())
                 .thenReturn(executionControl);
 
-        assertThatThrownBy(() -> HttpConnectionService.getInstance().get("connection1", actionExecution))
+        assertThatThrownBy(() -> httpConnectionService.get("connection1", actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Could not find definition for http connection connection1 for environment test");
-
-        Whitebox.setInternalState(ConnectionConfiguration.class, "INSTANCE", (ConnectionConfiguration) null);
     }
 
 }

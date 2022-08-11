@@ -27,6 +27,7 @@ public class ScriptLogOutput extends ActionTypeExecution {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
+    private final ScriptResultOutputConfiguration scriptResultOutputConfiguration = SpringContext.getBean(ScriptResultOutputConfiguration.class);
 
     public ScriptLogOutput(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -51,7 +52,7 @@ public class ScriptLogOutput extends ActionTypeExecution {
                 new ScriptResultOutputKey(getExecutionControl().getRunId(), getExecutionControl().getProcessId(), name),
                 getScriptExecution().getScript().getMetadataKey().getScriptId(),
                 value);
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
+        scriptResultOutputConfiguration.insert(scriptResultOutput);
 
         getActionExecution().getActionControl().increaseSuccessCount();
         return true;

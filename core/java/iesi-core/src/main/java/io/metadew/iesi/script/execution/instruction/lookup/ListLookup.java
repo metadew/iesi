@@ -47,7 +47,7 @@ public class ListLookup implements LookupInstruction {
             return array.getList().get(index).toString();
         } else if (elementSelector instanceof Template) {
             for (DataType dataType : array.getList()) {
-                if (TemplateService.getInstance().matches(dataType, (Template) elementSelector, executionRuntime)) {
+                if (((TemplateService) DataTypeHandler.getInstance().getDataTypeService(Template.class)).matches(dataType, (Template) elementSelector, executionRuntime)) {
                     return dataType.toString();
                 }
             }

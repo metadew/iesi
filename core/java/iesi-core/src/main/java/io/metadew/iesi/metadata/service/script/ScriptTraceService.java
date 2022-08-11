@@ -13,38 +13,44 @@ import io.metadew.iesi.metadata.definition.script.trace.ScriptVersionTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptLabelTraceKey;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @Log4j2
+@Service
 public class ScriptTraceService {
 
     private static ScriptTraceService instance;
+    private final ScriptTraceConfiguration scriptTraceConfiguration;
+    private final ScriptVersionTraceConfiguration scriptVersionTraceConfigurations;
+    private final ScriptParameterTraceConfiguration scriptParameterTraceConfiguration;
+    private final ScriptLabelTraceConfiguration scriptLabelTraceConfiguration;
 
-    public static ScriptTraceService getInstance() {
-        if (instance == null) {
-            instance = new ScriptTraceService();
-        }
-        return instance;
-    }
-
-    private ScriptTraceService() {
+    public ScriptTraceService(ScriptTraceConfiguration scriptTraceConfiguration,
+                              ScriptVersionTraceConfiguration scriptVersionTraceConfigurations,
+                              ScriptParameterTraceConfiguration scriptParameterTraceConfiguration,
+                              ScriptLabelTraceConfiguration scriptLabelTraceConfiguration) {
+        this.scriptTraceConfiguration = scriptTraceConfiguration;
+        this.scriptVersionTraceConfigurations = scriptVersionTraceConfigurations;
+        this.scriptParameterTraceConfiguration = scriptParameterTraceConfiguration;
+        this.scriptLabelTraceConfiguration = scriptLabelTraceConfiguration;
     }
 
     public void trace(ScriptExecution scriptExecution) {
         try {
             String runId = scriptExecution.getExecutionControl().getRunId();
             Long processId = scriptExecution.getProcessId();
-            ScriptTraceConfiguration.getInstance().insert(new ScriptTrace(runId, processId,
+            scriptTraceConfiguration.insert(new ScriptTrace(runId, processId,
                     scriptExecution.getParentScriptExecution().map(ScriptExecution::getProcessId).orElse(0L),
                     scriptExecution.getScript()));
-            ScriptVersionTraceConfiguration.getInstance().insert(new ScriptVersionTrace(runId, processId, scriptExecution.getScript().getVersion()));
+            scriptVersionTraceConfigurations.insert(new ScriptVersionTrace(runId, processId, scriptExecution.getScript().getVersion()));
             for (ScriptParameter scriptParameter : scriptExecution.getScript().getParameters()) {
-                ScriptParameterTraceConfiguration.getInstance().insert(new ScriptParameterTrace(runId, processId, scriptParameter));
+                scriptParameterTraceConfiguration.insert(new ScriptParameterTrace(runId, processId, scriptParameter));
             }
             for (ScriptLabel scriptLabel : scriptExecution.getScript().getLabels()) {
-                ScriptLabelTraceConfiguration.getInstance().insert(new ScriptLabelTrace(
+                scriptLabelTraceConfiguration.insert(new ScriptLabelTrace(
                         new ScriptLabelTraceKey(runId, processId, scriptLabel.getMetadataKey()),
                         scriptLabel.getScriptKey(), scriptLabel.getName(), scriptLabel.getValue()));
             }

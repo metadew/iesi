@@ -4,13 +4,21 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.user.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.stereotype.Service;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class RoleListResultSetExtractor {
+
+    private final UserConfiguration userConfiguration;
+
+    public RoleListResultSetExtractor(UserConfiguration userConfiguration) {
+        this.userConfiguration = userConfiguration;
+    }
 
     public List<Role> extractData(CachedRowSet cachedRowSet) throws SQLException {
         Map<String, RoleBuilder> userMap = new HashMap<>();
@@ -38,7 +46,7 @@ public class RoleListResultSetExtractor {
     private void addUserId(RoleBuilder roleBuilder, CachedRowSet cachedRowSet) throws SQLException {
         String userId = cachedRowSet.getString("user_role_user_id");
         if (userId != null) {
-            User user = UserConfiguration.getInstance().get(new UserKey(UUID.fromString(userId)))
+            User user = userConfiguration.get(new UserKey(UUID.fromString(userId)))
                             .orElseThrow(() -> new MetadataDoesNotExistException(new UserKey(UUID.fromString(userId))));
             roleBuilder.getUsers().add(user);
         }

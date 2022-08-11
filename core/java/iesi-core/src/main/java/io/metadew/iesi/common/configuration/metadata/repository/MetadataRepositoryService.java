@@ -1,29 +1,21 @@
 package io.metadew.iesi.common.configuration.metadata.repository;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorHandler;
-import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.metadata.repository.*;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
+import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class MetadataRepositoryService implements IMetadataRepositoryService {
 
+    private final MetadataRepositoryCoordinatorHandler metadataRepositoryCoordinatorHandler;
 
-    private static MetadataRepositoryService INSTANCE;
-    private final MetadataRepositoryCoordinatorHandler metadataRepositoryCoordinatorHandler = SpringContext.getBean(MetadataRepositoryCoordinatorHandler.class);
-
-    public synchronized static MetadataRepositoryService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataRepositoryService();
-        }
-        return INSTANCE;
-    }
-
-    private MetadataRepositoryService() {
+    public MetadataRepositoryService(MetadataRepositoryCoordinatorHandler metadataRepositoryCoordinatorHandler) {
+        this.metadataRepositoryCoordinatorHandler = metadataRepositoryCoordinatorHandler;
     }
 
 

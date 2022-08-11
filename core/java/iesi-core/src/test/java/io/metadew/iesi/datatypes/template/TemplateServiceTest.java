@@ -1,5 +1,6 @@
 package io.metadew.iesi.datatypes.template;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
@@ -22,6 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.powermock.reflect.Whitebox;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -35,6 +38,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest(classes = { Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class })
 @ExtendWith(MockitoExtension.class)
 class TemplateServiceTest {
 
@@ -47,25 +51,26 @@ class TemplateServiceTest {
     private Template template2;
     private UUID templateUuid2;
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -286,7 +291,7 @@ class TemplateServiceTest {
 
     @Test
     void resolveTest() {
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template1);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
 
         when(executionRuntime.resolveVariables("template1"))
@@ -313,7 +318,7 @@ class TemplateServiceTest {
 
     @Test
     void matchesSuccessfulTest() {
-        MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().save(template1);
+        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template1);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
         when(executionRuntime.resolveVariables(anyString()))
                 .thenReturn("value2");

@@ -32,6 +32,7 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public SqlExecuteProcedure(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -49,7 +50,7 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         boolean appendOutput = convertAppendOutput(getParameterResolvedValue(APPEND_OUTPUT_KEY));
 
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = connectionConfiguration
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
@@ -56,6 +57,7 @@ class UsersControllerSecurityTest {
     @MockBean
     private io.metadew.iesi.metadata.service.user.UserService userService;
     @MockBean
+    @Qualifier("restUserService")
     private UserService userDtoService;
     @MockBean
     private PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;

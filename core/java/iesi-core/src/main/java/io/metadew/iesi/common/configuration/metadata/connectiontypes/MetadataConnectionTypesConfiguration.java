@@ -1,7 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.connectiontypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
@@ -14,24 +13,18 @@ import java.util.Optional;
 @Log4j2
 public class MetadataConnectionTypesConfiguration {
 
-    private static MetadataConnectionTypesConfiguration INSTANCE;
     private static final String actionsKey = "connection-types";
 
     private Map<String, ConnectionType> connectionTypeMap;
-    Configuration configuration = SpringContext.getBean(Configuration.class);
 
-    public synchronized static MetadataConnectionTypesConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataConnectionTypesConfiguration();
-        }
-        return INSTANCE;
-    }
+    private final Configuration configuration;
 
     @SuppressWarnings("unchecked")
-    private MetadataConnectionTypesConfiguration() {
+    private MetadataConnectionTypesConfiguration(Configuration configuration) {
+        this.configuration = configuration;
         connectionTypeMap = new HashMap<>();
         if (containsConfiguration()) {
-            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) configuration.getProperties()
+            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) this.configuration.getProperties()
                     .get(MetadataConfiguration.configurationKey))
                     .get(actionsKey);
             ObjectMapper objectMapper = new ObjectMapper();

@@ -1,5 +1,6 @@
 package io.metadew.iesi.datatypes.dataset;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Map;
 import java.util.UUID;
@@ -22,27 +25,32 @@ import java.util.stream.Stream;
 import static io.metadew.iesi.datatypes.dataset.DatasetBuilder.generateDataset;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, DatasetConfiguration.class})
 class DatasetConfigurationTest {
+
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private DatasetConfiguration datasetConfiguration;
 
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -50,8 +58,8 @@ class DatasetConfigurationTest {
     @Test
     void testExists() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration
                 .exists(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
                 .isTrue();
     }
@@ -59,8 +67,8 @@ class DatasetConfigurationTest {
     @Test
     void testExistsNotExisting() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration
                 .exists(new DatasetKey(UUID.randomUUID())))
                 .isFalse();
     }
@@ -68,8 +76,8 @@ class DatasetConfigurationTest {
     @Test
     void testExistsByName() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration
                 .existsByName("dataset0"))
                 .isTrue();
     }
@@ -77,8 +85,8 @@ class DatasetConfigurationTest {
     @Test
     void testExistsByNameNotExisting() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration
                 .existsByName("dataset1"))
                 .isFalse();
     }
@@ -86,8 +94,8 @@ class DatasetConfigurationTest {
     @Test
     void testGetById() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration
                 .get(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
                 .hasValue((Dataset) datasetMap.get("dataset"));
     }
@@ -95,32 +103,32 @@ class DatasetConfigurationTest {
     @Test
     void testGetByIdNoImplementations() {
         Map<String, Object> datasetMap = generateDataset(0, 0, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance().get(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration.get(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
                 .hasValue((Dataset) datasetMap.get("dataset"));
     }
 
     @Test
     void testGetByIdNoLabels() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 0, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance().get(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration.get(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
                 .hasValue((Dataset) datasetMap.get("dataset"));
     }
 
     @Test
     void testGetByIdNoKeyValues() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 0);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance().get(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration.get(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
                 .hasValue((Dataset) datasetMap.get("dataset"));
     }
 
     @Test
     void testGetByIdDoesNotExist() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 0);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance().get(new DatasetKey(UUID.randomUUID())))
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration.get(new DatasetKey(UUID.randomUUID())))
                 .isEmpty();
     }
 
@@ -128,8 +136,8 @@ class DatasetConfigurationTest {
     @Test
     void testGetByName() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration
                 .get(new DatasetKey((UUID) datasetMap.get("datasetUUID"))))
                 .hasValue((Dataset) datasetMap.get("dataset"));
     }
@@ -137,40 +145,40 @@ class DatasetConfigurationTest {
     @Test
     void testGetByNameNoImplementations() {
         Map<String, Object> datasetMap = generateDataset(0, 0, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance().getByName("dataset0"))
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration.getByName("dataset0"))
                 .hasValue((Dataset) datasetMap.get("dataset"));
     }
 
     @Test
     void testGetByNameNoLabels() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 0, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance().getByName("dataset0"))
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration.getByName("dataset0"))
                 .hasValue((Dataset) datasetMap.get("dataset"));
     }
 
     @Test
     void testGetByNameNoKeyValues() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 0);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance().getByName("dataset0"))
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration.getByName("dataset0"))
                 .hasValue((Dataset) datasetMap.get("dataset"));
     }
 
     @Test
     void testGetByNameDoesNotExist() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 0);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance().getByName("dataset1"))
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration.getByName("dataset1"))
                 .isEmpty();
     }
 
     @Test
     void testGetIdByName() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration
                 .getIdByName("dataset0"))
                 .hasValue(new DatasetKey((UUID) datasetMap.get("datasetUUID")));
     }
@@ -178,8 +186,8 @@ class DatasetConfigurationTest {
     @Test
     void testGetIdByNameNotExisting() {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
+        assertThat(datasetConfiguration
                 .getIdByName("dataset1"))
                 .isEmpty();
     }
@@ -187,14 +195,14 @@ class DatasetConfigurationTest {
     @Test
     void testGetAll() {
         Map<String, Object> datasetMap1 = generateDataset(1, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap1.get("dataset"));
+        datasetConfiguration.insert((Dataset) datasetMap1.get("dataset"));
         Map<String, Object> datasetMap2 = generateDataset(2, 0, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap2.get("dataset"));
+        datasetConfiguration.insert((Dataset) datasetMap2.get("dataset"));
         Map<String, Object> datasetMap3 = generateDataset(3, 1, 0, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap3.get("dataset"));
+        datasetConfiguration.insert((Dataset) datasetMap3.get("dataset"));
         Map<String, Object> datasetMap4 = generateDataset(4, 1, 1, 0);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap4.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap4.get("dataset"));
+        assertThat(datasetConfiguration
                 .getAll())
                 .containsOnly((Dataset) datasetMap4.get("dataset"),
                         (Dataset) datasetMap3.get("dataset"),
@@ -204,7 +212,7 @@ class DatasetConfigurationTest {
 
     @Test
     void testGetAllNoDatasets() {
-        assertThat(DatasetConfiguration.getInstance()
+        assertThat(datasetConfiguration
                 .getAll())
                 .isEmpty();
     }
@@ -212,12 +220,12 @@ class DatasetConfigurationTest {
     @Test
     void testDeleteDatasets() {
         Map<String, Object> datasetMap1 = generateDataset(1, 1, 1, 1);
-        DatasetConfiguration.getInstance().insert((Dataset) datasetMap1.get("dataset"));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.insert((Dataset) datasetMap1.get("dataset"));
+        assertThat(datasetConfiguration
                 .exists(new DatasetKey((UUID) datasetMap1.get("datasetUUID"))))
                 .isTrue();
-        DatasetConfiguration.getInstance().delete(new DatasetKey((UUID) datasetMap1.get("datasetUUID")));
-        assertThat(DatasetConfiguration.getInstance()
+        datasetConfiguration.delete(new DatasetKey((UUID) datasetMap1.get("datasetUUID")));
+        assertThat(datasetConfiguration
                 .exists(new DatasetKey((UUID) datasetMap1.get("datasetUUID"))))
                 .isFalse();
     }
@@ -226,7 +234,7 @@ class DatasetConfigurationTest {
     void updateDataset() {
         Map<String, Object> datasetMap1 = generateDataset(1, 2, 1, 1);
         Dataset dataset = (Dataset) datasetMap1.get("dataset");
-        DatasetConfiguration.getInstance().insert(dataset);
+        datasetConfiguration.insert(dataset);
         dataset.getDatasetImplementations().clear();
         UUID datasetImplementationUuid = UUID.randomUUID();
         dataset.getDatasetImplementations().add(
@@ -252,9 +260,9 @@ class DatasetConfigurationTest {
 
                 )
         );
-        DatasetConfiguration.getInstance().update(dataset);
+        datasetConfiguration.update(dataset);
 
-        assertThat(DatasetConfiguration.getInstance().get(dataset.getMetadataKey()))
+        assertThat(datasetConfiguration.get(dataset.getMetadataKey()))
                 .hasValue(dataset);
 
     }

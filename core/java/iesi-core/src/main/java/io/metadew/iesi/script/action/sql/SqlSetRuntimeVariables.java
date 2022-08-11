@@ -26,6 +26,7 @@ public class SqlSetRuntimeVariables extends ActionTypeExecution {
     private static final String CONNECTION_KEY = "connection";
 
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public SqlSetRuntimeVariables(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -39,7 +40,7 @@ public class SqlSetRuntimeVariables extends ActionTypeExecution {
         String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+        Connection connection = connectionConfiguration.get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Could not find connection " + connectionName + " for env " + getExecutionControl().getEnvName()));
 
         Database database = databaseHandler.getDatabase(connection);

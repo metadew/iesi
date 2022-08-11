@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.MetadataJsonComponent;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
@@ -55,7 +56,7 @@ public class ComponentJsonComponent {
             } else {
                 securityGroupName = "PUBLIC";
             }
-            SecurityGroupKey securityGroupKey = SecurityGroupService.getInstance().get(securityGroupName)
+            SecurityGroupKey securityGroupKey = SpringContext.getBean(SecurityGroupService.class).get(securityGroupName)
                     .map(Metadata::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("could not find Security Group " + securityGroupName));
 

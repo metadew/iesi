@@ -7,7 +7,9 @@ import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptDesignTraceKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -15,20 +17,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ScriptDesignTraceConfiguration extends Configuration<ScriptDesignTrace, ScriptDesignTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ScriptDesignTraceConfiguration instance;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public static synchronized ScriptDesignTraceConfiguration getInstance() {
-        if (instance == null) {
-            instance = new ScriptDesignTraceConfiguration();
-        }
-        return instance;
+    public ScriptDesignTraceConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptDesignTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+
+    @PostConstruct
+    private void ScriptDesignTraceConfiguration() {
+        setMetadataRepository(metadataRepositoryConfiguration.getTraceMetadataRepository());
     }
 
     @Override

@@ -39,6 +39,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public WfaExecuteQueryPing(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -82,7 +83,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         int timeoutInterval = convertTimeoutInterval(getParameterResolvedValue(TIMEOUT_KEY));
         int waitInterval = convertWaitInterval(getParameterResolvedValue(WAIT_KEY));
 
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = connectionConfiguration
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 

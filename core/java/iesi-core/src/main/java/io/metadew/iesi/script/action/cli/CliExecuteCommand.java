@@ -36,6 +36,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
 
     private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
     private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public CliExecuteCommand(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -60,7 +61,7 @@ public class CliExecuteCommand extends ActionTypeExecution {
         if (connectionName.isEmpty() || connectionName.equalsIgnoreCase("localhost")) {
             hostConnection = new HostConnection(HostConnectionTools.getLocalhostType());
         } else {
-            Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+            Connection connection = connectionConfiguration.get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection definition for {} in environment {}",
                             connectionName, getExecutionControl().getEnvName())));
             hostConnection = connectionOperation.getHostConnection(connection);

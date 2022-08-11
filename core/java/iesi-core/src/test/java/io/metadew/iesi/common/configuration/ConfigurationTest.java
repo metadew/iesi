@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = { SpringContext.class, Configuration.class, FrameworkControl.class,
-        MetadataRepositoryCoordinatorHandler.class, DatabaseHandler.class
+        MetadataConfiguration.class, MetadataRepositoryCoordinatorHandler.class, DatabaseHandler.class,
 })
 class ConfigurationTest {
 
@@ -41,6 +41,9 @@ class ConfigurationTest {
     private Configuration configuration;
 
     @Autowired
+    private MetadataConfiguration metadataConfiguration;
+
+    @Autowired
     private MetadataRepositoryCoordinatorHandler metadataRepositoryCoordinatorHandler;
 
     @Autowired
@@ -49,16 +52,15 @@ class ConfigurationTest {
     @Autowired
     private DatabaseHandler databaseHandler;
 
+
     @Test
     void initTest() {
         assertNotNull(springContext);
         assertNotNull(configuration);
+        assertNotNull(metadataConfiguration);
         assertNotNull(metadataRepositoryCoordinatorHandler);
         assertNotNull(frameworkControl);
         assertNotNull(databaseHandler);
-
-        MetadataConfiguration metadataRepositoryConfiguration = MetadataConfiguration.getInstance();
-        assertTrue(true);
 
         PluginConfiguration pluginConfiguration = PluginConfiguration.getInstance();
         GuardConfiguration guardConfiguration = GuardConfiguration.getInstance();

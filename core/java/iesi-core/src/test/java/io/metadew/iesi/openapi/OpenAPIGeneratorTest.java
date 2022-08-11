@@ -1,5 +1,6 @@
 package io.metadew.iesi.openapi;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
@@ -18,6 +19,8 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +32,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, OpenAPIGenerator.class, SecurityGroupConfiguration.class })
 class OpenAPIGeneratorTest {
 
     byte[] docFile;
@@ -36,25 +40,32 @@ class OpenAPIGeneratorTest {
     String title;
     String version;
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private OpenAPIGenerator openAPIGenerator;
+
+    @Autowired
+    private SecurityGroupConfiguration securityGroupConfiguration;
+
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -73,7 +84,6 @@ class OpenAPIGeneratorTest {
     @Test
     void transformFromFile() throws IOException {
         File file = File.createTempFile("doc", null);
-        OpenAPIGenerator openAPIGenerator = OpenAPIGenerator.getInstance();
         try (OutputStream os = new FileOutputStream(file)) {
             os.write(docFile);
         }
@@ -86,7 +96,6 @@ class OpenAPIGeneratorTest {
         File file = File.createTempFile("doc", null);
         List<String> messages = Collections.singletonList("attribute info.title is missing");
         String filePath = file.getPath();
-        OpenAPIGenerator openAPIGenerator = OpenAPIGenerator.getInstance();
         try (OutputStream os = new FileOutputStream(file)) {
             os.write(wrongDocFile);
         }
@@ -97,7 +106,7 @@ class OpenAPIGeneratorTest {
 
 
     private TransformResult getTransformResult() {
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC").orElseThrow(RuntimeException::new);
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName("PUBLIC").orElseThrow(RuntimeException::new);
         EnvironmentKey environmentKey = new EnvironmentKey("env0");
         ConnectionKey connectionKey = new ConnectionKey(
                 "Swagger Petstore - OpenAPI 3.0",

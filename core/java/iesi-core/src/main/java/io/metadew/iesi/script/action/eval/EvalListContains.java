@@ -52,7 +52,7 @@ public class EvalListContains extends ActionTypeExecution {
     private boolean executeOperation(Array list, DataType element) throws InterruptedException {
         if (element instanceof Template) {
             for (DataType dataType : list.getList()) {
-                if (TemplateService.getInstance().matches(dataType, (Template) element, getExecutionControl().getExecutionRuntime())) {
+                if (((TemplateService) DataTypeHandler.getInstance().getDataTypeService(Template.class)).matches(dataType, (Template) element, getExecutionControl().getExecutionRuntime())) {
                     return true;
                 }
             }

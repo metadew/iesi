@@ -9,28 +9,39 @@ import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
 import io.metadew.iesi.metadata.definition.template.matcher.MatcherKey;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValue;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class MatcherConfiguration extends Configuration<Matcher, MatcherKey> {
 
-    private static MatcherConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
+    private final MatcherValueConfiguration matcherValueConfiguration;
 
-    private static final String insertMatcherQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " (ID, KEY, TEMPLATE_ID) VALUES ({0}, {1}, {2});";
-
-    private static final String deleteMatchersByTemplateIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " where template_id={0};";
-
-    public synchronized static MatcherConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MatcherConfiguration();
-        }
-        return INSTANCE;
+    private String insertMatcherQuery() {
+        return "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("Matchers").getName() + " (ID, KEY, TEMPLATE_ID) VALUES ({0}, {1}, {2});";
     }
 
-    private MatcherConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+    private String deleteMatchersByTemplateIdQuery() {
+        return "DELETE FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Matchers").getName() + " where template_id={0};";
+    }
+
+
+    public MatcherConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, MetadataTablesConfiguration metadataTablesConfiguration, MatcherValueConfiguration matcherValueConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
+        this.matcherValueConfiguration = matcherValueConfiguration;
+    }
+
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDesignMetadataRepository());
     }
 
     @Override
@@ -49,9 +60,9 @@ public class MatcherConfiguration extends Configuration<Matcher, MatcherKey> {
     }
 
     public void deleteByTemplateId(TemplateKey templateKey) {
-        MatcherValueConfiguration.getInstance().deleteByTemplateId(templateKey);
+        matcherValueConfiguration.deleteByTemplateId(templateKey);
         getMetadataRepository().executeUpdate(
-                MessageFormat.format(deleteMatchersByTemplateIdQuery,
+                MessageFormat.format(deleteMatchersByTemplateIdQuery(),
                         SQLTools.getStringForSQL(templateKey.getId())
                 ));
     }
@@ -59,11 +70,11 @@ public class MatcherConfiguration extends Configuration<Matcher, MatcherKey> {
 
     public void insert(Matcher matcher) {
         getMetadataRepository().executeUpdate(
-                MessageFormat.format(insertMatcherQuery,
+                MessageFormat.format(insertMatcherQuery(),
                         SQLTools.getStringForSQL(matcher.getMetadataKey().getId()),
                         SQLTools.getStringForSQL(matcher.getKey()),
                         SQLTools.getStringForSQL(matcher.getTemplateKey().getId())));
         MatcherValue matcherValue = matcher.getMatcherValue();
-        MatcherValueConfiguration.getInstance().insert(matcherValue);
+        matcherValueConfiguration.insert(matcherValue);
     }
 }

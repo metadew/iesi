@@ -33,6 +33,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     // Local
     private String sqlSuccess;
@@ -58,7 +59,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         String checkValue = convertCheckValue(getParameterResolvedValue(VALUE_KEY));
         String checkOperatorName = convertCheckOperationName(getParameterResolvedValue(OPERATOR_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = connectionConfiguration
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
 

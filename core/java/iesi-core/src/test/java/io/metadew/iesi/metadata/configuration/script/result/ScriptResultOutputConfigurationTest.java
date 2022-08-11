@@ -1,37 +1,47 @@
 package io.metadew.iesi.metadata.configuration.script.result;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.trace.ConnectionTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.script.ScriptParameterConfiguration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ScriptResultOutputConfiguration.class})
 class ScriptResultOutputConfigurationTest {
+
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private ScriptResultOutputConfiguration scriptResultOutputConfiguration;
 
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -42,7 +52,7 @@ class ScriptResultOutputConfigurationTest {
 
     @Test
     void scriptGetAllEmptyTest() {
-        assertThat(ScriptResultOutputConfiguration.getInstance().getAll())
+        assertThat(scriptResultOutputConfiguration.getAll())
                 .isEmpty();
     }
 
@@ -58,10 +68,10 @@ class ScriptResultOutputConfigurationTest {
                 .scriptId(UUID.randomUUID().toString())
                 .value("value1")
                 .build();
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput1);
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput2);
+        scriptResultOutputConfiguration.insert(scriptResultOutput1);
+        scriptResultOutputConfiguration.insert(scriptResultOutput2);
 
-        assertThat(ScriptResultOutputConfiguration.getInstance().getAll())
+        assertThat(scriptResultOutputConfiguration.getAll())
                 .containsOnly(scriptResultOutput1, scriptResultOutput2);
 
     }
@@ -74,9 +84,9 @@ class ScriptResultOutputConfigurationTest {
                 .scriptId(UUID.randomUUID().toString())
                 .value("value1")
                 .build();
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput1);
+        scriptResultOutputConfiguration.insert(scriptResultOutput1);
 
-        assertThat(ScriptResultOutputConfiguration.getInstance().get(scriptResultOutputKey1))
+        assertThat(scriptResultOutputConfiguration.get(scriptResultOutputKey1))
                 .hasValue(scriptResultOutput1);
     }
 
@@ -101,11 +111,11 @@ class ScriptResultOutputConfigurationTest {
                 .scriptId(UUID.randomUUID().toString())
                 .value("value1")
                 .build();
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput1);
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput2);
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput3);
+        scriptResultOutputConfiguration.insert(scriptResultOutput1);
+        scriptResultOutputConfiguration.insert(scriptResultOutput2);
+        scriptResultOutputConfiguration.insert(scriptResultOutput3);
 
-        assertThat(ScriptResultOutputConfiguration.getInstance().getByRunId(runUuid.toString()))
+        assertThat(scriptResultOutputConfiguration.getByRunId(runUuid.toString()))
                 .containsOnly(scriptResultOutput1, scriptResultOutput2);
     }
 
@@ -117,8 +127,8 @@ class ScriptResultOutputConfigurationTest {
                 .scriptId(UUID.randomUUID().toString())
                 .value("value1")
                 .build();
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput1);
-        assertThat(ScriptResultOutputConfiguration.getInstance().get(scriptResultOutputKey))
+        scriptResultOutputConfiguration.insert(scriptResultOutput1);
+        assertThat(scriptResultOutputConfiguration.get(scriptResultOutputKey))
                 .hasValue(scriptResultOutput1);
     }
 
@@ -135,16 +145,16 @@ class ScriptResultOutputConfigurationTest {
                 .scriptId(UUID.randomUUID().toString())
                 .value("value1")
                 .build();
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput1);
+        scriptResultOutputConfiguration.insert(scriptResultOutput1);
 
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput2);
+        scriptResultOutputConfiguration.insert(scriptResultOutput2);
 
-        assertThat(ScriptResultOutputConfiguration.getInstance().getAll())
+        assertThat(scriptResultOutputConfiguration.getAll())
                 .containsOnly(scriptResultOutput1, scriptResultOutput2);
 
-        ScriptResultOutputConfiguration.getInstance().delete(scriptResultOutputKey);
+        scriptResultOutputConfiguration.delete(scriptResultOutputKey);
 
-        assertThat(ScriptResultOutputConfiguration.getInstance().getAll())
+        assertThat(scriptResultOutputConfiguration.getAll())
                 .containsOnly(scriptResultOutput2);
     }
 
@@ -157,9 +167,9 @@ class ScriptResultOutputConfigurationTest {
                 .scriptId(scriptId)
                 .value("value1")
                 .build();
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
+        scriptResultOutputConfiguration.insert(scriptResultOutput);
 
-        assertThat(ScriptResultOutputConfiguration.getInstance().get(scriptResultOutputKey))
+        assertThat(scriptResultOutputConfiguration.get(scriptResultOutputKey))
                 .hasValue(scriptResultOutput);
 
         ScriptResultOutput updatedScriptResultOutput = ScriptResultOutput.builder()
@@ -168,9 +178,9 @@ class ScriptResultOutputConfigurationTest {
                 .value("value2")
                 .build();
 
-        ScriptResultOutputConfiguration.getInstance().update(updatedScriptResultOutput);
+        scriptResultOutputConfiguration.update(updatedScriptResultOutput);
 
-        assertThat(ScriptResultOutputConfiguration.getInstance().get(scriptResultOutputKey))
+        assertThat(scriptResultOutputConfiguration.get(scriptResultOutputKey))
                 .hasValue(updatedScriptResultOutput);
     }
 

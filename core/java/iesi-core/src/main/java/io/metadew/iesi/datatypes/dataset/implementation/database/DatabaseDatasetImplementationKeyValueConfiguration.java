@@ -7,6 +7,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey
 import io.metadew.iesi.metadata.configuration.Configuration;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -18,62 +19,83 @@ import java.util.UUID;
 @Log4j2
 public class DatabaseDatasetImplementationKeyValueConfiguration extends Configuration<DatabaseDatasetImplementationKeyValue, DatabaseDatasetImplementationKeyValueKey> {
 
-    private static final String EXISTS_QUERY = "SELECT " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "where dataset_in_mem_impl_kvs.ID={0};";
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
 
-    private static final String SELECT_QUERY = "SELECT " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs;";
-
-    private static final String SELECT_SINGLE_QUERY = "SELECT " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "where dataset_in_mem_impl_kvs.ID={0};";
-
-    private static final String SELECT_BY_DATASET_IMPL_ID_QUERY = "SELECT " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "where dataset_in_mem_impl_kvs.IMPL_MEM_ID={0};";
-
-    private static final String SELECT_BY_DATASET_IMPL_ID_AND_KEY_QUERY = "SELECT " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "where dataset_in_mem_impl_kvs.IMPL_MEM_ID={0} and dataset_in_mem_impl_kvs.KEY={1};";
-
-    private static final String INSERT_QUERY = "insert into " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " (ID, IMPL_MEM_ID, KEY, VALUE) " +
-            "VALUES ({0}, {1}, {2}, {3});";
-
-    private static final String DELETE_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " WHERE ID={0};";
-
-    private static final String DELETE_BY_DATASET_IMPLEMENTATION_ID_QUERY = "delete from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " WHERE IMPL_MEM_ID={0};";
-
-    private static String UPDATE_QUERY = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-            " SET IMPL_MEM_ID = {0}, KEY ={1}, VALUE = {2}" +
-            " WHERE ID = {3};";
-
-    private static DatabaseDatasetImplementationKeyValueConfiguration instance;
-
-    private DatabaseDatasetImplementationKeyValueConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
+    private String existsQuery() {
+        return "SELECT " +
+                "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "where dataset_in_mem_impl_kvs.ID={0};";
     }
 
-    public static synchronized DatabaseDatasetImplementationKeyValueConfiguration getInstance() {
-        if (instance == null) {
-            instance = new DatabaseDatasetImplementationKeyValueConfiguration();
-        }
-        return instance;
+    private String selectQuery() {
+        return "SELECT " +
+                "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs;";
     }
+
+    private String selectSingleQuery() {
+        return "SELECT " +
+                "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "where dataset_in_mem_impl_kvs.ID={0};";
+    }
+
+    private String selectByDatasetImplIdQuery() {
+        return "SELECT " +
+                "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "where dataset_in_mem_impl_kvs.IMPL_MEM_ID={0};";
+    }
+
+    private String selectByDatasetImplIdAndKeyQuery() {
+        return "SELECT " +
+                "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "where dataset_in_mem_impl_kvs.IMPL_MEM_ID={0} and dataset_in_mem_impl_kvs.KEY={1};";
+    }
+
+    private String insertQuery() {
+        return "insert into " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
+                " (ID, IMPL_MEM_ID, KEY, VALUE) " +
+                "VALUES ({0}, {1}, {2}, {3});";
+    }
+
+    private String deleteQuery() {
+        return "delete from " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
+                " WHERE ID={0};";
+    }
+
+
+    private String deleteByDatasetImplementationIdQuery() {
+        return "delete from " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
+                " WHERE IMPL_MEM_ID={0};";
+    }
+
+    private String updateQuery() {
+        return "UPDATE " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
+                " SET IMPL_MEM_ID = {0}, KEY ={1}, VALUE = {2}" +
+                " WHERE ID = {3};";
+    }
+
+    public DatabaseDatasetImplementationKeyValueConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, MetadataTablesConfiguration metadataTablesConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
+    }
+
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDataMetadataRepository());
+    }
+
 
     @Override
     public boolean exists(DatabaseDatasetImplementationKeyValueKey datasetImplementationKeyValueKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(EXISTS_QUERY, SQLTools.getStringForSQL(datasetImplementationKeyValueKey.getUuid())),
+                    MessageFormat.format(existsQuery(), SQLTools.getStringForSQL(datasetImplementationKeyValueKey.getUuid())),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -85,7 +107,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
     public Optional<DatabaseDatasetImplementationKeyValue> get(DatabaseDatasetImplementationKeyValueKey datasetImplementationKeyValueKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(SELECT_SINGLE_QUERY, SQLTools.getStringForSQL(datasetImplementationKeyValueKey.getUuid())),
+                    MessageFormat.format(selectSingleQuery(), SQLTools.getStringForSQL(datasetImplementationKeyValueKey.getUuid())),
                     "reader");
             if (cachedRowSet.size() > 1) {
                 log.warn(String.format("found more than 1 %s with id %s", DatabaseDatasetImplementationKeyValue.class.getSimpleName(), datasetImplementationKeyValueKey));
@@ -104,7 +126,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
         try {
             List<DatabaseDatasetImplementationKeyValue> datasetImplementationKeyValues = new LinkedList<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(SELECT_BY_DATASET_IMPL_ID_QUERY,
+                    MessageFormat.format(selectByDatasetImplIdQuery(),
                             SQLTools.getStringForSQL(datasetImplementationKey.getUuid())),
                     "reader");
             while (cachedRowSet.next()) {
@@ -120,7 +142,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
         try {
             List<DatabaseDatasetImplementationKeyValue> datasetImplementationKeyValues = new LinkedList<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(SELECT_BY_DATASET_IMPL_ID_AND_KEY_QUERY,
+                    MessageFormat.format(selectByDatasetImplIdAndKeyQuery(),
                             SQLTools.getStringForSQL(datasetImplementationKey.getUuid()),
                             SQLTools.getStringForSQL(key)),
                     "reader");
@@ -142,7 +164,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
         try {
             List<DatabaseDatasetImplementationKeyValue> datasetImplementationKeyValues = new LinkedList<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    SELECT_QUERY,
+                    selectQuery(),
                     "reader");
             while (cachedRowSet.next()) {
                 datasetImplementationKeyValues.add(mapRow(cachedRowSet));
@@ -155,18 +177,18 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
 
     @Override
     public void delete(DatabaseDatasetImplementationKeyValueKey datasetImplementationKeyValueKey) {
-        getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_QUERY,
+        getMetadataRepository().executeUpdate(MessageFormat.format(deleteQuery(),
                 SQLTools.getStringForSQL(datasetImplementationKeyValueKey.getUuid())));
     }
 
     public void deleteByDatasetImplementationId(DatasetImplementationKey datasetImplementationKey) {
-        getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_BY_DATASET_IMPLEMENTATION_ID_QUERY,
+        getMetadataRepository().executeUpdate(MessageFormat.format(deleteByDatasetImplementationIdQuery(),
                 SQLTools.getStringForSQL(datasetImplementationKey.getUuid())));
     }
 
     @Override
     public void insert(DatabaseDatasetImplementationKeyValue datasetImplementationKeyValue) {
-        getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_QUERY,
+        getMetadataRepository().executeUpdate(MessageFormat.format(insertQuery(),
                 SQLTools.getStringForSQL(datasetImplementationKeyValue.getMetadataKey().getUuid()),
                 SQLTools.getStringForSQL(datasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
                 SQLTools.getStringForSQL(datasetImplementationKeyValue.getKey()),
@@ -178,7 +200,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
 
     @Override
     public void update(DatabaseDatasetImplementationKeyValue datasetImplementationKeyValue) {
-        getMetadataRepository().executeUpdate(MessageFormat.format(UPDATE_QUERY,
+        getMetadataRepository().executeUpdate(MessageFormat.format(updateQuery(),
                 SQLTools.getStringForSQL(datasetImplementationKeyValue.getDatasetImplementationKey().getUuid()),
                 SQLTools.getStringForSQL(datasetImplementationKeyValue.getKey()),
                 SQLTools.getStringForSQLClob(datasetImplementationKeyValue.getValue(),

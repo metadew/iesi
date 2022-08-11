@@ -1,5 +1,6 @@
 package io.metadew.iesi.datatypes.template;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
@@ -30,6 +31,8 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
 
     private static TemplateService INSTANCE;
 
+    private final TemplateConfiguration templateConfiguration = SpringContext.getBean(TemplateConfiguration.class);
+
     public synchronized static TemplateService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new TemplateService();
@@ -58,7 +61,7 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
             DataType templateName = DataTypeHandler.getInstance().resolve(splittedArguments.get(0), executionRuntime);
             DataType templateVersion = DataTypeHandler.getInstance().resolve(splittedArguments.get(1), executionRuntime);
             if (templateName instanceof Text && templateVersion instanceof Text) {
-                return TemplateConfiguration.getInstance()
+                return templateConfiguration
                         .getByNameAndVersion(((Text) templateName).getString(), Long.parseLong(((Text) templateVersion).getString()))
                         .orElseThrow(() -> new RuntimeException("Cannot find template with name " + ((Text) templateName).getString()));
             } else {
@@ -121,45 +124,45 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
     }
 
     public List<Template> getAll() {
-        return TemplateConfiguration.getInstance().getAll();
+        return templateConfiguration.getAll();
     }
 
     public boolean exists(TemplateKey templateKey) {
-        return TemplateConfiguration.getInstance().exists(templateKey);
+        return templateConfiguration.exists(templateKey);
     }
 
     public boolean exists(String templateName, Long version) {
-        return TemplateConfiguration.getInstance().exists(templateName, version);
+        return templateConfiguration.exists(templateName, version);
     }
 
     public void insert(Template template) {
         if (exists(template.getName(), template.getVersion())) {
             throw new MetadataDoesNotExistException(String.format("Template with name %s and version %s already exists", template.getName(), template.getVersion()));
         }
-        TemplateConfiguration.getInstance().insert(template);
+        templateConfiguration.insert(template);
     }
 
     public Optional<Template> get(TemplateKey templateKey) {
-        return TemplateConfiguration.getInstance().get(templateKey);
+        return templateConfiguration.get(templateKey);
     }
 
     public Optional<Template> get(String templateName, long version) {
-        return TemplateConfiguration.getInstance().getByNameAndVersion(templateName, version);
+        return templateConfiguration.getByNameAndVersion(templateName, version);
     }
 
     public void update(Template template) {
         if (!exists(template.getName(), template.getVersion())) {
             throw new MetadataDoesNotExistException(String.format("Template with name %s and version %s does not exist", template.getName(), template.getVersion()));
         }
-        TemplateConfiguration.getInstance().update(template);
+        templateConfiguration.update(template);
     }
 
     public void delete(TemplateKey templateKey) {
-        TemplateConfiguration.getInstance().delete(templateKey);
+        templateConfiguration.delete(templateKey);
     }
 
     public void delete(String name, long version) {
-        TemplateConfiguration.getInstance().deleteByNameAndVersion(name, version);
+        templateConfiguration.deleteByNameAndVersion(name, version);
     }
 
     @Override

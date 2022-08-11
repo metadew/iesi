@@ -30,6 +30,7 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
 
     private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
     private final FileTransferService fileTransferService = SpringContext.getBean(FileTransferService.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public FhoExecuteFileTransfer(ExecutionControl executionControl,
                                   ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -55,13 +56,13 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
         // Run the action
         FileTransferResult fileTransferResult;
         if (sourceIsOnLocalHost && !targetIsOnLocalHost) {
-            Connection targetConnection = ConnectionConfiguration.getInstance()
+            Connection targetConnection = connectionConfiguration
                     .get(new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))));
             fileTransferResult = fileTransferService.transferLocalToRemote(sourceFilePath,
                     sourceFileName, targetFilePath, targetFileName, targetConnection);
         } else if (!sourceIsOnLocalHost && targetIsOnLocalHost) {
-            Connection sourceConnection = ConnectionConfiguration.getInstance()
+            Connection sourceConnection = connectionConfiguration
                     .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))));
 

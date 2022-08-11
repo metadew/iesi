@@ -11,18 +11,12 @@ import java.text.MessageFormat;
 
 public class HttpQueryParameterService implements IHttpQueryParameterService {
 
-    private static HttpQueryParameterService INSTANCE;
-    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
+    private final FrameworkCrypto frameworkCrypto;
 
-    public synchronized static HttpQueryParameterService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpQueryParameterService();
-        }
-        return INSTANCE;
+    public HttpQueryParameterService(FrameworkCrypto frameworkCrypto) {
+        this.frameworkCrypto = frameworkCrypto;
     }
 
-    private HttpQueryParameterService() {
-    }
 
 
     public HttpQueryParameter convert(HttpQueryParameterDefinition httpQueryParameterDefinition, ActionExecution actionExecution) {

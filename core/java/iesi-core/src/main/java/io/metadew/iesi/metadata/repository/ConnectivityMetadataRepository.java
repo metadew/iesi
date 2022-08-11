@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -20,6 +21,11 @@ import java.text.MessageFormat;
 
 public class ConnectivityMetadataRepository extends MetadataRepository {
     private static final Logger LOGGER = LogManager.getLogger();
+
+    private final EnvironmentConfiguration environmentConfiguration = SpringContext.getBean(EnvironmentConfiguration.class);
+    private final ImpersonationConfiguration impersonationConfiguration = SpringContext.getBean(ImpersonationConfiguration.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+    private final SecurityGroupService securityGroupService = SpringContext.getBean(SecurityGroupService.class);
 
     public ConnectivityMetadataRepository(String instanceName, RepositoryCoordinator repositoryCoordinator) {
         super(instanceName, repositoryCoordinator);
@@ -57,16 +63,16 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         try {
             if (connection.getSecurityGroupKey() == null) {
                 LOGGER.warn("{0} not linked to a security group, linking it to the public security group");
-                SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
+                SecurityGroup publicSecurityGroup = securityGroupService.get("PUBLIC")
                         .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
                 connection.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
                 connection.setSecurityGroupName(publicSecurityGroup.getName());
             }
-            ConnectionConfiguration.getInstance().insert(connection);
+            connectionConfiguration.insert(connection);
         } catch (MetadataAlreadyExistsException e1) {
             LOGGER.info(MessageFormat.format("Connection {0}-{1} already exists in connectivity repository. Updating connection {0}-{1} instead.",
                     connection.getMetadataKey().getName(), connection.getMetadataKey().getEnvironmentKey().getName()));
-            ConnectionConfiguration.getInstance().update(connection);
+            connectionConfiguration.update(connection);
         }
     }
 
@@ -74,11 +80,11 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Inserting environment {0} into connectivity repository",
                 environment.getName()));
         try {
-            EnvironmentConfiguration.getInstance().insert(environment);
+            environmentConfiguration.insert(environment);
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Environment {0} already exists in connectivity repository. Updating connection {0} instead.",
                     environment.getName()));
-            EnvironmentConfiguration.getInstance().update(environment);
+            environmentConfiguration.update(environment);
         }
     }
 
@@ -86,11 +92,11 @@ public class ConnectivityMetadataRepository extends MetadataRepository {
         LOGGER.info(MessageFormat.format("Inserting impersonation {0} into connectivity repository",
                 impersonation.getMetadataKey().getName()));
         try {
-            ImpersonationConfiguration.getInstance().insertImpersonation(impersonation);
+            impersonationConfiguration.insertImpersonation(impersonation);
         } catch (MetadataAlreadyExistsException e) {
             LOGGER.info(MessageFormat.format("Impersonation {0} already exists in connectivity repository. Updating impersonation {0} instead.",
                     impersonation.getMetadataKey().getName()));
-            ImpersonationConfiguration.getInstance().updateImpersonation(impersonation);
+            impersonationConfiguration.updateImpersonation(impersonation);
         }
     }
 

@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.configuration.connection;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -10,6 +11,8 @@ import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +22,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SpringBootTest(classes = { Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ConnectionConfiguration.class, ConnectionParameterConfiguration.class })
 class ConnectionConfigurationTest {
 
     private Connection connection1;
@@ -26,25 +30,32 @@ class ConnectionConfigurationTest {
     private Connection connection3;
     private ConnectivityMetadataRepository connectivityMetadataRepository;
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private ConnectionConfiguration connectionConfiguration;
+
+    @Autowired
+    private ConnectionParameterConfiguration connectionParameterConfiguration;
+
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -76,20 +87,20 @@ class ConnectionConfigurationTest {
 
     @Test
     void connectionNotExistsTest() {
-        assertFalse(ConnectionConfiguration.getInstance().exists(connection1));
+        assertFalse(connectionConfiguration.exists(connection1));
     }
 
     @Test
     void connectionExistsTest() {
-        ConnectionConfiguration.getInstance().insert(connection1);
-        assertTrue(ConnectionConfiguration.getInstance().exists(connection1.getMetadataKey()));
+        connectionConfiguration.insert(connection1);
+        assertTrue(connectionConfiguration.exists(connection1.getMetadataKey()));
     }
 
     @Test
     void connectionInsertTest() {
-        ConnectionConfiguration.getInstance().insert(connection1);
+        connectionConfiguration.insert(connection1);
 
-        Optional<Connection> fetchedConnection = ConnectionConfiguration.getInstance().get(connection1.getMetadataKey());
+        Optional<Connection> fetchedConnection = connectionConfiguration.get(connection1.getMetadataKey());
 
         assertTrue(fetchedConnection.isPresent());
         assertEquals(connection1, fetchedConnection.get());
@@ -97,15 +108,15 @@ class ConnectionConfigurationTest {
 
     @Test
     void connectionInsertMultipleTest() {
-        ConnectionConfiguration.getInstance().insert(connection1);
-        ConnectionConfiguration.getInstance().insert(connection2);
-        ConnectionConfiguration.getInstance().insert(connection3);
+        connectionConfiguration.insert(connection1);
+        connectionConfiguration.insert(connection2);
+        connectionConfiguration.insert(connection3);
 
-        Optional<Connection> fetchedConnection1 = ConnectionConfiguration.getInstance().get(connection1.getMetadataKey());
-        Optional<Connection> fetchedConnection2 = ConnectionConfiguration.getInstance().get(connection2.getMetadataKey());
-        Optional<Connection> fetchedConnection3 = ConnectionConfiguration.getInstance().get(connection3.getMetadataKey());
+        Optional<Connection> fetchedConnection1 = connectionConfiguration.get(connection1.getMetadataKey());
+        Optional<Connection> fetchedConnection2 = connectionConfiguration.get(connection2.getMetadataKey());
+        Optional<Connection> fetchedConnection3 = connectionConfiguration.get(connection3.getMetadataKey());
 
-        assertEquals(3, ConnectionConfiguration.getInstance().getAll().size());
+        assertEquals(3, connectionConfiguration.getAll().size());
         assertTrue(fetchedConnection1.isPresent());
         assertEquals(connection1, fetchedConnection1.get());
         assertTrue(fetchedConnection2.isPresent());
@@ -116,132 +127,132 @@ class ConnectionConfigurationTest {
 
     @Test
     void connectionInsertAlreadyExistsTest() {
-        ConnectionConfiguration.getInstance().insert(connection1);
-        assertThrows(MetadataAlreadyExistsException.class, () -> ConnectionConfiguration.getInstance().insert(connection1));
+        connectionConfiguration.insert(connection1);
+        assertThrows(MetadataAlreadyExistsException.class, () -> connectionConfiguration.insert(connection1));
     }
 
     @Test
     void connectionDeleteTest() {
-        ConnectionConfiguration.getInstance().insert(connection1);
+        connectionConfiguration.insert(connection1);
 
-        assertEquals(1, ConnectionConfiguration.getInstance().getAll().size());
+        assertEquals(1, connectionConfiguration.getAll().size());
 
-        ConnectionConfiguration.getInstance().delete(connection1.getMetadataKey());
+        connectionConfiguration.delete(connection1.getMetadataKey());
 
-        assertEquals(0, ConnectionConfiguration.getInstance().getAll().size());
-        assertEquals(0, ConnectionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(0, connectionConfiguration.getAll().size());
+        assertEquals(0, connectionParameterConfiguration.getAll().size());
     }
 
     @Test
     void connectionDeleteMultipleTest() {
-        ConnectionConfiguration.getInstance().insert(connection1);
-        ConnectionConfiguration.getInstance().insert(connection2);
-        ConnectionConfiguration.getInstance().insert(connection3);
+        connectionConfiguration.insert(connection1);
+        connectionConfiguration.insert(connection2);
+        connectionConfiguration.insert(connection3);
 
-        assertEquals(3, ConnectionConfiguration.getInstance().getAll().size());
+        assertEquals(3, connectionConfiguration.getAll().size());
 
-        ConnectionConfiguration.getInstance().delete(connection1.getMetadataKey());
+        connectionConfiguration.delete(connection1.getMetadataKey());
 
-        assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(2, connectionConfiguration.getAll().size());
+        assertEquals(4, connectionParameterConfiguration.getAll().size());
     }
 
     @Test
     void connectionDeleteMultiple2Test() {
-        ConnectionConfiguration.getInstance().insert(connection1);
-        ConnectionConfiguration.getInstance().insert(connection2);
-        ConnectionConfiguration.getInstance().insert(connection3);
+        connectionConfiguration.insert(connection1);
+        connectionConfiguration.insert(connection2);
+        connectionConfiguration.insert(connection3);
 
-        assertEquals(3, ConnectionConfiguration.getInstance().getAll().size());
+        assertEquals(3, connectionConfiguration.getAll().size());
 
-        ConnectionConfiguration.getInstance().delete(connection2.getMetadataKey());
+        connectionConfiguration.delete(connection2.getMetadataKey());
 
-        assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(2, connectionConfiguration.getAll().size());
+        assertEquals(4, connectionParameterConfiguration.getAll().size());
     }
 
     @Test
     void connectionDeleteMultiple3Test() {
-        ConnectionConfiguration.getInstance().insert(connection1);
-        ConnectionConfiguration.getInstance().insert(connection2);
-        ConnectionConfiguration.getInstance().insert(connection3);
+        connectionConfiguration.insert(connection1);
+        connectionConfiguration.insert(connection2);
+        connectionConfiguration.insert(connection3);
 
-        assertEquals(3, ConnectionConfiguration.getInstance().getAll().size());
+        assertEquals(3, connectionConfiguration.getAll().size());
 
-        ConnectionConfiguration.getInstance().delete(connection3.getMetadataKey());
+        connectionConfiguration.delete(connection3.getMetadataKey());
 
-        assertEquals(2, ConnectionConfiguration.getInstance().getAll().size());
-        assertEquals(4, ConnectionParameterConfiguration.getInstance().getAll().size());
+        assertEquals(2, connectionConfiguration.getAll().size());
+        assertEquals(4, connectionParameterConfiguration.getAll().size());
     }
 
     @Test
     void connectionDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class, () -> ConnectionConfiguration.getInstance().delete(connection1.getMetadataKey()));
+        assertThrows(MetadataDoesNotExistException.class, () -> connectionConfiguration.delete(connection1.getMetadataKey()));
     }
 
 
     @Test
     void connectionGetNotExistsTest() {
-        assertFalse(ConnectionConfiguration.getInstance().exists(connection1));
-        assertFalse(ConnectionConfiguration.getInstance().get(connection1.getMetadataKey()).isPresent());
+        assertFalse(connectionConfiguration.exists(connection1));
+        assertFalse(connectionConfiguration.get(connection1.getMetadataKey()).isPresent());
     }
 
     @Test
     void connectionUpdate1Test() {
-        ConnectionConfiguration.getInstance().insert(connection1);
-        ConnectionConfiguration.getInstance().insert(connection2);
-        ConnectionConfiguration.getInstance().insert(connection3);
+        connectionConfiguration.insert(connection1);
+        connectionConfiguration.insert(connection2);
+        connectionConfiguration.insert(connection3);
 
-        Optional<Connection> fetchedConnection1 = ConnectionConfiguration.getInstance().get(connection1.getMetadataKey());
+        Optional<Connection> fetchedConnection1 = connectionConfiguration.get(connection1.getMetadataKey());
         assertTrue(fetchedConnection1.isPresent());
         assertEquals("desc", fetchedConnection1.get().getDescription());
-        Optional<Connection> fetchedConnection2 = ConnectionConfiguration.getInstance().get(connection2.getMetadataKey());
+        Optional<Connection> fetchedConnection2 = connectionConfiguration.get(connection2.getMetadataKey());
         assertTrue(fetchedConnection2.isPresent());
         assertEquals("desc", fetchedConnection2.get().getDescription());
-        Optional<Connection> fetchedConnection3 = ConnectionConfiguration.getInstance().get(connection3.getMetadataKey());
+        Optional<Connection> fetchedConnection3 = connectionConfiguration.get(connection3.getMetadataKey());
         assertTrue(fetchedConnection3.isPresent());
         assertEquals("desc", fetchedConnection3.get().getDescription());
 
         connection1.setDescription("new desc");
-        ConnectionConfiguration.getInstance().update(connection1);
+        connectionConfiguration.update(connection1);
 
-        fetchedConnection1 = ConnectionConfiguration.getInstance().get(connection1.getMetadataKey());
+        fetchedConnection1 = connectionConfiguration.get(connection1.getMetadataKey());
         assertTrue(fetchedConnection1.isPresent());
         assertEquals("new desc", fetchedConnection1.get().getDescription());
-        fetchedConnection2 = ConnectionConfiguration.getInstance().get(connection2.getMetadataKey());
+        fetchedConnection2 = connectionConfiguration.get(connection2.getMetadataKey());
         assertTrue(fetchedConnection2.isPresent());
         assertEquals("new desc", fetchedConnection2.get().getDescription());
-        fetchedConnection3 = ConnectionConfiguration.getInstance().get(connection3.getMetadataKey());
+        fetchedConnection3 = connectionConfiguration.get(connection3.getMetadataKey());
         assertTrue(fetchedConnection3.isPresent());
         assertEquals("desc", fetchedConnection3.get().getDescription());
     }
 
     @Test
     void connectionUpdate2Test() {
-        ConnectionConfiguration.getInstance().insert(connection1);
-        ConnectionConfiguration.getInstance().insert(connection2);
-        ConnectionConfiguration.getInstance().insert(connection3);
+        connectionConfiguration.insert(connection1);
+        connectionConfiguration.insert(connection2);
+        connectionConfiguration.insert(connection3);
 
-        Optional<Connection> fetchedConnection1 = ConnectionConfiguration.getInstance().get(connection1.getMetadataKey());
+        Optional<Connection> fetchedConnection1 = connectionConfiguration.get(connection1.getMetadataKey());
         assertTrue(fetchedConnection1.isPresent());
         assertEquals("desc", fetchedConnection1.get().getDescription());
-        Optional<Connection> fetchedConnection2 = ConnectionConfiguration.getInstance().get(connection2.getMetadataKey());
+        Optional<Connection> fetchedConnection2 = connectionConfiguration.get(connection2.getMetadataKey());
         assertTrue(fetchedConnection2.isPresent());
         assertEquals("desc", fetchedConnection2.get().getDescription());
-        Optional<Connection> fetchedConnection3 = ConnectionConfiguration.getInstance().get(connection3.getMetadataKey());
+        Optional<Connection> fetchedConnection3 = connectionConfiguration.get(connection3.getMetadataKey());
         assertTrue(fetchedConnection3.isPresent());
         assertEquals("desc", fetchedConnection3.get().getDescription());
 
         connection3.setDescription("new desc");
-        ConnectionConfiguration.getInstance().update(connection3);
+        connectionConfiguration.update(connection3);
 
-        fetchedConnection1 = ConnectionConfiguration.getInstance().get(connection1.getMetadataKey());
+        fetchedConnection1 = connectionConfiguration.get(connection1.getMetadataKey());
         assertTrue(fetchedConnection1.isPresent());
         assertEquals("desc", fetchedConnection1.get().getDescription());
-        fetchedConnection2 = ConnectionConfiguration.getInstance().get(connection2.getMetadataKey());
+        fetchedConnection2 = connectionConfiguration.get(connection2.getMetadataKey());
         assertTrue(fetchedConnection2.isPresent());
         assertEquals("desc", fetchedConnection2.get().getDescription());
-        fetchedConnection3 = ConnectionConfiguration.getInstance().get(connection3.getMetadataKey());
+        fetchedConnection3 = connectionConfiguration.get(connection3.getMetadataKey());
         assertTrue(fetchedConnection3.isPresent());
         assertEquals("new desc", fetchedConnection3.get().getDescription());
     }

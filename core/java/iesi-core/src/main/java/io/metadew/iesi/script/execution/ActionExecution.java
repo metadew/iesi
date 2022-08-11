@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.script.action.ActionParameterResolvement;
@@ -28,6 +29,9 @@ public class ActionExecution {
     private ComponentAttributeOperation componentAttributeOperation;
     private ActionTypeExecution actionTypeExecution;
     private boolean executed = false;
+
+    private final ActionTypeConfiguration actionTypeConfiguration = SpringContext.getBean(ActionTypeConfiguration.class);
+    private final ActionPerformanceLogger actionPerformanceLogger = SpringContext.getBean(ActionPerformanceLogger.class);
 
     // Constructors
     public ActionExecution(ExecutionControl executionControl,
@@ -68,7 +72,7 @@ public class ActionExecution {
                 this.setComponentAttributeOperation(new ComponentAttributeOperation(executionControl, this, action.getComponent().trim()));
             }
 
-            String className = ActionTypeConfiguration.getInstance().getActionType(action.getType()).getClassName();
+            String className = actionTypeConfiguration.getActionType(action.getType()).getClassName();
             log.debug("action.type=" + action.getType());
 
             Class<?> classRef = Class.forName(className);
@@ -90,7 +94,7 @@ public class ActionExecution {
 
                 LocalDateTime start = LocalDateTime.now();
                 instance.execute();
-                ActionPerformanceLogger.getInstance().log(this, "action", start, LocalDateTime.now());
+                actionPerformanceLogger.log(this, "action", start, LocalDateTime.now());
 
                 verifyExecutionMetrics();
 
@@ -116,7 +120,7 @@ public class ActionExecution {
     }
 
     private void traceDesignMetadata(List<ActionParameterResolvement> actionParameterResolvements) {
-        ExecutionTrace.getInstance().setExecution(this, actionParameterResolvements);
+        SpringContext.getBean(ExecutionTrace.class).setExecution(this, actionParameterResolvements);
     }
 
     private void verifyExecutionMetrics() {

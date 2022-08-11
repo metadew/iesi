@@ -11,32 +11,23 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Log4j2
+@org.springframework.context.annotation.Configuration
 public class MetadataConfiguration {
 
-    private static MetadataConfiguration INSTANCE;
     public static final String configurationKey = "metadata";
 
     Configuration configuration = SpringContext.getBean(Configuration.class);
 
-    public synchronized static MetadataConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataConfiguration();
-        }
-        return INSTANCE;
-    }
 
-    private MetadataConfiguration() {
+
+    @PostConstruct
+    private void postConstruct() {
         if (containsConfiguration()) {
-            MetadataActionTypesConfiguration.getInstance();
-            MetadataComponentTypesConfiguration.getInstance();
-            MetadataConnectionTypesConfiguration.getInstance();
-            MetadataTablesConfiguration.getInstance();
-            MetadataObjectsConfiguration.getInstance();
-            MetadataRepositoryConfiguration.getInstance();
-            MetadataPolicyConfiguration.getInstance();
+            //TODO: REMOVE THIS CLASS AND ADD @CONDITIONAL ON EVERY METADATA CONFIGURATION
         } else {
             log.warn("no metadata configuration found on system variable, classpath or filesystem");
         }

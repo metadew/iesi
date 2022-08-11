@@ -10,6 +10,7 @@ import io.metadew.iesi.server.rest.user.ldap.LdapGroup;
 import io.metadew.iesi.server.rest.user.ldap.LdapUser;
 import io.metadew.iesi.server.rest.user.team.TeamService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -46,7 +47,7 @@ public class LdapAuthenticationProvider implements AuthenticationProvider {
             LdapGroupMapping ldapGroupMapping,
             LdapRoleMapping ldapRoleMapping,
             LdapServer ldapServer,
-            TeamService teamConfiguration
+            @Qualifier("restTeamService") TeamService teamConfiguration
     ) {
         this.ldapContextSource = ldapContextSource;
         this.ldapTemplate = ldapTemplate;

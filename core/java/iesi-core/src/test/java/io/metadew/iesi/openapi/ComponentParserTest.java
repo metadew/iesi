@@ -1,5 +1,6 @@
 package io.metadew.iesi.openapi;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
@@ -17,22 +18,32 @@ import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
+@SpringBootTest(classes = { Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, SecurityGroupConfiguration.class, ComponentParser.class })
 class ComponentParserTest {
 
     private OpenAPI openAPI;
     private long componentVersion;
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private SecurityGroupConfiguration securityGroupConfiguration;
+
+    @Autowired
+    private ComponentParser componentParser;
+
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
@@ -60,15 +71,14 @@ class ComponentParserTest {
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -100,7 +110,7 @@ class ComponentParserTest {
                 componentParameters,
                 new ArrayList<>());
 
-        assertThat(ComponentParser.getInstance().createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
+        assertThat(componentParser.createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
     }
 
     @Test
@@ -131,7 +141,7 @@ class ComponentParserTest {
                 componentParameters,
                 new ArrayList<>());
 
-        assertThat(ComponentParser.getInstance().createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
+        assertThat(componentParser.createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet", "POST")).isEqualTo(component);
     }
 
     @Test
@@ -161,14 +171,14 @@ class ComponentParserTest {
                 componentParameters,
                 new ArrayList<>());
 
-        assertThat(ComponentParser.getInstance().createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet/{id}", "POST")).isEqualTo(component);
+        assertThat(componentParser.createComponent(securityGroupKey, componentVersion, connectionName, operation, "/pet/{id}", "POST")).isEqualTo(component);
 
     }
 
     @Test
     void createComponentWithStringVersion() {
         SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        SecurityGroupConfiguration.getInstance().insert(
+        securityGroupConfiguration.insert(
                 new SecurityGroup(
                         securityGroupKey,
                         "PUBLIC",
@@ -179,14 +189,14 @@ class ComponentParserTest {
         List<String> messages = Collections.singletonList("The version should be a number");
         openAPI.getInfo().setVersion("SNAPSHOT-1.1");
 
-        SwaggerParserException exception = assertThrows(SwaggerParserException.class, () -> ComponentParser.getInstance().parse(openAPI));
+        SwaggerParserException exception = assertThrows(SwaggerParserException.class, () -> componentParser.parse(openAPI));
         assertThat(exception.getMessages()).isEqualTo(messages);
     }
 
     @Test
     void createComponentWithLongVersion() {
         SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        SecurityGroupConfiguration.getInstance().insert(
+        securityGroupConfiguration.insert(
                 new SecurityGroup(
                         securityGroupKey,
                         "PUBLIC",
@@ -204,14 +214,14 @@ class ComponentParserTest {
         openAPI.setPaths(paths);
         openAPI.getInfo().setVersion("1");
 
-        List<Component> components = ComponentParser.getInstance().parse(openAPI);
+        List<Component> components = componentParser.parse(openAPI);
         assertThat(components.get(0).getVersion().getMetadataKey().getComponentKey().getVersionNumber()).isEqualTo(1);
     }
 
     @Test
     void createComponentWithSemanticVersion() {
         SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        SecurityGroupConfiguration.getInstance().insert(
+        securityGroupConfiguration.insert(
                 new SecurityGroup(
                         securityGroupKey,
                         "PUBLIC",
@@ -229,14 +239,14 @@ class ComponentParserTest {
         openAPI.setPaths(paths);
         openAPI.getInfo().setVersion("11.2.3");
 
-        List<Component> components = ComponentParser.getInstance().parse(openAPI);
+        List<Component> components = componentParser.parse(openAPI);
         assertThat(components.get(0).getVersion().getMetadataKey().getComponentKey().getVersionNumber()).isEqualTo(11);
     }
 
     @Test
     void testComponentWithSemanticVersion() {
         SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        SecurityGroupConfiguration.getInstance().insert(
+        securityGroupConfiguration.insert(
                 new SecurityGroup(
                         securityGroupKey,
                         "PUBLIC",
@@ -254,7 +264,7 @@ class ComponentParserTest {
         openAPI.setPaths(paths);
         openAPI.getInfo().setVersion("1.2.3");
 
-        List<Component> components = ComponentParser.getInstance().parse(openAPI);
+        List<Component> components = componentParser.parse(openAPI);
         assertThat(components.get(0).getVersion().getMetadataKey().getComponentKey().getVersionNumber()).isNotEqualTo(1.2);
     }
 }

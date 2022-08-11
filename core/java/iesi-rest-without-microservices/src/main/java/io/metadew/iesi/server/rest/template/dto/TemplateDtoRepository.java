@@ -29,11 +29,15 @@ import java.util.stream.Stream;
 public class TemplateDtoRepository extends PaginatedRepository implements ITemplateDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
     private final FilterService filterService;
 
-    public TemplateDtoRepository(FilterService filterService, MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+    public TemplateDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                                 MetadataTablesConfiguration metadataTablesConfiguration,
+                                 FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
         this.filterService = filterService;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
                     new TemplateFilter(TemplateFilterOption.VERSION, Long.toString(version), true)
             ).collect(Collectors.toSet());
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    getFetchAllQuery(authentication, Pageable.unpaged(),false, templateFilters),
+                    getFetchAllQuery(authentication, Pageable.unpaged(), false, templateFilters),
                     "reader"
             );
             return new TemplateDtoListResultSetExtractor().extractData(cachedRowSet)
@@ -81,17 +85,17 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
                 "mvt.TEMPLATE_NAME as matcherValue_templateName, " +
                 "mvt.TEMPLATE_VERSION as matcherValue_templateVersion " +
                 "FROM (" + getBaseQuery(authentication, pageable, onlyLatestVersion, templateFilters) + ") base_templates " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " t " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Templates").getName() + " t " +
                 "ON base_templates.ID = t.ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Matchers").getName() + " m " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Matchers").getName() + " m " +
                 "ON t.ID = m.TEMPLATE_ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("MatcherValues").getName() + " mv " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("MatcherValues").getName() + " mv " +
                 "ON m.ID = mv.MATCHER_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AnyMatcherValues").getName() + " mva " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("AnyMatcherValues").getName() + " mva " +
                 "ON mva.ID = mv.ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " mvf " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("FixedMatcherValues").getName() + " mvf " +
                 "ON mvf.ID = mv.ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " mvt " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " mvt " +
                 "ON mvt.ID = mv.ID " +
                 getOrderByClause(pageable) +
                 ";";
@@ -99,7 +103,7 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
 
     private String getBaseQuery(Authentication authentication, Pageable pageable, boolean onlyLatestVersion, Set<TemplateFilter> templateFilters) {
         return "SELECT distinct t.ID, t.NAME, t.VERSION " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " t " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Templates").getName() + " t " +
                 getWhereClause(authentication, templateFilters, onlyLatestVersion) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -121,7 +125,7 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
         if (onlyLatestVersion) {
             filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") +
                     " (t.NAME, t.VERSION) in (select templates.NAME, max(templates.VERSION) " +
-                    "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " templates " +
+                    "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Templates").getName() + " templates " +
                     "GROUP BY templates.NAME) ";
         }
 
@@ -148,7 +152,7 @@ public class TemplateDtoRepository extends PaginatedRepository implements ITempl
 
     private long getRowSize(Authentication authentication, Set<TemplateFilter> templateFilters, boolean onlyLatestVersion) throws SQLException {
         String query = "select count(*) as row_count from " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " t " +
+                metadataTablesConfiguration.getMetadataTableNameByLabel("Templates").getName() + " t " +
                 getWhereClause(authentication, templateFilters, onlyLatestVersion) + ";";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();

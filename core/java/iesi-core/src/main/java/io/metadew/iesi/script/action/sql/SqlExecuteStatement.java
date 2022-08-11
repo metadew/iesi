@@ -24,6 +24,7 @@ public class SqlExecuteStatement extends ActionTypeExecution {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public SqlExecuteStatement(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -36,7 +37,7 @@ public class SqlExecuteStatement extends ActionTypeExecution {
         String sqlStatement = convertSqlStatement(getParameterResolvedValue(SQL_STATEMENT_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = connectionConfiguration
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 

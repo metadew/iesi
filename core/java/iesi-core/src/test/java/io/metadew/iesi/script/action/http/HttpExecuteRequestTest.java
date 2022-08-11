@@ -1,5 +1,7 @@
 package io.metadew.iesi.script.action.http;
 
+import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.component.http.HttpComponent;
 import io.metadew.iesi.component.http.HttpComponentService;
 import io.metadew.iesi.component.http.HttpHeader;
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, ActionParameterService.class, HttpComponentService.class })
 class HttpExecuteRequestTest {
 
     ExecutionControl executionControl;
@@ -37,7 +42,10 @@ class HttpExecuteRequestTest {
     ActionExecution actionExecution;
     ActionKey actionKey;
     ActionControl actionControl;
+
+    @SpyBean
     ActionParameterService actionParameterServiceSpy;
+    @SpyBean
     HttpComponentService httpComponentServiceSpy;
 
     @BeforeEach
@@ -52,21 +60,12 @@ class HttpExecuteRequestTest {
                 .actionId("actionId")
                 .build();
 
-        ActionParameterService actionParameterService = ActionParameterService.getInstance();
-        actionParameterServiceSpy = Mockito.spy(actionParameterService);
-
-        HttpComponentService httpComponentService = HttpComponentService.getInstance();
-        httpComponentServiceSpy = Mockito.spy(httpComponentService);
 
         when(executionControl.getExecutionRuntime())
                 .thenReturn(executionRuntime);
         when(actionExecution.getActionControl())
                 .thenReturn(actionControl);
         doNothing().when(httpComponentServiceSpy).traceEmptyVersion(actionExecution, "", 0L);
-
-
-        Whitebox.setInternalState(ActionParameterService.class, "instance", actionParameterServiceSpy);
-        Whitebox.setInternalState(HttpComponentService.class, "instance", httpComponentServiceSpy);
     }
 
     @AfterEach

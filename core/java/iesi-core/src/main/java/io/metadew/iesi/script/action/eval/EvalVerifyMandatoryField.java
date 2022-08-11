@@ -32,6 +32,7 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         private static final String CONNECTION_KEY = "connection";
 
         private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+        private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     // Local
     private String sqlSuccess;
@@ -58,7 +59,7 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         boolean isMandatory = convertIsMandatory(getParameterResolvedValue(IS_MANDATORY_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
+        Connection connection = connectionConfiguration.get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
         Database database = databaseHandler.getDatabase(connection);
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory);

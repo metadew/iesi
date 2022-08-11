@@ -18,16 +18,18 @@ import java.util.stream.Collectors;
 @ConditionalOnWebApplication
 public class ActionTypeController {
 
-    private IActionTypeDtoService actionTypeDtoService;
+    private final  IActionTypeDtoService actionTypeDtoService;
+    private final MetadataActionTypesConfiguration metadataActionTypesConfiguration;
 
     @Autowired
-    ActionTypeController(IActionTypeDtoService actionTypeDtoService) {
+    ActionTypeController(IActionTypeDtoService actionTypeDtoService, MetadataActionTypesConfiguration metadataActionTypesConfiguration) {
         this.actionTypeDtoService = actionTypeDtoService;
+        this.metadataActionTypesConfiguration = metadataActionTypesConfiguration;
     }
 
     @GetMapping("")
     public List<ActionTypeDto> getAll() {
-        return MetadataActionTypesConfiguration.getInstance().getActionTypes()
+        return metadataActionTypesConfiguration.getActionTypes()
                 .entrySet()
                 .stream()
                 .map(entry -> actionTypeDtoService.convertToDto(entry.getValue(), entry.getKey()))
@@ -36,7 +38,7 @@ public class ActionTypeController {
 
     @GetMapping("/{name}")
     public ActionTypeDto getByName(@PathVariable String name) {
-        return MetadataActionTypesConfiguration.getInstance().getActionType(name)
+        return metadataActionTypesConfiguration.getActionType(name)
                 .map(actionType -> actionTypeDtoService.convertToDto(actionType, name))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Could not find action type " + name));

@@ -11,7 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -19,20 +21,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
+@Component
 public class ComponentTraceConfiguration extends Configuration<ComponentTrace, ComponentTraceKey> {
 
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
 
-    private static ComponentTraceConfiguration INSTANCE;
-
-    public synchronized static ComponentTraceConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ComponentTraceConfiguration();
-        }
-        return INSTANCE;
+    public ComponentTraceConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, MetadataTablesConfiguration metadataTablesConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
     }
 
-    private ComponentTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getTraceMetadataRepository());
     }
 
 
@@ -104,16 +106,16 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
     @Override
     public void delete(ComponentTraceKey metadataKey) {
         log.trace("deleting " + metadataKey.toString());
-        String deleteTraceComponent = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponent").getName() +
+        String deleteTraceComponent = "DELETE FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceComponent").getName() +
                 " WHERE ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceComponent);
-        String deleteTraceHttpComponent = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponent").getName() +
+        String deleteTraceHttpComponent = "DELETE FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponent").getName() +
                 " WHERE ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponent);
-        String deleteTraceHttpComponentHeader = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
+        String deleteTraceHttpComponentHeader = "DELETE FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
                 " WHERE HTTP_COMP_ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponentHeader);
-        String deleteTraceHttpComponentQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
+        String deleteTraceHttpComponentQuery = "DELETE FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
                 " WHERE HTTP_COMP_ID = " + SQLTools.getStringForSQL(metadataKey.getUuid().toString()) + ";";
         getMetadataRepository().executeUpdate(deleteTraceHttpComponentQuery);
     }
@@ -121,7 +123,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
     @Override
     public void insert(ComponentTrace metadata) {
         log.trace(MessageFormat.format("Inserting {0}.", metadata.toString()));
-        String insertStatementTraceComponent = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceComponent").getName() +
+        String insertStatementTraceComponent = "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceComponent").getName() +
                 " (ID, RUN_ID,  PRC_ID, ACTION_PAR_NM, COMP_TYP_NM, COMP_NM, COMP_DSC, COMP_VRS_NB ) VALUES (" +
                 SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
                 SQLTools.getStringForSQL(metadata.getRunId()) + ", " +
@@ -135,7 +137,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
         getMetadataRepository().executeUpdate(insertStatementTraceComponent);
 
         if (metadata instanceof HttpComponentTrace) {
-            String insertStatementHttpTraceComponent = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponent").getName() +
+            String insertStatementHttpTraceComponent = "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponent").getName() +
                     " (ID, CONN_NM, TYPE, ENDPOINT ) VALUES ( "
                     +
                     SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString()) + ", " +
@@ -147,7 +149,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
 
             ((HttpComponentTrace) metadata).getHttpComponentHeaderTrace().forEach(httpComponentHeaderTrace ->
                     getMetadataRepository().executeUpdate(
-                            "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
+                            "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
                                     " (ID, HTTP_COMP_ID, NAME, VALUE ) VALUES ( " +
                                     SQLTools.getStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentHeaderTrace.getHttpComponentHeaderID().getUuid().toString()) + ", " +
@@ -159,7 +161,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
 
             ((HttpComponentTrace) metadata).getHttpComponentQueries().forEach(httpComponentTrace ->
                     getMetadataRepository().executeUpdate(
-                            "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
+                            "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
                                     " (ID, HTTP_COMP_ID,  NAME, VALUE ) VALUES  ( " +
                                     SQLTools.getStringForSQL(httpComponentTrace.getMetadataKey().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentTrace.getHttpComponentQueryID().getUuid().toString()) + ", " +

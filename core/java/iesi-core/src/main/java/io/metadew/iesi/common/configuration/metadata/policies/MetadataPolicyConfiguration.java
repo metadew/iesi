@@ -1,7 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.policies;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.executionRequests.ExecutionRequestPolicyDefinition;
@@ -16,25 +15,19 @@ import java.util.Map;
 
 @Log4j2
 public class MetadataPolicyConfiguration {
-    private static MetadataPolicyConfiguration instance;
     private static final String POLICIES = "policies";
 
     private List<ScriptPolicyDefinition> scriptsPolicyDefinitions;
     private List<ExecutionRequestPolicyDefinition> executionRequestsPolicyDefinitions;
 
-    private Configuration configuration = SpringContext.getBean(Configuration.class);
+    private final Configuration configuration;
 
-    public static synchronized MetadataPolicyConfiguration getInstance() {
-        if (instance == null) {
-            instance = new MetadataPolicyConfiguration();
-        }
-        return instance;
-    }
 
-    private MetadataPolicyConfiguration() {
+    private MetadataPolicyConfiguration(Configuration configuration) {
+        this.configuration = configuration;
         if (containsConfiguration()) {
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<?, ?> frameworkSettingsConfiguration = (Map<?, ?>) ((Map<?, ?>) configuration.getProperties()
+            Map<?, ?> frameworkSettingsConfiguration = (Map<?, ?>) ((Map<?, ?>) this.configuration.getProperties()
                     .get(MetadataConfiguration.configurationKey))
                     .get(POLICIES);
 

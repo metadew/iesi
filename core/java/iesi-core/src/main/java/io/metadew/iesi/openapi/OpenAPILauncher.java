@@ -1,5 +1,6 @@
 package io.metadew.iesi.openapi;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +13,8 @@ public class OpenAPILauncher {
     private static final String SOURCE = "source";
     private static final String TARGET = "target";
     private static final String LOAD = "load";
+    //TODO: DEPENDENCY INJECTION ONCE THIS CLASS BECOME A SPRING APP
+    private static final OpenAPIGenerator openApiGenerator = SpringContext.getBean(OpenAPIGenerator.class);
 
     public static void main(String[] args) throws ParseException {
         ThreadContext.clearAll();
@@ -22,10 +25,7 @@ public class OpenAPILauncher {
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
 
-        // Configuration.getInstance();
-        // FrameworkCrypto.getInstance();
-
-        TransformResult transformResult = OpenAPIGenerator.getInstance().transformFromFile(line.getOptionValue(SOURCE));
-        OpenAPIGenerator.getInstance().generate(transformResult, line.getOptionValue(TARGET),line.hasOption(LOAD));
+        TransformResult transformResult = openApiGenerator.transformFromFile(line.getOptionValue(SOURCE));
+        openApiGenerator.generate(transformResult, line.getOptionValue(TARGET),line.hasOption(LOAD));
     }
 }

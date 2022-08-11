@@ -1,21 +1,19 @@
 package io.metadew.iesi.common.configuration.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.common.configuration.metadata.objects.MetadataObjectsConfiguration;
-import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.metadata.repository.*;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Log4j2
+@org.springframework.context.annotation.Configuration
 public class MetadataRepositoryConfiguration {
 
     private static MetadataRepositoryConfiguration INSTANCE;
@@ -25,13 +23,26 @@ public class MetadataRepositoryConfiguration {
     @Getter
     private List<MetadataRepository> metadataRepositories;
 
-    private Configuration configuration = SpringContext.getBean(Configuration.class);
+    private final Configuration configuration;
+    private final MetadataRepositoryService metadataRepositoryService;
 
-    public synchronized static MetadataRepositoryConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataRepositoryConfiguration();
+    public MetadataRepositoryConfiguration(Configuration configuration, MetadataRepositoryService metadataRepositoryService) {
+        this.configuration = configuration;
+        this.metadataRepositoryService = metadataRepositoryService;
+    }
+
+
+    @PostConstruct
+    private void postConstruct() {
+        // init the MetadataTables and MetadataObjects configuration before creating the metadata repositories
+        metadataRepositories = new ArrayList<>();
+        metadataRepositoryDefinitions = new ArrayList<>();
+        if (containsConfiguration()) {
+            loadConfigurations();
+            convertConfigurations();
+        } else {
+            log.warn("no metadata repository configurations found on system variable, classpath or filesystem");
         }
-        return INSTANCE;
     }
 
     public ConnectivityMetadataRepository getConnectivityMetadataRepository() {
@@ -83,23 +94,9 @@ public class MetadataRepositoryConfiguration {
                 .orElseThrow(() -> new RuntimeException("ExecutionServerMetadataRepository not configured"));
     }
 
-    private MetadataRepositoryConfiguration() {
-        // init the MetadataTables and MetadataObjects configuration before creating the metadata repositories
-        MetadataTablesConfiguration.getInstance();
-        MetadataObjectsConfiguration.getInstance();
-        metadataRepositories = new ArrayList<>();
-        metadataRepositoryDefinitions = new ArrayList<>();
-        if (containsConfiguration()) {
-            loadConfigurations();
-            convertConfigurations();
-        } else {
-            log.warn("no metadata repository configurations found on system variable, classpath or filesystem");
-        }
-    }
-
     private void convertConfigurations() {
         for (MetadataRepositoryDefinition metadataRepositoryDefinition : metadataRepositoryDefinitions) {
-            metadataRepositories.addAll(MetadataRepositoryService.getInstance().convert(metadataRepositoryDefinition));
+            metadataRepositories.addAll(metadataRepositoryService.convert(metadataRepositoryDefinition));
         }
     }
 

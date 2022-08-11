@@ -18,8 +18,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class SecurityGroupDtoResourceAssembler extends RepresentationModelAssemblerSupport<SecurityGroup, SecurityGroupDto> {
 
-    public SecurityGroupDtoResourceAssembler() {
+    private final TeamConfiguration teamConfiguration;
+
+    public SecurityGroupDtoResourceAssembler(TeamConfiguration teamConfiguration) {
         super(SecurityGroupController.class, SecurityGroupDto.class);
+        this.teamConfiguration = teamConfiguration;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class SecurityGroupDtoResourceAssembler extends RepresentationModelAssemb
     }
 
     private SecurityGroupTeamDto convertToDto(TeamKey teamKey) {
-        Team team = TeamConfiguration.getInstance().get(teamKey)
+        Team team = teamConfiguration.get(teamKey)
                 .orElseThrow(() -> new MetadataDoesNotExistException(teamKey));
         return new SecurityGroupTeamDto(
                 team.getMetadataKey().getUuid(),

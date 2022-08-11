@@ -12,9 +12,11 @@ import org.springframework.stereotype.Component;
 public final class HostConnectionTools {
 
     private final ConnectionOperation connectionOperation;
+    private final ConnectionConfiguration connectionConfiguration;
 
-    public HostConnectionTools(ConnectionOperation connectionOperation) {
+    public HostConnectionTools(ConnectionOperation connectionOperation, ConnectionConfiguration connectionConfiguration) {
         this.connectionOperation = connectionOperation;
+        this.connectionConfiguration = connectionConfiguration;
     }
 
     public boolean isOnLocalhost(String connectionName, String environmentName) {
@@ -23,7 +25,7 @@ public final class HostConnectionTools {
         } else if (connectionName.equalsIgnoreCase("localhost")) {
             return true;
         } else {
-            Connection connection = ConnectionConfiguration.getInstance()
+            Connection connection = connectionConfiguration
                     .get(new ConnectionKey(connectionName, environmentName))
                     .orElseThrow(() -> new RuntimeException(String.format("Unable to find connection %s", new ConnectionKey(connectionName, environmentName))));
             HostConnection hostConnection = connectionOperation.getHostConnection(connection);

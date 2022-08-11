@@ -7,10 +7,11 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.ComponentBuild;
 import io.metadew.iesi.metadata.definition.component.key.ComponentBuildKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -20,22 +21,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ComponentBuildConfiguration extends Configuration<ComponentBuild, ComponentBuildKey> {
 
     private ComponentBuild componentBuild;
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ComponentBuildConfiguration INSTANCE;
 
-    public synchronized static ComponentBuildConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ComponentBuildConfiguration();
-        }
-        return INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    public ComponentBuildConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ComponentBuildConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDesignMetadataRepository());
     }
 
     @Override

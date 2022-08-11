@@ -14,7 +14,7 @@ public class TestConfiguration {
     @Primary
     @Order(0)
     @DependsOn("frameworkInstance")
-    public MetadataRepositoryConfiguration metadataRepositoryConfiguration() {
-        return MetadataRepositoryConfiguration.getInstance();
+    public MetadataRepositoryConfiguration metadataRepositoryConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        return metadataRepositoryConfiguration;
     }
 }

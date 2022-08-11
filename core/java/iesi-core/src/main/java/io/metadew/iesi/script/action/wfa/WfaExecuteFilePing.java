@@ -45,6 +45,7 @@ public class WfaExecuteFilePing extends ActionTypeExecution {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
 
     public WfaExecuteFilePing(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -65,7 +66,7 @@ public class WfaExecuteFilePing extends ActionTypeExecution {
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         int timeoutInterval = convertTimeoutInterval(getParameterResolvedValue(TIMEOUT_KEY));
         int waitInterval = convertWaitInterval(getParameterResolvedValue(WAIT_KEY));
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = connectionConfiguration
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(InterruptedException::new);
         HostConnection dcConnection = connectionOperation.getHostConnection(connection);

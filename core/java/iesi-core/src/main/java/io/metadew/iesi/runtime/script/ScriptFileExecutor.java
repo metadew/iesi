@@ -16,6 +16,7 @@ import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.script.operation.JsonInputOperation;
 import io.metadew.iesi.script.operation.YamlInputOperation;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -23,19 +24,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Component
 public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionRequest> {
 
-    private static ScriptFileExecutor INSTANCE;
+    private final ImpersonationConfiguration impersonationConfiguration;
+    private final ScriptExecutionConfiguration scriptExecutionConfiguration;
+    private final ScriptResultConfiguration scriptResultConfiguration;
 
-    public synchronized static ScriptFileExecutor getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptFileExecutor();
-        }
-        return INSTANCE;
-    }
-
-    private ScriptFileExecutor() {
-        ScriptResultConfiguration.getInstance();
+    public ScriptFileExecutor(ImpersonationConfiguration impersonationConfiguration,
+                              ScriptExecutionConfiguration scriptExecutionConfiguration,
+                              ScriptResultConfiguration scriptResultConfiguration) {
+        this.impersonationConfiguration = impersonationConfiguration;
+        this.scriptExecutionConfiguration = scriptExecutionConfiguration;
+        this.scriptResultConfiguration = scriptResultConfiguration;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
 
         Map<String, String> impersonations = new HashMap<>();
         scriptExecutionRequest.getImpersonations()
-                .forEach(scriptExecutionRequestImpersonation -> ImpersonationConfiguration.getInstance().get(scriptExecutionRequestImpersonation.getImpersonationKey())
+                .forEach(scriptExecutionRequestImpersonation -> impersonationConfiguration.get(scriptExecutionRequestImpersonation.getImpersonationKey())
                         .ifPresent(impersonation -> impersonation.getParameters()
                                 .forEach(impersonationParameter -> impersonations.put(impersonationParameter.getMetadataKey().getParameterName(), impersonationParameter.getImpersonatedConnection()))));
 
@@ -74,15 +75,15 @@ public class ScriptFileExecutor implements ScriptExecutor<ScriptFileExecutionReq
                 .build();
 
         io.metadew.iesi.metadata.definition.execution.script.ScriptExecution scriptExecution1 = new io.metadew.iesi.metadata.definition.execution.script.ScriptExecution(new ScriptExecutionKey(IdentifierTools.getScriptExecutionRequestIdentifier()), scriptExecutionRequest.getMetadataKey(), scriptExecution.getExecutionControl().getRunId(), ScriptRunStatus.RUNNING, LocalDateTime.now(), null);
-        ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
+        scriptExecutionConfiguration.insert(scriptExecution1);
 
         scriptExecution.execute();
 
-        scriptExecution1.updateScriptRunStatus(ScriptResultConfiguration.getInstance()
+        scriptExecution1.updateScriptRunStatus(scriptResultConfiguration
                 .get(new ScriptResultKey(scriptExecution1.getRunId(), -1L))
                 .map(ScriptResult::getStatus)
                 .orElseThrow(() -> new RuntimeException("Cannot find result of run id: " + scriptExecution1.getRunId())));
         scriptExecution1.setEndTimestamp(LocalDateTime.now());
-        ScriptExecutionConfiguration.getInstance().insert(scriptExecution1);
+        scriptExecutionConfiguration.insert(scriptExecution1);
     }
 }

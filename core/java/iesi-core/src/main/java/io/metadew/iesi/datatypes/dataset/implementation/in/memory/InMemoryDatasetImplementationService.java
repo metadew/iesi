@@ -2,6 +2,7 @@ package io.metadew.iesi.datatypes.dataset.implementation.in.memory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class InMemoryDatasetImplementationService implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
 
     private static InMemoryDatasetImplementationService instance;
+    private final SecurityGroupConfiguration securityGroupConfiguration = SpringContext.getBean(SecurityGroupConfiguration.class);
 
     private InMemoryDatasetImplementationService() {
     }
@@ -191,7 +193,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
 
     @Override
     public InMemoryDatasetImplementation createNewDatasetImplementation(String name, List<String> labels, ExecutionRuntime executionRuntime) {
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC")
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName("PUBLIC")
                 .orElseThrow(() -> new RuntimeException("As the dataset doesn't exist, tried to create new one with the security group PUBLIC, but the group doesn't exist"));
         Dataset dataset = new Dataset(new DatasetKey(), securityGroup.getMetadataKey(), securityGroup.getName(), name, new HashSet<>());
 

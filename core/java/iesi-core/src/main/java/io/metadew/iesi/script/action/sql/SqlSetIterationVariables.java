@@ -26,6 +26,7 @@ public class SqlSetIterationVariables extends ActionTypeExecution {
     private static final String CONNECTION_KEY = "connection";
 
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration configuration = SpringContext.getBean(ConnectionConfiguration.class);
 
 
     public SqlSetIterationVariables(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -43,7 +44,7 @@ public class SqlSetIterationVariables extends ActionTypeExecution {
         String listName = convertListName(getParameterResolvedValue(LIST_KEY));
 
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+        Connection connection = configuration.get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
         Database database = databaseHandler.getDatabase(connection);
         // Run the action

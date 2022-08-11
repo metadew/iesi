@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
@@ -14,6 +15,9 @@ import java.text.MessageFormat;
 
 @Log4j2
 public class DataMetadataRepository extends MetadataRepository {
+
+    private final DatasetConfiguration datasetConfiguration = SpringContext.getBean(DatasetConfiguration.class);
+    private final SecurityGroupService securityGroupService = SpringContext.getBean(SecurityGroupService.class);
 
     public DataMetadataRepository(String instance, RepositoryCoordinator repositoryCoordinator) {
         super(instance, repositoryCoordinator);
@@ -39,16 +43,16 @@ public class DataMetadataRepository extends MetadataRepository {
         log.info(MessageFormat.format("Saving dataset {0} into data repository", dataset.getName()));
         if (dataset.getSecurityGroupKey() == null) {
             log.warn("{0} not linked to a security group, linking it to the public security group");
-            SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
+            SecurityGroup publicSecurityGroup = securityGroupService.get("PUBLIC")
                     .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
             dataset.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
             dataset.setSecurityGroupName(publicSecurityGroup.getName());
         }
-        if (!DatasetConfiguration.getInstance().exists(dataset.getMetadataKey())) {
-            DatasetConfiguration.getInstance().insert(dataset);
+        if (!datasetConfiguration.exists(dataset.getMetadataKey())) {
+            datasetConfiguration.insert(dataset);
         } else {
             log.info(MessageFormat.format("dataset {0} already exists in data repository. Updating to new definition", dataset.getName()));
-            DatasetConfiguration.getInstance().update(dataset);
+            datasetConfiguration.update(dataset);
         }
     }
 

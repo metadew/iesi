@@ -1,5 +1,6 @@
 package io.metadew.iesi.launch;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.FrameworkRuntime;
 import io.metadew.iesi.common.configuration.Configuration;
@@ -70,34 +71,34 @@ public class MetadataLauncher {
 
         switch (type) {
             case "connectivity":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getConnectivityMetadataRepository());
                 break;
             case "control":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getControlMetadataRepository());
                 break;
             case "design":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getDesignMetadataRepository());
                 break;
             case "result":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getResultMetadataRepository());
                 break;
             case "trace":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getTraceMetadataRepository());
                 break;
             case "execution":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getExecutionServerMetadataRepository());
                 break;
             case "data":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getDataMetadataRepository());
                 break;
             case "general":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getConnectivityMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getControlMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getDesignMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getResultMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getTraceMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getExecutionServerMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getDataMetadataRepository());
                 break;
             default:
                 System.out.println("Unknown Option -type (type) = " + type);
@@ -175,7 +176,8 @@ public class MetadataLauncher {
             writeFooterMessage();
         }
 
-        FrameworkInstance.getInstance().shutdown();
+        //TODO: UNCOMMENT WHEN METADATA LAUNCHER WILL BE A SPRING APPLICATION
+        // FrameworkInstance.getInstance().shutdown();
         System.out.println();
         System.out.println("metadata.launcher.end");
         endLauncher(0, exit);

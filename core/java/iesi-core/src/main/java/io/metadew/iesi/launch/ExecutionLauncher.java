@@ -26,7 +26,12 @@ import java.util.Optional;
 @Log4j2
 public class ExecutionLauncher {
 
-    private static Configuration configuration = SpringContext.getBean(Configuration.class);
+    //TODO: DEPENDENCY INJECTIONS WHEN THE LAUNCHER WILL BECOME A SPRING APP
+    private static final Configuration configuration = SpringContext.getBean(Configuration.class);
+    private static final ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration = SpringContext.getBean(ScriptExecutionRequestConfiguration.class);
+    private static final FrameworkInstance frameworkInstance = SpringContext.getBean(FrameworkInstance.class);
+    private static final ScriptExecutorService scriptExecutorService = SpringContext.getBean(ScriptExecutorService.class);
+
 
     public static void main(String[] args) throws ParseException, IOException {
         ThreadContext.clearAll();
@@ -59,7 +64,7 @@ public class ExecutionLauncher {
         if (line.hasOption("scriptExecutionRequestKey")) {
             log.info("Option -scriptExecutionRequestKey (scriptExecutionRequestKey) value = " + line.getOptionValue("scriptExecutionRequestKey"));
             ScriptExecutionRequestKey scriptExecutionRequestKey = new ScriptExecutionRequestKey(line.getOptionValue("scriptExecutionRequestKey"));
-            Optional<ScriptExecutionRequest> optionalScriptExecutionRequest = ScriptExecutionRequestConfiguration.getInstance().get(scriptExecutionRequestKey);
+            Optional<ScriptExecutionRequest> optionalScriptExecutionRequest = scriptExecutionRequestConfiguration.get(scriptExecutionRequestKey);
             if (optionalScriptExecutionRequest.isPresent()) {
                 scriptExecutionRequest = optionalScriptExecutionRequest.get();
             } else {
@@ -72,9 +77,9 @@ public class ExecutionLauncher {
             System.exit(1);
             return;
         }
-        ScriptExecutorService.getInstance().execute(scriptExecutionRequest);
+        scriptExecutorService.execute(scriptExecutionRequest);
 
-        FrameworkInstance.getInstance().shutdown();
+        frameworkInstance.shutdown();
         System.exit(0);
     }
 

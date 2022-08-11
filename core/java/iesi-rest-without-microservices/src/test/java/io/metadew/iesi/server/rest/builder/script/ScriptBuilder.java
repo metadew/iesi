@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.builder.script;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
@@ -92,7 +93,7 @@ public class ScriptBuilder {
             securityGroupName = "DEFAULT";
         }
         if (securityGroupKey == null) {
-            securityGroupKey = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
+            securityGroupKey = SpringContext.getBean(SecurityGroupConfiguration.class).getByName(securityGroupName)
                     .map(SecurityGroup::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("Could not find Security Group with name" + securityGroupName));
         }

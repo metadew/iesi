@@ -1,33 +1,31 @@
 package io.metadew.iesi.common.configuration.metadata.objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.MetadataObject;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
 @Log4j2
+@org.springframework.context.annotation.Configuration
 public class MetadataObjectsConfiguration {
 
-    private static MetadataObjectsConfiguration INSTANCE;
     private static final String metadataTableKey = "objects";
 
     private Map<String, MetadataObject> metadataObjectMap;
-    Configuration configuration = SpringContext.getBean(Configuration.class);
+    private final Configuration configuration;
 
-    public synchronized static MetadataObjectsConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataObjectsConfiguration();
-        }
-        return INSTANCE;
+    public MetadataObjectsConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @SuppressWarnings("unchecked")
-    private MetadataObjectsConfiguration() {
+    @PostConstruct
+    private void postConstruct() {
         metadataObjectMap = new HashMap<>();
         if (containsConfiguration()) {
             Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) configuration.getProperties()

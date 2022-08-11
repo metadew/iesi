@@ -1,5 +1,6 @@
 package io.metadew.iesi.datatypes.dataset;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
@@ -16,6 +17,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,30 +31,38 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = { Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, SecurityGroupConfiguration.class, DatasetService.class })
 class DatasetServiceTest {
 
     SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
 
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private SecurityGroupConfiguration securityGroupConfiguration;
+
+    @Autowired
+    private DatasetService datasetService;
+
     @BeforeEach
     void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()
+        metadataRepositoryConfiguration.getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
 
-        SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(securityGroupKey, "PUBLIC", new HashSet<>(), new HashSet<>()));
+        securityGroupConfiguration.insert(new SecurityGroup(securityGroupKey, "PUBLIC", new HashSet<>(), new HashSet<>()));
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -85,7 +96,7 @@ class DatasetServiceTest {
                     )).collect(Collectors.toSet())
             );
 
-            List<Dataset> datasets = DatasetService.getInstance().importDatasets(jsonContent);
+            List<Dataset> datasets = datasetService.importDatasets(jsonContent);
             List<Dataset> expectedDatasets = Stream.of(dataset).collect(Collectors.toList());
 
             expectedDataset = expectedDatasets.stream().findFirst().get();

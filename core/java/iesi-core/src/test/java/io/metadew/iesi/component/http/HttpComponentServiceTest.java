@@ -1,5 +1,6 @@
 package io.metadew.iesi.component.http;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.http.HttpConnection;
@@ -9,6 +10,7 @@ import io.metadew.iesi.connection.http.request.HttpPostRequest;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.component.Component;
@@ -29,7 +31,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.powermock.reflect.Whitebox;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -42,27 +49,51 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, HttpComponentService.class, HttpConnectionService.class,
+    HttpQueryParameterService.class, HttpConnection.class, ConnectionConfiguration.class, ComponentConfiguration.class})
 class HttpComponentServiceTest {
+
+    @Autowired
+    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    private HttpComponentService httpComponentService;
+
+    @Autowired
+    private ConnectionConfiguration connectionConfiguration;
+
+    @Autowired
+    private ComponentConfiguration componentConfiguration;
+
+    @MockBean
+    private HttpConnection httpConnection;
+
+    @SpyBean
+    private HttpConnectionService httpConnectionServiceSpy;
+
+    @SpyBean
+    private HttpHeaderService httpHeaderServiceSpy;
+
+    @SpyBean
+    private HttpQueryParameterService httpQueryParameterServiceSpy;
 
     @BeforeAll
     static void prepare() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::createAllTables);
     }
 
     @AfterEach
     void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::cleanAllTables);
     }
 
     @AfterAll
     static void teardown() {
-        // Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
+        metadataRepositoryConfiguration
                 .getMetadataRepositories()
                 .forEach(MetadataRepository::dropAllTables);
     }
@@ -71,14 +102,11 @@ class HttpComponentServiceTest {
     void getUriTest() {
         HttpConnection httpConnection = mock(HttpConnection.class);
 
-        HttpConnectionService httpConnectionService = HttpConnectionService.getInstance();
-        HttpConnectionService httpConnectionServiceSpy = Mockito.spy(httpConnectionService);
-        Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", httpConnectionServiceSpy);
         doReturn("http://host")
                 .when(httpConnectionServiceSpy)
                 .getBaseUri(httpConnection);
 
-        assertThat(HttpComponentService.getInstance().getUri(new HttpComponent(
+        assertThat(httpComponentService.getUri(new HttpComponent(
                 "component1",
                 1L,
                 "description",
@@ -94,16 +122,6 @@ class HttpComponentServiceTest {
 
     @Test
     void convertTest() {
-        HttpConnectionService httpConnectionService = HttpConnectionService.getInstance();
-        HttpConnectionService httpConnectionServiceSpy = Mockito.spy(httpConnectionService);
-        Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", httpConnectionServiceSpy);
-        HttpHeaderService httpHeaderService = HttpHeaderService.getInstance();
-        HttpHeaderService httpHeaderServiceSpy = Mockito.spy(httpHeaderService);
-        Whitebox.setInternalState(HttpHeaderService.class, "INSTANCE", httpHeaderServiceSpy);
-        HttpQueryParameterService httpQueryParameterService = HttpQueryParameterService.getInstance();
-        HttpQueryParameterService httpQueryParameterServiceSpy = Mockito.spy(httpQueryParameterService);
-        Whitebox.setInternalState(HttpQueryParameterService.class, "INSTANCE", httpQueryParameterServiceSpy);
-
         ActionRuntime actionRuntime = mock(ActionRuntime.class);
         ActionControl actionControl = mock(ActionControl.class);
         ExecutionControl executionControl = mock(ExecutionControl.class);
@@ -162,7 +180,7 @@ class HttpComponentServiceTest {
                 .when(httpQueryParameterServiceSpy)
                 .convert(new HttpQueryParameterDefinition("version", "2"), actionExecution);
 
-        assertThat(HttpComponentService.getInstance().convert(
+        assertThat(httpComponentService.convert(
                 new HttpComponentDefinition(
                         "component1",
                         1L,
@@ -193,7 +211,7 @@ class HttpComponentServiceTest {
 
     @Test
     void getAndTraceTestRightNameAndVersion() {
-        HttpComponentService httpComponentService = HttpComponentService.getInstance();
+        HttpComponentService httpComponentService = HttpComponentServiceTest.this.httpComponentService;
         HttpComponentService httpComponentServiceSpy = Mockito.spy(httpComponentService);
         ActionExecution actionExecution = mock(ActionExecution.class);
         ExecutionControl executionControl = mock(ExecutionControl.class);
@@ -227,7 +245,7 @@ class HttpComponentServiceTest {
                 new ArrayList<>()
         );
 
-        ConnectionConfiguration.getInstance().insert(new Connection(
+        connectionConfiguration.insert(new Connection(
                 "connectionName",
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -242,7 +260,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList())
 
         ));
-        ComponentConfiguration.getInstance().insert(new Component(
+       componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion1),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -257,7 +275,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList()),
                 new ArrayList<>()
         ));
-        ComponentConfiguration.getInstance().insert(new Component(
+       componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion2),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -278,7 +296,7 @@ class HttpComponentServiceTest {
 
     @Test
     void getAndTraceTestNameAndUnknownVersion() {
-        HttpComponentService httpComponentService = HttpComponentService.getInstance();
+        HttpComponentService httpComponentService = HttpComponentServiceTest.this.httpComponentService;
         HttpComponentService httpComponentServiceSpy = Mockito.spy(httpComponentService);
         ActionExecution actionExecution = mock(ActionExecution.class);
         ExecutionControl executionControl = mock(ExecutionControl.class);
@@ -293,7 +311,7 @@ class HttpComponentServiceTest {
         Mockito.doReturn("/pet").when(httpComponentServiceSpy).resolveEndpoint(anyString(), any(ActionExecution.class));
         Mockito.doReturn("GET").when(httpComponentServiceSpy).resolveType(anyString(), any(ActionExecution.class));
 
-        ConnectionConfiguration.getInstance().insert(new Connection(
+        connectionConfiguration.insert(new Connection(
                 "connectionName",
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -308,7 +326,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList())
 
         ));
-        ComponentConfiguration.getInstance().insert(new Component(
+       componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion1),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -323,7 +341,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList()),
                 new ArrayList<>()
         ));
-        ComponentConfiguration.getInstance().insert(new Component(
+       componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion2),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -346,7 +364,7 @@ class HttpComponentServiceTest {
 
     @Test
     void getAndTraceTestNameAndNoVersion() {
-        HttpComponentService httpComponentService = HttpComponentService.getInstance();
+        HttpComponentService httpComponentService = HttpComponentServiceTest.this.httpComponentService;
         HttpComponentService httpComponentServiceSpy = Mockito.spy(httpComponentService);
         ActionExecution actionExecution = mock(ActionExecution.class);
         ExecutionControl executionControl = mock(ExecutionControl.class);
@@ -397,7 +415,7 @@ class HttpComponentServiceTest {
         Mockito.doReturn("/pet").when(httpComponentServiceSpy).resolveEndpoint(anyString(), any(ActionExecution.class));
         Mockito.doReturn("POST").when(httpComponentServiceSpy).resolveType(anyString(), any(ActionExecution.class));
 
-        ConnectionConfiguration.getInstance().insert(new Connection(
+        connectionConfiguration.insert(new Connection(
                 "connectionName",
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -413,7 +431,7 @@ class HttpComponentServiceTest {
 
         ));
 
-        ComponentConfiguration.getInstance().insert(new Component(
+       componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion1),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -428,7 +446,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList()),
                 new ArrayList<>()
         ));
-        ComponentConfiguration.getInstance().insert(new Component(
+       componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion2),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -444,7 +462,7 @@ class HttpComponentServiceTest {
                 new ArrayList<>()
         ));
 
-        ComponentConfiguration.getInstance().insert(new Component(
+       componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion3),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -465,10 +483,6 @@ class HttpComponentServiceTest {
 
     @Disabled
     void buildHttpRequestTest() throws HttpRequestBuilderException, URISyntaxException {
-        HttpConnection httpConnection = mock(HttpConnection.class);
-        HttpConnectionService httpConnectionService = HttpConnectionService.getInstance();
-        HttpConnectionService httpConnectionServiceSpy = Mockito.spy(httpConnectionService);
-        Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", httpConnectionServiceSpy);
         doReturn("http://host")
                 .when(httpConnectionServiceSpy)
                 .getBaseUri(httpConnection);
@@ -477,7 +491,7 @@ class HttpComponentServiceTest {
         httpGet.addHeader("content-type", "application/json");
         httpGet.addHeader("content-length", "1000");
 
-        assertThat(HttpComponentService.getInstance().buildHttpRequest(new HttpComponent(
+        assertThat(httpComponentService.buildHttpRequest(new HttpComponent(
                 "component1",
                 1L,
                 "description",
@@ -493,9 +507,6 @@ class HttpComponentServiceTest {
 
     @Disabled
     void buildHttpRequestBodyTest() throws HttpRequestBuilderException, URISyntaxException, UnsupportedEncodingException {
-        HttpConnection httpConnection = mock(HttpConnection.class);
-        HttpConnectionService httpConnectionService = HttpConnectionService.getInstance();
-        HttpConnectionService httpConnectionServiceSpy = Mockito.spy(httpConnectionService);
         Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", httpConnectionServiceSpy);
         doReturn("http://host")
                 .when(httpConnectionServiceSpy)
@@ -506,7 +517,7 @@ class HttpComponentServiceTest {
         httpPost.addHeader("content-length", "1000");
         httpPost.setEntity(new StringEntity("body"));
 
-        assertThat(HttpComponentService.getInstance().buildHttpRequest(new HttpComponent(
+        assertThat(httpComponentService.buildHttpRequest(new HttpComponent(
                 "component1",
                 1L,
                 "description",

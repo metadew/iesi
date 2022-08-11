@@ -28,6 +28,7 @@ public class SqlEvaluateResult extends ActionTypeExecution {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public SqlEvaluateResult(ExecutionControl executionControl,
                              ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -41,7 +42,7 @@ public class SqlEvaluateResult extends ActionTypeExecution {
         boolean hasResult = convertHasResult(getParameterResolvedValue(SQL_EXPECTED_RESULT_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
 
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = connectionConfiguration
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 

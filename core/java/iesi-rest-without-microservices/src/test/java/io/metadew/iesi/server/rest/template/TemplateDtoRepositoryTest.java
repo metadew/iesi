@@ -53,7 +53,7 @@ class TemplateDtoRepositoryTest {
 
     @BeforeEach
     void cleanup() {
-        MetadataRepositoryConfiguration.getInstance().clearAllTables();
+        metadataRepositoryConfiguration.clearAllTables();
     }
 
     @Test

@@ -9,6 +9,7 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ScriptLabelDesignTraceConfiguration extends Configuration<ScriptLabelDesignTrace, ScriptLabelDesignTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();

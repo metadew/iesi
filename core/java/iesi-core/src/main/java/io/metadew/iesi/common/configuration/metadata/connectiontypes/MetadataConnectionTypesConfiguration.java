@@ -6,10 +6,12 @@ import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@org.springframework.context.annotation.Configuration
 @Log4j2
 public class MetadataConnectionTypesConfiguration {
 
@@ -19,9 +21,13 @@ public class MetadataConnectionTypesConfiguration {
 
     private final Configuration configuration;
 
-    @SuppressWarnings("unchecked")
-    private MetadataConnectionTypesConfiguration(Configuration configuration) {
+    public MetadataConnectionTypesConfiguration(Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    @SuppressWarnings("unchecked")
+    @PostConstruct
+    private void postConstruct() {
         connectionTypeMap = new HashMap<>();
         if (containsConfiguration()) {
             Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) this.configuration.getProperties()

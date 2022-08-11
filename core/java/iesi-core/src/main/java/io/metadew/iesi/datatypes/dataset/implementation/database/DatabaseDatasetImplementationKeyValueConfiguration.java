@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
@@ -16,11 +17,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Component
 @Log4j2
 public class DatabaseDatasetImplementationKeyValueConfiguration extends Configuration<DatabaseDatasetImplementationKeyValue, DatabaseDatasetImplementationKeyValueKey> {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final MetadataTablesConfiguration metadataTablesConfiguration;
+
+    public DatabaseDatasetImplementationKeyValueConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, MetadataTablesConfiguration metadataTablesConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
+    }
+
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDataMetadataRepository());
+    }
 
     private String existsQuery() {
         return "SELECT " +
@@ -78,18 +91,6 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
                 " SET IMPL_MEM_ID = {0}, KEY ={1}, VALUE = {2}" +
                 " WHERE ID = {3};";
     }
-
-    public DatabaseDatasetImplementationKeyValueConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, MetadataTablesConfiguration metadataTablesConfiguration) {
-        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
-        this.metadataTablesConfiguration = metadataTablesConfiguration;
-    }
-
-
-    @PostConstruct
-    private void postConstruct() {
-        setMetadataRepository(metadataRepositoryConfiguration.getDataMetadataRepository());
-    }
-
 
     @Override
     public boolean exists(DatabaseDatasetImplementationKeyValueKey datasetImplementationKeyValueKey) {

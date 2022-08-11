@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.action.design.ActionParameterDesignTr
 import io.metadew.iesi.metadata.definition.action.design.key.ActionParameterDesignTraceKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Component
 public class ActionParameterDesignTraceConfiguration extends Configuration<ActionParameterDesignTrace, ActionParameterDesignTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -25,7 +27,6 @@ public class ActionParameterDesignTraceConfiguration extends Configuration<Actio
     public ActionParameterDesignTraceConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
-
 
     @PostConstruct
     private void postConstruct() {

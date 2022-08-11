@@ -6,6 +6,8 @@ import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.repository.*;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -14,9 +16,9 @@ import java.util.Map;
 
 @Log4j2
 @org.springframework.context.annotation.Configuration
+@DependsOn({ "metadataTablesConfiguration", "metadataObjectsConfiguration" })
 public class MetadataRepositoryConfiguration {
 
-    private static MetadataRepositoryConfiguration INSTANCE;
     private static final String repositoryTableKey = "repository";
 
     private List<MetadataRepositoryDefinition> metadataRepositoryDefinitions;
@@ -95,6 +97,7 @@ public class MetadataRepositoryConfiguration {
     }
 
     private void convertConfigurations() {
+        System.out.println("AFTER CONVERT: " + metadataRepositoryDefinitions);
         for (MetadataRepositoryDefinition metadataRepositoryDefinition : metadataRepositoryDefinitions) {
             metadataRepositories.addAll(metadataRepositoryService.convert(metadataRepositoryDefinition));
         }

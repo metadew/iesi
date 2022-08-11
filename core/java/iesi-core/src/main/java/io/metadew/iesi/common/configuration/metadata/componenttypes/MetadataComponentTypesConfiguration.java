@@ -28,7 +28,7 @@ public class MetadataComponentTypesConfiguration {
 
     @SuppressWarnings("unchecked")
     @PostConstruct
-    private void postConstruct(Configuration configuration) {
+    private void postConstruct() {
         componentTypeMap = new HashMap<>();
         if (containsConfiguration()) {
             Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) this.configuration.getProperties()

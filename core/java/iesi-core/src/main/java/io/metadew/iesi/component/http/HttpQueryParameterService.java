@@ -1,14 +1,15 @@
 package io.metadew.iesi.component.http;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ActionExecution;
+import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 
+@Service
 public class HttpQueryParameterService implements IHttpQueryParameterService {
 
     private final FrameworkCrypto frameworkCrypto;
@@ -17,12 +18,9 @@ public class HttpQueryParameterService implements IHttpQueryParameterService {
         this.frameworkCrypto = frameworkCrypto;
     }
 
-
-
     public HttpQueryParameter convert(HttpQueryParameterDefinition httpQueryParameterDefinition, ActionExecution actionExecution) {
         return new HttpQueryParameter(httpQueryParameterDefinition.getName(), resolveQueryParameter(httpQueryParameterDefinition.getValue(), actionExecution));
     }
-
 
     private String resolveQueryParameter(String httpQueryParameter, ActionExecution actionExecution) {
         String actionResolvedValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(httpQueryParameter);

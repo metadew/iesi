@@ -3,9 +3,11 @@ package io.metadew.iesi.component.http;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
+import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+@Service
 public class HttpComponentDefinitionService implements IHttpComponentDefinitionService {
 
     private static final String COMPONENT_TYPE = "http.request";

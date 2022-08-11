@@ -6,6 +6,8 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.user.*;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
@@ -15,12 +17,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
+@Component
 public class UserConfiguration extends Configuration<User, UserKey> {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final MetadataTablesConfiguration metadataTablesConfiguration;
     private final TeamListResultSetExtractor teamListResultSetExtractor;
     private final RoleListResultSetExtractor roleListResultSetExtractor;
+
+    public UserConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                             MetadataTablesConfiguration metadataTablesConfiguration,
+                             @Lazy TeamListResultSetExtractor teamListResultSetExtractor,
+                             @Lazy RoleListResultSetExtractor roleListResultSetExtractor) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
+        this.teamListResultSetExtractor = teamListResultSetExtractor;
+        this.roleListResultSetExtractor = roleListResultSetExtractor;
+    }
+
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getControlMetadataRepository());
+    }
 
     private String fetchIdByNameQuery() {
         return "select users.ID as user_id" +
@@ -124,22 +143,6 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                 " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
                 " ON teams.ID = security_group_teams.TEAM_ID " +
                 " WHERE user_roles.ID={0};";
-    }
-
-    public UserConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
-                             MetadataTablesConfiguration metadataTablesConfiguration,
-                             TeamListResultSetExtractor teamListResultSetExtractor,
-                             RoleListResultSetExtractor roleListResultSetExtractor) {
-        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
-        this.metadataTablesConfiguration = metadataTablesConfiguration;
-        this.teamListResultSetExtractor = teamListResultSetExtractor;
-        this.roleListResultSetExtractor = roleListResultSetExtractor;
-    }
-
-
-    @PostConstruct
-    private void postConstruct() {
-        setMetadataRepository(metadataRepositoryConfiguration.getControlMetadataRepository());
     }
 
     @Override

@@ -9,10 +9,12 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.script.Script;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@org.springframework.context.annotation.Configuration
 @Log4j2
 public class MetadataPolicyConfiguration {
     private static final String POLICIES = "policies";
@@ -22,9 +24,12 @@ public class MetadataPolicyConfiguration {
 
     private final Configuration configuration;
 
-
-    private MetadataPolicyConfiguration(Configuration configuration) {
+    public MetadataPolicyConfiguration(Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    @PostConstruct
+    private void postConstruct() {
         if (containsConfiguration()) {
             ObjectMapper objectMapper = new ObjectMapper();
             Map<?, ?> frameworkSettingsConfiguration = (Map<?, ?>) ((Map<?, ?>) this.configuration.getProperties()

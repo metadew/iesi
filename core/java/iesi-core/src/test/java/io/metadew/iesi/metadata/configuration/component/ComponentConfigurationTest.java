@@ -1,19 +1,19 @@
 package io.metadew.iesi.metadata.configuration.component;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +26,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ComponentConfiguration.class,
-        ComponentVersionConfiguration.class, ComponentAttributeConfiguration.class, ComponentParameterConfiguration.class })
+@SpringBootTest(classes = { ComponentConfiguration.class, ComponentParameterConfiguration.class, ComponentVersionConfiguration.class, ComponentAttributeConfiguration.class } )
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ComponentConfigurationTest {
 
-    private DesignMetadataRepository designMetadataRepository;
     private Component component1;
     private Component component2;
     private Component component3;
@@ -49,28 +50,6 @@ class ComponentConfigurationTest {
 
     @Autowired
     private ComponentParameterConfiguration componentParameterConfiguration;
-
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
-
 
     @BeforeEach
     void setup() {
@@ -99,8 +78,6 @@ class ComponentConfigurationTest {
                 .name("comp2")
                 .description("test")
                 .build();
-
-        designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
     }
 
     @Test

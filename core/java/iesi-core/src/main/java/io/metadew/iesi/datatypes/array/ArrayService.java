@@ -2,6 +2,7 @@ package io.metadew.iesi.datatypes.array;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 public class ArrayService implements IDataTypeService<Array> {
 
     private static ArrayService INSTANCE;
+
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     public synchronized static ArrayService getInstance() {
         if (INSTANCE == null) {
@@ -40,9 +43,9 @@ public class ArrayService implements IDataTypeService<Array> {
 
     public Array resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Array", arguments));
-        List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
+        List<String> splittedArguments = dataTypeHandler.splitInstructionArguments(arguments);
         List<DataType> resolvedArguments = splittedArguments.stream()
-                .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
+                .map(argument -> dataTypeHandler.resolve(argument, executionRuntime))
                 .collect(Collectors.toList());
         return new Array(resolvedArguments);
     }
@@ -60,7 +63,7 @@ public class ArrayService implements IDataTypeService<Array> {
         }
 
         for (int i = 0; i < _this.getList().size(); i++) {
-            if (!DataTypeHandler.getInstance().equals(_this.getList().get(i), other.getList().get(i), executionRuntime)) {
+            if (!dataTypeHandler.equals(_this.getList().get(i), other.getList().get(i), executionRuntime)) {
                 return false;
             }
         }
@@ -71,7 +74,7 @@ public class ArrayService implements IDataTypeService<Array> {
         Array array = new Array();
         int elementCounter = 1;
         for (JsonNode element : jsonNode) {
-            array.add(DataTypeHandler.getInstance().resolve(databaseDatasetImplementation, key + "." + elementCounter, element, executionRuntime));
+            array.add(dataTypeHandler.resolve(databaseDatasetImplementation, key + "." + elementCounter, element, executionRuntime));
             elementCounter++;
         }
         return array;

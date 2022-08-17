@@ -27,6 +27,7 @@ public abstract class ActionTypeExecution {
     private final ActionExecution actionExecution;
     private final List<ActionParameterResolvement> actionParameterResolvements = new ArrayList<>();
     private final ActionTypeParameterConfiguration actionTypeParameterConfiguration = SpringContext.getBean(ActionTypeParameterConfiguration.class);
+    private final ActionParameterService actionParameterService = SpringContext.getBean(ActionParameterService.class);
 
     protected ActionTypeExecution(ExecutionControl executionControl,
                         ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -49,7 +50,7 @@ public abstract class ActionTypeExecution {
             } else {
                 getActionParameterResolvements().add(new ActionParameterResolvement(
                         actionParameter.get(),
-                        ActionParameterService.getInstance().getValue(actionParameter.get(), getExecutionControl().getExecutionRuntime(), getActionExecution())));
+                        actionParameterService.getValue(actionParameter.get(), getExecutionControl().getExecutionRuntime(), getActionExecution())));
             }
         }
     }

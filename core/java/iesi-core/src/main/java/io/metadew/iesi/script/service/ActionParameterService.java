@@ -1,6 +1,5 @@
 package io.metadew.iesi.script.service;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -9,25 +8,19 @@ import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
-
-import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Log4j2
+@Service
 public class ActionParameterService {
 
-    private static ActionParameterService instance;
-    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
+    private final FrameworkCrypto frameworkCrypto;
+    private final DataTypeHandler dataTypeHandler;
 
-    public static synchronized ActionParameterService getInstance() {
-        if (instance == null) {
-            instance = new ActionParameterService();
-        }
-        return instance;
+    public ActionParameterService(FrameworkCrypto frameworkCrypto, DataTypeHandler dataTypeHandler) {
+        this.frameworkCrypto = frameworkCrypto;
+        this.dataTypeHandler = dataTypeHandler;
     }
-
-    private ActionParameterService() {
-    }
-
 
     public DataType getValue(ActionParameter actionParameter, ExecutionRuntime executionRuntime, ActionExecution actionExecution) {
         if (actionParameter.getValue() == null) {
@@ -61,7 +54,7 @@ public class ActionParameterService {
 //        }
 
         // Resolve to data type
-        return DataTypeHandler.getInstance().resolve(decryptedInputValue, executionRuntime);
+        return dataTypeHandler.resolve(decryptedInputValue, executionRuntime);
     }
 
     private String lookupSubroutine(String input) {

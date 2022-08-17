@@ -43,6 +43,7 @@ public class FwkExecuteScript extends ActionTypeExecution {
 
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.*)\\s*");
     private final ScriptConfiguration scriptConfiguration = SpringContext.getBean(ScriptConfiguration.class);
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
 
 
@@ -149,7 +150,7 @@ public class FwkExecuteScript extends ActionTypeExecution {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeHandler.resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

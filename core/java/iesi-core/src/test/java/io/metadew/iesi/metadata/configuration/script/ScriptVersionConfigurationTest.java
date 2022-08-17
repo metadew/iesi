@@ -1,17 +1,16 @@
 package io.metadew.iesi.metadata.configuration.script;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
-import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,44 +21,21 @@ import java.util.stream.Stream;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ScriptVersionConfiguration.class })
+@SpringBootTest(classes = ScriptVersionConfiguration.class)
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ScriptVersionConfigurationTest {
 
-    private DesignMetadataRepository designMetadataRepository;
     private ScriptVersion scriptVersion1;
     private ScriptVersion scriptVersion2;
     private ScriptVersion scriptVersion3;
 
     @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-
-    @Autowired
     private ScriptVersionConfiguration scriptVersionConfiguration;
-
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
 
     @BeforeEach
     void setup() {
-        designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         scriptVersion1 = new ScriptVersionBuilder("1", 1)
                 .description("version of script")
                 .build();

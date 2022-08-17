@@ -1,16 +1,23 @@
 package io.metadew.iesi.component.http;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.connection.http.HttpConnection;
 import io.metadew.iesi.connection.http.HttpConnectionService;
 import io.metadew.iesi.connection.http.request.HttpGetRequest;
 import io.metadew.iesi.connection.http.request.HttpPostRequest;
 import io.metadew.iesi.connection.http.request.HttpRequestBuilderException;
+import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentAttributeConfiguration;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentParameterConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentVersionConfiguration;
+import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.component.trace.ComponentTraceConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.trace.ConnectionTraceConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.component.Component;
@@ -24,19 +31,24 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.service.action.ActionParameterTraceService;
+import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
+import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import io.metadew.iesi.script.execution.*;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -49,12 +61,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, HttpComponentService.class, HttpConnectionService.class,
-    HttpQueryParameterService.class, HttpConnection.class, ConnectionConfiguration.class, ComponentConfiguration.class})
+@SpringBootTest(classes = {HttpComponentService.class, ComponentConfiguration.class, ActionParameterTraceConfiguration.class, ActionParameterDesignTraceConfiguration.class, ActionParameterTraceService.class,
+        HttpConnectionService.class, HttpComponentTraceService.class, HttpConnectionTraceService.class, HttpComponentDefinitionService.class, HttpQueryParameterService.class,
+        DataTypeHandler.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class, ComponentTraceConfiguration.class,
+        ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, DataTypeHandler.class, MetadataFieldService.class, ConnectionConfiguration.class,
+        ConnectionParameterConfiguration.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class HttpComponentServiceTest {
-
-    @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
     private HttpComponentService httpComponentService;
@@ -77,27 +92,6 @@ class HttpComponentServiceTest {
     @SpyBean
     private HttpQueryParameterService httpQueryParameterServiceSpy;
 
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
-
     @Test
     void getUriTest() {
         HttpConnection httpConnection = mock(HttpConnection.class);
@@ -116,8 +110,6 @@ class HttpComponentServiceTest {
                 Stream.of(new HttpHeader("content-type", "application/json"), new HttpHeader("content-length", "1000")).collect(Collectors.toList()),
                 Stream.of(new HttpQueryParameter("name", "test"), new HttpQueryParameter("version", "2")).collect(Collectors.toList())
         ))).isEqualTo("http://host/endpoint");
-
-        Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", (HttpConnectionService) null);
     }
 
     @Test
@@ -203,10 +195,6 @@ class HttpComponentServiceTest {
                                 Stream.of(new HttpHeader("content-type", "application/json"), new HttpHeader("content-length", "1000")).collect(Collectors.toList()),
                                 Stream.of(new HttpQueryParameter("name", "test"), new HttpQueryParameter("version", "2")).collect(Collectors.toList())
                         ));
-
-        Whitebox.setInternalState(HttpConnectionService.class, "INSTANCE", (HttpConnectionService) null);
-        Whitebox.setInternalState(HttpHeaderService.class, "INSTANCE", (HttpHeaderService) null);
-        Whitebox.setInternalState(HttpQueryParameterService.class, "INSTANCE", (HttpQueryParameterService) null);
     }
 
     @Test
@@ -260,7 +248,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList())
 
         ));
-       componentConfiguration.insert(new Component(
+        componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion1),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -275,7 +263,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList()),
                 new ArrayList<>()
         ));
-       componentConfiguration.insert(new Component(
+        componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion2),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -326,7 +314,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList())
 
         ));
-       componentConfiguration.insert(new Component(
+        componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion1),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -341,7 +329,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList()),
                 new ArrayList<>()
         ));
-       componentConfiguration.insert(new Component(
+        componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion2),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -431,7 +419,7 @@ class HttpComponentServiceTest {
 
         ));
 
-       componentConfiguration.insert(new Component(
+        componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion1),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -446,7 +434,7 @@ class HttpComponentServiceTest {
                 ).collect(Collectors.toList()),
                 new ArrayList<>()
         ));
-       componentConfiguration.insert(new Component(
+        componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion2),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",
@@ -462,7 +450,7 @@ class HttpComponentServiceTest {
                 new ArrayList<>()
         ));
 
-       componentConfiguration.insert(new Component(
+        componentConfiguration.insert(new Component(
                 new ComponentKey("component1", componentVersion3),
                 new SecurityGroupKey(UUID.randomUUID()),
                 "PUBLIC",

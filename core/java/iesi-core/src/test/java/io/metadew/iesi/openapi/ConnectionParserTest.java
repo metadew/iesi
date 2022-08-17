@@ -1,7 +1,6 @@
 package io.metadew.iesi.openapi;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -9,6 +8,7 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -20,6 +20,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,11 +30,11 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ConnectionParser.class, SecurityGroupConfiguration.class })
-public class ConnectionParserTest {
-
-    @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+@SpringBootTest(classes = { ConnectionParser.class, SecurityGroupService.class, SecurityGroupConfiguration.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
+class ConnectionParserTest {
 
     @Autowired
     private ConnectionParser connectionParser;
@@ -39,38 +42,10 @@ public class ConnectionParserTest {
     @Autowired
     private SecurityGroupConfiguration securityGroupConfiguration;
 
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
-
     @Test
     void parse() throws MalformedURLException {
-        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        securityGroupConfiguration.insert(
-                new SecurityGroup(
-                        securityGroupKey,
-                        "PUBLIC",
-                        new HashSet<>(),
-                        new HashSet<>()
-                )
-        );
+        SecurityGroupKey securityGroupKey =  securityGroupConfiguration.getByName("PUBLIC").get().getMetadataKey();
+
         Info info = new Info()
                 .version("1")
                 .title("Documentation")

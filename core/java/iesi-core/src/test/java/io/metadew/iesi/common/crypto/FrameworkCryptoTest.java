@@ -1,14 +1,15 @@
 package io.metadew.iesi.common.crypto;
 
-import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.Configuration;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
@@ -16,7 +17,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
-@SpringBootTest(classes = { Configuration.class, SpringContext.class, FrameworkCrypto.class })
+@SpringBootTest
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class FrameworkCryptoTest {
 
     @MockBean
@@ -24,10 +28,6 @@ class FrameworkCryptoTest {
 
     @Autowired
     FrameworkCrypto frameworkCrypto;
-
-    @BeforeAll
-    static void setup() {
-    }
 
     @Test
     void testHardcodeKey() {
@@ -60,7 +60,5 @@ class FrameworkCryptoTest {
         // computed with https://www.devglan.com/online-tools/aes-encryption-decryption
         assertThat(frameworkCrypto.encrypt("teststring")).isEqualTo("ENC(+COX3DFR3IWeBvn6seDtWg==)");
         assertThat(frameworkCrypto.decrypt("ENC(+COX3DFR3IWeBvn6seDtWg==)")).isEqualTo("teststring");
-
-        Whitebox.setInternalState(FrameworkCrypto.class, "INSTANCE", (FrameworkCrypto) null);
     }
 }

@@ -20,6 +20,8 @@ public class EvalAssertEquals extends ActionTypeExecution {
     private DataType expectedValue;
     private DataType actualValue;
 
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
+
 
     public EvalAssertEquals(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -35,9 +37,9 @@ public class EvalAssertEquals extends ActionTypeExecution {
     protected boolean executeAction() throws InterruptedException {
         boolean evaluation;
         if (expectedValue instanceof Template && actualValue instanceof Dataset) {
-            evaluation = ((TemplateService) DataTypeHandler.getInstance().getDataTypeService(Template.class)).matches(actualValue, (Template) expectedValue, getExecutionControl().getExecutionRuntime());
+            evaluation = ((TemplateService) dataTypeHandler.getDataTypeService(Template.class)).matches(actualValue, (Template) expectedValue, getExecutionControl().getExecutionRuntime());
         } else {
-            evaluation = DataTypeHandler.getInstance().equals(expectedValue, actualValue, getExecutionControl().getExecutionRuntime());
+            evaluation = dataTypeHandler.equals(expectedValue, actualValue, getExecutionControl().getExecutionRuntime());
         }
 
         if (evaluation) {

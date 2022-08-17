@@ -1,8 +1,6 @@
 package io.metadew.iesi.connection.service;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.FrameworkControl;
-import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.presto.PrestoDatabase;
@@ -13,15 +11,15 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.text.MessageFormat;
 import java.util.UUID;
@@ -31,7 +29,10 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, FrameworkCrypto.class, FrameworkControl.class, DatabaseHandler.class})
+@SpringBootTest
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class DbPrestoConnectionServiceTest {
 
     @Autowired

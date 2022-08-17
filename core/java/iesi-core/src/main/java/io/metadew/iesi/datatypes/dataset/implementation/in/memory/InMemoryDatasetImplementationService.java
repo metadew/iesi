@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 public class InMemoryDatasetImplementationService implements IInMemoryDatasetImplementationService, IDataTypeService<InMemoryDatasetImplementation> {
 
     private static InMemoryDatasetImplementationService instance;
-    private final SecurityGroupConfiguration securityGroupConfiguration = SpringContext.getBean(SecurityGroupConfiguration.class);
 
     private InMemoryDatasetImplementationService() {
     }
@@ -53,10 +52,10 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
     @Override
     public InMemoryDatasetImplementation resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Dataset Implementation", arguments));
-        List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
+        List<String> splittedArguments = SpringContext.getBean(DataTypeHandler.class).splitInstructionArguments(arguments);
         if (splittedArguments.size() == 3 || splittedArguments.size() == 2) {
             List<DataType> resolvedArguments = splittedArguments.stream()
-                    .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
+                    .map(argument -> SpringContext.getBean(DataTypeHandler.class).resolve(argument, executionRuntime))
                     .collect(Collectors.toList());
             String datasetName = convertDatasetName(resolvedArguments.get(0));
             List<String> datasetLabels = convertDatasetLabels(resolvedArguments.get(1), executionRuntime);
@@ -91,7 +90,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeHandler.getInstance().resolve(datasetLabel.trim(), executionRuntime), executionRuntime)));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(SpringContext.getBean(DataTypeHandler.class).resolve(datasetLabel.trim(), executionRuntime), executionRuntime)));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()
@@ -132,7 +131,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
         }
         for (Map.Entry<String, DataType> thisDataItem : thisDataItems.entrySet()) {
             if (!getDataItem(other, thisDataItem.getKey(), executionRuntime)
-                    .map(dataType -> DataTypeHandler.getInstance().equals(dataType, thisDataItem.getValue(), executionRuntime))
+                    .map(dataType -> SpringContext.getBean(DataTypeHandler.class).equals(dataType, thisDataItem.getValue(), executionRuntime))
                     .orElse(false)) {
                 return false;
             }
@@ -193,7 +192,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
 
     @Override
     public InMemoryDatasetImplementation createNewDatasetImplementation(String name, List<String> labels, ExecutionRuntime executionRuntime) {
-        SecurityGroup securityGroup = securityGroupConfiguration.getByName("PUBLIC")
+        SecurityGroup securityGroup = SpringContext.getBean(SecurityGroupConfiguration.class).getByName("PUBLIC")
                 .orElseThrow(() -> new RuntimeException("As the dataset doesn't exist, tried to create new one with the security group PUBLIC, but the group doesn't exist"));
         Dataset dataset = new Dataset(new DatasetKey(), securityGroup.getMetadataKey(), securityGroup.getName(), name, new HashSet<>());
 
@@ -223,7 +222,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
         InMemoryDatasetImplementation inMemoryDatasetImplementation = getObjectDataset(dataset, key, executionRuntime);
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> field = fields.next();
-            DataType object = DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementation, field.getKey(), field.getValue(), executionRuntime);
+            DataType object = SpringContext.getBean(DataTypeHandler.class).resolve(inMemoryDatasetImplementation, field.getKey(), field.getValue(), executionRuntime);
             setDataItem(inMemoryDatasetImplementation, field.getKey(), object);
         }
         return inMemoryDatasetImplementation;
@@ -273,7 +272,7 @@ public class InMemoryDatasetImplementationService implements IInMemoryDatasetImp
         return datasetImplementation.getKeyValues().stream()
                 .collect(Collectors.toMap(
                         InMemoryDatasetImplementationKeyValue::getKey,
-                        inMemoryDatasetImplementationKeyValue -> DataTypeHandler.getInstance()
+                        inMemoryDatasetImplementationKeyValue -> SpringContext.getBean(DataTypeHandler.class)
                                 .resolve(inMemoryDatasetImplementationKeyValue.getValue().toString(), executionRuntime)
                 ));
     }

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.eval;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
@@ -23,6 +24,8 @@ public class EvalListContains extends ActionTypeExecution {
     // Parameters
     private Array list;
     private DataType value;
+
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     public EvalListContains(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -52,14 +55,14 @@ public class EvalListContains extends ActionTypeExecution {
     private boolean executeOperation(Array list, DataType element) throws InterruptedException {
         if (element instanceof Template) {
             for (DataType dataType : list.getList()) {
-                if (((TemplateService) DataTypeHandler.getInstance().getDataTypeService(Template.class)).matches(dataType, (Template) element, getExecutionControl().getExecutionRuntime())) {
+                if (((TemplateService) dataTypeHandler.getDataTypeService(Template.class)).matches(dataType, (Template) element, getExecutionControl().getExecutionRuntime())) {
                     return true;
                 }
             }
             return false;
         } else {
             for (DataType dataType : list.getList()) {
-                if (DataTypeHandler.getInstance().equals(dataType, element, getExecutionControl().getExecutionRuntime())) {
+                if (dataTypeHandler.equals(dataType, element, getExecutionControl().getExecutionRuntime())) {
                     return true;
                 }
             }

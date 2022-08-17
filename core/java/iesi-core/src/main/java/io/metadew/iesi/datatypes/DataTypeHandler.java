@@ -19,13 +19,16 @@ import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Log4j2
+@Service
 public class DataTypeHandler {
 
     private static final String DATATYPE_START_CHARACTERS = "{{";
@@ -34,18 +37,14 @@ public class DataTypeHandler {
 
     private Map<ClassStringPair, IDataTypeService> dataTypeServiceMap;
 
-    private static DataTypeHandler instance;
+    private final FrameworkCrypto frameworkCrypto;
 
-    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
-
-    public static synchronized DataTypeHandler getInstance() {
-        if (instance == null) {
-            instance = new DataTypeHandler();
-        }
-        return instance;
+    public DataTypeHandler(FrameworkCrypto frameworkCrypto) {
+        this.frameworkCrypto = frameworkCrypto;
     }
 
-    private DataTypeHandler() {
+    @PostConstruct
+    private void postConstruct() {
         dataTypeServiceMap = new HashMap<>();
         dataTypeServiceMap.put(new ClassStringPair(TextService.getInstance().keyword(), TextService.getInstance().appliesTo()), TextService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());

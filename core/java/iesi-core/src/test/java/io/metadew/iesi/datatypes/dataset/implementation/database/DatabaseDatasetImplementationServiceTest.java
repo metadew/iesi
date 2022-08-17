@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.DataType;
@@ -11,6 +12,7 @@ import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
@@ -30,6 +32,10 @@ import org.mockito.stubbing.Answer;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.AbstractMap;
 import java.util.HashSet;
@@ -43,12 +49,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = { Configuration.class, SpringContext.class, DatasetConfiguration.class, DatabaseDatasetImplementationKeyValueConfiguration.class })
+@SpringBootTest(classes = { DatasetConfiguration.class, DatasetImplementationConfiguration.class, DatabaseDatasetImplementationKeyValueConfiguration.class, DataTypeHandler.class} )
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 @Log4j2
 class DatabaseDatasetImplementationServiceTest {
 
-    @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
     private DatasetConfiguration datasetConfiguration;
@@ -56,28 +63,11 @@ class DatabaseDatasetImplementationServiceTest {
     @Autowired
     private DatabaseDatasetImplementationKeyValueConfiguration databaseDatasetImplementationKeyValueConfiguration;
 
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
+    @Autowired
+    private DataTypeHandler dataTypeHandler;
 
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
-
-    // public Optional<InMemoryDatasetImplementation> getDatasetImplementation(String name, List<String> labels) {
+    @SpyBean
+    private DataTypeHandler dataTypeHandlerSpy;
 
     @Test
     void testGetDatasetImplementationByDatasetIdAndLabels() {
@@ -121,10 +111,6 @@ class DatabaseDatasetImplementationServiceTest {
 
     @Test
     void testGetDatasetItem() {
-        DataTypeHandler dataTypeHandler = DataTypeHandler.getInstance();
-        DataTypeHandler dataTypeHandlerSpy = Mockito.spy(dataTypeHandler);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandlerSpy);
-
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
 
         doReturn(new Text("value000"))
@@ -155,16 +141,10 @@ class DatabaseDatasetImplementationServiceTest {
         assertThat(DatabaseDatasetImplementationService.getInstance()
                 .getDataItem((DatabaseDatasetImplementation) datasetMap.get("datasetImplementation1"), "key011", executionRuntime))
                 .hasValue(new Text("value011"));
-
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
     void testGetDatasetItems() {
-        DataTypeHandler dataTypeHandler = DataTypeHandler.getInstance();
-        DataTypeHandler dataTypeHandlerSpy = Mockito.spy(dataTypeHandler);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandlerSpy);
-
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
 
         doReturn(new Text("value000"))
@@ -203,8 +183,6 @@ class DatabaseDatasetImplementationServiceTest {
                                 collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey,
                                         AbstractMap.SimpleEntry::getValue))
                 );
-
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
@@ -394,7 +372,7 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key1",
                                 "dataset"
                         ));
-        DataType dataType1 = DataTypeHandler.getInstance()
+        DataType dataType1 = dataTypeHandler
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
         assertThat(dataType1 instanceof DatabaseDatasetImplementation).isTrue();
         assertThat(((DatabaseDatasetImplementation) dataType1).getKeyValues())

@@ -1,18 +1,20 @@
 package io.metadew.iesi.metadata.configuration.environment;
 
 import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,7 +25,10 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, EnvironmentParameterConfiguration.class})
+@SpringBootTest(classes = EnvironmentParameterConfiguration.class)
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class EnvironmentParameterConfigurationTest {
 
     private EnvironmentParameter environmentParameter11;
@@ -32,35 +37,13 @@ class EnvironmentParameterConfigurationTest {
     private EnvironmentParameter environmentParameter2;
 
     @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     @Autowired
     private EnvironmentParameterConfiguration environmentParameterConfiguration;
 
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        // Configuration.getInstance();
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
 
     @BeforeEach
     void setup() {
-        connectivityMetadataRepository = RepositoryTestSetup.getConnectivityMetadataRepository();
         environmentParameter11 = new EnvironmentParameterBuilder("env1", "parameter name 1")
                 .value("parameter value")
                 .build();

@@ -1,8 +1,10 @@
 package io.metadew.iesi.component.http;
 
 import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
@@ -20,6 +22,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,35 +34,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = { Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, HttpComponentDefinitionService.class })
+@SpringBootTest(classes = { HttpComponentDefinitionService.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class})
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class HttpComponentDefinitionServiceTest {
 
     @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-
-    @Autowired
     private HttpComponentDefinitionService httpComponentDefinitionService;
-
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
 
     @Test
     void convertTest() {

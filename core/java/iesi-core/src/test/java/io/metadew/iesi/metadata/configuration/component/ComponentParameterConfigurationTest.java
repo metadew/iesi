@@ -1,17 +1,16 @@
 package io.metadew.iesi.metadata.configuration.component;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
-import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,46 +21,23 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = { Configuration.class, SpringContext.class, ComponentParameterConfiguration.class })
+@SpringBootTest(classes = { ComponentParameterConfiguration.class, })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ComponentParameterConfigurationTest {
 
-    private DesignMetadataRepository designMetadataRepository;
     private ComponentParameter componentParameter11;
     private ComponentParameter componentParameter12;
     private ComponentParameter componentParameter2;
     private ComponentParameter componentParameter3;
 
-    @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
     private ComponentParameterConfiguration componentParameterConfiguration;
 
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
-
-
     @BeforeEach
     void setup() {
-        this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         componentParameter11 = new ComponentParameterBuilder("1", 1, "parameter name 1")
                 .value("value")
                 .build();

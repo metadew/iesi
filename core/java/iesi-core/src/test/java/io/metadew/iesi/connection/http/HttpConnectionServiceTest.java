@@ -1,12 +1,19 @@
 package io.metadew.iesi.connection.http;
 
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.trace.ConnectionTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
+import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
+import io.metadew.iesi.openapi.ComponentParser;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.assertj.core.api.Assertions;
@@ -16,6 +23,9 @@ import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,7 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = {Configuration.class, HttpConnectionService.class, ConnectionConfiguration.class })
+@SpringBootTest(classes = { HttpConnectionService.class, ConnectionConfiguration.class, HttpConnectionTraceService.class, ConnectionTraceConfiguration.class, ConnectionParameterConfiguration.class})
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class HttpConnectionServiceTest {
 
     @Autowired

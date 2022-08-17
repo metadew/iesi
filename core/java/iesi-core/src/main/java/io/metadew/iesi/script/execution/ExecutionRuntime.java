@@ -387,6 +387,7 @@ public class ExecutionRuntime {
      * We will move only here when stable
      */
     public LookupResult resolveConceptLookup(String input) {
+        System.out.println("NANI ?");
         LOGGER.trace(MessageFormat.format("concept.lookup.resolve=resolving {0} for concept lookup instructions", input));
         LookupResult lookupResult = new LookupResult();
         lookupResult.setInputValue(input);

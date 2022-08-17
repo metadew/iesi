@@ -11,9 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import oracle.ucp.proxy.annotation.Post;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -32,7 +32,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
         this.metadataTablesConfiguration = metadataTablesConfiguration;
     }
 
-    @Post
+    @PostConstruct
     private void postConstruct() {
         setMetadataRepository(metadataRepositoryConfiguration.getTraceMetadataRepository());
     }

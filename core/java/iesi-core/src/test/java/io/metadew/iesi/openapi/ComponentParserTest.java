@@ -1,8 +1,6 @@
 package io.metadew.iesi.openapi;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
@@ -10,30 +8,33 @@ import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
-import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = { Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, SecurityGroupConfiguration.class, ComponentParser.class })
+@SpringBootTest(classes = { ComponentParser.class, SecurityGroupService.class, SecurityGroupConfiguration.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ComponentParserTest {
 
     private OpenAPI openAPI;
     private long componentVersion;
-
-    @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
     private SecurityGroupConfiguration securityGroupConfiguration;
@@ -41,12 +42,6 @@ class ComponentParserTest {
     @Autowired
     private ComponentParser componentParser;
 
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
 
     @BeforeEach
     void setup() {
@@ -67,20 +62,6 @@ class ComponentParserTest {
                 .components(new Components()
                         .securitySchemes(securitySchemeMap));
         this.componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
     }
 
     @Test
@@ -177,15 +158,6 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithStringVersion() {
-        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        securityGroupConfiguration.insert(
-                new SecurityGroup(
-                        securityGroupKey,
-                        "PUBLIC",
-                        new HashSet<>(),
-                        new HashSet<>()
-                )
-        );
         List<String> messages = Collections.singletonList("The version should be a number");
         openAPI.getInfo().setVersion("SNAPSHOT-1.1");
 
@@ -195,15 +167,6 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithLongVersion() {
-        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        securityGroupConfiguration.insert(
-                new SecurityGroup(
-                        securityGroupKey,
-                        "PUBLIC",
-                        new HashSet<>(),
-                        new HashSet<>()
-                )
-        );
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()
@@ -220,15 +183,6 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithSemanticVersion() {
-        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        securityGroupConfiguration.insert(
-                new SecurityGroup(
-                        securityGroupKey,
-                        "PUBLIC",
-                        new HashSet<>(),
-                        new HashSet<>()
-                )
-        );
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()
@@ -245,15 +199,6 @@ class ComponentParserTest {
 
     @Test
     void testComponentWithSemanticVersion() {
-        SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
-        securityGroupConfiguration.insert(
-                new SecurityGroup(
-                        securityGroupKey,
-                        "PUBLIC",
-                        new HashSet<>(),
-                        new HashSet<>()
-                )
-        );
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()

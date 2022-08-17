@@ -39,6 +39,8 @@ public class HttpComponentService implements IHttpComponentService {
     private final HttpConnectionTraceService httpConnectionTraceService;
     private final HttpComponentDefinitionService httpComponentDefinitionService;
     private final HttpQueryParameterService httpQueryParameterService;
+    private final DataTypeHandler dataTypeHandler;
+    private final HttpHeaderService httpHeaderService;
 
     public HttpComponentService(FrameworkCrypto frameworkCrypto,
                                 ComponentConfiguration componentConfiguration,
@@ -48,7 +50,9 @@ public class HttpComponentService implements IHttpComponentService {
                                 HttpComponentTraceService httpComponentTraceService,
                                 HttpConnectionTraceService httpConnectionTraceService,
                                 HttpComponentDefinitionService httpComponentDefinitionService,
-                                HttpQueryParameterService httpQueryParameterService) {
+                                HttpQueryParameterService httpQueryParameterService,
+                                DataTypeHandler dataTypeHandler,
+                                HttpHeaderService httpHeaderService) {
         this.frameworkCrypto = frameworkCrypto;
         this.componentConfiguration = componentConfiguration;
         this.actionParameterDesignTraceConfiguration = actionParameterDesignTraceConfiguration;
@@ -58,6 +62,8 @@ public class HttpComponentService implements IHttpComponentService {
         this.httpConnectionTraceService = httpConnectionTraceService;
         this.httpComponentDefinitionService = httpComponentDefinitionService;
         this.httpQueryParameterService = httpQueryParameterService;
+        this.dataTypeHandler = dataTypeHandler;
+        this.httpHeaderService = httpHeaderService;
     }
 
 
@@ -129,7 +135,7 @@ public class HttpComponentService implements IHttpComponentService {
                 resolveEndpoint(httpComponentDefinition.getEndpoint(), actionExecution),
                 resolveType(httpComponentDefinition.getType(), actionExecution),
                 httpComponentDefinition.getHeaders().stream()
-                        .map(header -> HttpHeaderService.getInstance().convert(header, actionExecution))
+                        .map(header -> httpHeaderService.convert(header, actionExecution))
                         .collect(Collectors.toList()),
                 httpComponentDefinition.getQueryParameters().stream()
                         .map(queryParameter -> httpQueryParameterService.convert(queryParameter, actionExecution))
@@ -151,7 +157,7 @@ public class HttpComponentService implements IHttpComponentService {
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
         String decryptedInputValue = frameworkCrypto.resolve(resolvedInputValue);
-        return convertEndpointDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
+        return convertEndpointDatatype(dataTypeHandler.resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 
     protected String resolveType(String type, ActionExecution actionExecution) {
@@ -160,7 +166,7 @@ public class HttpComponentService implements IHttpComponentService {
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
         String decryptedInputValue = frameworkCrypto.resolve(resolvedInputValue);
-        return convertTypeDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
+        return convertTypeDatatype(dataTypeHandler.resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 
     private String convertTypeDatatype(DataType type) {

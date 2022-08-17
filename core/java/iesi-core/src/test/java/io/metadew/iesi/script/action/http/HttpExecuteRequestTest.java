@@ -1,28 +1,45 @@
 package io.metadew.iesi.script.action.http;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.component.http.HttpComponent;
-import io.metadew.iesi.component.http.HttpComponentService;
-import io.metadew.iesi.component.http.HttpHeader;
-import io.metadew.iesi.component.http.HttpQueryParameter;
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
+import io.metadew.iesi.component.http.*;
 import io.metadew.iesi.connection.http.HttpConnection;
+import io.metadew.iesi.connection.http.HttpConnectionService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.performance.ActionPerformanceConfiguration;
+import io.metadew.iesi.metadata.configuration.action.trace.ActionParameterTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentAttributeConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentParameterConfiguration;
+import io.metadew.iesi.metadata.configuration.component.ComponentVersionConfiguration;
+import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.component.trace.ComponentTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.trace.ConnectionTraceConfiguration;
+import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.service.action.ActionParameterTraceService;
+import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
+import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import io.metadew.iesi.script.execution.*;
 import io.metadew.iesi.script.service.ActionParameterService;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +50,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, ActionParameterService.class, HttpComponentService.class })
+@SpringBootTest(classes = { ActionParameterService.class, HttpComponentService.class, ComponentConfiguration.class, ActionParameterTraceConfiguration.class, ActionParameterDesignTraceConfiguration.class, ActionParameterTraceService.class,
+        HttpConnectionService.class, HttpComponentTraceService.class, HttpConnectionTraceService.class, HttpComponentDefinitionService.class, HttpQueryParameterService.class,
+        DataTypeHandler.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class, ComponentTraceConfiguration.class,
+        ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, DataTypeHandler.class, MetadataFieldService.class, ConnectionConfiguration.class,
+        ConnectionParameterConfiguration.class, HttpHeaderService.class, ActionTypeParameterConfiguration.class, MetadataActionTypesConfiguration.class, ActionPerformanceLogger.class, ActionPerformanceConfiguration.class})
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class HttpExecuteRequestTest {
 
     ExecutionControl executionControl;
@@ -66,12 +90,6 @@ class HttpExecuteRequestTest {
         when(actionExecution.getActionControl())
                 .thenReturn(actionControl);
         doNothing().when(httpComponentServiceSpy).traceEmptyVersion(actionExecution, "", 0L);
-    }
-
-    @AfterEach
-    void teardown() {
-        Whitebox.setInternalState(ActionParameterService.class, "instance", (ActionParameterService) null);
-        Whitebox.setInternalState(HttpComponentService.class, "instance", (HttpComponentService) null);
     }
 
     @Test

@@ -1,18 +1,15 @@
 package io.metadew.iesi.metadata.configuration.audit;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
 import io.metadew.iesi.metadata.definition.audit.key.ScriptDesignAuditKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -21,35 +18,14 @@ import java.util.UUID;
 import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ScriptDesignAuditConfiguration.class })
-public class ScriptDesignAuditConfigurationTest {
-
-    @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+@SpringBootTest(classes = ScriptDesignAuditConfiguration.class )
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
+class ScriptDesignAuditConfigurationTest {
 
     @Autowired
     private ScriptDesignAuditConfiguration scriptDesignAuditConfiguration;
-
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
 
     @Test
     void scriptGetAllEmptyTest() throws Exception {

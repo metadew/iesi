@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
@@ -24,6 +25,7 @@ public class ListLookup implements LookupInstruction {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final ExecutionRuntime executionRuntime;
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     public ListLookup(ExecutionRuntime executionRuntime) {
         this.executionRuntime = executionRuntime;
@@ -40,14 +42,14 @@ public class ListLookup implements LookupInstruction {
 //        }
         LOGGER.debug(MessageFormat.format("fetching element {0} of list {1}", arguments[1], arguments[0]));
 
-        Array array = getArray(DataTypeHandler.getInstance().resolve(arguments[0], executionRuntime));
-        DataType elementSelector = DataTypeHandler.getInstance().resolve(arguments[1], executionRuntime);
+        Array array = getArray(dataTypeHandler.resolve(arguments[0], executionRuntime));
+        DataType elementSelector = dataTypeHandler.resolve(arguments[1], executionRuntime);
         if (elementSelector instanceof Text) {
             int index = Integer.parseInt(((Text) elementSelector).getString().trim()) - 1;
             return array.getList().get(index).toString();
         } else if (elementSelector instanceof Template) {
             for (DataType dataType : array.getList()) {
-                if (((TemplateService) DataTypeHandler.getInstance().getDataTypeService(Template.class)).matches(dataType, (Template) elementSelector, executionRuntime)) {
+                if (((TemplateService) dataTypeHandler.getDataTypeService(Template.class)).matches(dataType, (Template) elementSelector, executionRuntime)) {
                     return dataType.toString();
                 }
             }

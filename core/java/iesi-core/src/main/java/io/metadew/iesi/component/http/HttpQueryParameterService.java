@@ -13,9 +13,11 @@ import java.text.MessageFormat;
 public class HttpQueryParameterService implements IHttpQueryParameterService {
 
     private final FrameworkCrypto frameworkCrypto;
+    private final DataTypeHandler dataTypeHandler;
 
-    public HttpQueryParameterService(FrameworkCrypto frameworkCrypto) {
+    public HttpQueryParameterService(FrameworkCrypto frameworkCrypto, DataTypeHandler dataTypeHandler) {
         this.frameworkCrypto = frameworkCrypto;
+        this.dataTypeHandler = dataTypeHandler;
     }
 
     public HttpQueryParameter convert(HttpQueryParameterDefinition httpQueryParameterDefinition, ActionExecution actionExecution) {
@@ -28,7 +30,7 @@ public class HttpQueryParameterService implements IHttpQueryParameterService {
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
         String decryptedInputValue = frameworkCrypto.resolve(resolvedInputValue);
-        return convertQueryParameterDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
+        return convertQueryParameterDatatype(dataTypeHandler.resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 
     private String convertQueryParameterDatatype(DataType header) {

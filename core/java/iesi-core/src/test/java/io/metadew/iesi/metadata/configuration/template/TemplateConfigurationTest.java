@@ -1,8 +1,9 @@
 package io.metadew.iesi.metadata.configuration.template;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.template.matcher.MatcherConfiguration;
+import io.metadew.iesi.metadata.configuration.template.matcher.value.MatcherValueConfiguration;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
@@ -11,10 +12,13 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -24,7 +28,10 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, TemplateConfiguration.class})
+@SpringBootTest(classes = { TemplateConfiguration.class, MatcherConfiguration.class, MatcherValueConfiguration.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class TemplateConfigurationTest {
 
     private Template template1;
@@ -33,34 +40,13 @@ class TemplateConfigurationTest {
     private Template template2;
     private UUID templateUuid2;
 
-    @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
     private TemplateConfiguration templateConfiguration;
 
-    @BeforeAll
-    static void prepare() {
-        // Configuration.getInstance();
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
+    @Autowired
+    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        // Configuration.getInstance();
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
     @BeforeEach
     void initializeTemplates() {
         templateUuid1 = UUID.randomUUID();

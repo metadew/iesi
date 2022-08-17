@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.data;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes._null.Null;
@@ -31,6 +32,8 @@ public class DataOutputDataset extends ActionTypeExecution {
     private static final String DATASET_NAME_KEY = "name";
     private static final String DATASET_LABELS_KEY = "labels";
     private static final String DATASET_ON_SCREEN_KEY = "onScreen";
+
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     // Parameters
 
@@ -67,7 +70,7 @@ public class DataOutputDataset extends ActionTypeExecution {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeHandler.getInstance().resolve(datasetLabel.trim(), executionRuntime), executionRuntime)));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeHandler.resolve(datasetLabel.trim(), executionRuntime), executionRuntime)));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()

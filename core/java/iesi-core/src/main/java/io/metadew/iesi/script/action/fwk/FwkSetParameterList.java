@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.fwk;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
@@ -24,6 +25,8 @@ public class FwkSetParameterList extends ActionTypeExecution {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.*)\\s*");
 
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
+
     public FwkSetParameterList(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
@@ -47,7 +50,7 @@ public class FwkSetParameterList extends ActionTypeExecution {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeHandler.resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
             return parameterMap;
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

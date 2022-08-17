@@ -1,12 +1,19 @@
 package io.metadew.iesi.datatypes.template;
 
 import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
+import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
+import io.metadew.iesi.metadata.configuration.template.matcher.MatcherConfiguration;
+import io.metadew.iesi.metadata.configuration.template.matcher.value.MatcherValueConfiguration;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.definition.template.matcher.Matcher;
@@ -25,6 +32,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -38,8 +48,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = { Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class })
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = { TemplateConfiguration.class, MatcherConfiguration.class, MatcherValueConfiguration.class, DataTypeHandler.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class TemplateServiceTest {
 
     private Template template1;
@@ -52,28 +64,7 @@ class TemplateServiceTest {
     private UUID templateUuid2;
 
     @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
+    private TemplateConfiguration templateConfiguration;
 
     @BeforeEach
     void initializeTemplates() {
@@ -291,7 +282,7 @@ class TemplateServiceTest {
 
     @Test
     void resolveTest() {
-        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template1);
+        templateConfiguration.insert(template1);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
 
         when(executionRuntime.resolveVariables("template1"))
@@ -318,7 +309,7 @@ class TemplateServiceTest {
 
     @Test
     void matchesSuccessfulTest() {
-        metadataRepositoryConfiguration.getDesignMetadataRepository().save(template1);
+        templateConfiguration.insert(template1);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
         when(executionRuntime.resolveVariables(anyString()))
                 .thenReturn("value2");

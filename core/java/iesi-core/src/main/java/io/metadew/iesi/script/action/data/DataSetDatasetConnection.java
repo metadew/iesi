@@ -51,6 +51,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     private final SecurityGroupConfiguration securityGroupConfiguration = SpringContext.getBean(SecurityGroupConfiguration.class);
     private final DatasetConfiguration datasetConfiguration = SpringContext.getBean(DatasetConfiguration.class);
     private final DatasetImplementationConfiguration datasetImplementationConfiguration = SpringContext.getBean(DatasetImplementationConfiguration.class);
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     public DataSetDatasetConnection(ExecutionControl executionControl,
                                     ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -140,7 +141,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeHandler.getInstance().resolve(datasetLabel.trim(), getExecutionControl().getExecutionRuntime()))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(dataTypeHandler.resolve(datasetLabel.trim(), getExecutionControl().getExecutionRuntime()))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()

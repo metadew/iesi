@@ -1,23 +1,23 @@
 package io.metadew.iesi.metadata.configuration.script;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
+import io.metadew.iesi.metadata.configuration.action.ActionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -30,17 +30,16 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, MetadataRepositoryConfiguration.class, ScriptConfiguration.class, ActionConfiguration.class,
-        ScriptVersionConfiguration.class, ScriptParameterConfiguration.class })
+@SpringBootTest(classes = { ScriptConfiguration.class, ScriptVersionConfiguration.class, ScriptParameterConfiguration.class, ScriptLabelConfiguration.class,
+        ActionConfiguration.class, ActionParameterConfiguration.class, })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ScriptConfigurationTest {
 
-    private DesignMetadataRepository designMetadataRepository;
     private Script script11;
     private Script script12;
     private Script script2;
-
-    @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
     private ScriptConfiguration scriptConfiguration;
@@ -53,27 +52,6 @@ class ScriptConfigurationTest {
 
     @Autowired
     private ScriptParameterConfiguration scriptParameterConfiguration;
-
-    @BeforeAll
-    static void prepare() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        metadataRepositoryConfiguration
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
 
     @BeforeEach
     void setup() {

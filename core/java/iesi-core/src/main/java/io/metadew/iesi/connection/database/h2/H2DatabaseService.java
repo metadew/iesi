@@ -27,8 +27,6 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static H2DatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new H2DatabaseService();
@@ -40,36 +38,36 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
     }
 
     public H2Database getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, schemaKey);
         H2DatabaseConnection h2DatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             h2DatabaseConnection = new H2DatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     null,
                     schemaName);
             return new H2Database(h2DatabaseConnection, schemaName);
         }
-        String mode = databaseHandler.getMandatoryParameterWithKey(connection, modeKey);
+        String mode = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, modeKey);
         switch (mode) {
             case embeddedModeKey:
                 h2DatabaseConnection = new H2EmbeddedDatabaseConnection(
-                        databaseHandler.getMandatoryParameterWithKey(connection, fileKey),
+                        SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, fileKey),
                         userName,
                         userPassword,
                         null,
                         schemaName);
                 return new H2Database(h2DatabaseConnection, schemaName);
             case serverModeKey:
-                String host = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
-                int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
+                String host = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+                int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, portKey));
                 h2DatabaseConnection = new H2ServerDatabaseConnection(
                         host,
                         port,
-                        databaseHandler.getMandatoryParameterWithKey(connection, fileKey),
+                        SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, fileKey),
                         userName,
                         userPassword,
                         null,
@@ -77,7 +75,7 @@ public class H2DatabaseService extends SchemaDatabaseService<H2Database> impleme
                 return new H2Database(h2DatabaseConnection, schemaName);
             case memoryModeKey:
                 h2DatabaseConnection = new H2MemoryDatabaseConnection(
-                        databaseHandler.getMandatoryParameterWithKey(connection, databaseKey),
+                        SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, databaseKey),
                         userName,
                         userPassword,
                         null,

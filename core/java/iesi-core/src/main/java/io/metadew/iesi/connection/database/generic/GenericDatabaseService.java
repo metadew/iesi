@@ -19,8 +19,6 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
     private static final String INIT_SQL = "initSql";
     private static GenericDatabaseService instance;
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     private GenericDatabaseService() {
     }
 
@@ -33,11 +31,11 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public GenericDatabase getDatabase(Connection connection) {
-        Optional<String> username = databaseHandler.getOptionalParameterWithKey(connection, USER_KEY);
-        Optional<String> password = databaseHandler.getOptionalParameterWithKey(connection, PASSWORD_KEY);
-        Optional<String> schema = databaseHandler.getOptionalParameterWithKey(connection, SCHEMA_KEY);
-        String connectionURL = databaseHandler.getMandatoryParameterWithKey(connection, CONNECTION_URL_KEY);
-        Optional<String> initSql = databaseHandler.getOptionalParameterWithKey(connection, INIT_SQL);
+        Optional<String> username = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, USER_KEY);
+        Optional<String> password = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, PASSWORD_KEY);
+        Optional<String> schema = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, SCHEMA_KEY);
+        String connectionURL = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, CONNECTION_URL_KEY);
+        Optional<String> initSql = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, INIT_SQL);
 
         GenericDatabaseConnection genericDatabaseConnection = new GenericDatabaseConnection(
                 connectionURL,

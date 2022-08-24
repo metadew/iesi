@@ -21,8 +21,6 @@ public class PrestoDatabaseService extends SchemaDatabaseService<PrestoDatabase>
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static PrestoDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new PrestoDatabaseService();
@@ -34,22 +32,22 @@ public class PrestoDatabaseService extends SchemaDatabaseService<PrestoDatabase>
 
     @Override
     public PrestoDatabase getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, schemaKey);
         PrestoDatabaseConnection prestoDatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             prestoDatabaseConnection = new PrestoDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     schemaName);
             return new PrestoDatabase(prestoDatabaseConnection, schemaName);
         }
 
-        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection,portKey));
-        String catalogName = databaseHandler.getMandatoryParameterWithKey(connection, catalogNameKey);
+        String hostName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection,portKey));
+        String catalogName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, catalogNameKey);
 
         prestoDatabaseConnection = new PrestoDatabaseConnection(
                 hostName,

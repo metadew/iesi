@@ -22,9 +22,6 @@ public class PostgresqlDatabaseService extends SchemaDatabaseService<PostgresqlD
 
     private static PostgresqlDatabaseService instance;
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
-
     private PostgresqlDatabaseService() {
     }
 
@@ -37,22 +34,22 @@ public class PostgresqlDatabaseService extends SchemaDatabaseService<PostgresqlD
 
     @Override
     public PostgresqlDatabase getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, USER_KEY);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, PASSWORD_KEY);
-        Optional<String> schemaName = databaseHandler.getOptionalParameterWithKey(connection, SCHEMA_KEY);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, USER_KEY);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, PASSWORD_KEY);
+        Optional<String> schemaName = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, SCHEMA_KEY);
         PostgresqlDatabaseConnection postgresqlDatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).isPresent()) {
             postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).get(),
                     userName,
                     userPassword,
                     "",
                     schemaName.orElse(null));
             return new PostgresqlDatabase(postgresqlDatabaseConnection, schemaName.orElse(null));
         }
-        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, HOST_KEY);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, PORT_KEY));
-        String databaseName = databaseHandler.getMandatoryParameterWithKey(connection, DATABASE_KEY);
+        String hostName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, HOST_KEY);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, PORT_KEY));
+        String databaseName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, DATABASE_KEY);
 
         postgresqlDatabaseConnection = new PostgresqlDatabaseConnection(hostName,
                 port,

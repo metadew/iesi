@@ -21,8 +21,6 @@ public class MssqlDatabaseService extends SchemaDatabaseService<MssqlDatabase> i
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static MssqlDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MssqlDatabaseService();
@@ -36,13 +34,13 @@ public class MssqlDatabaseService extends SchemaDatabaseService<MssqlDatabase> i
 
     @Override
     public MssqlDatabase getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, schemaKey);
         MssqlDatabaseConnection mssqlDatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             mssqlDatabaseConnection = new MssqlDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     null,
@@ -50,9 +48,9 @@ public class MssqlDatabaseService extends SchemaDatabaseService<MssqlDatabase> i
             return new MssqlDatabase(mssqlDatabaseConnection, schemaName);
         }
 
-        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
-        String databaseName = databaseHandler.getMandatoryParameterWithKey(connection, databaseKey);
+        String hostName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, portKey));
+        String databaseName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, databaseKey);
 
         mssqlDatabaseConnection = new MssqlDatabaseConnection(hostName,
                 port,

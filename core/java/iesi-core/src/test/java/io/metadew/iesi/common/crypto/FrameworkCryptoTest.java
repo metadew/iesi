@@ -2,6 +2,7 @@ package io.metadew.iesi.common.crypto;
 
 import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.Configuration;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
@@ -21,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 @ContextConfiguration(classes = TestConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
+@Disabled
 class FrameworkCryptoTest {
 
     @MockBean

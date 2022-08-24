@@ -24,8 +24,6 @@ public class Db2DatabaseService extends SchemaDatabaseService<Db2Database> imple
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static Db2DatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new Db2DatabaseService();
@@ -37,22 +35,22 @@ public class Db2DatabaseService extends SchemaDatabaseService<Db2Database> imple
 
     @Override
     public Db2Database getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
-        Optional<String> schemaName = databaseHandler.getOptionalParameterWithKey(connection, schemaKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
+        Optional<String> schemaName = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, schemaKey);
         Db2DatabaseConnection db2DatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             db2DatabaseConnection = new Db2DatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     schemaName.orElse(null));
             return new Db2Database(db2DatabaseConnection, schemaName.orElse(null));
         }
 
-        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection,portKey));
-        String databaseName = databaseHandler.getMandatoryParameterWithKey(connection, databaseKey);
+        String hostName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection,portKey));
+        String databaseName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, databaseKey);
 
         db2DatabaseConnection = new Db2DatabaseConnection(hostName,
                 port,

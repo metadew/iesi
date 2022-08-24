@@ -19,8 +19,6 @@ public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> i
     private static final String DATABASE_KEY = "database";
     private static MysqlDatabaseService INSTANCE;
 
-    private DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     private MysqlDatabaseService() {
     }
 
@@ -33,21 +31,21 @@ public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> i
 
     @Override
     public MysqlDatabase getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, USER_KEY);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, PASSWORD_KEY);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, USER_KEY);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, PASSWORD_KEY);
         MysqlDatabaseConnection mysqlDatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).isPresent()) {
             mysqlDatabaseConnection = new MysqlDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, CONNECTION_URL_KEY).get(),
                     userName,
                     userPassword,
                     ""
             );
             return new MysqlDatabase(mysqlDatabaseConnection);
         }
-        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, HOST_KEY);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, PORT_KEY));
-        String database = databaseHandler.getMandatoryParameterWithKey(connection, DATABASE_KEY);
+        String hostName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, HOST_KEY);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, PORT_KEY));
+        String database = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, DATABASE_KEY);
         mysqlDatabaseConnection = new MysqlDatabaseConnection(
                 hostName,
                 port,

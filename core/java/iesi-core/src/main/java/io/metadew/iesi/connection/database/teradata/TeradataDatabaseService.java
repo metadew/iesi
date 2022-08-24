@@ -20,8 +20,6 @@ public class TeradataDatabaseService extends DatabaseService<TeradataDatabase> i
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static TeradataDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new TeradataDatabaseService();
@@ -33,20 +31,20 @@ public class TeradataDatabaseService extends DatabaseService<TeradataDatabase> i
 
     @Override
     public TeradataDatabase getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
         TeradataDatabaseConnection teradataDatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             teradataDatabaseConnection = new TeradataDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword);
             return new TeradataDatabase(teradataDatabaseConnection);
         }
 
-        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
-        String databaseName = databaseHandler.getMandatoryParameterWithKey(connection, databaseKey);
+        String hostName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, portKey));
+        String databaseName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, databaseKey);
 
         teradataDatabaseConnection = new TeradataDatabaseConnection(hostName, port, databaseName, userName, userPassword);
         return new TeradataDatabase(teradataDatabaseConnection);

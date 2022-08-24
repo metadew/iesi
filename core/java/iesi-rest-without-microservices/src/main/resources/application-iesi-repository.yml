@@ -6,7 +6,7 @@ iesi:
       # each category should define its own type and definition
       - categories:
           - general
-        instance:
+
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
@@ -17,6 +17,29 @@ iesi:
           owner:
             user: IESI_TEST
             password: IESI_TEST
+
+#          type: h2
+#          mode: memory
+#          database: test
+#          owner:
+#            user: test
+#            password: test
+
+
+#          type: oracle
+#          schema:
+#          connection: jdbc://test
+#          owner:
+#            user: owner
+#            password: owner
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+
 #          type: h2
 #          mode: embedded
 #          file:
@@ -68,8 +91,7 @@ iesi:
 #          host: 
 #          name: 
 #          port: 
-#          reader: 
-#          schema: 
+#          schema:
 #          owner:
 #            user:
 #            password:

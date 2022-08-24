@@ -24,8 +24,6 @@ public class DrillDatabaseService extends SchemaDatabaseService<DrillDatabase> i
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static DrillDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new DrillDatabaseService();
@@ -37,24 +35,24 @@ public class DrillDatabaseService extends SchemaDatabaseService<DrillDatabase> i
 
     @Override
     public DrillDatabase getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, schemaKey);
         DrillDatabaseConnection drillDatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             drillDatabaseConnection = new DrillDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     schemaName);
             return new DrillDatabase(drillDatabaseConnection, schemaName);
         }
 
-        String connectionMode = databaseHandler.getMandatoryParameterWithKey(connection, connectionModeKey);
-        String clusterName = databaseHandler.getMandatoryParameterWithKey(connection, clusterNamesKey);
-        String directoryName = databaseHandler.getMandatoryParameterWithKey(connection, directoryNameKey);
-        String clusterId = databaseHandler.getMandatoryParameterWithKey(connection, clusterIdKey);
-        String triesParameter = databaseHandler.getMandatoryParameterWithKey(connection, triesParameterKey);
+        String connectionMode = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, connectionModeKey);
+        String clusterName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, clusterNamesKey);
+        String directoryName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, directoryNameKey);
+        String clusterId = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, clusterIdKey);
+        String triesParameter = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, triesParameterKey);
 
         drillDatabaseConnection = new DrillDatabaseConnection(connectionMode,
                 clusterName,

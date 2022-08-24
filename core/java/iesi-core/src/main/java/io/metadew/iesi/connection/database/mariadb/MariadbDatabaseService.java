@@ -20,8 +20,6 @@ public class MariadbDatabaseService extends DatabaseService<MariadbDatabase> imp
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static MariadbDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MariadbDatabaseService();
@@ -33,20 +31,20 @@ public class MariadbDatabaseService extends DatabaseService<MariadbDatabase> imp
 
     @Override
     public MariadbDatabase getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
         MariadbDatabaseConnection mariadbDatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             mariadbDatabaseConnection = new MariadbDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword);
             return new MariadbDatabase(mariadbDatabaseConnection);
         }
 
-        String hostName = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
-        String databaseName = databaseHandler.getMandatoryParameterWithKey(connection, databaseKey);
+        String hostName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, portKey));
+        String databaseName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, databaseKey);
 
         mariadbDatabaseConnection = new MariadbDatabaseConnection(hostName,
                 port,

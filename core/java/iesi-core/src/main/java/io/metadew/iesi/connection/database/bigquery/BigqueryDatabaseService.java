@@ -27,8 +27,6 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
     private final static String clientSecretKey = "clientSecret";
     private final static String schemaKey = "dataset";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static BigqueryDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new BigqueryDatabaseService();
@@ -45,22 +43,22 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
 
     @Override
     public BigqueryDatabase getDatabase(Connection connection) {
-        String schemaName = databaseHandler.getMandatoryParameterWithKey(connection, schemaKey);
+        String schemaName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, schemaKey);
 
         BigqueryDatabaseConnection bigqueryDatabaseConnection;
 
         //ConnectionUrl has been provided
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             bigqueryDatabaseConnection = new BigqueryDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get());
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get());
             return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
         }
 
         //Individual parameters have been provided
-        String host = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
-        String project = databaseHandler.getMandatoryParameterWithKey(connection, projectKey);
-        String authMode = databaseHandler.getMandatoryParameterWithKey(connection, authModeKey);
+        String host = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, portKey));
+        String project = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, projectKey);
+        String authMode = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, authModeKey);
 
         switch (authMode) {
             case "service":
@@ -68,8 +66,8 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
                                 host,
                                 port,
                                 project,
-                                databaseHandler.getMandatoryParameterWithKey(connection, serviceAccountKey),
-                                databaseHandler.getMandatoryParameterWithKey(connection, keyPathKey));
+                                SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, serviceAccountKey),
+                                SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, keyPathKey));
                 return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
             case "user":
                 bigqueryDatabaseConnection = new UserBigqueryDatabaseConnection(
@@ -82,10 +80,10 @@ public class BigqueryDatabaseService extends SchemaDatabaseService<BigqueryDatab
                                 host,
                                 port,
                                 project,
-                                databaseHandler.getOptionalParameterWithKey(connection, accessTokenKey).orElse(null),
-                                databaseHandler.getOptionalParameterWithKey(connection, refreshTokenKey).orElse(null),
-                                databaseHandler.getOptionalParameterWithKey(connection, clientIdKey).orElse(null),
-                                databaseHandler.getOptionalParameterWithKey(connection, clientSecretKey).orElse(null));
+                                SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, accessTokenKey).orElse(null),
+                                SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, refreshTokenKey).orElse(null),
+                                SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, clientIdKey).orElse(null),
+                                SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, clientSecretKey).orElse(null));
                 return new BigqueryDatabase(bigqueryDatabaseConnection, schemaName);
             case "default":
                 bigqueryDatabaseConnection = new DefaultBigqueryDatabaseConnection(

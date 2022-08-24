@@ -28,8 +28,6 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
     private final static String userKey = "user";
     private final static String passwordKey = "password";
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public synchronized static OracleDatabaseService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new OracleDatabaseService();
@@ -41,28 +39,28 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
 
     @Override
     public OracleDatabase getDatabase(Connection connection) {
-        String userName = databaseHandler.getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = databaseHandler.getMandatoryParameterWithKey(connection, passwordKey);
-        Optional<String> schemaName = databaseHandler.getOptionalParameterWithKey(connection, schemaKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
+        Optional<String> schemaName = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, schemaKey);
         OracleDatabaseConnection oracleDatabaseConnection;
-        if (databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             oracleDatabaseConnection = new OracleDatabaseConnection(
-                    databaseHandler.getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     null,
                     schemaName.orElse(null));
             return new OracleDatabase(oracleDatabaseConnection, schemaName.orElse(null));
         }
-        String mode = databaseHandler.getMandatoryParameterWithKey(connection, modeKey);
-        String host = databaseHandler.getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(databaseHandler.getMandatoryParameterWithKey(connection, portKey));
+        String mode = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, modeKey);
+        String host = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, portKey));
         switch (mode) {
             case tnsAliasModeKey:
                 oracleDatabaseConnection = new TnsAliasOracleDatabaseConnection(
                         host,
                         port,
-                        databaseHandler.getMandatoryParameterWithKey(connection, tnsAliasKey),
+                        SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, tnsAliasKey),
                         userName,
                         userPassword,
                         null,
@@ -72,7 +70,7 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
                 oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(
                         host,
                         port,
-                        databaseHandler.getMandatoryParameterWithKey(connection, serviceKey),
+                        SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, serviceKey),
                         userName,
                         userPassword,
                         null,

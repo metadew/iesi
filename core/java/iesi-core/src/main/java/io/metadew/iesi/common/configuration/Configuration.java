@@ -122,6 +122,7 @@ public class Configuration {
     private void loadClasspathFiles() {
         Yaml yaml = new Yaml();
         for (String resourceName : getApplicationResourceFiles()) {
+            System.out.println("RESOURCE NAME : " + resourceName);
             Map<String, Object> yamlProperties = (Map<String, Object>) yaml.load(getClass().getClassLoader().getResourceAsStream(resourceName));
             if (yamlProperties.containsKey(iesiKeyword)) {
                 update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), iesiKeyword);
@@ -180,9 +181,12 @@ public class Configuration {
         return filename.startsWith("application") && filename.endsWith(".yml");
     }
 
-    private InputStream getResourceAsStream(String resource) {
-        final InputStream in = getContextClassLoader().getResourceAsStream(resource);
-        return in == null ? getClass().getResourceAsStream(resource) : in;
+    private InputStream getResourceAsStream(String resource) throws IOException {
+        final InputStream in = Configuration.class.getClassLoader().getResourceAsStream(resource);
+
+
+
+        return in == null ? Configuration.class.getClassLoader().getResourceAsStream(resource) : in;
     }
 
     private ClassLoader getContextClassLoader() {

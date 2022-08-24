@@ -21,7 +21,7 @@
         <connection>scm:git:git://github.com/metadew/iesi.git</connection>
         <developerConnection>scm:git:ssh://github.com/metadew/iesi.git</developerConnection>
         <url>https://github.com/metadew/iesi</url>
-        <tag>iesi-core-0.8.0</tag>
+        <tag>iesi-core-0.9.0</tag>
     </scm>
 
     <distributionManagement>

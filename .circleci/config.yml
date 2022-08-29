@@ -65,7 +65,7 @@ jobs:
           when: always
 
       - store_artifacts:
-          path: core/java/iesi-core/target/iesi-core-0.8.0.jar
+          path: core/java/iesi-core/target/iesi-core-0.9.0.jar
 
       - run:
           name: Fetch dependencies for REST Server

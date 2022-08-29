@@ -2649,10 +2649,6 @@ class ScriptDtoRepositoryTest {
                         new ScriptLabelDto("label3", "value3"))
                         .collect(Collectors.toSet()))
                 .build();
-        System.out.println(scriptDtoRepository.getAll(null, PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name")),
-                new ArrayList<>(),
-                true,
-                Stream.of(new ScriptFilter(ScriptFilterOption.NAME, "criptB", false), new ScriptFilter(ScriptFilterOption.LABEL, "label2:ue2", false)).collect(Collectors.toList())).getContent());
         assertThat(scriptDtoRepository.getAll(null, PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name")),
                 new ArrayList<>(),
                 true,

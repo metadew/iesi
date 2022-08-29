@@ -5,6 +5,7 @@ import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionT
 import io.metadew.iesi.common.configuration.metadata.componenttypes.MetadataComponentTypesConfiguration;
 import io.metadew.iesi.common.configuration.metadata.connectiontypes.MetadataConnectionTypesConfiguration;
 import io.metadew.iesi.common.configuration.metadata.objects.MetadataObjectsConfiguration;
+import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import lombok.extern.log4j.Log4j2;
@@ -32,6 +33,7 @@ public class MetadataConfiguration {
             MetadataTablesConfiguration.getInstance();
             MetadataObjectsConfiguration.getInstance();
             MetadataRepositoryConfiguration.getInstance();
+            MetadataPolicyConfiguration.getInstance();
         } else {
             log.warn("no metadata configuration found on system variable, classpath or filesystem");
         }

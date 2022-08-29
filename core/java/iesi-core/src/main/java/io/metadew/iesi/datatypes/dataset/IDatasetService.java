@@ -9,8 +9,6 @@ public interface IDatasetService {
 
     boolean exists(String name);
 
-    boolean getIdByName(String name);
-
     Optional<Dataset> get(DatasetKey datasetKey);
 
     List<Dataset> getAll();
@@ -18,6 +16,8 @@ public interface IDatasetService {
     Optional<Dataset> getByName(String name);
 
     void create(Dataset dataset);
+
+    List<Dataset> importDatasets(String textPlain);
 
     void delete(Dataset dataset);
 

@@ -20,6 +20,7 @@ public class ExecutionRequestBuilder {
     private String username;
 
     private String email;
+    private boolean debugMode;
 
     private List<ScriptExecutionRequest> scriptExecutionRequests;
     private Set<ExecutionRequestLabel> executionRequestLabels = new HashSet<>();
@@ -64,6 +65,10 @@ public class ExecutionRequestBuilder {
         return this;
     }
 
+    public ExecutionRequestBuilder debugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+        return this;
+    }
     /*public ExecutionRequestBuilder user(String user) {
         this.user = user;
         return this;
@@ -121,6 +126,7 @@ public class ExecutionRequestBuilder {
                 email,
                 scope,
                 context,
+                debugMode,
                 ExecutionRequestStatus.NEW,
                 getScriptExecutionRequests().orElse(new ArrayList<>()),
                 executionRequestLabels);
@@ -144,6 +150,7 @@ public class ExecutionRequestBuilder {
                 email,
                 scope,
                 context,
+                debugMode,
                 ExecutionRequestStatus.NEW,
                 getScriptExecutionRequests().orElse(new ArrayList<>()),
                 executionRequestLabels,

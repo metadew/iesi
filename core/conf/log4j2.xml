@@ -153,6 +153,7 @@
             <AppenderRef ref="STDOUT" level="info" />
             <AppenderRef ref="rest" level="all" />
         </Logger>
+        <Logger name="org.springframework.security.oauth2" additivity="false" level="off" />
         <Root level="all" additivity="false">
             <AppenderRef ref="STDOUT" level="warn" />
             <AppenderRef ref="default" level="all" />

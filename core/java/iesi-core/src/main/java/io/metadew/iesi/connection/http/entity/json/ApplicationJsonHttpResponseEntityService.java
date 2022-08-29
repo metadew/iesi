@@ -1,5 +1,7 @@
 package io.metadew.iesi.connection.http.entity.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -42,15 +44,26 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
     @Override
     public void writeToDataset(HttpResponse httpResponse, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         if (httpResponse.getEntityContent().isPresent()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+            objectMapper.enable(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS);
+
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
+
             String jsonContent = new String(httpResponse.getEntityContent().get(), charset);
-            log.debug("raw JSON content: " + jsonContent);
-            JsonNode jsonNode = new ObjectMapper().readTree(jsonContent);
-            if (jsonNode == null || jsonNode.getNodeType().equals(JsonNodeType.MISSING)) {
-                log.warn("response does not contain a valid JSON message: " + jsonContent + ". ");
+            JsonNode jsonNode = null;
+
+            try {
+                jsonNode = objectMapper.readTree(jsonContent);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+
+            if (jsonNode.getNodeType().equals(JsonNodeType.MISSING)) {
+                log.warn("response does not contain a valid JSON message: " + jsonNode.toPrettyString() + ". ");
             } else {
                 DatasetImplementationHandler.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
             }
@@ -71,11 +84,22 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
     @Override
     public void outputResponse(HttpResponse httpResponse, ActionControl actionControl) {
         httpResponse.getEntityContent().ifPresent(s -> {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+            objectMapper.enable(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS);
+
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
-            actionControl.logOutput("response.body", new String(s, charset));
+
+            JsonNode jsonNode = null;
+            try {
+                jsonNode = objectMapper.readTree(new String(s, charset));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            actionControl.logOutput("response.body", jsonNode.toPrettyString());
         });
     }
 

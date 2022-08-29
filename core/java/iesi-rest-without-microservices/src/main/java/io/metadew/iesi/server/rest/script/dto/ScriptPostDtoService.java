@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,6 +57,11 @@ public class ScriptPostDtoService implements IScriptPostDtoService {
                 scriptDto.getLabels().stream()
                         .map(label -> label.convertToEntity(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptDto.getName()), scriptDto.getVersion().getNumber())))
                         .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<Script> convertToEntities(List<ScriptPostDto> scriptPostDtos) {
+        return scriptPostDtos.stream().map(this::convertToEntity).collect(Collectors.toList());
     }
 
     public ScriptPostDto convertToDto(Script script) {

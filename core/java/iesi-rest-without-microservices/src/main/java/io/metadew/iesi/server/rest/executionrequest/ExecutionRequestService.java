@@ -1,8 +1,13 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
+import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
+import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
+import io.metadew.iesi.common.configuration.metadata.policies.definitions.executionRequests.ExecutionRequestLabelPolicy;
+import io.metadew.iesi.common.configuration.metadata.policies.definitions.executionRequests.ExecutionRequestPolicyDefinition;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
@@ -19,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,12 +38,20 @@ public class ExecutionRequestService implements IExecutionRequestService {
     private final ExecutionRequestExecutorService executionRequestExecutorService;
     private final ExecutionRequestDtoRepository executionRequestDtoRepository;
     private final UserDtoRepository userDtoRepository;
+    private final MetadataPolicyConfiguration metadataPolicyConfiguration;
 
-    private ExecutionRequestService(ExecutionRequestConfiguration executionRequestConfiguration, ExecutionRequestExecutorService executionRequestExecutorService, ExecutionRequestDtoRepository executionRequestDtoRepository, UserDtoRepository userDtoRepository) {
+    private ExecutionRequestService(
+            ExecutionRequestConfiguration executionRequestConfiguration,
+            ExecutionRequestExecutorService executionRequestExecutorService,
+            ExecutionRequestDtoRepository executionRequestDtoRepository,
+            UserDtoRepository userDtoRepository,
+            MetadataPolicyConfiguration metadataPolicyConfiguration
+    ) {
         this.executionRequestConfiguration = executionRequestConfiguration;
         this.executionRequestExecutorService = executionRequestExecutorService;
         this.executionRequestDtoRepository = executionRequestDtoRepository;
         this.userDtoRepository = userDtoRepository;
+        this.metadataPolicyConfiguration = metadataPolicyConfiguration;
     }
 
 
@@ -57,36 +71,10 @@ public class ExecutionRequestService implements IExecutionRequestService {
     }
 
     public ExecutionRequest createExecutionRequest(ExecutionRequest executionRequest) {
+        metadataPolicyConfiguration.verifyExecutionRequestPolicies(executionRequest);
         executionRequestConfiguration.insert(executionRequest);
         executionRequestExecutorService.execute(executionRequest);
         return executionRequest;
-    }
-
-    public ExecutionRequest createExecutionRequest(ExecutionRequestPostDto executionRequestPostDto) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserDto userDto = userDtoRepository.get(username)
-                .orElseThrow(() -> new RuntimeException("Cannot find user :" + username));
-        String newExecutionRequestId = UUID.randomUUID().toString();
-        AuthenticatedExecutionRequest authenticatedExecutionRequest = AuthenticatedExecutionRequest.builder()
-                .executionRequestKey(new ExecutionRequestKey(newExecutionRequestId))
-                .name(executionRequestPostDto.getName())
-                .username(userDto.getUsername())
-                .userID(userDto.getId().toString())
-                .context(executionRequestPostDto.getContext())
-                .description(executionRequestPostDto.getDescription())
-                .scope(executionRequestPostDto.getScope())
-                .executionRequestLabels(executionRequestPostDto.getExecutionRequestLabels().stream()
-                        .map(executionRequestLabelDto -> executionRequestLabelDto.convertToEntity(new ExecutionRequestKey(newExecutionRequestId)))
-                        .collect(Collectors.toSet()))
-                .email(executionRequestPostDto.getEmail())
-                .scriptExecutionRequests(executionRequestPostDto.getScriptExecutionRequests().stream()
-                        .map(scriptExecutionRequestPostDto -> scriptExecutionRequestPostDto.convertToEntity(newExecutionRequestId))
-                        .collect(Collectors.toList()))
-                .executionRequestStatus(ExecutionRequestStatus.NEW)
-                .requestTimestamp(LocalDateTime.now())
-                .build();
-
-        return createExecutionRequest(authenticatedExecutionRequest);
     }
 
     public void deleteAll() {

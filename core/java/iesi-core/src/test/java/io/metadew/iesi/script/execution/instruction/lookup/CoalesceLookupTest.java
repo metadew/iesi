@@ -52,7 +52,6 @@ class CoalesceLookupTest {
                 .thenReturn("");
         when(executionRuntime.resolveConceptLookup(""))
                 .thenReturn(new LookupResult("", null, null));
-
         CoalesceLookup coalesceLookup = new CoalesceLookup(executionRuntime);
         assertThat(coalesceLookup.generateOutput("test"))
                 .isEqualTo("test");

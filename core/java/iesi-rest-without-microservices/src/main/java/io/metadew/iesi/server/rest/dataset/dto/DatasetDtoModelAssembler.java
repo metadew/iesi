@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -30,6 +31,10 @@ public class DatasetDtoModelAssembler extends RepresentationModelAssemblerSuppor
                 .collect(Collectors.toSet()));
 
         return datasetDto;
+    }
+
+    public List<DatasetDto> toModel(List<Dataset> datasets) {
+        return datasets.stream().map(this::toModel).collect(Collectors.toList());
     }
 
     public DatasetDto toModel(DatasetDto datasetDto) {

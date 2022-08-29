@@ -54,15 +54,15 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("FixedMatcherValues").getName() + " fixed_matcher_value on matcher_value.id=fixed_matcher_value.id " +
             "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("TemplateMatcherValues").getName() + " templ_matcher_value on matcher_value.id=templ_matcher_value.id ";
 
-    private static final String existsByNameQuery = "SELECT template.id " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " " +
-            "WHERE template.name={0};";
-    private static final String deleteByTemplateIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " where id={0});";
+    private static final String existsByNameAndVersionQuery = "SELECT template.id " +
+            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " template " +
+            "WHERE template.name={0} AND template.version={1};";
+    private static final String deleteByTemplateIdQuery = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " where id={0};";
 
     private static final String insertQuery = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " (ID, NAME, VERSION, DESCRIPTION) VALUES ({0}, {1}, {2}, {3});";
 
-    private static final String updateQuery = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() + " " +
-            "SET NAME={0}, VERSION={1}, DESCRIPTION={2} WHERE ID={3};";
+    private static final String updateQuery = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Templates").getName() +
+            " SET NAME={0}, VERSION={1}, DESCRIPTION={2} WHERE ID={3};";
 
     private static TemplateConfiguration INSTANCE;
 
@@ -98,10 +98,11 @@ public class TemplateConfiguration extends Configuration<Template, TemplateKey> 
         }
     }
 
-    public boolean exists(String name) {
+    public boolean exists(String name, Long version) {
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                MessageFormat.format(existsByNameQuery,
-                        SQLTools.getStringForSQL(name)
+                MessageFormat.format(existsByNameAndVersionQuery,
+                        SQLTools.getStringForSQL(name),
+                        SQLTools.getStringForSQL(version)
                 ),
                 "reader");
         return cachedRowSet.size() >= 1;

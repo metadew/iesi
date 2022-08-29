@@ -191,6 +191,22 @@ class ComponentRepositoryDtoTest {
     }
 
     @Test
+    void getAllSortedCaseTest() {
+        Component component1 = createComponent("a", "1", "PUBLIC");
+        Component component2 = createComponent("Z", "2", "PUBLIC");
+        componentConfiguration.insert(component1);
+        componentConfiguration.insert(component2);
+        ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
+        ComponentDto component2Dto = componentDtoResourceAssembler.toModel(component2);
+
+        PageRequest pageableASC = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
+        PageRequest pageabledESC = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
+
+        assertThat(componentDtoRepository.getAll(null, pageableASC, new ArrayList<>())).containsExactly(component1Dto, component2Dto);
+        assertThat(componentDtoRepository.getAll(null, pageabledESC, new ArrayList<>())).containsExactly(component2Dto, component1Dto);
+    }
+
+    @Test
     void getAllFilteredOnNameTest() {
         Component component1 = createComponent("component1", "1", "PUBLIC");
         Component component2 = createComponent("component2", "2", "PUBLIC");

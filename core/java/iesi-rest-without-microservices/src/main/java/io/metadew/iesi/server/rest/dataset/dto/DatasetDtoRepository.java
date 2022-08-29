@@ -40,7 +40,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
 
     public Page<DatasetDto> fetchAll(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
         try {
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(
                     getFetchAllQuery(authentication, pageable, datasetFilters),
                     "reader");
             return new PageImpl<>(new DatasetDtoListResultSetExtractor().extractData(cachedRowSet),
@@ -53,7 +53,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
 
     public List<DatasetImplementationDto> fetchImplementationsByDatasetUuid(UUID datasetUuid) {
         try {
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(
                     MessageFormat.format(getFetchImplementationsByDatasetIdQuery(),
                             SQLTools.getStringForSQL(datasetUuid)),
                     "reader");
@@ -66,7 +66,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
 
     public Optional<DatasetImplementationDto> fetchImplementationByUuid(UUID uuid) {
         try {
-            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
+            CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(
                     MessageFormat.format(getFetchImplementationByIdQuery(),
                             SQLTools.getStringForSQL(uuid)),
                     "reader");
@@ -156,22 +156,27 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.isUnpaged()) {
-            return " ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY lower(datasets.NAME) ASC ";
+        List<String> sorting = pageable.getSort().stream().map(order -> {
+                    if (order.getProperty().equalsIgnoreCase("NAME")) {
+                        return "lower(datasets.NAME) " + order.getDirection();
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (sorting.isEmpty()) {
+            return " ORDER BY lower(datasets.NAME) ASC";
         }
-        if (pageable.getSort().isUnsorted()) {
-            // set default ordering for pagination to last loaded
-            return " ORDER BY datasets.LOAD_TMS ASC ";
-        } else {
-            return " ";
-        }
+        return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 
     private long getRowSize(Authentication authentication, Set<DatasetFilter> datasetFilters) throws SQLException {
         String query = "select count(*) as row_count from " +
                 MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
                 getWhereClause(authentication, datasetFilters) + ";";
-        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
+        CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
     }

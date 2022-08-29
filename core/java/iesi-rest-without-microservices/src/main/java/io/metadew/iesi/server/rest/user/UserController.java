@@ -5,7 +5,6 @@ import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.TeamService;
-import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -14,13 +13,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
@@ -39,7 +41,6 @@ public class UserController {
     private static final String ADMIN_PASSWORD = "admin";
 
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final TeamService teamService;
     private final IUserService userService;
@@ -47,14 +48,12 @@ public class UserController {
     private final PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
 
     public UserController(AuthenticationManager authenticationManager,
-                          JwtService jwtService,
                           PasswordEncoder passwordEncoder,
                           TeamService teamService,
                           IUserService userService,
                           UserDtoModelAssembler userDtoModelAssembler,
                           PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler) {
         this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.teamService = teamService;
         this.userService = userService;
@@ -99,20 +98,14 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
-    public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
-        log.trace("authenticating " + authenticationRequest.getUsername());
-        // authenticationManager will load the user details (containing the encrypted password) using the IesiUserDetailManager
-        // and will match the password based on the provided password
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-        return jwtService.generateAuthenticationResponse(authentication);
-    }
-
     @PostMapping("/create")
     @PreAuthorize("hasPrivilege('USERS_WRITE')")
     public ResponseEntity<Object> create(@RequestBody UserPostDto userPostDto) {
         if (userService.exists(userPostDto.getUsername())) {
-            return ResponseEntity.badRequest().body("username is already taken");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username " + userPostDto.getUsername() + " is already taken");
+        }
+        if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The repeated password does not match the password provided");
         }
         User user = new User(
                 new UserKey(UUID.randomUUID()),
@@ -130,11 +123,11 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
-    @GetMapping("/{uuid}")
+    @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('USERS_READ')")
-    public ResponseEntity<UserDto> fetch(@PathVariable UUID uuid) {
+    public ResponseEntity<UserDto> fetch(@PathVariable String name) {
         return ResponseEntity
-                .of(userService.get(uuid));
+                .of(userService.get(name));
     }
 
     @GetMapping("")

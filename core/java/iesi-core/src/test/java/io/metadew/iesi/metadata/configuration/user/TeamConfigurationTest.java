@@ -2,12 +2,14 @@ package io.metadew.iesi.metadata.configuration.user;
 
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,14 +26,7 @@ class TeamConfigurationTest {
     private Team team2;
 
     private SecurityGroupKey securityGroupKey1;
-    private SecurityGroup securityGroup1;
     private SecurityGroupKey securityGroupKey2;
-    private SecurityGroup securityGroup2;
-
-    private UserKey userKey1;
-    private User user1;
-    private UserKey userKey2;
-    private User user2;
 
     private RoleKey roleKey1;
     private Role role1;
@@ -73,8 +68,6 @@ class TeamConfigurationTest {
         teamKey2 = new TeamKey(UUID.randomUUID());
         roleKey1 = new RoleKey(UUID.randomUUID());
         roleKey2 = new RoleKey(UUID.randomUUID());
-        userKey1 = new UserKey(UUID.randomUUID());
-        userKey2 = new UserKey(UUID.randomUUID());
         securityGroupKey1 = new SecurityGroupKey(UUID.randomUUID());
         securityGroupKey2 = new SecurityGroupKey(UUID.randomUUID());
 
@@ -110,48 +103,27 @@ class TeamConfigurationTest {
                 .metadataKey(roleKey1)
                 .teamKey(teamKey1)
                 .name("role1")
-                .userKeys(Stream.of(userKey1, userKey2).collect(Collectors.toSet()))
+                .users(new HashSet<>())
                 .privileges(Stream.of(privilege1, privilege2).collect(Collectors.toSet()))
                 .build();
         role2 = Role.builder()
                 .metadataKey(roleKey2)
                 .teamKey(teamKey2)
                 .name("role2")
-                .userKeys(Stream.of(userKey1).collect(Collectors.toSet()))
+                .users(new HashSet<>())
                 .privileges(Stream.of(privilege3, privilege4).collect(Collectors.toSet()))
                 .build();
-        user1 = User.builder()
-                .userKey(userKey1)
-                .username("user1")
-                .enabled(true)
-                .expired(false)
-                .credentialsExpired(false)
-                .locked(false)
-                .password("password1")
-                .roleKeys(Stream.of(role1.getMetadataKey(), role2.getMetadataKey()).collect(Collectors.toSet()))
-                .build();
-        user2 = User.builder()
-                .userKey(userKey2)
-                .username("user2")
-                .enabled(true)
-                .expired(false)
-                .credentialsExpired(false)
-                .locked(false)
-                .password("password3")
-                .roleKeys(Stream.of(role1.getMetadataKey()).collect(Collectors.toSet()))
-                .build();
-
         team1 = Team.builder()
                 .teamKey(teamKey1)
                 .teamName("team1")
                 .roles(Stream.of(role1).collect(Collectors.toSet()))
-                .securityGroupKeys(Stream.of(securityGroupKey1).collect(Collectors.toSet()))
+                .securityGroups(new HashSet<>())
                 .build();
         team2 = Team.builder()
                 .teamKey(teamKey2)
                 .teamName("team2")
                 .roles(Stream.of(role2).collect(Collectors.toSet()))
-                .securityGroupKeys(Stream.of(securityGroupKey2).collect(Collectors.toSet()))
+                .securityGroups(new HashSet<>())
                 .build();
     }
 

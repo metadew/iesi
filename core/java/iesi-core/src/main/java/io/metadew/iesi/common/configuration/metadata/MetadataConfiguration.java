@@ -10,6 +10,7 @@ import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConf
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;

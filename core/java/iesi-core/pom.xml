@@ -8,12 +8,19 @@
         <version>2.2.6.RELEASE</version>
     </parent>
 
+    <packaging>${packaging.type}</packaging>
     <groupId>io.github.metadew</groupId>
     <artifactId>iesi-core</artifactId>
     <version>0.8.0-SNAPSHOT</version>
     <name>io.metadew:iesi-core</name>
     <description>IESI Core artifact</description>
     <url>https://metadew.github.io/metadew/</url>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <packaging.type>jar</packaging.type>
+        <log4j2.version>2.16.0</log4j2.version>
+    </properties>
 
     <licenses>
         <license>
@@ -85,11 +92,6 @@
             </build>
         </profile>
     </profiles>
-    <properties>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -100,6 +102,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -314,6 +330,24 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build information</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>repackage</id>
+                        <configuration>
+                            <classifier>exec</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>

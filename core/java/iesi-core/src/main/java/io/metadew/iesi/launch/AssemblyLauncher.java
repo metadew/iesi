@@ -5,6 +5,8 @@ import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import org.apache.commons.cli.*;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -14,9 +16,11 @@ import java.io.IOException;
  *
  * @author peter.billen
  */
+@Component
+@Lazy
 public class AssemblyLauncher {
 
-    public static void main(String[] args) throws IOException, ParseException {
+    public void execute(String[] args) throws IOException, ParseException {
         Options options = new Options()
                 .addOption(Option.builder("help").desc("print this message").build())
                 .addOption(Option.builder("repository").hasArg().desc("set repository location").required().build())
@@ -81,10 +85,9 @@ public class AssemblyLauncher {
 //                version, configuration, applyConfiguration, testAssembly, distribution);
         AssemblyService assemblyService = new AssemblyService(repository, sandbox, instance, version);
         assemblyService.execute();
-
     }
 
-    private static void writeHeaderMessage() {
+    private void writeHeaderMessage() {
         System.out.println("Invoking the assembly execution...");
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         System.out.println();

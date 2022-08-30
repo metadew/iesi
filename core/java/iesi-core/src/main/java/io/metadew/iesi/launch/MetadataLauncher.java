@@ -11,6 +11,8 @@ import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -21,9 +23,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
+@Lazy
 public class MetadataLauncher {
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException, IOException {
+    public void execute(String[] args) throws IOException, ParseException {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(new Option("help", "print this message"))
@@ -58,10 +62,6 @@ public class MetadataLauncher {
 
         // Define the exit behaviour
         boolean exit = !line.hasOption("exit") || line.getOptionValue("exit").equalsIgnoreCase("y") || line.getOptionValue("exit").equalsIgnoreCase("true");
-
-        // Configuration.getInstance();
-        // FrameworkCrypto.getInstance();
-        // FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("metadata", "")));
 
         MetadataRepositoryOperation metadataRepositoryOperation = new MetadataRepositoryOperation();
         List<MetadataRepository> metadataRepositories = new ArrayList<>();
@@ -183,20 +183,21 @@ public class MetadataLauncher {
         endLauncher(0, exit);
     }
 
-    private static void endLauncher(int status, boolean exit) {
+
+    private void endLauncher(int status, boolean exit) {
         FrameworkRuntime.getInstance().terminate();
         if (exit) {
             System.exit(status);
         }
     }
 
-    private static void writeHeaderMessage() {
+    private void writeHeaderMessage() {
         System.out.println("metadata.launcher.start");
         System.out.println();
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 
-    private static void writeFooterMessage() {
+    private void writeFooterMessage() {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 

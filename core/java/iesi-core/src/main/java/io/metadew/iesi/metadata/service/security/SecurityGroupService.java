@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service()
+@Service
 @Log4j2
 public class SecurityGroupService {
 
@@ -22,21 +23,6 @@ public class SecurityGroupService {
 
     public SecurityGroupService(SecurityGroupConfiguration securityGroupConfiguration) {
         this.securityGroupConfiguration = securityGroupConfiguration;
-    }
-
-
-    @PostConstruct
-    private void postConstruct() {
-        if (!securityGroupConfiguration.getByName("PUBLIC").isPresent()) {
-            log.info("Creating PUBLIC security group for IESI");
-            SecurityGroup publicSecurityGroup = SecurityGroup.builder()
-                    .metadataKey(new SecurityGroupKey(UUID.randomUUID()))
-                    .name("PUBLIC")
-                    .teamKeys(new HashSet<>())
-                    .securedObjects(new HashSet<>())
-                    .build();
-            addSecurityGroup(publicSecurityGroup);
-        }
     }
 
     public List<SecurityGroup> getAll() {

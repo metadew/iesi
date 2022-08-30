@@ -1,6 +1,5 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
@@ -11,11 +10,10 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 
 /**
@@ -23,17 +21,29 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
+@Component
+@Lazy
 @Log4j2
 public class ExecutionLauncher {
 
-    //TODO: DEPENDENCY INJECTIONS WHEN THE LAUNCHER WILL BECOME A SPRING APP
-    private static final Configuration configuration = SpringContext.getBean(Configuration.class);
-    private static final ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration = SpringContext.getBean(ScriptExecutionRequestConfiguration.class);
-    private static final FrameworkInstance frameworkInstance = SpringContext.getBean(FrameworkInstance.class);
-    private static final ScriptExecutorService scriptExecutorService = SpringContext.getBean(ScriptExecutorService.class);
+    private final Configuration configuration;
+    private final ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration;
+    private final FrameworkInstance frameworkInstance;
+    private final ScriptExecutorService scriptExecutorService;
+
+    public ExecutionLauncher(Configuration configuration,
+                             ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration,
+                             FrameworkInstance frameworkInstance,
+                             ScriptExecutorService scriptExecutorService
+    ) {
+        this.configuration = configuration;
+        this.scriptExecutionRequestConfiguration = scriptExecutionRequestConfiguration;
+        this.frameworkInstance = frameworkInstance;
+        this.scriptExecutorService = scriptExecutorService;
+    }
 
 
-    public static void main(String[] args) throws ParseException, IOException {
+    public void execute(String[] args) throws ParseException {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(Option.builder("help").desc("print this message").build()).addOption(Option.builder("scriptExecutionRequestKey").hasArg().desc("identified of the script exection request to execute").build()).addOption(Option.builder("debugMode").hasArg().desc("Define if logs should be enabled for the execution").build());

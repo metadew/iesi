@@ -47,6 +47,12 @@
             <organization>Accenture</organization>
             <organizationUrl>http://metadew.io</organizationUrl>
         </developer>
+        <developer>
+            <name>Hamza Khattabi</name>
+            <email>h.khattabi@accenture.com</email>
+            <organization>Accenture</organization>
+            <organizationUrl>http://metadew.io</organizationUrl>
+        </developer>
     </developers>
 
     <profiles>

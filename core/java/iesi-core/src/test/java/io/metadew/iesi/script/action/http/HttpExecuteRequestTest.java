@@ -52,17 +52,18 @@ class HttpExecuteRequestTest {
                 .actionId("actionId")
                 .build();
 
-
-        when(executionControl.getExecutionRuntime())
-                .thenReturn(executionRuntime);
-        when(actionExecution.getActionControl())
-                .thenReturn(actionControl);
-
         ActionParameterService actionParameterService = ActionParameterService.getInstance();
         actionParameterServiceSpy = Mockito.spy(actionParameterService);
 
         HttpComponentService httpComponentService = HttpComponentService.getInstance();
         httpComponentServiceSpy = Mockito.spy(httpComponentService);
+
+        when(executionControl.getExecutionRuntime())
+                .thenReturn(executionRuntime);
+        when(actionExecution.getActionControl())
+                .thenReturn(actionControl);
+        doNothing().when(httpComponentServiceSpy).traceEmptyVersion(actionExecution, "", 0L);
+
 
         Whitebox.setInternalState(ActionParameterService.class, "instance", actionParameterServiceSpy);
         Whitebox.setInternalState(HttpComponentService.class, "instance", httpComponentServiceSpy);
@@ -455,7 +456,7 @@ class HttpExecuteRequestTest {
     void mockGetAndTraceHttpComponent(HttpComponent httpComponent) {
         doReturn(httpComponent)
                 .when(httpComponentServiceSpy)
-                .getAndTrace("request", actionExecution, "request");
+                .getAndTrace("request", actionExecution, "request", "requestVersion");
     }
 
     HttpComponent createBaseComponent(List<HttpHeader> headers, List<HttpQueryParameter> queryParameters) {

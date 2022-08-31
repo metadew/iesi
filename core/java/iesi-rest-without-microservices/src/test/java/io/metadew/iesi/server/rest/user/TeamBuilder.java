@@ -43,15 +43,13 @@ public class TeamBuilder {
                                                 info.put(String.format("privilege%d%d", roleIndex, privilegeIndex), privilege);
                                                 return privilege;
                                             }).collect(Collectors.toSet()))
-                                    .userKeys(new HashSet<>())
+                                    .users(new HashSet<>())
                                     .build();
                             info.put(String.format("role%d", roleIndex), role);
                             return role;
                         })
                         .collect(Collectors.toSet()))
-                .securityGroupKeys(securityGroups.stream()
-                        .map(SecurityGroup::getMetadataKey)
-                        .collect(Collectors.toSet()))
+                .securityGroups(securityGroups)
                 .build();
         info.put("team", team);
 

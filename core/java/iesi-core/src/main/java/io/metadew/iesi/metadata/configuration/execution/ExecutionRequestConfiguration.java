@@ -41,6 +41,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         try {
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "EXECUTION_REQUEST.DEBUG_MODE, " +
                     "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
                     "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
@@ -67,6 +68,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         cachedRowSet.getString("NOTIF_EMAIL"),
                         cachedRowSet.getString("SCOPE_NM"),
                         cachedRowSet.getString("CONTEXT_NM"),
+                        SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                         ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
                         ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
@@ -82,6 +84,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         cachedRowSet.getString("NOTIF_EMAIL"),
                         cachedRowSet.getString("SCOPE_NM"),
                         cachedRowSet.getString("CONTEXT_NM"),
+                        SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                         ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                         ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
                         ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(executionRequestKey)));
@@ -100,6 +103,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             List<ExecutionRequest> executionRequests = new ArrayList<>();
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "EXECUTION_REQUEST.DEBUG_MODE, " +
                     "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
                     "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
@@ -121,6 +125,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("NOTIF_EMAIL"),
                             cachedRowSet.getString("SCOPE_NM"),
                             cachedRowSet.getString("CONTEXT_NM"),
+                            SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
@@ -136,6 +141,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("NOTIF_EMAIL"),
                             cachedRowSet.getString("SCOPE_NM"),
                             cachedRowSet.getString("CONTEXT_NM"),
+                            SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                             ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
@@ -155,6 +161,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             List<ExecutionRequest> executionRequests = new ArrayList<>();
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "EXECUTION_REQUEST.DEBUG_MODE, " +
                     "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
                     "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
@@ -180,6 +187,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             List<ExecutionRequest> executionRequests = new ArrayList<>();
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "EXECUTION_REQUEST.DEBUG_MODE, " +
                     "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
                     "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
@@ -210,12 +218,12 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     cachedRowSet.getString("NOTIF_EMAIL"),
                     cachedRowSet.getString("SCOPE_NM"),
                     cachedRowSet.getString("CONTEXT_NM"),
+                    SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                     ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                     ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                     cachedRowSet.getString("USER_ID"),
                     cachedRowSet.getString("USERNAME")
-
             );
         } else if (cachedRowSet.getString("NON_AUTH") != null) {
             return new NonAuthenticatedExecutionRequest(
@@ -226,6 +234,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     cachedRowSet.getString("NOTIF_EMAIL"),
                     cachedRowSet.getString("SCOPE_NM"),
                     cachedRowSet.getString("CONTEXT_NM"),
+                    SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                     ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
                     ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                     ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))));
@@ -280,7 +289,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") +
                 " (REQUEST_ID, " +
-                "REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, ST_NM) VALUES (" +
+                "REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, DEBUG_MODE, ST_NM) VALUES (" +
                 SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getRequestTimestamp()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getName()) + "," +
@@ -288,6 +297,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                 SQLTools.getStringForSQL(executionRequest.getEmail()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getScope()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getContext()) + "," +
+                SQLTools.getStringForSQL(executionRequest.isDebugMode()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getExecutionRequestStatus().value()) + ");");
         if (executionRequest instanceof AuthenticatedExecutionRequest) {
             queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") +

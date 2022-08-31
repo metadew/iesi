@@ -2,15 +2,28 @@ server:
   servlet:
     context-path: /api
 spring:
+  ldap:
+    embedded:
+      port: 8389
+      ldif: classpath:ldap.ldif
+      base-dn: dc=test,dc=com
+  #      credential:
+  #        username: 'uid=admin'
+  #        password: secret
   profiles:
     active: http
 
 iesi:
   security:
     enabled: true
+    cors:
+      allowed-origin: "*"
+    client_id: test
+    client_secret: test
     jwt:
       secret: secret
-      expiry-date: 10
+      access-token-validity: 1800
+      refresh-token-validity: 86400
   debug: true
 
 management:

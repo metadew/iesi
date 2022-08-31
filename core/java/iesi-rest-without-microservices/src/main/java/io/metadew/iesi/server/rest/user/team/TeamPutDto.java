@@ -17,7 +17,7 @@ public class TeamPutDto {
 
     private UUID id;
     private String teamName;
-    private Set<UUID> securityGroupIds;
+    private Set<TeamSecurityGroupPutDto> securityGroups;
     private Set<RolePutDto> roles;
 
 }

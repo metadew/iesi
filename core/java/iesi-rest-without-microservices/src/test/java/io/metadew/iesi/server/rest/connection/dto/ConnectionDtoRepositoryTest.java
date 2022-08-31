@@ -196,6 +196,26 @@ class ConnectionDtoRepositoryTest {
     }
 
     @Test
+    void getAllUpperCaseSortTest() {
+        List<Connection> connection1 = createConnection("a", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection2 = createConnection("Z", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+
+        environmentConfiguration.insert(createEnvironment("env1"));
+        environmentConfiguration.insert(createEnvironment("env2"));
+        insert(connection1);
+        insert(connection2);
+        ConnectionDto connection1Dto = createConnectionDto(connection1);
+        ConnectionDto connection2Dto = createConnectionDto(connection2);
+
+        PageRequest pageableASC = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
+        PageRequest pageableDESC = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
+
+
+        assertThat(connectionDtoRepository.getAll(null, pageableASC, new ArrayList<>())).containsExactly(connection1Dto, connection2Dto);
+        assertThat(connectionDtoRepository.getAll(null, pageableDESC, new ArrayList<>())).containsExactly(connection2Dto, connection1Dto);
+    }
+
+    @Test
     void getAllFilteredOnNameTest() {
         List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
         List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");

@@ -48,9 +48,7 @@ public class TeamBuilder {
                             return role;
                         })
                         .collect(Collectors.toSet()))
-                .securityGroupKeys(securityGroups.stream()
-                        .map(SecurityGroup::getMetadataKey)
-                        .collect(Collectors.toSet()))
+                .securityGroups(securityGroups)
                 .build();
         info.put("team", team);
 

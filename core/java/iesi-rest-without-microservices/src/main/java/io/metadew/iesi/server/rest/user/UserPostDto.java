@@ -11,5 +11,6 @@ public class UserPostDto {
 
     private String username;
     private String password;
+    private String repeatedPassword;
 
 }

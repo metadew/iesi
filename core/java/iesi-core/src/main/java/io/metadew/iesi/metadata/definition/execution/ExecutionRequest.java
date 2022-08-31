@@ -20,6 +20,7 @@ public abstract class ExecutionRequest extends Metadata<ExecutionRequestKey> {
     private String scope;
     private String context;
     private String email;
+    private boolean debugMode;
     private ExecutionRequestStatus executionRequestStatus;
     private List<ScriptExecutionRequest> scriptExecutionRequests;
     private Set<ExecutionRequestLabel> executionRequestLabels;
@@ -33,6 +34,7 @@ public abstract class ExecutionRequest extends Metadata<ExecutionRequestKey> {
                             String email,
                             String scope,
                             String context,
+                            boolean debugMode,
                             ExecutionRequestStatus executionRequestStatus,
                             List<ScriptExecutionRequest> scriptExecutionRequests,
                             Set<ExecutionRequestLabel> executionRequestLabels) {
@@ -46,6 +48,7 @@ public abstract class ExecutionRequest extends Metadata<ExecutionRequestKey> {
         this.email = email;
         this.scope = scope;
         this.context = context;
+        this.debugMode = debugMode;
         this.executionRequestStatus = executionRequestStatus;
         this.scriptExecutionRequests = scriptExecutionRequests;
         this.executionRequestLabels = executionRequestLabels;

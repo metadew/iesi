@@ -2,7 +2,6 @@ package io.metadew.iesi.server.rest.configuration.security;
 
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.definition.user.Privilege;
 import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.server.rest.Application;
@@ -12,7 +11,6 @@ import io.metadew.iesi.server.rest.user.*;
 import io.metadew.iesi.server.rest.user.role.PrivilegeDto;
 import io.metadew.iesi.server.rest.user.role.RoleTeamDto;
 import io.metadew.iesi.server.rest.user.team.TeamSecurityGroupDto;
-import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,8 +28,6 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-
-@Log4j2
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class, ClockConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
@@ -43,7 +39,7 @@ class IesiUserDetailsManagerTest {
     private IesiUserDetailsManager iesiUserDetailsManager;
 
     @MockBean
-    private IUserService userService;
+    private UserService userService;
 
     @Test
     void loadUserByUsernameTest() {

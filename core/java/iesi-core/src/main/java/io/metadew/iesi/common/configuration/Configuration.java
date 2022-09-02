@@ -122,7 +122,6 @@ public class Configuration {
     private void loadClasspathFiles() {
         Yaml yaml = new Yaml();
         for (String resourceName : getApplicationResourceFiles()) {
-            System.out.println("RESOURCE NAME : " + resourceName);
             Map<String, Object> yamlProperties = (Map<String, Object>) yaml.load(getClass().getClassLoader().getResourceAsStream(resourceName));
             if (yamlProperties.containsKey(iesiKeyword)) {
                 update(properties, (Map<String, Object>) yamlProperties.get(iesiKeyword), iesiKeyword);

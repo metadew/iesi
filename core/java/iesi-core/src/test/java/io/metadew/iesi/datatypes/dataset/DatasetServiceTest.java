@@ -9,6 +9,7 @@ import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDataset
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,6 +47,12 @@ class DatasetServiceTest {
     @Test
     void importDatasetsTestJson() {
         try {
+            securityGroupConfiguration.insert(new SecurityGroup(
+                    new SecurityGroupKey(UUID.randomUUID()),
+                    "PUBLIC",
+                    new HashSet<>(),
+                    new HashSet<>()
+            ));
             String filePath = getClass().getClassLoader().getResource("io.metadew.iesi.datatypes.dataset/dataset_single.json").getFile();
             String jsonContent = new String(Files.readAllBytes(Paths.get(filePath)));
             DatasetKey datasetKey = new DatasetKey();

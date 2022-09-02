@@ -72,7 +72,7 @@ public class ExecutionRuntime {
         this.runId = runId;
 
         // Create cache folder
-        this.runCacheFolderName = FrameworkConfiguration.getInstance()
+        this.runCacheFolderName = SpringContext.getBean(FrameworkConfiguration.class)
                 .getMandatoryFrameworkFolder("run.cache")
                 .getAbsolutePath()
                 .resolve(runId)
@@ -387,7 +387,6 @@ public class ExecutionRuntime {
      * We will move only here when stable
      */
     public LookupResult resolveConceptLookup(String input) {
-        System.out.println("NANI ?");
         LOGGER.trace(MessageFormat.format("concept.lookup.resolve=resolving {0} for concept lookup instructions", input));
         LookupResult lookupResult = new LookupResult();
         lookupResult.setInputValue(input);

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.eval;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.action.ActionTypeExecution;
@@ -18,6 +19,8 @@ public class EvalExecuteExpression extends ActionTypeExecution {
     private static final String EXPRESSION_KEY = "expression";
     private String expression;
 
+    private final ConditionService conditionService = SpringContext.getBean(ConditionService.class);
+
     public EvalExecuteExpression(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
@@ -27,7 +30,7 @@ public class EvalExecuteExpression extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws InterruptedException, ScriptException {
-        if (ConditionService.getInstance().evaluateCondition(expression, getExecutionControl().getExecutionRuntime(), getActionExecution())) {
+        if (conditionService.evaluateCondition(expression, getExecutionControl().getExecutionRuntime(), getActionExecution())) {
             getActionExecution().getActionControl().increaseSuccessCount();
             return true;
         } else {

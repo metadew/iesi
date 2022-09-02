@@ -32,6 +32,7 @@ public class ActionExecution {
 
     private final ActionTypeConfiguration actionTypeConfiguration = SpringContext.getBean(ActionTypeConfiguration.class);
     private final ActionPerformanceLogger actionPerformanceLogger = SpringContext.getBean(ActionPerformanceLogger.class);
+    private final ConditionService conditionService = SpringContext.getBean(ConditionService.class);
 
     // Constructors
     public ActionExecution(ExecutionControl executionControl,
@@ -145,7 +146,7 @@ public class ActionExecution {
         } else {
             log.info("action.condition=" + condition);
             try {
-                return ConditionService.getInstance()
+                return conditionService
                         .evaluateCondition(condition, executionControl.getExecutionRuntime(), this);
             } catch (ScriptException e) {
                 log.warn("action.condition.error=" + e.getMessage());

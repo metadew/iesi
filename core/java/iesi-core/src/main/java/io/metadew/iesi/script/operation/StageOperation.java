@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.operation;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.database.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.FileTools;
@@ -26,7 +27,7 @@ public class StageOperation {
         this.setStageName(stageName);
         this.setStageCleanup(StageCleanup);
 
-        String stageFolderName = FrameworkConfiguration.getInstance()
+        String stageFolderName = SpringContext.getBean(FrameworkConfiguration.class)
                 .getMandatoryFrameworkFolder("run.tmp")
                 .getAbsolutePath()
                 .resolve("stage")

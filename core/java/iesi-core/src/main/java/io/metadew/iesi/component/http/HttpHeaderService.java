@@ -22,8 +22,6 @@ public class HttpHeaderService implements IHttpHeaderService {
 
 
     public HttpHeader convert(HttpHeaderDefinition httpHeaderDefinition, ActionExecution actionExecution) {
-        System.out.println("HTTP HEADER DEFINTION: " + httpHeaderDefinition);
-        System.out.println("ACTION EXECUTION: "+ actionExecution);
         return new HttpHeader(httpHeaderDefinition.getName(), resolveHeader(httpHeaderDefinition.getValue(), actionExecution));
     }
 

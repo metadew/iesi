@@ -13,8 +13,6 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Comparator;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 @Log4j2
 public class AssemblyService {
 
@@ -39,7 +37,6 @@ public class AssemblyService {
         recreateVersionDirectory(versionHomePath);
         createIESISkeleton(versionHomePath);
         loadLicenses(versionHomePath);
-        loadMavenDependencies(versionHomePath);
         loadRestLicenses(versionHomePath);
         //loadRestDependencies(versionHomePath);
         loadAssets(versionHomePath);
@@ -63,34 +60,16 @@ public class AssemblyService {
             String targetPath = versionHome.toString() + parts[2] + File.separator + parts[0];
             log.info("Copying " + sourcePath + " to " + targetPath);
             Files.copy(Paths.get(sourcePath), Paths.get(targetPath));
-            //FileTools.copyFromFileToFile(sourcePath, targetPath);
         }
         bufferedReader.close();
     }
 
-    private void loadRestDependencies(Path versionHome) throws IOException {
-        log.info(MessageFormat.format("Loading dependencies (REST) into version home: {0}", versionHome));
-        String mavenDependenciesSource = repository + File.separator + "core" + File.separator + "java" + File.separator + "iesi-rest-without-microservices" + File.separator + "target";
-        String mavenDependenciesTarget = versionHome.toString() + File.separator + "rest";
-        Path restJar = Files.walk(Paths.get(mavenDependenciesSource), 1)
-                .filter(path -> path.getFileName().toString().endsWith("jar"))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Could not find REST jar"));
-        Files.copy(restJar, Paths.get(mavenDependenciesTarget).resolve(restJar.getFileName()), REPLACE_EXISTING);
-    }
 
     private void loadRestLicenses(Path versionHome) {
         log.info(MessageFormat.format("Loading licenses (REST) into version home: {0}", versionHome));
         String licensesReportSource = repository + File.separator + "core" + File.separator + "java" + File.separator + "iesi-rest-without-microservices" + File.separator + "target" + File.separator + "site";
         String licensesReportTarget = versionHome.toString() + File.separator + "licenses" + File.separator + "rest";
         FolderTools.copyFromFolderToFolder(licensesReportSource, licensesReportTarget, true);
-    }
-
-    private void loadMavenDependencies(Path versionHome) {
-        log.info(MessageFormat.format("Loading rest into version home: {0}", versionHome));
-        String mavenDependenciesSource = repository + File.separator + "core" + File.separator + "java" + File.separator + "iesi-core" + File.separator + "target" + File.separator + "dependencies";
-        String mavenDependenciesTarget = versionHome.toString() + File.separator + "lib";
-        FolderTools.copyFromFolderToFolder(mavenDependenciesSource, mavenDependenciesTarget, true);
     }
 
     private void loadLicenses(Path versionHome) {
@@ -137,5 +116,4 @@ public class AssemblyService {
                     .forEach(File::delete);
         }
     }
-
 }

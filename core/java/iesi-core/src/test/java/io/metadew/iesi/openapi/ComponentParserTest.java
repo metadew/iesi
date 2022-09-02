@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.component.ComponentVersion;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
@@ -158,6 +159,12 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithStringVersion() {
+        securityGroupConfiguration.insert(new SecurityGroup(
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                new HashSet<>(),
+                new HashSet<>()
+        ));
         List<String> messages = Collections.singletonList("The version should be a number");
         openAPI.getInfo().setVersion("SNAPSHOT-1.1");
 
@@ -167,6 +174,12 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithLongVersion() {
+        securityGroupConfiguration.insert(new SecurityGroup(
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                new HashSet<>(),
+                new HashSet<>()
+        ));
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()
@@ -183,6 +196,12 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithSemanticVersion() {
+        securityGroupConfiguration.insert(new SecurityGroup(
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                new HashSet<>(),
+                new HashSet<>()
+        ));
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()
@@ -199,6 +218,12 @@ class ComponentParserTest {
 
     @Test
     void testComponentWithSemanticVersion() {
+        securityGroupConfiguration.insert(new SecurityGroup(
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                new HashSet<>(),
+                new HashSet<>()
+        ));
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()

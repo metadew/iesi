@@ -1,12 +1,9 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.FrameworkRuntime;
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;
@@ -15,10 +12,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +21,15 @@ import java.util.List;
 @Component
 @Lazy
 public class MetadataLauncher {
+
+    private final FrameworkConfiguration frameworkConfiguration;
+    private final FrameworkRuntime frameworkRuntime;
+
+    public MetadataLauncher(FrameworkConfiguration frameworkConfiguration,
+                            FrameworkRuntime frameworkRuntime) {
+        this.frameworkConfiguration = frameworkConfiguration;
+        this.frameworkRuntime = frameworkRuntime;
+    }
 
     public void execute(String[] args) throws IOException, ParseException {
         ThreadContext.clearAll();
@@ -120,16 +124,16 @@ public class MetadataLauncher {
         if (line.hasOption("ddl")) {
             writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                Files.deleteIfExists(FrameworkConfiguration.getInstance()
+                Files.deleteIfExists(frameworkConfiguration
                         .getMandatoryFrameworkFolder("metadata.out.ddl")
                         .getAbsolutePath()
                         .resolve("ddl_" + metadataRepository.getCategory() + ".sql"));
-                Files.createFile(FrameworkConfiguration.getInstance()
+                Files.createFile(frameworkConfiguration
                         .getMandatoryFrameworkFolder("metadata.out.ddl")
                         .getAbsolutePath()
                         .resolve("ddl_" + metadataRepository.getCategory() + ".sql"));
 
-                Files.write(FrameworkConfiguration.getInstance()
+                Files.write(frameworkConfiguration
                                 .getMandatoryFrameworkFolder("metadata.out.ddl")
                                 .getAbsolutePath()
                                 .resolve("ddl_" + metadataRepository.getCategory() + ".sql"),
@@ -185,7 +189,7 @@ public class MetadataLauncher {
 
 
     private void endLauncher(int status, boolean exit) {
-        FrameworkRuntime.getInstance().terminate();
+        frameworkRuntime.terminate();
         if (exit) {
             System.exit(status);
         }

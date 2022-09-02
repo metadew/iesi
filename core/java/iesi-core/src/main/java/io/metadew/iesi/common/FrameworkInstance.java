@@ -18,12 +18,6 @@ public class FrameworkInstance {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    @PostConstruct
-    private void postConstruct() throws IOException {
-        FrameworkRuntime.getInstance().init();
-    }
-
-
     public void shutdown() {
         log.debug("closing framework instance");
         for (MetadataRepository metadataRepository : metadataRepositoryConfiguration.getMetadataRepositories()) {

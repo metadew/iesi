@@ -26,6 +26,7 @@ public class IterationConfiguration {
     private final static int RUNTIME_VAR_VALUE_MAX_LENGTH = 4000;
 
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConditionService conditionService = SpringContext.getBean(ConditionService.class);
 
     // Constructors
     public IterationConfiguration(String runCacheFolderName, ExecutionControl executionControl)  {
@@ -192,7 +193,7 @@ public class IterationConfiguration {
         IterationInstance iterationInstance = new IterationInstance();
 
         try {
-            if (ConditionService.getInstance().evaluateCondition(condition, executionControl.getExecutionRuntime(), actionExecution)) {
+            if (conditionService.evaluateCondition(condition, executionControl.getExecutionRuntime(), actionExecution)) {
                 iterationInstance.setEmpty(false);
                 iterationInstance.getVariableMap().put("iterate", "y");
             }

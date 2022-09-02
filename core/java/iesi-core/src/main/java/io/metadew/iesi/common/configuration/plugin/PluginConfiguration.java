@@ -1,33 +1,33 @@
 package io.metadew.iesi.common.configuration.plugin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+@org.springframework.context.annotation.Configuration
 @Log4j2
 @Getter
 public class PluginConfiguration {
 
-    private static PluginConfiguration INSTANCE;
     private static final String pluginsKey = "plugins";
 
     private Map<String, FrameworkPlugin> frameworkPluginMap;
-    Configuration configuration = SpringContext.getBean(Configuration.class);
 
-    public synchronized static PluginConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new PluginConfiguration();
-        }
-        return INSTANCE;
+    private final Configuration configuration;
+
+    public PluginConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
+
     @SuppressWarnings("unchecked")
-    private PluginConfiguration() {
+    @PostConstruct
+    private void postConstruct() {
         frameworkPluginMap = new HashMap<>();
         if (containsConfiguration()) {
             Map<String, Object> frameworkPluginsConfigurations = (Map<String, Object>) configuration.getProperties()
@@ -46,5 +46,4 @@ public class PluginConfiguration {
         return configuration.getProperties().containsKey(PluginConfiguration.pluginsKey) &&
                 (configuration.getProperties().get(PluginConfiguration.pluginsKey) instanceof Map);
     }
-
 }

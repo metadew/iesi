@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 /**
@@ -62,9 +64,9 @@ public class ExecutionLauncher {
         }
 
         if (line.hasOption("debugMode") && line.getOptionValue("debugMode").equalsIgnoreCase("Y")) {
-            String log4j2File = (configuration.getProperty("iesi.home").orElse("")) + "/lib/log4j2.xml";
+            URI log4j2File = Paths.get(configuration.getProperty("iesi.home").orElse("")  + "/lib/log4j2.xml").toUri();
             if (new File(log4j2File).exists()) {
-                Configurator.initialize(null, log4j2File);
+                Configurator.reconfigure(log4j2File);
             } else {
                 log.warn(String.format("The file %s does not exist", log4j2File));
             }

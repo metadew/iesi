@@ -39,6 +39,7 @@ public class HostConnection {
 
     private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
     private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+    private final FrameworkRuntime frameworkRuntime = SpringContext.getBean(FrameworkRuntime.class);
 
     // Session management
     // private Session[] sessions;
@@ -125,7 +126,7 @@ public class HostConnection {
         // Check if execution can be performed as being on localhost
         if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
             try {
-                if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName().toString())) {
+                if (this.localhostFileExists(frameworkRuntime.getLocalHostChallengeFileName().toString())) {
                     result = true;
                 } else {
                     result = false;

@@ -97,7 +97,6 @@ public class MetadataRepositoryConfiguration {
     }
 
     private void convertConfigurations() {
-        System.out.println("AFTER CONVERT: " + metadataRepositoryDefinitions);
         for (MetadataRepositoryDefinition metadataRepositoryDefinition : metadataRepositoryDefinitions) {
             metadataRepositories.addAll(metadataRepositoryService.convert(metadataRepositoryDefinition));
         }

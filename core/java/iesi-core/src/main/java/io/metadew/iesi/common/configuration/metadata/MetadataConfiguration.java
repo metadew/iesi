@@ -2,15 +2,7 @@ package io.metadew.iesi.common.configuration.metadata;
 
 import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
-import io.metadew.iesi.common.configuration.metadata.componenttypes.MetadataComponentTypesConfiguration;
-import io.metadew.iesi.common.configuration.metadata.connectiontypes.MetadataConnectionTypesConfiguration;
-import io.metadew.iesi.common.configuration.metadata.objects.MetadataObjectsConfiguration;
-import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;

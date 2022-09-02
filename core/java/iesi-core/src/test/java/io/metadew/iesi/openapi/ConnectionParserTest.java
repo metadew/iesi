@@ -44,7 +44,14 @@ class ConnectionParserTest {
 
     @Test
     void parse() throws MalformedURLException {
-        SecurityGroupKey securityGroupKey =  securityGroupConfiguration.getByName("PUBLIC").get().getMetadataKey();
+        SecurityGroupKey securityGroupKey =  new SecurityGroupKey(UUID.randomUUID());
+
+        securityGroupConfiguration.insert(new SecurityGroup(
+                securityGroupKey,
+                "PUBLIC",
+                new HashSet<>(),
+                new HashSet<>()
+        ));
 
         Info info = new Info()
                 .version("1")

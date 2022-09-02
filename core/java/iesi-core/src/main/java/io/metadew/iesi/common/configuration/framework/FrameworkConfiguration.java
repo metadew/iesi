@@ -1,19 +1,20 @@
 package io.metadew.iesi.common.configuration.framework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
+@org.springframework.context.annotation.Configuration
 public class FrameworkConfiguration {
 
-    private static FrameworkConfiguration INSTANCE;
     private static final String configurationKey = "framework";
     private static final String folderConfigurationKey = "folders";
     private static final String settingConfigurationKey = "settings";
@@ -21,16 +22,14 @@ public class FrameworkConfiguration {
     private Map<String, FrameworkSetting> frameworkSettings;
     private Map<String, FrameworkFolder> frameworkFolders;
 
-    Configuration configuration = SpringContext.getBean(Configuration.class);
+    private final Configuration configuration;
 
-    public synchronized static FrameworkConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new FrameworkConfiguration();
-        }
-        return INSTANCE;
+    public FrameworkConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
-    private FrameworkConfiguration() {
+    @PostConstruct
+    private void postConstruct() {
         frameworkSettings = new HashMap<>();
         frameworkFolders = new HashMap<>();
         if (!configuration.getProperties().containsKey(configurationKey) || !(configuration.getProperties().get(configurationKey) instanceof Map)) {

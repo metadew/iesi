@@ -5,6 +5,6 @@ setLocal EnableDelayedExpansion
 call set LIB_DIR="%CD%\..\lib"
 cd !LIB_DIR!
 
-java -cp %LIB_DIR%\* io.metadew.iesi.launch.ExecutionLauncher %*
+java -Dlogging.config=./log4j2-disabled -jar iesi-core.jar -launcher execution %*
 
 cd !CURRENT_DIR!

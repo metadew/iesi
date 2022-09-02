@@ -3,14 +3,17 @@ package io.metadew.iesi;
 import io.metadew.iesi.launch.AssemblyLauncher;
 import io.metadew.iesi.launch.ExecutionLauncher;
 import io.metadew.iesi.launch.MetadataLauncher;
+import io.metadew.iesi.launch.OpenAPILauncher;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Arrays;
 
@@ -18,17 +21,19 @@ import java.util.Arrays;
 @Log4j2
 public class Application implements ApplicationRunner {
 
-    private final AssemblyLauncher assemblyLauncher;
-    private final MetadataLauncher metadataLauncher;
-    private final ExecutionLauncher executionLauncher;
+    @Autowired
+    @Lazy
+    private AssemblyLauncher assemblyLauncher;
+    @Autowired
+    @Lazy
+    private MetadataLauncher metadataLauncher;
+    @Autowired
+    @Lazy
+    private ExecutionLauncher executionLauncher;
 
-    public Application(AssemblyLauncher assemblyLauncher,
-                       MetadataLauncher metadataLauncher,
-                       ExecutionLauncher executionLauncher) {
-        this.assemblyLauncher = assemblyLauncher;
-        this.metadataLauncher = metadataLauncher;
-        this.executionLauncher = executionLauncher;
-    }
+    @Autowired
+    @Lazy
+    private OpenAPILauncher openAPILauncher;
 
 
     public static void main(String[] args) {
@@ -37,24 +42,29 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        String launcherSelected = args.getSourceArgs()[1];
-        String[] launcherOptions = Arrays.copyOfRange(args.getSourceArgs(), 2, args.getSourceArgs().length);
+        Options options = new Options()
+                .addOption(Option.builder("help").desc("print this message").build())
+                .addOption(Option.builder("launcher").hasArg().required().desc("Identify the launcher to execute from on of them: ['assembly', 'metadata', 'execution', 'openapi']").build());
 
-        switch (launcherSelected) {
+        CommandLineParser parser = new DefaultParser();
+        CommandLine line = parser.parse(options, args.getSourceArgs(), true);
+
+        switch (line.getOptionValue("launcher")) {
             case "assembly":
-                assemblyLauncher.execute(launcherOptions);
+                assemblyLauncher.execute(line.getArgs());
                 break;
             case "metadata" :
-                metadataLauncher.execute(launcherOptions);
+                metadataLauncher.execute(line.getArgs());
                 break;
             case "execution":
-                executionLauncher.execute(launcherOptions);
+                executionLauncher.execute(line.getArgs());
+                break;
+            case "openapi":
+                openAPILauncher.execute(line.getArgs());
                 break;
             default:
                 log.info("Not a recognized launcher");
                 System.exit(1);
         }
-
-        System.exit(0);
     }
 }

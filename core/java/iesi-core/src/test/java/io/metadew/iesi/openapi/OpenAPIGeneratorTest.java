@@ -20,8 +20,10 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +56,13 @@ class OpenAPIGeneratorTest {
     String title;
     String version;
 
+
     @Autowired
     private OpenAPIGenerator openAPIGenerator;
 
     @Autowired
     private SecurityGroupConfiguration securityGroupConfiguration;
+
 
     @BeforeEach
     public void init() {
@@ -73,6 +77,12 @@ class OpenAPIGeneratorTest {
 
     @Test
     void transformFromFile() throws IOException {
+        securityGroupConfiguration.insert(new SecurityGroup(
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                new HashSet<>(),
+                new HashSet<>()
+        ));
         File file = File.createTempFile("doc", null);
         try (OutputStream os = new FileOutputStream(file)) {
             os.write(docFile);

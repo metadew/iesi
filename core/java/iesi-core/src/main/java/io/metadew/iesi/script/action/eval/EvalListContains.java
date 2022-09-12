@@ -25,8 +25,6 @@ public class EvalListContains extends ActionTypeExecution {
     private Array list;
     private DataType value;
 
-    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
-
     public EvalListContains(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -55,14 +53,14 @@ public class EvalListContains extends ActionTypeExecution {
     private boolean executeOperation(Array list, DataType element) throws InterruptedException {
         if (element instanceof Template) {
             for (DataType dataType : list.getList()) {
-                if (((TemplateService) dataTypeHandler.getDataTypeService(Template.class)).matches(dataType, (Template) element, getExecutionControl().getExecutionRuntime())) {
+                if (((TemplateService) SpringContext.getBean(DataTypeHandler.class).getDataTypeService(Template.class)).matches(dataType, (Template) element, getExecutionControl().getExecutionRuntime())) {
                     return true;
                 }
             }
             return false;
         } else {
             for (DataType dataType : list.getList()) {
-                if (dataTypeHandler.equals(dataType, element, getExecutionControl().getExecutionRuntime())) {
+                if (SpringContext.getBean(DataTypeHandler.class).equals(dataType, element, getExecutionControl().getExecutionRuntime())) {
                     return true;
                 }
             }

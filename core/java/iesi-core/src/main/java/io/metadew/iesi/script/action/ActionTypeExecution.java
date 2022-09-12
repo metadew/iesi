@@ -26,8 +26,6 @@ public abstract class ActionTypeExecution {
     private final ScriptExecution scriptExecution;
     private final ActionExecution actionExecution;
     private final List<ActionParameterResolvement> actionParameterResolvements = new ArrayList<>();
-    private final ActionTypeParameterConfiguration actionTypeParameterConfiguration = SpringContext.getBean(ActionTypeParameterConfiguration.class);
-    private final ActionParameterService actionParameterService = SpringContext.getBean(ActionParameterService.class);
 
     protected ActionTypeExecution(ExecutionControl executionControl,
                         ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -37,7 +35,7 @@ public abstract class ActionTypeExecution {
     }
 
     public void resolveParameters() {
-        for (Map.Entry<String, ActionTypeParameter> actionTypeParameter : actionTypeParameterConfiguration.getActionTypeParameters(getKeyword()).entrySet()) {
+        for (Map.Entry<String, ActionTypeParameter> actionTypeParameter : SpringContext.getBean(ActionTypeParameterConfiguration.class).getActionTypeParameters(getKeyword()).entrySet()) {
             Optional<ActionParameter> actionParameter = getActionExecution().getAction().getParameters().stream()
                     // TODO: go to equals instead of equals ignore case
                     .filter(actionParameterElement -> actionParameterElement.getMetadataKey().getParameterName().equalsIgnoreCase(actionTypeParameter.getKey()))
@@ -50,7 +48,7 @@ public abstract class ActionTypeExecution {
             } else {
                 getActionParameterResolvements().add(new ActionParameterResolvement(
                         actionParameter.get(),
-                        actionParameterService.getValue(actionParameter.get(), getExecutionControl().getExecutionRuntime(), getActionExecution())));
+                        SpringContext.getBean(ActionParameterService.class).getValue(actionParameter.get(), getExecutionControl().getExecutionRuntime(), getActionExecution())));
             }
         }
     }

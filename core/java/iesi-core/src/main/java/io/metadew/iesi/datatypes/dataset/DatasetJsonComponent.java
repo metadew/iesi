@@ -34,7 +34,6 @@ public class DatasetJsonComponent {
         IMPLEMENTATIONS_KEY("implementations");
 
         private final String label;
-        private final DatasetConfiguration datasetConfiguration = SpringContext.getBean(DatasetConfiguration.class);
 
         Field(String label) {
             this.label = label;

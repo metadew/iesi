@@ -31,9 +31,6 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         private static final String IS_MANDATORY_KEY = "isMandatory";
         private static final String CONNECTION_KEY = "connection";
 
-        private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-        private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
-
     // Local
     private String sqlSuccess;
 
@@ -59,8 +56,8 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         boolean isMandatory = convertIsMandatory(getParameterResolvedValue(IS_MANDATORY_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         // Get Connection
-        Connection connection = connectionConfiguration.get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
-        Database database = databaseHandler.getDatabase(connection);
+        Connection connection = SpringContext.getBean(ConnectionConfiguration.class).get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
+        Database database = SpringContext.getBean(DatabaseHandler.class).getDatabase(connection);
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory);
         long successTotal = 0;
@@ -68,7 +65,7 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         CachedRowSet cachedRowSet;
 
         // Success
-        cachedRowSet = databaseHandler.executeQuery(database, this.getSqlSuccess());
+        cachedRowSet = SpringContext.getBean(DatabaseHandler.class).executeQuery(database, this.getSqlSuccess());
         while (cachedRowSet.next()) {
             successTotal = cachedRowSet.getLong("RES_SUC");
         }
@@ -76,7 +73,7 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        cachedRowSet = databaseHandler.executeQuery(database, this.getSqlError());
+        cachedRowSet = SpringContext.getBean(DatabaseHandler.class).executeQuery(database, this.getSqlError());
         while (cachedRowSet.next()) {
             errorTotal = cachedRowSet.getLong("RES_ERR");
         }

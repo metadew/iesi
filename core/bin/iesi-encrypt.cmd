@@ -5,6 +5,6 @@ setLocal EnableDelayedExpansion
 call set LIB_DIR="%CD%\..\lib"
 cd !LIB_DIR!
 
-java -jar iesi-core.jar -launcher encryption %*
+java -cp $classpath io.metadew.iesi.Application -launcher encryption "$@"
 
 cd !CURRENT_DIR!

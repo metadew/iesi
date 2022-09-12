@@ -30,9 +30,6 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
         private static final String OUTPUT_PATH_KEY = "outputPath";
         private static final String OUTPUT_FILE_KEY = "outputFile";
 
-        private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
-
     public DdlGenerateFromFile(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -108,7 +105,7 @@ public class DdlGenerateFromFile extends ActionTypeExecution {
 
         for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
             MetadataTable metadataTable = objectMapper.convertValue(dataObject.getData(), MetadataTable.class);
-            FileTools.appendToFile(outputFile, "", databaseHandler.getCreateStatement(database, metadataTable, "IESI_"));
+            FileTools.appendToFile(outputFile, "", SpringContext.getBean(DatabaseHandler.class).getCreateStatement(database, metadataTable, "IESI_"));
         }
 
         this.getActionExecution().getActionControl().increaseSuccessCount();

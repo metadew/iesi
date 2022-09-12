@@ -38,6 +38,7 @@ public class AssemblyService {
         createIESISkeleton(versionHomePath);
         loadLicenses(versionHomePath);
         loadRestLicenses(versionHomePath);
+        loadMavenDependencies(versionHomePath);
         //loadRestDependencies(versionHomePath);
         loadAssets(versionHomePath);
     }
@@ -70,6 +71,13 @@ public class AssemblyService {
         String licensesReportSource = repository + File.separator + "core" + File.separator + "java" + File.separator + "iesi-rest-without-microservices" + File.separator + "target" + File.separator + "site";
         String licensesReportTarget = versionHome.toString() + File.separator + "licenses" + File.separator + "rest";
         FolderTools.copyFromFolderToFolder(licensesReportSource, licensesReportTarget, true);
+    }
+
+    private void loadMavenDependencies(Path versionHome) {
+        log.info(MessageFormat.format("Loading rest into version home: {0}", versionHome));
+        String mavenDependenciesSource = repository + File.separator + "core" + File.separator + "java" + File.separator + "iesi-core" + File.separator + "target" + File.separator + "dependencies";
+        String mavenDependenciesTarget = versionHome.toString() + File.separator + "lib";
+        FolderTools.copyFromFolderToFolder(mavenDependenciesSource, mavenDependenciesTarget, true);
     }
 
     private void loadLicenses(Path versionHome) {

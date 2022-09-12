@@ -37,11 +37,6 @@ public class FhoFileExists extends ActionTypeExecution {
     private static final String CONNECTION_NAME_KEY = "connection";
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
-    private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
-    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
-
-
     public FhoFileExists(ExecutionControl executionControl,
                          ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -54,7 +49,7 @@ public class FhoFileExists extends ActionTypeExecution {
         String path = convertPath(getParameterResolvedValue(FILE_PATH_KEY));
         String fileName = convertFile(getParameterResolvedValue(FILE_NAME_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
-        boolean isOnLocalhost = hostConnectionTools.isOnLocalhost(
+        boolean isOnLocalhost = SpringContext.getBean(HostConnectionTools.class).isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         String subjectFilePath = "";
@@ -85,10 +80,10 @@ public class FhoFileExists extends ActionTypeExecution {
                 }
             }
         } else {
-            Connection connection = connectionConfiguration
+            Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = SpringContext.getBean(ConnectionOperation.class).getHostConnection(connection);
 
             for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
                     FilenameUtils.separatorsToUnix(file.getParent()), FilenameUtils.separatorsToUnix(file.getName()), false)) {

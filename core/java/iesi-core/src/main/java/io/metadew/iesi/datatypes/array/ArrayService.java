@@ -19,8 +19,6 @@ public class ArrayService implements IDataTypeService<Array> {
 
     private static ArrayService INSTANCE;
 
-    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
-
     public synchronized static ArrayService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new ArrayService();
@@ -43,9 +41,9 @@ public class ArrayService implements IDataTypeService<Array> {
 
     public Array resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Array", arguments));
-        List<String> splittedArguments = dataTypeHandler.splitInstructionArguments(arguments);
+        List<String> splittedArguments = SpringContext.getBean(DataTypeHandler.class).splitInstructionArguments(arguments);
         List<DataType> resolvedArguments = splittedArguments.stream()
-                .map(argument -> dataTypeHandler.resolve(argument, executionRuntime))
+                .map(argument -> SpringContext.getBean(DataTypeHandler.class).resolve(argument, executionRuntime))
                 .collect(Collectors.toList());
         return new Array(resolvedArguments);
     }
@@ -63,7 +61,7 @@ public class ArrayService implements IDataTypeService<Array> {
         }
 
         for (int i = 0; i < _this.getList().size(); i++) {
-            if (!dataTypeHandler.equals(_this.getList().get(i), other.getList().get(i), executionRuntime)) {
+            if (!SpringContext.getBean(DataTypeHandler.class).equals(_this.getList().get(i), other.getList().get(i), executionRuntime)) {
                 return false;
             }
         }
@@ -74,7 +72,7 @@ public class ArrayService implements IDataTypeService<Array> {
         Array array = new Array();
         int elementCounter = 1;
         for (JsonNode element : jsonNode) {
-            array.add(dataTypeHandler.resolve(databaseDatasetImplementation, key + "." + elementCounter, element, executionRuntime));
+            array.add(SpringContext.getBean(DataTypeHandler.class).resolve(databaseDatasetImplementation, key + "." + elementCounter, element, executionRuntime));
             elementCounter++;
         }
         return array;

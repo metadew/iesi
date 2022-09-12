@@ -42,10 +42,6 @@ public class FwkExecuteScript extends ActionTypeExecution {
     private static final String PARAM_FILE_KEY = "paramFile";
 
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.*)\\s*");
-    private final ScriptConfiguration scriptConfiguration = SpringContext.getBean(ScriptConfiguration.class);
-    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
-
-
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -80,10 +76,10 @@ public class FwkExecuteScript extends ActionTypeExecution {
 
         // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
         Script script = scriptVersion
-                .map(version -> scriptConfiguration
+                .map(version -> SpringContext.getBean(ScriptConfiguration.class)
                         .get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version))
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
-                .orElse(scriptConfiguration.getLatestVersion(scriptName)
+                .orElse(SpringContext.getBean(ScriptConfiguration.class).getLatestVersion(scriptName)
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));
 
         Map<String, String> parameters = new HashMap<>();
@@ -150,7 +146,7 @@ public class FwkExecuteScript extends ActionTypeExecution {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(dataTypeHandler.resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(SpringContext.getBean(DataTypeHandler.class).resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

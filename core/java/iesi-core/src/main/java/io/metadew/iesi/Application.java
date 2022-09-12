@@ -1,5 +1,6 @@
 package io.metadew.iesi;
 
+import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.launch.AssemblyLauncher;
 import io.metadew.iesi.launch.ExecutionLauncher;
 import io.metadew.iesi.launch.MetadataLauncher;
@@ -9,35 +10,32 @@ import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Lazy;
-
-import java.util.Arrays;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan(basePackages = { "io.metadew.iesi", "${pluginPackage:#{''}}"})
 @Log4j2
 public class Application implements ApplicationRunner {
 
     @Autowired
-    @Lazy
     private AssemblyLauncher assemblyLauncher;
     @Autowired
-    @Lazy
     private MetadataLauncher metadataLauncher;
     @Autowired
-    @Lazy
     private ExecutionLauncher executionLauncher;
-
     @Autowired
-    @Lazy
     private OpenAPILauncher openAPILauncher;
-
+    @Autowired
+    private FrameworkCrypto frameworkCrypto;
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        new SpringApplicationBuilder(Application.class)
+                .web(WebApplicationType.NONE)
+                .lazyInitialization(true)
+                .run(args);
     }
 
     @Override
@@ -53,7 +51,7 @@ public class Application implements ApplicationRunner {
             case "assembly":
                 assemblyLauncher.execute(line.getArgs());
                 break;
-            case "metadata" :
+            case "metadata":
                 metadataLauncher.execute(line.getArgs());
                 break;
             case "execution":

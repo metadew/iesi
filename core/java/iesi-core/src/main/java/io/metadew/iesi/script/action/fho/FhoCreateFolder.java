@@ -36,10 +36,6 @@ public class FhoCreateFolder extends ActionTypeExecution {
     private static final String CONNECTION_NAME_KEY = "connection";
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
-    private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
-    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
-
     public FhoCreateFolder(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -51,7 +47,7 @@ public class FhoCreateFolder extends ActionTypeExecution {
         String path = convertPath(getParameterResolvedValue(FOLDER_PATH_KEY));
         String folder = convertFolder(getParameterResolvedValue(FOLDER_NAME_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
-        boolean isOnLocalhost = hostConnectionTools.isOnLocalhost(
+        boolean isOnLocalhost = SpringContext.getBean(HostConnectionTools.class).isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
@@ -68,10 +64,10 @@ public class FhoCreateFolder extends ActionTypeExecution {
             this.setSuccess();
 
         } else {
-            Connection connection = connectionConfiguration
+            Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
-            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
+            HostConnection hostConnection = SpringContext.getBean(ConnectionOperation.class).getHostConnection(connection);
 
             String subjectFolderPath = "";
             if (path.isEmpty()) {

@@ -37,10 +37,6 @@ public class HostConnection {
     private String outputRuntimeVariablesOutput;
     private List<String> systemOutputKeywordList;
 
-    private final ConnectionOperation connectionOperation = SpringContext.getBean(ConnectionOperation.class);
-    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
-    private final FrameworkRuntime frameworkRuntime = SpringContext.getBean(FrameworkRuntime.class);
-
     // Session management
     // private Session[] sessions;
     public HostConnection() {
@@ -126,7 +122,7 @@ public class HostConnection {
         // Check if execution can be performed as being on localhost
         if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
             try {
-                if (this.localhostFileExists(frameworkRuntime.getLocalHostChallengeFileName().toString())) {
+                if (this.localhostFileExists(SpringContext.getBean(FrameworkRuntime.class).getLocalHostChallengeFileName().toString())) {
                     result = true;
                 } else {
                     result = false;
@@ -272,10 +268,10 @@ public class HostConnection {
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
                         String finalJumphostConnection = jumphostConnection;
-                        Connection connection = connectionConfiguration
+                        Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(finalJumphostConnection, shellCommandSettings.getEnvironment()))));
-                        hostConnection = connectionOperation.getHostConnection(connection);
+                        hostConnection = SpringContext.getBean(ConnectionOperation.class).getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }
@@ -422,10 +418,10 @@ public class HostConnection {
                     HostConnection hostConnection = null;
                     if (i < jumphostConnections.length) {
                         jumphostConnection = jumphostConnections[i];
-                        Connection connection = connectionConfiguration
+                        Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                                 .get(new ConnectionKey(jumphostConnection, shellCommandSettings.getEnvironment()))
                                 .get();
-                        hostConnection = connectionOperation.getHostConnection(connection);
+                        hostConnection = SpringContext.getBean(ConnectionOperation.class).getHostConnection(connection);
                     } else {
                         hostConnection = this;
                     }

@@ -27,8 +27,6 @@ public class FwkSetRepository extends ActionTypeExecution {
     private static final String REPOSITORY_INSTANCE_LABELS_KEY = "labels";
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
-
     public FwkSetRepository(ExecutionControl executionControl,
                             ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -81,7 +79,7 @@ public class FwkSetRepository extends ActionTypeExecution {
         List<String> labels = new ArrayList<>();
         if (repositoryLabels instanceof Text) {
             Arrays.stream(repositoryLabels.toString().split(","))
-                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(dataTypeHandler.resolve(repositoryLabel.trim(), getExecutionControl().getExecutionRuntime()))));
+                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(SpringContext.getBean(DataTypeHandler.class).resolve(repositoryLabel.trim(), getExecutionControl().getExecutionRuntime()))));
             return labels;
         } else if (repositoryLabels instanceof Array) {
             ((Array) repositoryLabels).getList()

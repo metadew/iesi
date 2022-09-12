@@ -50,8 +50,6 @@ public class DataTypeHandler {
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(TemplateService.getInstance().keyword(), TemplateService.getInstance().appliesTo()), TemplateService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(DatasetImplementationHandler.getInstance().keyword(), DatasetImplementationHandler.getInstance().appliesTo()), DatasetImplementationHandler.getInstance());
-        dataTypeServiceMap.put(new ClassStringPair(DatabaseDatasetImplementationService.getInstance().keyword(), DatabaseDatasetImplementationService.getInstance().appliesTo()), DatabaseDatasetImplementationService.getInstance());
-        dataTypeServiceMap.put(new ClassStringPair(InMemoryDatasetImplementationService.getInstance().keyword(), InMemoryDatasetImplementationService.getInstance().appliesTo()), InMemoryDatasetImplementationService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(NullService.getInstance().keyword(), NullService.getInstance().appliesTo()), NullService.getInstance());
     }
 

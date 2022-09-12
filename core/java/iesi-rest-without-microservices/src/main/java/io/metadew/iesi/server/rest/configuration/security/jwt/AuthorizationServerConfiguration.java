@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -32,7 +33,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     private final AuthenticationManager authenticationManager;
     private final IesiUserAuthenticationConverter iesiUserAuthenticationConverter;
     private final DataSource dataSource;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final Environment environment;
 
     @Value("${iesi.security.jwt.access-token-validity}")
@@ -50,13 +51,13 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
             AuthenticationManager authenticationManager,
             IesiUserAuthenticationConverter iesiUserAuthenticationConverter,
             DataSource dataSource,
-            BCryptPasswordEncoder bCryptPasswordEncoder,
+            PasswordEncoder passwordEncoder,
             Environment environment) {
         this.iesiUserDetailsManager = iesiUserDetailsManager;
         this.authenticationManager = authenticationManager;
         this.iesiUserAuthenticationConverter = iesiUserAuthenticationConverter;
         this.dataSource = dataSource;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.passwordEncoder = passwordEncoder;
         this.environment = environment;
     }
 
@@ -126,7 +127,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         if (environment.acceptsProfiles(Profiles.of("test", "sqlite"))) {
             clients.inMemory()
-                    .withClient("iesi").secret(bCryptPasswordEncoder.encode("iesi"))
+                    .withClient("iesi").secret(passwordEncoder.encode("iesi"))
                     .accessTokenValiditySeconds(accessTokenValidityInSeconds)
                     .refreshTokenValiditySeconds(refreshTokenValidityInSeconds)
                     .authorizedGrantTypes("password","refresh_token")

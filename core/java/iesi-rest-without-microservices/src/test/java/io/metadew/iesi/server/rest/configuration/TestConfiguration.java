@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.configuration;
 
 import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkControl;
+import io.metadew.iesi.common.FrameworkInstance;
 import io.metadew.iesi.common.configuration.metadata.objects.MetadataObjectsConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryService;
@@ -13,6 +14,7 @@ import io.metadew.iesi.metadata.service.metadata.MetadataTableService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Order;
 import org.springframework.context.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @Profile("test")
@@ -74,5 +76,10 @@ public class TestConfiguration {
     @Bean
     public DatabaseHandler databaseHandler(FrameworkControl frameworkControl, FrameworkCrypto frameworkCrypto) {
         return new DatabaseHandler(frameworkControl, frameworkCrypto);
+    }
+
+    @Bean
+    public FrameworkInstance frameworkInstance(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        return new FrameworkInstance(metadataRepositoryConfiguration);
     }
 }

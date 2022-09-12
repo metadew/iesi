@@ -40,20 +40,17 @@ public class UserController {
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
 
-    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final TeamService teamService;
     private final IUserService userService;
     private final UserDtoModelAssembler userDtoModelAssembler;
     private final PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
 
-    public UserController(AuthenticationManager authenticationManager,
-                          PasswordEncoder passwordEncoder,
+    public UserController(PasswordEncoder passwordEncoder,
                           TeamService teamService,
                           IUserService userService,
                           UserDtoModelAssembler userDtoModelAssembler,
                           PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler) {
-        this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.teamService = teamService;
         this.userService = userService;

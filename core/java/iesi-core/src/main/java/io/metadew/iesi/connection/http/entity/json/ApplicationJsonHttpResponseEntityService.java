@@ -29,8 +29,6 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
 
     private static ApplicationJsonHttpResponseEntityService instance;
 
-    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
-
     public static synchronized ApplicationJsonHttpResponseEntityService getInstance() {
         if (instance == null) {
             instance = new ApplicationJsonHttpResponseEntityService();
@@ -68,7 +66,7 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
             if (jsonNode.getNodeType().equals(JsonNodeType.MISSING)) {
                 log.warn("response does not contain a valid JSON message: " + jsonNode.toPrettyString() + ". ");
             } else {
-                DatasetImplementationHandler.getInstance().setDataItem(dataset, key, dataTypeHandler.resolve(dataset, key, jsonNode, executionRuntime));
+                DatasetImplementationHandler.getInstance().setDataItem(dataset, key, SpringContext.getBean(DataTypeHandler.class).resolve(dataset, key, jsonNode, executionRuntime));
             }
         }
     }

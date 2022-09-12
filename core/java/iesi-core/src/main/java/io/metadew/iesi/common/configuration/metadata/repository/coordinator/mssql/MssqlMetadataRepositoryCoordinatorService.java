@@ -15,7 +15,6 @@ import java.util.Map;
 public class MssqlMetadataRepositoryCoordinatorService implements IMetadataRepositoryCoordinatorService<MssqlMetadataRepositoryCoordinatorDefinition, MssqlDatabaseConnection> {
 
     private static MssqlMetadataRepositoryCoordinatorService INSTANCE;
-    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public synchronized static MssqlMetadataRepositoryCoordinatorService getInstance() {
         if (INSTANCE == null) {
@@ -64,7 +63,7 @@ public class MssqlMetadataRepositoryCoordinatorService implements IMetadataRepos
             return new MssqlDatabaseConnection(
                     mssqlRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     mssqlRepositoryCoordinatorDefinition.getInitSql(),
                     mssqlRepositoryCoordinatorDefinition.getSchema().orElse(null));
         } else {
@@ -73,7 +72,7 @@ public class MssqlMetadataRepositoryCoordinatorService implements IMetadataRepos
                     mssqlRepositoryCoordinatorDefinition.getPort(),
                     mssqlRepositoryCoordinatorDefinition.getDatabase(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     mssqlRepositoryCoordinatorDefinition.getInitSql(),
                     mssqlRepositoryCoordinatorDefinition.getSchema().orElse(null)
             );

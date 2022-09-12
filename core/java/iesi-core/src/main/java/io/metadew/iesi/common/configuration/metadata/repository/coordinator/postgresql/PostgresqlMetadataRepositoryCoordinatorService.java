@@ -15,7 +15,6 @@ import java.util.Map;
 public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadataRepositoryCoordinatorService<PostgresqlMetadataRepositoryCoordinatorDefinition, PostgresqlDatabaseConnection> {
 
     private static PostgresqlMetadataRepositoryCoordinatorService INSTANCE;
-    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public synchronized static PostgresqlMetadataRepositoryCoordinatorService getInstance() {
         if (INSTANCE == null) {
@@ -64,7 +63,7 @@ public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadata
             return new PostgresqlDatabaseConnection(
                     postgresqlRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     postgresqlRepositoryCoordinatorDefinition.getInitSql(),
                     postgresqlRepositoryCoordinatorDefinition.getSchema().orElse(null));
         } else {
@@ -74,7 +73,7 @@ public class PostgresqlMetadataRepositoryCoordinatorService implements IMetadata
                     postgresqlRepositoryCoordinatorDefinition.getDatabase(),
                     postgresqlRepositoryCoordinatorDefinition.getSchema().orElse(null),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     postgresqlRepositoryCoordinatorDefinition.getInitSql()
             );
         }

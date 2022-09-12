@@ -1,6 +1,5 @@
 spring:
   main:
-    lazy-initialization: true
     banner-mode: "off"
 iesi:
   guard:
@@ -15,6 +14,8 @@ iesi:
       timeout: 30
   home: '.'
   security:
+    encryption:
+      key: c7c1e47391154a6a
     enabled: true
     jwt:
       secret: secret

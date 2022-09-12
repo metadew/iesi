@@ -1,6 +1,7 @@
 package io.metadew.iesi.common.configuration.plugin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -9,28 +10,30 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
-@org.springframework.context.annotation.Configuration
+
 @Log4j2
 @Getter
 public class PluginConfiguration {
 
+
+    private static PluginConfiguration INSTANCE;
     private static final String pluginsKey = "plugins";
 
     private Map<String, FrameworkPlugin> frameworkPluginMap;
 
-    private final Configuration configuration;
-
-    public PluginConfiguration(Configuration configuration) {
-        this.configuration = configuration;
+    public synchronized static PluginConfiguration getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new PluginConfiguration();
+        }
+        return INSTANCE;
     }
 
 
     @SuppressWarnings("unchecked")
-    @PostConstruct
-    private void postConstruct() {
+    private PluginConfiguration() {
         frameworkPluginMap = new HashMap<>();
         if (containsConfiguration()) {
-            Map<String, Object> frameworkPluginsConfigurations = (Map<String, Object>) configuration.getProperties()
+            Map<String, Object> frameworkPluginsConfigurations = (Map<String, Object>) SpringContext.getBean(Configuration.class).getProperties()
                     .get(pluginsKey);
             ObjectMapper objectMapper = new ObjectMapper();
             for (Map.Entry<String, Object> entry : frameworkPluginsConfigurations.entrySet()) {
@@ -43,7 +46,7 @@ public class PluginConfiguration {
 
 
     private boolean containsConfiguration() {
-        return configuration.getProperties().containsKey(PluginConfiguration.pluginsKey) &&
-                (configuration.getProperties().get(PluginConfiguration.pluginsKey) instanceof Map);
+        return SpringContext.getBean(Configuration.class).getProperties().containsKey(PluginConfiguration.pluginsKey) &&
+                (SpringContext.getBean(Configuration.class).getProperties().get(PluginConfiguration.pluginsKey) instanceof Map);
     }
 }

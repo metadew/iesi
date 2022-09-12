@@ -32,9 +32,6 @@ public class EvalVerifySingleField extends ActionTypeExecution {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
-
     // Local
     private String sqlSuccess;
 
@@ -59,11 +56,11 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         String checkValue = convertCheckValue(getParameterResolvedValue(VALUE_KEY));
         String checkOperatorName = convertCheckOperationName(getParameterResolvedValue(OPERATOR_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
-        Connection connection = connectionConfiguration
+        Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
 
-        Database database = databaseHandler.getDatabase(connection);
+        Database database = SpringContext.getBean(DatabaseHandler.class).getDatabase(connection);
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, checkName, checkValue);
         long successTotal = 0;
@@ -71,7 +68,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         CachedRowSet crs;
 
         // Success
-        crs = databaseHandler.executeQuery(database, this.getSqlSuccess());
+        crs = SpringContext.getBean(DatabaseHandler.class).executeQuery(database, this.getSqlSuccess());
         while (crs.next()) {
             successTotal = crs.getLong("RES_SUC");
         }
@@ -79,7 +76,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        crs = databaseHandler.executeQuery(database, this.getSqlError());
+        crs = SpringContext.getBean(DatabaseHandler.class).executeQuery(database, this.getSqlError());
         while (crs.next()) {
             errorTotal = crs.getLong("RES_ERR");
         }

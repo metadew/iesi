@@ -19,8 +19,6 @@ public class EvalExecuteExpression extends ActionTypeExecution {
     private static final String EXPRESSION_KEY = "expression";
     private String expression;
 
-    private final ConditionService conditionService = SpringContext.getBean(ConditionService.class);
-
     public EvalExecuteExpression(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
@@ -30,7 +28,7 @@ public class EvalExecuteExpression extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws InterruptedException, ScriptException {
-        if (conditionService.evaluateCondition(expression, getExecutionControl().getExecutionRuntime(), getActionExecution())) {
+        if (SpringContext.getBean(ConditionService.class).evaluateCondition(expression, getExecutionControl().getExecutionRuntime(), getActionExecution())) {
             getActionExecution().getActionControl().increaseSuccessCount();
             return true;
         } else {

@@ -15,7 +15,6 @@ import java.util.Map;
 public class MysqlMetadataRepositoryCoordinatorService implements IMetadataRepositoryCoordinatorService<MysqlMetadataRepositoryCoordinatorDefinition, MysqlDatabaseConnection> {
 
     private static MysqlMetadataRepositoryCoordinatorService INSTANCE;
-    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public synchronized static MysqlMetadataRepositoryCoordinatorService getInstance() {
         if (INSTANCE == null) {
@@ -65,7 +64,7 @@ public class MysqlMetadataRepositoryCoordinatorService implements IMetadataRepos
                     .map(schema -> new MysqlDatabaseConnection(
                             mysqlRepositoryCoordinatorDefinition.getConnection().get(),
                             metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                            SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                             mysqlRepositoryCoordinatorDefinition.getInitSql(),
                             schema))
                     .orElseThrow(RuntimeException::new);
@@ -76,7 +75,7 @@ public class MysqlMetadataRepositoryCoordinatorService implements IMetadataRepos
                             mysqlRepositoryCoordinatorDefinition.getPort(),
                             s,
                             metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                            SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                             mysqlRepositoryCoordinatorDefinition.getInitSql()
                     ))
                     .orElseThrow(() -> new RuntimeException("Mysql database connection needs a schema"));

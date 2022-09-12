@@ -14,8 +14,6 @@ public class SubroutineParameterConfiguration {
 
     private SubroutineParameter subroutineParameter;
 
-    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration = SpringContext.getBean(MetadataRepositoryConfiguration.class);
-
     // Constructors
     public SubroutineParameterConfiguration(SubroutineParameter subroutineParameter) {
         this.setSubroutineParameter(subroutineParameter);
@@ -28,7 +26,7 @@ public class SubroutineParameterConfiguration {
     public String getInsertStatement(String subroutineName) {
         String sql = "";
 
-        sql += "INSERT INTO " + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
+        sql += "INSERT INTO " + SpringContext.getBean(MetadataRepositoryConfiguration.class).getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
         sql += " (SRT_NM, SRT_PAR_NM, SRT_PAR_VAL) ";
         sql += "VALUES ";
         sql += "(";
@@ -46,9 +44,9 @@ public class SubroutineParameterConfiguration {
     public SubroutineParameter getSubroutineParameter(String subroutineName, String subroutineParameterName) {
         SubroutineParameter subroutineParameter = new SubroutineParameter();
         CachedRowSet crsSubroutineParameter = null;
-        String querySubroutineParameter = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
+        String querySubroutineParameter = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + SpringContext.getBean(MetadataRepositoryConfiguration.class).getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
                 + " where SRT_NM = '" + subroutineName + "' and SRT_PAR_NM = '" + subroutineParameterName + "'";
-        crsSubroutineParameter = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(querySubroutineParameter, "reader");
+        crsSubroutineParameter = SpringContext.getBean(MetadataRepositoryConfiguration.class).getDesignMetadataRepository().executeQuery(querySubroutineParameter, "reader");
         try {
             while (crsSubroutineParameter.next()) {
                 subroutineParameter.setName(subroutineParameterName);

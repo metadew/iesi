@@ -28,10 +28,6 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
     private static final String TARGET_CONNECTION_NAME = "targetConnection";
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final HostConnectionTools hostConnectionTools = SpringContext.getBean(HostConnectionTools.class);
-    private final FileTransferService fileTransferService = SpringContext.getBean(FileTransferService.class);
-    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
-
     public FhoExecuteFileTransfer(ExecutionControl executionControl,
                                   ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -48,30 +44,30 @@ public class FhoExecuteFileTransfer extends ActionTypeExecution {
         String targetConnectionName = convertTargetConnection(getParameterResolvedValue(TARGET_CONNECTION_NAME));
         // Check if source or target are localhost
         // TODO check the creation of the sourceConnections
-        boolean sourceIsOnLocalHost = hostConnectionTools.isOnLocalhost(
+        boolean sourceIsOnLocalHost = SpringContext.getBean(HostConnectionTools.class).isOnLocalhost(
                 sourceConnectionName, this.getExecutionControl().getEnvName());
-        boolean targetIsOnLocalHost = hostConnectionTools.isOnLocalhost(
+        boolean targetIsOnLocalHost = SpringContext.getBean(HostConnectionTools.class).isOnLocalhost(
                 targetConnectionName, this.getExecutionControl().getEnvName());
 
         // Run the action
         FileTransferResult fileTransferResult;
         if (sourceIsOnLocalHost && !targetIsOnLocalHost) {
-            Connection targetConnection = connectionConfiguration
+            Connection targetConnection = SpringContext.getBean(ConnectionConfiguration.class)
                     .get(new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(targetConnectionName, this.getExecutionControl().getEnvName()))));
-            fileTransferResult = fileTransferService.transferLocalToRemote(sourceFilePath,
+            fileTransferResult = SpringContext.getBean(FileTransferService.class).transferLocalToRemote(sourceFilePath,
                     sourceFileName, targetFilePath, targetFileName, targetConnection);
         } else if (!sourceIsOnLocalHost && targetIsOnLocalHost) {
-            Connection sourceConnection = connectionConfiguration
+            Connection sourceConnection = SpringContext.getBean(ConnectionConfiguration.class)
                     .get(new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))
                     .orElseThrow(() -> new RuntimeException(String.format("Unable to find %s", new ConnectionKey(sourceConnectionName, this.getExecutionControl().getEnvName()))));
 
-            fileTransferResult = fileTransferService.transferRemoteToLocal(sourceFilePath,
+            fileTransferResult = SpringContext.getBean(FileTransferService.class).transferRemoteToLocal(sourceFilePath,
                     sourceFileName, sourceConnection, targetFilePath,
                     targetFileName);
         } else if (sourceIsOnLocalHost && targetIsOnLocalHost) {
 
-            fileTransferResult = fileTransferService.transferLocalToLocal(sourceFilePath,
+            fileTransferResult = SpringContext.getBean(FileTransferService.class).transferLocalToLocal(sourceFilePath,
                     sourceFileName, targetFilePath, targetFileName);
         } else {
             throw new RuntimeException("Method not supported yet");

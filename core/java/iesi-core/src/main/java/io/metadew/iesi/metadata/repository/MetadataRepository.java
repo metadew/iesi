@@ -23,14 +23,11 @@ public abstract class MetadataRepository {
     @Getter
     private final RepositoryCoordinator repositoryCoordinator;
 
-    private final MetadataTablesConfiguration metadataTablesConfiguration = SpringContext.getBean(MetadataTablesConfiguration.class);
-    private final MetadataTableService metadataTableService = SpringContext.getBean(MetadataTableService.class);
-
     public MetadataRepository(String instanceName,
                               RepositoryCoordinator repositoryCoordinator) {
         this.tablePrefix = "iesi".toUpperCase() + "_" + (instanceName != null ? instanceName + "_" : "");
         this.repositoryCoordinator = repositoryCoordinator;
-        this.metadataTables = metadataTablesConfiguration.getMetadataTables().stream()
+        this.metadataTables = SpringContext.getBean(MetadataTablesConfiguration.class).getMetadataTables().stream()
                 .filter(metadataTable -> metadataTable.getCategory().equalsIgnoreCase(getCategory()))
                 .peek(metadataTable -> metadataTable.setName(tablePrefix + metadataTable.getName()))
                 .collect(Collectors.toList());
@@ -87,7 +84,7 @@ public abstract class MetadataRepository {
 
 
     public String getTableNameByLabel(String label) {
-        return metadataTableService.getByLabel(label).getName();
+        return SpringContext.getBean(MetadataTableService.class).getByLabel(label).getName();
     }
 
     public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;

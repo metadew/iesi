@@ -24,7 +24,6 @@ public class Configuration {
     private static final String iesiKeyword = "iesi";
     private Map<String, Object> properties;
 
-
     @PostConstruct
     private void postConstruct() {
         properties = new HashMap<>();
@@ -181,11 +180,8 @@ public class Configuration {
     }
 
     private InputStream getResourceAsStream(String resource) throws IOException {
-        final InputStream in = Configuration.class.getClassLoader().getResourceAsStream(resource);
-
-
-
-        return in == null ? Configuration.class.getClassLoader().getResourceAsStream(resource) : in;
+        final InputStream in = getContextClassLoader().getResourceAsStream(resource);
+        return in == null ? getClass().getResourceAsStream(resource) : in;
     }
 
     private ClassLoader getContextClassLoader() {

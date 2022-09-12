@@ -15,7 +15,6 @@ import java.util.Map;
 public class SqliteMetadataRepositoryCoordinatorService implements IMetadataRepositoryCoordinatorService<SQLiteMetadataRepositoryCoordinatorDefinition, SqliteDatabaseConnection> {
 
     private static SqliteMetadataRepositoryCoordinatorService INSTANCE;
-    private final FrameworkControl frameworkControl = SpringContext.getBean(FrameworkControl.class);
 
     public synchronized static SqliteMetadataRepositoryCoordinatorService getInstance() {
         if (INSTANCE == null) {
@@ -44,13 +43,13 @@ public class SqliteMetadataRepositoryCoordinatorService implements IMetadataRepo
     public SqliteDatabaseConnection getDatabaseConnection(SQLiteMetadataRepositoryCoordinatorDefinition sqLiteRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
         if (sqLiteRepositoryCoordinatorDefinition.getConnection().isPresent()) {
             return new SqliteDatabaseConnection(
-                    frameworkControl.resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getConnection().get()),
+                    SpringContext.getBean(FrameworkControl.class).resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getConnection().get()),
                     "",
                     "",
                     sqLiteRepositoryCoordinatorDefinition.getInitSql());
         } else {
             return new SqliteDatabaseConnection(
-                    frameworkControl.resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getFile()),
+                    SpringContext.getBean(FrameworkControl.class).resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getFile()),
                     sqLiteRepositoryCoordinatorDefinition.getInitSql());
         }
     }

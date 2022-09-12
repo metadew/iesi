@@ -17,8 +17,6 @@ import java.text.MessageFormat;
 @Log4j2
 public class ConnIsAlive extends ActionTypeExecution {
 
-    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
-
     // Parameters
 
     private final static String CONNECTION_KEY = "connection";
@@ -33,7 +31,7 @@ public class ConnIsAlive extends ActionTypeExecution {
     protected boolean executeAction() throws InterruptedException {
         // Get Connection
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
-        Connection connection = connectionConfiguration
+        Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
 

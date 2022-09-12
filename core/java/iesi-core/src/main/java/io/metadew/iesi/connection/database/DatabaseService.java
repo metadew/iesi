@@ -26,11 +26,9 @@ import java.util.stream.Collectors;
 @Log4j2
 public abstract class DatabaseService<T extends Database> implements IDatabaseService<T> {
 
-    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
-
     public Connection getConnection(T database) throws SQLException {
         if (database.getConnectionPool() == null) {
-            database.setConnectionPool(databaseHandler.createConnectionPool(database, database.getDatabaseConnection()));
+            database.setConnectionPool(SpringContext.getBean(DatabaseHandler.class).createConnectionPool(database, database.getDatabaseConnection()));
         }
         return database.getConnectionPool().getConnection();
     }

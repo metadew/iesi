@@ -15,7 +15,6 @@ import java.util.Map;
 public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRepositoryCoordinatorService<NetezzaMetadataRepositoryCoordinatorDefinition, NetezzaDatabaseConnection> {
 
     private static NetezzaMetadataRepositoryCoordinatorService INSTANCE;
-    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public synchronized static NetezzaMetadataRepositoryCoordinatorService getInstance() {
         if (INSTANCE == null) {
@@ -65,7 +64,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
             netezzaDatabaseConnection = new NetezzaDatabaseConnection(
                     netezzaRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     netezzaRepositoryCoordinatorDefinition.getInitSql());
             netezzaRepositoryCoordinatorDefinition.getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
         } else {
@@ -74,7 +73,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
                     netezzaRepositoryCoordinatorDefinition.getPort(),
                     netezzaRepositoryCoordinatorDefinition.getDatabase(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    frameworkCrypto.decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     netezzaRepositoryCoordinatorDefinition.getInitSql()
             );
             netezzaRepositoryCoordinatorDefinition.getSchema().ifPresent(netezzaDatabaseConnection::setSchema);

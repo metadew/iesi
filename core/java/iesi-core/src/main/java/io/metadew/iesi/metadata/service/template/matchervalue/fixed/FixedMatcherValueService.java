@@ -13,8 +13,6 @@ public class FixedMatcherValueService implements IMatcherValueService<MatcherFix
 
     private static FixedMatcherValueService INSTANCE;
 
-    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
-
     public synchronized static FixedMatcherValueService getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new FixedMatcherValueService();
@@ -25,8 +23,8 @@ public class FixedMatcherValueService implements IMatcherValueService<MatcherFix
     @Override
     public boolean matches(MatcherFixedValue matcherValue, DataType dataType, ExecutionRuntime executionRuntime) {
         log.info("checking " + matcherValue.toString() + " against " + dataType.toString());
-        return dataTypeHandler.equals(dataType,
-                dataTypeHandler.resolve(matcherValue.getValue(), executionRuntime),
+        return SpringContext.getBean(DataTypeHandler.class).equals(dataType,
+                SpringContext.getBean(DataTypeHandler.class).resolve(matcherValue.getValue(), executionRuntime),
                 executionRuntime);
     }
 

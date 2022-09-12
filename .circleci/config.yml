@@ -46,7 +46,9 @@ jobs:
             - v1-dependencies-{{ checksum "~/pom-checksum" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
+      - run:
+          name: Get list of directories
+          command: ls ~/repo/core/java/iesi-core
       - run:
           name: Fetch dependencies for Core
           command: |

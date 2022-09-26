@@ -27,6 +27,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.powermock.reflect.Whitebox;
@@ -62,6 +63,10 @@ class DatabaseDatasetImplementationServiceTest {
 
     @Autowired
     private DatabaseDatasetImplementationKeyValueConfiguration databaseDatasetImplementationKeyValueConfiguration;
+
+    @Autowired
+    @InjectMocks
+    private DataTypeHandler dataTypeHandler;
 
     @SpyBean
     private DataTypeHandler dataTypeHandlerSpy;
@@ -346,6 +351,11 @@ class DatabaseDatasetImplementationServiceTest {
         datasetConfiguration.insert(dataset);
         ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":{\"key2\":\"value2\"}}");
 
+        DatabaseDatasetImplementationService databaseDatasetImplementationService = DatabaseDatasetImplementationService.getInstance();
+        DatabaseDatasetImplementationService databaseDatasetImplementationServiceSpy = Mockito.spy(databaseDatasetImplementationService);
+        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", databaseDatasetImplementationServiceSpy);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
+
         DataType dataType = DatabaseDatasetImplementationService.getInstance()
                 .resolve(
                         databaseDatasetImplementation,
@@ -364,7 +374,7 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key1",
                                 "dataset"
                         ));
-        DataType dataType1 = DatasetImplementationHandler.getInstance()
+        DataType dataType1 = dataTypeHandler
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
 
         assertThat(dataType1 instanceof DatabaseDatasetImplementation).isTrue();
@@ -378,6 +388,8 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key2",
                                 "value2"
                         ));
+        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
 }

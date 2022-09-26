@@ -374,6 +374,7 @@ class DatabaseDatasetImplementationServiceTest {
                         ));
         DataType dataType1 = dataTypeHandler
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
+
         assertThat(dataType1 instanceof DatabaseDatasetImplementation).isTrue();
         assertThat(((DatabaseDatasetImplementation) dataType1).getKeyValues())
                 .hasSize(1)

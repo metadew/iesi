@@ -39,3 +39,14 @@ jobs:
         run: |
           cd core/java/iesi-core
           mvn clean install -Dmaven.deploy.skip=true -Dgpg.skip
+      - name: Save test results
+        run: |
+          mkdir -p ~/test-results/junit/
+          find core/java/iesi-core/target/surefire-reports/ -type f | grep -i xml$ | xargs -i cp {} ~/test-results/junit/
+      - name: Store iesi-core artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: iesi-core-0.10.0-SNAPSHOT.jar
+          path: | 
+            core/java/iesi-core/target/iesi-core-0.10.0-SNAPSHOT.jar
+            core/java/iesi-core/target/iesi-core-0.10.0-SNAPSHOT-exec.jar

@@ -2,6 +2,8 @@ server:
   servlet:
     context-path: /api
 spring:
+  main:
+    banner-mode: "off"
   ldap:
     embedded:
       port: 8389

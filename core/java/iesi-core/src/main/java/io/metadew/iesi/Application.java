@@ -14,6 +14,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Lazy;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "io.metadew.iesi", "${pluginPackage:#{''}}"})
@@ -21,14 +22,19 @@ import org.springframework.context.annotation.ComponentScan;
 public class Application implements ApplicationRunner {
 
     @Autowired
+    @Lazy
     private AssemblyLauncher assemblyLauncher;
     @Autowired
+    @Lazy
     private MetadataLauncher metadataLauncher;
     @Autowired
+    @Lazy
     private ExecutionLauncher executionLauncher;
     @Autowired
+    @Lazy
     private OpenAPILauncher openAPILauncher;
     @Autowired
+    @Lazy
     private FrameworkCrypto frameworkCrypto;
 
     public static void main(String[] args) {

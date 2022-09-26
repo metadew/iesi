@@ -25,7 +25,7 @@ RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-ning-servi
 RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
 WORKDIR $APP/core/java/iesi-core
 RUN mvn versions:set -DnewVersion=0.10.0-SNAPSHOT
-RUN mvn -P dependencies clean install project-info-reports:dependencies -Dmaven.test.skip=true -Dmaven.deploy.skip=true -Dgpg.skip
+RUN mvn -P dependencies clean install project-info-reports:dependencies -Dmaven.deploy.skip=true -Dgpg.skip
 WORKDIR $APP/core/java/iesi-rest-without-microservices
 RUN mvn versions:set -DnewVersion=0.10.0-SNAPSHOT
 RUN mvn clean install project-info-reports:dependencies -Diesi-rest.version=0.10.0-SNAPSHOT -Dmaven.test.skip=true

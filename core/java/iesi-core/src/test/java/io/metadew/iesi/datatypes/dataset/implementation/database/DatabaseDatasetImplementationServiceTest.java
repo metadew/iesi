@@ -349,10 +349,6 @@ class DatabaseDatasetImplementationServiceTest {
         datasetConfiguration.insert(dataset);
         ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":{\"key2\":\"value2\"}}");
 
-        DatabaseDatasetImplementationService databaseDatasetImplementationService = DatabaseDatasetImplementationService.getInstance();
-        DatabaseDatasetImplementationService databaseDatasetImplementationServiceSpy = Mockito.spy(databaseDatasetImplementationService);
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", databaseDatasetImplementationServiceSpy);
-
         DataType dataType = DatabaseDatasetImplementationService.getInstance()
                 .resolve(
                         databaseDatasetImplementation,
@@ -385,7 +381,6 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key2",
                                 "value2"
                         ));
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
     }
 
 }

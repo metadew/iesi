@@ -39,16 +39,6 @@ jobs:
         run: |
           mkdir -p ~/test-results/junit/
           find core/java/iesi-core/target/surefire-reports/ -type f | grep -i xml$ | xargs -i cp {} ~/test-results/junit/
-      - name: Store iesi-core artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: iesi-core-0.10.0-SNAPSHOT.jar
-          path: core/java/iesi-core/target/iesi-core-0.10.0-SNAPSHOT.jar
-      - name: Store iesi-core executable artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: iesi-core-0.10.0-SNAPSHOT-exec.jar
-          path: core/java/iesi-core/target/iesi-core-0.10.0-SNAPSHOT-exec.jar
       - name: Fetch dependencies for REST server
         run: |
           cd core/java/iesi-rest-without-microservices
@@ -61,11 +51,8 @@ jobs:
         run: |
           mkdir -p ~/test-results/junit/
           find core/java/iesi-rest-without-microservices/target/surefire-reports/ -type f | grep -i xml$ | xargs -i cp {} ~/test-results/junit/
-      - name: Store iesi-rest artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: iesi-rest-0.10.0-SNAPSHOT.jar
-          path: core/java/iesi-rest-without-microservices/target/iesi-rest-0.10.0-SNAPSHOT.jar
+      - name: Create sandbox folder
+        run: mkdir sandbox
       - name: Build assembly
         run: |
           cd core/java/iesi-core
@@ -73,4 +60,4 @@ jobs:
           cd ../iesi-rest-without-microservices
           mvn project-info-reports:dependencies
           cd ../iesi-core/target
-          java -jar iesi-core-0.10.0-SNAPSHOT-exec.jar -launcher assembly -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.10.0-SNAPSHOT
+          java -jar iesi-core-0.10.0-SNAPSHOT-exec.jar -launcher assembly -repository . -sandbox sandbox -instance assembly -version 0.10.0-SNAPSHOT

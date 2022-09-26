@@ -70,7 +70,7 @@ jobs:
         run: |
           cd core/java/iesi-core
           mvn -P dependencies validate project-info-reports:dependencies
-          cd core/java/iesi-rest-without-microservices
+          cd ../iesi-rest-without-microservices
           mvn project-info-reports:dependencies
-          cd core/java/iesi-core/target
+          cd ../iesi-core/target
           java -jar iesi-core-0.10.0-SNAPSHOT-exec.jar -launcher assembly -repository ~/repo -sandbox ~/sandbox -instance assembly -version 0.10.0-SNAPSHOT

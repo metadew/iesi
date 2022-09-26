@@ -313,7 +313,6 @@ class DatabaseDatasetImplementationServiceTest {
     }
 
     @Test
-    @Ignore
     void testResolveNested() throws JsonProcessingException {
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
         when(executionRuntime.resolveVariables(anyString()))

@@ -82,8 +82,6 @@ public class DataTypeHandler {
     }
 
     public IDataTypeService getDataTypeService(String key) {
-        System.out.println("KEY: " + key);
-        System.out.println("MAP: " + dataTypeServiceMap);
         return dataTypeServiceMap.entrySet().stream()
                 .filter(entry -> entry.getKey().keyword.equals(key))
                 .map(Map.Entry::getValue)

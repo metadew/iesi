@@ -47,6 +47,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: iesi-core-0.10.0-SNAPSHOT.jar
-          path: | 
-            core/java/iesi-core/target/iesi-core-0.10.0-SNAPSHOT.jar
-            core/java/iesi-core/target/iesi-core-0.10.0-SNAPSHOT-exec.jar
+          path: core/java/iesi-core/target/iesi-core-0.10.0-SNAPSHOT.jar
+      - name: Store iesi-core executable artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: iesi-core-0.10.0-SNAPSHOT-exec.jar
+          path: core/java/iesi-core/target/iesi-core-0.10.0-SNAPSHOT-exec.jar

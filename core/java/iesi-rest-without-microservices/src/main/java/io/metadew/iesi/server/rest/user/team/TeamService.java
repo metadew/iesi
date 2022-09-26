@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Service
+@Service("restTeamService")
 public class TeamService implements ITeamService {
 
     private final ITeamDtoRepository teamDtoRepository;

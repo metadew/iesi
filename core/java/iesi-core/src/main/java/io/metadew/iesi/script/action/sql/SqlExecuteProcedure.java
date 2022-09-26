@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.sql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
@@ -30,6 +31,9 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
     private static final String APPEND_OUTPUT_KEY = "appendOutput";
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+
     public SqlExecuteProcedure(ExecutionControl executionControl,
                                ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -46,15 +50,15 @@ public class SqlExecuteProcedure extends ActionTypeExecution {
         boolean appendOutput = convertAppendOutput(getParameterResolvedValue(APPEND_OUTPUT_KEY));
 
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = connectionConfiguration
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Database database = databaseHandler.getDatabase(connection);
 
         SqlScriptResult sqlScriptResult = null;
         CachedRowSet crs = null;
-        crs = DatabaseHandler.getInstance().executeProcedure(database, sqlProcedure, sqlParameters);
+        crs = databaseHandler.executeProcedure(database, sqlProcedure, sqlParameters);
         // TODO resolve for files and resolve inside
         // TODO Retrieve config from a file
 

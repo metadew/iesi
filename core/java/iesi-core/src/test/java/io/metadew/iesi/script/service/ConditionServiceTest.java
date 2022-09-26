@@ -4,6 +4,9 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.script.ScriptException;
 
@@ -11,8 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-// https://commons.apache.org/proper/commons-jexl/reference/syntax.html
+@SpringBootTest(classes = ConditionService.class )
+@ActiveProfiles("test")
 class ConditionServiceTest {
+
+    @Autowired
+    private ConditionService conditionService;
 
     @Test
     void testSimpleJexlExpressions() throws ScriptException {
@@ -36,11 +43,11 @@ class ConditionServiceTest {
         when(executionRuntime.resolveConceptLookup(condition3))
                 .thenReturn(new LookupResult(condition3, "", condition2));
 
-        assertThat(ConditionService.getInstance().evaluateCondition(condition1, executionRuntime, actionExecution))
+        assertThat(conditionService.evaluateCondition(condition1, executionRuntime, actionExecution))
                 .isTrue();
-        assertThat(ConditionService.getInstance().evaluateCondition(condition2, executionRuntime, actionExecution))
+        assertThat(conditionService.evaluateCondition(condition2, executionRuntime, actionExecution))
                 .isTrue();
-        assertThat(ConditionService.getInstance().evaluateCondition(condition3, executionRuntime, actionExecution))
+        assertThat(conditionService.evaluateCondition(condition3, executionRuntime, actionExecution))
                 .isFalse();
     }
     @Test
@@ -65,11 +72,11 @@ class ConditionServiceTest {
         when(executionRuntime.resolveConceptLookup("\"b\" == \"a\""))
                 .thenReturn(new LookupResult("\"b\" == \"a\"", "", "\"b\" == \"a\""));
 
-        assertThat(ConditionService.getInstance().evaluateCondition(condition1, executionRuntime, actionExecution))
+        assertThat(conditionService.evaluateCondition(condition1, executionRuntime, actionExecution))
                 .isTrue();
-        assertThat(ConditionService.getInstance().evaluateCondition(condition2, executionRuntime, actionExecution))
+        assertThat(conditionService.evaluateCondition(condition2, executionRuntime, actionExecution))
                 .isTrue();
-        assertThat(ConditionService.getInstance().evaluateCondition(condition3, executionRuntime, actionExecution))
+        assertThat(conditionService.evaluateCondition(condition3, executionRuntime, actionExecution))
                 .isFalse();
     }
 

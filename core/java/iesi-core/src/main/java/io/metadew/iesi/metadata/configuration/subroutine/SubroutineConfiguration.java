@@ -4,6 +4,7 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.definition.subroutine.Subroutine;
 import io.metadew.iesi.metadata.definition.subroutine.SubroutineParameter;
+import org.springframework.stereotype.Component;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -12,34 +13,33 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class SubroutineConfiguration {
 
     private Subroutine subroutine;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    // Constructors
-    public SubroutineConfiguration() {
+    public SubroutineConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    public SubroutineConfiguration(Subroutine subroutine) {
-        this.setSubroutine(subroutine);
-    }
 
     // Insert
     public String getInsertStatement() {
         String sql = "";
 
         if (this.exists()) {
-            sql += "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
+            sql += "DELETE FROM " + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters");
             sql += " WHERE SRT_NM = " + SQLTools.getStringForSQL(this.getSubroutine().getName());
             sql += ";";
             sql += "\n";
-            sql += "DELETE FROM " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
+            sql += "DELETE FROM " + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("Subroutines");
             sql += " WHERE SRT_NM = " + SQLTools.getStringForSQL(this.getSubroutine().getName());
             sql += ";";
             sql += "\n";
         }
 
-        sql += "INSERT INTO " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines");
+        sql += "INSERT INTO " + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("Subroutines");
         sql += " (SRT_NM, SRT_TYP_NM, SRT_DSC) ";
         sql += "VALUES ";
         sql += "(";
@@ -79,8 +79,8 @@ public class SubroutineConfiguration {
     public Subroutine getSubroutine(String subroutineName) {
         Subroutine subroutine = new Subroutine();
         CachedRowSet crsSubroutine = null;
-        String querySubroutine = "select SRT_NM, SRT_TYP_NM, SRT_DSC from " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Subroutines") + " where SRT_NM = '" + subroutineName + "'";
-        crsSubroutine = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(querySubroutine, "reader");
+        String querySubroutine = "select SRT_NM, SRT_TYP_NM, SRT_DSC from " + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("Subroutines") + " where SRT_NM = '" + subroutineName + "'";
+        crsSubroutine = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(querySubroutine, "reader");
         SubroutineParameterConfiguration subroutineParameterConfiguration = new SubroutineParameterConfiguration();
         try {
             while (crsSubroutine.next()) {
@@ -90,9 +90,9 @@ public class SubroutineConfiguration {
 
                 // Get parameters
                 CachedRowSet crsSubroutineParameters = null;
-                String querySubroutineParameters = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
+                String querySubroutineParameters = "select SRT_NM, SRT_PAR_NM, SRT_PAR_VAL from " + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("SubroutineParameters")
                         + " where SRT_NM = '" + subroutineName + "'";
-                crsSubroutineParameters = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(querySubroutineParameters, "reader");
+                crsSubroutineParameters = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(querySubroutineParameters, "reader");
                 List<SubroutineParameter> subroutineParameterList = new ArrayList();
                 while (crsSubroutineParameters.next()) {
                     subroutineParameterList

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.configuration.environment.EnvironmentParameterConfiguration;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
@@ -33,7 +34,7 @@ public class EnvironmentLookup implements LookupInstruction {
         String environmentName = inputParameterMatcher.group(ENVIRONMENT_NAME_KEY);
         String environmentParameterName = inputParameterMatcher.group(ENVIRONMENT_PARAMETER_NAME_KEY);
 
-        Optional<String> environmentParameterValue = EnvironmentParameterConfiguration.getInstance().get(new EnvironmentParameterKey(new EnvironmentKey(environmentName), environmentParameterName))
+        Optional<String> environmentParameterValue = SpringContext.getBean(EnvironmentParameterConfiguration.class).get(new EnvironmentParameterKey(new EnvironmentKey(environmentName), environmentParameterName))
                 .map(EnvironmentParameter::getValue);
 
         if (!environmentParameterValue.isPresent()) {

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.eval;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
@@ -55,8 +56,8 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         boolean isMandatory = convertIsMandatory(getParameterResolvedValue(IS_MANDATORY_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
         // Get Connection
-        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Connection connection = SpringContext.getBean(ConnectionConfiguration.class).get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName())).get();
+        Database database = SpringContext.getBean(DatabaseHandler.class).getDatabase(connection);
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, evaluationFieldName, evaluationFieldValue, isMandatory);
         long successTotal = 0;
@@ -64,7 +65,7 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         CachedRowSet cachedRowSet;
 
         // Success
-        cachedRowSet = DatabaseHandler.getInstance().executeQuery(database, this.getSqlSuccess());
+        cachedRowSet = SpringContext.getBean(DatabaseHandler.class).executeQuery(database, this.getSqlSuccess());
         while (cachedRowSet.next()) {
             successTotal = cachedRowSet.getLong("RES_SUC");
         }
@@ -72,7 +73,7 @@ public class EvalVerifyMandatoryField extends ActionTypeExecution {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        cachedRowSet = DatabaseHandler.getInstance().executeQuery(database, this.getSqlError());
+        cachedRowSet = SpringContext.getBean(DatabaseHandler.class).executeQuery(database, this.getSqlError());
         while (cachedRowSet.next()) {
             errorTotal = cachedRowSet.getLong("RES_ERR");
         }

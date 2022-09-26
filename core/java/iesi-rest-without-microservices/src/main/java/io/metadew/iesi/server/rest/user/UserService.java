@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-@Service
+@Service("restUserService")
 public class UserService implements IUserService {
 
     private final UserDtoRepository userDtoRepository;

@@ -3,21 +3,17 @@ package io.metadew.iesi.metadata.service.metadata;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
+@Component
 @Log4j2
 public class MetadataFieldService {
 
-    private static MetadataFieldService INSTANCE;
+    private final MetadataTableService metadataTableService;
 
-    public synchronized static MetadataFieldService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataFieldService();
-        }
-        return INSTANCE;
-    }
-
-    private MetadataFieldService() {
+    public MetadataFieldService(MetadataTableService metadataTableService) {
+        this.metadataTableService = metadataTableService;
     }
 
     public MetadataField getByName(MetadataTable metadataTable, String name) {
@@ -29,7 +25,7 @@ public class MetadataFieldService {
     }
 
     public MetadataField getByTableLabelAndName(String label, String name) {
-        return getByName(MetadataTableService.getInstance().getByLabel(label), name);
+        return getByName(metadataTableService.getByLabel(label), name);
     }
 
     public String truncateAccordingToConfiguration(String tableLabel, String columnName, String value) {

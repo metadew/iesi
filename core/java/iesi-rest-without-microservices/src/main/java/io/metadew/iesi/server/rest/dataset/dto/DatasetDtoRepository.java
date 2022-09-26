@@ -31,11 +31,15 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
 
     @Autowired
-    public DatasetDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
+    public DatasetDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                                FilterService filterService,
+                                MetadataTablesConfiguration metadataTablesConfiguration) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
         this.filterService = filterService;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
     }
 
     public Page<DatasetDto> fetchAll(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
@@ -83,9 +87,9 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "datasets.SECURITY_GROUP_NM as dataset_security_group_name, " +
                 "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
                 "from (" + getBaseQuery(authentication, pageable, datasetFilters) + ") base_datasets " + //base table
-                "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "inner join " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
                 "on base_datasets.ID=datasets.ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
                 "on dataset_impls.DATASET_ID=datasets.ID ;";
     }
 
@@ -94,14 +98,14 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "dataset_impls.ID as dataset_impl_id, " +
                 "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
                 "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
                 "on dataset_impls.DATASET_ID=datasets.ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
                 "on dataset_impls.ID = dataset_in_mem_impls.ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
                 "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
                 "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
                 "where dataset_impls.ID={0};";
     }
@@ -111,21 +115,21 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
                 "dataset_impls.ID as dataset_impl_id, " +
                 "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
                 "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
                 "on dataset_impls.DATASET_ID=datasets.ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
                 "on dataset_impls.ID = dataset_in_mem_impls.ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
                 "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
                 "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
                 "where datasets.ID={0};";
     }
 
     private String getBaseQuery(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
         return "select datasets.ID " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
                 getWhereClause(authentication, datasetFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -174,7 +178,7 @@ public class DatasetDtoRepository extends PaginatedRepository implements IDatase
 
     private long getRowSize(Authentication authentication, Set<DatasetFilter> datasetFilters) throws SQLException {
         String query = "select count(*) as row_count from " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
                 getWhereClause(authentication, datasetFilters) + ";";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDataMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();

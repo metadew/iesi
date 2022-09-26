@@ -1,3 +1,6 @@
+spring:
+  main:
+    banner-mode: "off"
 iesi:
   guard:
     authenticate: N

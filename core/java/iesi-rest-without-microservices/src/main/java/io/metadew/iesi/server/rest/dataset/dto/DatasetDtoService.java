@@ -30,11 +30,13 @@ import java.util.stream.Collectors;
 @ConditionalOnWebApplication
 public class DatasetDtoService implements IDatasetDtoService {
 
-    final IDatasetDtoRepository datasetDtoRepository;
+    private final IDatasetDtoRepository datasetDtoRepository;
+    private final SecurityGroupConfiguration securityGroupConfiguration;
 
     @Autowired
-    public DatasetDtoService(IDatasetDtoRepository datasetDtoRepository) {
+    public DatasetDtoService(IDatasetDtoRepository datasetDtoRepository, SecurityGroupConfiguration securityGroupConfiguration) {
         this.datasetDtoRepository = datasetDtoRepository;
+        this.securityGroupConfiguration = securityGroupConfiguration;
     }
 
     public Page<DatasetDto> fetchAll(Authentication authentication, Pageable pageable, Set<DatasetFilter> datasetFilters) {
@@ -55,7 +57,7 @@ public class DatasetDtoService implements IDatasetDtoService {
         String datasetName = datasetPostDto.getName();
         UUID datasetUuid = UUID.randomUUID();
 
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(datasetPostDto.getSecurityGroupName())
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName(datasetPostDto.getSecurityGroupName())
                 .orElseThrow(() -> new RuntimeException("Could not find security group with name + " + datasetPostDto.getSecurityGroupName()));
 
         return new Dataset(

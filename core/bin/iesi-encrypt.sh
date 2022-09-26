@@ -11,6 +11,7 @@ for i in *.jar; do
     classpath="$classpath:$lib_dir/$i"
 done
 
-java -cp $classpath io.metadew.iesi.launch.EncryptionLauncher "$@"
+
+java -cp $classpath io.metadew.iesi.Application -launcher encryption "$@"
 
 cd $calling_dir

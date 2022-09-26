@@ -1,14 +1,16 @@
 package io.metadew.iesi.metadata.configuration.component;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
-import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.repository.RepositoryTestSetup;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,40 +21,21 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SpringBootTest(classes = ComponentVersionConfiguration.class)
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ComponentVersionConfigurationTest {
 
-    private DesignMetadataRepository designMetadataRepository;
     private ComponentVersion componentVersion1;
     private ComponentVersion componentVersion2;
     private ComponentVersion componentVersion3;
 
-    @BeforeAll
-    static void prepare() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
-
+    @Autowired
+    private ComponentVersionConfiguration componentVersionConfiguration;
 
     @BeforeEach
     void setup() {
-        this.designMetadataRepository = RepositoryTestSetup.getDesignMetadataRepository();
         componentVersion1 = new ComponentVersionBuilder("1", 1)
                 .description("test")
                 .build();
@@ -66,21 +49,21 @@ class ComponentVersionConfigurationTest {
 
     @Test
     void componentVersionNotExistsTest() {
-        assertFalse(ComponentVersionConfiguration.getInstance().exists(componentVersion1));
+        assertFalse(componentVersionConfiguration.exists(componentVersion1));
     }
 
     @Test
     void componentVersionExistsTest() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        assertTrue(ComponentVersionConfiguration.getInstance().exists(componentVersion1.getMetadataKey()));
+        componentVersionConfiguration.insert(componentVersion1);
+        assertTrue(componentVersionConfiguration.exists(componentVersion1.getMetadataKey()));
     }
 
     @Test
     void componentVersionInsertTest() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        assertEquals(1, ComponentVersionConfiguration.getInstance().getAll().size());
+        componentVersionConfiguration.insert(componentVersion1);
+        assertEquals(1, componentVersionConfiguration.getAll().size());
 
-        Optional<ComponentVersion> fetchedComponentVersion1 = ComponentVersionConfiguration.getInstance().get(componentVersion1.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion1 = componentVersionConfiguration.get(componentVersion1.getMetadataKey());
         assertTrue(fetchedComponentVersion1.isPresent());
         assertEquals(componentVersion1, fetchedComponentVersion1.get());
 
@@ -88,182 +71,183 @@ class ComponentVersionConfigurationTest {
 
     @Test
     void componentVersionInsertAlreadyExistsTest() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        assertThrows(MetadataAlreadyExistsException.class,() -> ComponentVersionConfiguration.getInstance().insert(componentVersion1));
+        componentVersionConfiguration.insert(componentVersion1);
+        assertThrows(MetadataAlreadyExistsException.class, () -> componentVersionConfiguration.insert(componentVersion1));
     }
 
     @Test
     void componentVersionDeleteTest() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
-        assertEquals(3, ComponentVersionConfiguration.getInstance().getAll().size());
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
+        assertEquals(3, componentVersionConfiguration.getAll().size());
 
-        ComponentVersionConfiguration.getInstance().delete(componentVersion1.getMetadataKey());
+        componentVersionConfiguration.delete(componentVersion1.getMetadataKey());
 
-        assertEquals(2, ComponentVersionConfiguration.getInstance().getAll().size());
+        assertEquals(2, componentVersionConfiguration.getAll().size());
 
-        Optional<ComponentVersion> fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().get(componentVersion2.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion2 = componentVersionConfiguration.get(componentVersion2.getMetadataKey());
         assertTrue(fetchedComponentVersion2.isPresent());
         assertEquals(componentVersion2, fetchedComponentVersion2.get());
-        Optional<ComponentVersion> fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().get(componentVersion3.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion3 = componentVersionConfiguration.get(componentVersion3.getMetadataKey());
         assertTrue(fetchedComponentVersion3.isPresent());
         assertEquals(componentVersion3, fetchedComponentVersion3.get());
     }
 
     @Test
     void componentVersionDeleteDoesNotExistTest() {
-        assertThrows(MetadataDoesNotExistException.class,() ->
-                ComponentVersionConfiguration.getInstance().delete(componentVersion1.getMetadataKey()));
+        assertThrows(MetadataDoesNotExistException.class, () ->
+                componentVersionConfiguration.delete(componentVersion1.getMetadataKey()));
     }
 
     @Test
-    void componentVersionGetNotExistsTest(){
-        assertFalse(ComponentVersionConfiguration.getInstance().exists(componentVersion1));
-        assertFalse(ComponentVersionConfiguration.getInstance().get(componentVersion1.getMetadataKey()).isPresent());
+    void componentVersionGetNotExistsTest() {
+        assertFalse(componentVersionConfiguration.exists(componentVersion1));
+        assertFalse(componentVersionConfiguration.get(componentVersion1.getMetadataKey()).isPresent());
     }
 
     @Test
     void componentVersionUpdate1Test() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
 
-        Optional<ComponentVersion> fetchedComponentVersion1 = ComponentVersionConfiguration.getInstance().get(componentVersion1.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion1 = componentVersionConfiguration.get(componentVersion1.getMetadataKey());
         assertTrue(fetchedComponentVersion1.isPresent());
         assertEquals("test", fetchedComponentVersion1.get().getDescription());
-        Optional<ComponentVersion> fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().get(componentVersion2.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion2 = componentVersionConfiguration.get(componentVersion2.getMetadataKey());
         assertTrue(fetchedComponentVersion2.isPresent());
         assertEquals("test", fetchedComponentVersion2.get().getDescription());
-        Optional<ComponentVersion> fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().get(componentVersion3.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion3 = componentVersionConfiguration.get(componentVersion3.getMetadataKey());
         assertTrue(fetchedComponentVersion3.isPresent());
         assertEquals("test", fetchedComponentVersion3.get().getDescription());
 
         componentVersion1.setDescription("dummy");
-        ComponentVersionConfiguration.getInstance().update(componentVersion1);
+        componentVersionConfiguration.update(componentVersion1);
 
-        fetchedComponentVersion1 = ComponentVersionConfiguration.getInstance().get(componentVersion1.getMetadataKey());
+        fetchedComponentVersion1 = componentVersionConfiguration.get(componentVersion1.getMetadataKey());
         assertTrue(fetchedComponentVersion1.isPresent());
         assertEquals("dummy", fetchedComponentVersion1.get().getDescription());
-        fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().get(componentVersion2.getMetadataKey());
+        fetchedComponentVersion2 = componentVersionConfiguration.get(componentVersion2.getMetadataKey());
         assertTrue(fetchedComponentVersion2.isPresent());
         assertEquals("test", fetchedComponentVersion2.get().getDescription());
-        fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().get(componentVersion3.getMetadataKey());
+        fetchedComponentVersion3 = componentVersionConfiguration.get(componentVersion3.getMetadataKey());
         assertTrue(fetchedComponentVersion3.isPresent());
         assertEquals("test", fetchedComponentVersion3.get().getDescription());
     }
 
     @Test
     void componentVersionUpdate2Test() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
 
-        Optional<ComponentVersion> fetchedComponentVersion1 = ComponentVersionConfiguration.getInstance().get(componentVersion1.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion1 = componentVersionConfiguration.get(componentVersion1.getMetadataKey());
         assertTrue(fetchedComponentVersion1.isPresent());
         assertEquals("test", fetchedComponentVersion1.get().getDescription());
-        Optional<ComponentVersion> fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().get(componentVersion2.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion2 = componentVersionConfiguration.get(componentVersion2.getMetadataKey());
         assertTrue(fetchedComponentVersion2.isPresent());
         assertEquals("test", fetchedComponentVersion2.get().getDescription());
-        Optional<ComponentVersion> fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().get(componentVersion3.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion3 = componentVersionConfiguration.get(componentVersion3.getMetadataKey());
         assertTrue(fetchedComponentVersion3.isPresent());
         assertEquals("test", fetchedComponentVersion3.get().getDescription());
 
         componentVersion2.setDescription("dummy");
-        ComponentVersionConfiguration.getInstance().update(componentVersion2);
+        componentVersionConfiguration.update(componentVersion2);
 
-        fetchedComponentVersion1 = ComponentVersionConfiguration.getInstance().get(componentVersion1.getMetadataKey());
+        fetchedComponentVersion1 = componentVersionConfiguration.get(componentVersion1.getMetadataKey());
         assertTrue(fetchedComponentVersion1.isPresent());
         assertEquals("test", fetchedComponentVersion1.get().getDescription());
-        fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().get(componentVersion2.getMetadataKey());
+        fetchedComponentVersion2 = componentVersionConfiguration.get(componentVersion2.getMetadataKey());
         assertTrue(fetchedComponentVersion2.isPresent());
         assertEquals("dummy", fetchedComponentVersion2.get().getDescription());
-        fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().get(componentVersion3.getMetadataKey());
+        fetchedComponentVersion3 = componentVersionConfiguration.get(componentVersion3.getMetadataKey());
         assertTrue(fetchedComponentVersion3.isPresent());
         assertEquals("test", fetchedComponentVersion3.get().getDescription());
     }
 
     @Test
     void componentVersionUpdate3Test() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
 
-        Optional<ComponentVersion> fetchedComponentVersion1 = ComponentVersionConfiguration.getInstance().get(componentVersion1.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion1 = componentVersionConfiguration.get(componentVersion1.getMetadataKey());
         assertTrue(fetchedComponentVersion1.isPresent());
         assertEquals("test", fetchedComponentVersion1.get().getDescription());
-        Optional<ComponentVersion> fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().get(componentVersion2.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion2 = componentVersionConfiguration.get(componentVersion2.getMetadataKey());
         assertTrue(fetchedComponentVersion2.isPresent());
         assertEquals("test", fetchedComponentVersion2.get().getDescription());
-        Optional<ComponentVersion> fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().get(componentVersion3.getMetadataKey());
+        Optional<ComponentVersion> fetchedComponentVersion3 = componentVersionConfiguration.get(componentVersion3.getMetadataKey());
         assertTrue(fetchedComponentVersion3.isPresent());
         assertEquals("test", fetchedComponentVersion3.get().getDescription());
 
         componentVersion3.setDescription("dummy");
-        ComponentVersionConfiguration.getInstance().update(componentVersion3);
+        componentVersionConfiguration.update(componentVersion3);
 
-        fetchedComponentVersion1 = ComponentVersionConfiguration.getInstance().get(componentVersion1.getMetadataKey());
+        fetchedComponentVersion1 = componentVersionConfiguration.get(componentVersion1.getMetadataKey());
         assertTrue(fetchedComponentVersion1.isPresent());
         assertEquals("test", fetchedComponentVersion1.get().getDescription());
-        fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().get(componentVersion2.getMetadataKey());
+        fetchedComponentVersion2 = componentVersionConfiguration.get(componentVersion2.getMetadataKey());
         assertTrue(fetchedComponentVersion2.isPresent());
         assertEquals("test", fetchedComponentVersion2.get().getDescription());
-        fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().get(componentVersion3.getMetadataKey());
+        fetchedComponentVersion3 = componentVersionConfiguration.get(componentVersion3.getMetadataKey());
         assertTrue(fetchedComponentVersion3.isPresent());
         assertEquals("dummy", fetchedComponentVersion3.get().getDescription());
     }
 
     @Test
     void componentVersionGetByComponentId1Test() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
 
         assertEquals(Stream.of(componentVersion1, componentVersion2).collect(Collectors.toList()),
-                ComponentVersionConfiguration.getInstance().getByComponent(componentVersion1.getMetadataKey().getComponentKey().getId()));
+                componentVersionConfiguration.getByComponent(componentVersion1.getMetadataKey().getComponentKey().getId()));
     }
+
     @Test
     void componentVersionGetByComponentId2Test() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
 
         assertEquals(Stream.of(componentVersion3).collect(Collectors.toList()),
-                ComponentVersionConfiguration.getInstance().getByComponent(componentVersion3.getMetadataKey().getComponentKey().getId()));
+                componentVersionConfiguration.getByComponent(componentVersion3.getMetadataKey().getComponentKey().getId()));
     }
 
     @Test
     void componentVersionDeleteByComponentId1Test() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
 
-        ComponentVersionConfiguration.getInstance().deleteByComponentId(componentVersion3.getMetadataKey().getComponentKey().getId());
+        componentVersionConfiguration.deleteByComponentId(componentVersion3.getMetadataKey().getComponentKey().getId());
 
         assertEquals(Stream.of(componentVersion1, componentVersion2).collect(Collectors.toList()),
-                ComponentVersionConfiguration.getInstance().getByComponent(componentVersion1.getMetadataKey().getComponentKey().getId()));
+                componentVersionConfiguration.getByComponent(componentVersion1.getMetadataKey().getComponentKey().getId()));
     }
 
     @Test
     void componentVersionDeleteByComponentId2Test() {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
 
-        ComponentVersionConfiguration.getInstance().deleteByComponentId(componentVersion1.getMetadataKey().getComponentKey().getId());
+        componentVersionConfiguration.deleteByComponentId(componentVersion1.getMetadataKey().getComponentKey().getId());
 
         assertEquals(Stream.of(componentVersion3).collect(Collectors.toList()),
-                ComponentVersionConfiguration.getInstance().getByComponent(componentVersion3.getMetadataKey().getComponentKey().getId()));
+                componentVersionConfiguration.getByComponent(componentVersion3.getMetadataKey().getComponentKey().getId()));
     }
 
     @Test
     void componentVersionGetLatestVersionByComponentIdTest() throws MetadataAlreadyExistsException, MetadataDoesNotExistException {
-        ComponentVersionConfiguration.getInstance().insert(componentVersion1);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion2);
-        ComponentVersionConfiguration.getInstance().insert(componentVersion3);
+        componentVersionConfiguration.insert(componentVersion1);
+        componentVersionConfiguration.insert(componentVersion2);
+        componentVersionConfiguration.insert(componentVersion3);
 
-        Optional<ComponentVersion> fetchedComponentVersion2 = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentVersion1.getMetadataKey().getComponentKey().getId());
-        Optional<ComponentVersion> fetchedComponentVersion3 = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentVersion3.getMetadataKey().getComponentKey().getId());
+        Optional<ComponentVersion> fetchedComponentVersion2 = componentVersionConfiguration.getLatestVersionByComponentId(componentVersion1.getMetadataKey().getComponentKey().getId());
+        Optional<ComponentVersion> fetchedComponentVersion3 = componentVersionConfiguration.getLatestVersionByComponentId(componentVersion3.getMetadataKey().getComponentKey().getId());
         assertTrue(fetchedComponentVersion2.isPresent());
         assertEquals(2, fetchedComponentVersion2.get().getMetadataKey().getComponentKey().getVersionNumber());
         assertTrue(fetchedComponentVersion3.isPresent());

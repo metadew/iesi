@@ -19,12 +19,6 @@ class HttpConnectionTraceServiceTest {
                 .thenReturn(1L);
         when(executionControl.getRunId())
                 .thenReturn("runId");
-//        HttpConnectionTraceService.getInstance().trace(
-//                new HttpConnection("referenceName", "description", "environment", "host", "baseurl", 8080, true),
-//                actionExecution,
-//                "test"
-//        );
-        //ConnectionTraceConfiguration.getInstance().insert(HttpConnectionTrace.builder().build());
     }
 
 }

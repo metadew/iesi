@@ -7,7 +7,9 @@ import io.metadew.iesi.metadata.definition.script.trace.ScriptParameterTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptParameterTraceKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -15,20 +17,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ScriptParameterTraceConfiguration extends Configuration<ScriptParameterTrace, ScriptParameterTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ScriptParameterTraceConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ScriptParameterTraceConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptParameterTraceConfiguration();
-        }
-        return INSTANCE;
+    public ScriptParameterTraceConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptParameterTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getTraceMetadataRepository());
     }
 
     @Override

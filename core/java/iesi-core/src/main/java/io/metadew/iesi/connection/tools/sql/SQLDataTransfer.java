@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.tools.sql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.tools.SQLTools;
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 public final class SQLDataTransfer {
 
     // Insert statement tools
-    public static void transferData(CachedRowSet crs, Database targetDatabase, String name, boolean cleanPrevious) throws SQLException {
+    public void transferData(CachedRowSet crs, Database targetDatabase, String name, boolean cleanPrevious) throws SQLException {
 
         String QueryString = "";
         java.sql.Connection liveTargetDatabaseConnection = null;
@@ -29,16 +30,16 @@ public final class SQLDataTransfer {
             // Cleaning
             if (cleanPrevious) {
                 QueryString = SQLTools.getDropStmt(name, true);
-                DatabaseHandler.getInstance().executeUpdate(targetDatabase, QueryString);
+                SpringContext.getBean(DatabaseHandler.class).executeUpdate(targetDatabase, QueryString);
             }
 
             // create the dataset table if needed
             QueryString = SQLTools.getCreateStmt(rsmd, name, true);
-            DatabaseHandler.getInstance().executeUpdate(targetDatabase, QueryString);
+            SpringContext.getBean(DatabaseHandler.class).executeUpdate(targetDatabase, QueryString);
 
             String temp = "";
             String sql = SQLTools.getInsertPstmt(rsmd, name);
-            liveTargetDatabaseConnection = DatabaseHandler.getInstance().getLiveConnection(targetDatabase);
+            liveTargetDatabaseConnection = SpringContext.getBean(DatabaseHandler.class).getLiveConnection(targetDatabase);
             PreparedStatement preparedStatement = liveTargetDatabaseConnection.prepareStatement(sql);
 
             int crsType = crs.getType();

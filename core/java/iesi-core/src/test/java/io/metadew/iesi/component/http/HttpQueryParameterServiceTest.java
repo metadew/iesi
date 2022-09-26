@@ -1,16 +1,32 @@
 package io.metadew.iesi.component.http;
 
+import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.script.execution.*;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest(classes = { HttpQueryParameterService.class, DataTypeHandler.class})
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class HttpQueryParameterServiceTest {
+
+    @Autowired
+    private HttpQueryParameterService httpQueryParameterService;
 
     @Test
     void convertTest() {
@@ -39,7 +55,7 @@ class HttpQueryParameterServiceTest {
         when(executionRuntime.resolveVariables("value"))
                 .thenReturn("value");
 
-        assertThat(HttpQueryParameterService.getInstance().convert(new HttpQueryParameterDefinition("param", "function"), actionExecution))
+        assertThat(httpQueryParameterService.convert(new HttpQueryParameterDefinition("param", "function"), actionExecution))
                 .isEqualTo(new HttpQueryParameter("param", "value"));
     }
 

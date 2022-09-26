@@ -14,14 +14,28 @@ import io.metadew.iesi.metadata.definition.script.design.ScriptVersionDesignTrac
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptLabelDesignTraceKey;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @Log4j2
+@Service
 public class ScriptDesignTraceService {
 
-    public ScriptDesignTraceService() {
+    private final ScriptDesignTraceConfiguration scriptDesignTraceConfiguration;
+    private final ScriptVersionDesignTraceConfiguration scriptVersionDesignTraceConfiguration;
+    private final ScriptParameterDesignTraceConfiguration scriptParameterDesignTraceConfiguration;
+    private final ScriptLabelDesignTraceConfiguration scriptLabelDesignTraceConfiguration;
+
+    public ScriptDesignTraceService(ScriptDesignTraceConfiguration scriptDesignTraceConfiguration,
+                                    ScriptVersionDesignTraceConfiguration scriptVersionDesignTraceConfiguration,
+                                    ScriptParameterDesignTraceConfiguration scriptParameterDesignTraceConfiguration,
+                                    ScriptLabelDesignTraceConfiguration scriptLabelDesignTraceConfiguration) {
+        this.scriptDesignTraceConfiguration = scriptDesignTraceConfiguration;
+        this.scriptVersionDesignTraceConfiguration = scriptVersionDesignTraceConfiguration;
+        this.scriptParameterDesignTraceConfiguration = scriptParameterDesignTraceConfiguration;
+        this.scriptLabelDesignTraceConfiguration = scriptLabelDesignTraceConfiguration;
     }
 
     public void trace(ScriptExecution scriptExecution) {
@@ -33,14 +47,14 @@ public class ScriptDesignTraceService {
                     .orElse(-1L);
             Script script = scriptExecution.getScript();
 
-            ScriptDesignTraceConfiguration.getInstance().insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));
-            ScriptVersionDesignTraceConfiguration.getInstance().insert(new ScriptVersionDesignTrace(runId, processId, script.getVersion()));
+            scriptDesignTraceConfiguration.insert(new ScriptDesignTrace(runId, processId, parentProcessId, script));
+            scriptVersionDesignTraceConfiguration.insert(new ScriptVersionDesignTrace(runId, processId, script.getVersion()));
 
             for (ScriptParameter scriptParameter : script.getParameters()) {
-                ScriptParameterDesignTraceConfiguration.getInstance().insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
+                scriptParameterDesignTraceConfiguration.insert(new ScriptParameterDesignTrace(runId, processId, scriptParameter));
             }
             for (ScriptLabel scriptLabel : script.getLabels()) {
-                ScriptLabelDesignTraceConfiguration.getInstance().insert(new ScriptLabelDesignTrace(
+                scriptLabelDesignTraceConfiguration.insert(new ScriptLabelDesignTrace(
                         new ScriptLabelDesignTraceKey(runId, processId, scriptLabel.getMetadataKey()), scriptLabel.getScriptKey(),
                         scriptLabel.getName(), scriptLabel.getValue()));
             }

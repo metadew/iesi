@@ -5,11 +5,11 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -17,20 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ScriptResultOutputConfiguration extends Configuration<ScriptResultOutput, ScriptResultOutputKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ScriptResultOutputConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ScriptResultOutputConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptResultOutputConfiguration();
-        }
-        return INSTANCE;
+    public ScriptResultOutputConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptResultOutputConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getResultMetadataRepository());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.mssql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -62,7 +63,7 @@ public class MssqlMetadataRepositoryCoordinatorService implements IMetadataRepos
             return new MssqlDatabaseConnection(
                     mssqlRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     mssqlRepositoryCoordinatorDefinition.getInitSql(),
                     mssqlRepositoryCoordinatorDefinition.getSchema().orElse(null));
         } else {
@@ -71,7 +72,7 @@ public class MssqlMetadataRepositoryCoordinatorService implements IMetadataRepos
                     mssqlRepositoryCoordinatorDefinition.getPort(),
                     mssqlRepositoryCoordinatorDefinition.getDatabase(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     mssqlRepositoryCoordinatorDefinition.getInitSql(),
                     mssqlRepositoryCoordinatorDefinition.getSchema().orElse(null)
             );

@@ -8,10 +8,11 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,20 +22,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ConnectionParameterConfiguration extends Configuration<ConnectionParameter, ConnectionParameterKey> {
 
-    private static ConnectionParameterConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ConnectionParameterConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ConnectionParameterConfiguration();
-        }
-        return INSTANCE;
+    public ConnectionParameterConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ConnectionParameterConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getControlMetadataRepository());
     }
 
     @Override

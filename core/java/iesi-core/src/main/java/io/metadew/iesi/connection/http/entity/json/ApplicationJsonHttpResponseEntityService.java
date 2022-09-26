@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -65,7 +66,7 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
             if (jsonNode.getNodeType().equals(JsonNodeType.MISSING)) {
                 log.warn("response does not contain a valid JSON message: " + jsonNode.toPrettyString() + ". ");
             } else {
-                DatasetImplementationHandler.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
+                DatasetImplementationHandler.getInstance().setDataItem(dataset, key, SpringContext.getBean(DataTypeHandler.class).resolve(dataset, key, jsonNode, executionRuntime));
             }
         }
     }

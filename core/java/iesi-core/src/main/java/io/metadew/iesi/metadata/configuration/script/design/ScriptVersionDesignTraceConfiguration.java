@@ -5,10 +5,11 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.script.design.ScriptVersionDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptVersionDesignTraceKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -16,20 +17,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ScriptVersionDesignTraceConfiguration extends Configuration<ScriptVersionDesignTrace, ScriptVersionDesignTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ScriptVersionDesignTraceConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ScriptVersionDesignTraceConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptVersionDesignTraceConfiguration();
-        }
-        return INSTANCE;
+    public ScriptVersionDesignTraceConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptVersionDesignTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getTraceMetadataRepository());
     }
 
     @Override

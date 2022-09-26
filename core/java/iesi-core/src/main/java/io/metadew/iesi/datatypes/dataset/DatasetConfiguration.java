@@ -10,108 +10,133 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
 public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
 
-    private static final String EXIST_QUERY = "SELECT " +
-            "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-            "WHERE datasets.ID = {0}";
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
+    private final DatasetImplementationConfiguration datasetImplementationConfiguration;
 
-    private static final String FETCH_ID_BY_NAME = "SELECT " +
-            "datasets.ID as dataset_id " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-            "WHERE datasets.NAME = {0}";
-
-    private static final String FETCH_SINGLE_QUERY = "SELECT " +
-            "dataset_impls.ID as dataset_impl_id, " +
-            "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
-            "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
-            "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
-            "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
-            "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
-            "on dataset_impls.DATASET_ID=datasets.ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
-            "on dataset_impls.ID = dataset_in_mem_impls.ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
-            "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
-            "where datasets.ID={0};";
-
-    private static final String FETCH_QUERY = "SELECT " +
-            "dataset_impls.ID as dataset_impl_id, " +
-            "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
-            "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
-            "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
-            "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
-            "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
-            "on dataset_impls.DATASET_ID=datasets.ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
-            "on dataset_impls.ID = dataset_in_mem_impls.ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
-            "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID;";
-
-    private static final String FETCH_BY_NAME_QUERY = "SELECT " +
-            "dataset_impls.ID as dataset_impl_id, " +
-            "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
-            "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
-            "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
-            "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
-            "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
-            "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
-            "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
-            "on dataset_impls.DATASET_ID=datasets.ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
-            "on dataset_impls.ID = dataset_in_mem_impls.ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
-            "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
-            "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
-            "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
-            "WHERE datasets.NAME={0};";
-
-    private static final String EXISTS_BY_NAME_QUERY = "SELECT " +
-            "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
-            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
-            "WHERE datasets.NAME={0};";
-
-    private static final String INSERT_QUERY = "INSERT INTO " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
-            " (ID, SECURITY_GROUP_ID, SECURITY_GROUP_NM, NAME) VALUES ({0}, {1}, {2}, {3})";
-
-    private static final String UPDATE_QUERY = "UPDATE " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
-            " SET NAME={0} " +
-            "WHERE ID={1}";
-
-    private static final String DELETE_QUERY = "DELETE FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Datasets").getName() +
-            " WHERE ID={0}";
-
-
-    private static DatasetConfiguration instance;
-
-    public static synchronized DatasetConfiguration getInstance() {
-        if (instance == null) {
-            instance = new DatasetConfiguration();
-        }
-        return instance;
+    private String existQuery() {
+        return "SELECT " +
+                "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "WHERE datasets.ID = {0}";
     }
 
-    private DatasetConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
+    private String fetchIdByName() {
+        return "SELECT " +
+                "datasets.ID as dataset_id " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "WHERE datasets.NAME = {0}";
+    }
+
+    private String fetchSingleQuery() {
+        return "SELECT " +
+                "dataset_impls.ID as dataset_impl_id, " +
+                "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
+                "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
+                "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
+                "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
+                "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
+                "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+                "on dataset_impls.DATASET_ID=datasets.ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
+                "on dataset_impls.ID = dataset_in_mem_impls.ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+                "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
+                "where datasets.ID={0};";
+    }
+
+    private String fetchQuery() {
+        return "SELECT " +
+                "dataset_impls.ID as dataset_impl_id, " +
+                "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
+                "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
+                "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
+                "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
+                "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
+                "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+                "on dataset_impls.DATASET_ID=datasets.ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
+                "on dataset_impls.ID = dataset_in_mem_impls.ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+                "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID;";
+    }
+
+    private String fetchByNameQuery() {
+        return "SELECT " +
+                "dataset_impls.ID as dataset_impl_id, " +
+                "datasets.NAME as dataset_name, datasets.ID as dataset_id, " +
+                "datasets.SECURITY_GROUP_ID as dataset_security_group_id, " +
+                "datasets.SECURITY_GROUP_NM as dataset_security_group_name,  " +
+                "dataset_impl_labels.ID as dataset_impl_label_id, dataset_impl_labels.DATASET_IMPL_ID as dataset_impl_label_impl_id, dataset_impl_labels.VALUE as dataset_impl_label_value, " +
+                "dataset_in_mem_impls.ID as dataset_in_mem_impl_id, " +
+                "dataset_in_mem_impl_kvs.ID as dataset_in_mem_impl_kv_id, dataset_in_mem_impl_kvs.IMPL_MEM_ID as dataset_in_mem_impl_kv_impl_id, dataset_in_mem_impl_kvs.KEY as dataset_in_mem_impl_kvs_key, dataset_in_mem_impl_kvs.VALUE as dataset_in_mem_impl_kvs_value " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementations").getName() + " dataset_impls " +
+                "on dataset_impls.DATASET_ID=datasets.ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementations").getName() + " dataset_in_mem_impls " +
+                "on dataset_impls.ID = dataset_in_mem_impls.ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() + " dataset_in_mem_impl_kvs " +
+                "on dataset_in_mem_impls.ID = dataset_in_mem_impl_kvs.IMPL_MEM_ID " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementationLabels").getName() + " dataset_impl_labels " +
+                "on dataset_impls.ID = dataset_impl_labels.DATASET_IMPL_ID " +
+                "WHERE datasets.NAME={0};";
+    }
+
+    private String existsByNameQuery() {
+        return "SELECT " +
+                "datasets.NAME as dataset_name, datasets.ID as dataset_id " +
+                " FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() + " datasets " +
+                "WHERE datasets.NAME={0};";
+    }
+
+    private String insertQuery() {
+        return "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() +
+                " (ID, SECURITY_GROUP_ID, SECURITY_GROUP_NM, NAME) VALUES ({0}, {1}, {2}, {3})";
+    }
+
+    private String updateQuery() {
+        return  "UPDATE " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() +
+                " SET NAME={0} " +
+                "WHERE ID={1}";
+    }
+
+    private String deleteQuery() {
+        return "DELETE FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() +
+                " WHERE ID={0}";
+    }
+
+    public DatasetConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                                MetadataTablesConfiguration metadataTablesConfiguration,
+                                DatasetImplementationConfiguration datasetImplementationConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
+        this.datasetImplementationConfiguration = datasetImplementationConfiguration;
+    }
+
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDataMetadataRepository());
     }
 
     @Override
@@ -119,7 +144,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
         try {
             Map<String, DatasetBuilder> datasetBuilderMap = new LinkedHashMap<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.getStringForSQL(metadataKey.getUuid())),
+                    MessageFormat.format(fetchSingleQuery(), SQLTools.getStringForSQL(metadataKey.getUuid())),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetBuilderMap);
@@ -136,7 +161,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public boolean exists(DatasetKey metadataKey) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(EXIST_QUERY, SQLTools.getStringForSQL(metadataKey.getUuid())),
+                    MessageFormat.format(existQuery(), SQLTools.getStringForSQL(metadataKey.getUuid())),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -148,7 +173,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
         try {
             Map<String, DatasetBuilder> datasetBuilderMap = new LinkedHashMap<>();
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_BY_NAME_QUERY, SQLTools.getStringForSQL(name)),
+                    MessageFormat.format(fetchByNameQuery(), SQLTools.getStringForSQL(name)),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetBuilderMap);
@@ -164,7 +189,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public boolean existsByName(String name) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(EXISTS_BY_NAME_QUERY, SQLTools.getStringForSQL(name)),
+                    MessageFormat.format(existsByNameQuery(), SQLTools.getStringForSQL(name)),
                     "reader");
             return cachedRowSet.next();
         } catch (SQLException e) {
@@ -175,7 +200,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public Optional<DatasetKey> getIdByName(String name) {
         try {
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_ID_BY_NAME, SQLTools.getStringForSQL(name)),
+                    MessageFormat.format(fetchIdByName(), SQLTools.getStringForSQL(name)),
                     "reader");
             if (cachedRowSet.next()) {
                 return Optional.of(new DatasetKey(UUID.fromString(cachedRowSet.getString("dataset_id"))));
@@ -191,7 +216,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public List<Dataset> getAll() {
         try {
             Map<String, DatasetBuilder> datasetBuilderMap = new LinkedHashMap<>();
-            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(FETCH_QUERY,
+            CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(fetchQuery(),
                     "reader");
             while (cachedRowSet.next()) {
                 mapRow(cachedRowSet, datasetBuilderMap);
@@ -206,33 +231,33 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
 
     @Override
     public void delete(DatasetKey datasetKey) {
-        List<DatasetImplementation> datasetImplementations = DatasetImplementationConfiguration.getInstance()
+        List<DatasetImplementation> datasetImplementations = datasetImplementationConfiguration
                 .getByDatasetId(datasetKey);
         datasetImplementations
-                .forEach(datasetImplementation -> DatasetImplementationConfiguration.getInstance().delete(datasetImplementation.getMetadataKey()));
-        getMetadataRepository().executeUpdate(MessageFormat.format(DELETE_QUERY,
+                .forEach(datasetImplementation -> datasetImplementationConfiguration.delete(datasetImplementation.getMetadataKey()));
+        getMetadataRepository().executeUpdate(MessageFormat.format(deleteQuery(),
                 SQLTools.getStringForSQL(datasetKey.getUuid().toString())));
     }
 
     @Override
     public void insert(Dataset dataset) {
-        getMetadataRepository().executeUpdate(MessageFormat.format(INSERT_QUERY,
+        getMetadataRepository().executeUpdate(MessageFormat.format(insertQuery(),
                 SQLTools.getStringForSQL(dataset.getMetadataKey().getUuid()),
                 SQLTools.getStringForSQL(dataset.getSecurityGroupKey().getUuid()),
                 SQLTools.getStringForSQL(dataset.getSecurityGroupName()),
                 SQLTools.getStringForSQL(dataset.getName())));
         dataset.getDatasetImplementations()
-                .forEach(datasetImplementation -> DatasetImplementationConfiguration.getInstance().insert(datasetImplementation));
+                .forEach(datasetImplementation -> datasetImplementationConfiguration.insert(datasetImplementation));
     }
 
     @Override
     public void update(Dataset dataset) {
-        getMetadataRepository().executeUpdate(MessageFormat.format(UPDATE_QUERY,
+        getMetadataRepository().executeUpdate(MessageFormat.format(updateQuery(),
                 SQLTools.getStringForSQL(dataset.getName()),
                 SQLTools.getStringForSQL(dataset.getMetadataKey().getUuid())));
-        DatasetImplementationConfiguration.getInstance().deleteByDatasetId(dataset.getMetadataKey());
+        datasetImplementationConfiguration.deleteByDatasetId(dataset.getMetadataKey());
         dataset.getDatasetImplementations()
-                .forEach(datasetImplementation -> DatasetImplementationConfiguration.getInstance().insert(datasetImplementation));
+                .forEach(datasetImplementation -> datasetImplementationConfiguration.insert(datasetImplementation));
     }
 
     private void mapRow(CachedRowSet cachedRowSet, Map<String, DatasetBuilder> datasetBuilderMap) throws SQLException {
@@ -242,7 +267,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
             datasetBuilder = extractDatasetBuilder(cachedRowSet);
             datasetBuilderMap.put(datasetId, datasetBuilder);
         }
-        DatasetImplementationConfiguration.getInstance().mapRow(cachedRowSet, datasetBuilder.getDatasetImplementationBuilders());
+        datasetImplementationConfiguration.mapRow(cachedRowSet, datasetBuilder.getDatasetImplementationBuilders());
     }
 
     private DatasetBuilder extractDatasetBuilder(CachedRowSet cachedRowSet) throws SQLException {

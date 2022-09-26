@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.oracle;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -68,7 +69,7 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
             databaseConnection = new OracleDatabaseConnection(
                     oracleRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     oracleRepositoryCoordinatorDefinition.getInitSql());
             oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
         } else {
@@ -79,7 +80,7 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
                             oracleRepositoryCoordinatorDefinition.getPort(),
                             oracleRepositoryCoordinatorDefinition.getTnsAlias(),
                             metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                            SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                             oracleRepositoryCoordinatorDefinition.getInitSql());
                     oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                     break;
@@ -89,7 +90,7 @@ public class OracleMetadataRepositoryCoordinatorService implements IMetadataRepo
                             oracleRepositoryCoordinatorDefinition.getPort(),
                             oracleRepositoryCoordinatorDefinition.getService(),
                             metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                            SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                             oracleRepositoryCoordinatorDefinition.getInitSql());
                     oracleRepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                     break;

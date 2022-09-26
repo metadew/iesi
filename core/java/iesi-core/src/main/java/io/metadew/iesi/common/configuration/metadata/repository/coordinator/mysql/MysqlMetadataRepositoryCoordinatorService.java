@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.mysql;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -63,7 +64,7 @@ public class MysqlMetadataRepositoryCoordinatorService implements IMetadataRepos
                     .map(schema -> new MysqlDatabaseConnection(
                             mysqlRepositoryCoordinatorDefinition.getConnection().get(),
                             metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                            SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                             mysqlRepositoryCoordinatorDefinition.getInitSql(),
                             schema))
                     .orElseThrow(RuntimeException::new);
@@ -74,7 +75,7 @@ public class MysqlMetadataRepositoryCoordinatorService implements IMetadataRepos
                             mysqlRepositoryCoordinatorDefinition.getPort(),
                             s,
                             metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                            FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                            SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                             mysqlRepositoryCoordinatorDefinition.getInitSql()
                     ))
                     .orElseThrow(() -> new RuntimeException("Mysql database connection needs a schema"));

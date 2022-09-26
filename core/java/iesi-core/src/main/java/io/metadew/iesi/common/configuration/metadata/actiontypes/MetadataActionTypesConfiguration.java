@@ -6,30 +6,31 @@ import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
 import io.metadew.iesi.metadata.definition.action.type.ActionType;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
+@org.springframework.context.annotation.Configuration
 public class MetadataActionTypesConfiguration {
 
-    private static MetadataActionTypesConfiguration INSTANCE;
-    private static final String actionsKey = "action-types";
 
+    private static final String actionsKey = "action-types";
     private Map<String, ActionType> actionTypeMap;
 
-    public synchronized static MetadataActionTypesConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataActionTypesConfiguration();
-        }
-        return INSTANCE;
+    private final Configuration configuration;
+
+    public MetadataActionTypesConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @SuppressWarnings("unchecked")
-    private MetadataActionTypesConfiguration() {
+    @PostConstruct
+    private void postConstruct() {
         actionTypeMap = new HashMap<>();
         if (containsConfiguration()) {
-            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
+            Map<String, Object> frameworkSettingConfigurations = (Map<String, Object>) ((Map<String, Object>) this.configuration.getProperties()
                     .get(MetadataConfiguration.configurationKey))
                     .get(actionsKey);
             ObjectMapper objectMapper = new ObjectMapper();
@@ -38,7 +39,6 @@ public class MetadataActionTypesConfiguration {
             }
         } else {
             log.warn("no action type configurations found on system variable, classpath or filesystem");
-
         }
     }
 
@@ -52,9 +52,9 @@ public class MetadataActionTypesConfiguration {
 
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
-                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(actionsKey) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(actionsKey) instanceof Map;
+        return configuration.getProperties().containsKey(MetadataConfiguration.configurationKey) &&
+                (configuration.getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).containsKey(actionsKey) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).get(actionsKey) instanceof Map;
     }
 }

@@ -3,32 +3,48 @@ package io.metadew.iesi.common.configuration.metadata.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.MetadataConfiguration;
-import io.metadew.iesi.common.configuration.metadata.objects.MetadataObjectsConfiguration;
-import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.metadata.repository.*;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Log4j2
+@org.springframework.context.annotation.Configuration
+@DependsOn({ "metadataTablesConfiguration", "metadataObjectsConfiguration" })
 public class MetadataRepositoryConfiguration {
 
-    private static MetadataRepositoryConfiguration INSTANCE;
     private static final String repositoryTableKey = "repository";
 
     private List<MetadataRepositoryDefinition> metadataRepositoryDefinitions;
     @Getter
     private List<MetadataRepository> metadataRepositories;
 
-    public synchronized static MetadataRepositoryConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataRepositoryConfiguration();
+    private final Configuration configuration;
+    private final MetadataRepositoryService metadataRepositoryService;
+
+    public MetadataRepositoryConfiguration(Configuration configuration, MetadataRepositoryService metadataRepositoryService) {
+        this.configuration = configuration;
+        this.metadataRepositoryService = metadataRepositoryService;
+    }
+
+
+    @PostConstruct
+    private void postConstruct() {
+        // init the MetadataTables and MetadataObjects configuration before creating the metadata repositories
+        metadataRepositories = new ArrayList<>();
+        metadataRepositoryDefinitions = new ArrayList<>();
+        if (containsConfiguration()) {
+            loadConfigurations();
+            convertConfigurations();
+        } else {
+            log.warn("no metadata repository configurations found on system variable, classpath or filesystem");
         }
-        return INSTANCE;
     }
 
     public ConnectivityMetadataRepository getConnectivityMetadataRepository() {
@@ -80,29 +96,15 @@ public class MetadataRepositoryConfiguration {
                 .orElseThrow(() -> new RuntimeException("ExecutionServerMetadataRepository not configured"));
     }
 
-    private MetadataRepositoryConfiguration() {
-        // init the MetadataTables and MetadataObjects configuration before creating the metadata repositories
-        MetadataTablesConfiguration.getInstance();
-        MetadataObjectsConfiguration.getInstance();
-        metadataRepositories = new ArrayList<>();
-        metadataRepositoryDefinitions = new ArrayList<>();
-        if (containsConfiguration()) {
-            loadConfigurations();
-            convertConfigurations();
-        } else {
-            log.warn("no metadata repository configurations found on system variable, classpath or filesystem");
-        }
-    }
-
     private void convertConfigurations() {
         for (MetadataRepositoryDefinition metadataRepositoryDefinition : metadataRepositoryDefinitions) {
-            metadataRepositories.addAll(MetadataRepositoryService.getInstance().convert(metadataRepositoryDefinition));
+            metadataRepositories.addAll(metadataRepositoryService.convert(metadataRepositoryDefinition));
         }
     }
 
     @SuppressWarnings("unchecked")
     private void loadConfigurations() {
-        List<Object> frameworkSettingConfigurations = (List<Object>) ((Map<String, Object>) Configuration.getInstance().getProperties()
+        List<Object> frameworkSettingConfigurations = (List<Object>) ((Map<String, Object>) configuration.getProperties()
                 .get(MetadataConfiguration.configurationKey))
                 .get(repositoryTableKey);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -113,10 +115,10 @@ public class MetadataRepositoryConfiguration {
 
     @SuppressWarnings("unchecked")
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
-                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(repositoryTableKey) &&
-                ((Map<String, Object>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(repositoryTableKey) instanceof List;
+        return configuration.getProperties().containsKey(MetadataConfiguration.configurationKey) &&
+                (configuration.getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).containsKey(repositoryTableKey) &&
+                ((Map<String, Object>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).get(repositoryTableKey) instanceof List;
     }
 
     public void createAllTables() {

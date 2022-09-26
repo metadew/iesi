@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
@@ -24,6 +25,7 @@ public abstract class ScriptExecution {
 	public Map<String, String> impersonations;
 	private ActionSelectOperation actionSelectOperation;
 	private String environment;
+
 
 	public ScriptExecution(Script script, String environment, ExecutionControl executionControl,
 						   ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion,
@@ -179,7 +181,7 @@ public abstract class ScriptExecution {
 //	}
 
 	public void traceDesignMetadata() {
-		ExecutionTrace.getInstance().setExecution(this);
+		SpringContext.getBean(ExecutionTrace.class).setExecution(this);
 	}
 
 	public ExecutionControl getExecutionControl() {

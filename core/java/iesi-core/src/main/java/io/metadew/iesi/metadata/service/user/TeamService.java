@@ -6,83 +6,81 @@ import io.metadew.iesi.metadata.configuration.user.TeamConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Service
 public class TeamService {
 
-    private static TeamService instance;
+    private final TeamConfiguration teamConfiguration;
+    private final RoleConfiguration roleConfiguration;
 
-    public static synchronized TeamService getInstance() {
-        if (instance == null) {
-            instance = new TeamService();
-        }
-        return instance;
-    }
-
-    private TeamService() {
+    public TeamService(TeamConfiguration teamConfiguration, RoleConfiguration roleConfiguration) {
+        this.teamConfiguration = teamConfiguration;
+        this.roleConfiguration = roleConfiguration;
     }
 
     public List<Team> getAll() {
-        return TeamConfiguration.getInstance().getAll();
+        return teamConfiguration.getAll();
     }
 
     public boolean exists(TeamKey teamKey) {
-        return TeamConfiguration.getInstance().exists(teamKey);
+        return teamConfiguration.exists(teamKey);
     }
 
     public boolean exists(String teamname) {
-        return TeamConfiguration.getInstance().exists(teamname);
+        return teamConfiguration.exists(teamname);
     }
 
     public void addTeam(Team team) {
-        TeamConfiguration.getInstance().insert(team);
+        teamConfiguration.insert(team);
     }
 
     public Optional<Team> get(TeamKey teamKey) {
-        return TeamConfiguration.getInstance().get(teamKey);
+        return teamConfiguration.get(teamKey);
     }
 
     public Optional<Team> get(String teamname) {
-        return TeamConfiguration.getInstance().getByName(teamname);
+        return teamConfiguration.getByName(teamname);
     }
 
     public void update(Team team) {
-        TeamConfiguration.getInstance().update(team);
+        teamConfiguration.update(team);
     }
 
     public void delete(TeamKey teamKey) {
-        TeamConfiguration.getInstance().delete(teamKey);
+        teamConfiguration.delete(teamKey);
     }
 
     public void delete(String teamname) {
-        TeamConfiguration.getInstance().delete(teamname);
+        teamConfiguration.delete(teamname);
     }
 
     public Set<SecurityGroup> getSecurityGroups(TeamKey teamKey) {
-        return TeamConfiguration.getInstance().getSecurityGroups(teamKey);
+        return teamConfiguration.getSecurityGroups(teamKey);
     }
 
     public void addRole(TeamKey teamKey, Role role) {
-        RoleConfiguration.getInstance().insert(role);
+        roleConfiguration.insert(role);
     }
 
     public void deleteRole(TeamKey teamKey, RoleKey roleKey) {
-        RoleConfiguration.getInstance().delete(roleKey);
+        roleConfiguration.delete(roleKey);
     }
 
     public Set<User> getUsers(TeamKey teamKey) {
-        return TeamConfiguration.getInstance().getUsers(teamKey);
+        return teamConfiguration.getUsers(teamKey);
     }
 
     public void addSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {
-        TeamConfiguration.getInstance().addSecurityGroup(teamKey, securityGroupKey);
+        teamConfiguration.addSecurityGroup(teamKey, securityGroupKey);
     }
 
     public void removeSecurityGroup(TeamKey teamKey, SecurityGroupKey securityGroupKey) {
-        TeamConfiguration.getInstance().removeSecurityGroup(teamKey, securityGroupKey);
+        teamConfiguration.removeSecurityGroup(teamKey, securityGroupKey);
     }
 
 }

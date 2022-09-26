@@ -1,28 +1,37 @@
 package io.metadew.iesi.launch;
 
-import io.metadew.iesi.common.FrameworkInstance;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkRuntime;
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
+@Lazy
 public class MetadataLauncher {
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException, IOException {
+    private final FrameworkConfiguration frameworkConfiguration;
+    private final FrameworkRuntime frameworkRuntime;
+
+    public MetadataLauncher(FrameworkConfiguration frameworkConfiguration,
+                            FrameworkRuntime frameworkRuntime) {
+        this.frameworkConfiguration = frameworkConfiguration;
+        this.frameworkRuntime = frameworkRuntime;
+    }
+
+    public void execute(String[] args) throws IOException, ParseException {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(new Option("help", "print this message"))
@@ -58,10 +67,6 @@ public class MetadataLauncher {
         // Define the exit behaviour
         boolean exit = !line.hasOption("exit") || line.getOptionValue("exit").equalsIgnoreCase("y") || line.getOptionValue("exit").equalsIgnoreCase("true");
 
-        Configuration.getInstance();
-        FrameworkCrypto.getInstance();
-        // FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("metadata", "")));
-
         MetadataRepositoryOperation metadataRepositoryOperation = new MetadataRepositoryOperation();
         List<MetadataRepository> metadataRepositories = new ArrayList<>();
 
@@ -70,34 +75,34 @@ public class MetadataLauncher {
 
         switch (type) {
             case "connectivity":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getConnectivityMetadataRepository());
                 break;
             case "control":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getControlMetadataRepository());
                 break;
             case "design":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getDesignMetadataRepository());
                 break;
             case "result":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getResultMetadataRepository());
                 break;
             case "trace":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getTraceMetadataRepository());
                 break;
             case "execution":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getExecutionServerMetadataRepository());
                 break;
             case "data":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getDataMetadataRepository());
                 break;
             case "general":
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getConnectivityMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
-                metadataRepositories.add(MetadataRepositoryConfiguration.getInstance().getDataMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getConnectivityMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getControlMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getDesignMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getResultMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getTraceMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getExecutionServerMetadataRepository());
+                metadataRepositories.add(SpringContext.getBean(MetadataRepositoryConfiguration.class).getDataMetadataRepository());
                 break;
             default:
                 System.out.println("Unknown Option -type (type) = " + type);
@@ -119,16 +124,16 @@ public class MetadataLauncher {
         if (line.hasOption("ddl")) {
             writeHeaderMessage();
             for (MetadataRepository metadataRepository : metadataRepositories) {
-                Files.deleteIfExists(FrameworkConfiguration.getInstance()
+                Files.deleteIfExists(frameworkConfiguration
                         .getMandatoryFrameworkFolder("metadata.out.ddl")
                         .getAbsolutePath()
                         .resolve("ddl_" + metadataRepository.getCategory() + ".sql"));
-                Files.createFile(FrameworkConfiguration.getInstance()
+                Files.createFile(frameworkConfiguration
                         .getMandatoryFrameworkFolder("metadata.out.ddl")
                         .getAbsolutePath()
                         .resolve("ddl_" + metadataRepository.getCategory() + ".sql"));
 
-                Files.write(FrameworkConfiguration.getInstance()
+                Files.write(frameworkConfiguration
                                 .getMandatoryFrameworkFolder("metadata.out.ddl")
                                 .getAbsolutePath()
                                 .resolve("ddl_" + metadataRepository.getCategory() + ".sql"),
@@ -175,26 +180,28 @@ public class MetadataLauncher {
             writeFooterMessage();
         }
 
-        FrameworkInstance.getInstance().shutdown();
+        //TODO: UNCOMMENT WHEN METADATA LAUNCHER WILL BE A SPRING APPLICATION
+        // FrameworkInstance.getInstance().shutdown();
         System.out.println();
         System.out.println("metadata.launcher.end");
         endLauncher(0, exit);
     }
 
-    private static void endLauncher(int status, boolean exit) {
-        FrameworkRuntime.getInstance().terminate();
+
+    private void endLauncher(int status, boolean exit) {
+        frameworkRuntime.terminate();
         if (exit) {
             System.exit(status);
         }
     }
 
-    private static void writeHeaderMessage() {
+    private void writeHeaderMessage() {
         System.out.println("metadata.launcher.start");
         System.out.println();
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 
-    private static void writeFooterMessage() {
+    private void writeFooterMessage() {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 

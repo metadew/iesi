@@ -3,60 +3,55 @@ package io.metadew.iesi.metadata.service.user;
 
 import io.metadew.iesi.metadata.configuration.user.RoleConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
+import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class RoleService {
 
-    private static RoleService instance;
+    private final RoleConfiguration roleConfiguration;
 
-    public static synchronized RoleService getInstance() {
-        if (instance == null) {
-            instance = new RoleService();
-        }
-        return instance;
-    }
-
-    private RoleService() {
+    public RoleService(RoleConfiguration roleConfiguration) {
+        this.roleConfiguration = roleConfiguration;
     }
 
     public List<Role> getAll() {
-        return RoleConfiguration.getInstance().getAll();
+        return roleConfiguration.getAll();
     }
-    public List<Role> getByTeamId(TeamKey teamKey) { return RoleConfiguration.getInstance().getByTeamId(teamKey);}
+    public List<Role> getByTeamId(TeamKey teamKey) { return roleConfiguration.getByTeamId(teamKey);}
 
     public boolean exists(RoleKey roleKey) {
-        return RoleConfiguration.getInstance().exists(roleKey);
+        return roleConfiguration.exists(roleKey);
     }
 
     public void addRole(Role role) {
-        RoleConfiguration.getInstance().insert(role);
+        roleConfiguration.insert(role);
     }
 
     public Optional<Role> get(RoleKey roleKey) {
-        return RoleConfiguration.getInstance().get(roleKey);
+        return roleConfiguration.get(roleKey);
     }
 
     public void update(Role role) {
-        RoleConfiguration.getInstance().update(role);
+        roleConfiguration.update(role);
     }
 
     public void delete(RoleKey roleKey) {
-        RoleConfiguration.getInstance().delete(roleKey);
+        roleConfiguration.delete(roleKey);
     }
 
     public Set<User> getUsers(RoleKey roleKey) {
-        return new HashSet<>(RoleConfiguration.getInstance().getUsers(roleKey));
+        return new HashSet<>(roleConfiguration.getUsers(roleKey));
     }
 
     public void addUser(RoleKey roleKey, UserKey userKey) {
-        RoleConfiguration.getInstance().addUser(roleKey, userKey);
+        roleConfiguration.addUser(roleKey, userKey);
     }
 
     public void removeUser(RoleKey roleKey, UserKey userKey) {
-        RoleConfiguration.getInstance().removeUser(roleKey, userKey);
+        roleConfiguration.removeUser(roleKey, userKey);
     }
 
     public Role convertDefaultRole(IESIRole iesiRole, TeamKey teamKey) {

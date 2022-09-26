@@ -22,58 +22,67 @@ import java.util.stream.Collectors;
 @ConditionalOnWebApplication
 public class UserDtoRepository extends PaginatedRepository implements IUserDtoRepository {
 
-    private static final String FETCH_SINGLE_QUERY = "select " +
-            "users.ID as user_id, users.USERNAME as user_username, " +
-            "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
-            "roles.ID as role_id, roles.role_name as role_role_name, " +
-            "privileges.ID as privilege_id, privileges.privilege as privilege_privilege, " +
-            "teams.ID as team_id, teams.TEAM_NAME as team_name, " +
-            "security_groups.ID as security_group_id, security_groups.NAME as security_group_name " +
-            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users" +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
-            " ON users.ID = user_roles.USER_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
-            " ON user_roles.ROLE_ID = roles.ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
-            " ON privileges.ROLE_ID = roles.ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
-            " ON teams.ID = roles.TEAM_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
-            " ON teams.ID = security_group_teams.TEAM_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
-            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
-            " WHERE users.ID={0};";
-
-
-    private static final String FETCH_SINGLE_BY_NAME_QUERY = "select " +
-            "users.ID as user_id, users.USERNAME as user_username, " +
-            "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
-            "roles.ID as role_id, roles.role_name as role_role_name, " +
-            "privileges.ID as privilege_id, privileges.privilege as privilege_privilege, " +
-            "teams.ID as team_id, teams.TEAM_NAME as team_name, " +
-            "security_groups.ID as security_group_id, security_groups.NAME as security_group_name " +
-            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users" +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
-            " ON users.ID = user_roles.USER_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
-            " ON user_roles.ROLE_ID = roles.ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
-            " ON privileges.ROLE_ID = roles.ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
-            " ON teams.ID = roles.TEAM_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
-            " ON teams.ID = security_group_teams.TEAM_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
-            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
-            " WHERE users.USERNAME={0};";
-
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
 
     @Autowired
-    public UserDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
+    public UserDtoRepository(MetadataTablesConfiguration metadataTablesConfiguration,
+                             MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                             FilterService filterService) {
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
         this.filterService = filterService;
+    }
+
+    private String fetchSingleQuery() {
+        return "select " +
+                "users.ID as user_id, users.USERNAME as user_username, " +
+                "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
+                "roles.ID as role_id, roles.role_name as role_role_name, " +
+                "privileges.ID as privilege_id, privileges.privilege as privilege_privilege, " +
+                "teams.ID as team_id, teams.TEAM_NAME as team_name, " +
+                "security_groups.ID as security_group_id, security_groups.NAME as security_group_name " +
+                " FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() + " users" +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
+                " ON users.ID = user_roles.USER_ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Roles").getName() + " roles " +
+                " ON user_roles.ROLE_ID = roles.ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
+                " ON privileges.ROLE_ID = roles.ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Teams").getName() + " teams " +
+                " ON teams.ID = roles.TEAM_ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
+                " ON teams.ID = security_group_teams.TEAM_ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
+                " WHERE users.ID={0};";
+    }
+
+
+
+    private String fetchSingleByNameQuery() {
+        return "select " +
+                "users.ID as user_id, users.USERNAME as user_username, " +
+                "users.ENABLED as user_enabled, users.EXPIRED as user_expired, users.CREDENTIALS_EXPIRED as user_credentials_expired, users.LOCKED as user_locked, " +
+                "roles.ID as role_id, roles.role_name as role_role_name, " +
+                "privileges.ID as privilege_id, privileges.privilege as privilege_privilege, " +
+                "teams.ID as team_id, teams.TEAM_NAME as team_name, " +
+                "security_groups.ID as security_group_id, security_groups.NAME as security_group_name " +
+                " FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() + " users" +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
+                " ON users.ID = user_roles.USER_ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Roles").getName() + " roles " +
+                " ON user_roles.ROLE_ID = roles.ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
+                " ON privileges.ROLE_ID = roles.ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Teams").getName() + " teams " +
+                " ON teams.ID = roles.TEAM_ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
+                " ON teams.ID = security_group_teams.TEAM_ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
+                " WHERE users.USERNAME={0};";
     }
 
     private String getFetchAllQuery(Pageable pageable, Set<UserFilter> userFilters) {
@@ -85,25 +94,25 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
                 "teams.ID as team_id, teams.TEAM_NAME as team_name, " +
                 "security_groups.ID as security_group_id, security_groups.NAME as security_group_name " +
                 " FROM (" + getBaseQuery(pageable, userFilters) + ") base_users " + //base table
-                " inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
+                " inner join " + metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() + " users " +
                 " on base_users.ID=users.ID " +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("UserRoles").getName() + " user_roles " +
                 " ON users.ID = user_roles.USER_ID " +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Roles").getName() + " roles " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Roles").getName() + " roles " +
                 " ON user_roles.ROLE_ID = roles.ID " +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Privileges").getName() + " privileges " +
                 " ON privileges.ROLE_ID = roles.ID " +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Teams").getName() + " teams " +
                 " ON teams.ID = roles.TEAM_ID" +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
                 " ON teams.ID = security_group_teams.TEAM_ID " +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
                 " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID;";
     }
 
     private String getBaseQuery(Pageable pageable, Set<UserFilter> userFilters) {
         return "select users.ID " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() + " users " +
                 getWhereClause(userFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -144,7 +153,7 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
     public Optional<UserDto> get(String username) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_SINGLE_BY_NAME_QUERY, SQLTools.getStringForSQL(username)),
+                    MessageFormat.format(fetchSingleByNameQuery(), SQLTools.getStringForSQL(username)),
                     "reader");
             return new UserDtoListResultSetExtractor()
                     .extractData(cachedRowSet).stream()
@@ -157,7 +166,7 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
     public Optional<UserDto> get(UUID id) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.getStringForSQL(id)),
+                    MessageFormat.format(fetchSingleQuery(), SQLTools.getStringForSQL(id)),
                     "reader");
             return new UserDtoListResultSetExtractor()
                     .extractData(cachedRowSet).stream()
@@ -182,7 +191,7 @@ public class UserDtoRepository extends PaginatedRepository implements IUserDtoRe
 
     private long getRowSize(Set<UserFilter> userFilters) throws SQLException {
         String query = "select count(*) as row_count from " +
-                MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Users").getName() + " users " +
+                metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() + " users " +
                 getWhereClause(userFilters) + ";";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -68,12 +69,15 @@ public class AuthenticationTest {
     private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
+    @Qualifier("restUserService")
     private UserService userService;
 
     @Autowired
+    @Qualifier("restTeamService")
     private TeamService teamService;
 
     @Autowired
+    @Qualifier("restSecurityGroupService")
     private SecurityGroupService securityGroupService;
 
     @Autowired
@@ -399,7 +403,7 @@ public class AuthenticationTest {
                 new HashSet<>()
         );
 
-        SecurityGroupConfiguration.getInstance().insert(securityGroup);
+        securityGroupService.addSecurityGroup(securityGroup);
 
         return securityGroup.getMetadataKey();
     }

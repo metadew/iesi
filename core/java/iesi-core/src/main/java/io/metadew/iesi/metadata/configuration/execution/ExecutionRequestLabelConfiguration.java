@@ -8,28 +8,28 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 
 @Log4j2
+@Component
 public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionRequestLabel, ExecutionRequestLabelKey> {
 
-    private static ExecutionRequestLabelConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ExecutionRequestLabelConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ExecutionRequestLabelConfiguration();
-        }
-        return INSTANCE;
+    public ExecutionRequestLabelConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ExecutionRequestLabelConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getExecutionServerMetadataRepository());
     }
 
     @Override

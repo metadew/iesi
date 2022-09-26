@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.fho;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.ShellCommandResult;
@@ -48,7 +49,7 @@ public class FhoDeleteFile extends ActionTypeExecution {
         String fileName = convertFile(getParameterResolvedValue(FILE_NAME_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
         System.out.println("Deleting " + path + " " + fileName + " on " + connectionName);
-        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
+        boolean isOnLocalhost = SpringContext.getBean(HostConnectionTools.class).isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         if (isOnLocalhost) {
@@ -68,10 +69,10 @@ public class FhoDeleteFile extends ActionTypeExecution {
             }
         } else {
             ConnectionKey connectionKey = new ConnectionKey(connectionName, this.getExecutionControl().getEnvName());
-            Connection connection = ConnectionConfiguration.getInstance()
+            Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                     .get(connectionKey)
                     .get();
-            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
+            HostConnection hostConnection = SpringContext.getBean(ConnectionOperation.class).getHostConnection(connection);
 
             if (path.isEmpty()) {
                 this.setScope(fileName);

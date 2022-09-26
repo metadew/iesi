@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.tools;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.connection.DatabaseConnectionHandler;
@@ -15,6 +16,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class SQLTools {
+
+    private static final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
 
     private SQLTools() {
     }
@@ -56,7 +60,7 @@ public final class SQLTools {
 
     public static String getStringForSQLClob(String clobString, Database database) {
         try {
-            Connection connection = DatabaseHandler.getInstance().getConnection(database);
+            Connection connection = databaseHandler.getConnection(database);
             String rawClobString;
             try {
                 Clob clob = connection.createClob();

@@ -50,13 +50,16 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
 @DirtiesContext
-public class ScriptServiceTest {
+class ScriptServiceTest {
 
     @Autowired
     private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
     private ScriptService scriptService;
+
+    @Autowired
+    private SecurityGroupConfiguration securityGroupConfiguration;
 
     @SpyBean
     private ScriptDesignAuditService scriptDesignAuditServiceSpy;
@@ -69,7 +72,7 @@ public class ScriptServiceTest {
     @Test
     void createScriptRightPolicy() throws NoSuchFieldException {
 
-        SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
+        securityGroupConfiguration.insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
         ScriptBuilder scriptBuilder = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script"), 1L);
         Script script = scriptBuilder.securityGroupName("PUBLIC").build();
 
@@ -98,7 +101,7 @@ public class ScriptServiceTest {
     @Test
     void createScriptDisabledPolicy() throws NoSuchFieldException {
 
-        SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
+        securityGroupConfiguration.insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
         ScriptBuilder scriptBuilder = new ScriptBuilder(IdentifierTools.getScriptIdentifier("script"), 1L);
         Script script = scriptBuilder.securityGroupName("PUBLIC").build();
 
@@ -126,7 +129,7 @@ public class ScriptServiceTest {
 
     @Test
     void createScriptWrongPolicy() {
-        SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
+        securityGroupConfiguration.insert(new SecurityGroup(new SecurityGroupKey(UUID.randomUUID()), "PUBLIC", new HashSet<>(), new HashSet<>()));
         ScriptBuilder scriptBuilder = new ScriptBuilder(IdentifierTools.getScriptIdentifier("scriptname"), 1L);
         Script script = scriptBuilder.name("scriptname").securityGroupName("PUBLIC").build();
 
@@ -136,7 +139,7 @@ public class ScriptServiceTest {
                 ).collect(Collectors.toList())
         );
 
-        MetadataPolicyConfiguration.getInstance();
+        // MetadataPolicyConfiguration.getInstance();
         assertThatThrownBy(() -> scriptService.createScript(script))
                 .isInstanceOf(PolicyVerificationException.class)
                 .hasMessage("scriptname does not contain the mandatory label \"label_2\" defined in the policy \"policy_1\"");

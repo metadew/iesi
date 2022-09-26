@@ -8,29 +8,28 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestParameter;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestParameterKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 
+@Component
 @Log4j2
 public class ScriptExecutionRequestParameterConfiguration extends Configuration<ScriptExecutionRequestParameter, ScriptExecutionRequestParameterKey> {
 
-    private static ScriptExecutionRequestParameterConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ScriptExecutionRequestParameterConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptExecutionRequestParameterConfiguration();
-        }
-        return INSTANCE;
+    public ScriptExecutionRequestParameterConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptExecutionRequestParameterConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getExecutionServerMetadataRepository());
     }
 
     @Override

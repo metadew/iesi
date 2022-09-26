@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.framework;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,8 +19,10 @@ public class FrameworkFolder {
     private String description;
     private String permissions;
 
+    Configuration configuration = SpringContext.getBean(Configuration.class);
+
     public Path getAbsolutePath() {
-        return Paths.get((String) Configuration.getInstance()
+        return Paths.get((String) configuration
                 .getMandatoryProperty("iesi.home"))
                 .resolve(path)
                 .toAbsolutePath();

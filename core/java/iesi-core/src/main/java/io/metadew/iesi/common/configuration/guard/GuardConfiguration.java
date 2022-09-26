@@ -4,31 +4,32 @@ import io.metadew.iesi.common.configuration.Configuration;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@org.springframework.context.annotation.Configuration
 @Log4j2
 @Getter
 public class GuardConfiguration {
 
-    private static GuardConfiguration INSTANCE;
     private static final String guardKey = "guard";
 
     private Map<String, String> guardSettingsMap;
+    private final Configuration configuration;
 
-    public synchronized static GuardConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new GuardConfiguration();
-        }
-        return INSTANCE;
+    public GuardConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
+
     @SuppressWarnings("unchecked")
-    private GuardConfiguration() {
+    @PostConstruct
+    private void postConstruct() {
         guardSettingsMap = new HashMap<>();
         if (containsConfiguration()) {
-            guardSettingsMap = (Map<String, String>) Configuration.getInstance().getProperties()
+            guardSettingsMap = (Map<String, String>) this.configuration.getProperties()
                     .get(guardKey);
         } else {
             log.warn("no guard configuration found on system variable, classpath or filesystem");
@@ -37,8 +38,8 @@ public class GuardConfiguration {
 
 
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(GuardConfiguration.guardKey) &&
-                (Configuration.getInstance().getProperties().get(GuardConfiguration.guardKey) instanceof Map);
+        return configuration.getProperties().containsKey(GuardConfiguration.guardKey) &&
+                (configuration.getProperties().get(GuardConfiguration.guardKey) instanceof Map);
     }
 
     public Optional<String> getGuardSetting(String guardSetting) {

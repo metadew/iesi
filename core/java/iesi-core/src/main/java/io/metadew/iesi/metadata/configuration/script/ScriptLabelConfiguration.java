@@ -8,10 +8,11 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -19,20 +20,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptLabelKey> {
 
-    private static ScriptLabelConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ScriptLabelConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptLabelConfiguration();
-        }
-        return INSTANCE;
+    public ScriptLabelConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptLabelConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDesignMetadataRepository());
     }
 
     @Override

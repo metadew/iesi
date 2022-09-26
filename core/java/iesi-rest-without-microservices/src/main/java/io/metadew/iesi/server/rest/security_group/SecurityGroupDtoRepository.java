@@ -23,32 +23,41 @@ import java.util.stream.Collectors;
 public class SecurityGroupDtoRepository extends PaginatedRepository implements ISecurityGroupDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
     private final FilterService filterService;
 
-    private static final String FETCH_SINGLE_QUERY = "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
-            "security_group_teams.team_id as security_group_teams_team_id, " +
-            "teams.id as team_id, teams.TEAM_NAME as team_name " +
-            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
-            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
-            " ON teams.ID = security_group_teams.TEAM_ID " +
-            " WHERE security_groups.ID={0};";
-
-    private static final String FETCH_BY_NAME_QUERY = "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
-            "security_group_teams.team_id as security_group_teams_team_id, " +
-            "teams.id as team_id, teams.TEAM_NAME as team_name " +
-            " FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
-            " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
-            " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
-            " ON teams.ID = security_group_teams.TEAM_ID " +
-            " WHERE security_groups.NAME={0};";
-
     @Autowired
-    public SecurityGroupDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
+    public SecurityGroupDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                                      MetadataTablesConfiguration metadataTablesConfiguration,
+                                      FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
         this.filterService = filterService;
+    }
+
+    private String fetchSingleQuery() {
+        return "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
+                "security_group_teams.team_id as security_group_teams_team_id, " +
+                "teams.id as team_id, teams.TEAM_NAME as team_name " +
+                " FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
+                " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Teams").getName() + " teams " +
+                " ON teams.ID = security_group_teams.TEAM_ID " +
+                " WHERE security_groups.ID={0};";
+
+    }
+
+    private String fetchByNameQuery() {
+        return "select security_groups.id as security_groups_id, security_groups.name as security_groups_name, " +
+                "security_group_teams.team_id as security_group_teams_team_id, " +
+                "teams.id as team_id, teams.TEAM_NAME as team_name " +
+                " FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
+                " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Teams").getName() + " teams " +
+                " ON teams.ID = security_group_teams.TEAM_ID " +
+                " WHERE security_groups.NAME={0};";
     }
 
     private String getFetchAllQuery(Pageable pageable, List<SecurityGroupFilter> securityGroupFilters) {
@@ -57,17 +66,17 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
                 "security_group_teams.team_id as security_group_teams_team_id, " +
                 "teams.id as team_id, teams.TEAM_NAME as team_name " +
                 " FROM (" + getBaseQUery(pageable, securityGroupFilters) + ") base_security_groups " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
                 "ON base_security_groups.id = security_groups.id " +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroupTeams").getName() + " security_group_teams " +
                 " ON security_groups.ID = security_group_teams.SECURITY_GROUP_ID" +
-                " LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Teams").getName() + " teams " +
+                " LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Teams").getName() + " teams " +
                 " ON teams.ID = security_group_teams.TEAM_ID;";
     }
 
     private String getBaseQUery(Pageable pageable, List<SecurityGroupFilter> securityGroupFilters) {
         return "select distinct security_groups.id, security_groups.name " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
                 getWhereClause(securityGroupFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -107,7 +116,7 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
 
     private long getRowSize(List<SecurityGroupFilter> securityGroupFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct security_groups.id " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
                 getWhereClause(securityGroupFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
@@ -131,7 +140,7 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
     public Optional<SecurityGroupDto> get(String teamName) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_BY_NAME_QUERY, SQLTools.getStringForSQL(teamName)),
+                    MessageFormat.format(fetchByNameQuery(), SQLTools.getStringForSQL(teamName)),
                     "reader");
             return new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();
@@ -143,7 +152,7 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
     public Optional<SecurityGroupDto> get(UUID id) {
         try {
             CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getControlMetadataRepository().executeQuery(
-                    MessageFormat.format(FETCH_SINGLE_QUERY, SQLTools.getStringForSQL(id)),
+                    MessageFormat.format(fetchSingleQuery(), SQLTools.getStringForSQL(id)),
                     "reader");
             return new SecurityGroupDtoListResultSetExtractor().extractData(cachedRowSet).stream()
                     .findFirst();

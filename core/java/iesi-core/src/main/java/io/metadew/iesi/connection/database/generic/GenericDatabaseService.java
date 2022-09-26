@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.generic;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.DatabaseService;
 import io.metadew.iesi.connection.database.IDatabaseService;
@@ -30,11 +31,11 @@ public class GenericDatabaseService extends DatabaseService<GenericDatabase> imp
 
     @Override
     public GenericDatabase getDatabase(Connection connection) {
-        Optional<String> username = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, USER_KEY);
-        Optional<String> password = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, PASSWORD_KEY);
-        Optional<String> schema = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, SCHEMA_KEY);
-        String connectionURL = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, CONNECTION_URL_KEY);
-        Optional<String> initSql = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, INIT_SQL);
+        Optional<String> username = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, USER_KEY);
+        Optional<String> password = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, PASSWORD_KEY);
+        Optional<String> schema = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, SCHEMA_KEY);
+        String connectionURL = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, CONNECTION_URL_KEY);
+        Optional<String> initSql = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, INIT_SQL);
 
         GenericDatabaseConnection genericDatabaseConnection = new GenericDatabaseConnection(
                 connectionURL,

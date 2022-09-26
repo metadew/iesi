@@ -352,7 +352,6 @@ class DatabaseDatasetImplementationServiceTest {
         DatabaseDatasetImplementationService databaseDatasetImplementationService = DatabaseDatasetImplementationService.getInstance();
         DatabaseDatasetImplementationService databaseDatasetImplementationServiceSpy = Mockito.spy(databaseDatasetImplementationService);
         Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", databaseDatasetImplementationServiceSpy);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
 
         DataType dataType = DatabaseDatasetImplementationService.getInstance()
                 .resolve(
@@ -387,7 +386,6 @@ class DatabaseDatasetImplementationServiceTest {
                                 "value2"
                         ));
         Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
 }

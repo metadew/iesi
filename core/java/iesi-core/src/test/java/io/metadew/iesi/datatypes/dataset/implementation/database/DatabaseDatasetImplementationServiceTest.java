@@ -65,9 +65,6 @@ class DatabaseDatasetImplementationServiceTest {
     @Autowired
     private DatabaseDatasetImplementationKeyValueConfiguration databaseDatasetImplementationKeyValueConfiguration;
 
-    @Autowired
-    private DataTypeHandler dataTypeHandler;
-
     @SpyBean
     private DataTypeHandler dataTypeHandlerSpy;
 
@@ -325,8 +322,10 @@ class DatabaseDatasetImplementationServiceTest {
                     Object[] args = invocation.getArguments();
                     return new LookupResult((String) args[0], null, null);
                 });
+
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
         DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+
         DatabaseDatasetImplementation databaseDatasetImplementation = DatabaseDatasetImplementation.builder()
                 .metadataKey(datasetImplementationKey)
                 .datasetKey(datasetKey)
@@ -374,7 +373,7 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key1",
                                 "dataset"
                         ));
-        DataType dataType1 = dataTypeHandler
+        DataType dataType1 = dataTypeHandlerSpy
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
 
         assertThat(dataType1 instanceof DatabaseDatasetImplementation).isTrue();

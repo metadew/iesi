@@ -33,9 +33,9 @@ jobs:
           mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
       - name: Fetch dependencies for core
         run: |
-          cd ~/repo/core/java/iesi-core
+          cd core/java/iesi-core
           mvn dependency:go-offline
       - name: Build, package and install the core
         run: |
-          cd ~/repo/core/java/iesi-core
+          cd core/java/iesi-core
           mvn clean install -Dmaven.deploy.skip=true -Dgpg.skip

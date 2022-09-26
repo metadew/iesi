@@ -63,9 +63,6 @@ class DatabaseDatasetImplementationServiceTest {
     @Autowired
     private DatabaseDatasetImplementationKeyValueConfiguration databaseDatasetImplementationKeyValueConfiguration;
 
-    @Autowired
-    private DataTypeHandler dataTypeHandler;
-
     @SpyBean
     private DataTypeHandler dataTypeHandlerSpy;
 
@@ -367,7 +364,7 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key1",
                                 "dataset"
                         ));
-        DataType dataType1 = dataTypeHandler
+        DataType dataType1 = DatasetImplementationHandler.getInstance()
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
 
         assertThat(dataType1 instanceof DatabaseDatasetImplementation).isTrue();

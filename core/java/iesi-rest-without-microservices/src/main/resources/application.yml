@@ -22,7 +22,7 @@ iesi:
     client_secret: iesi
     jwt:
       secret: secret
-      access-token-validity: 5
+      access-token-validity: 1800
       refresh-token-validity: 86400
   debug: true
 management:

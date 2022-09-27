@@ -39,7 +39,7 @@ public class IterationConfiguration {
     }
 
     private void createIterationExecTable()  {
-        String query = "CREATE TABLE " + PRC_ITERATION_EXEC + " (" + "RUN_ID VARCHAR(200) NOT NULL,"
+        String query = "CREATE TABLE IF NOT EXISTS " + PRC_ITERATION_EXEC + " (" + "RUN_ID VARCHAR(200) NOT NULL,"
                 + "PRC_ID INT NOT NULL," + "LIST_ID INT NOT NULL," + "LIST_NM VARCHAR(200) NOT NULL,"
                 + "SET_ID INT NOT NULL," + "SET_NM VARCHAR(200) NOT NULL," + "ORDER_NB INT NOT NULL,"
                 + "VAR_NM VARCHAR(200) NOT NULL," + "VAR_VAL VARCHAR("+RUNTIME_VAR_VALUE_MAX_LENGTH+")" + ")";

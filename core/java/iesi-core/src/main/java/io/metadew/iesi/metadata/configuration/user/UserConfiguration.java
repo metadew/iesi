@@ -116,8 +116,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
 
     private String updateQuery() {
         return "UPDATE " + metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() +
-                " SET PASSWORD ={0}, ENABLED = {1}, EXPIRED = {2}, CREDENTIALS_EXPIRED = {3}, LOCKED = {4}" +
-                " WHERE ID = {5};";
+                " SET USERNAME={0}, PASSWORD ={1}, ENABLED = {2}, EXPIRED = {3}, CREDENTIALS_EXPIRED = {4}, LOCKED = {5}" +
+                " WHERE ID = {6};";
     }
 
     private String fetchRoleSByUserIdQuery() {
@@ -259,7 +259,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                 SQLTools.getStringForSQL(metadata.isLocked()),
                 SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString())));
 
-        String deleteRolesStatement = MessageFormat.format(deleteUserRolesByUserIdAndRoleIdQuery(), SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
+        String deleteRolesStatement = MessageFormat.format(deleteUserRolesByUserIdQuery(),
+                SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
         getMetadataRepository().executeUpdate(deleteRolesStatement);
         for (RoleKey roleKey : metadata.getRoleKeys()) {
             getMetadataRepository().executeUpdate(

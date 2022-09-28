@@ -20,10 +20,14 @@ import java.util.stream.Collectors;
 @ConditionalOnWebApplication
 public class UserDtoModelAssembler extends RepresentationModelAssemblerSupport<User, UserDto> {
 
+    private final RoleConfiguration roleConfiguration;
+    private final TeamConfiguration teamConfiguration;
 
     @Autowired
-    public UserDtoModelAssembler() {
+    public UserDtoModelAssembler(RoleConfiguration roleConfiguration, TeamConfiguration teamConfiguration) {
         super(UserController.class, UserDto.class);
+        this.roleConfiguration = roleConfiguration;
+        this.teamConfiguration = teamConfiguration;
     }
 
     @Override
@@ -37,9 +41,9 @@ public class UserDtoModelAssembler extends RepresentationModelAssemblerSupport<U
                 user.isLocked(),
                 user.getRoleKeys().stream()
                         .map(roleKey -> {
-                            Role role = RoleConfiguration.getInstance().get(roleKey)
+                            Role role = roleConfiguration.get(roleKey)
                                     .orElseThrow(() -> new MetadataDoesNotExistException(roleKey));
-                            Team team = TeamConfiguration.getInstance().get(role.getTeamKey())
+                            Team team = teamConfiguration.get(role.getTeamKey())
                                     .orElseThrow(() -> new MetadataDoesNotExistException(role.getTeamKey()));
                             return new UserRoleDto(
                                     roleKey.getUuid(),

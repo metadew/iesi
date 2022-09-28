@@ -1,9 +1,11 @@
 package io.metadew.iesi.server.rest.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
+import io.metadew.iesi.metadata.configuration.user.*;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
+import io.metadew.iesi.metadata.service.user.RoleService;
 import io.metadew.iesi.metadata.service.user.TeamService;
 import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
@@ -20,11 +22,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,7 +40,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,10 +47,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {UserController.class, TeamsController.class, SecurityGroupController.class, CustomGlobalExceptionHandler.class,
-        TeamService.class, IUserService.class, UserDtoModelAssembler.class, SecurityGroupService.class, SecurityGroupDtoRepository.class, SecurityGroupPutDtoService.class,
-        SecurityGroupDtoResourceAssembler.class, io.metadew.iesi.server.rest.user.team.TeamService.class, TeamDtoRepository.class, TeamPutDtoService.class, TeamDtoResourceAssembler.class,
-        BCryptPasswordEncoder.class, UserDtoRepository.class, UserService.class, TestConfiguration.class, IesiConfiguration.class, IesiSecurityChecker.class,
-        UserDtoRepository.class, FilterService.class})
+        TeamService.class, IUserService.class, UserDtoModelAssembler.class, SecurityGroupService.class, io.metadew.iesi.metadata.service.security.SecurityGroupService.class, SecurityGroupDtoRepository.class, SecurityGroupPutDtoService.class,
+        SecurityGroupConfiguration.class, TeamConfiguration.class, RoleConfiguration.class, RoleListResultSetExtractor.class, SecurityGroupDtoResourceAssembler.class, io.metadew.iesi.server.rest.user.team.TeamService.class,
+        TeamDtoRepository.class, TeamPutDtoService.class, TeamDtoResourceAssembler.class, TeamListResultSetExtractor.class, RoleService.class, UserService.class,
+        io.metadew.iesi.metadata.service.user.UserService.class, BCryptPasswordEncoder.class, UserConfiguration.class, UserDtoRepository.class, UserService.class, TestConfiguration.class, IesiConfiguration.class,
+        IesiSecurityChecker.class, UserDtoRepository.class, FilterService.class})
 @ActiveProfiles("test")
 @DirtiesContext
 class UserControllerTest {
@@ -117,16 +117,7 @@ class UserControllerTest {
         UserPostDto userPostDto = new UserPostDto(
                 "user1",
                 "password",
-                "password"
-        );
-        UserDto user = new UserDto(
-                UUID.randomUUID(),
-                "user1",
-                true,
-                false,
-                false,
-                false,
-                new HashSet<>()
+                "passwords"
         );
 
         String userPostDtoString = objectMapper.writeValueAsString(userPostDto);
@@ -212,15 +203,11 @@ class UserControllerTest {
     void updatePasswordsMisMatch() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         UUID userUuid = UUID.randomUUID();
-        UserPostDto userPostDto = new UserPostDto(
-                "user2",
-                "password",
-                "password"
-        );
+        PasswordPostDto passwordPostDto = new PasswordPostDto("password", "passwords");
 
-        String userPostDtoString = objectMapper.writeValueAsString(userPostDto);
+        String userPostDtoString = objectMapper.writeValueAsString(passwordPostDto);
         mvc.perform(
-                        put("/users/" + userUuid)
+                        put("/users/" + userUuid + "/password")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(userPostDtoString))
                 .andExpect(status().isBadRequest())

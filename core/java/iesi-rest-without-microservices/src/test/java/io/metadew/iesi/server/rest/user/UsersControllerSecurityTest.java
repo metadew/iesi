@@ -6,11 +6,13 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
+import io.metadew.iesi.server.rest.configuration.security.jwt.JwtWebSecurityConfiguration;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
@@ -19,9 +21,11 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -34,10 +38,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Log4j2
-@SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
+@SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, JwtWebSecurityConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
+@ContextConfiguration(classes = TestConfiguration.class)
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ActiveProfiles({"test"})
+@ActiveProfiles("test")
 @DirtiesContext
 class UsersControllerSecurityTest {
 
@@ -56,6 +61,7 @@ class UsersControllerSecurityTest {
     @MockBean
     private io.metadew.iesi.metadata.service.user.UserService userService;
     @MockBean
+    @Qualifier("restUserService")
     private UserService userDtoService;
     @MockBean
     private PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;

@@ -6,6 +6,7 @@ import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager
 import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,7 +30,7 @@ public class IesiUserAuthenticationConverter implements UserAuthenticationConver
 
 
     @Autowired
-    public IesiUserAuthenticationConverter(IesiUserDetailsManager iesiUserDetailsManager, UserService userService) {
+    public IesiUserAuthenticationConverter(IesiUserDetailsManager iesiUserDetailsManager, @Qualifier("restUserService") UserService userService) {
         this.iesiUserDetailsManager = iesiUserDetailsManager;
         this.userService = userService;
     }

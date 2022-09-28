@@ -1,12 +1,12 @@
 package io.metadew.iesi.script.action.socket;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -45,6 +45,10 @@ public class SocketTransmitMessage extends ActionTypeExecution {
     private SocketConnection socket;
     private DatasetImplementation outputDataset;
     private Integer timeout;
+
+    private final Configuration configuration = SpringContext.getBean(Configuration.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+    private final ActionPerformanceLogger actionPerformanceLogger = SpringContext.getBean(ActionPerformanceLogger.class);
 
     public SocketTransmitMessage(ExecutionControl executionControl,
                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -128,7 +132,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
             LocalDateTime endDateTime;
             if (timeout == null) {
                 endDateTime = LocalDateTime.now()
-                        .plus((Integer) Configuration.getInstance().getMandatoryProperty("iesi.actions.socket.transmitMessage.timeout.default"),
+                        .plus((Integer) configuration.getMandatoryProperty("iesi.actions.socket.transmitMessage.timeout.default"),
                                 ChronoUnit.SECONDS);
             } else {
                 endDateTime = LocalDateTime.now().plus(timeout, ChronoUnit.SECONDS);
@@ -139,7 +143,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
                     int bytesRead = dIn.read(bytes);
                     LocalDateTime end = LocalDateTime.now();
                     DatasetImplementationHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
-                    ActionPerformanceLogger.getInstance().log(getActionExecution(), "response", start, end);
+                    actionPerformanceLogger.log(getActionExecution(), "response", start, end);
                     break;
                 }
             }
@@ -150,7 +154,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
 
     private SocketConnection convertSocket(DataType socket) {
         if (socket instanceof Text) {
-            return ConnectionConfiguration.getInstance()
+            return connectionConfiguration
                     .get(new ConnectionKey(((Text) socket).getString(), getExecutionControl().getEnvName()))
                     .map(SocketConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) socket).getString())));

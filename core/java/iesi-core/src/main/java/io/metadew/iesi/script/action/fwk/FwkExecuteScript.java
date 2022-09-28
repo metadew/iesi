@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.fwk;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -32,6 +33,8 @@ import java.util.regex.Pattern;
 
 public class FwkExecuteScript extends ActionTypeExecution {
 
+
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String SCRIPT_NAME_KEY = "script";
     private static final String SCRIPT_VERSION_KEY = "version";
     private static final String ENVIRONMENT_KEY = "environment";
@@ -39,7 +42,6 @@ public class FwkExecuteScript extends ActionTypeExecution {
     private static final String PARAM_FILE_KEY = "paramFile";
 
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.*)\\s*");
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -74,10 +76,10 @@ public class FwkExecuteScript extends ActionTypeExecution {
 
         // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
         Script script = scriptVersion
-                .map(version -> ScriptConfiguration.getInstance()
+                .map(version -> SpringContext.getBean(ScriptConfiguration.class)
                         .get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version))
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
-                .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)
+                .orElse(SpringContext.getBean(ScriptConfiguration.class).getLatestVersion(scriptName)
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));
 
         Map<String, String> parameters = new HashMap<>();
@@ -144,7 +146,7 @@ public class FwkExecuteScript extends ActionTypeExecution {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(SpringContext.getBean(DataTypeHandler.class).resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {

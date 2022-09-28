@@ -1,6 +1,7 @@
 package io.metadew.iesi.datatypes.dataset.implementation;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
@@ -87,7 +88,7 @@ public class DatasetImplementationHandler implements IDatasetImplementationHandl
 
     @Override
     public DatasetImplementation resolve(String input, ExecutionRuntime executionRuntime) {
-        List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(input);
+        List<String> splittedArguments = SpringContext.getBean(DataTypeHandler.class).splitInstructionArguments(input);
         if (splittedArguments.size() == 3) {
             if (splittedArguments.get(2).equalsIgnoreCase("database")){
                 return DatabaseDatasetImplementationService.getInstance().resolve(input, executionRuntime);
@@ -124,7 +125,7 @@ public class DatasetImplementationHandler implements IDatasetImplementationHandl
         }
         for (Map.Entry<String, DataType> thisDataItem : thisDataItems.entrySet()) {
             if (!getDataItem(other, thisDataItem.getKey(), executionRuntime)
-                    .map(dataType -> DataTypeHandler.getInstance().equals(dataType, thisDataItem.getValue(), executionRuntime))
+                    .map(dataType -> SpringContext.getBean(DataTypeHandler.class).equals(dataType, thisDataItem.getValue(), executionRuntime))
                     .orElse(false)) {
                 return false;
             }

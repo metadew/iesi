@@ -9,10 +9,11 @@ import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,23 +23,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ImpersonationConfiguration extends Configuration<Impersonation, ImpersonationKey> {
 
     private Impersonation impersonation;
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ImpersonationConfiguration INSTANCE;
 
-    public synchronized static ImpersonationConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ImpersonationConfiguration();
-        }
-        return INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final ImpersonationParameterConfiguration impersonationParameterConfiguration;
+
+    public ImpersonationConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, ImpersonationParameterConfiguration impersonationParameterConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.impersonationParameterConfiguration = impersonationParameterConfiguration;
     }
 
-    // Constructors
-    private ImpersonationConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+   @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getControlMetadataRepository());
     }
 
     @Override
@@ -64,10 +66,6 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     @Override
     public void insert(Impersonation metadata) {
         insertImpersonation(metadata);
-    }
-
-    public ImpersonationConfiguration(Impersonation impersonation) {
-        this.setImpersonation(impersonation);
     }
 
     // Methods
@@ -188,7 +186,7 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
         }
 
         for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
-            ImpersonationParameterConfiguration.getInstance().insert(impersonationParameter);
+            impersonationParameterConfiguration.insert(impersonationParameter);
         }
         String query = "INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") + " (IMP_NM, IMP_DSC) VALUES (" +
                 SQLTools.getStringForSQL(impersonation.getMetadataKey().getName()) + "," +
@@ -214,7 +212,6 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
     }
 
     public List<String> getInsertStatement(Impersonation impersonation) {
-        ImpersonationParameterConfiguration impersonationParameterConfiguration = ImpersonationParameterConfiguration.getInstance();
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("Impersonations") + " (IMP_NM, IMP_DSC) VALUES (" +
                 SQLTools.getStringForSQL(impersonation.getMetadataKey().getName()) + "," +
@@ -233,7 +230,6 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
             return result;
 
         for (ImpersonationParameter impersonationParameter : impersonation.getParameters()) {
-            ImpersonationParameterConfiguration impersonationParameterConfiguration = ImpersonationParameterConfiguration.getInstance();
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
 
@@ -300,7 +296,6 @@ public class ImpersonationConfiguration extends Configuration<Impersonation, Imp
             return result;
 
         for (ImpersonationParameter impersonationParameter : this.getImpersonation().getParameters()) {
-            ImpersonationParameterConfiguration impersonationParameterConfiguration = ImpersonationParameterConfiguration.getInstance();
             if (!result.equalsIgnoreCase(""))
                 result += "\n";
             result += impersonationParameterConfiguration.getInsertStatement(impersonationName);

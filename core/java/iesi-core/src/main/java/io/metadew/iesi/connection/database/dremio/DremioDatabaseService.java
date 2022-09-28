@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.dremio;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
@@ -32,23 +33,23 @@ public class DremioDatabaseService extends SchemaDatabaseService<DremioDatabase>
 
     @Override
     public DremioDatabase getDatabase(Connection connection) {
-        String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
-        String schemaName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, schemaKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
+        String schemaName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, schemaKey);
         DremioDatabaseConnection dremioDatabaseConnection;
-        if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             dremioDatabaseConnection = new DremioDatabaseConnection(
-                    DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     schemaName);
             return new DremioDatabase(dremioDatabaseConnection, schemaName);
         }
 
-        String hostName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection,portKey));
-        String connectionMode = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, connectionModeKey);
-        String clusterName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, clusterNameKey);
+        String hostName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection,portKey));
+        String connectionMode = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, connectionModeKey);
+        String clusterName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, clusterNameKey);
 
         dremioDatabaseConnection = new DremioDatabaseConnection(hostName,
                 port,

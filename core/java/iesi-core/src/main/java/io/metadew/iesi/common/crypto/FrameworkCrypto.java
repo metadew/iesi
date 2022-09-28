@@ -3,7 +3,9 @@ package io.metadew.iesi.common.crypto;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.crypto.algo.AESEncryptBasic;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -14,28 +16,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
+@Component
 public class FrameworkCrypto {
 
     private AESEncryptBasic aes;
 
-    private static FrameworkCrypto INSTANCE;
+    private final Configuration configuration;
 
-    public static FrameworkCrypto getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new FrameworkCrypto();
-        }
-        return INSTANCE;
+    public FrameworkCrypto(Configuration configuration) {
+        this.configuration = configuration;
     }
 
-    public FrameworkCrypto() {
-        if (Configuration.getInstance().getProperty("iesi.security.encryption.alias").isPresent()) {
+    @PostConstruct
+    private void postConstruct() {
+        if (configuration.getProperty("iesi.security.encryption.alias").isPresent()) {
             char[] password = Console.getInstance().readPassword("Enter your keystore password: ");
-            String keystoreLocation = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
-            String alias = Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.alias").toString();
+            String keystoreLocation = configuration.getMandatoryProperty("iesi.security.encryption.keystore-path").toString();
+            String alias = configuration.getMandatoryProperty("iesi.security.encryption.alias").toString();
             String keyJKS = new JavaKeystore().loadKey(password, keystoreLocation, alias);
             this.aes = new AESEncryptBasic(keyJKS);
-        } else if (Configuration.getInstance().getProperty("iesi.security.encryption.key").isPresent()) {
-            this.aes = new AESEncryptBasic(Configuration.getInstance().getMandatoryProperty("iesi.security.encryption.key").toString());
+        } else if (configuration.getProperty("iesi.security.encryption.key").isPresent()) {
+            this.aes = new AESEncryptBasic(configuration.getMandatoryProperty("iesi.security.encryption.key").toString());
         } else {
             log.warn("iesi.security.encryption.key: no encryption key provided. IESI will use the hardcoded key");
             this.aes = new AESEncryptBasic("a9a1e56891154a6a");

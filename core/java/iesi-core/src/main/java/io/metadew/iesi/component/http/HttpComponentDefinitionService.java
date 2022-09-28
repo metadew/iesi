@@ -3,9 +3,11 @@ package io.metadew.iesi.component.http;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
+import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+@Service
 public class HttpComponentDefinitionService implements IHttpComponentDefinitionService {
 
     private static final String COMPONENT_TYPE = "http.request";
@@ -13,16 +15,10 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
     private static final String ENDPOINT_KEY = "endpoint";
     private static final String TYPE_KEY = "type";
 
-    private static HttpComponentDefinitionService INSTANCE;
+    private final HttpComponentDesignTraceService httpComponentDesignTraceService;
 
-    public synchronized static HttpComponentDefinitionService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpComponentDefinitionService();
-        }
-        return INSTANCE;
-    }
-
-    private HttpComponentDefinitionService() {
+    public HttpComponentDefinitionService(HttpComponentDesignTraceService httpComponentDesignTraceService) {
+        this.httpComponentDesignTraceService = httpComponentDesignTraceService;
     }
 
     public HttpComponentDefinition convert(Component component, ActionExecution actionExecution) {
@@ -64,7 +60,7 @@ public class HttpComponentDefinitionService implements IHttpComponentDefinitionS
     @Override
     public HttpComponentDefinition convertAndTrace(Component component, ActionExecution actionExecution, String actionParameterName) {
         HttpComponentDefinition httpComponentDefinition = convert(component, actionExecution);
-        HttpComponentDesignTraceService.getInstance().trace(httpComponentDefinition, actionExecution, actionParameterName);
+        httpComponentDesignTraceService.trace(httpComponentDefinition, actionExecution, actionParameterName);
         return httpComponentDefinition;
     }
 }

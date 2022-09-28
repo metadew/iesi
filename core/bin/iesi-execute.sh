@@ -8,8 +8,8 @@ plugin_lib_dir=$absolute_dir/../plugin_lib
 classpath="*"
 
 cd $lib_dir
-for i in *.jar; do
-    classpath="$classpath:$lib_dir/$i"
+for i in  *.jar; do
+  classpath="$classpath:$lib_dir/$i"
 done
 
 cd $plugin_lib_dir
@@ -18,6 +18,6 @@ for i in *.jar; do
 done
 cd $lib_dir
 
-java -cp $classpath io.metadew.iesi.launch.ExecutionLauncher "$@"
+java -Xmx1G -Dlogging.config=./log4j2-disabled.xml -cp $classpath io.metadew.iesi.Application -launcher execution "$@"
 
 cd $calling_dir

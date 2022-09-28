@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.data.text;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
 public class TextSubstring implements DataInstruction {
 
     private final ExecutionRuntime executionRuntime;
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     public TextSubstring(ExecutionRuntime executionRuntime) {
         this.executionRuntime = executionRuntime;
@@ -30,7 +32,7 @@ public class TextSubstring implements DataInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        DataType resolvedParameters = DataTypeHandler.getInstance().resolve(parameters, executionRuntime);
+        DataType resolvedParameters = dataTypeHandler.resolve(parameters, executionRuntime);
         if (!(resolvedParameters instanceof Text)) {
             throw new IllegalArgumentException(MessageFormat.format("text cannot be a type of", resolvedParameters.getClass()));
         }

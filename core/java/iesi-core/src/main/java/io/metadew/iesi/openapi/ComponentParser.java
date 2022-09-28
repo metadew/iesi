@@ -23,25 +23,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
+@org.springframework.stereotype.Component
 @Log4j2
 @Data
 public class ComponentParser implements Parser<Component> {
-    private static ComponentParser instance;
 
-    private ComponentParser() {
-    }
+    private final SecurityGroupService securityGroupService;
 
-    public static synchronized ComponentParser getInstance() {
-        if (instance == null) {
-            instance = new ComponentParser();
-        }
-        return instance;
+    public ComponentParser(SecurityGroupService securityGroupService) {
+        this.securityGroupService = securityGroupService;
     }
 
     public List<Component> parse(OpenAPI openAPI) {
         List<Component> components = new ArrayList<>();
-        SecurityGroupKey securityGroupKey = SecurityGroupService.getInstance().get("PUBLIC")
+        SecurityGroupKey securityGroupKey = securityGroupService.get("PUBLIC")
                 .map(Metadata::getMetadataKey)
                 .orElseThrow(() -> new RuntimeException("could not find security group PUBLIC"));
         Paths paths = openAPI.getPaths();

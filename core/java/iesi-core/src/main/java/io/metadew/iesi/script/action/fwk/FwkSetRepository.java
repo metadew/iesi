@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.fwk;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
@@ -78,7 +79,7 @@ public class FwkSetRepository extends ActionTypeExecution {
         List<String> labels = new ArrayList<>();
         if (repositoryLabels instanceof Text) {
             Arrays.stream(repositoryLabels.toString().split(","))
-                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(DataTypeHandler.getInstance().resolve(repositoryLabel.trim(), getExecutionControl().getExecutionRuntime()))));
+                    .forEach(repositoryLabel -> labels.add(convertRepositoryInstanceLabel(SpringContext.getBean(DataTypeHandler.class).resolve(repositoryLabel.trim(), getExecutionControl().getExecutionRuntime()))));
             return labels;
         } else if (repositoryLabels instanceof Array) {
             ((Array) repositoryLabels).getList()

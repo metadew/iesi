@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.eval;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.Dataset;
@@ -33,9 +34,9 @@ public class EvalAssertEquals extends ActionTypeExecution {
     protected boolean executeAction() throws InterruptedException {
         boolean evaluation;
         if (expectedValue instanceof Template && actualValue instanceof Dataset) {
-            evaluation = TemplateService.getInstance().matches(actualValue, (Template) expectedValue, getExecutionControl().getExecutionRuntime());
+            evaluation = ((TemplateService) SpringContext.getBean(DataTypeHandler.class).getDataTypeService(Template.class)).matches(actualValue, (Template) expectedValue, getExecutionControl().getExecutionRuntime());
         } else {
-            evaluation = DataTypeHandler.getInstance().equals(expectedValue, actualValue, getExecutionControl().getExecutionRuntime());
+            evaluation = SpringContext.getBean(DataTypeHandler.class).equals(expectedValue, actualValue, getExecutionControl().getExecutionRuntime());
         }
 
         if (evaluation) {

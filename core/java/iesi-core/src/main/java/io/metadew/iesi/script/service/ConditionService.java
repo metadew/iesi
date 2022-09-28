@@ -8,24 +8,17 @@ import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
+import org.springframework.stereotype.Service;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+@Service
 @Log4j2
 public class ConditionService implements IConditionService {
 
     private final JexlEngine jexl;
-
-    private static ConditionService INSTANCE;
-
-    public synchronized static ConditionService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ConditionService();
-        }
-        return INSTANCE;
-    }
 
     private ConditionService() {
         jexl = new JexlEngine();

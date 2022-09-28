@@ -11,6 +11,6 @@ for i in *.jar; do
     classpath="$classpath:$lib_dir/$i"
 done
 
-java -cp $classpath io.metadew.iesi.openapi.OpenAPILauncher "$@"
+java -cp $classpath io.metadew.iesi.Application -launcher openapi "$@"
 
 cd $calling_dir

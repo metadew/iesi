@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.eval;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
@@ -55,11 +56,11 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         String checkValue = convertCheckValue(getParameterResolvedValue(VALUE_KEY));
         String checkOperatorName = convertCheckOperationName(getParameterResolvedValue(OPERATOR_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
 
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Database database = SpringContext.getBean(DatabaseHandler.class).getDatabase(connection);
         // Run the action
         this.getTestQueries(schemaName, tableName, fieldName, checkName, checkValue);
         long successTotal = 0;
@@ -67,7 +68,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         CachedRowSet crs;
 
         // Success
-        crs = DatabaseHandler.getInstance().executeQuery(database, this.getSqlSuccess());
+        crs = SpringContext.getBean(DatabaseHandler.class).executeQuery(database, this.getSqlSuccess());
         while (crs.next()) {
             successTotal = crs.getLong("RES_SUC");
         }
@@ -75,7 +76,7 @@ public class EvalVerifySingleField extends ActionTypeExecution {
         this.getActionExecution().getActionControl().logOutput("pass", Long.toString(successTotal));
 
         // Error
-        crs = DatabaseHandler.getInstance().executeQuery(database, this.getSqlError());
+        crs = SpringContext.getBean(DatabaseHandler.class).executeQuery(database, this.getSqlError());
         while (crs.next()) {
             errorTotal = crs.getLong("RES_ERR");
         }

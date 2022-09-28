@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.data.text;
 
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -8,31 +9,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-public class XMLPathTraversalTest {
+@SpringBootTest(classes = DataTypeHandler.class )
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext
+@ActiveProfiles("test")
+class XMLPathTraversalTest {
 
-    DataTypeHandler dataTypeHandler;
-    DataTypeHandler dataTypeHandlerServiceSpy;
     ExecutionRuntime executionRuntime;
     XMLPathTraversal xmlPathTraversal;
 
+    @SpyBean
+    DataTypeHandler dataTypeHandlerSpy;
+
     @BeforeEach
     public void before() {
-        dataTypeHandler = DataTypeHandler.getInstance();
-        dataTypeHandlerServiceSpy = Mockito.spy(dataTypeHandler);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandlerServiceSpy);
         executionRuntime = mock(ExecutionRuntime.class);
         xmlPathTraversal = new XMLPathTraversal(executionRuntime);
-    }
-
-    @AfterEach
-    public void after() {
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
@@ -40,7 +43,7 @@ public class XMLPathTraversalTest {
         String xmlString = "<?xml version=\"1.0\"?><Tutorials><Tutorial><title>Guava</title><description>Introduction to Guava</description></Tutorial></Tutorials>";
         String xmlPath = "/Tutorials/Tutorial[1]/title";
 
-        doReturn(new Text((xmlString + "," + xmlPath))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xmlPath, executionRuntime);
+        doReturn(new Text((xmlString + "," + xmlPath))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xmlPath, executionRuntime);
 
         String result = xmlPathTraversal.generateOutput(xmlString + "," + xmlPath);
 
@@ -52,7 +55,7 @@ public class XMLPathTraversalTest {
         String xmlString = "<?xml version=\"1.0\"?><Tutorials><Tutorial><title>Guava</title><description>Introduction to Guava</description></Tutorial></Tutorials>";
         String xmlPath = "/Tutorials/Tutorial[1]/description";
 
-        doReturn(new Text((xmlString + "," + xmlPath))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xmlPath, executionRuntime);
+        doReturn(new Text((xmlString + "," + xmlPath))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xmlPath, executionRuntime);
         String result = xmlPathTraversal.generateOutput(xmlString + "," + xmlPath);
 
         assertEquals("Introduction to Guava", result);
@@ -63,7 +66,7 @@ public class XMLPathTraversalTest {
         String xmlString = "<Tutorials><Tutorial><title>Guava</title><description>Introduction to Guava</description></Tutorial></Tutorials>";
         String xmlPath = "/Tutorials/Tutorial[1]/title";
 
-        doReturn(new Text((xmlString + "," + xmlPath))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xmlPath, executionRuntime);
+        doReturn(new Text((xmlString + "," + xmlPath))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xmlPath, executionRuntime);
         String result = xmlPathTraversal.generateOutput(xmlString + "," + xmlPath);
 
         assertEquals("Guava", result);
@@ -75,8 +78,8 @@ public class XMLPathTraversalTest {
         String xmlPathTitle = "/Tutorials/Tutorial[1]/title";
         String xmmPathDescription = "/Tutorials/Tutorial[1]/description";
 
-        doReturn(new Text((xmlString + "," + xmlPathTitle))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xmlPathTitle, executionRuntime);
-        doReturn(new Text((xmlString + "," + xmmPathDescription))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xmmPathDescription, executionRuntime);
+        doReturn(new Text((xmlString + "," + xmlPathTitle))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xmlPathTitle, executionRuntime);
+        doReturn(new Text((xmlString + "," + xmmPathDescription))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xmmPathDescription, executionRuntime);
         assertEquals("Guava", xmlPathTraversal.generateOutput(xmlString + "," + xmlPathTitle));
         assertEquals("Introduction to Guava", xmlPathTraversal.generateOutput(xmlString + "," + xmmPathDescription));
     }
@@ -87,8 +90,8 @@ public class XMLPathTraversalTest {
         String xmlPathTitle = "/Tutorials/Tutorial[1]/title";
         String xlmPathDescription = "/Tutorials/Tutorial[1]/description";
 
-        doReturn(new Text((xmlString + "," + xmlPathTitle))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xmlPathTitle, executionRuntime);
-        doReturn(new Text((xmlString + "," + xlmPathDescription))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xlmPathDescription, executionRuntime);
+        doReturn(new Text((xmlString + "," + xmlPathTitle))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xmlPathTitle, executionRuntime);
+        doReturn(new Text((xmlString + "," + xlmPathDescription))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xlmPathDescription, executionRuntime);
         assertEquals("Guava", xmlPathTraversal.generateOutput(xmlString + "," + xmlPathTitle));
         assertEquals("Introduction to Guava,", xmlPathTraversal.generateOutput(xmlString + "," + xlmPathDescription));
     }
@@ -99,8 +102,8 @@ public class XMLPathTraversalTest {
         String xmlPathTitle = "/Tutorials/Tutorial[1]/title";
         String xlmPathDescription = "/Tutorials/Tutorial[1]/description";
 
-        doReturn(new Text((xmlString + "," + xmlPathTitle))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xmlPathTitle, executionRuntime);
-        doReturn(new Text((xmlString + "," + xlmPathDescription))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xlmPathDescription, executionRuntime);
+        doReturn(new Text((xmlString + "," + xmlPathTitle))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xmlPathTitle, executionRuntime);
+        doReturn(new Text((xmlString + "," + xlmPathDescription))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xlmPathDescription, executionRuntime);
         assertEquals("Guava,", xmlPathTraversal.generateOutput(xmlString + "," + xmlPathTitle));
         assertEquals(",Introduct,ion to Guava,", xmlPathTraversal.generateOutput(xmlString + "," + xlmPathDescription));
     }
@@ -109,7 +112,7 @@ public class XMLPathTraversalTest {
     void xmlPathWithCommaInsideSecondtArgument() {
         String xmlString = "<Tutorials> \n <Tutorial>\n<title>Guava</title>\n<description>Introduction to Guava</description>\n</Tutorial>\n</Tutorials>";
         String xmlPathTitle = "/Tutorials/Tutorial[1]/title,1";
-        doReturn(new Text((xmlString + xmlPathTitle))).when(dataTypeHandlerServiceSpy).resolve(xmlString + xmlPathTitle, executionRuntime);
+        doReturn(new Text((xmlString + xmlPathTitle))).when(dataTypeHandlerSpy).resolve(xmlString + xmlPathTitle, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> xmlPathTraversal.generateOutput(xmlString + xmlPathTitle));
     }
 
@@ -117,14 +120,14 @@ public class XMLPathTraversalTest {
     void xmlPathMissingCommaBetweenParametersShouldThrowException() {
         String xmlString = "<?xml version=\"1.0\"?><Tutorials><Tutorial><title>Guava</title><description>Introduction to Guava</description></Tutorial></Tutorials>";
         String xmlPath = "/Tutorials/Tutorial[1]/description";
-        doReturn(new Text((xmlString + xmlPath))).when(dataTypeHandlerServiceSpy).resolve(xmlString + xmlPath, executionRuntime);
+        doReturn(new Text((xmlString + xmlPath))).when(dataTypeHandlerSpy).resolve(xmlString + xmlPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> xmlPathTraversal.generateOutput(xmlString + xmlPath));
     }
 
     @Test
     void xmlPathMissingXmlPathShouldThrowException() {
         String xmlString = "<?xml version=\"1.0\"?><Tutorials><Tutorial><title>Guava</title><description>Introduction to Guava</description></Tutorial></Tutorials>";
-        doReturn(new Text((xmlString))).when(dataTypeHandlerServiceSpy).resolve(xmlString, executionRuntime);
+        doReturn(new Text((xmlString))).when(dataTypeHandlerSpy).resolve(xmlString, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> xmlPathTraversal.generateOutput(xmlString));
     }
 
@@ -132,7 +135,7 @@ public class XMLPathTraversalTest {
     void xmlPathMissingXmlStringShouldThrowException() {
         String xmlPath = "/Tutorials/Tutorial[1]/description";
 
-        doReturn(new Text((xmlPath))).when(dataTypeHandlerServiceSpy).resolve(xmlPath, executionRuntime);
+        doReturn(new Text((xmlPath))).when(dataTypeHandlerSpy).resolve(xmlPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> xmlPathTraversal.generateOutput(xmlPath));
     }
 
@@ -141,7 +144,7 @@ public class XMLPathTraversalTest {
         String xmlString = "<Tutorials><Tutorial><title>Guava</title><description>Introduction to Guava</description></Tutorials>";
         String xmlPath = "/Tutorials/Tutorial[1]/title";
 
-        doReturn(new Text((xmlString + "," + xmlPath))).when(dataTypeHandlerServiceSpy).resolve(xmlString + "," + xmlPath, executionRuntime);
+        doReturn(new Text((xmlString + "," + xmlPath))).when(dataTypeHandlerSpy).resolve(xmlString + "," + xmlPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> xmlPathTraversal.generateOutput(xmlString + "," + xmlPath));
     }
 }

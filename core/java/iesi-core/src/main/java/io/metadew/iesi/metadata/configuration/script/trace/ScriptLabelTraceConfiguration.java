@@ -7,10 +7,11 @@ import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptLabelTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptLabelTraceKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -18,20 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrace, ScriptLabelTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ScriptLabelTraceConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ScriptLabelTraceConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptLabelTraceConfiguration();
-        }
-        return INSTANCE;
+    public ScriptLabelTraceConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptLabelTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getTraceMetadataRepository());
     }
 
     @Override

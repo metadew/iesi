@@ -1,14 +1,27 @@
 package io.metadew.iesi.component.http;
 
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.script.execution.*;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest(classes = {HttpHeaderService.class, DataTypeHandler.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class HttpHeaderServiceTest {
 
+    @Autowired
+    private HttpHeaderService httpHeaderService;
 
     @Test
     void convertTest() {
@@ -37,7 +50,7 @@ class HttpHeaderServiceTest {
         when(executionRuntime.resolveVariables("application/json"))
                 .thenReturn("application/json");
 
-        assertThat(HttpHeaderService.getInstance().convert(new HttpHeaderDefinition("content-type", "function"), actionExecution))
+        assertThat(httpHeaderService.convert(new HttpHeaderDefinition("content-type", "function"), actionExecution))
                 .isEqualTo(new HttpHeader("content-type", "application/json"));
     }
 

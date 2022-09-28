@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.database.sqlite;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.DatabaseService;
 import io.metadew.iesi.connection.database.IDatabaseService;
@@ -18,7 +19,6 @@ public class SqliteDatabaseService extends DatabaseService<SqliteDatabase> imple
     private static final String FILE_PATH = "filePath";
     private static final String FILE_NAME = "fileName";
 
-
     public static synchronized SqliteDatabaseService getInstance() {
         if (instance == null) {
             instance = new SqliteDatabaseService();
@@ -32,9 +32,9 @@ public class SqliteDatabaseService extends DatabaseService<SqliteDatabase> imple
     @Override
     public SqliteDatabase getDatabase(io.metadew.iesi.metadata.definition.connection.Connection connection) {
         return new SqliteDatabase(new SqliteDatabaseConnection(
-                DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, FILE_PATH) +
+                SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, FILE_PATH) +
                         File.separator +
-                        DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, FILE_NAME),
+                        SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, FILE_NAME),
                 ""
         ));
     }

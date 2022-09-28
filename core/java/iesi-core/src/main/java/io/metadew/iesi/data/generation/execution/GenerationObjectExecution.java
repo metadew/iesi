@@ -1,5 +1,6 @@
 package io.metadew.iesi.data.generation.execution;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
@@ -90,7 +91,7 @@ public class GenerationObjectExecution {
         int i = 0;
         // Default Configuration
         for (File file : FolderTools.getFilesInFolder(
-                FrameworkConfiguration.getInstance()
+                SpringContext.getBean(FrameworkConfiguration.class)
                         .getMandatoryFrameworkFolder("metadata.gen")
                         .getAbsolutePath().toString(),
                 "regex", ".+\\.yml")) {

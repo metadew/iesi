@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.http;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.component.http.*;
 import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.request.HttpRequest;
@@ -65,6 +66,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     @SuppressWarnings("unused")
     private static final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d");
 
+    private final HttpComponentService httpComponentService = SpringContext.getBean(HttpComponentService.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+    private final ActionPerformanceLogger actionPerformanceLogger = SpringContext.getBean(ActionPerformanceLogger.class);
+
     public HttpExecuteRequest(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -74,9 +79,9 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         Long componentVersion = convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION));
         HttpComponent httpComponent;
         if (componentVersion == null) {
-            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, REQUEST_VERSION);
+            httpComponent = httpComponentService.getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, REQUEST_VERSION);
         } else {
-            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
+            httpComponent = httpComponentService.getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
         }
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
@@ -89,11 +94,11 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
         if (body.isPresent()) {
             getActionExecution().getActionControl().logOutput("request.body", body.get());
-            httpRequest = HttpComponentService.getInstance().buildHttpRequest(
+            httpRequest = httpComponentService.buildHttpRequest(
                     httpComponent,
                     body.get());
         } else {
-            httpRequest = HttpComponentService.getInstance().buildHttpRequest(httpComponent);
+            httpRequest = httpComponentService.buildHttpRequest(httpComponent);
         }
         getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
         getActionExecution().getActionControl().logOutput("request.method", httpRequest.getHttpRequest().getMethod());
@@ -117,7 +122,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             httpResponse = HttpRequestService.getInstance().send(httpRequest);
         }
         outputResponse(httpResponse);
-        ActionPerformanceLogger.getInstance().log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());
+        actionPerformanceLogger.log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());
         checkStatusCode(httpResponse);
         return true;
     }
@@ -252,7 +257,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (connectionName == null || connectionName instanceof Null) {
             return null;
         } else if (connectionName instanceof Text) {
-            return ConnectionConfiguration.getInstance()
+            return connectionConfiguration
                     .get(new ConnectionKey(((Text) connectionName).getString(), getExecutionControl().getEnvName()))
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));

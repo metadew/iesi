@@ -66,7 +66,7 @@ public class ScriptService implements IScriptService {
 
         return dataObjectOperation.getDataObjects().stream().map((dataObject -> {
             Script script = (Script) objectMapper.convertValue(dataObject, Metadata.class);
-            if (ScriptConfiguration.getInstance().exists(script.getMetadataKey())) {
+            if (scriptConfiguration.exists(script.getMetadataKey())) {
                 log.info(MessageFormat.format("Script {0} already exists in design repository. Updating to new definition", script.getName()));
                 this.updateScript(script);
             } else {

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
@@ -23,6 +24,8 @@ public class ScriptExecutionBuilder {
     private Map<String, String> impersonations = new HashMap<>();
     private ActionSelectOperation actionSelectOperation;
     private String environment;
+
+    private final RootStrategy rootStrategy = SpringContext.getBean(RootStrategy.class);
 
     public ScriptExecutionBuilder(boolean root, boolean route) {
         this.root = root;
@@ -113,7 +116,7 @@ public class ScriptExecutionBuilder {
                         impersonations,
                         //getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to script execution builder")),
                         getActionSelectOperation().orElse(new ActionSelectOperation("")),
-                        new RootStrategy()
+                        rootStrategy
                 );
             } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new ScriptExecutionBuildException(e);
@@ -155,7 +158,7 @@ public class ScriptExecutionBuilder {
                     impersonations,
                     // getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to route script execution builder")),
                     getActionSelectOperation().orElse(new ActionSelectOperation("")),
-                    root ? new RootStrategy() : new NonRootStrategy()
+                    root ? rootStrategy : new NonRootStrategy()
             );
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new ScriptExecutionBuildException(e);

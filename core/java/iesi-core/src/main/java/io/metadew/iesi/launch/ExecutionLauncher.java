@@ -10,11 +10,12 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 /**
@@ -22,10 +23,29 @@ import java.util.Optional;
  *
  * @author peter.billen
  */
+@Component
+@Lazy
 @Log4j2
 public class ExecutionLauncher {
 
-    public static void main(String[] args) throws ParseException, IOException {
+    private final Configuration configuration;
+    private final ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration;
+    private final FrameworkInstance frameworkInstance;
+    private final ScriptExecutorService scriptExecutorService;
+
+    public ExecutionLauncher(Configuration configuration,
+                             ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration,
+                             FrameworkInstance frameworkInstance,
+                             ScriptExecutorService scriptExecutorService
+    ) {
+        this.configuration = configuration;
+        this.scriptExecutionRequestConfiguration = scriptExecutionRequestConfiguration;
+        this.frameworkInstance = frameworkInstance;
+        this.scriptExecutorService = scriptExecutorService;
+    }
+
+
+    public void execute(String[] args) throws ParseException {
         ThreadContext.clearAll();
 
         Options options = new Options().addOption(Option.builder("help").desc("print this message").build()).addOption(Option.builder("scriptExecutionRequestKey").hasArg().desc("identified of the script exection request to execute").build()).addOption(Option.builder("debugMode").hasArg().desc("Define if logs should be enabled for the execution").build());
@@ -44,9 +64,9 @@ public class ExecutionLauncher {
         }
 
         if (line.hasOption("debugMode") && line.getOptionValue("debugMode").equalsIgnoreCase("Y")) {
-            String log4j2File = (Configuration.getInstance().getProperty("iesi.home").orElse("")) + "/lib/log4j2.xml";
+            URI log4j2File = Paths.get(configuration.getProperty("iesi.home").orElse("")  + "/lib/log4j2.xml").toUri();
             if (new File(log4j2File).exists()) {
-                Configurator.initialize(null, log4j2File);
+                Configurator.reconfigure(log4j2File);
             } else {
                 log.warn(String.format("The file %s does not exist", log4j2File));
             }
@@ -56,7 +76,7 @@ public class ExecutionLauncher {
         if (line.hasOption("scriptExecutionRequestKey")) {
             log.info("Option -scriptExecutionRequestKey (scriptExecutionRequestKey) value = " + line.getOptionValue("scriptExecutionRequestKey"));
             ScriptExecutionRequestKey scriptExecutionRequestKey = new ScriptExecutionRequestKey(line.getOptionValue("scriptExecutionRequestKey"));
-            Optional<ScriptExecutionRequest> optionalScriptExecutionRequest = ScriptExecutionRequestConfiguration.getInstance().get(scriptExecutionRequestKey);
+            Optional<ScriptExecutionRequest> optionalScriptExecutionRequest = scriptExecutionRequestConfiguration.get(scriptExecutionRequestKey);
             if (optionalScriptExecutionRequest.isPresent()) {
                 scriptExecutionRequest = optionalScriptExecutionRequest.get();
             } else {
@@ -69,9 +89,9 @@ public class ExecutionLauncher {
             System.exit(1);
             return;
         }
-        ScriptExecutorService.getInstance().execute(scriptExecutionRequest);
+        scriptExecutorService.execute(scriptExecutionRequest);
 
-        FrameworkInstance.getInstance().shutdown();
+        frameworkInstance.shutdown();
         System.exit(0);
     }
 

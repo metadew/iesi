@@ -20,16 +20,19 @@ import java.util.stream.Collectors;
 @RequestMapping("/component-types")
 @ConditionalOnWebApplication
 public class ComponentTypeController {
-    private ComponentTypeDtoResourceAssembler componentTypeDtoResourceAssembler;
+
+    private final ComponentTypeDtoResourceAssembler componentTypeDtoResourceAssembler;
+    private final MetadataComponentTypesConfiguration metadataComponentTypesConfiguration;
 
     @Autowired
-    ComponentTypeController(ComponentTypeDtoResourceAssembler componentTypeDtoResourceAssembler) {
+    ComponentTypeController(ComponentTypeDtoResourceAssembler componentTypeDtoResourceAssembler, MetadataComponentTypesConfiguration metadataComponentTypesConfiguration) {
         this.componentTypeDtoResourceAssembler = componentTypeDtoResourceAssembler;
+        this.metadataComponentTypesConfiguration = metadataComponentTypesConfiguration;
     }
 
     @GetMapping("")
     public List<ComponentTypeDto> getAll() {
-        return MetadataComponentTypesConfiguration.getInstance().getComponentTypes()
+        return metadataComponentTypesConfiguration.getComponentTypes()
                 .entrySet()
                 .stream()
                 .map(entry -> {
@@ -41,7 +44,7 @@ public class ComponentTypeController {
 
     @GetMapping("/{name}")
     public ComponentTypeDto getByName(@PathVariable String name) {
-        return MetadataComponentTypesConfiguration.getInstance().getComponentType(name)
+        return metadataComponentTypesConfiguration.getComponentType(name)
                 .map(componentType -> componentTypeDtoResourceAssembler.toModel(componentType))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find action type " + name));
     }

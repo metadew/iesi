@@ -23,10 +23,12 @@ import java.util.stream.Collectors;
 public class ComponentDtoService implements IComponentDtoService {
 
     private final IComponentDtoRepository componentDtoRepository;
+    private final SecurityGroupConfiguration securityGroupConfiguration;
 
     @Autowired
-    public ComponentDtoService(IComponentDtoRepository componentDtoRepository) {
+    public ComponentDtoService(IComponentDtoRepository componentDtoRepository, SecurityGroupConfiguration securityGroupConfiguration) {
         this.componentDtoRepository = componentDtoRepository;
+        this.securityGroupConfiguration = securityGroupConfiguration;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class ComponentDtoService implements IComponentDtoService {
 
     @Override
     public Component convertToEntity(ComponentDto componentDto) {
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(componentDto.getSecurityGroupName())
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName(componentDto.getSecurityGroupName())
                 .orElseThrow(() -> new RuntimeException("Could not find security group with name " + componentDto.getSecurityGroupName()));
         return new Component(
                 new ComponentKey(IdentifierTools.getComponentIdentifier(componentDto.getName()), componentDto.getVersion().getNumber()),

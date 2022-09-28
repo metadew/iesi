@@ -79,6 +79,11 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                 " ON users.ID = user_roles.USER_ID;";
     }
 
+    private String updatePasswordQuery() {
+        return "UPDATE " + metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() +
+                " SET PASSWORD = {0} WHERE ID = {1};";
+    }
+
     private String deleteSingleQuery() {
         return "DELETE FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() +
                 " WHERE ID={0};";
@@ -111,8 +116,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
 
     private String updateQuery() {
         return "UPDATE " + metadataTablesConfiguration.getMetadataTableNameByLabel("Users").getName() +
-                " SET PASSWORD ={0}, ENABLED = {1}, EXPIRED = {2}, CREDENTIALS_EXPIRED = {3}, LOCKED = {4}" +
-                " WHERE ID = {5};";
+                " SET USERNAME={0}, PASSWORD ={1}, ENABLED = {2}, EXPIRED = {3}, CREDENTIALS_EXPIRED = {4}, LOCKED = {5}" +
+                " WHERE ID = {6};";
     }
 
     private String fetchRoleSByUserIdQuery() {
@@ -246,6 +251,7 @@ public class UserConfiguration extends Configuration<User, UserKey> {
     @Override
     public void update(User metadata) {
         getMetadataRepository().executeUpdate(MessageFormat.format(updateQuery(),
+                SQLTools.getStringForSQL(metadata.getUsername()),
                 SQLTools.getStringForSQL(metadata.getPassword()),
                 SQLTools.getStringForSQL(metadata.isEnabled()),
                 SQLTools.getStringForSQL(metadata.isExpired()),
@@ -253,7 +259,8 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                 SQLTools.getStringForSQL(metadata.isLocked()),
                 SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid().toString())));
 
-        String deleteRolesStatement = MessageFormat.format(deleteUserRolesByUserIdQuery(), SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
+        String deleteRolesStatement = MessageFormat.format(deleteUserRolesByUserIdQuery(),
+                SQLTools.getStringForSQL(metadata.getMetadataKey().getUuid()));
         getMetadataRepository().executeUpdate(deleteRolesStatement);
         for (RoleKey roleKey : metadata.getRoleKeys()) {
             getMetadataRepository().executeUpdate(
@@ -262,6 +269,12 @@ public class UserConfiguration extends Configuration<User, UserKey> {
                             SQLTools.getStringForSQL(roleKey.getUuid())));
 
         }
+    }
+
+    public void updatePassword(String password, UserKey userKey) {
+        getMetadataRepository().executeUpdate(MessageFormat.format(updatePasswordQuery(),
+                SQLTools.getStringForSQL(password),
+                SQLTools.getStringForSQL(userKey.getUuid())));
     }
 
     public Set<Role> getRoles(UserKey userKey) {

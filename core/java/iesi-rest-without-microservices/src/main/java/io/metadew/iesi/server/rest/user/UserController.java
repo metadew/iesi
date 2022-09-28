@@ -1,28 +1,27 @@
 package io.metadew.iesi.server.rest.user;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.user.Role;
 import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.TeamService;
+import io.metadew.iesi.server.rest.error.PasswordsMisMatchException;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
@@ -97,12 +96,12 @@ public class UserController {
 
     @PostMapping("/create")
     @PreAuthorize("hasPrivilege('USERS_WRITE')")
-    public ResponseEntity<Object> create(@RequestBody UserPostDto userPostDto) {
-        if (userService.exists(userPostDto.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username " + userPostDto.getUsername() + " is already taken");
-        }
+    public ResponseEntity<UserDto> create(@RequestBody UserPostDto userPostDto) {
         if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The repeated password does not match the password provided");
+            throw new PasswordsMisMatchException();
+        }
+        if (userService.exists(userPostDto.getUsername())) {
+            throw new MetadataAlreadyExistsException("Username " + userPostDto.getUsername() + " is already taken");
         }
         User user = new User(
                 new UserKey(UUID.randomUUID()),
@@ -114,10 +113,48 @@ public class UserController {
                 false,
                 new HashSet<>());
         userService.addUser(user);
-        Optional<UserDto> userDto = userService.get(user.getMetadataKey().getUuid());
-        return userDto
-                .<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+
+        return ResponseEntity.ok(userDtoModelAssembler.toModel(user));
+    }
+
+    @PutMapping("/{uuid}/password")
+    public HttpEntity<?> updatePassword(@PathVariable UUID uuid, @RequestBody PasswordPostDto passwordPostDto) {
+        if (!passwordPostDto.getValue().equals(passwordPostDto.getRepeatedPassword())) {
+            throw new PasswordsMisMatchException();
+        }
+        if (!userService.exists(new UserKey(uuid))) {
+            throw new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist");
+        }
+
+        userService.updatePassword(passwordEncoder.encode(passwordPostDto.getValue()), uuid);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<UserDto> update(@PathVariable UUID uuid, @RequestBody UserPutDto userPutDto) {
+        User user = userService.getRawUser(new UserKey(uuid))
+                .orElseThrow(() -> new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist"));
+
+        if (userService.exists(userPutDto.getUsername())) {
+            throw new MetadataAlreadyExistsException(userPutDto.getUsername());
+        }
+
+
+        User updatedUser = new User(
+                user.getMetadataKey(),
+                userPutDto.getUsername(),
+                user.getPassword(),
+                userPutDto.isEnabled(),
+                userPutDto.isExpired(),
+                userPutDto.isCredentialsExpired(),
+                userPutDto.isLocked(),
+                user.getRoleKeys()
+        );
+
+        userService.update(updatedUser);
+
+        return ResponseEntity.ok(userDtoModelAssembler.toModel(updatedUser));
     }
 
     @GetMapping("/{name}")
@@ -138,8 +175,5 @@ public class UserController {
         if (userDtoPage.hasContent())
             return userDtoPagedResourcesAssembler.toModel(userDtoPage, userDtoModelAssembler::toModel);
         return (PagedModel<UserDto>) userDtoPagedResourcesAssembler.toEmptyModel(userDtoPage, UserDto.class);
-
     }
-
-
 }

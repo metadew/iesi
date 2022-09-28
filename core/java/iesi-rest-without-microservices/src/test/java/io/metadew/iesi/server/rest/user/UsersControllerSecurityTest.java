@@ -202,6 +202,7 @@ class UsersControllerSecurityTest {
         UserPostDto userPostDto = UserPostDto.builder()
                 .username("username")
                 .password("password")
+                .repeatedPassword("password")
                 .build();
         assertThatThrownBy(() -> userController.create(userPostDto))
                 .isInstanceOf(AccessDeniedException.class);

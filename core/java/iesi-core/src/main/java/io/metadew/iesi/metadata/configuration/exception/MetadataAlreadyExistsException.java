@@ -13,8 +13,12 @@ public class MetadataAlreadyExistsException extends RuntimeException {
         super(MessageFormat.format("{0}: {1} already exists", metadataKey.getClass().getSimpleName(), metadataKey));
     }
 
-    public MetadataAlreadyExistsException(Metadata metadata) {
+    public MetadataAlreadyExistsException(Metadata<?> metadata) {
         this(metadata.getMetadataKey());
+    }
+
+    public MetadataAlreadyExistsException(String metadataName) {
+        super(MessageFormat.format("{0} already exists", metadataName));
     }
 
 }

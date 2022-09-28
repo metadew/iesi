@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.FrameworkInstance;

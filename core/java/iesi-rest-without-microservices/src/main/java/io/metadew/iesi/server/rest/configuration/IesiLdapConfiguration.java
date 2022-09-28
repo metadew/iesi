@@ -40,14 +40,13 @@ public class IesiLdapConfiguration {
     @Bean
     public LdapContextSource contextSource(LdapServer ldapServer, LdapAuthentication ldapAuthentication) {
         LdapContextSource ldapContextSource = new LdapContextSource();
-        if (ldapServer.isDisabled()) {
-            return ldapContextSource;
-        }
         ldapContextSource.setUrl(ldapServer.getUrl());
         ldapContextSource.setBase(ldapServer.getBase());
         ldapContextSource.setUserDn(ldapAuthentication.getAdmin().getDn());
         ldapContextSource.setPassword(ldapAuthentication.getAdmin().getPassword());
-        ldapContextSource.afterPropertiesSet();
+        if (!ldapServer.isDisabled()) {
+            ldapContextSource.afterPropertiesSet();
+        }
         return ldapContextSource;
     }
 

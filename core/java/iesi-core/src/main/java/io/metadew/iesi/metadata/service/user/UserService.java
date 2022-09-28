@@ -52,6 +52,10 @@ public class UserService {
         userConfiguration.update(user);
     }
 
+    public void updatePassword(String password, UserKey userKey) {
+        userConfiguration.updatePassword(password, userKey);
+    }
+
     public void delete(UserKey userKey) {
         userConfiguration.delete(userKey);
     }

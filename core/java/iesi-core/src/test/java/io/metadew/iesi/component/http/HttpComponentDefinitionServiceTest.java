@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = { HttpComponentDefinitionService.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class})
 @ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 class HttpComponentDefinitionServiceTest {
 

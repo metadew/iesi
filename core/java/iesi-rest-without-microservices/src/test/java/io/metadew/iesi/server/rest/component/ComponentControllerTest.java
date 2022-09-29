@@ -58,8 +58,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ComponentsController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {ComponentsController.class, CustomGlobalExceptionHandler.class, ComponentDtoService.class,
-        ComponentDtoResourceAssembler.class, TestConfiguration.class, SecurityGroupService.class, SecurityGroupDtoRepository.class, FilterService.class, io.metadew.iesi.metadata.service.security.SecurityGroupService.class,
-        SecurityGroupConfiguration.class,
+        ComponentDtoResourceAssembler.class, TestConfiguration.class, SecurityGroupService.class, SecurityGroupDtoRepository.class, FilterService.class,
+        io.metadew.iesi.metadata.service.security.SecurityGroupService.class, SecurityGroupConfiguration.class,
         IesiConfiguration.class, IesiSecurityChecker.class})
 @ActiveProfiles("test")
 @DirtiesContext
@@ -413,7 +413,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$.type", is("component")))
                 .andExpect(jsonPath("$.data").isNotEmpty())
-                .andExpect(jsonPath("$.data.id", is(componentId)))
+                .andExpect(jsonPath("$.data.id").doesNotExist())
                 .andExpect(jsonPath("$.data.type", is("http.request")))
                 .andExpect(jsonPath("$.data.name", is("component")))
                 .andExpect(jsonPath("$.data.description", is("")))
@@ -460,7 +460,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$.type", is("component")))
                 .andExpect(jsonPath("$.data").isNotEmpty())
-                .andExpect(jsonPath("$.data.id", is(componentId)))
+                .andExpect(jsonPath("$.data.id").doesNotExist())
                 .andExpect(jsonPath("$.data.type", is("http.request")))
                 .andExpect(jsonPath("$.data.name", is("component")))
                 .andExpect(jsonPath("$.data.description", is("")))
@@ -507,7 +507,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$.type", is("component")))
                 .andExpect(jsonPath("$.data").isNotEmpty())
-                .andExpect(jsonPath("$.data.id", is(componentId)))
+                .andExpect(jsonPath("$.data.id").doesNotExist())
                 .andExpect(jsonPath("$.data.type", is("http.request")))
                 .andExpect(jsonPath("$.data.name", is("component")))
                 .andExpect(jsonPath("$.data.description", is("")))
@@ -554,7 +554,7 @@ class ComponentControllerTest {
                 .andExpect(jsonPath("$").isNotEmpty())
                 .andExpect(jsonPath("$.type", is("component")))
                 .andExpect(jsonPath("$.data").isNotEmpty())
-                .andExpect(jsonPath("$.data.id", is(componentId)))
+                .andExpect(jsonPath("$.data.id").doesNotExist())
                 .andExpect(jsonPath("$.data.type", is("http.request")))
                 .andExpect(jsonPath("$.data.name", is("component")))
                 .andExpect(jsonPath("$.data.description", is("")))
@@ -602,6 +602,8 @@ class ComponentControllerTest {
                         new ComponentParameter(new ComponentParameterKey(componentKey, "type"), "type")).collect(Collectors.toList()),
                 new ArrayList<>());
 
+        String text = objectMapper.writeValueAsString(component);
+
 
         doReturn(Optional.of(new SecurityGroup(
                 new SecurityGroupKey(UUID.randomUUID()),
@@ -611,10 +613,9 @@ class ComponentControllerTest {
         )))
                 .when(securityGroupService)
                 .get("PUBLIC");
-
-
-        String text = objectMapper.writeValueAsString(component);
-
+        doReturn(Stream.of(component).collect(Collectors.toList()))
+                .when(componentService)
+                .importComponents(text);
 
         mvc.perform(post("/components/import")
                         .contentType(MediaType.TEXT_PLAIN_VALUE)

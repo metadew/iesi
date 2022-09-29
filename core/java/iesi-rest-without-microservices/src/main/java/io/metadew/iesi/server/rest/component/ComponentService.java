@@ -2,6 +2,8 @@ package io.metadew.iesi.server.rest.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
+import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
+import io.metadew.iesi.metadata.configuration.type.ComponentTypeConfiguration;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
@@ -23,18 +25,23 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ComponentService implements IComponentService {
 
-    private ComponentConfiguration componentConfiguration;
-    private IComponentDtoService componentDtoService;
-    private ObjectMapper objectMapper;
+    private final ComponentConfiguration componentConfiguration;
+    private final IComponentDtoService componentDtoService;
+    private final ObjectMapper objectMapper;
+
+    private final ComponentTypeConfiguration componentTypeConfiguration;
 
     @Autowired
     public ComponentService(
             ComponentConfiguration componentConfiguration,
             IComponentDtoService componentDtoService,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            ComponentTypeConfiguration componentTypeConfiguration
+    ) {
         this.componentConfiguration = componentConfiguration;
         this.componentDtoService = componentDtoService;
         this.objectMapper = objectMapper;
+        this.componentTypeConfiguration = componentTypeConfiguration;
     }
 
     public List<Component> getAll() {
@@ -49,9 +56,19 @@ public class ComponentService implements IComponentService {
     public List<Component> importComponents(String textPLain) {
         DataObjectOperation dataObjectOperation = new DataObjectOperation(textPLain);
 
+        System.out.println("DATA OBJECT OPERATION: " + dataObjectOperation);
+
         return dataObjectOperation.getDataObjects().stream().map((dataObject -> {
             Component component = (Component) objectMapper.convertValue(dataObject, Metadata.class);
-            if (componentConfiguration.exists(component.getMetadataKey())) {
+
+            System.out.println("CHEESH: " + componentTypeConfiguration.getComponentType(component.getType()));
+
+            if (!componentTypeConfiguration.getComponentType(component.getType()).isPresent()) {
+                throw new RuntimeException("Component type " + component.getType() + " not found");
+            }
+
+
+            if (componentConfiguration.getByNameAndVersion(component.getName(), component.getMetadataKey().getVersionNumber()).isPresent()) {
                 log.info(String.format("Component %s with version %s already exists in design repository. Updating to new definition", component.getName(), component.getVersion().getMetadataKey().getComponentKey().getVersionNumber()));
                 componentConfiguration.update(component);
             } else {

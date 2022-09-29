@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
@@ -119,7 +120,17 @@ public class ComponentsController {
         httpHeaders.setContentDisposition(contentDisposition);
 
         try {
-            String jsonString = objectMapper.writeValueAsString(component);
+            String jsonString = objectMapper.writeValueAsString(new Component(
+                    null,
+                    component.getSecurityGroupKey(),
+                    component.getSecurityGroupName(),
+                    component.getType(),
+                    component.getName(),
+                    component.getDescription(),
+                    component.getVersion(),
+                    component.getParameters(),
+                    component.getAttributes()
+            ));
             byte[] data = jsonString.getBytes(StandardCharsets.UTF_8);
             ByteArrayResource resource = new ByteArrayResource(data);
 

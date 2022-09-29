@@ -12,6 +12,8 @@ public interface IComponentService {
 
     List<Component> getByName(String name);
 
+    List<Component> importComponents(String textPLain);
+
     Optional<Component> getByNameAndVersion(String name, long version);
 
     void createComponent(ComponentDto componentDto);

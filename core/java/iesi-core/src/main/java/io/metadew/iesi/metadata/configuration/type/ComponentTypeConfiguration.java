@@ -4,6 +4,8 @@ import io.metadew.iesi.common.configuration.metadata.componenttypes.MetadataComp
 import io.metadew.iesi.metadata.definition.component.ComponentType;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class ComponentTypeConfiguration {
 
@@ -16,9 +18,8 @@ public class ComponentTypeConfiguration {
         this.metadataComponentTypesConfiguration = metadataComponentTypesConfiguration;
     }
 
-    public ComponentType getComponentType(String componentTypeName) {
-        return metadataComponentTypesConfiguration.getComponentType(componentTypeName)
-                .orElseThrow(() -> new RuntimeException("connection type " + componentTypeName + " not found"));
+    public Optional<ComponentType> getComponentType(String componentTypeName) {
+        return metadataComponentTypesConfiguration.getComponentType(componentTypeName);
     }
 
     public void setComponentType(ComponentType componentType) {

@@ -39,7 +39,6 @@ public class IesiConfiguration {
         return TemplateService.getInstance();
     }
 
-
     @Bean
     @DependsOn("frameworkInstance")
     public IDatabaseDatasetImplementationService datasetImplementationService() {

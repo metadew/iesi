@@ -111,7 +111,10 @@ public class ComponentJsonComponent {
 
             jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
 
-            jsonGenerator.writeStringField(Field.ID_KEY.value(), component.getMetadataKey().getId());
+            if (component.getMetadataKey() != null) {
+                jsonGenerator.writeStringField(Field.ID_KEY.value(), component.getMetadataKey().getId());
+            }
+
             jsonGenerator.writeStringField(Field.COMPONENT_TYPE_KEY.value(), component.getType());
             jsonGenerator.writeStringField(Field.NAME_KEY.value(), component.getName());
             jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), component.getDescription());

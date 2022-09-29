@@ -1,7 +1,11 @@
 package io.metadew.iesi.server.rest.component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.Metadata;
+import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
@@ -13,20 +17,24 @@ import io.metadew.iesi.server.rest.error.DataBadRequestException;
 import io.metadew.iesi.server.rest.resource.HalMultipleEmbeddedResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,19 +51,22 @@ public class ComponentsController {
     private final ComponentDtoResourceAssembler componentDtoResourceAssembler;
     private final PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler;
     private final IesiSecurityChecker iesiSecurityChecker;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     ComponentsController(ComponentDtoResourceAssembler componentDtoResourceAssembler,
                          IComponentService componentService,
                          IComponentDtoService componentDtoService,
                          PagedResourcesAssembler<ComponentDto> componentDtoPagedResourcesAssembler,
-                         IesiSecurityChecker iesiSecurityChecker
+                         IesiSecurityChecker iesiSecurityChecker,
+                         ObjectMapper objectMapper
     ) {
         this.componentDtoResourceAssembler = componentDtoResourceAssembler;
         this.componentService = componentService;
         this.componentDtoService = componentDtoService;
         this.componentDtoPagedResourcesAssembler = componentDtoPagedResourcesAssembler;
         this.iesiSecurityChecker = iesiSecurityChecker;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("")
@@ -96,6 +107,39 @@ public class ComponentsController {
                 .orElseThrow(() -> new MetadataDoesNotExistException(new ComponentKey(IdentifierTools.getComponentIdentifier(name), version)));
     }
 
+    @GetMapping("/{name}/{version}/download")
+    @PreAuthorize("hasPrivilege('COMPONENTS_READ')")
+    public ResponseEntity<Resource> getFile(@PathVariable String name, @PathVariable long version) {
+        Component component = componentService.getByNameAndVersion(name, version)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The component %s with version %s does not exist", name, version)));
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+                .filename(String.format("component_%s_%s.json", name, version))
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentDisposition(contentDisposition);
+
+        try {
+            String jsonString = objectMapper.writeValueAsString(new Component(
+                    null,
+                    component.getSecurityGroupKey(),
+                    component.getSecurityGroupName(),
+                    component.getType(),
+                    component.getName(),
+                    component.getDescription(),
+                    component.getVersion(),
+                    component.getParameters(),
+                    component.getAttributes()
+            ));
+            byte[] data = jsonString.getBytes(StandardCharsets.UTF_8);
+            ByteArrayResource resource = new ByteArrayResource(data);
+
+            return ResponseEntity.ok().headers(httpHeaders).contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
     @PostMapping("")
     @PreAuthorize("hasPrivilege('COMPONENTS_WRITE', #componentDto.securityGroupName)")
     public ComponentDto post(@Valid @RequestBody ComponentDto componentDto) {
@@ -106,6 +150,23 @@ public class ComponentsController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Component " + componentDto.getName() + " already exists");
         }
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<ComponentDto>> importComponents(@RequestParam(value = "file") MultipartFile multipartFile) {
+        try {
+            String textPlain = new String(multipartFile.getBytes());
+            List<Component> components = componentService.importComponents(textPlain);
+            return ResponseEntity.ok(componentDtoResourceAssembler.toModel(components));
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("Cannot process the given file: %s", multipartFile.getOriginalFilename()));
+        }
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<List<ComponentDto>> importComponents(@RequestBody String textPlain) {
+        List<Component> components = componentService.importComponents(textPlain);
+        return ResponseEntity.ok(componentDtoResourceAssembler.toModel(components));
     }
 
     @PutMapping("")

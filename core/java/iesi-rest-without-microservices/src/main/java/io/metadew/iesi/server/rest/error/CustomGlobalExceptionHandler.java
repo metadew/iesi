@@ -102,7 +102,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
     public Map<String, String> handleException(PolicyVerificationException e) {
-        System.out.println("HELLO TEST");
         Map<String, String> errMessages = new HashMap<>();
         errMessages.put("errorCode", "400");
         errMessages.put("message", e.getMessage());

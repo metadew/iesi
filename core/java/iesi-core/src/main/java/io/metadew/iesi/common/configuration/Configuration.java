@@ -27,13 +27,6 @@ public class Configuration {
     private static final String iesiKeyword = "iesi";
     private Map<String, Object> properties;
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper;
-    }
-
     @PostConstruct
     private void postConstruct() {
         properties = new HashMap<>();

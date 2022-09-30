@@ -56,12 +56,8 @@ public class ComponentService implements IComponentService {
     public List<Component> importComponents(String textPLain) {
         DataObjectOperation dataObjectOperation = new DataObjectOperation(textPLain);
 
-        System.out.println("DATA OBJECT OPERATION: " + dataObjectOperation);
-
         return dataObjectOperation.getDataObjects().stream().map((dataObject -> {
             Component component = (Component) objectMapper.convertValue(dataObject, Metadata.class);
-
-            System.out.println("CHEESH: " + componentTypeConfiguration.getComponentType(component.getType()));
 
             if (!componentTypeConfiguration.getComponentType(component.getType()).isPresent()) {
                 throw new RuntimeException("Component type " + component.getType() + " not found");

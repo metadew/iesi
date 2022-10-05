@@ -10,13 +10,8 @@ iesi:
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
           # init_sql: alter  current....
-          type: oracle
-          connection: jdbc:oracle:thin:@tcp://localhost:1521/XEPDB1
-          init_sql: "alter session set nls_timestamp_format='YYYY-MM-DD\"T\" HH24:MI:SS:FF' current_schema=IESI_TEST"
-          schema: IESI_TEST
-          owner:
-            user: IESI_TEST
-            password: IESI_TEST
+          type: sqlite
+          file: ./repository.db3
 
 
 #          type: h2

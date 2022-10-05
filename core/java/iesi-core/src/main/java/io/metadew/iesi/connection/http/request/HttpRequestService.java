@@ -10,8 +10,10 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.net.ssl.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyManagementException;
@@ -41,6 +43,10 @@ public class HttpRequestService implements IHttpRequestService {
     public HttpResponse send(HttpRequest httpRequest, ProxyConnection proxyConnection) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         CloseableHttpClient httpClient = noSSLCertificateVerification(proxyConnection);
         return send(httpRequest, httpClient);
+    }
+
+    public HttpResponse send(HttpRequest httpRequest, File certificate) {
+        throw new UnsupportedOperationException();
     }
 
     private HttpResponse send(HttpRequest httpRequest, CloseableHttpClient httpClient) throws IOException {

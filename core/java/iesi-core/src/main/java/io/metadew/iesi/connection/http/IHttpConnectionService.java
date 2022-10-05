@@ -2,6 +2,8 @@ package io.metadew.iesi.connection.http;
 
 import io.metadew.iesi.script.execution.ActionExecution;
 
+import java.io.File;
+
 public interface IHttpConnectionService {
 
     public HttpConnection get(String httpConnectionReferenceName,  ActionExecution actionExecution);
@@ -9,6 +11,8 @@ public interface IHttpConnectionService {
     public HttpConnection getAndTrace(String httpConnectionReferenceName, ActionExecution actionExecution, String actionParameterName);
 
     public String getBaseUri(HttpConnection httpConnection);
+
+    File getCertificate(HttpConnection httpConnection);
 
     public HttpConnection convert(HttpConnectionDefinition httpConnectionDefinition);
 

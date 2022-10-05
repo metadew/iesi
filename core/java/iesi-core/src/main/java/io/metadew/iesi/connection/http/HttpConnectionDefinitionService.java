@@ -10,6 +10,7 @@ public class HttpConnectionDefinitionService implements IHttpConnectionDefinitio
     private static final String BASE_URL_KEY = "baseUrl";
     private static final String PORT_KEY = "port";
     private static final String TLS_KEY = "tls";
+    private static final String CERTIFICATE = "certificate";
     private static HttpConnectionDefinitionService INSTANCE;
 
     public synchronized static HttpConnectionDefinitionService getInstance() {
@@ -50,7 +51,12 @@ public class HttpConnectionDefinitionService implements IHttpConnectionDefinitio
                         .filter(componentParameter -> componentParameter.getMetadataKey().getParameterName().equals(TLS_KEY))
                         .findFirst()
                         .map(connectionParameter -> connectionParameter.getValue().equalsIgnoreCase("y"))
-                        .orElseThrow(() -> new RuntimeException("Http connection " + connection.toString() + " does not contain a " + TLS_KEY + " setting")));
+                        .orElseThrow(() -> new RuntimeException("Http connection " + connection.toString() + " does not contain a " + TLS_KEY + " setting")),
+                connection.getParameters().stream()
+                        .filter(connectionParameter -> connectionParameter.getMetadataKey().getParameterName().equals(CERTIFICATE))
+                        .findFirst()
+                        .map(ConnectionParameter::getValue)
+                        .orElse(null));
     }
 
 

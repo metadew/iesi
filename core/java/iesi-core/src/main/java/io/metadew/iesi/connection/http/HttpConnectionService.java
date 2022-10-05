@@ -1,5 +1,7 @@
 package io.metadew.iesi.connection.http;
 
+import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -7,6 +9,10 @@ import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
 import io.metadew.iesi.script.execution.ActionExecution;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class HttpConnectionService implements IHttpConnectionService {
@@ -42,6 +48,20 @@ public class HttpConnectionService implements IHttpConnectionService {
     }
 
     @Override
+    public File getCertificate(HttpConnection httpConnection) {
+        String certificateReferenceName = httpConnection.getCertificate();
+
+        Path path = Paths.get(String.format("%s/%s", SpringContext.getBean(Configuration.class).getProperty("home"), certificateReferenceName));
+        File file = path.toFile();
+
+        if (!file.exists()) {
+            throw new RuntimeException("The certificate name is not recognized by the IESI server");
+        }
+
+        return file;
+    }
+
+    @Override
     public HttpConnection convert(HttpConnectionDefinition httpConnectionDefinition) {
         return new HttpConnection(
                 httpConnectionDefinition.getReferenceName(),
@@ -50,7 +70,8 @@ public class HttpConnectionService implements IHttpConnectionService {
                 httpConnectionDefinition.getHost(),
                 httpConnectionDefinition.getBaseUrl(),
                 httpConnectionDefinition.getPort(),
-                httpConnectionDefinition.isTls());
+                httpConnectionDefinition.isTls(),
+                httpConnectionDefinition.getCertificate());
     }
 
 }

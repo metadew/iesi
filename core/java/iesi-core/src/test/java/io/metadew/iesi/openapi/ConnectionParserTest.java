@@ -14,45 +14,50 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = { ConnectionParser.class, SecurityGroupService.class, SecurityGroupConfiguration.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {TestConfiguration.class, ConnectionParser.class })
 @ActiveProfiles("test")
 class ConnectionParserTest {
 
-    @Autowired
-    private ConnectionParser connectionParser;
+    final SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
 
     @Autowired
-    private SecurityGroupConfiguration securityGroupConfiguration;
+    ConnectionParser connectionParser;
+
+    @MockBean
+    SecurityGroupService securityGroupService;
+
+    @BeforeEach
+    void beforeEach() {
+        when(securityGroupService.get("PUBLIC"))
+                .thenReturn(Optional.of(new SecurityGroup(
+                        securityGroupKey,
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>()
+                )));
+    }
+
 
     @Test
     void parse() throws MalformedURLException {
-        SecurityGroupKey securityGroupKey =  new SecurityGroupKey(UUID.randomUUID());
-
-        securityGroupConfiguration.insert(new SecurityGroup(
-                securityGroupKey,
-                "PUBLIC",
-                new HashSet<>(),
-                new HashSet<>()
-        ));
-
         Info info = new Info()
                 .version("1")
                 .title("Documentation")
@@ -104,20 +109,20 @@ class ConnectionParserTest {
     }
 
     @Test
-    public void toUrlModel() throws MalformedURLException {
+    void toUrlModel() throws MalformedURLException {
         assertThat(connectionParser.toUrlModel("https://petstore3.swagger.io/api/v3/"))
                 .isInstanceOf(URL.class)
                 .isEqualTo(new URL("https://petstore3.swagger.io/api/v3/"));
     }
 
     @Test
-    public void toUrlModelWrong() {
+    void toUrlModelWrong() {
         assertThat(connectionParser.toUrlModel("https//petstore3.swagger/api/v3/"))
                 .isNull();
     }
 
     @Test
-    public void getAddresses() throws MalformedURLException {
+    void getAddresses() throws MalformedURLException {
         List<Server> servers = new ArrayList<>();
         List<URL> urls = new ArrayList<>();
         Server server = new Server();
@@ -132,7 +137,7 @@ class ConnectionParserTest {
     }
 
     @Test
-    public void getAddressesWithWrongUrl() {
+    void getAddressesWithWrongUrl() {
         List<Server> servers = new ArrayList<>();
         Server server = new Server();
         server.setUrl("https//petstore3.swagger/api/v3/");
@@ -144,51 +149,51 @@ class ConnectionParserTest {
     }
 
     @Test
-    public void getHost() throws MalformedURLException {
+    void getHost() throws MalformedURLException {
         assertThat(connectionParser.getHost(new URL("https://petstore3.swagger.io/api/v3/")))
                 .isEqualTo("petstore3.swagger.io");
     }
 
     @Test
-    public void getHostWithoutBaseUrl() throws MalformedURLException {
+    void getHostWithoutBaseUrl() throws MalformedURLException {
         assertThat(connectionParser.getHost(new URL("https://petstore3.swagger.io")))
                 .isEqualTo("petstore3.swagger.io");
     }
 
 
     @Test
-    public void getPortWithPortUndefined() throws MalformedURLException {
+    void getPortWithPortUndefined() throws MalformedURLException {
         assertThat(connectionParser.getPort(new URL("https://petstore3.swagger.io/api/v3/")))
                 .isEmpty();
     }
 
     @Test
-    public void getPortWithPortDefined() throws MalformedURLException {
+    void getPortWithPortDefined() throws MalformedURLException {
         assertThat(connectionParser.getPort(new URL("http://petstore3.swagger.io:5000/api/v3/")))
                 .isEqualTo(Optional.of("5000"));
     }
 
     @Test
-    public void getProtocolWithTls() throws MalformedURLException {
+    void getProtocolWithTls() throws MalformedURLException {
         assertThat(connectionParser.getProtocol(new URL("https://petstore3.swagger.io/api/v3/")))
                 .isEqualTo("Y");
     }
 
     @Test
-    public void getProtocolWithNoTls() throws MalformedURLException {
+    void getProtocolWithNoTls() throws MalformedURLException {
         assertThat(connectionParser.getProtocol(new URL("http://petstore3.swagger.io/api/v3/")))
                 .isEqualTo("N");
     }
 
     @Test
-    public void getBaseUrl() throws MalformedURLException {
+    void getBaseUrl() throws MalformedURLException {
         assertThat(connectionParser.getBaseUrl(new URL("http://petstore3.swagger.io/api/v3/")))
                 .isEqualTo(Optional.of("/api/v3/"));
     }
 
 
     @Test
-    public void getNoBaseUrl() throws MalformedURLException {
+    void getNoBaseUrl() throws MalformedURLException {
         assertThat(connectionParser.getBaseUrl(new URL("http://petstore3.swagger.io")))
                 .isEmpty();
     }

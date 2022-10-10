@@ -4,9 +4,12 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.script.ScriptException;
 
@@ -14,12 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = ConditionService.class )
-@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { ConditionService.class } )
 class ConditionServiceTest {
 
     @Autowired
-    private ConditionService conditionService;
+    ConditionService conditionService;
 
     @Test
     void testSimpleJexlExpressions() throws ScriptException {

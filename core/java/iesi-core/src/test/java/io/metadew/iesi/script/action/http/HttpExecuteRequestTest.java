@@ -24,6 +24,7 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
+import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.service.action.ActionParameterTraceService;
 import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
@@ -34,12 +35,15 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.powermock.reflect.Whitebox;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,13 +54,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = { ActionParameterService.class, HttpComponentService.class, ComponentConfiguration.class, ActionParameterTraceConfiguration.class, ActionParameterDesignTraceConfiguration.class, ActionParameterTraceService.class,
-        HttpConnectionService.class, HttpComponentTraceService.class, HttpConnectionTraceService.class, HttpComponentDefinitionService.class, HttpQueryParameterService.class,
-        DataTypeHandler.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class, ComponentTraceConfiguration.class,
-        ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, DataTypeHandler.class, MetadataFieldService.class, ConnectionConfiguration.class,
-        ConnectionParameterConfiguration.class, HttpHeaderService.class, ActionTypeParameterConfiguration.class, MetadataActionTypesConfiguration.class, ActionPerformanceLogger.class, ActionPerformanceConfiguration.class})
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, DataTypeHandler.class, HttpConnectionService.class })
 @ActiveProfiles("test")
 class HttpExecuteRequestTest {
 
@@ -66,6 +65,8 @@ class HttpExecuteRequestTest {
     ActionExecution actionExecution;
     ActionKey actionKey;
     ActionControl actionControl;
+
+    HttpExecuteRequest httpExecuteRequestSpy;
 
     @SpyBean
     ActionParameterService actionParameterServiceSpy;
@@ -84,6 +85,8 @@ class HttpExecuteRequestTest {
                 .actionId("actionId")
                 .build();
 
+        httpExecuteRequestSpy = spy(new HttpExecuteRequest(executionControl, scriptExecution, actionExecution));
+
 
         when(executionControl.getExecutionRuntime())
                 .thenReturn(executionRuntime);
@@ -97,23 +100,19 @@ class HttpExecuteRequestTest {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         Action action = createAction(requestActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
+        mockResolvedValues(requestActionParameter);
+        mockGetAndTraceHttpComponent(httpComponent);
         when(actionExecution.getAction())
                 .thenReturn(action);
 
-        mockResolvedValues(requestActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
-        mockGetAndTraceHttpComponent(httpComponent);
-
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getAllHeaders()).isEmpty();
-        assertThat(httpExecuteRequest.getExpectedStatusCodes()).isEmpty();
-        assertThat(httpExecuteRequest.getProxyConnection()).isEmpty();
+        assertThat(httpExecuteRequestSpy.getExpectedStatusCodes()).isEmpty();
+        assertThat(httpExecuteRequestSpy.getProxyConnection()).isEmpty();
     }
 
     @Test
@@ -123,19 +122,15 @@ class HttpExecuteRequestTest {
         ActionParameter headersActionParameter = createActionParameter("headers", "X-API-KEY=\"1234\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
         HttpHeader defaultHeader = new HttpHeader("Accept", "application/xml");
+        HttpComponent httpComponent = createBaseComponent(Collections.singletonList(defaultHeader), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, headersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(Collections.singletonList(defaultHeader), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getAllHeaders()).hasSize(2);
         assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/xml");
@@ -149,19 +144,15 @@ class HttpExecuteRequestTest {
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/xml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
         HttpHeader existingHeader = new HttpHeader("Accept", "application/json");
+        HttpComponent httpComponent = createBaseComponent(Collections.singletonList(existingHeader), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
+        mockGetAndTraceHttpComponent(httpComponent);
         mockResolvedValues(requestActionParameter, headersActionParameter);
 
-        HttpComponent httpComponent = createBaseComponent(Collections.singletonList(existingHeader), new ArrayList<>());
-        mockGetAndTraceHttpComponent(httpComponent);
-
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getAllHeaders()).hasSize(1);
         assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/xml");
@@ -174,19 +165,15 @@ class HttpExecuteRequestTest {
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, headersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getAllHeaders()).hasSize(1);
         assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json");
@@ -198,19 +185,17 @@ class HttpExecuteRequestTest {
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json;version=1.2\",Content-Type=\"application/json,application/xml,application/yml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
 
         mockResolvedValues(requestActionParameter, headersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
 
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getAllHeaders()).hasSize(2);
         assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json;version=1.2");
@@ -223,18 +208,14 @@ class HttpExecuteRequestTest {
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept======\"application/json\",Content-Type\"application/json,application/xml,application/yml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, headersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-
-        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
+        assertThrows(QuoteCharException.class, httpExecuteRequestSpy::prepareAction);
     }
 
     @Test
@@ -243,18 +224,14 @@ class HttpExecuteRequestTest {
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json\", Content-Type=application/json,application/xml,application/yml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, headersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-
-        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
+        assertThrows(QuoteCharException.class, httpExecuteRequestSpy::prepareAction);
     }
 
     @Test
@@ -263,18 +240,14 @@ class HttpExecuteRequestTest {
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json\", Content-Type=\"application/json,application/xml,application/yml");
         Action action = createAction(requestActionParameter, headersActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, headersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-
-        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
+        assertThrows(QuoteCharException.class, httpExecuteRequestSpy::prepareAction);
     }
 
     @Test
@@ -284,20 +257,16 @@ class HttpExecuteRequestTest {
         ActionParameter queryParameterActionParameter = createActionParameter("queryParameters", "name=name");
         Action action = createAction(requestActionParameter, queryParameterActionParameter);
         HttpQueryParameter defaultQueryParam = new HttpQueryParameter("status", "sold");
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), Collections.singletonList
+                (defaultQueryParam));
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, queryParameterActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), Collections.singletonList
-                (defaultQueryParam));
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getURI()).hasToString("https://hostendpoint?name=name&status=sold");
     }
@@ -310,19 +279,15 @@ class HttpExecuteRequestTest {
         ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=sold");
         Action action = createAction(requestActionParameter, queryParametersActionParameter);
         HttpQueryParameter defaultQueryParameters = new HttpQueryParameter("status", "available");
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), Collections.singletonList(defaultQueryParameters));
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, queryParametersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), Collections.singletonList(defaultQueryParameters));
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getURI()).hasToString("https://hostendpoint?status=sold");
     }
@@ -334,19 +299,15 @@ class HttpExecuteRequestTest {
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=sold");
         Action action = createAction(requestActionParameter, queryParametersActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, queryParametersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getURI()).hasToString("https://hostendpoint?status=sold");
     }
@@ -357,19 +318,15 @@ class HttpExecuteRequestTest {
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=sold,name=name");
         Action action = createAction(requestActionParameter, queryParametersActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, queryParametersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
-
-        HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
+        httpExecuteRequestSpy.prepareAction();
+        HttpRequestBase httpRequest = httpExecuteRequestSpy.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getURI()).hasToString("https://hostendpoint?name=name&status=sold");
     }
@@ -381,18 +338,14 @@ class HttpExecuteRequestTest {
         ActionParameter requestActionParameter = createActionParameter("request", "request");
         ActionParameter queryParametersActionParameter = createActionParameter("queryParameters", "status=====sold,namename");
         Action action = createAction(requestActionParameter, queryParametersActionParameter);
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
-
         mockResolvedValues(requestActionParameter, queryParametersActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-
-        assertThrows(KeyValuePairException.class, httpExecuteRequest::prepare);
+        assertThrows(KeyValuePairException.class, httpExecuteRequestSpy::prepareAction);
     }
 
     @Test
@@ -402,20 +355,18 @@ class HttpExecuteRequestTest {
         ActionParameter statusCodeActionParameter = createActionParameter("expectedStatusCodes", "200");
         Action action = createAction(requestActionParameter, statusCodeActionParameter);
         List<String> expectedStatusCode = Collections.singletonList("200");
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
 
         mockResolvedValues(requestActionParameter, statusCodeActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
+        httpExecuteRequestSpy.prepareAction();
 
-        assertThat(httpExecuteRequest.getExpectedStatusCodes()).isNotEmpty();
-        assertThat(httpExecuteRequest.getExpectedStatusCodes()).get().isEqualTo(expectedStatusCode);
+        assertThat(httpExecuteRequestSpy.getExpectedStatusCodes()).isNotEmpty();
+        assertThat(httpExecuteRequestSpy.getExpectedStatusCodes()).get().isEqualTo(expectedStatusCode);
     }
 
     @Test
@@ -425,20 +376,18 @@ class HttpExecuteRequestTest {
         ActionParameter statusCodeActionParameter = createActionParameter("expectedStatusCodes", "200,400,500");
         Action action = createAction(requestActionParameter, statusCodeActionParameter);
         List<String> expectedStatusCode = new ArrayList<>(Arrays.asList("200", "400", "500"));
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
 
         when(actionExecution.getAction())
                 .thenReturn(action);
 
         mockResolvedValues(requestActionParameter, statusCodeActionParameter);
-
-        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
         mockGetAndTraceHttpComponent(httpComponent);
 
-        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
-        httpExecuteRequest.prepare();
+        httpExecuteRequestSpy.prepareAction();
 
-        assertThat(httpExecuteRequest.getExpectedStatusCodes()).isNotEmpty();
-        assertThat(httpExecuteRequest.getExpectedStatusCodes()).get().isEqualTo(expectedStatusCode);
+        assertThat(httpExecuteRequestSpy.getExpectedStatusCodes()).isNotEmpty();
+        assertThat(httpExecuteRequestSpy.getExpectedStatusCodes()).get().isEqualTo(expectedStatusCode);
     }
 
 
@@ -465,8 +414,8 @@ class HttpExecuteRequestTest {
     void mockResolvedValues(ActionParameter... actionParameters) {
         for (ActionParameter actionParameter : actionParameters) {
             doReturn(new Text(actionParameter.getValue()))
-                    .when(actionParameterServiceSpy)
-                    .getValue(actionParameter, executionRuntime, actionExecution);
+                    .when(httpExecuteRequestSpy)
+                    .getParameterResolvedValue(actionParameter.getMetadataKey().getParameterName());
         }
     }
 

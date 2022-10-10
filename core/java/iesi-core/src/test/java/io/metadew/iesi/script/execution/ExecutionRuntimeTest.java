@@ -1,5 +1,9 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
@@ -8,9 +12,16 @@ import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatase
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.datatypes.text.TextService;
+import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
+import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.powermock.reflect.Whitebox;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -21,8 +32,11 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@Disabled
-public class ExecutionRuntimeTest {
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, FrameworkConfiguration.class, MetadataRepositoryConfiguration.class, DataTypeHandler.class, ScriptResultOutputConfiguration.class,
+    ConnectionParameterConfiguration.class})
+@ActiveProfiles("test")
+class ExecutionRuntimeTest {
 
     private final ExecutionControl executionControl = mock(ExecutionControl.class);
     private final ScriptExecutionInitializationParameters scriptExecutionInitializationParameters = mock(ScriptExecutionInitializationParameters.class);
@@ -129,10 +143,13 @@ public class ExecutionRuntimeTest {
 
         LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
 
-        assertThat(lookupResult.getValue()).isEqualTo("My {{text : SUM : Ok");
+        Text resolvedInput = TextService.getInstance().resolve(lookupResult.getValue(), executionRuntime);
+
+        assertThat(resolvedInput.getString()).isEqualTo("My {{text : SUM : Ok");
     }
 
     @Test
+    @Disabled
     void resolveConceptLookupTestWithComplexJsonArray() {
         ExecutionRuntime executionRuntime = new ExecutionRuntime(executionControl, "8", scriptExecutionInitializationParameters);
         String instruction = "My <!{{text!> : {{*text.jsonPath(<!{\n" +
@@ -149,7 +166,7 @@ public class ExecutionRuntimeTest {
                 "\t\t\t\t\t\"Abbrev\": \"ISO 88,79:1986\",\n" +
                 "\t\t\t\t\t\"GlossDef\": {\n" +
                 "                        \"para\": \"A meta-markup language, ,used to create, markup languages such as DocBook.\",\n" +
-                "\t\t\t\t\t\t\"GlossSeeAlso\": [\"GM,L\", \",XM,L\"]\n" +
+                "\t\t\t\t\t\t\"GlossSeeAlso\": [\"GM,L\",\",XM,L\"]\n" +
                 "                    },\n" +
                 "\t\t\t\t\t\"GlossSee\": \"markup\"\n" +
                 "                }\n" +
@@ -158,9 +175,11 @@ public class ExecutionRuntimeTest {
                 "    }\n" +
                 "}!>, /glossary/GlossDiv/GlossList/GlossEntry/GlossDef/GlossSeeAlso/1)}}";
 
-        LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
 
-        assertThat(lookupResult.getValue()).isEqualTo("My {{text : ,XM,L");
+        LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
+        Text resolvedInput = TextService.getInstance().resolve(lookupResult.getValue(), executionRuntime);
+
+        assertThat(resolvedInput.getString()).isEqualTo("My {{text : ,XM,L");
     }
 
     @Test
@@ -241,7 +260,9 @@ public class ExecutionRuntimeTest {
         String instruction = "TEXT = {{*text.substring(<!{{hamza!>,1,5)}}{{*text.substring(hamza<!}}!>,4,7)}}{{*text.substring(hamza,1,3)}}";
 
         LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
-        assertThat(lookupResult.getValue()).isEqualTo("TEXT = {{hamza}}ham");
+        Text resolvedInput = TextService.getInstance().resolve(lookupResult.getValue(), executionRuntime);
+
+        assertThat(resolvedInput.getString()).isEqualTo("TEXT = {{hamza}}ham");
     }
 
     @Test
@@ -250,6 +271,8 @@ public class ExecutionRuntimeTest {
         String instruction = "[ \"Hello\", \"{{*text.replace(\"Hello<!}}!> World\", \"Hello\", \"<!{{!>World<!}}!>\")}}, \"WithBrackets<!}}!>, \"WithBrackets<!{{!> ]";
 
         LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
-        assertThat(lookupResult.getValue()).isEqualTo("[ \"Hello\", \"{{World}}}} World, \"WithBrackets<!}}!>, \"WithBrackets<!{{!> ]");
+        Text resolvedInput = TextService.getInstance().resolve(lookupResult.getValue(), executionRuntime);
+
+        assertThat(resolvedInput.getString()).isEqualTo("[ \"Hello\", \"{{World}}}} World, \"WithBrackets}}, \"WithBrackets{{ ]");
     }
 }

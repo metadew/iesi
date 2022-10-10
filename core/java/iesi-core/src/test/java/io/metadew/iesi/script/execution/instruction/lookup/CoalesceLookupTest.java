@@ -6,18 +6,19 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, DataTypeHandler.class })
 @ActiveProfiles("test")
 class CoalesceLookupTest {
 

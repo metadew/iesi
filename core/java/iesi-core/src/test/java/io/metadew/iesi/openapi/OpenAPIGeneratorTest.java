@@ -26,11 +26,14 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,16 +44,16 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = { OpenAPIGenerator.class, SecurityGroupConfiguration.class, SecurityGroupService.class,
-        ComponentParser.class, ConnectionParser.class,
-        ConnectionConfiguration.class, ConnectionParameterConfiguration.class,
-        ComponentConfiguration.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class})
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, OpenAPIGenerator.class, ComponentParser.class, ConnectionParser.class })
 @ActiveProfiles("test")
 class OpenAPIGeneratorTest {
 
+    final SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
     byte[] docFile;
     byte[] wrongDocFile;
     String title;
@@ -60,8 +63,14 @@ class OpenAPIGeneratorTest {
     @Autowired
     private OpenAPIGenerator openAPIGenerator;
 
-    @Autowired
-    private SecurityGroupConfiguration securityGroupConfiguration;
+    @MockBean
+    private SecurityGroupService securityGroupService;
+
+    @MockBean
+    ComponentConfiguration componentConfiguration;
+
+    @MockBean
+    ConnectionConfiguration connectionConfiguration;
 
 
     @BeforeEach
@@ -72,17 +81,26 @@ class OpenAPIGeneratorTest {
         wrongDocFile = Base64.getDecoder().decode(wrongBase64.getBytes(StandardCharsets.UTF_8));
         title = "Swagger Petstore - OpenAPI 3.0";
         version = "1";
+
+        when(securityGroupService.get("PUBLIC"))
+                .thenReturn(Optional.of(new SecurityGroup(
+                        securityGroupKey,
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>()
+                )));
+
+        doNothing()
+                .when(componentConfiguration)
+                .insert(any(Component.class));
+        doNothing()
+                .when(connectionConfiguration)
+                .insert(any(Connection.class));
     }
 
 
     @Test
     void transformFromFile() throws IOException {
-        securityGroupConfiguration.insert(new SecurityGroup(
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                new HashSet<>(),
-                new HashSet<>()
-        ));
         File file = File.createTempFile("doc", null);
         try (OutputStream os = new FileOutputStream(file)) {
             os.write(docFile);
@@ -106,7 +124,6 @@ class OpenAPIGeneratorTest {
 
 
     private TransformResult getTransformResult() {
-        SecurityGroup securityGroup = securityGroupConfiguration.getByName("PUBLIC").orElseThrow(RuntimeException::new);
         EnvironmentKey environmentKey = new EnvironmentKey("env0");
         ConnectionKey connectionKey = new ConnectionKey(
                 "Swagger Petstore - OpenAPI 3.0",
@@ -124,7 +141,7 @@ class OpenAPIGeneratorTest {
         ConnectionParameter tls = new ConnectionParameter(
                 new ConnectionParameterKey(connectionKey, "tls"),
                 "Y");
-        Connection connection = new Connection(connectionKey, securityGroup.getMetadataKey(), "PUBLIC", "http", "small description", Arrays.asList(baseUrl, host, tls));
+        Connection connection = new Connection(connectionKey, securityGroupKey, "PUBLIC", "http", "small description", Arrays.asList(baseUrl, host, tls));
 
 
         ComponentParameter endpoint = new ComponentParameter(
@@ -141,7 +158,7 @@ class OpenAPIGeneratorTest {
         );
         Component component = new Component(
                 componentKey,
-                securityGroup.getMetadataKey(),
+                securityGroupKey,
                 "PUBLIC",
                 "http.request",
                 "updatePet",

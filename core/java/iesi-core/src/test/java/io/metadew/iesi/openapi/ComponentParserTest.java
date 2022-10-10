@@ -15,22 +15,26 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = { ComponentParser.class, SecurityGroupService.class, SecurityGroupConfiguration.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {TestConfiguration.class, ComponentParser.class})
 @ActiveProfiles("test")
 class ComponentParserTest {
 
@@ -38,11 +42,10 @@ class ComponentParserTest {
     private long componentVersion;
 
     @Autowired
-    private SecurityGroupConfiguration securityGroupConfiguration;
+    ComponentParser componentParser;
 
-    @Autowired
-    private ComponentParser componentParser;
-
+    @MockBean
+    SecurityGroupService securityGroupService;
 
     @BeforeEach
     void setup() {
@@ -63,6 +66,14 @@ class ComponentParserTest {
                 .components(new Components()
                         .securitySchemes(securitySchemeMap));
         this.componentVersion = Long.parseLong(openAPI.getInfo().getVersion());
+
+        when(securityGroupService.get("PUBLIC"))
+                .thenReturn(Optional.of(new SecurityGroup(
+                        new SecurityGroupKey(UUID.randomUUID()),
+                        "PUBLIC",
+                        new HashSet<>(),
+                        new HashSet<>()
+                )));
     }
 
     @Test
@@ -159,12 +170,6 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithStringVersion() {
-        securityGroupConfiguration.insert(new SecurityGroup(
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                new HashSet<>(),
-                new HashSet<>()
-        ));
         List<String> messages = Collections.singletonList("The version should be a number");
         openAPI.getInfo().setVersion("SNAPSHOT-1.1");
 
@@ -174,12 +179,6 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithLongVersion() {
-        securityGroupConfiguration.insert(new SecurityGroup(
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                new HashSet<>(),
-                new HashSet<>()
-        ));
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()
@@ -196,12 +195,6 @@ class ComponentParserTest {
 
     @Test
     void createComponentWithSemanticVersion() {
-        securityGroupConfiguration.insert(new SecurityGroup(
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                new HashSet<>(),
-                new HashSet<>()
-        ));
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()
@@ -218,12 +211,6 @@ class ComponentParserTest {
 
     @Test
     void testComponentWithSemanticVersion() {
-        securityGroupConfiguration.insert(new SecurityGroup(
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                new HashSet<>(),
-                new HashSet<>()
-        ));
         Paths paths = new Paths();
         PathItem pathItem = new PathItem();
         pathItem.setGet(new Operation()

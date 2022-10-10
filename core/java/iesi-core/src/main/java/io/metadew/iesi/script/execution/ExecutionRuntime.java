@@ -55,8 +55,6 @@ public class ExecutionRuntime {
     private HashMap<String, DataInstruction> dataInstructions;
     private HashMap<String, VariableInstruction> variableInstructions;
     private HashMap<String, LookupInstruction> lookupInstructions;
-
-    private final FrameworkControl frameworkControl = SpringContext.getBean(FrameworkControl.class);
     private final String INSTRUCTION_TYPE_KEY = "instructionType";
     private final String INSTRUCTION_KEYWORD_KEY = "instructionKeyword";
     private final String INSTRUCTION_ARGUMENTS_KEY = "instructionArguments";
@@ -201,7 +199,7 @@ public class ExecutionRuntime {
         String result = "";
 
         // First level: settings
-        result = frameworkControl.resolveConfiguration(input);
+        result = SpringContext.getBean(FrameworkControl.class).resolveConfiguration(input);
 
         // Second level: runtime variables
         result = this.resolveRuntimeVariables(result);
@@ -218,7 +216,7 @@ public class ExecutionRuntime {
         String result;
 
         // First level: settings
-        result = frameworkControl.resolveConfiguration(input);
+        result = SpringContext.getBean(FrameworkControl.class).resolveConfiguration(input);
 
         // Second: Action attributes
         result = this.resolveConfiguration(actionExecution, result);

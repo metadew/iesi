@@ -20,6 +20,8 @@ import io.metadew.iesi.script.action.http.HttpExecuteRequest;
 import io.metadew.iesi.script.execution.ActionExecution;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.entity.ContentType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.net.URISyntaxException;
@@ -31,41 +33,21 @@ import java.util.stream.Collectors;
 public class HttpComponentService implements IHttpComponentService {
 
     private final FrameworkCrypto frameworkCrypto;
-    private final ComponentConfiguration componentConfiguration;
-    private final ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration;
-    private final ActionParameterTraceService actionParameterTraceService;
-    private final HttpConnectionService httpConnectionService;
-    private final HttpComponentTraceService httpComponentTraceService;
-    private final HttpConnectionTraceService httpConnectionTraceService;
-    private final HttpComponentDefinitionService httpComponentDefinitionService;
-    private final HttpQueryParameterService httpQueryParameterService;
-    private final DataTypeHandler dataTypeHandler;
-    private final HttpHeaderService httpHeaderService;
+    private ComponentConfiguration componentConfiguration;
 
-    public HttpComponentService(FrameworkCrypto frameworkCrypto,
-                                ComponentConfiguration componentConfiguration,
-                                ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration,
-                                ActionParameterTraceService actionParameterTraceService,
-                                HttpConnectionService httpConnectionService,
-                                HttpComponentTraceService httpComponentTraceService,
-                                HttpConnectionTraceService httpConnectionTraceService,
-                                HttpComponentDefinitionService httpComponentDefinitionService,
-                                HttpQueryParameterService httpQueryParameterService,
-                                DataTypeHandler dataTypeHandler,
-                                HttpHeaderService httpHeaderService) {
+    private ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration;
+    private ActionParameterTraceService actionParameterTraceService;
+    private HttpConnectionService httpConnectionService;
+    private HttpComponentTraceService httpComponentTraceService;
+    private HttpConnectionTraceService httpConnectionTraceService;
+    private HttpComponentDefinitionService httpComponentDefinitionService;
+    private HttpQueryParameterService httpQueryParameterService;
+    private DataTypeHandler dataTypeHandler;
+    private HttpHeaderService httpHeaderService;
+
+    public HttpComponentService(FrameworkCrypto frameworkCrypto) {
         this.frameworkCrypto = frameworkCrypto;
-        this.componentConfiguration = componentConfiguration;
-        this.actionParameterDesignTraceConfiguration = actionParameterDesignTraceConfiguration;
-        this.actionParameterTraceService = actionParameterTraceService;
-        this.httpConnectionService = httpConnectionService;
-        this.httpComponentTraceService = httpComponentTraceService;
-        this.httpConnectionTraceService = httpConnectionTraceService;
-        this.httpComponentDefinitionService = httpComponentDefinitionService;
-        this.httpQueryParameterService = httpQueryParameterService;
-        this.dataTypeHandler = dataTypeHandler;
-        this.httpHeaderService = httpHeaderService;
     }
-
 
     public HttpRequest buildHttpRequest(HttpComponent httpComponent, String body) throws URISyntaxException, HttpRequestBuilderException {
         HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder()
@@ -214,5 +196,46 @@ public class HttpComponentService implements IHttpComponentService {
             ((HttpExecuteRequest) actionExecution.getActionTypeExecution())
                     .replaceParameterResolvedValue(actionParameter, version.toString());
         }
+    }
+
+    @Autowired(required = false)
+    public void setComponentConfiguration(ComponentConfiguration componentConfiguration) {
+        this.componentConfiguration = componentConfiguration;
+    }
+    @Autowired(required = false)
+    public void setActionParameterDesignTraceConfiguration(ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration) {
+        this.actionParameterDesignTraceConfiguration = actionParameterDesignTraceConfiguration;
+    }
+    @Autowired(required = false)
+    public void setActionParameterTraceService(ActionParameterTraceService actionParameterTraceService) {
+        this.actionParameterTraceService = actionParameterTraceService;
+    }
+    @Autowired(required = false)
+    public void setHttpConnectionService(HttpConnectionService httpConnectionService) {
+        this.httpConnectionService = httpConnectionService;
+    }
+    @Autowired(required = false)
+    public void setHttpComponentTraceService(HttpComponentTraceService httpComponentTraceService) {
+        this.httpComponentTraceService = httpComponentTraceService;
+    }
+    @Autowired(required = false)
+    public void setHttpConnectionTraceService(HttpConnectionTraceService httpConnectionTraceService) {
+        this.httpConnectionTraceService = httpConnectionTraceService;
+    }
+    @Autowired(required = false)
+    public void setHttpComponentDefinitionService(HttpComponentDefinitionService httpComponentDefinitionService) {
+        this.httpComponentDefinitionService = httpComponentDefinitionService;
+    }
+    @Autowired(required = false)
+    public void setHttpQueryParameterService(HttpQueryParameterService httpQueryParameterService) {
+        this.httpQueryParameterService = httpQueryParameterService;
+    }
+    @Autowired(required = false)
+    public void setDataTypeHandler(DataTypeHandler dataTypeHandler) {
+        this.dataTypeHandler = dataTypeHandler;
+    }
+    @Autowired(required = false)
+    public void setHttpHeaderService(HttpHeaderService httpHeaderService) {
+        this.httpHeaderService = httpHeaderService;
     }
 }

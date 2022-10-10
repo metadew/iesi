@@ -119,7 +119,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(AuthorizationServerSecurityConfigurer serverSecurity) {
         serverSecurity
                 .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
+                .checkTokenAccess("permitAll()")
                 .allowFormAuthenticationForClients();
     }
 

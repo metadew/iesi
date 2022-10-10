@@ -6,16 +6,24 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
 import io.metadew.iesi.script.execution.ActionExecution;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class HttpConnectionService implements IHttpConnectionService {
 
-    private final ConnectionConfiguration connectionConfiguration;
-    private final HttpConnectionTraceService httpConnectionTraceService;
+    private ConnectionConfiguration connectionConfiguration;
+    private HttpConnectionTraceService httpConnectionTraceService;
 
-    public HttpConnectionService(ConnectionConfiguration connectionConfiguration, HttpConnectionTraceService httpConnectionTraceService) {
+    @Autowired(required = false)
+    public void setConnectionConfiguration(ConnectionConfiguration connectionConfiguration) {
         this.connectionConfiguration = connectionConfiguration;
+    }
+
+    @Autowired(required = false)
+    public void setHttpConnectionTraceService(HttpConnectionTraceService httpConnectionTraceService) {
         this.httpConnectionTraceService = httpConnectionTraceService;
     }
 

@@ -41,7 +41,6 @@ public class TestConfiguration {
         return new MetadataRepositoryService(metadataRepositoryCoordinatorHandler);
     }
 
-    @Bean
     @DependsOn({ "metadataTablesConfiguration", "metadataObjectsConfiguration"})
     public MetadataRepositoryConfiguration metadataRepositoryConfiguration(io.metadew.iesi.common.configuration.Configuration configuration, MetadataRepositoryService metadataRepositoryService) {
         return new MetadataRepositoryConfiguration(configuration, metadataRepositoryService);

@@ -10,6 +10,7 @@ import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -18,9 +19,11 @@ import javax.script.ScriptException;
 @Log4j2
 public class ConditionService implements IConditionService {
 
-    private final JexlEngine jexl;
+    private JexlEngine jexl;
 
-    private ConditionService() {
+    @PostConstruct
+    private void postConstruct() {
+        System.out.println("COUCOU");
         jexl = new JexlEngine();
         jexl.setCache(512);
         jexl.setLenient(false);

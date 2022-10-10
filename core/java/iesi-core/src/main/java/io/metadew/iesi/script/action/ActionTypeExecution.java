@@ -82,7 +82,7 @@ public abstract class ActionTypeExecution {
 
     protected abstract String getKeyword();
 
-    protected DataType getParameterResolvedValue(String parameterKey) {
+    public DataType getParameterResolvedValue(String parameterKey) {
         return getActionParameterResolvements().stream()
                 .filter(actionParameterResolvement -> actionParameterResolvement.getActionParameter().getMetadataKey().getParameterName().equalsIgnoreCase(parameterKey))
                 .findFirst()

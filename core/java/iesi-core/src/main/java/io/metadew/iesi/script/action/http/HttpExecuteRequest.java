@@ -66,10 +66,6 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     @SuppressWarnings("unused")
     private static final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d");
 
-    private final HttpComponentService httpComponentService = SpringContext.getBean(HttpComponentService.class);
-    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
-    private final ActionPerformanceLogger actionPerformanceLogger = SpringContext.getBean(ActionPerformanceLogger.class);
-
     public HttpExecuteRequest(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -79,9 +75,9 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         Long componentVersion = convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION));
         HttpComponent httpComponent;
         if (componentVersion == null) {
-            httpComponent = httpComponentService.getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, REQUEST_VERSION);
+            httpComponent = SpringContext.getBean(HttpComponentService.class).getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, REQUEST_VERSION);
         } else {
-            httpComponent = httpComponentService.getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
+            httpComponent = SpringContext.getBean(HttpComponentService.class).getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
         }
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
@@ -94,11 +90,11 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
         if (body.isPresent()) {
             getActionExecution().getActionControl().logOutput("request.body", body.get());
-            httpRequest = httpComponentService.buildHttpRequest(
+            httpRequest = SpringContext.getBean(HttpComponentService.class).buildHttpRequest(
                     httpComponent,
                     body.get());
         } else {
-            httpRequest = httpComponentService.buildHttpRequest(httpComponent);
+            httpRequest = SpringContext.getBean(HttpComponentService.class).buildHttpRequest(httpComponent);
         }
         getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
         getActionExecution().getActionControl().logOutput("request.method", httpRequest.getHttpRequest().getMethod());
@@ -122,7 +118,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
             httpResponse = HttpRequestService.getInstance().send(httpRequest);
         }
         outputResponse(httpResponse);
-        actionPerformanceLogger.log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());
+        SpringContext.getBean(ActionPerformanceLogger.class).log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());
         checkStatusCode(httpResponse);
         return true;
     }
@@ -257,7 +253,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (connectionName == null || connectionName instanceof Null) {
             return null;
         } else if (connectionName instanceof Text) {
-            return connectionConfiguration
+            return SpringContext.getBean(ConnectionConfiguration.class)
                     .get(new ConnectionKey(((Text) connectionName).getString(), getExecutionControl().getEnvName()))
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));
@@ -321,7 +317,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         }
     }
 
-    private String convertHttpRequestName(DataType httpRequestName) {
+    protected String convertHttpRequestName(DataType httpRequestName) {
         if (httpRequestName instanceof Text) {
             return ((Text) httpRequestName).getString();
         } else {

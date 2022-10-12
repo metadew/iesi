@@ -21,8 +21,13 @@ public class IterationExecution {
     }
 
     // Methods
-    public void initialize(ExecutionControl executionControl,
-                           ActionExecution actionExecution, String iterationName) {
+    public void initialize(ExecutionControl executionControl, String iterationName) {
+
+        if (executionControl.getExecutionRuntime().getIterationOperationMap().get(iterationName) == null) {
+            return;
+        }
+
+
         this.setExecutionControl(executionControl);
         this.setIterationName(iterationName);
         this.setIterationOperation(

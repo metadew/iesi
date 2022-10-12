@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -28,11 +29,19 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
 
     private static ApplicationJsonHttpResponseEntityService instance;
 
+    private final ObjectMapper objectMapper;
+
     public static synchronized ApplicationJsonHttpResponseEntityService getInstance() {
         if (instance == null) {
             instance = new ApplicationJsonHttpResponseEntityService();
         }
         return instance;
+    }
+
+    private ApplicationJsonHttpResponseEntityService() {
+        this.objectMapper = new ObjectMapper();
+        objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+        objectMapper.enable(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS);
     }
 
     @Override
@@ -44,17 +53,13 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
     @Override
     public void writeToDataset(HttpResponse httpResponse, DatasetImplementation dataset, String key, ExecutionRuntime executionRuntime) throws IOException {
         if (httpResponse.getEntityContent().isPresent()) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-            objectMapper.enable(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS);
-
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
 
             String jsonContent = new String(httpResponse.getEntityContent().get(), charset);
-            JsonNode jsonNode = null;
+            JsonNode jsonNode;
 
             try {
                 jsonNode = objectMapper.readTree(jsonContent);
@@ -65,7 +70,7 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
             if (jsonNode.getNodeType().equals(JsonNodeType.MISSING)) {
                 log.warn("response does not contain a valid JSON message: " + jsonNode.toPrettyString() + ". ");
             } else {
-                DatasetImplementationHandler.getInstance().setDataItem(dataset, key, DataTypeHandler.getInstance().resolve(dataset, key, jsonNode, executionRuntime));
+                DatasetImplementationHandler.getInstance().setDataItem(dataset, key, SpringContext.getBean(DataTypeHandler.class).resolve(dataset, key, jsonNode, executionRuntime));
             }
         }
     }
@@ -84,10 +89,6 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
     @Override
     public void outputResponse(HttpResponse httpResponse, ActionControl actionControl) {
         httpResponse.getEntityContent().ifPresent(s -> {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-            objectMapper.enable(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS);
-
             Charset charset = Optional.ofNullable(ContentType.get(httpResponse.getHttpEntity()))
                     .map(contentType -> Optional.ofNullable(contentType.getCharset())
                             .orElse(Consts.UTF_8))

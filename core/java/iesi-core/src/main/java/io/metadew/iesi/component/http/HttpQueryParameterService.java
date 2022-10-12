@@ -5,36 +5,32 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ActionExecution;
+import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 
+@Service
 public class HttpQueryParameterService implements IHttpQueryParameterService {
 
-    private static HttpQueryParameterService INSTANCE;
+    private final FrameworkCrypto frameworkCrypto;
+    private final DataTypeHandler dataTypeHandler;
 
-    public synchronized static HttpQueryParameterService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpQueryParameterService();
-        }
-        return INSTANCE;
+    public HttpQueryParameterService(FrameworkCrypto frameworkCrypto, DataTypeHandler dataTypeHandler) {
+        this.frameworkCrypto = frameworkCrypto;
+        this.dataTypeHandler = dataTypeHandler;
     }
-
-    private HttpQueryParameterService() {
-    }
-
 
     public HttpQueryParameter convert(HttpQueryParameterDefinition httpQueryParameterDefinition, ActionExecution actionExecution) {
         return new HttpQueryParameter(httpQueryParameterDefinition.getName(), resolveQueryParameter(httpQueryParameterDefinition.getValue(), actionExecution));
     }
-
 
     private String resolveQueryParameter(String httpQueryParameter, ActionExecution actionExecution) {
         String actionResolvedValue = actionExecution.getActionControl().getActionRuntime().resolveRuntimeVariables(httpQueryParameter);
         String resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, actionResolvedValue);
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
         resolvedInputValue = actionExecution.getExecutionControl().getExecutionRuntime().resolveVariables(actionExecution, resolvedInputValue);
-        String decryptedInputValue = FrameworkCrypto.getInstance().resolve(resolvedInputValue);
-        return convertQueryParameterDatatype(DataTypeHandler.getInstance().resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
+        String decryptedInputValue = frameworkCrypto.resolve(resolvedInputValue);
+        return convertQueryParameterDatatype(dataTypeHandler.resolve(decryptedInputValue, actionExecution.getExecutionControl().getExecutionRuntime()));
     }
 
     private String convertQueryParameterDatatype(DataType header) {

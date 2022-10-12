@@ -8,10 +8,11 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,20 +22,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class EnvironmentConfiguration extends Configuration<Environment, EnvironmentKey> {
 
-    private static EnvironmentConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final EnvironmentParameterConfiguration environmentParameterConfiguration;
 
-    public synchronized static EnvironmentConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new EnvironmentConfiguration();
-        }
-        return INSTANCE;
+    public EnvironmentConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, EnvironmentParameterConfiguration environmentParameterConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.environmentParameterConfiguration = environmentParameterConfiguration;
     }
 
-    private EnvironmentConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getControlMetadataRepository());
     }
 
     @Override
@@ -50,7 +52,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
             crsEnvironment.next();
             Environment environment = new Environment(environmentKey,
                     crsEnvironment.getString("ENV_DSC"),
-                    EnvironmentParameterConfiguration.getInstance()
+                    environmentParameterConfiguration
                             .getByEnvironment(environmentKey));
             crsEnvironment.close();
             return Optional.of(environment);
@@ -70,7 +72,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
                 String environmentName = crs.getString("ENV_NM");
                 String environmentDescription = crs.getString("ENV_DSC");
                 EnvironmentKey environmentKey = new EnvironmentKey(environmentName);
-                environments.add(new Environment(environmentKey, environmentDescription, EnvironmentParameterConfiguration.getInstance().getByEnvironment(environmentKey)));
+                environments.add(new Environment(environmentKey, environmentDescription, environmentParameterConfiguration.getByEnvironment(environmentKey)));
             }
             crs.close();
         } catch (SQLException e) {
@@ -88,7 +90,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
             throw new MetadataDoesNotExistException(environmentKey);
         }
 
-        EnvironmentParameterConfiguration.getInstance().deleteByEnvironment(environmentKey);
+        environmentParameterConfiguration.deleteByEnvironment(environmentKey);
         String deleteStatements = getDeleteStatement(environmentKey);
         getMetadataRepository().executeUpdate(deleteStatements);
     }
@@ -100,7 +102,7 @@ public class EnvironmentConfiguration extends Configuration<Environment, Environ
             throw new MetadataAlreadyExistsException(environment.getMetadataKey());
         }
         for (EnvironmentParameter environmentParameter : environment.getParameters()) {
-            EnvironmentParameterConfiguration.getInstance().insert(environmentParameter);
+            environmentParameterConfiguration.insert(environmentParameter);
         }
         getMetadataRepository().executeUpdate(getInsertStatement(environment));
     }

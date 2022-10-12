@@ -20,10 +20,12 @@ import java.util.stream.Collectors;
 public class ConnectionDtoService implements IConnectionDtoService {
 
     private final ConnectionDtoRepository connectionDtoRepository;
+    private final SecurityGroupConfiguration securityGroupConfiguration;
 
     @Autowired
-    public ConnectionDtoService(ConnectionDtoRepository connectionDtoRepository) {
+    public ConnectionDtoService(ConnectionDtoRepository connectionDtoRepository, SecurityGroupConfiguration securityGroupConfiguration) {
         this.connectionDtoRepository = connectionDtoRepository;
+        this.securityGroupConfiguration = securityGroupConfiguration;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class ConnectionDtoService implements IConnectionDtoService {
 
     @Override
     public List<Connection> convertToEntity(ConnectionDto connectionDto) {
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(connectionDto.getSecurityGroupName())
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName(connectionDto.getSecurityGroupName())
                 .orElseThrow(() -> new RuntimeException("could not find Security Group with name " + connectionDto.getSecurityGroupName()));
         return connectionDto.getEnvironments().stream()
                 .map(environment -> new Connection(

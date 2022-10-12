@@ -15,6 +15,7 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,21 +26,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@org.springframework.stereotype.Component
 public class ComponentConfiguration extends Configuration<Component, ComponentKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ComponentConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final ComponentVersionConfiguration componentVersionConfiguration;
+    private final ComponentParameterConfiguration componentParameterConfiguration;
+    private final ComponentAttributeConfiguration componentAttributeConfiguration;
 
-    public static synchronized ComponentConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ComponentConfiguration();
-        }
-        return INSTANCE;
+    public ComponentConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, ComponentVersionConfiguration componentVersionConfiguration, ComponentParameterConfiguration componentParameterConfiguration, ComponentAttributeConfiguration componentAttributeConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.componentVersionConfiguration = componentVersionConfiguration;
+        this.componentParameterConfiguration = componentParameterConfiguration;
+        this.componentAttributeConfiguration = componentAttributeConfiguration;
     }
 
-    // Constructors
-    private ComponentConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDesignMetadataRepository());
     }
 
 
@@ -56,13 +61,13 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             }
             crsComponent.next();
             ComponentKey componentKey = new ComponentKey(crsComponent.getString("COMP_ID"), version);
-            Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().get(new ComponentVersionKey(componentKey));
+            Optional<ComponentVersion> componentVersion = componentVersionConfiguration.get(new ComponentVersionKey(componentKey));
 
             if (!componentVersion.isPresent()) {
                 return Optional.empty();
             }
-            List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
-            List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
+            List<ComponentParameter> componentParameters = componentParameterConfiguration.getByComponent(componentKey);
+            List<ComponentAttribute> componentAttributes = componentAttributeConfiguration.getByComponent(componentKey);
 
             SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.fromString(crsComponent.getString("SECURITY_GROUP_ID")));
             String securityGroupName = crsComponent.getString("SECURITY_GROUP_NM");
@@ -97,7 +102,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             }
 
             crsComponent.next();
-            Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance()
+            Optional<ComponentVersion> componentVersion = componentVersionConfiguration
                     .getLatestVersionByComponentId(crsComponent.getString("COMP_ID"));
 
             if (!componentVersion.isPresent()) {
@@ -105,8 +110,8 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             }
 
             ComponentKey componentKey = componentVersion.get().getMetadataKey().getComponentKey();
-            List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
-            List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
+            List<ComponentParameter> componentParameters = componentParameterConfiguration.getByComponent(componentKey);
+            List<ComponentAttribute> componentAttributes = componentAttributeConfiguration.getByComponent(componentKey);
 
             String componentType = crsComponent.getString("COMP_TYP_NM");
             SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.fromString(crsComponent.getString("SECURITY_GROUP_ID")));
@@ -141,13 +146,13 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             }
             crsComponent.next();
 
-            Optional<ComponentVersion> componentVersion = ComponentVersionConfiguration.getInstance().get(new ComponentVersionKey(componentKey));
+            Optional<ComponentVersion> componentVersion = componentVersionConfiguration.get(new ComponentVersionKey(componentKey));
             if (!componentVersion.isPresent()) {
                 return Optional.empty();
             }
 
-            List<ComponentParameter> componentParameters = ComponentParameterConfiguration.getInstance().getByComponent(componentKey);
-            List<ComponentAttribute> componentAttributes = ComponentAttributeConfiguration.getInstance().getByComponent(componentKey);
+            List<ComponentParameter> componentParameters = componentParameterConfiguration.getByComponent(componentKey);
+            List<ComponentAttribute> componentAttributes = componentAttributeConfiguration.getByComponent(componentKey);
 
             SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.fromString(crsComponent.getString("SECURITY_GROUP_ID")));
             String securityGroupName = crsComponent.getString("SECURITY_GROUP_NM");
@@ -193,18 +198,18 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         if (!exists(componentKey)) {
             throw new MetadataDoesNotExistException(componentKey);
         }
-        ComponentVersionConfiguration.getInstance().delete(new ComponentVersionKey(componentKey));
-        ComponentParameterConfiguration.getInstance().deleteByComponent(componentKey);
-        ComponentAttributeConfiguration.getInstance().deleteByComponent(componentKey);
+        componentVersionConfiguration.delete(new ComponentVersionKey(componentKey));
+        componentParameterConfiguration.deleteByComponent(componentKey);
+        componentAttributeConfiguration.deleteByComponent(componentKey);
 
         getDeleteStatement(componentKey).ifPresent(getMetadataRepository()::executeUpdate);
     }
 
     public void deleteById(String componentId) {
         LOGGER.trace(MessageFormat.format("Deleting Component with id {0}.", componentId));
-        ComponentVersionConfiguration.getInstance().deleteByComponentId(componentId);
-        ComponentParameterConfiguration.getInstance().deleteByComponentId(componentId);
-        ComponentAttributeConfiguration.getInstance().deleteByComponentId(componentId);
+        componentVersionConfiguration.deleteByComponentId(componentId);
+        componentParameterConfiguration.deleteByComponentId(componentId);
+        componentAttributeConfiguration.deleteByComponentId(componentId);
 
         getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Components") +
                 " WHERE COMP_ID = " + SQLTools.getStringForSQL(componentId) + ";");
@@ -221,7 +226,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
                 return components;
             }
             crsComponent.next();
-            List<ComponentVersion> componentVersions = ComponentVersionConfiguration.getInstance().getByComponent(componentId);
+            List<ComponentVersion> componentVersions = componentVersionConfiguration.getByComponent(componentId);
             componentVersions
                     .forEach(componentVersion -> get(componentVersion.getMetadataKey().getComponentKey())
                             .ifPresent(components::add));
@@ -244,13 +249,13 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         if (crsComponent.size() == 0) {
             return false;
         }
-        return ComponentVersionConfiguration.getInstance().exists(new ComponentVersionKey(componentKey));
+        return componentVersionConfiguration.exists(new ComponentVersionKey(componentKey));
     }
 
     public void deleteAll() {
-        ComponentVersionConfiguration.getInstance().deleteAll();
-        ComponentAttributeConfiguration.getInstance().deleteAll();
-        ComponentParameterConfiguration.getInstance().deleteAll();
+        componentVersionConfiguration.deleteAll();
+        componentAttributeConfiguration.deleteAll();
+        componentParameterConfiguration.deleteAll();
         getMetadataRepository().executeUpdate("DELETE FROM " + getMetadataRepository().getTableNameByLabel("Components") + ";");
     }
 
@@ -280,12 +285,12 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
         if (exists(component.getMetadataKey())) {
             throw new MetadataAlreadyExistsException(component);
         }
-        ComponentVersionConfiguration.getInstance().insert(component.getVersion());
+        componentVersionConfiguration.insert(component.getVersion());
         for (ComponentParameter componentParameter : component.getParameters()) {
-            ComponentParameterConfiguration.getInstance().insert(componentParameter);
+            componentParameterConfiguration.insert(componentParameter);
         }
         for (ComponentAttribute componentAttribute : component.getAttributes()) {
-            ComponentAttributeConfiguration.getInstance().insert(componentAttribute);
+            componentAttributeConfiguration.insert(componentAttribute);
         }
 
         getInsertStatement(component).ifPresent(getMetadataRepository()::executeUpdate);
@@ -315,7 +320,7 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
     }
 
     public Optional<Component> get(String componentId) {
-        ComponentVersion componentVersion = ComponentVersionConfiguration.getInstance().getLatestVersionByComponentId(componentId).orElseThrow(
+        ComponentVersion componentVersion = componentVersionConfiguration.getLatestVersionByComponentId(componentId).orElseThrow(
                 () -> new RuntimeException(String.format("No versions found with the componentId %s ", componentId))
         );
         return get(componentVersion.getMetadataKey().getComponentKey());
@@ -329,13 +334,13 @@ public class ComponentConfiguration extends Configuration<Component, ComponentKe
             throw new MetadataDoesNotExistException(component.getMetadataKey());
         }
 
-        ComponentParameterConfiguration.getInstance().deleteByComponent(component.getMetadataKey());
-        ComponentAttributeConfiguration.getInstance().deleteByComponent(component.getMetadataKey());
+        componentParameterConfiguration.deleteByComponent(component.getMetadataKey());
+        componentAttributeConfiguration.deleteByComponent(component.getMetadataKey());
         for (ComponentParameter componentParameter : component.getParameters()) {
-            ComponentParameterConfiguration.getInstance().insert(componentParameter);
+            componentParameterConfiguration.insert(componentParameter);
         }
         for (ComponentAttribute componentAttribute : component.getAttributes()) {
-            ComponentAttributeConfiguration.getInstance().insert(componentAttribute);
+            componentAttributeConfiguration.insert(componentAttribute);
         }
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Components") +
                 " SET COMP_TYP_NM = " + SQLTools.getStringForSQL(component.getType()) + "," +

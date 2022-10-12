@@ -1,26 +1,28 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class CoalesceLookupTest {
 
+    @SpyBean
     private DataTypeHandler dataTypeHandlerSpy;
-
-    @BeforeEach
-    void setup() {
-        DataTypeHandler dataTypeHandler = DataTypeHandler.getInstance();
-        dataTypeHandlerSpy = spy(dataTypeHandler);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandlerSpy);
-    }
 
     @Test
     void test() {

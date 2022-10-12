@@ -46,10 +46,29 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return errMessages;
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataBadRequestException.class)
-    public void HandleBadRequest(HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.BAD_REQUEST.value());
+    @ResponseBody
+    public Map<String, String> handleBadRequest(DataBadRequestException e) {
+        Map<String, String> errMessages = new HashMap<>();
+        errMessages.put("error", "Bad data provided");
+        errMessages.put("errorCode", "400");
+        errMessages.put("message", e.getMessage());
+
+        return errMessages;
     }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(PasswordsMisMatchException.class)
+    @ResponseBody
+    public Map<String, String> handleBadRequest(PasswordsMisMatchException e) {
+        Map<String, String> errMessages = new HashMap<>();
+        errMessages.put("error", "Bad data provided");
+        errMessages.put("errorCode", "400");
+        errMessages.put("message", e.getMessage());
+
+        return errMessages;
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(SwaggerParserException.class)

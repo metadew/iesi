@@ -6,23 +6,21 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTraceService;
 import io.metadew.iesi.script.execution.ActionExecution;
+import org.springframework.stereotype.Service;
 
+@Service
 public class HttpConnectionService implements IHttpConnectionService {
 
-    private static HttpConnectionService INSTANCE;
+    private final ConnectionConfiguration connectionConfiguration;
+    private final HttpConnectionTraceService httpConnectionTraceService;
 
-    public synchronized static HttpConnectionService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpConnectionService();
-        }
-        return INSTANCE;
-    }
-
-    private HttpConnectionService() {
+    public HttpConnectionService(ConnectionConfiguration connectionConfiguration, HttpConnectionTraceService httpConnectionTraceService) {
+        this.connectionConfiguration = connectionConfiguration;
+        this.httpConnectionTraceService = httpConnectionTraceService;
     }
 
     public HttpConnection get(String httpConnectionReferenceName, ActionExecution actionExecution) {
-        Connection connection = ConnectionConfiguration.getInstance().get(new ConnectionKey(httpConnectionReferenceName, new EnvironmentKey(actionExecution.getExecutionControl().getEnvName())))
+        Connection connection = connectionConfiguration.get(new ConnectionKey(httpConnectionReferenceName, new EnvironmentKey(actionExecution.getExecutionControl().getEnvName())))
                 .orElseThrow(() -> new RuntimeException("Could not find definition for http connection " + httpConnectionReferenceName + " for environment " + actionExecution.getExecutionControl().getEnvName()));
         HttpConnectionDefinition httpConnectionDefinition = HttpConnectionDefinitionService.getInstance()
                 .convert(connection);
@@ -31,7 +29,7 @@ public class HttpConnectionService implements IHttpConnectionService {
 
     public HttpConnection getAndTrace(String httpConnectionReferenceName, ActionExecution actionExecution, String actionParameterName) {
         HttpConnection httpConnection = get(httpConnectionReferenceName, actionExecution);
-        HttpConnectionTraceService.getInstance().trace(httpConnection, actionExecution, actionParameterName);
+        httpConnectionTraceService.trace(httpConnection, actionExecution, actionParameterName);
         return httpConnection;
     }
 

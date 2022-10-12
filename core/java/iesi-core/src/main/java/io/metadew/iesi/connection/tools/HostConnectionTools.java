@@ -6,19 +6,29 @@ import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import org.apache.commons.lang3.SystemUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public final class HostConnectionTools {
 
-    public static boolean isOnLocalhost(String connectionName, String environmentName) {
+    private final ConnectionOperation connectionOperation;
+    private final ConnectionConfiguration connectionConfiguration;
+
+    public HostConnectionTools(ConnectionOperation connectionOperation, ConnectionConfiguration connectionConfiguration) {
+        this.connectionOperation = connectionOperation;
+        this.connectionConfiguration = connectionConfiguration;
+    }
+
+    public boolean isOnLocalhost(String connectionName, String environmentName) {
         if (connectionName.isEmpty()) {
             return true;
         } else if (connectionName.equalsIgnoreCase("localhost")) {
             return true;
         } else {
-            Connection connection = ConnectionConfiguration.getInstance()
+            Connection connection = connectionConfiguration
                     .get(new ConnectionKey(connectionName, environmentName))
                     .orElseThrow(() -> new RuntimeException(String.format("Unable to find connection %s", new ConnectionKey(connectionName, environmentName))));
-            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
+            HostConnection hostConnection = connectionOperation.getHostConnection(connection);
 
             return hostConnection.isOnLocalhost();
         }

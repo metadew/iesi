@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.data.text;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
@@ -27,8 +28,9 @@ public class XMLPathTraversal implements DataInstruction {
 
     private static final String TEXT = "text";
     private static final String XML_PATH = "xmlPath";
-
     private static final Pattern PATTERN = Pattern.compile("(?<" + TEXT + ">[\\s\\S]+),(?<" + XML_PATH + ">.+)");
+
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     public XMLPathTraversal(ExecutionRuntime executionRuntime) {
         this.executionRuntime = executionRuntime;
@@ -41,7 +43,7 @@ public class XMLPathTraversal implements DataInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        DataType resolvedParameters = DataTypeHandler.getInstance().resolve(parameters, executionRuntime);
+        DataType resolvedParameters = dataTypeHandler.resolve(parameters, executionRuntime);
         if (!(resolvedParameters instanceof Text)) {
             throw new IllegalArgumentException(MessageFormat.format("text cannot be a type of", resolvedParameters.getClass()));
         }

@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.user.UserKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -18,7 +19,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
+@Service
 public class TeamListResultSetExtractor {
+
+    private final SecurityGroupConfiguration securityGroupConfiguration;
+    private final UserConfiguration userConfiguration;
+
+    public TeamListResultSetExtractor(SecurityGroupConfiguration securityGroupConfiguration, UserConfiguration userConfiguration) {
+        this.securityGroupConfiguration = securityGroupConfiguration;
+        this.userConfiguration = userConfiguration;
+    }
 
     public List<Team> extractData(CachedRowSet rs) throws SQLException {
         Map<UUID, TeamBuilder> teamBuilderMap = new HashMap<>();
@@ -47,9 +57,8 @@ public class TeamListResultSetExtractor {
 
     private void addSecurityGroup(TeamBuilder teamBuilder, CachedRowSet cachedRowSet) throws SQLException {
         String securityGroupId = cachedRowSet.getString("security_group_id");
-        // security_group_teams.security_group_id as security_group_id
         if (securityGroupId != null) {
-            SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().get(new SecurityGroupKey(UUID.fromString(securityGroupId)))
+            SecurityGroup securityGroup = securityGroupConfiguration.get(new SecurityGroupKey(UUID.fromString(securityGroupId)))
                             .orElseThrow(() -> new MetadataDoesNotExistException(new SecurityGroupKey(UUID.fromString(securityGroupId))));
             teamBuilder.getSecurityGroups().add(securityGroup);
         }
@@ -77,7 +86,6 @@ public class TeamListResultSetExtractor {
     }
 
     private void addPrivilege(RoleListResultSetExtractor.RoleBuilder roleBuilder, CachedRowSet cachedRowSet) throws SQLException {
-        // privileges.id as privilege_id, privileges.role_id as privilege_role_id, privilege.privilege as privilege_privilege,
         if (cachedRowSet.getString("privilege_id") != null) {
             RoleListResultSetExtractor.PrivilegeBuilder privilegeBuilder = roleBuilder.getPrivilegeMap().get(cachedRowSet.getString("privilege_id"));
             if (privilegeBuilder == null) {
@@ -97,7 +105,7 @@ public class TeamListResultSetExtractor {
     private void addUserId(RoleListResultSetExtractor.RoleBuilder roleBuilder, CachedRowSet cachedRowSet) throws SQLException {
         String userId = cachedRowSet.getString("user_role_user_id");
         if (userId != null) {
-            User user = UserConfiguration.getInstance().get(new UserKey(UUID.fromString(userId)))
+            User user = userConfiguration.get(new UserKey(UUID.fromString(userId)))
                     .orElseThrow(() -> new MetadataDoesNotExistException(new UserKey(UUID.fromString(userId))));
             roleBuilder.getUsers().add(user);
         }

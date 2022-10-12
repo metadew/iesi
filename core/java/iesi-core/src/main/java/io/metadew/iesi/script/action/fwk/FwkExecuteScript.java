@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.fwk;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -15,6 +16,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,9 +31,11 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+@Log4j2
 public class FwkExecuteScript extends ActionTypeExecution {
 
+
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String SCRIPT_NAME_KEY = "script";
     private static final String SCRIPT_VERSION_KEY = "version";
     private static final String ENVIRONMENT_KEY = "environment";
@@ -39,13 +43,15 @@ public class FwkExecuteScript extends ActionTypeExecution {
     private static final String PARAM_FILE_KEY = "paramFile";
 
     private final Pattern keyValuePattern = Pattern.compile("\\s*(?<parameter>.+)\\s*=\\s*(?<value>.*)\\s*");
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public FwkExecuteScript(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
     }
 
-    public void prepareAction() { }
+    @Override
+    public void prepareAction() {
+        log.info("Preparing the execution of the action fwk.executeScript");
+    }
 
     private Optional<String> convertParameterList2(DataType parameterList) {
         if (parameterList == null) {
@@ -60,30 +66,41 @@ public class FwkExecuteScript extends ActionTypeExecution {
         }
     }
 
+    @Override
     protected boolean executeAction() throws ScriptExecutionBuildException, InterruptedException {
         // Check on Running a script in a loop
+        log.info("Converting the script name to execute");
         String scriptName = convertScriptName(getParameterResolvedValue(SCRIPT_NAME_KEY));
+        log.info("Converting the script version to execute");
         Optional<Long> scriptVersion = convertScriptVersion(getParameterResolvedValue(SCRIPT_VERSION_KEY));
-        Optional<String> environmentName = convertEnvironmentName(getParameterResolvedValue(ENVIRONMENT_KEY));
+        // Optional<String> environmentName = convertEnvironmentName(getParameterResolvedValue(ENVIRONMENT_KEY));
         // TODO: see setParameterList for nicer version
+        log.info("Converting the parameter list");
         Optional<String> parameterList = convertParameterList2(getParameterResolvedValue(PARAM_LIST_KEY));
+        log.info("Converting the parameter file name");
         Optional<String> parameterFileName = convertParameterFileName(getParameterResolvedValue(PARAM_FILE_KEY));
+        log.info("Checking if calling the script recursively");
         if (getScriptExecution().getScript().getName().equals(scriptName)) {
             throw new RuntimeException(MessageFormat.format("Not allowed to run the script recursively. Attempting to run {0} in {1}", scriptName, getScriptExecution().getScript().getName()));
         }
 
+        log.info("Building the script to execute");
         // Script script = ScriptConfiguration.getInstance().get(this.getScriptName().getValue());
         Script script = scriptVersion
-                .map(version -> ScriptConfiguration.getInstance()
+                .map(version -> SpringContext.getBean(ScriptConfiguration.class)
                         .get(new ScriptKey(IdentifierTools.getScriptIdentifier(scriptName), version))
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0}-{1} found", scriptName, version))))
-                .orElse(ScriptConfiguration.getInstance().getLatestVersion(scriptName)
+                .orElse(SpringContext.getBean(ScriptConfiguration.class).getLatestVersion(scriptName)
                         .orElseThrow(() -> new RuntimeException(MessageFormat.format("No implementation for script {0} found", scriptName))));
 
         Map<String, String> parameters = new HashMap<>();
+        log.info("Adding the parameters file to the parameters map");
         parameterFileName.ifPresent(parameterfilename -> parameters.putAll(parseParameterFiles(parameterfilename)));
+        log.info("Adding the parameters list to the parameters map");
         parameterList.ifPresent(parameterlist -> parameters.putAll(parseParameterRepresentation(parameterlist)));
 
+
+        log.info("Building the script execution for the child script");
         // TODO: impersonations?
         ScriptExecution subScriptScriptExecution = new ScriptExecutionBuilder(false, false)
                 .script(script)
@@ -95,8 +112,10 @@ public class FwkExecuteScript extends ActionTypeExecution {
                 .environment(getExecutionControl().getEnvName())
                 .build();
 
+        log.info("Executing the script");
         subScriptScriptExecution.execute();
 
+        log.info("Checking the execution results and statuses");
         if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.SUCCESS.value())) {
             getActionExecution().getActionControl().increaseSuccessCount();
         } else if (subScriptScriptExecution.getResult().equalsIgnoreCase(ScriptRunStatus.WARNING.value())) {
@@ -144,7 +163,7 @@ public class FwkExecuteScript extends ActionTypeExecution {
         Map<String, String> parameterMap = new HashMap<>();
         if (list instanceof Text) {
             Arrays.stream(list.toString().split(","))
-                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(DataTypeHandler.getInstance().resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
+                    .forEach(parameterEntry -> parameterMap.putAll(convertParameterEntry(SpringContext.getBean(DataTypeHandler.class).resolve(parameterEntry, getExecutionControl().getExecutionRuntime()))));
             return Optional.of(parameterMap);
         } else if (list instanceof Array) {
             for (DataType parameterEntry : ((Array) list).getList()) {
@@ -219,10 +238,10 @@ public class FwkExecuteScript extends ActionTypeExecution {
     }
 
     public Map<String, String> parseParameterFile(String file) {
+        log.info("File parameter to parse: " + file);
         Map<String, String> parameters = new HashMap<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
 
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
                 int delim = line.indexOf("=");
@@ -230,10 +249,10 @@ public class FwkExecuteScript extends ActionTypeExecution {
                     parameters.put(line.substring(0, delim), line.substring(delim + 1));
                 }
             }
-            br.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
+
         return parameters;
     }
 

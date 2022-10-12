@@ -5,11 +5,12 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -18,20 +19,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Component
 public class ActionParameterTraceConfiguration extends Configuration<ActionParameterTrace, ActionParameterTraceKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ActionParameterTraceConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataFieldService metadataFieldService;
 
-    public synchronized static ActionParameterTraceConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ActionParameterTraceConfiguration();
-        }
-        return INSTANCE;
+    public ActionParameterTraceConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, MetadataFieldService metadataFieldService) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataFieldService = metadataFieldService;
     }
 
-    private ActionParameterTraceConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getTraceMetadataRepository());
+
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getTraceMetadataRepository());
     }
 
     @Override
@@ -118,7 +121,7 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
                 SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getActionId()) + "," +
-                SQLTools.getStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ActionParameterTraces", "ACTION_PAR_NM", actionParameterTrace.getMetadataKey().getName())) + "," +
+                SQLTools.getStringForSQL(metadataFieldService.truncateAccordingToConfiguration("ActionParameterTraces", "ACTION_PAR_NM", actionParameterTrace.getMetadataKey().getName())) + "," +
                 SQLTools.getStringForSQLClob(actionParameterTrace.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
@@ -141,6 +144,6 @@ public class ActionParameterTraceConfiguration extends Configuration<ActionParam
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getProcessId()) +
                 " AND ACTION_ID = " + SQLTools.getStringForSQL(actionParameterTrace.getMetadataKey().getActionId()) +
-                " AND ACTION_PAR_NM = " + SQLTools.getStringForSQL(MetadataFieldService.getInstance().truncateAccordingToConfiguration("ActionParameterTraces", "ACTION_PAR_NM", actionParameterTrace.getMetadataKey().getName())) + ";";
+                " AND ACTION_PAR_NM = " + SQLTools.getStringForSQL(metadataFieldService.truncateAccordingToConfiguration("ActionParameterTraces", "ACTION_PAR_NM", actionParameterTrace.getMetadataKey().getName())) + ";";
     }
 }

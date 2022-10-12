@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
@@ -38,6 +37,17 @@ import java.util.stream.Stream;
 @Log4j2
 @ConditionalOnWebApplication
 public class ExecutionRequestDtoRepository extends PaginatedRepository implements IExecutionRequestDtoRepository {
+
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    @Autowired
+    ExecutionRequestDtoRepository(MetadataTablesConfiguration metadataTablesConfiguration, MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+    }
+
+
 
     private String getFetchAllQuery(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
         return "select execution_requests.REQUEST_ID as exe_req_id, execution_requests.REQUEST_TMS as exe_req_tms, execution_requests.REQUEST_NM as exe_req_name, " +
@@ -59,27 +69,27 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "from " +
                 // base table
                 " (" + getBaseQuery(authentication, pageable, executionRequestFilters) + ") base_execution_requests " +
-                "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "inner join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
                 "on base_execution_requests.REQUEST_ID = execution_requests.REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
                 "on base_execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("NonAuthenticatedExecutionRequests").getName() + " non_auth_execution_requests " +
                 "on base_execution_requests.REQUEST_ID = non_auth_execution_requests.REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on base_execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
                 "on base_execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " script_execution_request_imps " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequestImpersonations").getName() + " script_execution_request_imps " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_imps.SCRIPT_EXEC_REQ_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_execution_request_pars " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_execution_request_pars " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_execution_request_pars.SCRIPT_EXEC_REQ_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getOrderByClause(pageable) +
                 ";";
@@ -87,18 +97,18 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
 
     private String getBaseQuery(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
         return "SELECT distinct execution_requests.REQUEST_ID, execution_requests.REQUEST_TMS, name_script_execution_requests.SCRPT_NAME, name_script_execution_requests.SCRPT_VRS " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
                 "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
                 getOrderByClause(pageable) +
@@ -176,32 +186,24 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
     private long getRowSize(Authentication authentication, List<ExecutionRequestFilter> executionRequestFilters) throws SQLException {
         String query = "select count(*) as row_count from (" +
                 "SELECT distinct execution_requests.REQUEST_ID " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
                 "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = file_script_execution_requests.SCRPT_REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptNameExecutionRequests").getName() + " name_script_execution_requests " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = name_script_execution_requests.SCRPT_REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
                 "on name_script_execution_requests.SCRPT_NAME = scripts.SCRIPT_NM " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " execution_request_labels " +
                 "on execution_requests.REQUEST_ID = execution_request_labels.REQUEST_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
                 ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
-    }
-
-    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-
-
-    @Autowired
-    ExecutionRequestDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
-        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
     @Override

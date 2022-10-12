@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.configuration.security;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.server.rest.configuration.IesiHttpServletRequestWrapper;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +19,7 @@ public class IesiCorsFilter extends OncePerRequestFilter {
 
     private final CorsConfigurationSource configSource;
     private CorsProcessor processor = new DefaultCorsProcessor();
-    private FrameworkCrypto frameworkCrypto = FrameworkCrypto.getInstance();
+    private FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
 
     public IesiCorsFilter(CorsConfigurationSource configSource) {
         Assert.notNull(configSource, "CorsConfigurationSource must not be null");

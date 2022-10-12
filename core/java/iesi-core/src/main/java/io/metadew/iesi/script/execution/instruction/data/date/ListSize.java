@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.data.date;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.array.Array;
@@ -16,6 +17,7 @@ import java.util.List;
 public class ListSize implements DataInstruction {
 
     private final ExecutionRuntime executionRuntime;
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     public ListSize(ExecutionRuntime executionRuntime) {
         this.executionRuntime = executionRuntime;
@@ -28,7 +30,7 @@ public class ListSize implements DataInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        Array array = getArray(DataTypeHandler.getInstance().resolve(parameters, executionRuntime));
+        Array array = getArray(dataTypeHandler.resolve(parameters, executionRuntime));
         List<DataType> list = array.getList();
         return Integer.toString(list.size());
     }

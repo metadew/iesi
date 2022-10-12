@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-@Service
+@Service("restSecurityGroupService")
 public class SecurityGroupService implements ISecurityGroupService {
 
     private final ISecurityGroupDtoRepository securityGroupDtoRepository;

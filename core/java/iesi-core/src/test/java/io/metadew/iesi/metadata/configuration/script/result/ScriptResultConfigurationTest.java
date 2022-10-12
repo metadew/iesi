@@ -1,12 +1,17 @@
 package io.metadew.iesi.metadata.configuration.script.result;
 
-import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -14,38 +19,18 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = ScriptResultConfiguration.class )
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ScriptResultConfigurationTest {
 
-    @BeforeAll
-    static void prepare() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
-
-    @BeforeEach
-    void setup() {
-    }
+    @Autowired
+    private ScriptResultConfiguration scriptResultConfiguration;
 
     @Test
     void scriptGetAllEmptyTest() {
-        assertThat(ScriptResultConfiguration.getInstance().getAll())
+        assertThat(scriptResultConfiguration.getAll())
                 .isEmpty();
     }
 
@@ -75,10 +60,10 @@ class ScriptResultConfigurationTest {
                 .scriptVersion(1L)
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptResultConfiguration.getInstance().insert(scriptResult1);
-        ScriptResultConfiguration.getInstance().insert(scriptResult2);
+        scriptResultConfiguration.insert(scriptResult1);
+        scriptResultConfiguration.insert(scriptResult2);
 
-        assertThat(ScriptResultConfiguration.getInstance().getAll())
+        assertThat(scriptResultConfiguration.getAll())
                 .containsOnly(scriptResult1, scriptResult2);
 
     }
@@ -98,9 +83,9 @@ class ScriptResultConfigurationTest {
                 .scriptVersion(1L)
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptResultConfiguration.getInstance().insert(scriptResult1);
+        scriptResultConfiguration.insert(scriptResult1);
 
-        assertThat(ScriptResultConfiguration.getInstance().get(scriptResultKey))
+        assertThat(scriptResultConfiguration.get(scriptResultKey))
                 .hasValue(scriptResult1);
     }
 
@@ -119,8 +104,8 @@ class ScriptResultConfigurationTest {
                 .scriptVersion(1L)
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptResultConfiguration.getInstance().insert(scriptResult1);
-        assertThat(ScriptResultConfiguration.getInstance().get(scriptResultKey))
+        scriptResultConfiguration.insert(scriptResult1);
+        assertThat(scriptResultConfiguration.get(scriptResultKey))
                 .hasValue(scriptResult1);
     }
 
@@ -151,16 +136,16 @@ class ScriptResultConfigurationTest {
                 .scriptVersion(1L)
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptResultConfiguration.getInstance().insert(scriptResult1);
+        scriptResultConfiguration.insert(scriptResult1);
 
-        ScriptResultConfiguration.getInstance().insert(scriptResult2);
+        scriptResultConfiguration.insert(scriptResult2);
 
-        assertThat(ScriptResultConfiguration.getInstance().getAll())
+        assertThat(scriptResultConfiguration.getAll())
                 .containsOnly(scriptResult1, scriptResult2);
 
-        ScriptResultConfiguration.getInstance().delete(scriptResultKey);
+        scriptResultConfiguration.delete(scriptResultKey);
 
-        assertThat(ScriptResultConfiguration.getInstance().getAll())
+        assertThat(scriptResultConfiguration.getAll())
                 .containsOnly(scriptResult2);
     }
 
@@ -178,18 +163,18 @@ class ScriptResultConfigurationTest {
                 .scriptVersion(1L)
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptResultConfiguration.getInstance().insert(scriptResult1);
+        scriptResultConfiguration.insert(scriptResult1);
 
-        assertThat(ScriptResultConfiguration.getInstance().get(scriptResultKey))
+        assertThat(scriptResultConfiguration.get(scriptResultKey))
                 .hasValue(scriptResult1);
 
         LocalDateTime endTimestamp = LocalDateTime.now().plus(1, ChronoUnit.SECONDS);
         scriptResult1.setStatus(ScriptRunStatus.SUCCESS);
         scriptResult1.setEndTimestamp(endTimestamp);
 
-        ScriptResultConfiguration.getInstance().update(scriptResult1);
+        scriptResultConfiguration.update(scriptResult1);
 
-        assertThat(ScriptResultConfiguration.getInstance().get(scriptResultKey))
+        assertThat(scriptResultConfiguration.get(scriptResultKey))
                 .hasValue(scriptResult1);
     }
 

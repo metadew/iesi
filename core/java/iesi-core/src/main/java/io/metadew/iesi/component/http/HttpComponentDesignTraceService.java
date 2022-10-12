@@ -4,21 +4,21 @@ import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTra
 import io.metadew.iesi.metadata.definition.component.trace.design.ComponentDesignTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.design.http.*;
 import io.metadew.iesi.script.execution.ActionExecution;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Service
 public class HttpComponentDesignTraceService {
 
     private static final String COMPONENT_TYPE = "http.request";
-    private static HttpComponentDesignTraceService INSTANCE;
+    private final ComponentDesignTraceConfiguration componentDesignTraceConfiguration;
 
-    public synchronized static HttpComponentDesignTraceService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpComponentDesignTraceService();
-        }
-        return INSTANCE;
+    public HttpComponentDesignTraceService(ComponentDesignTraceConfiguration componentDesignTraceConfiguration) {
+        this.componentDesignTraceConfiguration = componentDesignTraceConfiguration;
     }
+
 
     public HttpComponentDesignTrace convert(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution,
                                             String actionParameterName) {
@@ -42,7 +42,7 @@ public class HttpComponentDesignTraceService {
 
     public void trace(HttpComponentDefinition httpComponentDefinition, ActionExecution actionExecution,
                                             String actionParameterName) {
-        ComponentDesignTraceConfiguration.getInstance().insert(convert(httpComponentDefinition, actionExecution, actionParameterName));
+        componentDesignTraceConfiguration.insert(convert(httpComponentDefinition, actionExecution, actionParameterName));
     }
 
     private HttpComponentHeaderDesignTrace convertHeaders(HttpHeaderDefinition httpHeaderDefinition, UUID id) {

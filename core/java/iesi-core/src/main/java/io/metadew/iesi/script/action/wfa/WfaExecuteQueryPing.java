@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.wfa;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.datatypes.DataType;
@@ -36,6 +37,9 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
     private static final int DEFAULT_TIMEOUT_INTERVAL = 60;
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
 
     public WfaExecuteQueryPing(ExecutionControl executionControl, ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -79,11 +83,11 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
         int timeoutInterval = convertTimeoutInterval(getParameterResolvedValue(TIMEOUT_KEY));
         int waitInterval = convertWaitInterval(getParameterResolvedValue(WAIT_KEY));
 
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = connectionConfiguration
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
 
-        Database database = DatabaseHandler.getInstance().getDatabase(connection);
+        Database database = databaseHandler.getDatabase(connection);
 
         // Run the action
         boolean done;
@@ -171,7 +175,7 @@ public class WfaExecuteQueryPing extends ActionTypeExecution {
     }
 
     private boolean doneWaiting(Database database, String query, boolean hasResult, boolean setRuntimeVariables) throws SQLException {
-        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
+        CachedRowSet crs = databaseHandler.executeQuery(database, query);
         if (crs.size() > 0 && hasResult) {
             this.setRuntimeVariable(crs, setRuntimeVariables);
             return true;

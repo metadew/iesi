@@ -11,6 +11,10 @@ iesi:
       timeout: 30
   home: '.'
   security:
+    keystore:
+      type: ''
+      location: ''
+      password: ''
     enabled: true
     jwt:
       secret: secret

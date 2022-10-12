@@ -12,6 +12,10 @@ iesi:
   home: '/home/hkhattabi/metadew/iesi/core/java/iesi-core'
   security:
     enabled: true
+    keystore:
+      type: ''
+      location: ''
+      password: ''
     jwt:
       secret: secret
       expiry-date: 10

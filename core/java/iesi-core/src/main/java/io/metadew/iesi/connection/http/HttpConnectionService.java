@@ -1,7 +1,5 @@
 package io.metadew.iesi.connection.http;
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -10,25 +8,26 @@ import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTrac
 import io.metadew.iesi.script.execution.ActionExecution;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 @Service
 public class HttpConnectionService implements IHttpConnectionService {
 
     private final ConnectionConfiguration connectionConfiguration;
     private final HttpConnectionTraceService httpConnectionTraceService;
 
-    public HttpConnectionService(ConnectionConfiguration connectionConfiguration, HttpConnectionTraceService httpConnectionTraceService) {
+    private final HttpConnectionDefinitionService httpConnectionDefinitionService;
+
+    public HttpConnectionService(ConnectionConfiguration connectionConfiguration,
+                                 HttpConnectionTraceService httpConnectionTraceService,
+                                 HttpConnectionDefinitionService httpConnectionDefinitionService) {
         this.connectionConfiguration = connectionConfiguration;
         this.httpConnectionTraceService = httpConnectionTraceService;
+        this.httpConnectionDefinitionService = httpConnectionDefinitionService;
     }
 
     public HttpConnection get(String httpConnectionReferenceName, ActionExecution actionExecution) {
         Connection connection = connectionConfiguration.get(new ConnectionKey(httpConnectionReferenceName, new EnvironmentKey(actionExecution.getExecutionControl().getEnvName())))
                 .orElseThrow(() -> new RuntimeException("Could not find definition for http connection " + httpConnectionReferenceName + " for environment " + actionExecution.getExecutionControl().getEnvName()));
-        HttpConnectionDefinition httpConnectionDefinition = HttpConnectionDefinitionService.getInstance()
+        HttpConnectionDefinition httpConnectionDefinition =  httpConnectionDefinitionService
                 .convert(connection);
         return convert(httpConnectionDefinition);
     }
@@ -48,20 +47,6 @@ public class HttpConnectionService implements IHttpConnectionService {
     }
 
     @Override
-    public File getCertificate(HttpConnection httpConnection) {
-        String certificateReferenceName = httpConnection.getCertificate();
-
-        Path path = Paths.get(String.format("%s/%s", SpringContext.getBean(Configuration.class).getProperty("home"), certificateReferenceName));
-        File file = path.toFile();
-
-        if (!file.exists()) {
-            throw new RuntimeException("The certificate name is not recognized by the IESI server");
-        }
-
-        return file;
-    }
-
-    @Override
     public HttpConnection convert(HttpConnectionDefinition httpConnectionDefinition) {
         return new HttpConnection(
                 httpConnectionDefinition.getReferenceName(),
@@ -70,8 +55,7 @@ public class HttpConnectionService implements IHttpConnectionService {
                 httpConnectionDefinition.getHost(),
                 httpConnectionDefinition.getBaseUrl(),
                 httpConnectionDefinition.getPort(),
-                httpConnectionDefinition.isTls(),
-                httpConnectionDefinition.getCertificate());
+                httpConnectionDefinition.isTls());
     }
 
 }

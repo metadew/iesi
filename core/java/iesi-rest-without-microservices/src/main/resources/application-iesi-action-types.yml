@@ -828,6 +828,13 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
+          useCertificates:
+            description: Allow IESI to use available certificate on the keystore
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
         status: stable
       mod.soapui:
         className: io.metadew.iesi.script.action.mod.ModSoapui

@@ -4,6 +4,7 @@ import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
 import io.metadew.iesi.component.http.*;
 import io.metadew.iesi.connection.http.HttpConnection;
+import io.metadew.iesi.connection.http.HttpConnectionDefinitionService;
 import io.metadew.iesi.connection.http.HttpConnectionService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -60,7 +61,8 @@ import static org.mockito.Mockito.*;
         HttpConnectionService.class, HttpComponentTraceService.class, HttpConnectionTraceService.class, HttpComponentDefinitionService.class, HttpQueryParameterService.class,
         DataTypeHandler.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class, ComponentTraceConfiguration.class,
         ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, DataTypeHandler.class, MetadataFieldService.class, ConnectionConfiguration.class,
-        ConnectionParameterConfiguration.class, HttpHeaderService.class, ActionTypeParameterConfiguration.class, MetadataActionTypesConfiguration.class, ActionPerformanceLogger.class, ActionPerformanceConfiguration.class})
+        ConnectionParameterConfiguration.class, HttpHeaderService.class, ActionTypeParameterConfiguration.class, MetadataActionTypesConfiguration.class, ActionPerformanceLogger.class, ActionPerformanceConfiguration.class,
+        HttpComponentService.class, HttpConnectionDefinitionService.class })
 @ContextConfiguration(classes = TestConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")

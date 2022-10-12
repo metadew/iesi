@@ -12,5 +12,4 @@ public class HttpConnectionDefinition {
     private final String baseUrl;
     private final Integer port;
     private final boolean tls;
-    private final String certificate;
 }

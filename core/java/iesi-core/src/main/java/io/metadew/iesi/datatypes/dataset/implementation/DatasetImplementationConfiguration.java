@@ -215,7 +215,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
 
     @PostConstruct
-    private void postConstruct() {
+    public void postConstruct() {
         setMetadataRepository(metadataRepositoryConfiguration.getDataMetadataRepository());
     }
 

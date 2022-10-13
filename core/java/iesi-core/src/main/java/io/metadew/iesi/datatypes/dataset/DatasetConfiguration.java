@@ -247,7 +247,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
                 SQLTools.getStringForSQL(dataset.getSecurityGroupName()),
                 SQLTools.getStringForSQL(dataset.getName())));
         dataset.getDatasetImplementations()
-                .forEach(datasetImplementation -> datasetImplementationConfiguration.insert(datasetImplementation));
+                .forEach(datasetImplementationConfiguration::insert);
     }
 
     @Override

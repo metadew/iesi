@@ -66,18 +66,13 @@ public abstract class ScriptExecution {
 					continue;
 				}
 
-//				if (action.getType().equalsIgnoreCase("fwk.route")) {
-//					executeFwkRouteAction(actionExecution);
-//					break;
-//				}
-
 				if (action.getType().equalsIgnoreCase("fwk.startIteration")) {
 					// Do not change - work in progress
 				}
 
 				IterationExecution iterationExecution = new IterationExecution();
 				if (action.getIteration() != null && !action.getIteration().trim().isEmpty()) {
-					iterationExecution.initialize(executionControl, actionExecution, action.getIteration());
+					iterationExecution.initialize(executionControl, action.getIteration());
 				}
 
 				while (iterationExecution.hasNext(actionExecution)) {

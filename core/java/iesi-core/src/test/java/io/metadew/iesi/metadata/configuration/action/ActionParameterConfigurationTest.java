@@ -7,13 +7,14 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
@@ -22,21 +23,20 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = ActionParameterConfiguration.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes =  { TestConfiguration.class, ActionParameterConfiguration.class })
 @ActiveProfiles("test")
 class ActionParameterConfigurationTest {
 
-    private ActionParameter actionParameter1;
-    private DesignMetadataRepository designMetadataRepository;
-    private ActionParameter actionParameter2;
+    ActionParameter actionParameter1;
+    DesignMetadataRepository designMetadataRepository;
+    ActionParameter actionParameter2;
 
     @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
-    private ActionParameterConfiguration actionParameterConfiguration;
+    ActionParameterConfiguration actionParameterConfiguration;
 
     @BeforeEach
     void setup() {
@@ -46,6 +46,13 @@ class ActionParameterConfigurationTest {
         actionParameter2 = new ActionParameterBuilder("1", 1, "1", "secondParameter")
                 .value("parameter value")
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

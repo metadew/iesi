@@ -5,28 +5,38 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.metadata.definition.script.trace.ScriptTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptTraceKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = { ScriptTraceConfiguration.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ScriptTraceConfiguration.class })
 @ActiveProfiles("test")
 class ScriptTraceConfigurationTest {
 
     @Autowired
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
     private ScriptTraceConfiguration scriptTraceConfiguration;
+
+    @BeforeEach
+    void setup() {
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
+    }
 
     @Test
     void scriptGetAllEmptyTest() {

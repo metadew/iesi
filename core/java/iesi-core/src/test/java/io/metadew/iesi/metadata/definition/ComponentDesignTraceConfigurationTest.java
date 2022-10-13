@@ -5,13 +5,15 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.component.trace.design.ComponentDesignTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.design.http.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,22 +21,21 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = ComponentDesignTraceConfiguration.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ComponentDesignTraceConfiguration.class })
 @ActiveProfiles("test")
 class ComponentDesignTraceConfigurationTest {
 
-    private HttpComponentDesignTrace httpComponentDesignTrace;
-    private HttpComponentDesignTrace httpComponentDesignTrace2;
-    private UUID componentUuid;
-    private UUID componentUuid2;
+    HttpComponentDesignTrace httpComponentDesignTrace;
+    HttpComponentDesignTrace httpComponentDesignTrace2;
+    UUID componentUuid;
+    UUID componentUuid2;
 
     @Autowired
-    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
-    private ComponentDesignTraceConfiguration componentDesignTraceConfiguration;
+    ComponentDesignTraceConfiguration componentDesignTraceConfiguration;
 
     @BeforeEach
     void initializeTemplates() {
@@ -130,6 +131,13 @@ class ComponentDesignTraceConfigurationTest {
                 .httpComponentHeaderDesigns(httpComponentHeaderDesigns2)
                 .httpComponentQueryDesigns(httpComponentQueryDesigns2)
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

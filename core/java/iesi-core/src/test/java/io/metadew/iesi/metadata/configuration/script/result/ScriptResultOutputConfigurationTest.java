@@ -6,24 +6,37 @@ import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = { ScriptResultOutputConfiguration.class } )
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ScriptResultOutputConfiguration.class })
 @ActiveProfiles("test")
 class ScriptResultOutputConfigurationTest {
 
     @Autowired
-    private ScriptResultOutputConfiguration scriptResultOutputConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    ScriptResultOutputConfiguration scriptResultOutputConfiguration;
+
+    @BeforeEach
+    void setup() {
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
+    }
 
     @Test
     void scriptGetAllEmptyTest() {

@@ -1,26 +1,21 @@
 package io.metadew.iesi.metadata.configuration.securitygroup;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.TestConfiguration;
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,24 +26,23 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = { SecurityGroupConfiguration.class } )
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, SecurityGroupConfiguration.class })
 @ActiveProfiles("test")
 @Log4j2
 class SecurityGroupConfigurationTest {
 
-    private SecurityGroupKey securityGroupKey1;
-    private SecurityGroup securityGroup1;
-    private SecurityGroupKey securityGroupKey2;
-    private SecurityGroup securityGroup2;
-
-
-    private TeamKey teamKey1;
-    private TeamKey teamKey2;
+    SecurityGroupKey securityGroupKey1;
+    SecurityGroup securityGroup1;
+    SecurityGroupKey securityGroupKey2;
+    SecurityGroup securityGroup2;
+    TeamKey teamKey1;
+    TeamKey teamKey2;
 
     @Autowired
-    private SecurityGroupConfiguration securityGroupConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    SecurityGroupConfiguration securityGroupConfiguration;
 
     @BeforeEach
     void setup() {
@@ -69,6 +63,13 @@ class SecurityGroupConfigurationTest {
                 .teamKeys(Stream.of(teamKey1, teamKey2).collect(Collectors.toSet()))
                 .securedObjects(new HashSet<>())
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

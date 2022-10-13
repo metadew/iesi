@@ -6,33 +6,33 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.script.ScriptParameter;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = { ScriptParameterConfiguration.class, })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ScriptParameterConfiguration.class })
 @ActiveProfiles("test")
 class ScriptParameterConfigurationTest {
-    private DesignMetadataRepository designMetadataRepository;
-    private ScriptParameter scriptParameter1;
-    private ScriptParameter scriptParameter2;
+    ScriptParameter scriptParameter1;
+    ScriptParameter scriptParameter2;
 
     @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     @Autowired
-    private ScriptParameterConfiguration scriptParameterConfiguration;
+    ScriptParameterConfiguration scriptParameterConfiguration;
 
 
     @BeforeEach
@@ -43,6 +43,13 @@ class ScriptParameterConfigurationTest {
         scriptParameter2 = new ScriptParameterBuilder("1", 1, "parameter2")
                 .value("parameter value")
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

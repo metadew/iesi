@@ -1,32 +1,46 @@
 package io.metadew.iesi.metadata.configuration.script.design;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.script.design.ScriptDesignTrace;
 import io.metadew.iesi.metadata.definition.script.design.key.ScriptDesignTraceKey;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = { ScriptDesignTraceConfiguration.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ScriptDesignTraceConfiguration.class })
 @ActiveProfiles("test")
 class ScriptDesignTraceConfigurationTest {
 
     @Autowired
-    private ScriptDesignTraceConfiguration scriptDesignTraceConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    ScriptDesignTraceConfiguration scriptDesignTraceConfiguration;
 
     @Test
     void scriptGetAllEmptyTest() {
         assertThat(scriptDesignTraceConfiguration.getAll())
                 .isEmpty();
+    }
+
+    @BeforeEach
+    void setup() {
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

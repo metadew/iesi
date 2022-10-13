@@ -1,15 +1,20 @@
 package io.metadew.iesi.metadata.configuration.audit;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
 import io.metadew.iesi.metadata.definition.audit.key.ScriptDesignAuditKey;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -18,14 +23,26 @@ import java.util.UUID;
 import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = ScriptDesignAuditConfiguration.class )
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ScriptDesignAuditConfiguration.class })
 @ActiveProfiles("test")
 class ScriptDesignAuditConfigurationTest {
 
+
     @Autowired
-    private ScriptDesignAuditConfiguration scriptDesignAuditConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    ScriptDesignAuditConfiguration scriptDesignAuditConfiguration;
+
+    @BeforeEach
+    void setup() {
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
+    }
 
     @Test
     void scriptGetAllEmptyTest() throws Exception {

@@ -12,13 +12,16 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -28,24 +31,21 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = { TemplateConfiguration.class, MatcherConfiguration.class, MatcherValueConfiguration.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, TemplateConfiguration.class, MatcherConfiguration.class, MatcherValueConfiguration.class })
 @ActiveProfiles("test")
 class TemplateConfigurationTest {
 
-    private Template template1;
-    private UUID templateUuid1;
+    Template template1;
+    UUID templateUuid1;
 
-    private Template template2;
-    private UUID templateUuid2;
-
-
-    @Autowired
-    private TemplateConfiguration templateConfiguration;
+    Template template2;
+    UUID templateUuid2;
 
     @Autowired
-    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    TemplateConfiguration templateConfiguration;
 
     @BeforeEach
     void initializeTemplates() {
@@ -116,6 +116,13 @@ class TemplateConfigurationTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

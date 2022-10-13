@@ -1,15 +1,18 @@
 package io.metadew.iesi.metadata.configuration.user;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,28 +22,26 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = { UserConfiguration.class, TeamListResultSetExtractor.class, RoleListResultSetExtractor.class, SecurityGroupConfiguration.class, })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, UserConfiguration.class, TeamListResultSetExtractor.class, RoleListResultSetExtractor.class, SecurityGroupConfiguration.class })
 @ActiveProfiles("test")
 class UserConfigurationTest {
 
-    private UUID uuid1;
-    private User user1;
-    private UUID uuid2;
-    private User user2;
-
-
-    private Role role1;
-    private Role role2;
-
-    private Privilege privilege1;
-    private Privilege privilege2;
-    private Privilege privilege3;
-    private Privilege privilege4;
+    UUID uuid1;
+    User user1;
+    UUID uuid2;
+    User user2;
+    Role role1;
+    Role role2;
+    Privilege privilege1;
+    Privilege privilege2;
+    Privilege privilege3;
+    Privilege privilege4;
 
     @Autowired
-    private UserConfiguration userConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    UserConfiguration userConfiguration;
 
     @BeforeEach
     void setup() {
@@ -111,6 +112,13 @@ class UserConfigurationTest {
                 .password("password3")
                 .roleKeys(Stream.of(role1.getMetadataKey()).collect(Collectors.toSet()))
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

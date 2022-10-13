@@ -5,13 +5,16 @@ import io.metadew.iesi.common.configuration.metadata.repository.MetadataReposito
 import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTrace;
 import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTraceKey;
 import io.metadew.iesi.metadata.definition.connection.trace.http.HttpConnectionTrace;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -19,22 +22,21 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = ConnectionTraceConfiguration.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ConnectionTraceConfiguration.class})
 @ActiveProfiles("test")
 class ConnectionTraceConfigurationTest {
 
-    private ConnectionTrace connectionTrace1;
-    private ConnectionTraceKey connectionTraceKey1;
-    private ConnectionTrace connectionTrace2;
-    private ConnectionTraceKey connectionTraceKey2;
+    ConnectionTrace connectionTrace1;
+    ConnectionTraceKey connectionTraceKey1;
+    ConnectionTrace connectionTrace2;
+    ConnectionTraceKey connectionTraceKey2;
 
     @Autowired
-    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
-    private ConnectionTraceConfiguration connectionTraceConfiguration;
+    ConnectionTraceConfiguration connectionTraceConfiguration;
 
     @BeforeEach
     void initializeTemplates() {
@@ -66,6 +68,13 @@ class ConnectionTraceConfigurationTest {
                 .baseUrl("baseUrl2")
                 .tls(true)
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
 

@@ -7,13 +7,16 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,27 +29,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = { ComponentConfiguration.class, ComponentParameterConfiguration.class, ComponentVersionConfiguration.class, ComponentAttributeConfiguration.class } )
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ComponentConfiguration.class, ComponentParameterConfiguration.class, ComponentVersionConfiguration.class, ComponentAttributeConfiguration.class })
 @ActiveProfiles("test")
 class ComponentConfigurationTest {
 
-    private Component component1;
-    private Component component2;
-    private Component component3;
+    Component component1;
+    Component component2;
+    Component component3;
 
     @Autowired
-    private static MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
     @Autowired
-    private ComponentConfiguration componentConfiguration;
+    ComponentConfiguration componentConfiguration;
 
     @Autowired
-    private ComponentVersionConfiguration componentVersionConfiguration;
+    ComponentVersionConfiguration componentVersionConfiguration;
 
     @Autowired
-    private ComponentAttributeConfiguration componentAttributeConfiguration;
+    ComponentAttributeConfiguration componentAttributeConfiguration;
 
     @Autowired
     private ComponentParameterConfiguration componentParameterConfiguration;
@@ -78,6 +80,12 @@ class ComponentConfigurationTest {
                 .name("comp2")
                 .description("test")
                 .build();
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

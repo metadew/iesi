@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionConfiguration;
 import io.metadew.iesi.metadata.configuration.action.ActionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -10,13 +11,16 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.repository.DesignMetadataRepository;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,28 +34,29 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = { ScriptConfiguration.class, ScriptVersionConfiguration.class, ScriptParameterConfiguration.class, ScriptLabelConfiguration.class,
-        ActionConfiguration.class, ActionParameterConfiguration.class, })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ScriptConfiguration.class, ScriptVersionConfiguration.class, ScriptParameterConfiguration.class, ScriptLabelConfiguration.class,
+        ActionConfiguration.class, ActionParameterConfiguration.class })
 @ActiveProfiles("test")
 class ScriptConfigurationTest {
 
-    private Script script11;
-    private Script script12;
-    private Script script2;
+    Script script11;
+    Script script12;
+    Script script2;
 
     @Autowired
-    private ScriptConfiguration scriptConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    ScriptConfiguration scriptConfiguration;
 
     @Autowired
-    private ActionConfiguration actionConfiguration;
+    ActionConfiguration actionConfiguration;
 
     @Autowired
-    private ScriptVersionConfiguration scriptVersionConfiguration;
+    ScriptVersionConfiguration scriptVersionConfiguration;
 
     @Autowired
-    private ScriptParameterConfiguration scriptParameterConfiguration;
+    ScriptParameterConfiguration scriptParameterConfiguration;
 
     @BeforeEach
     void setup() {
@@ -86,6 +91,13 @@ class ScriptConfigurationTest {
                 .numberOfActions(3)
                 .numberOfParameters(3)
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

@@ -1,18 +1,17 @@
 package io.metadew.iesi.metadata.configuration.user;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.TestConfiguration;
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -23,28 +22,27 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = { RoleConfiguration.class, RoleListResultSetExtractor.class, UserConfiguration.class, TeamListResultSetExtractor.class,
-        SecurityGroupConfiguration.class})
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, RoleConfiguration.class, RoleListResultSetExtractor.class, UserConfiguration.class, TeamListResultSetExtractor.class,
+        SecurityGroupConfiguration.class })
 @ActiveProfiles("test")
 class RoleConfigurationTest {
 
-    private TeamKey teamKey1;
-    private TeamKey teamKey2;
-
-    private RoleKey roleKey1;
-    private Role role1;
-    private RoleKey roleKey2;
-    private Role role2;
-
-    private Privilege privilege1;
-    private Privilege privilege2;
-    private Privilege privilege3;
-    private Privilege privilege4;
+    TeamKey teamKey1;
+    TeamKey teamKey2;
+    RoleKey roleKey1;
+    Role role1;
+    RoleKey roleKey2;
+    Role role2;
+    Privilege privilege1;
+    Privilege privilege2;
+    Privilege privilege3;
+    Privilege privilege4;
 
     @Autowired
-    private RoleConfiguration roleConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    RoleConfiguration roleConfiguration;
 
     @BeforeEach
     void setup() {
@@ -95,6 +93,13 @@ class RoleConfigurationTest {
                 .users(new HashSet<>())
                 .privileges(Stream.of(privilege3, privilege4).collect(Collectors.toSet()))
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

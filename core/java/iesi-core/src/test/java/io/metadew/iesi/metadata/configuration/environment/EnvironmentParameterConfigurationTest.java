@@ -10,11 +10,13 @@ import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,21 +27,19 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = EnvironmentParameterConfiguration.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, EnvironmentParameterConfiguration.class })
 @ActiveProfiles("test")
 class EnvironmentParameterConfigurationTest {
 
-    private EnvironmentParameter environmentParameter11;
-    private ConnectivityMetadataRepository connectivityMetadataRepository;
-    private EnvironmentParameter environmentParameter12;
-    private EnvironmentParameter environmentParameter2;
+    EnvironmentParameter environmentParameter11;
+    EnvironmentParameter environmentParameter12;
+    EnvironmentParameter environmentParameter2;
 
     @Autowired
-    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     @Autowired
-    private EnvironmentParameterConfiguration environmentParameterConfiguration;
+    EnvironmentParameterConfiguration environmentParameterConfiguration;
 
 
     @BeforeEach
@@ -53,6 +53,13 @@ class EnvironmentParameterConfigurationTest {
         environmentParameter2 = new EnvironmentParameterBuilder("env2", "parameter name")
                 .value("parameter value")
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

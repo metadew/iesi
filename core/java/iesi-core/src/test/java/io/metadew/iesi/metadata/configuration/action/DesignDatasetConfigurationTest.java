@@ -1,19 +1,23 @@
 package io.metadew.iesi.metadata.configuration.action;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,25 +28,24 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = {  ActionConfiguration.class, ActionParameterConfiguration.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ActionConfiguration.class, ActionParameterConfiguration.class })
 @ActiveProfiles("test")
 class DesignDatasetConfigurationTest {
 
-    private ActionParameter actionParameter11;
-    private ActionParameter actionParameter12;
-    private Action action1;
-    private Action action2;
-    private ActionParameter actionParameter21;
-    private ActionParameter actionParameter22;
-
+    ActionParameter actionParameter11;
+    ActionParameter actionParameter12;
+    Action action1;
+    Action action2;
+    ActionParameter actionParameter21;
+    ActionParameter actionParameter22;
+    @Autowired
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    ActionConfiguration actionConfiguration;
 
     @Autowired
-    private ActionConfiguration actionConfiguration;
-
-    @Autowired
-    private ActionParameterConfiguration actionParameterConfiguration;
+    ActionParameterConfiguration actionParameterConfiguration;
 
     @BeforeEach
     void setup() {
@@ -56,6 +59,13 @@ class DesignDatasetConfigurationTest {
         actionParameter12 = action1.getParameters().get(1);
         actionParameter21 = action2.getParameters().get(0);
         actionParameter22 = action2.getParameters().get(1);
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

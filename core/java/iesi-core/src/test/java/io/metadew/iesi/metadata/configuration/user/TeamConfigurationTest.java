@@ -1,16 +1,18 @@
 package io.metadew.iesi.metadata.configuration.user;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -21,33 +23,31 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = { TeamConfiguration.class, RoleConfiguration.class, RoleListResultSetExtractor.class, UserConfiguration.class, TeamListResultSetExtractor.class,
-        SecurityGroupConfiguration.class})
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, TeamConfiguration.class, RoleConfiguration.class, RoleListResultSetExtractor.class, UserConfiguration.class, TeamListResultSetExtractor.class,
+        SecurityGroupConfiguration.class })
 @ActiveProfiles("test")
 class TeamConfigurationTest {
 
-    private TeamKey teamKey1;
-    private Team team1;
-    private TeamKey teamKey2;
-    private Team team2;
-
-    private SecurityGroupKey securityGroupKey1;
-    private SecurityGroupKey securityGroupKey2;
-
-    private RoleKey roleKey1;
-    private Role role1;
-    private RoleKey roleKey2;
-    private Role role2;
-
-    private Privilege privilege1;
-    private Privilege privilege2;
-    private Privilege privilege3;
-    private Privilege privilege4;
+    TeamKey teamKey1;
+    Team team1;
+    TeamKey teamKey2;
+    Team team2;
+    SecurityGroupKey securityGroupKey1;
+    SecurityGroupKey securityGroupKey2;
+    RoleKey roleKey1;
+    Role role1;
+    RoleKey roleKey2;
+    Role role2;
+    Privilege privilege1;
+    Privilege privilege2;
+    Privilege privilege3;
+    Privilege privilege4;
 
     @Autowired
-    private TeamConfiguration teamConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    TeamConfiguration teamConfiguration;
 
     @BeforeEach
     void setup() {
@@ -112,6 +112,13 @@ class TeamConfigurationTest {
                 .roles(Stream.of(role2).collect(Collectors.toSet()))
                 .securityGroups(new HashSet<>())
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

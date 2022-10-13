@@ -1,17 +1,21 @@
 package io.metadew.iesi.metadata.configuration.connection;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -21,21 +25,21 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = { ConnectionConfiguration.class, ConnectionParameterConfiguration.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ConnectionConfiguration.class, ConnectionParameterConfiguration.class })
 @ActiveProfiles("test")
 class ConnectionConfigurationTest {
 
-    private Connection connection1;
-    private Connection connection2;
-    private Connection connection3;
+    Connection connection1;
+    Connection connection2;
+    Connection connection3;
 
     @Autowired
-    private ConnectionConfiguration connectionConfiguration;
-
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     @Autowired
-    private ConnectionParameterConfiguration connectionParameterConfiguration;
+    ConnectionConfiguration connectionConfiguration;
+    @Autowired
+    ConnectionParameterConfiguration connectionParameterConfiguration;
 
     @BeforeEach
     void setup() {
@@ -58,7 +62,15 @@ class ConnectionConfigurationTest {
                 .securityGroupKey(securityGroupKey)
                 .numberOfParameters(2)
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
     }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
+    }
+
 
     @Test
     void connectionNotExistsTest() {

@@ -8,13 +8,16 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsExc
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.repository.ConnectivityMetadataRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
@@ -23,18 +26,18 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = { ConnectionParameterConfiguration.class  })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ConnectionParameterConfiguration.class })
 @ActiveProfiles("test")
 class ConnectionParameterConfigurationTest {
 
-    private ConnectionParameter connectionParameter11;
-    private ConnectivityMetadataRepository connectivityMetadataRepository;
-    private ConnectionParameter connectionParameter12;
-    private ConnectionParameter connectionParameter2;
-    private ConnectionParameter connectionParameter3;
+    ConnectionParameter connectionParameter11;
+    ConnectionParameter connectionParameter12;
+    ConnectionParameter connectionParameter2;
+    ConnectionParameter connectionParameter3;
 
+    @Autowired
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     @Autowired
     private ConnectionParameterConfiguration connectionParameterConfiguration;
 
@@ -52,6 +55,13 @@ class ConnectionParameterConfigurationTest {
         connectionParameter3 = new ConnectionParameterBuilder("connection2", "env2", "parameter name 1")
                 .value("parameter value")
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

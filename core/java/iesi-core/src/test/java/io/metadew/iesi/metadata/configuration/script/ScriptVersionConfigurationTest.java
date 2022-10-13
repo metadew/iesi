@@ -4,13 +4,16 @@ import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,19 +23,19 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-@SpringBootTest(classes = ScriptVersionConfiguration.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, ScriptVersionConfiguration.class })
 @ActiveProfiles("test")
 class ScriptVersionConfigurationTest {
 
-    private ScriptVersion scriptVersion1;
-    private ScriptVersion scriptVersion2;
-    private ScriptVersion scriptVersion3;
+    ScriptVersion scriptVersion1;
+    ScriptVersion scriptVersion2;
+    ScriptVersion scriptVersion3;
 
     @Autowired
-    private ScriptVersionConfiguration scriptVersionConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    ScriptVersionConfiguration scriptVersionConfiguration;
 
     @BeforeEach
     void setup() {
@@ -45,6 +48,13 @@ class ScriptVersionConfigurationTest {
         scriptVersion3 = new ScriptVersionBuilder("2", 2)
                 .description("version of script")
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
     }
 
     @Test

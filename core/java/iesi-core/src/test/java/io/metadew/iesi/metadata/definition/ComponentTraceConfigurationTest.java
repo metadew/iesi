@@ -1,20 +1,18 @@
 package io.metadew.iesi.metadata.definition;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.TestConfiguration;
-import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.component.trace.ComponentTraceConfiguration;
-import io.metadew.iesi.metadata.configuration.user.*;
-import io.metadew.iesi.metadata.definition.component.trace.*;
+import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.http.*;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,20 +20,20 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = ComponentTraceConfiguration.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class,  ComponentTraceConfiguration.class })
 @ActiveProfiles("test")
-public class ComponentTraceConfigurationTest {
+class ComponentTraceConfigurationTest {
 
-
-    private HttpComponentTrace httpComponentTrace;
-    private HttpComponentTrace httpComponentTrace2;
-    private UUID componentUuid;
-    private UUID componentUuid2;
+    HttpComponentTrace httpComponentTrace;
+    HttpComponentTrace httpComponentTrace2;
+    UUID componentUuid;
+    UUID componentUuid2;
 
     @Autowired
-    private ComponentTraceConfiguration componentTraceConfiguration;
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
+    ComponentTraceConfiguration componentTraceConfiguration;
 
     @BeforeEach
     void initializeTemplates() {
@@ -131,9 +129,14 @@ public class ComponentTraceConfigurationTest {
                 .httpComponentHeaderTrace(httpComponentHeaders2Trace)
                 .httpComponentQueries(httpComponentQuerys2Trace)
                 .build();
+
+        metadataRepositoryConfiguration.createAllTables();
     }
 
-    ;
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
+    }
 
     @Test
     void testGetAllEmpty() {

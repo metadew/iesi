@@ -6,6 +6,8 @@ import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
@@ -25,7 +27,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 @ExtendWith(SpringExtension.class)
@@ -52,128 +56,11 @@ class DatasetImplementationConfigurationTest {
         metadataRepositoryConfiguration.dropAllTables();
     }
 
-    @Test
-    void exists() {
-        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
 
-        datasetConfiguration.insert(new Dataset(
-                datasetKey,
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "dataset",
-                new HashSet<>()
-        ));
 
-        assertThat(datasetConfiguration.exists(datasetKey))
-                .isTrue();
-    }
 
-    @Test
-    void existsNotFound() {
-        datasetConfiguration.insert(new Dataset(
-                new DatasetKey(UUID.randomUUID()),
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "dataset",
-                new HashSet<>()
-        ));
 
-        assertThat(datasetConfiguration.exists(new DatasetKey(UUID.randomUUID())))
-                .isFalse();
-    }
 
-    @Test
-    void existsByName() {
-        datasetConfiguration.insert(new Dataset(
-                new DatasetKey(UUID.randomUUID()),
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "dataset",
-                new HashSet<>()
-        ));
-
-        assertThat(datasetConfiguration.existsByName("dataset"))
-                .isTrue();
-    }
-
-    @Test
-    void existsByNameNotFound() {
-        datasetConfiguration.insert(new Dataset(
-                new DatasetKey(UUID.randomUUID()),
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "dataset",
-                new HashSet<>()
-        ));
-
-        assertThat(datasetConfiguration.existsByName("dataset1"))
-                .isFalse();
-    }
-
-    @Test
-    void getById() {
-        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
-        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
-
-        Set<DatasetImplementation> datasetImplementations = Stream.of(new DatabaseDatasetImplementation(
-                datasetImplementationKey,
-                datasetKey,
-                "dataset",
-                new HashSet<>(),
-                new HashSet<>())).collect(Collectors.toSet());
-
-        Dataset dataset = new Dataset(
-                datasetKey,
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "dataset",
-                datasetImplementations
-        );
-
-        datasetConfiguration.insert(dataset);
-
-        assertThat(datasetConfiguration.get(datasetKey))
-                .hasValue(dataset);
-    }
-
-    @Test
-    void getByIdNoImplementations() {
-        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
-        Dataset dataset = new Dataset(
-                datasetKey,
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "dataset",
-                new HashSet<>()
-        );
-
-        datasetConfiguration.insert(dataset);
-
-        assertThat(datasetConfiguration.get(datasetKey))
-                .hasValue(dataset);
-    }
-
-    @Test
-    void getByIdNoLabels() {
-        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
-        Dataset dataset = new Dataset(
-                datasetKey,
-                new SecurityGroupKey(UUID.randomUUID()),
-                "PUBLIC",
-                "dataset",
-                new HashSet<>()
-        );
-
-        datasetConfiguration.insert(dataset);
-
-        assertThat(datasetConfiguration.get(datasetKey))
-                .hasValue(dataset);
-    }
-
-    @Test
-    void getByIdNoKeyValues() {
-
-    }
 
     @Test
     void existsByDatasetImplementationKey() {
@@ -250,7 +137,201 @@ class DatasetImplementationConfigurationTest {
                 datasetImplementations
         ));
 
-        assertThat(datasetImplementationConfiguration.exists("dataset", Collections.singletonList("label1")))
+        assertThat(datasetImplementationConfiguration.exists("dataset", singletonList("label1")))
                 .isTrue();
     }
+
+    @Test
+    void existsByDatasetNameNotFoundAndImplementationLabels() {
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+
+        Set<DatasetImplementationLabel> datasetImplementationLabels = Stream.of(new DatasetImplementationLabel(
+                new DatasetImplementationLabelKey(UUID.randomUUID()),
+                datasetImplementationKey,
+                "label1")).collect(Collectors.toSet());
+
+        DatasetImplementation datasetImplementation = new DatabaseDatasetImplementation(
+                datasetImplementationKey,
+                new DatasetKey(UUID.randomUUID()),
+                "dataset",
+                datasetImplementationLabels,
+                new HashSet<>());
+
+        datasetImplementationConfiguration.insert(datasetImplementation);
+
+        assertThat(datasetImplementationConfiguration.exists("dataset", singletonList("label1")))
+                .isFalse();
+
+    }
+    @Test
+    void existsByDatasetNameAndImplementationLabelsNotFound() {
+        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+
+        Set<DatasetImplementation> datasetImplementations = Stream.of(new DatabaseDatasetImplementation(
+                datasetImplementationKey,
+                datasetKey,
+                "dataset",
+                new HashSet<>(),
+                new HashSet<>())).collect(Collectors.toSet());
+
+        datasetConfiguration.insert(new Dataset(
+                datasetKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "dataset",
+                datasetImplementations
+        ));
+
+        assertThat(datasetImplementationConfiguration.exists("dataset", singletonList("label1")))
+                .isFalse();
+    }
+
+    @Test
+    void isEmpty() {
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+
+        DatasetImplementation datasetImplementation = new DatabaseDatasetImplementation(
+                datasetImplementationKey,
+                new DatasetKey(UUID.randomUUID()),
+                "dataset",
+                new HashSet<>(),
+                new HashSet<>());
+
+        datasetImplementationConfiguration.insert(datasetImplementation);
+
+        assertThat(datasetImplementationConfiguration.isEmpty(datasetImplementationKey))
+                .isTrue();
+    }
+
+    @Test
+    void isNotEmpty() {
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+
+        Set<DatabaseDatasetImplementationKeyValue> databaseDatasetImplementationKeyValues = Stream.of(new DatabaseDatasetImplementationKeyValue(
+                new DatabaseDatasetImplementationKeyValueKey(UUID.randomUUID()),
+                datasetImplementationKey,
+                "key",
+                "value"
+        )).collect(Collectors.toSet());
+
+        DatasetImplementation datasetImplementation = new DatabaseDatasetImplementation(
+                datasetImplementationKey,
+                new DatasetKey(UUID.randomUUID()),
+                "dataset",
+                new HashSet<>(),
+                databaseDatasetImplementationKeyValues);
+
+        datasetImplementationConfiguration.insert(datasetImplementation);
+
+        assertThat(datasetImplementationConfiguration.isEmpty(datasetImplementationKey))
+                .isFalse();
+    }
+
+    @Test
+    void get() {
+        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+
+        DatasetImplementation datasetImplementation = new DatabaseDatasetImplementation(
+                datasetImplementationKey,
+                new DatasetKey(UUID.randomUUID()),
+                "dataset",
+                new HashSet<>(),
+                new HashSet<>());
+
+        Set<DatasetImplementation> datasetImplementations = Stream.of(new DatabaseDatasetImplementation(
+                datasetImplementationKey,
+                datasetKey,
+                "dataset",
+                new HashSet<>(),
+                new HashSet<>())).collect(Collectors.toSet());
+
+        datasetConfiguration.insert(new Dataset(
+                datasetKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "dataset",
+                datasetImplementations
+        ));
+
+        assertThat(datasetImplementationConfiguration.get(datasetImplementationKey))
+                .hasValue(datasetImplementation);
+    }
+    @Test
+    void getNotFound() {
+        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+
+
+        datasetConfiguration.insert(new Dataset(
+                datasetKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "dataset",
+                new HashSet<>()
+        ));
+
+        assertThat(datasetImplementationConfiguration.get(datasetImplementationKey))
+                .isEmpty();
+    }
+
+    @Test
+    void getByNameAndLabels() {
+        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+
+        Set<DatasetImplementationLabel> datasetImplementationLabels = Stream.of(new DatasetImplementationLabel(
+                new DatasetImplementationLabelKey(UUID.randomUUID()),
+                datasetImplementationKey,
+                "label1")).collect(Collectors.toSet());
+
+        DatasetImplementation datasetImplementation = new DatabaseDatasetImplementation(
+                datasetImplementationKey,
+                datasetKey,
+                "dataset",
+                datasetImplementationLabels,
+                new HashSet<>());
+
+        datasetConfiguration.insert(new Dataset(
+                datasetKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "dataset",
+                Stream.of(datasetImplementation).collect(Collectors.toSet())
+        ));
+
+        assertThat(datasetImplementationConfiguration.getByNameAndLabels("dataset", singletonList("label1")))
+                .hasValue(datasetImplementation);
+    }
+
+    @Test
+    void getByNameAndLabelsNotFound() {
+        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+
+        Set<DatasetImplementationLabel> datasetImplementationLabels = Stream.of(new DatasetImplementationLabel(
+                new DatasetImplementationLabelKey(UUID.randomUUID()),
+                datasetImplementationKey,
+                "label1")).collect(Collectors.toSet());
+
+        DatasetImplementation datasetImplementation = new DatabaseDatasetImplementation(
+                datasetImplementationKey,
+                datasetKey,
+                "dataset",
+                datasetImplementationLabels,
+                new HashSet<>());
+
+        datasetConfiguration.insert(new Dataset(
+                datasetKey,
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "dataset",
+                Stream.of(datasetImplementation).collect(Collectors.toSet())
+        ));
+
+        assertThat(datasetImplementationConfiguration.getByNameAndLabels("dataset", singletonList("label2")))
+                .isEmpty();
+    }
+
 }

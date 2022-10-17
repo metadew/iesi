@@ -29,11 +29,11 @@ public abstract class DatasetImplementation extends Metadata<DatasetImplementati
 
 
     public String toString() {
-        return "{{^dataset(" + new Text(name).toString() + ", " +
+        return "{{^dataset(" + new Text(name) + ", " +
                 new Array(datasetImplementationLabels.stream()
                         .map(DatasetImplementationLabel::getValue)
                         .map(Text::new)
-                        .collect(Collectors.toList())).toString() + ")}}";
+                        .collect(Collectors.toList())) + ")}}";
     }
 
 }

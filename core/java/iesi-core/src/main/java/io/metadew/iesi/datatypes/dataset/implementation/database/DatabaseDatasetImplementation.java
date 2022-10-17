@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 public class DatabaseDatasetImplementation extends DatasetImplementation {
 
     private Set<DatabaseDatasetImplementationKeyValue> keyValues;
@@ -26,10 +26,10 @@ public class DatabaseDatasetImplementation extends DatasetImplementation {
     }
 
     public String toString() {
-        return "{{^dataset(" + new Text(getName()).toString() + ", " +
+        return "{{^dataset(" + new Text(getName()) + ", " +
                 new Array(getDatasetImplementationLabels().stream()
                         .map(DatasetImplementationLabel::getValue)
                         .map(Text::new)
-                        .collect(Collectors.toList())).toString() + ", database" + ")}}";
+                        .collect(Collectors.toList())) + ", database" + ")}}";
     }
 }

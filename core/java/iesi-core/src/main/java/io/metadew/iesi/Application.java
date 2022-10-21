@@ -16,6 +16,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 
+import java.util.UUID;
+
 @SpringBootApplication
 @ComponentScan(basePackages = { "io.metadew.iesi", "${pluginPackage:#{''}}"})
 @Log4j2
@@ -38,6 +40,7 @@ public class Application implements ApplicationRunner {
     private FrameworkCrypto frameworkCrypto;
 
     public static void main(String[] args) {
+        System.out.println(UUID.randomUUID().toString());
         new SpringApplicationBuilder(Application.class)
                 .web(WebApplicationType.NONE)
                 .lazyInitialization(true)

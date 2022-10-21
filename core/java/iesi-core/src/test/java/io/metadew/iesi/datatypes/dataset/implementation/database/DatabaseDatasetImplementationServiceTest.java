@@ -11,7 +11,6 @@ import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
 import io.metadew.iesi.datatypes.dataset.DatasetKey;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
@@ -19,13 +18,12 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,60 +42,23 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { TestConfiguration.class, DatasetConfiguration.class, DatasetImplementationConfiguration.class, DatabaseDatasetImplementationKeyValueConfiguration.class, DataTypeHandler.class })
+@ContextConfiguration(classes = { TestConfiguration.class, DatasetConfiguration.class, DatasetImplementationConfiguration.class, DatabaseDatasetImplementationKeyValueConfiguration.class,
+        DataTypeHandler.class })
 @ActiveProfiles("test")
 class DatabaseDatasetImplementationServiceTest {
 
     @Autowired
     MetadataRepositoryConfiguration metadataRepositoryConfiguration;
-    @Autowired
-    DatasetConfiguration datasetConfiguration;
 
     @Autowired
-    DatabaseDatasetImplementationKeyValueConfiguration databaseDatasetImplementationKeyValueConfiguration;
+    DatasetConfiguration datasetConfiguration;
 
     @SpyBean
     DataTypeHandler dataTypeHandlerSpy;
 
-    @Test
-    void testGetDatasetImplementationByDatasetIdAndLabels() {
-        Map<String, Object> datasetMap = generateDataset(0, 2, 2, 1);
-
-
-        assertThat(DatabaseDatasetImplementationService.getInstance().getDatasetImplementation(new DatasetKey((UUID) datasetMap.get("datasetUUID")), Stream.of("label000", "label001").collect(Collectors.toList())))
-                .hasValue((DatabaseDatasetImplementation) datasetMap.get("datasetImplementation0"));
-        assertThat(DatabaseDatasetImplementationService.getInstance().getDatasetImplementation(new DatasetKey((UUID) datasetMap.get("datasetUUID")), Stream.of("label010", "label011").collect(Collectors.toList())))
-                .hasValue((DatabaseDatasetImplementation) datasetMap.get("datasetImplementation1"));
-    }
-
-    @Test
-    void testGetDatasetImplementationByDatasetIdAndLabelsNoMatch() {
-        Map<String, Object> datasetMap = generateDataset(0, 2, 2, 1);
-        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatabaseDatasetImplementationService.getInstance().getDatasetImplementation(new DatasetKey((UUID) datasetMap.get("datasetUUID")), Stream.of("label000").collect(Collectors.toList())))
-                .isEmpty();
-        assertThat(DatabaseDatasetImplementationService.getInstance().getDatasetImplementation(new DatasetKey(UUID.randomUUID()), Stream.of("label010", "label011").collect(Collectors.toList())))
-                .isEmpty();
-    }
-
-    @Test
-    void testGetDatasetImplementationByNameAndLabels() {
-        Map<String, Object> datasetMap = generateDataset(0, 2, 2, 1);
-        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatabaseDatasetImplementationService.getInstance().getDatasetImplementation("dataset0", Stream.of("label000", "label001").collect(Collectors.toList())))
-                .hasValue((DatabaseDatasetImplementation) datasetMap.get("datasetImplementation0"));
-        assertThat(DatabaseDatasetImplementationService.getInstance().getDatasetImplementation("dataset0", Stream.of("label010", "label011").collect(Collectors.toList())))
-                .hasValue((DatabaseDatasetImplementation) datasetMap.get("datasetImplementation1"));
-    }
-
-    @Test
-    void testGetDatasetImplementationByNameAndLabelsNoMatch() {
-        Map<String, Object> datasetMap = generateDataset(0, 2, 2, 1);
-        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
-        assertThat(DatabaseDatasetImplementationService.getInstance().getDatasetImplementation("dataset0", Stream.of("label000").collect(Collectors.toList())))
-                .isEmpty();
-        assertThat(DatabaseDatasetImplementationService.getInstance().getDatasetImplementation("dataset1", Stream.of("label010", "label011").collect(Collectors.toList())))
-                .isEmpty();
+    @BeforeEach
+    void setUp() {
+        metadataRepositoryConfiguration.createAllTables();
     }
 
     @Test
@@ -206,56 +167,6 @@ class DatabaseDatasetImplementationServiceTest {
     }
 
     @Test
-    void testSetDataItemNewKey() {
-        Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
-
-        DatabaseDatasetImplementationService.getInstance()
-                .setDataItem((DatabaseDatasetImplementation) datasetMap.get("datasetImplementation0"),
-                        "key",
-                        new Text("value")
-                );
-
-        assertThat(databaseDatasetImplementationKeyValueConfiguration
-                .getByDatasetImplementationId(new DatasetImplementationKey((UUID) datasetMap.get("datasetImplementation0UUID"))))
-                .hasSize(2);
-        assertThat(databaseDatasetImplementationKeyValueConfiguration
-                .getByDatasetImplementationIdAndKey(new DatasetImplementationKey((UUID) datasetMap.get("datasetImplementation0UUID")), "key000"))
-                .isPresent()
-                .map(DatabaseDatasetImplementationKeyValue::getValue)
-                .get()
-                .isEqualTo("value000");
-        assertThat(databaseDatasetImplementationKeyValueConfiguration
-                .getByDatasetImplementationIdAndKey(new DatasetImplementationKey((UUID) datasetMap.get("datasetImplementation0UUID")), "key"))
-                .isPresent()
-                .map(DatabaseDatasetImplementationKeyValue::getValue)
-                .get()
-                .isEqualTo("value");
-    }
-
-    @Test
-    void testSetDataItemExistingKey() {
-        Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
-        datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
-
-        DatabaseDatasetImplementationService.getInstance()
-                .setDataItem((DatabaseDatasetImplementation) datasetMap.get("datasetImplementation0"),
-                        "key000",
-                        new Text("value001")
-                );
-
-        assertThat(databaseDatasetImplementationKeyValueConfiguration
-                .getByDatasetImplementationId(new DatasetImplementationKey((UUID) datasetMap.get("datasetImplementation0UUID"))))
-                .hasSize(1);
-        assertThat(databaseDatasetImplementationKeyValueConfiguration
-                .getByDatasetImplementationIdAndKey(new DatasetImplementationKey((UUID) datasetMap.get("datasetImplementation0UUID")), "key000"))
-                .isPresent()
-                .map(DatabaseDatasetImplementationKeyValue::getValue)
-                .get()
-                .isEqualTo("value001");
-    }
-
-    @Test
     void testResolve() throws JsonProcessingException {
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
         DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
@@ -342,10 +253,6 @@ class DatabaseDatasetImplementationServiceTest {
         datasetConfiguration.insert(dataset);
         ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":{\"key2\":\"value2\"}}");
 
-        DatabaseDatasetImplementationService databaseDatasetImplementationService = DatabaseDatasetImplementationService.getInstance();
-        DatabaseDatasetImplementationService databaseDatasetImplementationServiceSpy = Mockito.spy(databaseDatasetImplementationService);
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", databaseDatasetImplementationServiceSpy);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
 
         DataType dataType = DatabaseDatasetImplementationService.getInstance()
                 .resolve(
@@ -379,8 +286,6 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key2",
                                 "value2"
                         ));
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
 }

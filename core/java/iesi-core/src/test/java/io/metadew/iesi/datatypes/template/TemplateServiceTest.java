@@ -1,16 +1,12 @@
 package io.metadew.iesi.datatypes.template;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.TestConfiguration;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
 import io.metadew.iesi.metadata.configuration.template.matcher.MatcherConfiguration;
 import io.metadew.iesi.metadata.configuration.template.matcher.value.MatcherValueConfiguration;
@@ -22,19 +18,19 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -44,27 +40,30 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = { TemplateConfiguration.class, MatcherConfiguration.class, MatcherValueConfiguration.class, DataTypeHandler.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, MatcherConfiguration.class, MatcherValueConfiguration.class, DataTypeHandler.class, DatasetImplementationHandler.class,
+        DatabaseDatasetImplementationKeyValueConfiguration.class})
 @ActiveProfiles("test")
 class TemplateServiceTest {
 
-    private Template template1;
-    private UUID templateUuid1;
+    Template template1;
+    UUID templateUuid1;
 
-    private Template template12;
-    private UUID templateUuid12;
+    Template template12;
+    UUID templateUuid12;
 
-    private Template template2;
-    private UUID templateUuid2;
+    Template template2;
+    UUID templateUuid2;
 
-    @Autowired
-    private TemplateConfiguration templateConfiguration;
+    @MockBean
+    TemplateConfiguration templateConfiguration;
+
+    @MockBean
+    DatasetImplementationHandler datasetImplementationHandler;
 
     @BeforeEach
     void initializeTemplates() {
@@ -177,58 +176,22 @@ class TemplateServiceTest {
     }
 
     @Test
-    void createTemplate() {
-        assertThatCode(() -> TemplateService.getInstance().insert(template1))
-                .doesNotThrowAnyException();
-        assertThat(TemplateService.getInstance().get(template1.getName(), template1.getVersion()))
-                .isEqualTo(Optional.of(template1));
-    }
+    void createTemplateAlreadyExists() {
 
-    @Test
-    void createTemplateSameNameAndOtherVersion() {
-        assertThatCode(() -> TemplateService.getInstance().insert(template1))
-                .doesNotThrowAnyException();
-        assertThatCode(() -> TemplateService.getInstance().insert(template12))
-                .doesNotThrowAnyException();
+        when(templateConfiguration.exists(template1.getName(), template1.getVersion()))
+                .thenReturn(true);
 
-        assertThat(TemplateService.getInstance().get(template1.getName(), template1.getVersion()))
-                .isEqualTo(Optional.of(template1));
-    }
-
-    @Test
-    void createTemplateNameAndVersionAlreadyExist() {
-        assertThatCode(() -> TemplateService.getInstance().insert(template1))
-                .doesNotThrowAnyException();
         assertThatThrownBy(() -> TemplateService.getInstance().insert(template1))
                 .hasMessage("Template with name template1 and version 1 already exists");
     }
 
     @Test
-    void updateTemplate() {
-        assertThatCode(() -> TemplateService.getInstance().insert(template1))
-                .doesNotThrowAnyException();
-        MatcherKey matcherKey = new MatcherKey(UUID.randomUUID());
-        template1.getMatchers().add(new Matcher(
-                matcherKey,
-                template1.getMetadataKey(),
-                "key4",
-                new MatcherTemplate(
-                        new MatcherValueKey(UUID.randomUUID()),
-                        matcherKey,
-                        "template1",
-                        2L
-                )
-        ));
-
-        assertThatCode(() -> TemplateService.getInstance().update(template1))
-                .doesNotThrowAnyException();
-        assertThat(TemplateService.getInstance().get(template1.getName(), template1.getVersion()))
-                .isEqualTo(Optional.of(template1));
-    }
-
-    @Test
     void updateUnexistingTemplate() {
         MatcherKey matcherKey = new MatcherKey(UUID.randomUUID());
+
+        when(templateConfiguration.exists(template1.getName(), template1.getVersion()))
+                .thenReturn(false);
+
         template1.getMatchers().add(new Matcher(
                 matcherKey,
                 template1.getMetadataKey(),
@@ -243,19 +206,6 @@ class TemplateServiceTest {
 
         assertThatThrownBy(() -> TemplateService.getInstance().update(template1))
                 .hasMessage("Template with name template1 and version 1 does not exist");
-    }
-
-    @Test
-    void deleteTemplate() {
-        assertThatCode(() -> TemplateService.getInstance().insert(template1))
-                .doesNotThrowAnyException();
-
-        assertThat(TemplateService.getInstance().get("template1", 1L))
-                .isEqualTo(Optional.of(template1));
-        TemplateService.getInstance().delete("template1", 1L);
-
-        assertThat(TemplateService.getInstance().get("template1", 1L))
-                .isEmpty();
     }
 
     @Test
@@ -282,7 +232,6 @@ class TemplateServiceTest {
 
     @Test
     void resolveTest() {
-        templateConfiguration.insert(template1);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
 
         when(executionRuntime.resolveVariables("template1"))
@@ -297,6 +246,8 @@ class TemplateServiceTest {
                 .thenReturn("2");
         when(executionRuntime.resolveConceptLookup("2"))
                 .thenReturn(new LookupResult("2", null, null));
+        when(templateConfiguration.getByNameAndVersion("template1", 1L))
+                .thenReturn(Optional.of(template1));
 
 
         assertThat(TemplateService.getInstance().resolve("template1, 1", executionRuntime))
@@ -311,40 +262,29 @@ class TemplateServiceTest {
     void matchesSuccessfulTest() {
         templateConfiguration.insert(template1);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+
+        DatabaseDatasetImplementation dataset1 = mock(DatabaseDatasetImplementation.class);
+        DatabaseDatasetImplementation dataset2 = mock(DatabaseDatasetImplementation.class);
+
         when(executionRuntime.resolveVariables(anyString()))
                 .thenReturn("value2");
         when(executionRuntime.resolveConceptLookup("value2"))
                 .thenReturn(new LookupResult("value2", null, null));
+        when(templateConfiguration.getByNameAndVersion("template1", 1L))
+                .thenReturn(Optional.of(template1));
+        when(datasetImplementationHandler.getDataItem(any(), eq("key1"), any(ExecutionRuntime.class)))
+                .thenReturn(Optional.of(new Text("test")));
+        when(datasetImplementationHandler.getDataItem(any(), eq("key2"), any(ExecutionRuntime.class)))
+                .thenReturn(Optional.of(new Text("test")));
+        when(datasetImplementationHandler.getDataItem(any(), eq("key3"), any(ExecutionRuntime.class)))
+                .thenReturn(Optional.of(new Text("test")));
+        when(datasetImplementationHandler.getDataItem(any(), eq("key4"), any(ExecutionRuntime.class)))
+                .thenReturn(Optional.of(new Text("test")));
 
-
-        DatabaseDatasetImplementationService databaseDatasetImplementationService = DatabaseDatasetImplementationService.getInstance();
-        DatabaseDatasetImplementationService databaseDatasetImplementationServiceSpy = Mockito.spy(databaseDatasetImplementationService);
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", databaseDatasetImplementationServiceSpy);
-
-        // Allow spy to be picked up
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
-
-        DatabaseDatasetImplementation dataset1 = mock(DatabaseDatasetImplementation.class);
-        DatabaseDatasetImplementation dataset2 = mock(DatabaseDatasetImplementation.class);
-        Mockito
-                .doReturn(Optional.of(new Text("test")))
-                .when(databaseDatasetImplementationServiceSpy).getDataItem(dataset1, "key1", executionRuntime);
-        Mockito
-                .doReturn(Optional.of(new Text("value2")))
-                .when(databaseDatasetImplementationServiceSpy).getDataItem(dataset1, "key2", executionRuntime);
-        Mockito
-                .doReturn(Optional.of(new Text("test")))
-                .when(databaseDatasetImplementationServiceSpy).getDataItem(dataset2, "key3", executionRuntime);
-        Mockito
-                .doReturn(Optional.of(dataset1))
-                .when(databaseDatasetImplementationServiceSpy).getDataItem(dataset2, "key4", executionRuntime);
 
         assertThat(TemplateService.getInstance().matches(dataset1, template1, executionRuntime))
                 .isTrue();
         assertThat(TemplateService.getInstance().matches(dataset2, template2, executionRuntime))
                 .isTrue();
-
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
-        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 }

@@ -50,6 +50,9 @@ public class DatasetImplementationHandler implements IDatasetImplementationHandl
 
     @Override
     public Optional<DataType> getDataItem(DatasetImplementation datasetImplementation, String dataItem, ExecutionRuntime executionRuntime) {
+        System.out.println(datasetImplementation);
+        System.out.println(dataItem);
+        System.out.println(executionRuntime);
         return getDatasetImplementationService(datasetImplementation).getDataItem(datasetImplementation, dataItem, executionRuntime);
     }
 

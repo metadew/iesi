@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class DatabaseDatasetImplementation extends DatasetImplementation {
 
     private Set<DatabaseDatasetImplementationKeyValue> keyValues;

@@ -47,7 +47,6 @@ public class IesiLdapConfiguration {
         ldapContextSource.setBase(ldapServer.getBase());
         ldapContextSource.setUserDn(ldapAuthentication.getAdmin().getDn());
         ldapContextSource.setPassword(ldapAuthentication.getAdmin().getPassword());
-        ldapContextSource.afterPropertiesSet();
         return ldapContextSource;
     }
 

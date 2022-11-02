@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.MessageFormat;
 import java.util.UUID;
@@ -39,9 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 public class DbH2ConnectionServiceTest {
 
@@ -64,10 +65,10 @@ public class DbH2ConnectionServiceTest {
                 "db.h2",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "embedded"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "file"), "file"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "file"), "file"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2EmbeddedDatabaseConnection(
                 "file", "user", "password", null, "schema"), "schema");
@@ -82,12 +83,12 @@ public class DbH2ConnectionServiceTest {
                 "db.h2",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "server"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "file"), "file"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "file"), "file"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2ServerDatabaseConnection(
                 "host", 1, "file", "user", "password", null, "schema"), "schema");
@@ -102,10 +103,10 @@ public class DbH2ConnectionServiceTest {
                 "db.h2",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "memory"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2MemoryDatabaseConnection(
                 "database", "user", "password", null, "schema"), "schema");
@@ -120,9 +121,9 @@ public class DbH2ConnectionServiceTest {
                 "db.h2",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "connectionURL"), "connectionURL"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), frameworkCrypto.encrypt("encrypted_password")))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), frameworkCrypto.encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         H2Database h2Database = new H2Database(new H2DatabaseConnection(
                 "connectionURL", "user", "encrypted_password", null, "schema"), "schema");
@@ -137,9 +138,9 @@ public class DbH2ConnectionServiceTest {
                 "db.mariadb",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "embedded"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "file"), "file"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "file"), "file"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         //  assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
         //    MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
@@ -153,9 +154,9 @@ public class DbH2ConnectionServiceTest {
                 "db.mariadb",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "memory"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         // assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
         //  MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
@@ -169,9 +170,9 @@ public class DbH2ConnectionServiceTest {
                 "db.mariadb",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "mode"), "embedded"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "file"), "file"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "file"), "file"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "schema"), "schema"))
                         .collect(Collectors.toList()));
         // assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
         // MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));

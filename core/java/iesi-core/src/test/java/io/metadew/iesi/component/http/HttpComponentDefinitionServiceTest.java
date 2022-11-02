@@ -13,11 +13,13 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.script.execution.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = { HttpComponentDefinitionService.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class})
-@ContextConfiguration(classes = TestConfiguration.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, HttpComponentDefinitionService.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class })
 @ActiveProfiles("test")
 class HttpComponentDefinitionServiceTest {
 

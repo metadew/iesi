@@ -12,12 +12,14 @@ import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.powermock.reflect.Whitebox;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -26,14 +28,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = { DataTypeHandler.class })
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, DataTypeHandler.class })
 @ActiveProfiles("test")
 class ApplicationJsonHttpResponseEntityServiceTest {
 
     @MockBean
-    private DataTypeHandler dataTypeHandler;
+    DataTypeHandler dataTypeHandler;
 
     @Test
     void writeToDatasetTest() throws IOException {

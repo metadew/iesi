@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.service;
 
 import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -17,11 +18,15 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.MessageFormat;
 import java.util.UUID;
@@ -32,7 +37,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, FrameworkCrypto.class, FrameworkControl.class, DatabaseHandler.class})
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestConfiguration.class)
+@ActiveProfiles("test")
 class DbMariadbConnectionServiceTest {
 
     @Autowired

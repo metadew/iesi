@@ -17,6 +17,7 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TestConfiguration.class, DatasetConfiguration.class, DatasetImplementationConfiguration.class})
 @ActiveProfiles("test")
+@Disabled
 class DatasetImplementationConfigurationTest {
 
     @Autowired

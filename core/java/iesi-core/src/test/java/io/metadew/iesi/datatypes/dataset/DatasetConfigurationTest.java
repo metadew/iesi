@@ -1,6 +1,7 @@
 package io.metadew.iesi.datatypes.dataset;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
@@ -8,6 +9,8 @@ import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDataset
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +33,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DatasetConfigurationTest {
 
     @Autowired
+    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    @Autowired
     private DatasetConfiguration datasetConfiguration;
+
+    @BeforeEach
+    void beforeEach() {
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void afterEach() {
+        metadataRepositoryConfiguration.dropAllTables();
+    }
 
     @Test
     void testExists() {

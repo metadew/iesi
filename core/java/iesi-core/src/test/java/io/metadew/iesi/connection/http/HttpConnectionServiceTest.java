@@ -18,6 +18,7 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,17 +37,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = { HttpConnectionService.class, ConnectionConfiguration.class, HttpConnectionTraceService.class, ConnectionTraceConfiguration.class, ConnectionParameterConfiguration.class})
-@ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, HttpConnectionService.class, ConnectionConfiguration.class, HttpConnectionTraceService.class, ConnectionTraceConfiguration.class, ConnectionParameterConfiguration.class})
 @ActiveProfiles("test")
 class HttpConnectionServiceTest {
 
     @Autowired
-    private HttpConnectionService httpConnectionService;
+    HttpConnectionService httpConnectionService;
 
     @SpyBean
-    private ConnectionConfiguration connectionConfigurationSpy;
+    ConnectionConfiguration connectionConfigurationSpy;
 
     @Test
     void getBaseUrlTest() {

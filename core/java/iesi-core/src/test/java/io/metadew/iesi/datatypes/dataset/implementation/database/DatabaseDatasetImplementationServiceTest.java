@@ -61,6 +61,11 @@ class DatabaseDatasetImplementationServiceTest {
         metadataRepositoryConfiguration.createAllTables();
     }
 
+    @AfterEach
+    void tearDown() {
+        metadataRepositoryConfiguration.dropAllTables();
+    }
+
     @Test
     void testGetDatasetItem() {
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);

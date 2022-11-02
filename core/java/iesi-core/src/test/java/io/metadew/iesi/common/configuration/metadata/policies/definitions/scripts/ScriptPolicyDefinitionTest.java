@@ -1,18 +1,17 @@
 package io.metadew.iesi.common.configuration.metadata.policies.definitions.scripts;
 
 
-import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
-import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,9 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@SpringBootTest(classes = {Configuration.class, SpringContext.class, FrameworkConfiguration.class, MetadataPolicyConfiguration.class })
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestConfiguration.class)
+@ActiveProfiles("test")
 class ScriptPolicyDefinitionTest {
 
     @Test

@@ -11,18 +11,14 @@ import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHan
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -33,10 +29,10 @@ import java.util.stream.Stream;
 
 import static io.metadew.iesi.datatypes.dataset.DatasetBuilder.generateDataset;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { TestConfiguration.class, DatasetConfiguration.class, DatabaseDatasetImplementationKeyValueConfiguration.class, DatasetImplementationHandler.class })
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfiguration.class, DatasetConfiguration.class, DatabaseDatasetImplementationKeyValueConfiguration.class, DatasetImplementationConfiguration.class,
+        DatasetImplementationHandler.class })
 @ActiveProfiles("test")
 class DatasetImplementationKeyValueConfigurationTest {
 
@@ -51,6 +47,16 @@ class DatasetImplementationKeyValueConfigurationTest {
 
     @Autowired
     DatasetImplementationHandler datasetImplementationHandler;
+
+    @BeforeEach
+    void beforeEach() {
+        metadataRepositoryConfiguration.createAllTables();
+    }
+
+    @AfterEach
+    void afterEach() {
+        metadataRepositoryConfiguration.dropAllTables();
+    }
 
     @Test
     void testExists() {
@@ -72,6 +78,8 @@ class DatasetImplementationKeyValueConfigurationTest {
                 )).collect(Collectors.toSet()));
 
         Set<DatasetImplementation> datasetImplementations = Stream.of(datasetImplementation).collect(Collectors.toSet());
+
+        System.out.println("TEST: " + datasetConfiguration);
 
         datasetConfiguration.insert(new Dataset(
                 datasetKey,

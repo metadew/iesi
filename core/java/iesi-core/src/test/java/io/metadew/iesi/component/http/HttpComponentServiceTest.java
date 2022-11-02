@@ -42,6 +42,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -64,12 +66,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = {HttpComponentService.class, ComponentConfiguration.class, ActionParameterTraceConfiguration.class, ActionParameterDesignTraceConfiguration.class, ActionParameterTraceService.class,
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {TestConfiguration.class, HttpComponentService.class, ComponentConfiguration.class, ActionParameterTraceConfiguration.class, ActionParameterDesignTraceConfiguration.class, ActionParameterTraceService.class,
         HttpConnectionService.class, HttpComponentTraceService.class, HttpConnectionTraceService.class, HttpComponentDefinitionService.class, HttpQueryParameterService.class,
         DataTypeHandler.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class, ComponentTraceConfiguration.class,
         ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, DataTypeHandler.class, MetadataFieldService.class, ConnectionConfiguration.class,
         ConnectionParameterConfiguration.class})
-@ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
 class HttpComponentServiceTest {
 
@@ -84,10 +86,22 @@ class HttpComponentServiceTest {
     private HttpConnection httpConnection;
 
     @MockBean
+    private HttpConnectionService httpConnectionService;
+
+    @MockBean
     private ConnectionTraceConfiguration connectionTraceConfiguration;
 
     @MockBean
     private ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration;
+
+    @MockBean
+    private HttpComponentDefinitionService httpComponentDefinitionService;
+
+    @MockBean
+    HttpConnectionTraceService httpConnectionTraceService;
+
+    @MockBean
+    HttpComponentTraceService httpComponentTraceService;
 
     @SpyBean
     private HttpComponentService httpComponentService;
@@ -237,17 +251,38 @@ class HttpComponentServiceTest {
                         ).collect(Collectors.toList()),
                         new ArrayList<>()
                 )));
+        when(httpComponentDefinitionService.convertAndTrace(any(), any(), any()))
+                .thenReturn(new HttpComponentDefinition(
+                        "component1",
+                        0L,
+                        "description",
+                        "connection",
+                        "endpoint",
+                        "type",
+                        new ArrayList<>(),
+                        new ArrayList<>()
+                ));
+        when(httpConnectionService.get(any(), any()))
+                .thenReturn(new HttpConnection(
+                        "connectionName",
+                        "description",
+                        "env0",
+                        "http://test.com",
+                        "/api",
+                        8080,
+                        false
+                ));
 
 
-        Mockito.doReturn("/pet").when(httpComponentService).resolveEndpoint(anyString(), any(ActionExecution.class));
-        Mockito.doReturn("GET").when(httpComponentService).resolveType(anyString(), any(ActionExecution.class));
+        doReturn("/pet").when(httpComponentService).resolveEndpoint(anyString(), any(ActionExecution.class));
+        doReturn("GET").when(httpComponentService).resolveType(anyString(), any(ActionExecution.class));
 
 
-        Mockito.doNothing()
+        doNothing()
                 .when(connectionTraceConfiguration)
                 .insert(any());
 
-        Mockito.doNothing()
+        doNothing()
                 .when(actionParameterDesignTraceConfiguration)
                 .insert(any(ActionParameterDesignTrace.class));
 
@@ -355,12 +390,42 @@ class HttpComponentServiceTest {
                                 new ComponentParameter(new ComponentParameterKey(componentKey, "connection"), "connectionName"),
                                 new ComponentParameter(new ComponentParameterKey(componentKey, "endpoint"), "/pet"),
                                 new ComponentParameter(new ComponentParameterKey(componentKey, "type"), "POST")
-                                ).collect(Collectors.toList()),
+                        ).collect(Collectors.toList()),
                         new ArrayList<>()
                 )));
 
-        Mockito.doReturn("/pet").when(httpComponentService).resolveEndpoint(anyString(), any(ActionExecution.class));
-        Mockito.doReturn("POST").when(httpComponentService).resolveType(anyString(), any(ActionExecution.class));
+        when(httpComponentDefinitionService.convertAndTrace(any(), any(), any()))
+                .thenReturn(new HttpComponentDefinition(
+                        "component1",
+                        3L,
+                        "description",
+                        "connection",
+                        "endpoint",
+                        "type",
+                        new ArrayList<>(),
+                        new ArrayList<>()
+                ));
+
+        when(httpConnectionService.get(any(), any()))
+                .thenReturn(new HttpConnection(
+                        "connectionName",
+                        "description",
+                        "env0",
+                        "http://test.com",
+                        "/api",
+                        8080,
+                        false
+                ));
+
+        doReturn("/pet").when(httpComponentService).resolveEndpoint(anyString(), any(ActionExecution.class));
+        doReturn("POST").when(httpComponentService).resolveType(anyString(), any(ActionExecution.class));
+
+        doNothing()
+                .when(httpConnectionTraceService)
+                .trace(any(), any(), any());
+        doNothing()
+                .when(httpComponentTraceService)
+                .trace(any(), any(), any());
 
 
         assertThat(httpComponentService.getAndTrace("component1", actionExecution, "request", "requestVersion")).isEqualTo(httpComponent3);

@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfiguration.class)
@@ -46,7 +47,7 @@ class DbOracleConnectionServiceTest {
 
     @BeforeEach
     void setup() {
-        Mockito.doReturn(false).when(databaseHandler).isInitializeConnectionPool(any());
+        doReturn(false).when(databaseHandler).isInitializeConnectionPool(any());
     }
 
     @Test

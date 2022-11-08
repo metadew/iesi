@@ -17,6 +17,7 @@ import io.metadew.iesi.openapi.ComponentParser;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -38,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { TestConfiguration.class, HttpConnectionService.class, ConnectionConfiguration.class, HttpConnectionTraceService.class, ConnectionTraceConfiguration.class, ConnectionParameterConfiguration.class})
+@ContextConfiguration(classes = { TestConfiguration.class, HttpConnectionService.class, HttpConnectionTraceService.class, ConnectionTraceConfiguration.class, ConnectionParameterConfiguration.class})
 @ActiveProfiles("test")
 class HttpConnectionServiceTest {
 

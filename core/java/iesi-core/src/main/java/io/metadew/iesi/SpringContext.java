@@ -18,6 +18,10 @@ public class SpringContext implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
+    public SpringContext() {
+        System.out.println("CONSTRUCTOR");
+    }
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         context = applicationContext;

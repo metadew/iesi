@@ -8,12 +8,11 @@ import io.metadew.iesi.common.configuration.metadata.repository.coordinator.Meta
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.database.DatabaseHandler;
+import io.metadew.iesi.connection.database.IDatabaseHandler;
 import io.metadew.iesi.metadata.service.metadata.MetadataTableService;
 import org.junit.jupiter.api.Order;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.*;
 
 @Configuration
 @Profile("test")
@@ -22,6 +21,7 @@ public class TestConfiguration {
     @Bean
     @Order(0)
     public SpringContext springContext() {
+        System.out.println("CREATE");
         return new SpringContext();
     }
 
@@ -72,8 +72,10 @@ public class TestConfiguration {
         return new FrameworkControl(configuration);
     }
 
+
     @Bean
     public DatabaseHandler databaseHandler(FrameworkControl frameworkControl, FrameworkCrypto frameworkCrypto) {
+        System.out.println("HELLO WORLD");
         return new DatabaseHandler(frameworkControl, frameworkCrypto);
     }
 }

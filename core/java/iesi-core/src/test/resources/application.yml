@@ -1,7 +1,7 @@
 spring:
   main:
     banner-mode: "off"
-    lazy-initialization: true
+    lazy-initialization: false
 iesi:
   guard:
     authenticate: N

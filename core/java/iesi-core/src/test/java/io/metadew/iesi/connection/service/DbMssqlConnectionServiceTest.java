@@ -10,14 +10,13 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,14 +26,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
-public class DbMssqlConnectionServiceTest {
+class DbMssqlConnectionServiceTest {
 
     @Autowired
     FrameworkCrypto frameworkCrypto;
@@ -63,7 +61,7 @@ public class DbMssqlConnectionServiceTest {
                         .collect(Collectors.toList()));
 
         MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "password", null, "schema"), "schema");
-        assertEquals(mssqlDatabase, databaseHandler.getDatabase(connection));
+        Assertions.assertEquals(mssqlDatabase, databaseHandler.getDatabase(connection));
     }
 
     @Test
@@ -81,7 +79,7 @@ public class DbMssqlConnectionServiceTest {
                                 new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), frameworkCrypto.encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         MssqlDatabase mssqlDatabase = new MssqlDatabase(new MssqlDatabaseConnection("host", 1, "database", "user", "encrypted_password", null, "schema"), "schema");
-        assertEquals(mssqlDatabase, databaseHandler.getDatabase(connection));
+        Assertions.assertEquals(mssqlDatabase, databaseHandler.getDatabase(connection));
     }
 
     @Test

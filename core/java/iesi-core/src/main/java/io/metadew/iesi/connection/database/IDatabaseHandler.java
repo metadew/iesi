@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-interface IDatabaseHandler {
+public interface IDatabaseHandler {
 
     Database getDatabase(io.metadew.iesi.metadata.definition.connection.Connection connection);
 

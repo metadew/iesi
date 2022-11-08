@@ -40,7 +40,6 @@ public class Application implements ApplicationRunner {
     private FrameworkCrypto frameworkCrypto;
 
     public static void main(String[] args) {
-        System.out.println(UUID.randomUUID().toString());
         new SpringApplicationBuilder(Application.class)
                 .web(WebApplicationType.NONE)
                 .lazyInitialization(true)

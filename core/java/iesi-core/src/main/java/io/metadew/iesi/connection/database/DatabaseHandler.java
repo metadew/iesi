@@ -23,6 +23,7 @@ import io.metadew.iesi.connection.database.temporary.TemporaryDatabaseServiceImp
 import io.metadew.iesi.connection.database.teradata.TeradataDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -48,6 +49,7 @@ public class DatabaseHandler implements IDatabaseHandler {
 
 
     public DatabaseHandler(FrameworkControl frameworkControl, FrameworkCrypto frameworkCrypto) {
+        System.out.println("HELLO");
         this.frameworkControl = frameworkControl;
         this.frameworkCrypto = frameworkCrypto;
     }

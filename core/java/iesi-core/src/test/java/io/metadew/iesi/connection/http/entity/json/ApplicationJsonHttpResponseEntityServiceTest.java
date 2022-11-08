@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.http.entity.json;
 
 import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
@@ -11,6 +12,7 @@ import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.message.BasicHeader;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powermock.reflect.Whitebox;
@@ -29,8 +31,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { TestConfiguration.class, DataTypeHandler.class })
+@ContextConfiguration(classes = { TestConfiguration.class, DataTypeHandler.class, DatabaseHandler.class })
 @ActiveProfiles("test")
+@Disabled
 class ApplicationJsonHttpResponseEntityServiceTest {
 
     @MockBean

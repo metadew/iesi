@@ -10,10 +10,10 @@ import lombok.ToString;
 public class H2MemoryDatabaseConnection extends H2DatabaseConnection {
 
     public H2MemoryDatabaseConnection(String databaseName, String userName, String userPassword, String initSql) {
-        super("jdbc:h2:mem:" + databaseName, userName, userPassword, initSql);
+        super("jdbc:h2:mem:" + databaseName + ";ALIAS_COLUMN_NAME=true", userName, userPassword, initSql);
     }
 
     public H2MemoryDatabaseConnection(String databaseName, String userName, String userPassword, String initSql, String schema) {
-        super("jdbc:h2:mem:" + databaseName, userName, userPassword, initSql, schema);
+        super("jdbc:h2:mem:" + databaseName + ";ALIAS_COLUMN_NAME=true", userName, userPassword, initSql, schema);
     }
 }

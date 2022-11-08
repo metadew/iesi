@@ -79,8 +79,6 @@ class DatasetImplementationKeyValueConfigurationTest {
 
         Set<DatasetImplementation> datasetImplementations = Stream.of(datasetImplementation).collect(Collectors.toSet());
 
-        System.out.println("TEST: " + datasetConfiguration);
-
         datasetConfiguration.insert(new Dataset(
                 datasetKey,
                 new SecurityGroupKey(UUID.randomUUID()),

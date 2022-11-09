@@ -13,9 +13,9 @@ iesi:
   security:
     enabled: true
     keystore:
-      type: ''
-      location: ''
-      password: ''
+      type: 'JKS'
+      location: 'key'
+      password: 'changeit'
     jwt:
       secret: secret
       expiry-date: 10

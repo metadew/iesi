@@ -25,7 +25,9 @@ import io.metadew.iesi.metadata.definition.MetadataField;
 import io.metadew.iesi.metadata.definition.MetadataTable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -35,21 +37,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 @Log4j2
+@Component
 public class DatabaseHandler implements IDatabaseHandler {
 
     private Map<ClassStringPair, IDatabaseService> databaseServiceMap;
+    private final FrameworkControl frameworkControl;
+    private final FrameworkCrypto frameworkCrypto;
 
-    private static DatabaseHandler INSTANCE;
 
-    public synchronized static DatabaseHandler getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DatabaseHandler();
-        }
-        return INSTANCE;
+    public DatabaseHandler(FrameworkControl frameworkControl, FrameworkCrypto frameworkCrypto) {
+        this.frameworkControl = frameworkControl;
+        this.frameworkCrypto = frameworkCrypto;
     }
 
-    private DatabaseHandler() {
+
+
+    @PostConstruct
+    private void postConstruct() {
         databaseServiceMap = new HashMap<>();
         databaseServiceMap.put(new ClassStringPair(BigqueryDatabaseService.getInstance().keyword(), BigqueryDatabaseService.getInstance().appliesTo()),
                 BigqueryDatabaseService.getInstance());
@@ -246,8 +252,8 @@ public class DatabaseHandler implements IDatabaseHandler {
         return connection.getParameters().stream()
                 .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
                 .findFirst()
-                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
-                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue))
+                .map(connectionParameter -> frameworkControl.resolveConfiguration(connectionParameter.getValue()))
+                .map(connectionParameterValue -> frameworkCrypto.decryptIfNeeded(connectionParameterValue))
                 .orElseThrow(() -> new RuntimeException(MessageFormat.format("Connection {0} does not contain mandatory parameter ''{1}''", connection, key)));
 
     }
@@ -256,8 +262,8 @@ public class DatabaseHandler implements IDatabaseHandler {
         return connection.getParameters().stream()
                 .filter(connectionParameter -> connectionParameter.getName().equalsIgnoreCase(key))
                 .findFirst()
-                .map(connectionParameter -> FrameworkControl.getInstance().resolveConfiguration(connectionParameter.getValue()))
-                .map(connectionParameterValue -> FrameworkCrypto.getInstance().decryptIfNeeded(connectionParameterValue));
+                .map(connectionParameter -> frameworkControl.resolveConfiguration(connectionParameter.getValue()))
+                .map(connectionParameterValue -> frameworkCrypto.decryptIfNeeded(connectionParameterValue));
     }
 
     private IDatabaseService getDatabaseService(Database database) {

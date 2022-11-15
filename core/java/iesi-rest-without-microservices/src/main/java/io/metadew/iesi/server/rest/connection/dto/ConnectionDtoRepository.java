@@ -29,11 +29,15 @@ import java.util.stream.Stream;
 public class ConnectionDtoRepository extends PaginatedRepository implements IConnectionDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
     private final FilterService filterService;
 
     @Autowired
-    public ConnectionDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
+    public ConnectionDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                                   MetadataTablesConfiguration metadataTablesConfiguration,
+                                   FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
         this.filterService = filterService;
     }
 
@@ -41,11 +45,11 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         return "select connections.CONN_NM, connections.SECURITY_GROUP_NM, connections.CONN_TYP_NM, connections.CONN_DSC, " +
                 "parameters.CONN_PAR_NM, " + "parameters.CONN_PAR_VAL, environments.ENV_NM " +
                 "FROM (" + getBaseQuery(authentication, pageable, connectionFilters) + ") base_connections " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 "on base_connections.CONN_NM = connections.CONN_NM " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ConnectionParameters").getName() + " parameters " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ConnectionParameters").getName() + " parameters " +
                 "on connections.CONN_NM = parameters.CONN_NM " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Environments").getName() + " environments " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Environments").getName() + " environments " +
                 "on parameters.ENV_NM = environments.ENV_NM " +
                 getOrderByClause(pageable) +
                 ";";
@@ -53,7 +57,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
 
     private String getBaseQuery(Authentication authentication, Pageable pageable, List<ConnectionFilter> connectionFilters) {
         return "select distinct connections.CONN_NM " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 getWhereClause(authentication, connectionFilters) +
                 getOrderByClause(pageable) +
                 getLimitAndOffsetClause(pageable);
@@ -98,7 +102,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
 
     private long getRowSize(Authentication authentication, List<ConnectionFilter> connectionFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct connections.CONN_NM " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Connections").getName() + " connections " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 getWhereClause(authentication, connectionFilters) +
                 ") filtered_components;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");

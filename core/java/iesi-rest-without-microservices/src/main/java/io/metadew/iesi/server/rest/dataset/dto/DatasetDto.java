@@ -20,6 +20,5 @@ public class DatasetDto extends NoEmptyLinksRepresentationModel<DatasetDto> {
     private String name;
     private String securityGroupName;
     private Set<UUID> implementations;
-
 }
 

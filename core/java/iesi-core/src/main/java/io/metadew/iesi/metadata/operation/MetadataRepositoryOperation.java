@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.operation;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.common.text.ParsingTools;
 import io.metadew.iesi.connection.tools.FileTools;
@@ -58,16 +59,16 @@ public class MetadataRepositoryOperation {
         LOGGER.info("metadata.load.start");
 
         // Folder definition
-        String inputFolder = FrameworkConfiguration.getInstance()
+        String inputFolder = SpringContext.getBean(FrameworkConfiguration.class)
                 .getMandatoryFrameworkFolder("metadata.in.new")
                 .getAbsolutePath().toString();
-        String workFolder = FrameworkConfiguration.getInstance()
+        String workFolder = SpringContext.getBean(FrameworkConfiguration.class)
                 .getMandatoryFrameworkFolder("metadata.in.work")
                 .getAbsolutePath().toString();
-        String errorFolder = FrameworkConfiguration.getInstance()
+        String errorFolder = SpringContext.getBean(FrameworkConfiguration.class)
                 .getMandatoryFrameworkFolder("metadata.in.error")
                 .getAbsolutePath().toString();
-        String archiveFolder = FrameworkConfiguration.getInstance()
+        String archiveFolder = SpringContext.getBean(FrameworkConfiguration.class)
                 .getMandatoryFrameworkFolder("metadata.in.done")
                 .getAbsolutePath().toString();
 

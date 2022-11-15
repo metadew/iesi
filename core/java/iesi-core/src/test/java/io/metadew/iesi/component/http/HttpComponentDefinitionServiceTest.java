@@ -1,7 +1,7 @@
 package io.metadew.iesi.component.http;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTraceConfiguration;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
@@ -11,12 +11,13 @@ import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentParameterKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentVersionKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.*;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,30 +27,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest(classes = { HttpComponentDefinitionService.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class})
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class HttpComponentDefinitionServiceTest {
 
-    @BeforeAll
-    static void prepare() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
+    @Autowired
+    private HttpComponentDefinitionService httpComponentDefinitionService;
 
     @Test
     void convertTest() {
@@ -116,7 +101,7 @@ class HttpComponentDefinitionServiceTest {
                 ).collect(Collectors.toList()))
                 .build();
 
-        assertThat(HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
+        assertThat(httpComponentDefinitionService.convert(component, actionExecution))
                 .isEqualTo(new HttpComponentDefinition(
                         "component1",
                         1L,
@@ -191,7 +176,7 @@ class HttpComponentDefinitionServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
+        assertThatThrownBy(() -> httpComponentDefinitionService.convert(component, actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert " + component.toString() + " to http component");
     }
@@ -254,7 +239,7 @@ class HttpComponentDefinitionServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
+        assertThatThrownBy(() -> httpComponentDefinitionService.convert(component, actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Http component " + component.toString() + " does not contain a type");
     }
@@ -316,7 +301,7 @@ class HttpComponentDefinitionServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
+        assertThatThrownBy(() -> httpComponentDefinitionService.convert(component, actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Http component " + component.toString() + " does not contain an endpoint");
     }
@@ -377,7 +362,7 @@ class HttpComponentDefinitionServiceTest {
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpComponentDefinitionService.getInstance().convert(component, actionExecution))
+        assertThatThrownBy(() -> httpComponentDefinitionService.convert(component, actionExecution))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Http component " + component.toString() + " does not contain a connection");
     }

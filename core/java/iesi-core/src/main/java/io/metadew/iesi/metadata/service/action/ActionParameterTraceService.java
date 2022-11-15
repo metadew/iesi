@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTrace
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.script.execution.ActionExecution;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,20 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Service
 @Log4j2
 public class ActionParameterTraceService {
 
-    private static ActionParameterTraceService instance;
+    private final ActionParameterTraceConfiguration actionParameterTraceConfiguration;
 
-    public static ActionParameterTraceService getInstance() {
-        if (instance == null) {
-            instance = new ActionParameterTraceService();
-        }
-        return instance;
+    public ActionParameterTraceService(ActionParameterTraceConfiguration actionParameterTraceConfiguration) {
+        this.actionParameterTraceConfiguration = actionParameterTraceConfiguration;
     }
 
-    private ActionParameterTraceService() {
-    }
 
     public void trace(ActionExecution actionExecution, Map<String, DataType> actionParameterMap) {
         trace(actionExecution, "", actionParameterMap);
@@ -42,10 +39,9 @@ public class ActionParameterTraceService {
         List<ActionParameterTrace> actionParameterTraces = new ArrayList<>();
         for (Map.Entry<String, DataType> actionParameterEntry : actionParameterMap.entrySet()) {
             actionParameterTraces.addAll(getActionParameterTraces(actionExecution, prefix + actionParameterEntry.getKey(), actionParameterEntry.getValue()));
-            // trace(actionExecution, prefix + actionParameterEntry.getKey(), actionParameterEntry.getValue());
         }
         try {
-            ActionParameterTraceConfiguration.getInstance().insert(actionParameterTraces);
+            actionParameterTraceConfiguration.insert(actionParameterTraces);
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -56,7 +52,7 @@ public class ActionParameterTraceService {
     public void trace(ActionExecution actionExecution, String key, DataType value) {
         try {
             List<ActionParameterTrace> actionParameterTraces = getActionParameterTraces(actionExecution, key, value);
-            ActionParameterTraceConfiguration.getInstance().insert(actionParameterTraces);
+            actionParameterTraceConfiguration.insert(actionParameterTraces);
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));

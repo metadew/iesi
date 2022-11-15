@@ -39,7 +39,7 @@ class ConnectionDtoTest {
 
     @Test
     void convertToEntityTest() {
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC")
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName("PUBLIC")
                 .orElseThrow(RuntimeException::new);
         Connection connection = new Connection(new ConnectionKey("name", "tst"),
                 securityGroup.getMetadataKey(),

@@ -9,25 +9,19 @@ import io.metadew.iesi.common.configuration.metadata.repository.coordinator.post
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.sqlite.SqliteMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class MetadataRepositoryCoordinatorHandler implements IMetadataRepositoryCoordinatorHandler {
-
-    private static MetadataRepositoryCoordinatorHandler INSTANCE;
 
     private Map<Class<? extends MetadataRepositoryCoordinatorDefinition>, IMetadataRepositoryCoordinatorService> metadataRepositoryCoordinatorServiceMap;
 
-
-    public synchronized static MetadataRepositoryCoordinatorHandler getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MetadataRepositoryCoordinatorHandler();
-        }
-        return INSTANCE;
-    }
-
-    private MetadataRepositoryCoordinatorHandler() {
+    @PostConstruct
+    private void postConstruct() {
         metadataRepositoryCoordinatorServiceMap = new HashMap<>();
         metadataRepositoryCoordinatorServiceMap.put(H2MetadataRepositoryCoordinatorService.getInstance().appliesTo(), H2MetadataRepositoryCoordinatorService.getInstance());
         metadataRepositoryCoordinatorServiceMap.put(MssqlMetadataRepositoryCoordinatorService.getInstance().appliesTo(), MssqlMetadataRepositoryCoordinatorService.getInstance());
@@ -49,5 +43,4 @@ public class MetadataRepositoryCoordinatorHandler implements IMetadataRepository
     public DatabaseConnection getDatabaseConnection(MetadataRepositoryCoordinatorDefinition metadataRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
         return metadataRepositoryCoordinatorServiceMap.get(metadataRepositoryCoordinatorDefinition.getClass()).getDatabaseConnection(metadataRepositoryCoordinatorDefinition, metadataRepositoryCoordinatorProfileDefinition);
     }
-
 }

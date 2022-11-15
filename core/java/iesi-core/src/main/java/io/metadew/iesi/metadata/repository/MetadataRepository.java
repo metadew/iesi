@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.repository;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.tables.MetadataTablesConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.MetadataTable;
@@ -26,7 +27,7 @@ public abstract class MetadataRepository {
                               RepositoryCoordinator repositoryCoordinator) {
         this.tablePrefix = "iesi".toUpperCase() + "_" + (instanceName != null ? instanceName + "_" : "");
         this.repositoryCoordinator = repositoryCoordinator;
-        this.metadataTables = MetadataTablesConfiguration.getInstance().getMetadataTables().stream()
+        this.metadataTables = SpringContext.getBean(MetadataTablesConfiguration.class).getMetadataTables().stream()
                 .filter(metadataTable -> metadataTable.getCategory().equalsIgnoreCase(getCategory()))
                 .peek(metadataTable -> metadataTable.setName(tablePrefix + metadataTable.getName()))
                 .collect(Collectors.toList());
@@ -83,7 +84,7 @@ public abstract class MetadataRepository {
 
 
     public String getTableNameByLabel(String label) {
-        return MetadataTableService.getInstance().getByLabel(label).getName();
+        return SpringContext.getBean(MetadataTableService.class).getByLabel(label).getName();
     }
 
     public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;

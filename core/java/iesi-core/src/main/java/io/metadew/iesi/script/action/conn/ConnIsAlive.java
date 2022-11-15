@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.conn;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
@@ -16,7 +17,6 @@ import java.text.MessageFormat;
 @Log4j2
 public class ConnIsAlive extends ActionTypeExecution {
 
-
     // Parameters
 
     private final static String CONNECTION_KEY = "connection";
@@ -31,7 +31,7 @@ public class ConnIsAlive extends ActionTypeExecution {
     protected boolean executeAction() throws InterruptedException {
         // Get Connection
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
-        Connection connection = ConnectionConfiguration.getInstance()
+        Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                 .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                 .get();
 

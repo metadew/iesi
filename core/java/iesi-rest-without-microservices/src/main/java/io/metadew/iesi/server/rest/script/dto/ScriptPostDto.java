@@ -7,7 +7,6 @@ import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,6 +23,4 @@ public class ScriptPostDto extends RepresentationModel<ScriptPostDto> {
     private Set<ScriptParameterDto> parameters;
     private Set<ActionDto> actions;
     private Set<ScriptLabelDto> labels;
-
-
 }

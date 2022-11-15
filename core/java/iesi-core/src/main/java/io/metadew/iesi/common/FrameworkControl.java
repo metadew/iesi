@@ -1,20 +1,15 @@
 package io.metadew.iesi.common;
 
 import io.metadew.iesi.common.configuration.Configuration;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FrameworkControl {
 
+    private final Configuration configuration;
 
-    private static FrameworkControl INSTANCE;
-
-    public synchronized static FrameworkControl getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new FrameworkControl();
-        }
-        return INSTANCE;
-    }
-
-    private FrameworkControl() {
+    public FrameworkControl(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     public String resolveConfiguration(String input) {
@@ -29,8 +24,8 @@ public class FrameworkControl {
             midBit = temp.substring(openPos + 1, closePos);
 
             // Replacing the value if found
-            if (Configuration.getInstance().getProperty(midBit).isPresent()) {
-                input = input.replaceAll(variable_char + midBit + variable_char, Configuration.getInstance().getProperty(midBit)
+            if (configuration.getProperty(midBit).isPresent()) {
+                input = input.replaceAll(variable_char + midBit + variable_char, configuration.getProperty(midBit)
                         .map(o -> (String) o)
                         .get());
             }

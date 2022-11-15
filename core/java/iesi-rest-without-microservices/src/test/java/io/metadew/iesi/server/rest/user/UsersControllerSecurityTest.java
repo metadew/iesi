@@ -6,12 +6,13 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
-import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
+import io.metadew.iesi.server.rest.configuration.security.jwt.JwtWebSecurityConfiguration;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
@@ -20,9 +21,11 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -35,10 +38,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Log4j2
-@SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
+@SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, JwtWebSecurityConfiguration.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=true"})
+@ContextConfiguration(classes = TestConfiguration.class)
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ActiveProfiles({"test"})
+@ActiveProfiles("test")
 @DirtiesContext
 class UsersControllerSecurityTest {
 
@@ -51,14 +55,13 @@ class UsersControllerSecurityTest {
     @MockBean
     private AuthenticationManager authenticationManager;
     @MockBean
-    private JwtService jwtService;
-    @MockBean
     private PasswordEncoder passwordEncoder;
     @MockBean
     private TeamService teamService;
     @MockBean
     private io.metadew.iesi.metadata.service.user.UserService userService;
     @MockBean
+    @Qualifier("restUserService")
     private UserService userDtoService;
     @MockBean
     private PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
@@ -141,8 +144,8 @@ class UsersControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetByUuidNoUserRead() {
-        UUID uuid = UUID.randomUUID();
-        assertThatThrownBy(() -> userController.fetch(uuid))
+        String username = "user";
+        assertThatThrownBy(() -> userController.fetch(username))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -162,7 +165,7 @@ class UsersControllerSecurityTest {
                                 false,
                                 new HashSet<>())
                 ));
-        userController.fetch(uuid);
+        userController.fetch("user");
     }
 
     // create components
@@ -199,6 +202,7 @@ class UsersControllerSecurityTest {
         UserPostDto userPostDto = UserPostDto.builder()
                 .username("username")
                 .password("password")
+                .repeatedPassword("password")
                 .build();
         assertThatThrownBy(() -> userController.create(userPostDto))
                 .isInstanceOf(AccessDeniedException.class);
@@ -211,6 +215,7 @@ class UsersControllerSecurityTest {
         UserPostDto userPostDto = UserPostDto.builder()
                 .username("username")
                 .password("password")
+                .repeatedPassword("password")
                 .build();
         when(userDtoService.get((UUID) any()))
                 .thenReturn(Optional.of(

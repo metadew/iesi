@@ -11,7 +11,9 @@ import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -19,21 +21,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ExecutionRequestConfiguration extends Configuration<ExecutionRequest, ExecutionRequestKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static ExecutionRequestConfiguration instance;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration;
+    private final ExecutionRequestLabelConfiguration executionRequestLabelConfiguration;
 
-    public static synchronized ExecutionRequestConfiguration getInstance() {
-        if (instance == null) {
-            instance = new ExecutionRequestConfiguration();
-        }
-        return instance;
+    public ExecutionRequestConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                                         ScriptExecutionRequestConfiguration scriptExecutionRequestConfiguration,
+                                         ExecutionRequestLabelConfiguration executionRequestLabelConfiguration
+    ) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.scriptExecutionRequestConfiguration = scriptExecutionRequestConfiguration;
+        this.executionRequestLabelConfiguration = executionRequestLabelConfiguration;
     }
 
-    private ExecutionRequestConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getExecutionServerMetadataRepository());
     }
 
     @Override
@@ -41,6 +49,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         try {
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "EXECUTION_REQUEST.DEBUG_MODE, " +
                     "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
                     "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
@@ -67,9 +76,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         cachedRowSet.getString("NOTIF_EMAIL"),
                         cachedRowSet.getString("SCOPE_NM"),
                         cachedRowSet.getString("CONTEXT_NM"),
+                        SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                         ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
-                        ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
+                        scriptExecutionRequestConfiguration.getByExecutionRequest(executionRequestKey),
+                        executionRequestLabelConfiguration.getByExecutionRequest(executionRequestKey),
                         cachedRowSet.getString("USER_ID"),
                         cachedRowSet.getString("USERNAME")
                 ));
@@ -82,9 +92,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                         cachedRowSet.getString("NOTIF_EMAIL"),
                         cachedRowSet.getString("SCOPE_NM"),
                         cachedRowSet.getString("CONTEXT_NM"),
+                        SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                         ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                        ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(executionRequestKey),
-                        ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(executionRequestKey)));
+                        scriptExecutionRequestConfiguration.getByExecutionRequest(executionRequestKey),
+                        executionRequestLabelConfiguration.getByExecutionRequest(executionRequestKey)));
             } else {
                 LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequestKey.toString()));
                 return Optional.empty();
@@ -100,6 +111,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             List<ExecutionRequest> executionRequests = new ArrayList<>();
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "EXECUTION_REQUEST.DEBUG_MODE, " +
                     "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
                     "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
@@ -121,9 +133,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("NOTIF_EMAIL"),
                             cachedRowSet.getString("SCOPE_NM"),
                             cachedRowSet.getString("CONTEXT_NM"),
+                            SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                            ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            scriptExecutionRequestConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            executionRequestLabelConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                             cachedRowSet.getString("USER_ID"),
                             cachedRowSet.getString("USERNAME")
                     ));
@@ -136,9 +149,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                             cachedRowSet.getString("NOTIF_EMAIL"),
                             cachedRowSet.getString("SCOPE_NM"),
                             cachedRowSet.getString("CONTEXT_NM"),
+                            SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                             ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                            ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                            ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
+                            scriptExecutionRequestConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                            executionRequestLabelConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID")))));
                 } else {
                     LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
 
@@ -155,6 +169,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             List<ExecutionRequest> executionRequests = new ArrayList<>();
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "EXECUTION_REQUEST.DEBUG_MODE, " +
                     "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
                     "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
@@ -180,6 +195,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             List<ExecutionRequest> executionRequests = new ArrayList<>();
             String query = "SELECT EXECUTION_REQUEST.REQUEST_ID, EXECUTION_REQUEST.REQUEST_TMS, EXECUTION_REQUEST.REQUEST_NM, " +
                     "EXECUTION_REQUEST.REQUEST_DSC, EXECUTION_REQUEST.NOTIF_EMAIL, EXECUTION_REQUEST.SCOPE_NM, EXECUTION_REQUEST.CONTEXT_NM, EXECUTION_REQUEST.ST_NM, " +
+                    "EXECUTION_REQUEST.DEBUG_MODE, " +
                     "AUTH_EXECUTION_REQUEST.USER_ID, AUTH_EXECUTION_REQUEST.USERNAME, " +
                     "AUTH_EXECUTION_REQUEST.REQUEST_ID AS AUTH, " +
                     "NON_AUTH_EXECUTION_REQUEST.REQUEST_ID AS NON_AUTH " +
@@ -210,12 +226,12 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     cachedRowSet.getString("NOTIF_EMAIL"),
                     cachedRowSet.getString("SCOPE_NM"),
                     cachedRowSet.getString("CONTEXT_NM"),
+                    SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                     ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                    ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                    ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                    scriptExecutionRequestConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                    executionRequestLabelConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
                     cachedRowSet.getString("USER_ID"),
                     cachedRowSet.getString("USERNAME")
-
             );
         } else if (cachedRowSet.getString("NON_AUTH") != null) {
             return new NonAuthenticatedExecutionRequest(
@@ -226,9 +242,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                     cachedRowSet.getString("NOTIF_EMAIL"),
                     cachedRowSet.getString("SCOPE_NM"),
                     cachedRowSet.getString("CONTEXT_NM"),
+                    SQLTools.getBooleanFromSql(cachedRowSet.getString("DEBUG_MODE")),
                     ExecutionRequestStatus.valueOf(cachedRowSet.getString("ST_NM")),
-                    ScriptExecutionRequestConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
-                    ExecutionRequestLabelConfiguration.getInstance().getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))));
+                    scriptExecutionRequestConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))),
+                    executionRequestLabelConfiguration.getByExecutionRequest(new ExecutionRequestKey(cachedRowSet.getString("REQUEST_ID"))));
         } else {
             throw new RuntimeException(String.format("ExecutionRequest %s does not have a certain class", cachedRowSet.getString("REQUEST_ID")));
         }
@@ -240,8 +257,8 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         if (!exists(executionRequestKey)) {
             throw new MetadataDoesNotExistException(executionRequestKey);
         }
-        ScriptExecutionRequestConfiguration.getInstance().deleteByExecutionRequest(executionRequestKey);
-        ExecutionRequestLabelConfiguration.getInstance().deleteByExecutionRequest(executionRequestKey);
+        scriptExecutionRequestConfiguration.deleteByExecutionRequest(executionRequestKey);
+        executionRequestLabelConfiguration.deleteByExecutionRequest(executionRequestKey);
         List<String> deleteStatement = deleteStatement(executionRequestKey);
         getMetadataRepository().executeBatch(deleteStatement);
     }
@@ -267,10 +284,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             throw new MetadataAlreadyExistsException(executionRequest);
         }
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-            ScriptExecutionRequestConfiguration.getInstance().insert(scriptExecutionRequest);
+            scriptExecutionRequestConfiguration.insert(scriptExecutionRequest);
         }
         for (ExecutionRequestLabel executionRequestLabel : executionRequest.getExecutionRequestLabels()) {
-            ExecutionRequestLabelConfiguration.getInstance().insert(executionRequestLabel);
+            executionRequestLabelConfiguration.insert(executionRequestLabel);
         }
         List<String> insertStatement = insertStatement(executionRequest);
         getMetadataRepository().executeBatch(insertStatement);
@@ -280,7 +297,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
         List<String> queries = new ArrayList<>();
         queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequests") +
                 " (REQUEST_ID, " +
-                "REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, ST_NM) VALUES (" +
+                "REQUEST_TMS, REQUEST_NM, REQUEST_DSC, NOTIF_EMAIL, SCOPE_NM, CONTEXT_NM, DEBUG_MODE, ST_NM) VALUES (" +
                 SQLTools.getStringForSQL(executionRequest.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getRequestTimestamp()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getName()) + "," +
@@ -288,6 +305,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
                 SQLTools.getStringForSQL(executionRequest.getEmail()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getScope()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getContext()) + "," +
+                SQLTools.getStringForSQL(executionRequest.isDebugMode()) + "," +
                 SQLTools.getStringForSQL(executionRequest.getExecutionRequestStatus().value()) + ");");
         if (executionRequest instanceof AuthenticatedExecutionRequest) {
             queries.add("INSERT INTO " + getMetadataRepository().getTableNameByLabel("AuthenticatedExecutionRequests") +
@@ -305,7 +323,7 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             LOGGER.warn(MessageFormat.format("ExecutionRequest {0} does not have a certain class", executionRequest.toString()));
         }
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-            queries.addAll(ScriptExecutionRequestConfiguration.getInstance().insertStatement(scriptExecutionRequest));
+            queries.addAll(scriptExecutionRequestConfiguration.insertStatement(scriptExecutionRequest));
         }
         return queries;
     }
@@ -316,10 +334,10 @@ public class ExecutionRequestConfiguration extends Configuration<ExecutionReques
             throw new MetadataDoesNotExistException(executionRequest);
         }
         for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-            ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
+            scriptExecutionRequestConfiguration.update(scriptExecutionRequest);
         }
         for (ExecutionRequestLabel executionRequestLabel : executionRequest.getExecutionRequestLabels()) {
-            ExecutionRequestLabelConfiguration.getInstance().update(executionRequestLabel);
+            executionRequestLabelConfiguration.update(executionRequestLabel);
         }
         List<String> updateStatement = updateStatement(executionRequest);
         getMetadataRepository().executeBatch(updateStatement);

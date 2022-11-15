@@ -37,11 +37,15 @@ import java.util.stream.Stream;
 @ConditionalOnWebApplication
 public class ScriptDtoRepository extends PaginatedRepository implements IScriptDtoRepository {
 
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
     private final FilterService filterService;
 
     @Autowired
-    public ScriptDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
+    public ScriptDtoRepository(MetadataTablesConfiguration metadataTablesConfiguration,
+                               MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                               FilterService filterService) {
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
         this.filterService = filterService;
     }
@@ -53,15 +57,15 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                 "actions.ACTION_ID, actions.ACTION_NB, actions.ACTION_DSC, actions.ACTION_NM, actions.ACTION_TYP_NM, actions.COMP_NM, actions.CONDITION_VAL, actions.ITERATION_VAL, actions.EXP_ERR_FL, actions.RETRIES_VAL, actions.STOP_ERR_FL, " +
                 "action_parameters.ACTION_PAR_NM, action_parameters.ACTION_PAR_VAL " +
                 "from (" + getBaseQuery(authentication, pageable, onlyLatestVersions, scriptFilters) + ") base_scripts " + //base table
-                "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
+                "inner join " + metadataTablesConfiguration.getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
                 "on base_scripts.SCRIPT_ID = script_designs.SCRIPT_ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
                 "on base_scripts.SCRIPT_ID = versions.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = versions.SCRIPT_VRS_NB " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
                 "on base_scripts.SCRIPT_ID = script_labels.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = script_labels.SCRIPT_VRS_NB " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Actions").getName() + " actions " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("Actions").getName() + " actions " +
                 "on base_scripts.SCRIPT_ID = actions.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = actions.SCRIPT_VRS_NB " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameters").getName() + " action_parameters " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ActionParameters").getName() + " action_parameters " +
                 "on base_scripts.SCRIPT_ID = action_parameters.SCRIPT_ID and base_scripts.SCRIPT_VRS_NB = action_parameters.SCRIPT_VRS_NB and actions.ACTION_ID = action_parameters.ACTION_ID" +
                 getOrderByClause(pageable) +
                 ";";
@@ -78,10 +82,10 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
      */
     private String getBaseQuery(Authentication authentication, Pageable pageable, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters) {
         return "select distinct script_designs.SCRIPT_ID, script_designs.SECURITY_GROUP_NAME, script_designs.SCRIPT_NM, versions.SCRIPT_VRS_NB " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
                 "on script_designs.SCRIPT_ID = versions.SCRIPT_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
                 "on script_designs.SCRIPT_ID = script_labels.SCRIPT_ID and versions.SCRIPT_VRS_NB = script_labels.SCRIPT_VRS_NB " +
                 getWhereClause(authentication, scriptFilters, onlyLatestVersions) +
                 getOrderByClause(pageable) +
@@ -117,8 +121,8 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         if (onlyLatestVersions) {
             filterStatements = (filterStatements.isEmpty() ? "" : filterStatements + " and ") +
                     " (versions.SCRIPT_ID, versions.SCRIPT_VRS_NB) in (select scripts.SCRIPT_ID, max(script_versions.SCRIPT_VRS_NB) SCRIPT_VRS_NB " +
-                    "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
-                    "inner join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " script_versions " +
+                    "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Scripts").getName() + " scripts " +
+                    "inner join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptVersions").getName() + " script_versions " +
                     "on scripts.SCRIPT_ID = script_versions.SCRIPT_ID group by scripts.SCRIPT_ID) ";
         }
         return filterStatements.isEmpty() ? "" : " WHERE " + filterStatements;
@@ -135,9 +139,9 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
         List<String> sorting = pageable.getSort().stream().map(order -> {
             // add further sort on the ScriptAndScriptVersionTable here
             if (order.getProperty().equalsIgnoreCase("NAME")) {
-                return "script_designs.SCRIPT_NM" + " " + order.getDirection();
+                return "lower(script_designs.SCRIPT_NM) " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
-                return "versions.SCRIPT_VRS_NB" + " " + order.getDirection();
+                return "versions.SCRIPT_VRS_NB " + order.getDirection();
             } else {
                 return null;
             }
@@ -178,13 +182,13 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
 
     private long getRowSize(Authentication authentication, boolean onlyLatestVersions, List<ScriptFilter> scriptFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct script_designs.SCRIPT_ID, versions.SCRIPT_VRS_NB " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Scripts").getName() + " script_designs " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptVersions").getName() + " versions " +
                 "on script_designs.SCRIPT_ID = versions.SCRIPT_ID " +
-                "left outer join " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptLabels").getName() + " script_labels " +
                 "on script_designs.SCRIPT_ID = script_labels.SCRIPT_ID and versions.SCRIPT_VRS_NB = script_labels.SCRIPT_VRS_NB " +
                 getWhereClause(authentication, scriptFilters, onlyLatestVersions) +
-                ") filtered_scripts;";
+                ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
@@ -367,10 +371,10 @@ public class ScriptDtoRepository extends PaginatedRepository implements IScriptD
                     "script_result.ENV_NM ENV_NM, script_result.ST_NM ST_NM, script_result.STRT_TMS STRT_TMS, " +
                     "script_result.END_TMS END_TMS " +
                     "FROM " +
-                    "inner join (select * from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() +
+                    "inner join (select * from " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptResults").getName() +
                     " where (SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, STRT_TMS) " +
                     "in (SELECT SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM, MAX(STRT_TMS) " +
-                    "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " " +
+                    "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptResults").getName() + " " +
                     "group by SCRIPT_NM, SCRIPT_VRS_NB, ENV_NM)) script_result " +
                     "on scriptAndScriptVRS.SCRIPT_ID = script_result.SCRIPT_ID and scriptAndScriptVRS.SCRIPT_VRS_NB = script_result.SCRIPT_VRS_NB ";
         } else {

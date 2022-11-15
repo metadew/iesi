@@ -6,10 +6,11 @@ import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.metadata.configuration.Configuration;
 import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -17,20 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ActionResultConfiguration extends Configuration<ActionResult, ActionResultKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ActionResultConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ActionResultConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ActionResultConfiguration();
-        }
-        return INSTANCE;
+    public ActionResultConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ActionResultConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getResultMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getResultMetadataRepository());
     }
 
     @Override

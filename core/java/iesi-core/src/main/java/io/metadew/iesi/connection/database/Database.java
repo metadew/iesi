@@ -1,6 +1,7 @@
 package io.metadew.iesi.connection.database;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.connection.DatabaseConnection;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,15 +27,16 @@ public abstract class Database {
     private HikariDataSource connectionPool;
 
     public Database(DatabaseConnection databaseConnection) {
-        this(databaseConnection, false);
+        this(databaseConnection, true);
     }
 
     public Database(DatabaseConnection databaseConnection, boolean eagerConnectionPoolCreation) {
         this.databaseConnection = databaseConnection;
         this.maximalPoolSize = DEFAULT_MAX_POOL_SIZE;
         this.initialPoolSize = DEFAULT_INITIAL_POOL_SIZE;
-        if (DatabaseHandler.getInstance().isInitializeConnectionPool(this) && eagerConnectionPoolCreation) {
-            this.connectionPool = DatabaseHandler.getInstance().createConnectionPool(this, databaseConnection);
+
+        if (SpringContext.getBean(DatabaseHandler.class).isInitializeConnectionPool(this) && eagerConnectionPoolCreation) {
+            this.connectionPool = SpringContext.getBean(DatabaseHandler.class).createConnectionPool(this, databaseConnection);
         }
     }
 
@@ -42,8 +44,8 @@ public abstract class Database {
         this.databaseConnection = databaseConnection;
         this.initialPoolSize = initialPoolSize;
         this.maximalPoolSize = maximalPoolSize;
-        if (DatabaseHandler.getInstance().isInitializeConnectionPool(this)) {
-            this.connectionPool = DatabaseHandler.getInstance().createConnectionPool(this, databaseConnection);
+        if (SpringContext.getBean(DatabaseHandler.class).isInitializeConnectionPool(this)) {
+            this.connectionPool = SpringContext.getBean(DatabaseHandler.class).createConnectionPool(this, databaseConnection);
         }
     }
 

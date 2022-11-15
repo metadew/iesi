@@ -1,6 +1,16 @@
 package io.metadew.iesi.server.rest.script;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
 import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
+import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.definition.script.ScriptLabel;
+import io.metadew.iesi.metadata.definition.script.ScriptVersion;
+import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
+import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
+import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
+import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
 import io.metadew.iesi.server.rest.builder.script.ScriptDtoBuilder;
 import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
@@ -9,13 +19,12 @@ import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
 import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditService;
-import io.metadew.iesi.server.rest.script.dto.ScriptDto;
-import io.metadew.iesi.server.rest.script.dto.ScriptDtoModelAssembler;
-import io.metadew.iesi.server.rest.script.dto.ScriptDtoService;
-import io.metadew.iesi.server.rest.script.dto.ScriptPostDtoService;
+import io.metadew.iesi.server.rest.script.dto.*;
 import io.metadew.iesi.server.rest.script.dto.action.ScriptActionDtoService;
+import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDtoService;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDtoService;
+import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDtoService;
 import io.metadew.iesi.server.rest.user.UserDtoRepository;
 import org.junit.jupiter.api.Test;
@@ -32,9 +41,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,7 +49,10 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -56,11 +66,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 class ScriptsControllerTest {
 
+
     @Autowired
     private MockMvc mvc;
 
     @MockBean
     private ScriptDtoService scriptDtoService;
+
+    @MockBean
+    private ScriptPostDtoService scriptPostDtoService;
+
+    @MockBean
+    private ScriptService scriptService;
 
     @Test
     void getAllNoResult() throws Exception {
@@ -438,43 +455,29 @@ class ScriptsControllerTest {
     @WithIesiUser(username = "spring",
             authorities = {"SCRIPTS_READ@PUBLIC"})
     void getByNameAndVersionFile() throws Exception {
-        Optional<ScriptDto> optionalScriptDto = Optional.of(ScriptDtoBuilder.simpleScriptDto("nameTest", 0));
-        given(scriptDtoService.getByNameAndVersion(null, "nameTest", 0, new ArrayList<>()))
-                .willReturn(optionalScriptDto);
+        ScriptBuilder scriptBuilder = new ScriptBuilder("nameTest", 0);
+        Script script = scriptBuilder
+                .name("nameTest")
+                .securityGroupName("PUBLIC")
+                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
+                .build();
+        Optional<Script> optionalScript = Optional.of(script);
+
+        given(scriptService.getByNameAndVersion( "nameTest", 0))
+                .willReturn(optionalScript);
 
 
         mvc.perform(get("/scripts/nameTest/0/download"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
-                .andExpect(jsonPath("$.name", is("nameTest")))
-                .andExpect(jsonPath("$.description").exists())
-                .andExpect(jsonPath("$.version.number").exists())
-                .andExpect(jsonPath("$.version.description").exists())
-                .andExpect(jsonPath("$.parameters").exists())
-                .andExpect(jsonPath("$.parameters[0].name").exists())
-                .andExpect(jsonPath("$.parameters[0].value").exists())
-                .andExpect(jsonPath("$.parameters[1].name").exists())
-                .andExpect(jsonPath("$.parameters[1].value").exists())
-                .andExpect(jsonPath("$.actions").exists())
-                .andExpect(jsonPath("$.actions[0].number").exists())
-                .andExpect(jsonPath("$.actions[0].name").exists())
-                .andExpect(jsonPath("$.actions[0].type").exists())
-                .andExpect(jsonPath("$.actions[0].description").exists())
-                .andExpect(jsonPath("$.actions[0].component").exists())
-                .andExpect(jsonPath("$.actions[0].condition").exists())
-                .andExpect(jsonPath("$.actions[0].iteration").exists())
-                .andExpect(jsonPath("$.actions[0].errorExpected").exists())
-                .andExpect(jsonPath("$.actions[0].errorStop").exists())
-                .andExpect(jsonPath("$.actions[0].retries").exists())
-                .andExpect(jsonPath("$.actions[0].parameters[0].name").exists())
-                .andExpect(jsonPath("$.actions[0].parameters[0].value").exists())
-                .andExpect(jsonPath("$.actions[0].parameters[1].name").exists())
-                .andExpect(jsonPath("$.actions[0].parameters[1].value").exists())
-                .andExpect(jsonPath("$.labels[0].name").exists())
-                .andExpect(jsonPath("$.labels[0].value").exists())
-                .andExpect(jsonPath("$.labels[1].name").exists())
-                .andExpect(jsonPath("$.labels[1].value").exists());
-
+                .andExpect(jsonPath("$.type", is("script")))
+                .andExpect(jsonPath("$.data.name", is("nameTest")))
+                .andExpect(jsonPath("$.data.description").exists())
+                .andExpect(jsonPath("$.data.version.number").exists())
+                .andExpect(jsonPath("$.data.version.description").exists())
+                .andExpect(jsonPath("$.data.parameters").exists())
+                .andExpect(jsonPath("$.data.actions").exists())
+                .andExpect(jsonPath("$.data.labels").exists());
     }
 
 
@@ -487,6 +490,63 @@ class ScriptsControllerTest {
 
         mvc.perform(get("/scripts/nameTest/1/download"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void postWithWrongPolicy() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ScriptPostDto scriptPostDto = ScriptPostDto.builder()
+                .name("my script")
+                .securityGroupName("PUBLIC")
+                .description("my description")
+                .version(new ScriptVersionDto(1L, "my description"))
+                .parameters(new HashSet<>())
+                .actions(new HashSet<>())
+                .labels(Stream.of(
+                        new ScriptLabelDto("label_1", "value1"),
+                        new ScriptLabelDto("label_2", "value2"),
+                        new ScriptLabelDto("label_4", "value4")
+                ).collect(Collectors.toSet()))
+                .build();
+        Script script = new Script(
+                new ScriptKey("id", 1L),
+                new SecurityGroupKey(UUID.randomUUID()),
+                "PUBLIC",
+                "my script",
+                "my description",
+                new ScriptVersion(
+                        new ScriptVersionKey(new ScriptKey("id", 1L)),
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                ),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                Stream.of(
+                        new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), new ScriptKey("id", 1L), "label_1", "value1"),
+                        new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), new ScriptKey("id", 1L), "label_2", "value2"),
+                        new ScriptLabel(new ScriptLabelKey(UUID.randomUUID().toString()), new ScriptKey("id", 1L), "label_4", "value4")
+                ).collect(Collectors.toList()
+        ));
+
+        String scriptPostDtoString = objectMapper.writeValueAsString(scriptPostDto);
+
+        doReturn(script).when(scriptPostDtoService).convertToEntity(scriptPostDto);
+
+        doThrow(new PolicyVerificationException("my script does not contain mandatory label \"label_3\" defined in the policy \"policy_2\""))
+                .when(scriptService).createScript(any());
+
+        mvc.perform(
+                        post("/scripts")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(scriptPostDtoString)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", is("400")))
+                .andExpect(jsonPath("$.message", is("my script does not contain mandatory label \"label_3\" defined in the policy \"policy_2\"")));
+
     }
 
 //    @Test

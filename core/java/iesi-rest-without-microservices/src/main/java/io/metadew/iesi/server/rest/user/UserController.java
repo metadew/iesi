@@ -1,24 +1,25 @@
 package io.metadew.iesi.server.rest.user;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.user.Role;
 import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.User;
 import io.metadew.iesi.metadata.definition.user.UserKey;
 import io.metadew.iesi.metadata.service.user.TeamService;
-import io.metadew.iesi.server.rest.configuration.security.jwt.JwtService;
+import io.metadew.iesi.server.rest.error.PasswordsMisMatchException;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,23 +39,17 @@ public class UserController {
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final TeamService teamService;
     private final IUserService userService;
     private final UserDtoModelAssembler userDtoModelAssembler;
     private final PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler;
 
-    public UserController(AuthenticationManager authenticationManager,
-                          JwtService jwtService,
-                          PasswordEncoder passwordEncoder,
+    public UserController(PasswordEncoder passwordEncoder,
                           TeamService teamService,
                           IUserService userService,
                           UserDtoModelAssembler userDtoModelAssembler,
                           PagedResourcesAssembler<UserDto> userDtoPagedResourcesAssembler) {
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.teamService = teamService;
         this.userService = userService;
@@ -99,20 +94,14 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
-    public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
-        log.trace("authenticating " + authenticationRequest.getUsername());
-        // authenticationManager will load the user details (containing the encrypted password) using the IesiUserDetailManager
-        // and will match the password based on the provided password
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-        return jwtService.generateAuthenticationResponse(authentication);
-    }
-
     @PostMapping("/create")
     @PreAuthorize("hasPrivilege('USERS_WRITE')")
-    public ResponseEntity<Object> create(@RequestBody UserPostDto userPostDto) {
+    public ResponseEntity<UserDto> create(@RequestBody UserPostDto userPostDto) {
+        if (!userPostDto.getPassword().equals(userPostDto.getRepeatedPassword())) {
+            throw new PasswordsMisMatchException();
+        }
         if (userService.exists(userPostDto.getUsername())) {
-            return ResponseEntity.badRequest().body("username is already taken");
+            throw new MetadataAlreadyExistsException("Username " + userPostDto.getUsername() + " is already taken");
         }
         User user = new User(
                 new UserKey(UUID.randomUUID()),
@@ -124,17 +113,55 @@ public class UserController {
                 false,
                 new HashSet<>());
         userService.addUser(user);
-        Optional<UserDto> userDto = userService.get(user.getMetadataKey().getUuid());
-        return userDto
-                .<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+
+        return ResponseEntity.ok(userDtoModelAssembler.toModel(user));
     }
 
-    @GetMapping("/{uuid}")
+    @PutMapping("/{uuid}/password")
+    public HttpEntity<?> updatePassword(@PathVariable UUID uuid, @RequestBody PasswordPostDto passwordPostDto) {
+        if (!passwordPostDto.getValue().equals(passwordPostDto.getRepeatedPassword())) {
+            throw new PasswordsMisMatchException();
+        }
+        if (!userService.exists(new UserKey(uuid))) {
+            throw new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist");
+        }
+
+        userService.updatePassword(passwordEncoder.encode(passwordPostDto.getValue()), uuid);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<UserDto> update(@PathVariable UUID uuid, @RequestBody UserPutDto userPutDto) {
+        User user = userService.getRawUser(new UserKey(uuid))
+                .orElseThrow(() -> new MetadataDoesNotExistException("The user with the id \"" + uuid + "\" does not exist"));
+
+        if (userService.exists(userPutDto.getUsername())) {
+            throw new MetadataAlreadyExistsException(userPutDto.getUsername());
+        }
+
+
+        User updatedUser = new User(
+                user.getMetadataKey(),
+                userPutDto.getUsername(),
+                user.getPassword(),
+                userPutDto.isEnabled(),
+                userPutDto.isExpired(),
+                userPutDto.isCredentialsExpired(),
+                userPutDto.isLocked(),
+                user.getRoleKeys()
+        );
+
+        userService.update(updatedUser);
+
+        return ResponseEntity.ok(userDtoModelAssembler.toModel(updatedUser));
+    }
+
+    @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('USERS_READ')")
-    public ResponseEntity<UserDto> fetch(@PathVariable UUID uuid) {
+    public ResponseEntity<UserDto> fetch(@PathVariable String name) {
         return ResponseEntity
-                .of(userService.get(uuid));
+                .of(userService.get(name));
     }
 
     @GetMapping("")
@@ -148,8 +175,5 @@ public class UserController {
         if (userDtoPage.hasContent())
             return userDtoPagedResourcesAssembler.toModel(userDtoPage, userDtoModelAssembler::toModel);
         return (PagedModel<UserDto>) userDtoPagedResourcesAssembler.toEmptyModel(userDtoPage, UserDto.class);
-
     }
-
-
 }

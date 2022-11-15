@@ -1,5 +1,6 @@
 package io.metadew.iesi.metadata.service.template.matchervalue.fixed;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
@@ -22,8 +23,8 @@ public class FixedMatcherValueService implements IMatcherValueService<MatcherFix
     @Override
     public boolean matches(MatcherFixedValue matcherValue, DataType dataType, ExecutionRuntime executionRuntime) {
         log.info("checking " + matcherValue.toString() + " against " + dataType.toString());
-        return DataTypeHandler.getInstance().equals(dataType,
-                DataTypeHandler.getInstance().resolve(matcherValue.getValue(), executionRuntime),
+        return SpringContext.getBean(DataTypeHandler.class).equals(dataType,
+                SpringContext.getBean(DataTypeHandler.class).resolve(matcherValue.getValue(), executionRuntime),
                 executionRuntime);
     }
 

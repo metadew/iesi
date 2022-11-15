@@ -33,11 +33,15 @@ import java.util.stream.Stream;
 public class ComponentDtoRepository extends PaginatedRepository implements IComponentDtoRepository {
 
     private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
     private final FilterService filterService;
 
     @Autowired
-    public ComponentDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, FilterService filterService) {
+    public ComponentDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration,
+                                  MetadataTablesConfiguration metadataTablesConfiguration,
+                                  FilterService filterService) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
         this.filterService = filterService;
     }
 
@@ -45,11 +49,11 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         return "select component_designs.COMP_ID, component_designs.SECURITY_GROUP_NM, component_designs.COMP_TYP_NM, component_designs.COMP_NM, component_designs.COMP_DSC, versions.COMP_VRS_NB, " +
                 "versions.COMP_VRS_DSC, " + "parameters.COMP_PAR_NM, " + "parameters.COMP_PAR_VAL, " + "versions.COMP_VRS_DSC " +
                 "FROM (" + getBaseQuery(authentication, pageable, componentFilters) + ") base_components " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "on base_components.COMP_ID = component_designs.COMP_ID " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
                 "on base_components.COMP_ID = versions.COMP_ID AND base_components.COMP_VRS_NB = versions.COMP_VRS_NB " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentParameters").getName() + " parameters " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ComponentParameters").getName() + " parameters " +
                 "on base_components.COMP_ID = parameters.COMP_ID AND base_components.COMP_VRS_NB = parameters.COMP_VRS_NB " +
                 getOrderByClause(pageable) +
                 ";";
@@ -65,8 +69,8 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 getLimitAndOffsetClause(pageable));
 
         return "select distinct component_designs.COMP_ID, component_designs.SECURITY_GROUP_NM, versions.COMP_VRS_NB " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Components").getName() + " component_designs " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
                 "on component_designs.COMP_ID = versions.COMP_ID" +
                 getWhereClause(authentication, componentFilters) +
                 getOrderByClause(pageable) +
@@ -136,8 +140,8 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
 
     private long getRowSize(Authentication authentication, List<ComponentFilter> componentFilters) throws SQLException {
         String query = "select count(*) as row_count from (select distinct component_designs.COMP_ID, versions.COMP_VRS_NB " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
+                "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Components").getName() + " component_designs " +
+                "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
                 "on component_designs.COMP_ID = versions.COMP_ID " +
                 
 		getWhereClause(authentication, componentFilters) +

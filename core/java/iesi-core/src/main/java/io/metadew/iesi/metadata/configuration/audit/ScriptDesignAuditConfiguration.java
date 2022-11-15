@@ -9,7 +9,9 @@ import io.metadew.iesi.metadata.definition.audit.key.ScriptDesignAuditKey;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -19,20 +21,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
+@Component
 public class ScriptDesignAuditConfiguration extends Configuration<ScriptDesignAudit, ScriptDesignAuditKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ScriptDesignAuditConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ScriptDesignAuditConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptDesignAuditConfiguration();
-        }
-        return INSTANCE;
+    public ScriptDesignAuditConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptDesignAuditConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getControlMetadataRepository());
     }
 
     @Override

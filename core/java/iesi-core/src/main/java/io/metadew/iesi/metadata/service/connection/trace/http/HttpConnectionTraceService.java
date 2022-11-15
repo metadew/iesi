@@ -6,24 +6,22 @@ import io.metadew.iesi.metadata.definition.connection.trace.ConnectionTraceKey;
 import io.metadew.iesi.metadata.definition.connection.trace.http.HttpConnectionTrace;
 import io.metadew.iesi.script.execution.ActionExecution;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Log4j2
+@Service
 public class HttpConnectionTraceService implements IHttpConnectionTraceService {
+
     private static final String CONNECTION_TYPE = "http";
 
-    private static HttpConnectionTraceService INSTANCE;
+    private final ConnectionTraceConfiguration connectionTraceConfiguration;
 
-    public synchronized static HttpConnectionTraceService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpConnectionTraceService();
-        }
-        return INSTANCE;
+    public HttpConnectionTraceService(ConnectionTraceConfiguration connectionTraceConfiguration) {
+        this.connectionTraceConfiguration = connectionTraceConfiguration;
     }
 
-    private HttpConnectionTraceService() {
-    }
 
     public HttpConnectionTrace convert(HttpConnection httpConnection, ActionExecution actionExecution, String actionParameterName) {
         return HttpConnectionTrace.builder()
@@ -43,7 +41,7 @@ public class HttpConnectionTraceService implements IHttpConnectionTraceService {
 
     public void trace(HttpConnection httpConnection, ActionExecution actionExecution, String actionParameterName) {
         HttpConnectionTrace httpConnectionTrace = convert(httpConnection, actionExecution, actionParameterName);
-        ConnectionTraceConfiguration.getInstance().insert(httpConnectionTrace);
+        connectionTraceConfiguration.insert(httpConnectionTrace);
     }
 
 }

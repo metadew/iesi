@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-@Service
+@Service("restTeamService")
 public class TeamService implements ITeamService {
 
     private final ITeamDtoRepository teamDtoRepository;

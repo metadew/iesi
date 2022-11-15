@@ -9,6 +9,7 @@ import io.metadew.iesi.connection.operation.filetransfer.FileTransferResult;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransfered;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,18 +17,13 @@ import java.util.List;
 import java.util.Vector;
 
 @Log4j2
+@Service
 public class FileTransferService {
 
-    private static FileTransferService instance;
+    private final ConnectionOperation connectionOperation;
 
-    public static synchronized FileTransferService getInstance() {
-        if (instance == null) {
-            instance = new FileTransferService();
-        }
-        return instance;
-    }
-
-    private FileTransferService() {
+    public FileTransferService(ConnectionOperation connectionOperation) {
+        this.connectionOperation = connectionOperation;
     }
 
     // File Transfer
@@ -36,7 +32,7 @@ public class FileTransferService {
                                                     Connection targetConnection) {
 
         List<FileTransfered> fileTransferedList = new ArrayList<>();
-        HostConnection targetConnectionConnection = ConnectionOperation.getInstance().getHostConnection(targetConnection);
+        HostConnection targetConnectionConnection = connectionOperation.getHostConnection(targetConnection);
         log.trace("fho.transfer.target.connection=" + targetConnection.getMetadataKey().getName());
 
         try {
@@ -105,7 +101,7 @@ public class FileTransferService {
                                                     String targetFileName) {
 
         List<FileTransfered> fileTransferedList = new ArrayList<>();
-        HostConnection sourceConnectionConnection = ConnectionOperation.getInstance().getHostConnection(sourceConnection);
+        HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
         log.trace("fho.transfer.source.connection=" + sourceConnection.getMetadataKey().getName());
 
         try {

@@ -1,6 +1,8 @@
 package io.metadew.iesi.script.action;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeParameterConfiguration;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.type.ActionTypeParameter;
@@ -12,7 +14,10 @@ import lombok.Getter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Getter
 public abstract class ActionTypeExecution {
@@ -30,7 +35,7 @@ public abstract class ActionTypeExecution {
     }
 
     public void resolveParameters() {
-        for (Map.Entry<String, ActionTypeParameter> actionTypeParameter : ActionTypeParameterConfiguration.getInstance().getActionTypeParameters(getKeyword()).entrySet()) {
+        for (Map.Entry<String, ActionTypeParameter> actionTypeParameter : SpringContext.getBean(ActionTypeParameterConfiguration.class).getActionTypeParameters(getKeyword()).entrySet()) {
             Optional<ActionParameter> actionParameter = getActionExecution().getAction().getParameters().stream()
                     // TODO: go to equals instead of equals ignore case
                     .filter(actionParameterElement -> actionParameterElement.getMetadataKey().getParameterName().equalsIgnoreCase(actionTypeParameter.getKey()))
@@ -43,7 +48,7 @@ public abstract class ActionTypeExecution {
             } else {
                 getActionParameterResolvements().add(new ActionParameterResolvement(
                         actionParameter.get(),
-                        ActionParameterService.getInstance().getValue(actionParameter.get(), getExecutionControl().getExecutionRuntime(), getActionExecution())));
+                        SpringContext.getBean(ActionParameterService.class).getValue(actionParameter.get(), getExecutionControl().getExecutionRuntime(), getActionExecution())));
             }
         }
     }
@@ -83,6 +88,16 @@ public abstract class ActionTypeExecution {
                 .findFirst()
                 .map(ActionParameterResolvement::getResolvedValue)
                 .orElse(null);
+    }
+
+    public void replaceParameterResolvedValue(ActionParameter actionParameter, String newValue) {
+        actionParameterResolvements.removeIf(o -> o.getActionParameter().getMetadataKey().getParameterName().equals(actionParameter.getMetadataKey().getParameterName()));
+        actionParameterResolvements.add(
+                new ActionParameterResolvement(
+                        actionParameter,
+                        new Text(newValue)
+                )
+        );
     }
 
 }

@@ -8,6 +8,7 @@ iesi:
 #    mode: off
     mode: standalone
     threads:
+      size: 2
       timeout: 30
   home: '.'
   security:

@@ -21,7 +21,6 @@ iesi:
       secret: secret
       expiry-date: 3600
   debug: true
-
 management:
   endpoints:
     web:

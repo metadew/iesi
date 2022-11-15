@@ -11,7 +11,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class User extends Metadata<UserKey> {
+public class User extends Metadata<UserKey>  {
 
     private String username;
     private String password;

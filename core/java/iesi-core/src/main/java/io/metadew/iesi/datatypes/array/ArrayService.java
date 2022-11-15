@@ -2,10 +2,11 @@ package io.metadew.iesi.datatypes.array;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import lombok.extern.log4j.Log4j2;
 
@@ -40,9 +41,9 @@ public class ArrayService implements IDataTypeService<Array> {
 
     public Array resolve(String arguments, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Array", arguments));
-        List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(arguments);
+        List<String> splittedArguments = SpringContext.getBean(DataTypeHandler.class).splitInstructionArguments(arguments);
         List<DataType> resolvedArguments = splittedArguments.stream()
-                .map(argument -> DataTypeHandler.getInstance().resolve(argument, executionRuntime))
+                .map(argument -> SpringContext.getBean(DataTypeHandler.class).resolve(argument, executionRuntime))
                 .collect(Collectors.toList());
         return new Array(resolvedArguments);
     }
@@ -60,18 +61,18 @@ public class ArrayService implements IDataTypeService<Array> {
         }
 
         for (int i = 0; i < _this.getList().size(); i++) {
-            if (!DataTypeHandler.getInstance().equals(_this.getList().get(i), other.getList().get(i), executionRuntime)) {
+            if (!SpringContext.getBean(DataTypeHandler.class).equals(_this.getList().get(i), other.getList().get(i), executionRuntime)) {
                 return false;
             }
         }
         return true;
     }
 
-    public Array resolve(InMemoryDatasetImplementation inMemoryDatasetImplementation, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) {
+    public Array resolve(DatasetImplementation databaseDatasetImplementation, String key, ArrayNode jsonNode, ExecutionRuntime executionRuntime) {
         Array array = new Array();
         int elementCounter = 1;
         for (JsonNode element : jsonNode) {
-            array.add(DataTypeHandler.getInstance().resolve(inMemoryDatasetImplementation, key + "." + elementCounter, element, executionRuntime));
+            array.add(SpringContext.getBean(DataTypeHandler.class).resolve(databaseDatasetImplementation, key + "." + elementCounter, element, executionRuntime));
             elementCounter++;
         }
         return array;

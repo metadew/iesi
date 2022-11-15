@@ -25,10 +25,10 @@ import java.util.concurrent.CompletableFuture;
 @ConditionalOnWebApplication
 @Profile("single_process")
 public class DevelopmentExecutionRequestExecutorService implements IExecutionRequestExecutorService {
+
     private final Map<Class<? extends ScriptExecutionRequest>, IExecutionRequestExecutor> executionRequestExecutorMap = new HashMap<>();
     private final ExecutionRequestConfiguration executionRequestConfiguration;
     private final ThreadPoolTaskExecutor executor;
-
     private final List<IExecutionRequestExecutor> executionRequestExecutors;
 
     public DevelopmentExecutionRequestExecutorService(ExecutionRequestConfiguration executionRequestConfiguration,
@@ -49,7 +49,7 @@ public class DevelopmentExecutionRequestExecutorService implements IExecutionReq
     @Async("executionRequestTaskExecutor")
     public CompletableFuture<Boolean> execute(ExecutionRequest executionRequest) {
         executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
-        ExecutionRequestConfiguration.getInstance().update(executionRequest);
+        executionRequestConfiguration.update(executionRequest);
         try {
             IExecutionRequestExecutor executionRequestExecutor = executionRequestExecutorMap.get(executionRequest.getClass());
             if (executionRequestExecutor == null) {
@@ -69,7 +69,7 @@ public class DevelopmentExecutionRequestExecutorService implements IExecutionReq
             log.info("exception=" + e);
             log.debug("exception.stacktrace=" + stackTrace.toString());
             executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.STOPPED);
-            ExecutionRequestConfiguration.getInstance().update(executionRequest);
+            executionRequestConfiguration.update(executionRequest);
             return CompletableFuture.completedFuture(false);
         }
         return CompletableFuture.completedFuture(true);

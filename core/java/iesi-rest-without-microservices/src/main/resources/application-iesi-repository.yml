@@ -9,8 +9,31 @@ iesi:
 
         # type of database: sqlite, h2, mssql, netezza, oracle, postgresql
         coordinator:
-         type: sqlite
-         file: ./repository.db3
+          # init_sql: alter  current....
+          type: sqlite
+          file: ./repository.db3
+
+
+#          type: h2
+#          mode: memory
+#          database: test
+#          owner:
+#            user: test
+#            password: test
+
+
+#          type: oracle
+#          schema:
+#          connection: jdbc://test
+#          owner:
+#            user: owner
+#            password: owner
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
 
 
 #          type: h2
@@ -64,6 +87,21 @@ iesi:
 #          host: 
 #          name: 
 #          port: 
+#          schema:
+#          owner:
+#            user:
+#            password:
+#          reader:
+#            user:
+#            password:
+#          writer:
+#            user:
+#            password:
+
+#          type: mysql
+#          host:
+#          name:
+#          port:
 #          schema:
 #          owner:
 #            user:

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.mod;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.host.ShellCommandResult;
@@ -72,7 +73,7 @@ public class ModSoapui extends ActionTypeExecution {
         String output = this.getActionExecution().getActionControl().getActionRuntime().getRunCacheFolderName() + "soapui";
         FolderTools.createFolder(output);
 
-        String command = FrameworkConfiguration.getInstance()
+        String command = SpringContext.getBean(FrameworkConfiguration.class)
                 .getMandatoryFrameworkFolder("modules")
                 .getAbsolutePath()
                 .resolve("soapui")

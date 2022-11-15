@@ -18,16 +18,18 @@ import java.util.stream.Collectors;
 @ConditionalOnWebApplication
 public class ConnectionTypeController {
 
-    private IConnectionTypeDtoService connectionTypeDtoService;
+    private final IConnectionTypeDtoService connectionTypeDtoService;
+    private final MetadataConnectionTypesConfiguration metadataConnectionTypesConfiguration;
 
     @Autowired
-    ConnectionTypeController(IConnectionTypeDtoService connectionTypeDtoService) {
+    ConnectionTypeController(IConnectionTypeDtoService connectionTypeDtoService, MetadataConnectionTypesConfiguration metadataConnectionTypesConfiguration) {
         this.connectionTypeDtoService = connectionTypeDtoService;
+        this.metadataConnectionTypesConfiguration = metadataConnectionTypesConfiguration;
     }
 
     @GetMapping("")
     public List<ConnectionTypeDto> getAll() {
-        return MetadataConnectionTypesConfiguration.getInstance().getConnectionTypes()
+        return metadataConnectionTypesConfiguration.getConnectionTypes()
                 .entrySet()
                 .stream()
                 .map(entry -> connectionTypeDtoService.convertToDto(entry.getValue(), entry.getKey()))
@@ -36,7 +38,7 @@ public class ConnectionTypeController {
 
     @GetMapping("/{name}")
     public ConnectionTypeDto getByName(@PathVariable String name) {
-        return MetadataConnectionTypesConfiguration.getInstance().getConnectionType(name)
+        return metadataConnectionTypesConfiguration.getConnectionType(name)
                 .map(actionType -> connectionTypeDtoService.convertToDto(actionType, name))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find action type " + name));
     }

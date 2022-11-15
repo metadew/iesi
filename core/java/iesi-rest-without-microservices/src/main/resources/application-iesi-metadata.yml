@@ -685,7 +685,7 @@ iesi:
             order: 1
             type: STRING
             length: 2000
-            nullable: false
+            nullable: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
@@ -819,7 +819,6 @@ iesi:
             type: NUMBER
             length: 0
             nullable: false
-            unique: true
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
             order: 5
@@ -1086,16 +1085,23 @@ iesi:
             length: 255
             nullable: true
             defaultTimestamp:
+          DEBUG_MODE:
+            description: Boolean that indicates if the execution request is lunch as debug mode to enable logging for the coming scripts execution
+            order: 11
+            type: STRING
+            length: 255
+            nullable: false
+            defaultTimestamp:
           ST_NM:
             description: Status
-            order: 10
+            order: 12
             type: STRING
             length: 255
             nullable: false
             defaultTimestamp:
           LOAD_TMS:
             description: Load timestamp indicating when the record was inserted in the table
-            order: 15
+            order: 13
             type: TIMESTAMP
             length: 0
             nullable: false

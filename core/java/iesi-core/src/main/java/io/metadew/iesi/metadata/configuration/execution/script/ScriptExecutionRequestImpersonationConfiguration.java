@@ -9,28 +9,28 @@ import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionReque
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestImpersonationKey;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 
 @Log4j2
+@Component
 public class ScriptExecutionRequestImpersonationConfiguration extends Configuration<ScriptExecutionRequestImpersonation, ScriptExecutionRequestImpersonationKey> {
 
-    private static ScriptExecutionRequestImpersonationConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ScriptExecutionRequestImpersonationConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ScriptExecutionRequestImpersonationConfiguration();
-        }
-        return INSTANCE;
+    public ScriptExecutionRequestImpersonationConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ScriptExecutionRequestImpersonationConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getExecutionServerMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getExecutionServerMetadataRepository());
     }
 
     @Override

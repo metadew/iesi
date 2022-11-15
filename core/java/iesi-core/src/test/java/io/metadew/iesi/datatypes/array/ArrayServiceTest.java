@@ -2,13 +2,22 @@ package io.metadew.iesi.datatypes.array;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.component.http.HttpComponentDefinitionService;
+import io.metadew.iesi.component.http.HttpComponentDesignTraceService;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTraceConfiguration;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,18 +28,20 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = { DataTypeHandler.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ArrayServiceTest {
 
     @Test
     void appliesToTest() {
         assertEquals(Array.class, ArrayService.getInstance().appliesTo());
     }
-
 
     @Test
     void keywordTest() {
@@ -68,7 +79,7 @@ class ArrayServiceTest {
                 .get("array");
 
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-        InMemoryDatasetImplementation keyValueDataset = mock(InMemoryDatasetImplementation.class);
+        DatabaseDatasetImplementation keyValueDataset = mock(DatabaseDatasetImplementation.class);
         assertEquals(new Array(Collections.emptyList()),
                 ArrayService.getInstance().resolve(keyValueDataset, "array", arrayNode, executionRuntime));
     }
@@ -87,7 +98,7 @@ class ArrayServiceTest {
 //                .thenReturn("testing2")
 //                .thenReturn("testing3");
 
-        InMemoryDatasetImplementation keyValueDataset = mock(InMemoryDatasetImplementation.class);
+        DatabaseDatasetImplementation keyValueDataset = mock(DatabaseDatasetImplementation.class);
 //        when(executionRuntime.resolveVariables(anyString()))
 //                .thenReturn("testing1, testing2, testing3")
 //                .thenReturn("testing1")
@@ -105,7 +116,7 @@ class ArrayServiceTest {
                 .get("array");
 
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-        InMemoryDatasetImplementation keyValueDataset = mock(InMemoryDatasetImplementation.class);
+        DatabaseDatasetImplementation keyValueDataset = mock(DatabaseDatasetImplementation.class);
 
         assertEquals(new Array(Stream.of(new Array(Stream.of(new Text("1"), new Text("2")).collect(Collectors.toList())),
                 new Array(Stream.of(new Text("3"), new Text("4")).collect(Collectors.toList()))).collect(Collectors.toList())),

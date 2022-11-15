@@ -1,11 +1,12 @@
 package io.metadew.iesi.script.action.socket;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.connection.network.SocketConnection;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes._null.Null;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -42,8 +43,12 @@ public class SocketTransmitMessage extends ActionTypeExecution {
     private String message;
     private String protocol;
     private SocketConnection socket;
-    private InMemoryDatasetImplementation outputDataset;
+    private DatasetImplementation outputDataset;
     private Integer timeout;
+
+    private final Configuration configuration = SpringContext.getBean(Configuration.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+    private final ActionPerformanceLogger actionPerformanceLogger = SpringContext.getBean(ActionPerformanceLogger.class);
 
     public SocketTransmitMessage(ExecutionControl executionControl,
                                  ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -73,7 +78,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         }
     }
 
-    private InMemoryDatasetImplementation convertOutputDataset(DataType dataset) {
+    private DatasetImplementation convertOutputDataset(DataType dataset) {
         if (dataset == null || dataset instanceof Null) {
             return null;
         } else if (dataset instanceof Text) {
@@ -107,11 +112,11 @@ public class SocketTransmitMessage extends ActionTypeExecution {
                 message.getBytes(Charset.forName(socket.getEncoding())).length);
         datagramSocket.send(datagramPacketToSend);
         if (getOutputDataset().isPresent()) {
-            InMemoryDatasetImplementationService.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
+            DatasetImplementationHandler.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
             byte[] buffer = new byte[65508];
             DatagramPacket datagramPacketToReceive = new DatagramPacket(buffer, buffer.length);
             datagramSocket.receive(datagramPacketToReceive);
-            InMemoryDatasetImplementationService.getInstance().setDataItem(outputDataset, "response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
+            DatasetImplementationHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(datagramPacketToReceive.getData(), 0, datagramPacketToReceive.getLength(), Charset.forName(socket.getEncoding()))));
         }
     }
 
@@ -123,11 +128,11 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         dOut.write(message.getBytes(Charset.forName(socket.getEncoding())));
         dOut.flush();
         if (getOutputDataset().isPresent()) {
-            InMemoryDatasetImplementationService.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
+            DatasetImplementationHandler.getInstance().clean(outputDataset, getExecutionControl().getExecutionRuntime());
             LocalDateTime endDateTime;
             if (timeout == null) {
                 endDateTime = LocalDateTime.now()
-                        .plus((Integer) Configuration.getInstance().getMandatoryProperty("iesi.actions.socket.transmitMessage.timeout.default"),
+                        .plus((Integer) configuration.getMandatoryProperty("iesi.actions.socket.transmitMessage.timeout.default"),
                                 ChronoUnit.SECONDS);
             } else {
                 endDateTime = LocalDateTime.now().plus(timeout, ChronoUnit.SECONDS);
@@ -137,8 +142,8 @@ public class SocketTransmitMessage extends ActionTypeExecution {
                     byte[] bytes = new byte[dIn.available()];
                     int bytesRead = dIn.read(bytes);
                     LocalDateTime end = LocalDateTime.now();
-                    InMemoryDatasetImplementationService.getInstance().setDataItem(outputDataset, "response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
-                    ActionPerformanceLogger.getInstance().log(getActionExecution(), "response", start, end);
+                    DatasetImplementationHandler.getInstance().setDataItem(outputDataset, "response", new Text(new String(bytes, 0, bytesRead, Charset.forName(socket.getEncoding()))));
+                    actionPerformanceLogger.log(getActionExecution(), "response", start, end);
                     break;
                 }
             }
@@ -149,7 +154,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
 
     private SocketConnection convertSocket(DataType socket) {
         if (socket instanceof Text) {
-            return ConnectionConfiguration.getInstance()
+            return connectionConfiguration
                     .get(new ConnectionKey(((Text) socket).getString(), getExecutionControl().getEnvName()))
                     .map(SocketConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) socket).getString())));
@@ -177,7 +182,7 @@ public class SocketTransmitMessage extends ActionTypeExecution {
         }
     }
 
-    private Optional<InMemoryDatasetImplementation> getOutputDataset() {
+    private Optional<DatasetImplementation> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
 

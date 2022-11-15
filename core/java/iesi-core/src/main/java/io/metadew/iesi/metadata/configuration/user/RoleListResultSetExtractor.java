@@ -1,15 +1,24 @@
 package io.metadew.iesi.metadata.configuration.user;
 
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.user.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.stereotype.Service;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class RoleListResultSetExtractor {
+
+    private final UserConfiguration userConfiguration;
+
+    public RoleListResultSetExtractor(UserConfiguration userConfiguration) {
+        this.userConfiguration = userConfiguration;
+    }
 
     public List<Role> extractData(CachedRowSet cachedRowSet) throws SQLException {
         Map<String, RoleBuilder> userMap = new HashMap<>();
@@ -35,8 +44,11 @@ public class RoleListResultSetExtractor {
     }
 
     private void addUserId(RoleBuilder roleBuilder, CachedRowSet cachedRowSet) throws SQLException {
-        if (cachedRowSet.getString("user_role_user_id") != null) {
-            roleBuilder.getUserKeys().add(new UserKey(UUID.fromString(cachedRowSet.getString("user_role_user_id"))));
+        String userId = cachedRowSet.getString("user_role_user_id");
+        if (userId != null) {
+            User user = userConfiguration.get(new UserKey(UUID.fromString(userId)))
+                            .orElseThrow(() -> new MetadataDoesNotExistException(new UserKey(UUID.fromString(userId))));
+            roleBuilder.getUsers().add(user);
         }
     }
 
@@ -66,7 +78,7 @@ public class RoleListResultSetExtractor {
         private UUID roleId;
         private UUID teamId;
         private String name;
-        private final Set<UserKey> userKeys;
+        private final Set<User> users;
         private final Map<String, PrivilegeBuilder> privilegeMap;
 
         public Role build() {
@@ -77,7 +89,7 @@ public class RoleListResultSetExtractor {
                     privilegeMap.values().stream()
                             .map(PrivilegeBuilder::build)
                             .collect(Collectors.toSet()),
-                    userKeys);
+                    users);
         }
     }
 

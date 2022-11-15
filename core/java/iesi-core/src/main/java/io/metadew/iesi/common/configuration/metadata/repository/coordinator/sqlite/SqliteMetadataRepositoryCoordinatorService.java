@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.sqlite;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.FrameworkControl;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
@@ -42,13 +43,13 @@ public class SqliteMetadataRepositoryCoordinatorService implements IMetadataRepo
     public SqliteDatabaseConnection getDatabaseConnection(SQLiteMetadataRepositoryCoordinatorDefinition sqLiteRepositoryCoordinatorDefinition, MetadataRepositoryCoordinatorProfileDefinition metadataRepositoryCoordinatorProfileDefinition) {
         if (sqLiteRepositoryCoordinatorDefinition.getConnection().isPresent()) {
             return new SqliteDatabaseConnection(
-                    FrameworkControl.getInstance().resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getConnection().get()),
+                    SpringContext.getBean(FrameworkControl.class).resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getConnection().get()),
                     "",
                     "",
                     sqLiteRepositoryCoordinatorDefinition.getInitSql());
         } else {
             return new SqliteDatabaseConnection(
-                    FrameworkControl.getInstance().resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getFile()),
+                    SpringContext.getBean(FrameworkControl.class).resolveConfiguration(sqLiteRepositoryCoordinatorDefinition.getFile()),
                     sqLiteRepositoryCoordinatorDefinition.getInitSql());
         }
     }

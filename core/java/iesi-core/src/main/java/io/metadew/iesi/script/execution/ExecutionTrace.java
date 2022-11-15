@@ -3,6 +3,7 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.metadata.service.action.ActionTraceService;
 import io.metadew.iesi.metadata.service.script.ScriptTraceService;
 import io.metadew.iesi.script.action.ActionParameterResolvement;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,27 +13,25 @@ import java.util.stream.Collectors;
  *
  * @author peter.billen
  */
+@Component
 public class ExecutionTrace {
 
-    private static ExecutionTrace instance;
+    private final ScriptTraceService scriptTraceService;
+    private final ActionTraceService actionTraceService;
 
-    public static ExecutionTrace getInstance() {
-        if (instance == null) {
-            instance = new ExecutionTrace();
-        }
-        return instance;
+    public ExecutionTrace(ScriptTraceService scriptTraceService, ActionTraceService actionTraceService) {
+        this.scriptTraceService = scriptTraceService;
+        this.actionTraceService = actionTraceService;
     }
 
-    private ExecutionTrace() {
-    }
 
     // Insert
     public void setExecution(ScriptExecution scriptExecution) {
-        ScriptTraceService.getInstance().trace(scriptExecution);
+        scriptTraceService.trace(scriptExecution);
     }
 
     public void setExecution(ActionExecution actionExecution, List<ActionParameterResolvement> actionParameterOperationMap) {
-        ActionTraceService.getInstance().trace(actionExecution,
+        actionTraceService.trace(actionExecution,
                 actionParameterOperationMap.stream()
                 .collect(Collectors.toMap(
                         entry -> entry.getActionParameter().getMetadataKey().getParameterName(),

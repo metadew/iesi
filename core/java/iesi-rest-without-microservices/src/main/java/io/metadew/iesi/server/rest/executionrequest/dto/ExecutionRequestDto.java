@@ -30,6 +30,7 @@ public class ExecutionRequestDto extends RepresentationModel<ExecutionRequestDto
     private String email;
     private String userId;
     private String username;
+    private boolean debugMode;
     private ExecutionRequestStatus executionRequestStatus;
     private Set<ScriptExecutionRequestDto> scriptExecutionRequests = new HashSet<>();
     private Set<ExecutionRequestLabelDto> executionRequestLabels = new HashSet<>();

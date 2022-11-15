@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.configuration;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.h2.H2Database;
 import io.metadew.iesi.connection.database.h2.H2MemoryDatabaseConnection;
@@ -16,6 +17,8 @@ public class RuntimeActionCacheConfiguration {
     private final static String PRC_RUN_CACHE = "PRC_RUN_CACHE";
     private final static int RUNTIME_VAR_VALUE_MAX_LENGTH = 4000;
 
+    private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
+
     // Constructors
     public RuntimeActionCacheConfiguration(String runCacheFolderName) {
         this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", "", null));
@@ -26,7 +29,7 @@ public class RuntimeActionCacheConfiguration {
                 "CACHE_NM VARCHAR(200) NOT NULL," +
                 "CACHE_VAL VARCHAR("+RUNTIME_VAR_VALUE_MAX_LENGTH+")" +
                 ");";
-        DatabaseHandler.getInstance().executeUpdate(database, query);
+        databaseHandler.executeUpdate(database, query);
     }
 
     private String truncateRuntimeVariableValue(String value) {
@@ -41,7 +44,7 @@ public class RuntimeActionCacheConfiguration {
         // Verify if name already exists
         value = truncateRuntimeVariableValue(value);
         try {
-            CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database,
+            CachedRowSet crs = databaseHandler.executeQuery(database,
                     "select run_id, prc_id, cache_typ_nm, cache_nm, cache_val from " + PRC_RUN_CACHE +
                             " where run_id = " + SQLTools.getStringForSQL(runId) +
                             " and prc_id = " + SQLTools.getStringForSQL(processId) +
@@ -50,7 +53,7 @@ public class RuntimeActionCacheConfiguration {
 
             // if so, the previous values will be deleted
             if (crs.size() > 0) {
-                DatabaseHandler.getInstance().executeUpdate(database, "delete from " + PRC_RUN_CACHE +
+                databaseHandler.executeUpdate(database, "delete from " + PRC_RUN_CACHE +
                         " where run_id = " + SQLTools.getStringForSQL(runId) +
                         " and cache_typ_nm = " + SQLTools.getStringForSQL(type) +
                         " and prc_id = " + SQLTools.getStringForSQL(processId) +
@@ -62,7 +65,7 @@ public class RuntimeActionCacheConfiguration {
         }
 
         // new values can be stored
-        DatabaseHandler.getInstance().executeUpdate(database, "INSERT INTO " + PRC_RUN_CACHE + "(run_id, prc_id, cache_typ_nm, cache_nm, cache_val) VALUES (" +
+        databaseHandler.executeUpdate(database, "INSERT INTO " + PRC_RUN_CACHE + "(run_id, prc_id, cache_typ_nm, cache_nm, cache_val) VALUES (" +
                 SQLTools.getStringForSQL(runId) + "," +
                 SQLTools.getStringForSQL(processId) + "," +
                 SQLTools.getStringForSQL(type) + "," +
@@ -77,7 +80,7 @@ public class RuntimeActionCacheConfiguration {
                 + " and prc_id = " + SQLTools.getStringForSQL(processId)
                 + " and cache_typ_nm = " + SQLTools.getStringForSQL(type)
                 + " and cache_nm = " + SQLTools.getStringForSQL(name) + ";";
-        CachedRowSet crs = DatabaseHandler.getInstance().executeQuery(database, query);
+        CachedRowSet crs = databaseHandler.executeQuery(database, query);
         String value = "";
         try {
             while (crs.next()) {
@@ -91,7 +94,7 @@ public class RuntimeActionCacheConfiguration {
     }
 
     public void shutdown() {
-        DatabaseHandler.getInstance().shutdown(database);
+        databaseHandler.shutdown(database);
     }
 
 }

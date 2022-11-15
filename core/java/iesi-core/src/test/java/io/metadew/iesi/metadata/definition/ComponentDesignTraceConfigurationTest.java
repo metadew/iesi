@@ -1,12 +1,17 @@
 package io.metadew.iesi.metadata.definition;
 
-import io.metadew.iesi.common.configuration.Configuration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.component.trace.ComponentDesignTraceConfiguration;
-import io.metadew.iesi.metadata.definition.component.trace.design.*;
+import io.metadew.iesi.metadata.definition.component.trace.design.ComponentDesignTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.design.http.*;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +19,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = ComponentDesignTraceConfiguration.class)
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ComponentDesignTraceConfigurationTest {
 
     private HttpComponentDesignTrace httpComponentDesignTrace;
@@ -21,28 +30,12 @@ class ComponentDesignTraceConfigurationTest {
     private UUID componentUuid;
     private UUID componentUuid2;
 
-    @BeforeAll
-    static void prepare() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
+    @Autowired
+    private MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
+    @Autowired
+    private ComponentDesignTraceConfiguration componentDesignTraceConfiguration;
 
-    @AfterAll
-    static void teardown() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
     @BeforeEach
     void initializeTemplates() {
         componentUuid = UUID.randomUUID();
@@ -141,23 +134,23 @@ class ComponentDesignTraceConfigurationTest {
 
     @Test
     void testGetAllEmpty() {
-        assertThat(ComponentDesignTraceConfiguration.getInstance().getAll())
+        assertThat(componentDesignTraceConfiguration.getAll())
                 .isEmpty();
     }
 
     @Test
     void testInsert() {
-        ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace);
-        assertThat(ComponentDesignTraceConfiguration.getInstance().get(httpComponentDesignTrace.getMetadataKey()))
+        componentDesignTraceConfiguration.insert(httpComponentDesignTrace);
+        assertThat(componentDesignTraceConfiguration.get(httpComponentDesignTrace.getMetadataKey()))
                 .hasValue(httpComponentDesignTrace);
         assertThat(httpComponentDesignTrace.getRunId()).isEqualTo("testRunid");
     }
 
     @Test
     void testGetAll() {
-        ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace);
-        ComponentDesignTraceConfiguration.getInstance().insert(httpComponentDesignTrace2);
-        assertThat(ComponentDesignTraceConfiguration.getInstance().getAll())
+        componentDesignTraceConfiguration.insert(httpComponentDesignTrace);
+        componentDesignTraceConfiguration.insert(httpComponentDesignTrace2);
+        assertThat(componentDesignTraceConfiguration.getAll())
                 .containsOnly(httpComponentDesignTrace, httpComponentDesignTrace2);
     }
 }

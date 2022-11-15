@@ -2,6 +2,7 @@ package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.metadata.definition.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -14,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-@Service
+@Service("restUserService")
 public class UserService implements IUserService {
 
     private final UserDtoRepository userDtoRepository;
@@ -70,14 +71,24 @@ public class UserService implements IUserService {
         return rawUserService.get(username);
     }
 
+    @Override
+    public Optional<User> getRawUser(UserKey userKey) {
+        return rawUserService.get(userKey);
+    }
+
     // If the name of a user is modified, the wrong record is evicted and the old, stale record
     // stays in the cache
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "users", key = "#user.metadataKey.uuid"),
-            @CacheEvict(value = "users", key = "#user.username")})
+            @CacheEvict(value = "users", allEntries = true)
+    })
     public void update(User user) {
         rawUserService.update(user);
+    }
+
+    @Override
+    public void updatePassword(String password, UUID uuid) {
+        rawUserService.updatePassword(password, new UserKey(uuid));
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -47,6 +48,10 @@ public class ComponentDtoResourceAssembler extends RepresentationModelAssemblerS
     private ComponentAttributeDto convertToDto(ComponentAttribute componentAttribute) {
         return new ComponentAttributeDto(componentAttribute.getMetadataKey().getEnvironmentKey().getName(),
                 componentAttribute.getMetadataKey().getComponentAttributeName(), componentAttribute.getValue());
+    }
+
+    public List<ComponentDto> toModel(List<Component> components) {
+        return components.stream().map(this::toModel).collect(Collectors.toList());
     }
 
     public ComponentDto toModel(ComponentDto componentDto) {

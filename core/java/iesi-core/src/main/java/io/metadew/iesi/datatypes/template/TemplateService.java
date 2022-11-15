@@ -1,11 +1,13 @@
 package io.metadew.iesi.datatypes.template;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.IDataTypeService;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.inmemory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
 import io.metadew.iesi.metadata.definition.template.Template;
 import io.metadew.iesi.metadata.definition.template.TemplateKey;
@@ -52,12 +54,12 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
     @Override
     public Template resolve(String input, ExecutionRuntime executionRuntime) {
         log.trace(MessageFormat.format("resolving {0} for Template", input));
-        List<String> splittedArguments = DataTypeHandler.getInstance().splitInstructionArguments(input);
+        List<String> splittedArguments = SpringContext.getBean(DataTypeHandler.class).splitInstructionArguments(input);
         if (splittedArguments.size() == 2) {
-            DataType templateName = DataTypeHandler.getInstance().resolve(splittedArguments.get(0), executionRuntime);
-            DataType templateVersion = DataTypeHandler.getInstance().resolve(splittedArguments.get(1), executionRuntime);
+            DataType templateName = SpringContext.getBean(DataTypeHandler.class).resolve(splittedArguments.get(0), executionRuntime);
+            DataType templateVersion = SpringContext.getBean(DataTypeHandler.class).resolve(splittedArguments.get(1), executionRuntime);
             if (templateName instanceof Text && templateVersion instanceof Text) {
-                return TemplateConfiguration.getInstance()
+                return SpringContext.getBean(TemplateConfiguration.class)
                         .getByNameAndVersion(((Text) templateName).getString(), Long.parseLong(((Text) templateVersion).getString()))
                         .orElseThrow(() -> new RuntimeException("Cannot find template with name " + ((Text) templateName).getString()));
             } else {
@@ -81,9 +83,9 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
         if (_this instanceof MatcherAnyValue) {
             return true;
         } else if (_this instanceof MatcherFixedValue) {
-            return DataTypeHandler.getInstance().equals(
-                    DataTypeHandler.getInstance().resolve(((MatcherFixedValue) _this).getValue(), executionRuntime),
-                    DataTypeHandler.getInstance().resolve(((MatcherFixedValue) other).getValue(), executionRuntime),
+            return SpringContext.getBean(DataTypeHandler.class).equals(
+                    SpringContext.getBean(DataTypeHandler.class).resolve(((MatcherFixedValue) _this).getValue(), executionRuntime),
+                    SpringContext.getBean(DataTypeHandler.class).resolve(((MatcherFixedValue) other).getValue(), executionRuntime),
                     executionRuntime);
         } else if (_this instanceof MatcherTemplate) {
             return ((MatcherTemplate) _this).getTemplateName().equals(((MatcherTemplate) other).getTemplateName()) &&
@@ -120,39 +122,45 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
     }
 
     public List<Template> getAll() {
-        return TemplateConfiguration.getInstance().getAll();
+        return SpringContext.getBean(TemplateConfiguration.class).getAll();
     }
 
     public boolean exists(TemplateKey templateKey) {
-        return TemplateConfiguration.getInstance().exists(templateKey);
+        return SpringContext.getBean(TemplateConfiguration.class).exists(templateKey);
     }
 
-    public boolean exists(String templateName) {
-        return TemplateConfiguration.getInstance().exists(templateName);
+    public boolean exists(String templateName, Long version) {
+        return SpringContext.getBean(TemplateConfiguration.class).exists(templateName, version);
     }
 
-    public void addUser(Template template) {
-        TemplateConfiguration.getInstance().insert(template);
+    public void insert(Template template) {
+        if (exists(template.getName(), template.getVersion())) {
+            throw new MetadataDoesNotExistException(String.format("Template with name %s and version %s already exists", template.getName(), template.getVersion()));
+        }
+        SpringContext.getBean(TemplateConfiguration.class).insert(template);
     }
 
     public Optional<Template> get(TemplateKey templateKey) {
-        return TemplateConfiguration.getInstance().get(templateKey);
+        return SpringContext.getBean(TemplateConfiguration.class).get(templateKey);
     }
 
-    public Optional<Template> get(String templatename, long version) {
-        return TemplateConfiguration.getInstance().getByNameAndVersion(templatename, version);
+    public Optional<Template> get(String templateName, long version) {
+        return SpringContext.getBean(TemplateConfiguration.class).getByNameAndVersion(templateName, version);
     }
 
     public void update(Template template) {
-        TemplateConfiguration.getInstance().update(template);
+        if (!exists(template.getName(), template.getVersion())) {
+            throw new MetadataDoesNotExistException(String.format("Template with name %s and version %s does not exist", template.getName(), template.getVersion()));
+        }
+        SpringContext.getBean(TemplateConfiguration.class).update(template);
     }
 
     public void delete(TemplateKey templateKey) {
-        TemplateConfiguration.getInstance().delete(templateKey);
+        SpringContext.getBean(TemplateConfiguration.class).delete(templateKey);
     }
 
     public void delete(String name, long version) {
-        TemplateConfiguration.getInstance().deleteByNameAndVersion(name, version);
+        SpringContext.getBean(TemplateConfiguration.class).deleteByNameAndVersion(name, version);
     }
 
     @Override

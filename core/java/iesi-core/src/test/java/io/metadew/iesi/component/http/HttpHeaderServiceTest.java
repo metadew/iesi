@@ -16,12 +16,11 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {HttpHeaderService.class, DataTypeHandler.class })
 @ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 class HttpHeaderServiceTest {
 
     @Autowired
-    private HttpHeaderService httpHeaderService;
+    HttpHeaderService httpHeaderService;
 
     @Test
     void convertTest() {

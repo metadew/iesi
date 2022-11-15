@@ -12,7 +12,7 @@ iesi:
         coordinator:
           type: h2
           mode: memory
-          database: test;DB_CLOSE_DELAY=-1;ALIAS_COLUMN_NAME=true;DB_CLOSE_ON_EXIT=FALSE
+          database: jdbc:h2:file:./test;DB_CLOSE_DELAY=-1;ALIAS_COLUMN_NAME=true;DB_CLOSE_ON_EXIT=FALSE
           owner:
             user: ""
             password: ""

@@ -21,12 +21,11 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = { HttpQueryParameterService.class, DataTypeHandler.class})
 @ContextConfiguration(classes = TestConfiguration.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 class HttpQueryParameterServiceTest {
 
     @Autowired
-    private HttpQueryParameterService httpQueryParameterService;
+    HttpQueryParameterService httpQueryParameterService;
 
     @Test
     void convertTest() {

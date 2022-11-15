@@ -4,6 +4,7 @@ import io.metadew.iesi.TestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,9 +14,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { TestConfiguration.class, DataTypeHandler.class })
-@DirtiesContext
+@SpringBootTest(classes = DataTypeHandler.class)
+@ContextConfiguration(classes = { TestConfiguration.class })
 @ActiveProfiles("test")
 class DataTypeHandlerTest {
 

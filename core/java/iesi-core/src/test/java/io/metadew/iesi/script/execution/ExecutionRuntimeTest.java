@@ -15,7 +15,6 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
-import jdk.jfr.internal.test.WhiteBox;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

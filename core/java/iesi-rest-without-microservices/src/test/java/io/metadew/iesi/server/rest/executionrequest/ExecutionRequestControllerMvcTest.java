@@ -1,5 +1,6 @@
 package io.metadew.iesi.server.rest.executionrequest;
 
+import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
@@ -31,13 +32,17 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,9 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log4j2
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true", "iesi.security.enabled=false"})
 @ContextConfiguration(classes = {TestConfiguration.class, MethodSecurityConfiguration.class})
-@ExtendWith({MockitoExtension.class, SpringExtension.class})
 @AutoConfigureMockMvc
-@ActiveProfiles({"test"})
+@ActiveProfiles("test")
 @DirtiesContext
 class ExecutionRequestControllerMvcTest {
 
@@ -169,5 +173,67 @@ class ExecutionRequestControllerMvcTest {
                 .andExpect(jsonPath("$.page.totalPages", is((int) Math.ceil(((double) executionRequestDtoList.size() / executionRequestDtoList3.size())))))
                 .andExpect(jsonPath("$.page.number", is(pageable3.getPageNumber())));
 
+    }
+
+    @Test
+    void getAllFilterRequester() throws Exception {
+
+        ExecutionRequestDto executionRequestDto = ExecutionRequestDto.builder()
+                .executionRequestId(UUID.randomUUID().toString())
+                .requestTimestamp(LocalDateTime.now())
+                .name("name")
+                .description("description")
+                .scope("scope")
+                .context("context")
+                .email("email")
+                .userId(UUID.randomUUID().toString())
+                .username("spring")
+                .debugMode(false)
+                .executionRequestStatus(ExecutionRequestStatus.COMPLETED)
+                .scriptExecutionRequests(new HashSet<>())
+                .build();
+
+        List<ExecutionRequestDto> executionRequestDtos = Stream.of(executionRequestDto)
+                .collect(Collectors.toList());
+
+        List<ExecutionRequestFilter> executionRequestFilters = Stream.of(new ExecutionRequestFilter(
+                ExecutionRequestFilterOption.REQUESTER,
+                "spring",
+                true)).collect(Collectors.toList());
+
+        Pageable page= PageRequest.of(0, 2);
+
+        Page<ExecutionRequestDto> executionRequestDtoPage = new PageImpl<>(executionRequestDtos, page, 1);
+
+        when(executionRequestService.getAll(any(), any(), eq(executionRequestFilters)))
+                .thenReturn(executionRequestDtoPage);
+
+        mvc.perform(get("/execution-requests?page=1&size=1&requester=spring"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(executionRequestDtos.size())))
+                .andExpect(jsonPath("$.page.size", is(2)))
+                .andExpect(jsonPath("$.page.number", is(0)));
+    }
+
+    @Test
+    void getAllFilterRequesterNoFound() throws Exception {
+
+        List<ExecutionRequestFilter> executionRequestFilters = Stream.of(new ExecutionRequestFilter(
+                ExecutionRequestFilterOption.REQUESTER,
+                "spring",
+                true)).collect(Collectors.toList());
+
+        Pageable page= PageRequest.of(0, 2);
+
+        Page<ExecutionRequestDto> executionRequestDtoPage = new PageImpl<>(new ArrayList<>(), page, 0);
+
+        when(executionRequestService.getAll(any(), any(), eq(executionRequestFilters)))
+                .thenReturn(executionRequestDtoPage);
+
+        mvc.perform(get("/execution-requests?page=1&size=1&requester=spring"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(0)))
+                .andExpect(jsonPath("$.page.size", is(2)))
+                .andExpect(jsonPath("$.page.number", is(0)));
     }
 }

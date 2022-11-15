@@ -62,7 +62,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         verify(datasetHandler, times(1)).setDataItem(dataset, "key", new Text("test"));
 
         // Clean up
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
     @Test
@@ -85,7 +85,7 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         verify(datasetHandler, times(1)).setDataItem(dataset, "key", new Text("test"));
 
         // Clean up
-        Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
     @Test

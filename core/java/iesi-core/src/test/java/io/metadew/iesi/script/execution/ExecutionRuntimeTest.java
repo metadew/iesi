@@ -15,6 +15,7 @@ import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.script.result.ScriptResultOutputConfiguration;
+import jdk.jfr.internal.test.WhiteBox;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -146,6 +147,8 @@ class ExecutionRuntimeTest {
         Text resolvedInput = TextService.getInstance().resolve(lookupResult.getValue(), executionRuntime);
 
         assertThat(resolvedInput.getString()).isEqualTo("My {{text : SUM : Ok");
+
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
     @Test
@@ -205,6 +208,7 @@ class ExecutionRuntimeTest {
     @Test
     void resolveConceptLookupWithMultipleInstruction() {
         ExecutionRuntime executionRuntime = new ExecutionRuntime(executionControl, "11", scriptExecutionInitializationParameters);
+
         DatasetImplementationHandler datasetImplementationHandler = mock(DatasetImplementationHandler.class);
         DatasetImplementationHandler datasetImplementationHandlerSpy = spy(datasetImplementationHandler);
         Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", datasetImplementationHandlerSpy);
@@ -241,6 +245,8 @@ class ExecutionRuntimeTest {
         String instruction = "My name is : {{*text.replace(\"placeholder Doe\", \"placeholder\", \"Jane\")}}, My phone number is : {{*text.replace(\"04 92 16 09 04\", \" \", \"-\")}}";
         LookupResult lookupResult = executionRuntime.resolveConceptLookup(instruction);
         assertThat(lookupResult.getValue()).isEqualTo("My name is : Jane Doe, My phone number is : 04-92-16-09-04");
+
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 
     @Test

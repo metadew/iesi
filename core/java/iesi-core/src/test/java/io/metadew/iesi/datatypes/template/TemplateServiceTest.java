@@ -2,6 +2,7 @@ package io.metadew.iesi.datatypes.template;
 
 import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.datatypes.DataTypeHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueConfiguration;
@@ -28,6 +29,7 @@ import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,13 +43,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { TestConfiguration.class, MatcherConfiguration.class, MatcherValueConfiguration.class, DataTypeHandler.class, DatasetImplementationHandler.class,
+@ContextConfiguration(classes = {TestConfiguration.class, MatcherConfiguration.class, MatcherValueConfiguration.class, DataTypeHandler.class,
         DatabaseDatasetImplementationKeyValueConfiguration.class})
 @ActiveProfiles("test")
+@DirtiesContext()
 class TemplateServiceTest {
 
     Template template1;
@@ -61,9 +63,6 @@ class TemplateServiceTest {
 
     @MockBean
     TemplateConfiguration templateConfiguration;
-
-    @MockBean
-    DatasetImplementationHandler datasetImplementationHandler;
 
     @BeforeEach
     void initializeTemplates() {
@@ -142,7 +141,6 @@ class TemplateServiceTest {
                 .build();
         MatcherKey matcherKey21 = MatcherKey.builder().id(UUID.randomUUID()).build();
         MatcherKey matcherKey22 = MatcherKey.builder().id(UUID.randomUUID()).build();
-
 
 
         template2 = Template.builder()
@@ -260,31 +258,41 @@ class TemplateServiceTest {
 
     @Test
     void matchesSuccessfulTest() {
-        templateConfiguration.insert(template1);
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
-
         DatabaseDatasetImplementation dataset1 = mock(DatabaseDatasetImplementation.class);
         DatabaseDatasetImplementation dataset2 = mock(DatabaseDatasetImplementation.class);
 
+        DatasetImplementationHandler datasetImplementationHandler = DatasetImplementationHandler.getInstance();
+        DatasetImplementationHandler datasetImplementationHandlerSpy = Mockito.spy(datasetImplementationHandler);
+
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", datasetImplementationHandlerSpy);
+
+
+        when(templateConfiguration.getByNameAndVersion("template1", 1L))
+                .thenReturn(Optional.of(template1));
         when(executionRuntime.resolveVariables(anyString()))
                 .thenReturn("value2");
         when(executionRuntime.resolveConceptLookup("value2"))
                 .thenReturn(new LookupResult("value2", null, null));
-        when(templateConfiguration.getByNameAndVersion("template1", 1L))
-                .thenReturn(Optional.of(template1));
-        when(datasetImplementationHandler.getDataItem(any(), eq("key1"), any(ExecutionRuntime.class)))
-                .thenReturn(Optional.of(new Text("test")));
-        when(datasetImplementationHandler.getDataItem(any(), eq("key2"), any(ExecutionRuntime.class)))
-                .thenReturn(Optional.of(new Text("test")));
-        when(datasetImplementationHandler.getDataItem(any(), eq("key3"), any(ExecutionRuntime.class)))
-                .thenReturn(Optional.of(new Text("test")));
-        when(datasetImplementationHandler.getDataItem(any(), eq("key4"), any(ExecutionRuntime.class)))
-                .thenReturn(Optional.of(new Text("test")));
 
+        Mockito
+                .doReturn(Optional.of(new Text("test")))
+                .when(datasetImplementationHandlerSpy).getDataItem(dataset1, "key1", executionRuntime);
+        Mockito
+                .doReturn(Optional.of(new Text("value2")))
+                .when(datasetImplementationHandlerSpy).getDataItem(dataset1, "key2", executionRuntime);
+        Mockito
+                .doReturn(Optional.of(new Text("test")))
+                .when(datasetImplementationHandlerSpy).getDataItem(dataset2, "key3", executionRuntime);
+        Mockito
+                .doReturn(Optional.of(dataset1))
+                .when(datasetImplementationHandlerSpy).getDataItem(dataset2, "key4", executionRuntime);
 
         assertThat(TemplateService.getInstance().matches(dataset1, template1, executionRuntime))
                 .isTrue();
         assertThat(TemplateService.getInstance().matches(dataset2, template2, executionRuntime))
                 .isTrue();
+
+        Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", (DatasetImplementationHandler) null);
     }
 }

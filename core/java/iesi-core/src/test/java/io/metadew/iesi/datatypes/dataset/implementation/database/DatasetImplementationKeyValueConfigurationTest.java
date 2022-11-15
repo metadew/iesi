@@ -31,8 +31,7 @@ import static io.metadew.iesi.datatypes.dataset.DatasetBuilder.generateDataset;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { TestConfiguration.class, DatasetConfiguration.class, DatabaseDatasetImplementationKeyValueConfiguration.class, DatasetImplementationConfiguration.class,
-        DatasetImplementationHandler.class })
+@ContextConfiguration(classes = { TestConfiguration.class, DatasetConfiguration.class, DatabaseDatasetImplementationKeyValueConfiguration.class, DatasetImplementationConfiguration.class })
 @ActiveProfiles("test")
 class DatasetImplementationKeyValueConfigurationTest {
 
@@ -44,9 +43,6 @@ class DatasetImplementationKeyValueConfigurationTest {
 
     @Autowired
     DatabaseDatasetImplementationKeyValueConfiguration databaseDatasetImplementationKeyValueConfiguration;
-
-    @Autowired
-    DatasetImplementationHandler datasetImplementationHandler;
 
     @BeforeEach
     void beforeEach() {
@@ -317,7 +313,7 @@ class DatasetImplementationKeyValueConfigurationTest {
         Map<String, Object> datasetMap = generateDataset(0, 1, 1, 1);
         datasetConfiguration.insert((Dataset) datasetMap.get("dataset"));
 
-        datasetImplementationHandler
+        DatasetImplementationHandler.getInstance()
                 .setDataItem((DatabaseDatasetImplementation) datasetMap.get("datasetImplementation0"),
                         "key",
                         new Text("value"));

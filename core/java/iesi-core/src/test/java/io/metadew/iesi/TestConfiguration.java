@@ -21,7 +21,6 @@ public class TestConfiguration {
     @Bean
     @Order(0)
     public SpringContext springContext() {
-        System.out.println("CREATE");
         return new SpringContext();
     }
 
@@ -75,7 +74,6 @@ public class TestConfiguration {
 
     @Bean
     public DatabaseHandler databaseHandler(FrameworkControl frameworkControl, FrameworkCrypto frameworkCrypto) {
-        System.out.println("HELLO WORLD");
         return new DatabaseHandler(frameworkControl, frameworkCrypto);
     }
 }

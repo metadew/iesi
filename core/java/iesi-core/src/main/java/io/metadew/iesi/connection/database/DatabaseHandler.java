@@ -49,7 +49,6 @@ public class DatabaseHandler implements IDatabaseHandler {
 
 
     public DatabaseHandler(FrameworkControl frameworkControl, FrameworkCrypto frameworkCrypto) {
-        System.out.println("HELLO");
         this.frameworkControl = frameworkControl;
         this.frameworkCrypto = frameworkCrypto;
     }

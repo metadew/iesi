@@ -37,6 +37,7 @@ import static org.mockito.Mockito.doReturn;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
+@DirtiesContext()
 class DbOracleConnectionServiceTest {
 
     @Autowired

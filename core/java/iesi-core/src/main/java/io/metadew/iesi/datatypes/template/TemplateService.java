@@ -167,7 +167,7 @@ public class TemplateService implements IDataTypeService<Template>, ITemplateSer
     public boolean matches(DataType dataType, Template template, ExecutionRuntime executionRuntime) {
         if (dataType instanceof DatasetImplementation) {
             for (Matcher matcher : template.getMatchers()) {
-                log.debug("validating " + matcher.toString() + " of template " + template.toString());
+                log.debug("validating " + matcher.toString() + " of template " + template);
                 if (!DatasetImplementationHandler.getInstance().getDataItem((DatasetImplementation) dataType, matcher.getKey(), executionRuntime)
                         .map(dataItem -> MatcherValueHandler.getInstance().matches(matcher.getMatcherValue(), dataItem, executionRuntime))
                         .orElse(false)) {

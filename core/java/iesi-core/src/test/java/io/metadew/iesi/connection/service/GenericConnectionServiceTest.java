@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
+@DirtiesContext()
 class GenericConnectionServiceTest {
 
     @SpyBean

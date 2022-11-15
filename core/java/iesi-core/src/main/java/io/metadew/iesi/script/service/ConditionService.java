@@ -23,7 +23,6 @@ public class ConditionService implements IConditionService {
 
     @PostConstruct
     private void postConstruct() {
-        System.out.println("COUCOU");
         jexl = new JexlEngine();
         jexl.setCache(512);
         jexl.setLenient(false);

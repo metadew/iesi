@@ -70,32 +70,32 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(classes = {TestConfiguration.class, HttpComponentService.class, ComponentConfiguration.class, ActionParameterTraceConfiguration.class, ActionParameterDesignTraceConfiguration.class, ActionParameterTraceService.class,
         HttpConnectionService.class, HttpComponentTraceService.class, HttpConnectionTraceService.class, HttpComponentDefinitionService.class, HttpQueryParameterService.class,
         DataTypeHandler.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class, ComponentTraceConfiguration.class,
-        ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, DataTypeHandler.class, MetadataFieldService.class, ConnectionConfiguration.class,
+        ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, MetadataFieldService.class, ConnectionConfiguration.class,
         ConnectionParameterConfiguration.class})
 @ActiveProfiles("test")
 class HttpComponentServiceTest {
 
 
     @Autowired
-    private ConnectionConfiguration connectionConfiguration;
+    ConnectionConfiguration connectionConfiguration;
 
     @MockBean
-    private ComponentConfiguration componentConfiguration;
+    ComponentConfiguration componentConfiguration;
 
     @MockBean
-    private HttpConnection httpConnection;
+    HttpConnection httpConnection;
 
     @MockBean
-    private HttpConnectionService httpConnectionService;
+    HttpConnectionService httpConnectionService;
 
     @MockBean
-    private ConnectionTraceConfiguration connectionTraceConfiguration;
+    ConnectionTraceConfiguration connectionTraceConfiguration;
 
     @MockBean
-    private ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration;
+    ActionParameterDesignTraceConfiguration actionParameterDesignTraceConfiguration;
 
     @MockBean
-    private HttpComponentDefinitionService httpComponentDefinitionService;
+    HttpComponentDefinitionService httpComponentDefinitionService;
 
     @MockBean
     HttpConnectionTraceService httpConnectionTraceService;
@@ -104,16 +104,16 @@ class HttpComponentServiceTest {
     HttpComponentTraceService httpComponentTraceService;
 
     @SpyBean
-    private HttpComponentService httpComponentService;
+    HttpComponentService httpComponentService;
 
     @SpyBean
-    private HttpConnectionService httpConnectionServiceSpy;
+    HttpConnectionService httpConnectionServiceSpy;
 
     @SpyBean
-    private HttpHeaderService httpHeaderServiceSpy;
+    HttpHeaderService httpHeaderServiceSpy;
 
     @SpyBean
-    private HttpQueryParameterService httpQueryParameterServiceSpy;
+    HttpQueryParameterService httpQueryParameterServiceSpy;
 
     @Test
     void getUriTest() {

@@ -35,8 +35,6 @@ public abstract class Database {
         this.maximalPoolSize = DEFAULT_MAX_POOL_SIZE;
         this.initialPoolSize = DEFAULT_INITIAL_POOL_SIZE;
 
-        System.out.println("DATABASE: " + databaseConnection.getType() + "TEST: " + SpringContext.getBean(DatabaseHandler.class).isInitializeConnectionPool(this));
-
         if (SpringContext.getBean(DatabaseHandler.class).isInitializeConnectionPool(this) && eagerConnectionPoolCreation) {
             this.connectionPool = SpringContext.getBean(DatabaseHandler.class).createConnectionPool(this, databaseConnection);
         }

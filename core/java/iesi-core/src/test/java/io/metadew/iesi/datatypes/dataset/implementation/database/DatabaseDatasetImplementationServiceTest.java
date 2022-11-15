@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -220,6 +221,10 @@ class DatabaseDatasetImplementationServiceTest {
     @Test
     void testResolveNested() throws JsonProcessingException {
         ExecutionRuntime executionRuntime = mock(ExecutionRuntime.class);
+
+        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
+        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+
         when(executionRuntime.resolveVariables(anyString()))
                 .thenAnswer((Answer<String>) invocation -> {
                     Object[] args = invocation.getArguments();
@@ -231,8 +236,7 @@ class DatabaseDatasetImplementationServiceTest {
                     return new LookupResult((String) args[0], null, null);
                 });
 
-        DatasetImplementationKey datasetImplementationKey = new DatasetImplementationKey(UUID.randomUUID());
-        DatasetKey datasetKey = new DatasetKey(UUID.randomUUID());
+
 
         DatabaseDatasetImplementation databaseDatasetImplementation = DatabaseDatasetImplementation.builder()
                 .metadataKey(datasetImplementationKey)
@@ -256,16 +260,16 @@ class DatabaseDatasetImplementationServiceTest {
         );
 
         datasetConfiguration.insert(dataset);
+
         ObjectNode jsonNode = (ObjectNode) new ObjectMapper().readTree("{\"key1\":{\"key2\":\"value2\"}}");
 
-
-        DataType dataType = DatabaseDatasetImplementationService.getInstance()
+        DataType dataType = dataTypeHandlerSpy
                 .resolve(
                         databaseDatasetImplementation,
                         "key",
                         jsonNode,
-                        executionRuntime
-                );
+                        executionRuntime);
+
         assertThat(dataType instanceof DatabaseDatasetImplementation).isTrue();
         assertThat(((DatabaseDatasetImplementation) dataType).getKeyValues())
                 .hasSize(1)
@@ -277,6 +281,8 @@ class DatabaseDatasetImplementationServiceTest {
                                 "key1",
                                 "dataset"
                         ));
+
+
         DataType dataType1 = dataTypeHandlerSpy
                 .resolve(((DatabaseDatasetImplementation) dataType).getKeyValues().iterator().next().getValue(), executionRuntime);
 

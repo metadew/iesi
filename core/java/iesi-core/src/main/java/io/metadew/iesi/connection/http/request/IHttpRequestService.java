@@ -8,11 +8,12 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 public interface IHttpRequestService {
 
-    HttpResponse send(HttpRequest httpRequest, boolean withCertificates) throws IOException, KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException;
+    HttpResponse send(HttpRequest httpRequest, boolean withCertificates) throws IOException, KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException, CertificateException;
 
-    HttpResponse send(HttpRequest httpRequest, ProxyConnection proxyConnection, boolean withCertificates) throws IOException, KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException;
+    HttpResponse send(HttpRequest httpRequest, ProxyConnection proxyConnection, boolean withCertificates) throws IOException, KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException, CertificateException;
 
 }

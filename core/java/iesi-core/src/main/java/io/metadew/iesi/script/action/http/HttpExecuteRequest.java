@@ -29,6 +29,7 @@ import org.apache.http.Header;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.*;
+import java.security.cert.CertificateException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,13 +52,14 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     private final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
     private final String HEADERS_KEY = "headers";
     private final String QUERY_PARAMETERS_KEY = "queryParameters";
-    private final String USE_CERTIFICATES_KEY = "useCertificates";
+
+    private final String M_TLS_KEY = "mutualTLS";
 
     private HttpRequest httpRequest;
     private DatasetImplementation outputDataset;
     private ProxyConnection proxyConnection;
 
-    private boolean withCertificates;
+    private boolean mutualTLS;
     private List<String> expectedStatusCodes;
 
     private static final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
@@ -114,15 +116,15 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         expectedStatusCodes = convertExpectStatusCodes(getParameterResolvedValue(EXPECTED_STATUS_CODES_KEY));
         proxyConnection = convertProxyName(getParameterResolvedValue(PROXY_KEY));
         outputDataset = convertOutputDatasetReferenceName(getParameterResolvedValue(SET_DATASET_KEY));
-        withCertificates = convertUseCertificates(getParameterResolvedValue(USE_CERTIFICATES_KEY));
+        mutualTLS = convertUseCertificates(getParameterResolvedValue(M_TLS_KEY));
     }
 
-    protected boolean executeAction() throws NoSuchAlgorithmException, IOException, KeyManagementException, InterruptedException, UnrecoverableKeyException, KeyStoreException {
+    protected boolean executeAction() throws NoSuchAlgorithmException, IOException, KeyManagementException, InterruptedException, UnrecoverableKeyException, KeyStoreException, CertificateException {
         HttpResponse httpResponse;
         if (getProxyConnection().isPresent()) {
-            httpResponse = SpringContext.getBean(HttpRequestService.class).send(httpRequest, proxyConnection, withCertificates);
+            httpResponse = SpringContext.getBean(HttpRequestService.class).send(httpRequest, proxyConnection, mutualTLS);
         } else {
-            httpResponse = SpringContext.getBean(HttpRequestService.class).send(httpRequest, withCertificates);
+            httpResponse = SpringContext.getBean(HttpRequestService.class).send(httpRequest, mutualTLS);
         }
         outputResponse(httpResponse);
         actionPerformanceLogger.log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());

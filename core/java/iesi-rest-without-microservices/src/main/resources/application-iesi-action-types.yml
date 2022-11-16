@@ -828,8 +828,8 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
-          useCertificates:
-            description: Allow IESI to use available certificate on the keystore
+          mutualTLS:
+            description: Indicate if IESI has to send certificate to the trust store of the targeted server
             type: string
             mandatory: false
             encrypted: false

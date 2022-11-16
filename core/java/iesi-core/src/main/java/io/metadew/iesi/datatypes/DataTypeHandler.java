@@ -11,6 +11,8 @@ import io.metadew.iesi.datatypes._null.NullService;
 import io.metadew.iesi.datatypes.array.ArrayService;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
+import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.template.TemplateService;
 import io.metadew.iesi.datatypes.text.TextService;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
@@ -47,6 +49,8 @@ public class DataTypeHandler {
         dataTypeServiceMap.put(new ClassStringPair(ArrayService.getInstance().keyword(), ArrayService.getInstance().appliesTo()), ArrayService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(TemplateService.getInstance().keyword(), TemplateService.getInstance().appliesTo()), TemplateService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(DatasetImplementationHandler.getInstance().keyword(), DatasetImplementationHandler.getInstance().appliesTo()), DatasetImplementationHandler.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(DatabaseDatasetImplementationService.getInstance().keyword(), DatabaseDatasetImplementationService.getInstance().appliesTo()), DatabaseDatasetImplementationService.getInstance());
+        dataTypeServiceMap.put(new ClassStringPair(InMemoryDatasetImplementationService.getInstance().keyword(), InMemoryDatasetImplementationService.getInstance().appliesTo()), InMemoryDatasetImplementationService.getInstance());
         dataTypeServiceMap.put(new ClassStringPair(NullService.getInstance().keyword(), NullService.getInstance().appliesTo()), NullService.getInstance());
     }
 

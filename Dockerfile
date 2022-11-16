@@ -42,12 +42,12 @@ COPY --from=staging /app/sandbox/0.10.0-SNAPSHOT/assembly /opt/iesi
 COPY --from=staging /app/docker/application.yml.template /opt/iesi/conf/application.yml
 COPY --from=staging /app/docker/application-repository.yml.template /opt/iesi/conf/application-repository.yml
 
-ENV DATABASE_TYPE oracle
-ENV DATABASE_CONNECTION_URL jdbc:oracle:thin:@tcp://oracle-db:1521/XEPDB1
-ENV DATABASE_SCHEMA IESI_TEST
-ENV DATABASE_INIT_SQL alter session set nls_timestamp_format=\'YYYY-MM-DD\\\"T\\\" HH24:MI:SS:FF\' current_schema=IESI_TEST
-ENV DATABASE_USER IESI_TEST
-ENV DATABASE_PASSWORD IESI_TEST
+ENV DATABASE_TYPE mysql
+ENV DATABASE_CONNECTION_URL jdbc:mysql://iesimysqldb-hqjlu7hnwtcte.mysql.database.azure.com
+ENV DATABASE_SCHEMA iesidb
+ENV DATABASE_INIT_SQL ""
+ENV DATABASE_USER dbadmin@iesimysqldb-hqjlu7hnwtcte
+ENV DATABASE_PASSWORD BuFAa6GZk8W1zBVyHgQv
 
 ENV IESI_HOME /opt/iesi
 ENV IESI_WORKER_PATH /opt/iesi

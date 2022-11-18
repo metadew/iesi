@@ -28,8 +28,8 @@ import org.apache.http.Header;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,19 +43,23 @@ import java.util.stream.Collectors;
 @Getter
 public class HttpExecuteRequest extends ActionTypeExecution {
 
-    private static final String ACTION_TYPE = "http.executeRequest";
-    private static final String REQUEST_KEY = "request";
-    private static final String REQUEST_VERSION = "requestVersion";
-    private static final String BODY_KEY = "body";
-    private static final String PROXY_KEY = "proxy";
-    private static final String SET_DATASET_KEY = "setDataset";
-    private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
-    private static final String HEADERS_KEY = "headers";
-    private static final String QUERY_PARAMETERS_KEY = "queryParameters";
+    private final String ACTION_TYPE = "http.executeRequest";
+    private final String REQUEST_KEY = "request";
+    private final String REQUEST_VERSION = "requestVersion";
+    private final String BODY_KEY = "body";
+    private final String PROXY_KEY = "proxy";
+    private final String SET_DATASET_KEY = "setDataset";
+    private final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
+    private final String HEADERS_KEY = "headers";
+    private final String QUERY_PARAMETERS_KEY = "queryParameters";
+
+    private final String M_TLS_KEY = "mutualTLS";
 
     private HttpRequest httpRequest;
     private DatasetImplementation outputDataset;
     private ProxyConnection proxyConnection;
+
+    private boolean mutualTLS;
     private List<String> expectedStatusCodes;
 
     private static final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
@@ -100,6 +104,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         } else {
             httpRequest = httpComponentService.buildHttpRequest(httpComponent);
         }
+
         getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
         getActionExecution().getActionControl().logOutput("request.method", httpRequest.getHttpRequest().getMethod());
 
@@ -111,15 +116,15 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         expectedStatusCodes = convertExpectStatusCodes(getParameterResolvedValue(EXPECTED_STATUS_CODES_KEY));
         proxyConnection = convertProxyName(getParameterResolvedValue(PROXY_KEY));
         outputDataset = convertOutputDatasetReferenceName(getParameterResolvedValue(SET_DATASET_KEY));
-
+        mutualTLS = convertUseCertificates(getParameterResolvedValue(M_TLS_KEY));
     }
 
-    protected boolean executeAction() throws NoSuchAlgorithmException, IOException, KeyManagementException, InterruptedException {
+    protected boolean executeAction() throws NoSuchAlgorithmException, IOException, KeyManagementException, InterruptedException, UnrecoverableKeyException, KeyStoreException, CertificateException {
         HttpResponse httpResponse;
         if (getProxyConnection().isPresent()) {
-            httpResponse = HttpRequestService.getInstance().send(httpRequest, proxyConnection);
+            httpResponse = SpringContext.getBean(HttpRequestService.class).send(httpRequest, proxyConnection, mutualTLS);
         } else {
-            httpResponse = HttpRequestService.getInstance().send(httpRequest);
+            httpResponse = SpringContext.getBean(HttpRequestService.class).send(httpRequest, mutualTLS);
         }
         outputResponse(httpResponse);
         actionPerformanceLogger.log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());
@@ -141,6 +146,21 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         return actionLevelParameters;
     }
 
+    private boolean convertUseCertificates(DataType dataType) {
+        if (dataType == null || dataType instanceof Null) {
+            return false;
+        } else if (dataType instanceof Text) {
+            if (((Text) dataType).getString().equalsIgnoreCase("Y")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for certificates parameter"),
+                    dataType.getClass()));
+            return false;
+        }
+    }
 
     private List<HttpHeader> convertHeaderParameters(DataType dataType) {
         if (dataType == null || dataType instanceof Null) {

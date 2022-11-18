@@ -14,15 +14,20 @@ public class HttpConnectionService implements IHttpConnectionService {
     private final ConnectionConfiguration connectionConfiguration;
     private final HttpConnectionTraceService httpConnectionTraceService;
 
-    public HttpConnectionService(ConnectionConfiguration connectionConfiguration, HttpConnectionTraceService httpConnectionTraceService) {
+    private final HttpConnectionDefinitionService httpConnectionDefinitionService;
+
+    public HttpConnectionService(ConnectionConfiguration connectionConfiguration,
+                                 HttpConnectionTraceService httpConnectionTraceService,
+                                 HttpConnectionDefinitionService httpConnectionDefinitionService) {
         this.connectionConfiguration = connectionConfiguration;
         this.httpConnectionTraceService = httpConnectionTraceService;
+        this.httpConnectionDefinitionService = httpConnectionDefinitionService;
     }
 
     public HttpConnection get(String httpConnectionReferenceName, ActionExecution actionExecution) {
         Connection connection = connectionConfiguration.get(new ConnectionKey(httpConnectionReferenceName, new EnvironmentKey(actionExecution.getExecutionControl().getEnvName())))
                 .orElseThrow(() -> new RuntimeException("Could not find definition for http connection " + httpConnectionReferenceName + " for environment " + actionExecution.getExecutionControl().getEnvName()));
-        HttpConnectionDefinition httpConnectionDefinition = HttpConnectionDefinitionService.getInstance()
+        HttpConnectionDefinition httpConnectionDefinition =  httpConnectionDefinitionService
                 .convert(connection);
         return convert(httpConnectionDefinition);
     }

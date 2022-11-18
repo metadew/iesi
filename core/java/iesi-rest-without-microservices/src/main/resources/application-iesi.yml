@@ -1,17 +1,21 @@
 iesi:
   guard:
     authenticate: N
-#  script:
-#    execution:
-#       runtime: ''
+  #  script:
+  #    execution:
+  #       runtime: ''
   server:
-#    mode: off
+    #    mode: off
     mode: standalone
     threads:
       timeout: 30
   home: '/home/hkhattabi/metadew/iesi/core/java/iesi-core'
   security:
     enabled: true
+    keystore:
+      location: /home/hkhattabi/metadew/iesi/core/java/iesi-core/src/main/resources/client-keystore.p12
+      store-password: changeit
+      key-password: changeit
     jwt:
       secret: secret
       expiry-date: 10

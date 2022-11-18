@@ -4,7 +4,9 @@ import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
 import io.metadew.iesi.component.http.*;
 import io.metadew.iesi.connection.http.HttpConnection;
+import io.metadew.iesi.connection.http.HttpConnectionDefinitionService;
 import io.metadew.iesi.connection.http.HttpConnectionService;
+import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.action.design.ActionParameterDesignTraceConfiguration;
@@ -30,7 +32,11 @@ import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTrac
 import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import io.metadew.iesi.script.execution.*;
 import io.metadew.iesi.script.service.ActionParameterService;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +47,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +61,8 @@ import static org.mockito.Mockito.*;
         HttpConnectionService.class, HttpComponentTraceService.class, HttpConnectionTraceService.class, HttpComponentDefinitionService.class, HttpQueryParameterService.class,
         DataTypeHandler.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class, ComponentTraceConfiguration.class,
         ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, DataTypeHandler.class, MetadataFieldService.class, ConnectionConfiguration.class,
-        ConnectionParameterConfiguration.class, HttpHeaderService.class, ActionTypeParameterConfiguration.class, MetadataActionTypesConfiguration.class, ActionPerformanceLogger.class, ActionPerformanceConfiguration.class})
+        ConnectionParameterConfiguration.class, HttpHeaderService.class, ActionTypeParameterConfiguration.class, MetadataActionTypesConfiguration.class, ActionPerformanceLogger.class, ActionPerformanceConfiguration.class,
+        HttpComponentService.class, HttpConnectionDefinitionService.class })
 @ContextConfiguration(classes = TestConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
@@ -439,6 +447,17 @@ class HttpExecuteRequestTest {
 
         assertThat(httpExecuteRequest.getExpectedStatusCodes()).isNotEmpty();
         assertThat(httpExecuteRequest.getExpectedStatusCodes()).get().isEqualTo(expectedStatusCode);
+    }
+
+    @Test
+    void executeRequestWithCertificate() throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        String urlOverHttps = "https://21c1d51e-7944-4ea3-8d72-1f6de5c07295.mock.pstmn.io/big-decimal";
+        HttpGet httpGet = new HttpGet(urlOverHttps);
+
+        CloseableHttpResponse response = httpClient.execute(httpGet);
+
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
     }
 
 

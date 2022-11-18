@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = { HttpConnectionService.class, ConnectionConfiguration.class, HttpConnectionTraceService.class, ConnectionTraceConfiguration.class, ConnectionParameterConfiguration.class})
+@SpringBootTest(classes = { HttpConnectionService.class, ConnectionConfiguration.class, HttpConnectionTraceService.class, ConnectionTraceConfiguration.class, ConnectionParameterConfiguration.class, HttpConnectionDefinitionService.class})
 @ContextConfiguration(classes = TestConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")

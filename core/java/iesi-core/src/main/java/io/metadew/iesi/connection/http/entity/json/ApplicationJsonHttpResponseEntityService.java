@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.NullNode;
 import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.http.entity.IHttpResponseEntityService;
 import io.metadew.iesi.connection.http.response.HttpResponse;
@@ -94,8 +95,11 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
                             .orElse(Consts.UTF_8))
                     .orElse(Consts.UTF_8);
 
-            JsonNode jsonNode = null;
+            JsonNode jsonNode = NullNode.getInstance();
             try {
+                log.info("S: " + s);
+                log.info("CHARSET: " + charset);
+                log.info("NEW STRING: " + new String(s, charset));
                 jsonNode = objectMapper.readTree(new String(s, charset));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();

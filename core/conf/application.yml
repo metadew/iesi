@@ -11,11 +11,11 @@ iesi:
       timeout: 30
   home: '.'
   security:
-    keystore:
-      type: ''
-      location: ''
-      password: ''
     enabled: true
+    keystore:
+      location: ''
+      store-password: ''
+      key-password: ''
     jwt:
       secret: secret
       expiry-date: 10

@@ -55,7 +55,7 @@ public class ScriptExecutionBuilder {
                                                                int scriptExecutionRequestParameterCount,
                                                                Long processId, Long parentProcessId,
                                                                int scriptResultOutputCount, int actionResultCount,
-                                                               String actionTypeName) {
+                                                               String actionTypeName, String username) {
         LocalDateTime startTimestamp = LocalDateTime.now();
         Map<String, Object> infoMap = new HashMap<>(ExecutionRequestBuilder.generateExecutionRequest(
                 executionRequestIndex,
@@ -67,7 +67,8 @@ public class ScriptExecutionBuilder {
                 scriptSecurityGroup,
                 environment,
                 scriptExecutionRequestImpersonationCount,
-                scriptExecutionRequestParameterCount));
+                scriptExecutionRequestParameterCount,
+                username));
         UUID runId = UUID.randomUUID();
         infoMap.put("runId", UUID.randomUUID());
 

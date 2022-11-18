@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,13 +35,13 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
@@ -62,16 +63,6 @@ class ExecutionRequestRepositoryDtoTest {
     @Autowired
     private ScriptConfiguration scriptConfiguration;
 
-    @BeforeAll
-    static void initialize() {
-        //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        //MetadataRepositoryConfiguration.getInstance().getMetadataRepositories().forEach(MetadataRepository::dropAllTables);
-    }
-
     @AfterEach
     void cleanup() {
         metadataRepositoryConfiguration.clearAllTables();
@@ -89,7 +80,7 @@ class ExecutionRequestRepositoryDtoTest {
             })
     void getAllSingleExecutionRequest() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
-        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
@@ -109,11 +100,11 @@ class ExecutionRequestRepositoryDtoTest {
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
                 .generateExecutionRequest(1, requestTimestamp, 2,
                         1, "script1", 1L, "PUBLIC",
-                        "test", 1, 1);
+                        "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
                 .generateExecutionRequest(1, requestTimestamp, 2,
                         1, "script2", 1L, "PRIVATE",
-                        "test", 1, 1);
+                        "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
@@ -131,7 +122,7 @@ class ExecutionRequestRepositoryDtoTest {
             })
     void getAllSingleExecutionRequestWithRunId() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
-        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
@@ -163,8 +154,8 @@ class ExecutionRequestRepositoryDtoTest {
             })
     void getAllMultipleExecutionRequests() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
-        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
-        Map<String, Object> executionRequest2Map = ExecutionRequestBuilder.generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
+        Map<String, Object> executionRequest2Map = ExecutionRequestBuilder.generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -184,8 +175,8 @@ class ExecutionRequestRepositoryDtoTest {
             })
     void getAllPaginated() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
-        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
-        Map<String, Object> executionRequest2Map = ExecutionRequestBuilder.generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
+        Map<String, Object> executionRequest2Map = ExecutionRequestBuilder.generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -204,8 +195,8 @@ class ExecutionRequestRepositoryDtoTest {
             })
     void getAllOrderedByRequestTimestamp() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
-        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
-        Map<String, Object> executionRequest2Map = ExecutionRequestBuilder.generateExecutionRequest(2, requestTimestamp.plus(1L, ChronoUnit.SECONDS), 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
+        Map<String, Object> executionRequest2Map = ExecutionRequestBuilder.generateExecutionRequest(2, requestTimestamp.plus(1L, ChronoUnit.SECONDS), 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -231,9 +222,9 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllOrderedByScriptName() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script2", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script2", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -260,9 +251,9 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllOrderedByScriptVersion() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 2L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 2L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -290,9 +281,9 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllFilteredByScriptName() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script2", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script2", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -322,9 +313,9 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllFilteredByScriptVersion() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 2L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 2L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -349,9 +340,9 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllFilteredByEnvironment() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 2L, "PUBLIC", "production", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -376,9 +367,9 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllFilteredByLabel() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -404,10 +395,10 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllFilteredByStatus() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -468,7 +459,7 @@ class ExecutionRequestRepositoryDtoTest {
             })
     void getAllFilteredByRunId() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
-        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+        Map<String, Object> executionRequest1Map = ExecutionRequestBuilder.generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         scriptConfiguration.insert((Script) executionRequest1Map.get("script"));
@@ -504,10 +495,10 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllFilteredByRunIdMultiple() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -560,10 +551,10 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllFilteredByRunIdWithoutScriptExecution() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -583,10 +574,10 @@ class ExecutionRequestRepositoryDtoTest {
     void getAllFilteredByRunIdWithUnknownScriptExecution() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
 
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 1, 1, "script1", 2L, "PUBLIC", "production", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -613,6 +604,123 @@ class ExecutionRequestRepositoryDtoTest {
                 .isEmpty();
     }
 
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {
+                    "EXECUTION_REQUESTS_READ@PUBLIC"
+            })
+    void getAllFilteredByRequester() {
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        Map<String, Object> executionRequestMap = ExecutionRequestBuilder
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
+
+        executionRequestConfiguration.insert((ExecutionRequest) executionRequestMap.get("executionRequest"));
+        scriptConfiguration.insert((Script) executionRequestMap.get("script"));
+
+
+        ScriptExecution scriptExecution = ScriptExecution.builder()
+                .scriptExecutionKey(new ScriptExecutionKey(UUID.randomUUID().toString()))
+                .scriptRunStatus(ScriptRunStatus.RUNNING)
+                .startTimestamp(LocalDateTime.now())
+                .endTimestamp(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS))
+                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(executionRequestMap.get("scriptExecutionRequest10UUID").toString()))
+                .runId(UUID.randomUUID().toString())
+                .build();
+
+        scriptExecutionConfiguration.insert(scriptExecution);
+
+        Page<ExecutionRequestDto> executionRequestDtos = executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2), Stream.of(
+                new ExecutionRequestFilter(ExecutionRequestFilterOption.REQUESTER, "spring", true)).collect(Collectors.toList()));
+
+        assertThat(executionRequestDtos)
+                .hasSize(1)
+                .element(0)
+                .extracting("username")
+                .isEqualTo("spring");
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {
+                    "EXECUTION_REQUESTS_READ@PUBLIC"
+            })
+    void getAllFilteredByUsernames() {
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        Map<String, Object> executionRequestMap = ExecutionRequestBuilder
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
+        Map<String, Object> executionRequestMap2 = ExecutionRequestBuilder
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script2", 1L, "PUBLIC", "test2", 1, 1, "spring2");
+
+
+        executionRequestConfiguration.insert((ExecutionRequest) executionRequestMap.get("executionRequest"));
+        scriptConfiguration.insert((Script) executionRequestMap.get("script"));
+
+        executionRequestConfiguration.insert((ExecutionRequest) executionRequestMap2.get("executionRequest"));
+        scriptConfiguration.insert((Script) executionRequestMap2.get("script"));
+
+
+        ScriptExecution scriptExecution = ScriptExecution.builder()
+                .scriptExecutionKey(new ScriptExecutionKey(UUID.randomUUID().toString()))
+                .scriptRunStatus(ScriptRunStatus.RUNNING)
+                .startTimestamp(LocalDateTime.now())
+                .endTimestamp(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS))
+                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(executionRequestMap.get("scriptExecutionRequest10UUID").toString()))
+                .runId(UUID.randomUUID().toString())
+                .build();
+
+        ScriptExecution scriptExecution2 = ScriptExecution.builder()
+                .scriptExecutionKey(new ScriptExecutionKey(UUID.randomUUID().toString()))
+                .scriptRunStatus(ScriptRunStatus.RUNNING)
+                .startTimestamp(LocalDateTime.now())
+                .endTimestamp(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS))
+                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(executionRequestMap2.get("scriptExecutionRequest10UUID").toString()))
+                .runId(UUID.randomUUID().toString())
+                .build();
+
+        scriptExecutionConfiguration.insert(scriptExecution);
+        scriptExecutionConfiguration.insert(scriptExecution2);
+
+        Page<ExecutionRequestDto> executionRequestDtos = executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2), Stream.of(
+                new ExecutionRequestFilter(ExecutionRequestFilterOption.REQUESTER, "spring", true)).collect(Collectors.toList()));
+
+        assertThat(executionRequestDtos)
+                .hasSize(1)
+                .element(0)
+                .extracting("username")
+                .isEqualTo("spring");
+    }
+
+    @Test
+    @WithIesiUser(username = "spring",
+            authorities = {
+                    "EXECUTION_REQUESTS_READ@PUBLIC"
+            })
+    void getAllFilteredByUsernameNotFound() {
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        Map<String, Object> executionRequestMap = ExecutionRequestBuilder
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring2");
+
+        executionRequestConfiguration.insert((ExecutionRequest) executionRequestMap.get("executionRequest"));
+        scriptConfiguration.insert((Script) executionRequestMap.get("script"));
+
+        ScriptExecution scriptExecution = ScriptExecution.builder()
+                .scriptExecutionKey(new ScriptExecutionKey(UUID.randomUUID().toString()))
+                .scriptRunStatus(ScriptRunStatus.RUNNING)
+                .startTimestamp(LocalDateTime.now())
+                .endTimestamp(LocalDateTime.now().plus(1L, ChronoUnit.MILLIS))
+                .scriptExecutionRequestKey(new ScriptExecutionRequestKey(executionRequestMap.get("scriptExecutionRequest10UUID").toString()))
+                .runId(UUID.randomUUID().toString())
+                .build();
+
+        scriptExecutionConfiguration.insert(scriptExecution);
+
+        Page<ExecutionRequestDto> executionRequestDtos = executionRequestDtoRepository.getAll(SecurityContextHolder.getContext().getAuthentication(), PageRequest.of(0, 2), Stream.of(
+                new ExecutionRequestFilter(ExecutionRequestFilterOption.REQUESTER, "spring", true)).collect(Collectors.toList()));
+
+        assertThat(executionRequestDtos)
+                .isEmpty();
+    }
+
 
     @Test
     @WithIesiUser(username = "spring",
@@ -631,9 +739,9 @@ class ExecutionRequestRepositoryDtoTest {
     void getByIdSingleExecutionRequest() {
         LocalDateTime requestTimestamp = LocalDateTime.now();
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
-                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1);
+                .generateExecutionRequest(1, requestTimestamp, 2, 1, "script1", 1L, "PUBLIC", "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
-                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 2L, "PUBLIC", "production", 1, 1);
+                .generateExecutionRequest(2, requestTimestamp, 2, 1, "script1", 2L, "PUBLIC", "production", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));
@@ -656,11 +764,11 @@ class ExecutionRequestRepositoryDtoTest {
         Map<String, Object> executionRequest1Map = ExecutionRequestBuilder
                 .generateExecutionRequest(1, requestTimestamp, 2,
                         1, "script1", 1L, "PUBLIC",
-                        "test", 1, 1);
+                        "test", 1, 1, "spring");
         Map<String, Object> executionRequest2Map = ExecutionRequestBuilder
                 .generateExecutionRequest(2, requestTimestamp, 2,
                         1, "script2", 2L, "PRIVATE",
-                        "production", 1, 1);
+                        "production", 1, 1, "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest1Map.get("executionRequest"));
         executionRequestConfiguration.insert((ExecutionRequest) executionRequest2Map.get("executionRequest"));

@@ -37,20 +37,18 @@ public class ExecutionRequestService implements IExecutionRequestService {
     private final ExecutionRequestConfiguration executionRequestConfiguration;
     private final ExecutionRequestExecutorService executionRequestExecutorService;
     private final ExecutionRequestDtoRepository executionRequestDtoRepository;
-    private final UserDtoRepository userDtoRepository;
+
     private final MetadataPolicyConfiguration metadataPolicyConfiguration;
 
-    private ExecutionRequestService(
+    public ExecutionRequestService(
             ExecutionRequestConfiguration executionRequestConfiguration,
             ExecutionRequestExecutorService executionRequestExecutorService,
             ExecutionRequestDtoRepository executionRequestDtoRepository,
-            UserDtoRepository userDtoRepository,
             MetadataPolicyConfiguration metadataPolicyConfiguration
     ) {
         this.executionRequestConfiguration = executionRequestConfiguration;
         this.executionRequestExecutorService = executionRequestExecutorService;
         this.executionRequestDtoRepository = executionRequestDtoRepository;
-        this.userDtoRepository = userDtoRepository;
         this.metadataPolicyConfiguration = metadataPolicyConfiguration;
     }
 

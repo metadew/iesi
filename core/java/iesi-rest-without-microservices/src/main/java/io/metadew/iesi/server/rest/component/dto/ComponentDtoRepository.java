@@ -146,9 +146,9 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
         if (pageable.getSort().isUnsorted()) return " ORDER BY component_designs.COMP_ID ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "lower(component_designs.COMP_NM)" + order.getDirection();
+                        return "lower(component_designs.COMP_NM) " + order.getDirection();
                     } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
-                        return "versions.COMP_VRS_NB" + order.getDirection();
+                        return "versions.COMP_VRS_NB " + order.getDirection();
                     } else {
                         return null;
                     }

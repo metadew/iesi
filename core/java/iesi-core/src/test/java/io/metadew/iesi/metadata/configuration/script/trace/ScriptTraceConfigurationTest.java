@@ -1,47 +1,31 @@
 package io.metadew.iesi.metadata.configuration.script.trace;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.metadata.definition.script.trace.ScriptTrace;
 import io.metadew.iesi.metadata.definition.script.trace.key.ScriptTraceKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = { ScriptTraceConfiguration.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ScriptTraceConfigurationTest {
 
-    @BeforeAll
-    static void prepare() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
+    @Autowired
+    private ScriptTraceConfiguration scriptTraceConfiguration;
 
     @Test
     void scriptGetAllEmptyTest() {
-        assertThat(ScriptTraceConfiguration.getInstance().getAll())
+        assertThat(scriptTraceConfiguration.getAll())
                 .isEmpty();
     }
 
@@ -63,10 +47,10 @@ class ScriptTraceConfigurationTest {
                 .scriptDescription("description")
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptTraceConfiguration.getInstance().insert(scriptTrace1);
-        ScriptTraceConfiguration.getInstance().insert(scriptTrace2);
+        scriptTraceConfiguration.insert(scriptTrace1);
+        scriptTraceConfiguration.insert(scriptTrace2);
 
-        assertThat(ScriptTraceConfiguration.getInstance().getAll())
+        assertThat(scriptTraceConfiguration.getAll())
                 .containsOnly(scriptTrace1, scriptTrace2);
 
     }
@@ -82,9 +66,9 @@ class ScriptTraceConfigurationTest {
                 .scriptDescription("description")
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptTraceConfiguration.getInstance().insert(scriptTrace1);
+        scriptTraceConfiguration.insert(scriptTrace1);
 
-        assertThat(ScriptTraceConfiguration.getInstance().get(scriptTraceKey))
+        assertThat(scriptTraceConfiguration.get(scriptTraceKey))
                 .hasValue(scriptTrace1);
     }
 
@@ -99,8 +83,8 @@ class ScriptTraceConfigurationTest {
                 .scriptDescription("description")
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptTraceConfiguration.getInstance().insert(scriptTrace1);
-        assertThat(ScriptTraceConfiguration.getInstance().get(scriptTraceKey))
+        scriptTraceConfiguration.insert(scriptTrace1);
+        assertThat(scriptTraceConfiguration.get(scriptTraceKey))
                 .hasValue(scriptTrace1);
     }
 
@@ -123,16 +107,16 @@ class ScriptTraceConfigurationTest {
                 .scriptDescription("description")
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptTraceConfiguration.getInstance().insert(scriptTrace1);
+        scriptTraceConfiguration.insert(scriptTrace1);
 
-        ScriptTraceConfiguration.getInstance().insert(scriptTrace2);
+        scriptTraceConfiguration.insert(scriptTrace2);
 
-        assertThat(ScriptTraceConfiguration.getInstance().getAll())
+        assertThat(scriptTraceConfiguration.getAll())
                 .containsOnly(scriptTrace1, scriptTrace2);
 
-        ScriptTraceConfiguration.getInstance().delete(scriptTraceKey);
+        scriptTraceConfiguration.delete(scriptTraceKey);
 
-        assertThat(ScriptTraceConfiguration.getInstance().getAll())
+        assertThat(scriptTraceConfiguration.getAll())
                 .containsOnly(scriptTrace2);
     }
 
@@ -147,9 +131,9 @@ class ScriptTraceConfigurationTest {
                 .scriptDescription("description")
                 .securityGroupName("PUBLIC")
                 .build();
-        ScriptTraceConfiguration.getInstance().insert(scriptTrace1);
+        scriptTraceConfiguration.insert(scriptTrace1);
 
-        assertThat(ScriptTraceConfiguration.getInstance().get(scriptTraceKey))
+        assertThat(scriptTraceConfiguration.get(scriptTraceKey))
                 .hasValue(scriptTrace1);
 
         scriptTrace1.setScriptDescription("description 2");
@@ -158,9 +142,9 @@ class ScriptTraceConfigurationTest {
         scriptTrace1.setScriptName("script 2");
         scriptTrace1.setSecurityGroupName("PUBLIC 2");
 
-        ScriptTraceConfiguration.getInstance().update(scriptTrace1);
+        scriptTraceConfiguration.update(scriptTrace1);
 
-        assertThat(ScriptTraceConfiguration.getInstance().get(scriptTraceKey))
+        assertThat(scriptTraceConfiguration.get(scriptTraceKey))
                 .hasValue(scriptTrace1);
     }
 

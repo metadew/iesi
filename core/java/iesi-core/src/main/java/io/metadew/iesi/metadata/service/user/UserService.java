@@ -3,85 +3,85 @@ package io.metadew.iesi.metadata.service.user;
 import io.metadew.iesi.metadata.configuration.user.UserConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+@Service
 @Log4j2
 public class UserService {
 
-    private static UserService instance;
+    private final UserConfiguration userConfiguration;
 
-    public static synchronized UserService getInstance() {
-        if (instance == null) {
-            instance = new UserService();
-        }
-        return instance;
-    }
-
-    private UserService() {
+    public UserService(UserConfiguration userConfiguration) {
+        this.userConfiguration = userConfiguration;
     }
 
     public List<User> getAll() {
-        return UserConfiguration.getInstance().getAll();
+        return userConfiguration.getAll();
     }
 
     public boolean exists(UserKey userKey) {
-        return UserConfiguration.getInstance().exists(userKey);
+        return userConfiguration.exists(userKey);
     }
 
     public boolean exists(String username) {
-        return UserConfiguration.getInstance().exists(username);
+        return userConfiguration.exists(username);
     }
 
     public void addUser(User user) {
-        UserConfiguration.getInstance().insert(user);
+        userConfiguration.insert(user);
     }
 
     public Optional<User> get(UserKey userKey) {
-        return UserConfiguration.getInstance().get(userKey);
+        return userConfiguration.get(userKey);
     }
 
     public Optional<UUID> getUuidByName(String username) {
-        return UserConfiguration.getInstance().getUuidByName(username);
+        return userConfiguration.getUuidByName(username);
     }
 
     public Optional<User> get(String username) {
-        return UserConfiguration.getInstance().getByName(username);
+        return userConfiguration.getByName(username);
     }
 
     public void update(User user) {
-        UserConfiguration.getInstance().update(user);
+        userConfiguration.update(user);
+    }
+
+    public void updatePassword(String password, UserKey userKey) {
+        userConfiguration.updatePassword(password, userKey);
     }
 
     public void delete(UserKey userKey) {
-        UserConfiguration.getInstance().delete(userKey);
+        userConfiguration.delete(userKey);
     }
 
     public void delete(String username) {
-        UserConfiguration.getInstance().delete(username);
+        userConfiguration.delete(username);
     }
 
     public Set<Privilege> getPrivileges(UserKey userKey) {
-        return UserConfiguration.getInstance().getPrivileges(userKey);
+        return userConfiguration.getPrivileges(userKey);
     }
 
     public Set<Role> getRoles(UserKey userKey) {
-        return UserConfiguration.getInstance().getRoles(userKey);
+        return userConfiguration.getRoles(userKey);
     }
 
     public Set<Team> getTeams(UserKey userKey) {
-        return UserConfiguration.getInstance().getTeams(userKey);
+        return userConfiguration.getTeams(userKey);
     }
 
     public void addRole(UserKey user, Role role) {
-        UserConfiguration.getInstance().addRole(user, role.getMetadataKey());
+        userConfiguration.addRole(user, role.getMetadataKey());
     }
 
     public void removeRole(User user, Role role) {
-        UserConfiguration.getInstance().removeRole(user.getMetadataKey(), role.getMetadataKey());
+        userConfiguration.removeRole(user.getMetadataKey(), role.getMetadataKey());
     }
 
 }

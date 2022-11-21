@@ -1,21 +1,16 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
-import io.metadew.iesi.server.rest.configuration.security.IESIGrantedAuthority;
-import io.metadew.iesi.server.rest.configuration.security.IesiUserDetails;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
-import io.metadew.iesi.server.rest.user.UserDto;
 import io.metadew.iesi.server.rest.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,7 +24,7 @@ public class IesiUserAuthenticationConverter implements UserAuthenticationConver
 
 
     @Autowired
-    public IesiUserAuthenticationConverter(IesiUserDetailsManager iesiUserDetailsManager, UserService userService) {
+    public IesiUserAuthenticationConverter(IesiUserDetailsManager iesiUserDetailsManager, @Qualifier("restUserService") UserService userService) {
         this.iesiUserDetailsManager = iesiUserDetailsManager;
         this.userService = userService;
     }

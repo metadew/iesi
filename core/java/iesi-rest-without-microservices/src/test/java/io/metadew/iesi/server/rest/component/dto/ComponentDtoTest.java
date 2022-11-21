@@ -37,12 +37,13 @@ class ComponentDtoTest {
 
     @Autowired
     private IComponentDtoService componentDtoService;
+
     @Autowired
     private SecurityGroupConfiguration securityGroupConfiguration;
 
     @Test
     void convertToEntityTest() {
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC")
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName("PUBLIC")
                 .orElseThrow(RuntimeException::new);
 
         Component component = new Component(new ComponentKey(IdentifierTools.getComponentIdentifier("name"), 1L),

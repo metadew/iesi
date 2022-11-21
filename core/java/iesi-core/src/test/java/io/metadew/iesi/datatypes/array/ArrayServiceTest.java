@@ -2,13 +2,19 @@ package io.metadew.iesi.datatypes.array;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import io.metadew.iesi.datatypes.text.Text;
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -23,13 +29,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = { DataTypeHandler.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class ArrayServiceTest {
 
     @Test
     void appliesToTest() {
         assertEquals(Array.class, ArrayService.getInstance().appliesTo());
     }
-
 
     @Test
     void keywordTest() {

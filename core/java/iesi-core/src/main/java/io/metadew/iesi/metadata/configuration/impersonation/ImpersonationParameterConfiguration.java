@@ -8,10 +8,11 @@ import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistExce
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationKey;
 import io.metadew.iesi.metadata.definition.impersonation.key.ImpersonationParameterKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -19,22 +20,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ImpersonationParameterConfiguration extends Configuration<ImpersonationParameter, ImpersonationParameterKey> {
 
     private ImpersonationParameter impersonationParameter;
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ImpersonationParameterConfiguration INSTANCE;
 
-    public synchronized static ImpersonationParameterConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ImpersonationParameterConfiguration();
-        }
-        return INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+
+    public ImpersonationParameterConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ImpersonationParameterConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getControlMetadataRepository());
     }
 
     @Override

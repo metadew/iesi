@@ -5,7 +5,6 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
 import lombok.*;
-import org.springframework.hateoas.RepresentationModel;
 
 import java.util.UUID;
 

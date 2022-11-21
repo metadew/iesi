@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.service;
 
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.mysql.MysqlDatabase;
@@ -9,12 +10,16 @@ import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.powermock.reflect.Whitebox;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.text.MessageFormat;
 import java.util.UUID;
@@ -25,19 +30,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
+@SpringBootTest
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class MysqlConnectionServiceTest {
 
-    @BeforeAll
-    static void setup() {
-        DatabaseHandler databaseConnectionHandler = DatabaseHandler.getInstance();
-        DatabaseHandler databaseConnectionHandlerSpy = Mockito.spy(databaseConnectionHandler);
-        Whitebox.setInternalState(DatabaseHandler.class, "INSTANCE", databaseConnectionHandlerSpy);
-        Mockito.doReturn(false).when(databaseConnectionHandlerSpy).isInitializeConnectionPool(any());
-    }
+    @Autowired
+    FrameworkCrypto frameworkCrypto;
 
-    @AfterAll
-    static void destroy() {
-        Whitebox.setInternalState(DatabaseHandler.class, "INSTANCE", (DatabaseHandler) null);
+    @SpyBean
+    DatabaseHandler databaseHandler;
+
+    @BeforeEach
+    void setup() {
+        Mockito.doReturn(false).when(databaseHandler).isInitializeConnectionPool(any());
     }
 
     @Test
@@ -48,14 +55,14 @@ class MysqlConnectionServiceTest {
                 "db.mysql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         MysqlDatabase mysqlDatabase = new MysqlDatabase(
                 new MysqlDatabaseConnection("host", 1, "database", "user", "password", ""));
-        assertEquals(mysqlDatabase, DatabaseHandler.getInstance().getDatabase(connection));
+        assertEquals(mysqlDatabase, databaseHandler.getDatabase(connection));
     }
 
     @Test
@@ -66,13 +73,13 @@ class MysqlConnectionServiceTest {
                 "db.mysql",
                 "description",
                 Stream.of(
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "connectionUrl"), "connectionUrl"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "connectionUrl"), "connectionUrl"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
         MysqlDatabase mysqlDatabase = new MysqlDatabase(
                 new MysqlDatabaseConnection("connectionUrl", "user", "password", ""));
-        Assertions.assertEquals(mysqlDatabase, DatabaseHandler.getInstance().getDatabase(connection));
+        Assertions.assertEquals(mysqlDatabase, databaseHandler.getDatabase(connection));
     }
 
     @Test
@@ -83,14 +90,14 @@ class MysqlConnectionServiceTest {
                 "db.mysql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), FrameworkCrypto.getInstance().encrypt("encrypted_password")))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), frameworkCrypto.encrypt("encrypted_password")))
                         .collect(Collectors.toList()));
         MysqlDatabase mysqlDatabase = new MysqlDatabase(
                 new MysqlDatabaseConnection("host", 1, "database", "user", "encrypted_password", ""));
-        assertEquals(mysqlDatabase, DatabaseHandler.getInstance().getDatabase(connection));
+        assertEquals(mysqlDatabase, databaseHandler.getDatabase(connection));
     }
 
     @Test
@@ -101,11 +108,11 @@ class MysqlConnectionServiceTest {
                 "db.mysql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> databaseHandler.getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'host'", connection));
     }
 
@@ -117,11 +124,11 @@ class MysqlConnectionServiceTest {
                 "db.mysql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> databaseHandler.getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'port'", connection));
     }
 
@@ -133,11 +140,11 @@ class MysqlConnectionServiceTest {
                 "db.mysql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> databaseHandler.getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'database'", connection));
     }
 
@@ -149,11 +156,11 @@ class MysqlConnectionServiceTest {
                 "db.mysql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "password"), "password"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> databaseHandler.getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'user'", connection));
     }
 
@@ -165,11 +172,11 @@ class MysqlConnectionServiceTest {
                 "db.mysql",
                 "description",
                 Stream.of(new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "host"), "host"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
-                        new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"))
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "port"), "1"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "database"), "database"),
+                                new ConnectionParameter(new ConnectionParameterKey(new ConnectionKey("test", "tst"), "user"), "user"))
                         .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> DatabaseHandler.getInstance().getDatabase(connection),
+        assertThrows(RuntimeException.class, () -> databaseHandler.getDatabase(connection),
                 MessageFormat.format("Connection {0} does not contain mandatory parameter 'password'", connection));
     }
 }

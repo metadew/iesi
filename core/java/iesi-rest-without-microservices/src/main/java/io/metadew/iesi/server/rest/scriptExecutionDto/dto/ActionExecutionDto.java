@@ -2,7 +2,6 @@ package io.metadew.iesi.server.rest.scriptExecutionDto.dto;
 
 import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;

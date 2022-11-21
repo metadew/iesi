@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
@@ -22,6 +23,8 @@ public class ConnectionLookup implements LookupInstruction {
     private final Pattern INPUT_PARAMETER_PATTERN = Pattern
             .compile("\\s*\"?(?<" + CONNECTION_NAME_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + CONNECTION_PARAMETER_NAME_KEY + ">(\\w|\\.)+)\\s*");
 
+    private final ConnectionParameterConfiguration connectionParameterConfiguration = SpringContext.getBean(ConnectionParameterConfiguration.class);
+
     public ConnectionLookup(ExecutionControl executionControl) {
         this.executionControl = executionControl;
     }
@@ -39,7 +42,7 @@ public class ConnectionLookup implements LookupInstruction {
         String connectionName = inputParameterMatcher.group(CONNECTION_NAME_KEY);
         String connectionParameterName = inputParameterMatcher.group(CONNECTION_PARAMETER_NAME_KEY);
 
-        Optional<String> connectionParameterValue = ConnectionParameterConfiguration.getInstance()
+        Optional<String> connectionParameterValue = connectionParameterConfiguration
                 .get(new ConnectionParameterKey(new ConnectionKey(connectionName, executionControl.getEnvName()), connectionParameterName))
                 .map(ConnectionParameter::getValue);
 

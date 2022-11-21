@@ -1,0 +1,13 @@
+[{
+  "code": {
+    "codeList": "AIA1",
+    "code": "1",
+    "startDate": "2008-08-11",
+    "endDate": "9999-12-31"
+  },
+  "description": [{
+    "language": "EN",
+    "shortDesc": "auto/moto",
+    "longDesc": "auto/moto"
+  }]
+}]

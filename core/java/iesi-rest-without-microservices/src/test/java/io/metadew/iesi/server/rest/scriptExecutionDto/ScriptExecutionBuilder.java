@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
-import io.metadew.iesi.metadata.definition.action.trace.ActionTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;
@@ -55,7 +54,7 @@ public class ScriptExecutionBuilder {
                                                                int scriptExecutionRequestParameterCount,
                                                                Long processId, Long parentProcessId,
                                                                int scriptResultOutputCount, int actionResultCount,
-                                                               String actionTypeName) {
+                                                               String actionTypeName, String username) {
         LocalDateTime startTimestamp = LocalDateTime.now();
         Map<String, Object> infoMap = new HashMap<>(ExecutionRequestBuilder.generateExecutionRequest(
                 executionRequestIndex,
@@ -67,7 +66,8 @@ public class ScriptExecutionBuilder {
                 scriptSecurityGroup,
                 environment,
                 scriptExecutionRequestImpersonationCount,
-                scriptExecutionRequestParameterCount));
+                scriptExecutionRequestParameterCount,
+                username));
         UUID runId = UUID.randomUUID();
         infoMap.put("runId", UUID.randomUUID());
 

@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.http.entity.json;
 
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
@@ -12,6 +13,11 @@ import org.apache.http.HttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -20,15 +26,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest(classes = { DataTypeHandler.class })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext
+@ActiveProfiles("test")
 class ApplicationJsonHttpResponseEntityServiceTest {
+
+    @MockBean
+    private DataTypeHandler dataTypeHandler;
 
     @Test
     void writeToDatasetTest() throws IOException {
         // Setup
         DatasetImplementationHandler datasetHandler = mock(DatasetImplementationHandler.class);
         Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", datasetHandler);
-        DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
         HttpResponse httpResponse = mock(HttpResponse.class);
         HttpEntity httpEntity = mock(HttpEntity.class);
@@ -48,7 +59,6 @@ class ApplicationJsonHttpResponseEntityServiceTest {
 
         // Clean up
         Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
@@ -56,8 +66,6 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         // Setup
         DatasetImplementationHandler datasetHandler = mock(DatasetImplementationHandler.class);
         Whitebox.setInternalState(DatasetImplementationHandler.class, "instance", datasetHandler);
-        DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
         HttpResponse httpResponse = mock(HttpResponse.class);
         when(httpResponse.getEntityContent())
@@ -74,7 +82,6 @@ class ApplicationJsonHttpResponseEntityServiceTest {
 
         // Clean up
         Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
     @Test
@@ -82,8 +89,6 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         // Setup
         DatabaseDatasetImplementationService datasetHandler = mock(DatabaseDatasetImplementationService.class);
         Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", datasetHandler);
-        DataTypeHandler dataTypeHandler = mock(DataTypeHandler.class);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", dataTypeHandler);
 
         HttpResponse httpResponse = mock(HttpResponse.class);
         HttpEntity httpEntity = mock(HttpEntity.class);
@@ -100,7 +105,6 @@ class ApplicationJsonHttpResponseEntityServiceTest {
         verify(datasetHandler, times(0)).setDataItem(dataset, "key", new Text("test"));
         // Clean up
         Whitebox.setInternalState(DatabaseDatasetImplementationService.class, "instance", (DatabaseDatasetImplementationService) null);
-        Whitebox.setInternalState(DataTypeHandler.class, "instance", (DataTypeHandler) null);
     }
 
 }

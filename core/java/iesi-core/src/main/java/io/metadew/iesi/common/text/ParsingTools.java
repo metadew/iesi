@@ -50,9 +50,6 @@ public final class ParsingTools {
 
             // Get Type Value
             String typeValue = input.substring(closePos + 1, input.length() - 1);
-            // System.out.println(input);
-            // System.out.println(typeValue);
-            // System.out.println(type);
             return typeValue;
         } else {
             return input;

@@ -10,8 +10,6 @@ import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
-import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestController;
-import io.metadew.iesi.server.rest.executionrequest.ExecutionRequestService;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDto;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestDtoModelAssembler;
 import io.metadew.iesi.server.rest.executionrequest.dto.ExecutionRequestPostDto;
@@ -36,14 +34,18 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Log4j2
 @SpringBootTest(classes = {Application.class, MethodSecurityConfiguration.class, TestConfiguration.class},
@@ -78,7 +80,7 @@ class ExecutionRequestsControllerSecurityTest {
     @Test
     void testGetAllNoUser() {
         Pageable pageable = Pageable.unpaged();
-        assertThatThrownBy(() -> executionRequestController.getAll(pageable, null, null, null, null, null, null))
+        assertThatThrownBy(() -> executionRequestController.getAll(pageable, null, null, null, null, null, null, null))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -111,7 +113,7 @@ class ExecutionRequestsControllerSecurityTest {
                     "DATASETS_WRITE@PUBLIC"})
     void testGetAllNoExecutionRequestReadPrivilege() {
         Pageable pageable = Pageable.unpaged();
-        assertThatThrownBy(() -> executionRequestController.getAll(pageable, null, null, null, null, null, null))
+        assertThatThrownBy(() -> executionRequestController.getAll(pageable, null, null, null, null, null, null, null))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -122,7 +124,7 @@ class ExecutionRequestsControllerSecurityTest {
         when(executionRequestService
                 .getAll(any(), eq(Pageable.unpaged()), eq(new ArrayList<>())))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
-        executionRequestController.getAll(Pageable.unpaged(), null, null, null, null, null, null);
+        executionRequestController.getAll(Pageable.unpaged(), null, null, null, null, null, null, null);
     }
 
     @Test

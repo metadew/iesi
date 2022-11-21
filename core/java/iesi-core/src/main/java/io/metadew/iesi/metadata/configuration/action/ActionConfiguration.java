@@ -9,10 +9,11 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,20 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ActionConfiguration extends Configuration<Action, ActionKey> {
 
     private final static Logger LOGGER = LogManager.getLogger();
-    private static ActionConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final ActionParameterConfiguration actionParameterConfiguration;
 
-    public synchronized static ActionConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ActionConfiguration();
-        }
-        return INSTANCE;
+    public ActionConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, ActionParameterConfiguration actionParameterConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.actionParameterConfiguration = actionParameterConfiguration;
     }
 
-    private ActionConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDesignMetadataRepository());
     }
 
     @Override
@@ -67,7 +69,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
                     crsAction.getString("EXP_ERR_FL"),
                     crsAction.getString("STOP_ERR_FL"),
                     crsAction.getString("RETRIES_VAL"),
-                    ActionParameterConfiguration.getInstance().getByAction(actionKey)
+                    actionParameterConfiguration.getByAction(actionKey)
             );
             crsAction.close();
             return Optional.of(action);
@@ -90,7 +92,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
             while (crs.next()) {
                 ActionKey actionKey = new ActionKey(new ScriptKey(crs.getString("SCRIPT_ID"), crs.getLong("SCRIPT_VRS_NB")),
                         crs.getString("ACTION_ID"));
-                List<ActionParameter> actionParameters = ActionParameterConfiguration.getInstance().getByAction(actionKey);
+                List<ActionParameter> actionParameters = actionParameterConfiguration.getByAction(actionKey);
                 actions.add(new Action(actionKey,
                         crs.getLong("ACTION_NB"),
                         crs.getString("ACTION_TYP_NM"),
@@ -121,7 +123,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         if (!exists(actionKey)) {
             throw new MetadataDoesNotExistException(actionKey);
         }
-        ActionParameterConfiguration.getInstance().deleteByAction(actionKey);
+        actionParameterConfiguration.deleteByAction(actionKey);
         getMetadataRepository().executeUpdate(deleteStatement(actionKey));
     }
 
@@ -132,7 +134,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
             throw new MetadataAlreadyExistsException(action);
         }
         for (ActionParameter actionParameter : action.getParameters()) {
-            ActionParameterConfiguration.getInstance().insert(actionParameter);
+            actionParameterConfiguration.insert(actionParameter);
         }
         String query = "INSERT INTO " + getMetadataRepository()
                 .getTableNameByLabel("Actions") +
@@ -183,7 +185,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
         try {
             while (crs.next()) {
                 ActionKey actionKey = new ActionKey(scriptKey, crs.getString("ACTION_ID"));
-                List<ActionParameter> actionParameters = ActionParameterConfiguration.getInstance().getByAction(actionKey);
+                List<ActionParameter> actionParameters = actionParameterConfiguration.getByAction(actionKey);
                 actions.add(new Action(actionKey,
                         crs.getLong("ACTION_NB"),
                         crs.getString("ACTION_TYP_NM"),
@@ -210,7 +212,7 @@ public class ActionConfiguration extends Configuration<Action, ActionKey> {
 
     public void deleteByScript(ScriptKey scriptKey) {
         LOGGER.trace(MessageFormat.format("Deleting actions for script {0}", scriptKey.toString()));
-        ActionParameterConfiguration.getInstance().deleteByScript(scriptKey);
+        actionParameterConfiguration.deleteByScript(scriptKey);
         getMetadataRepository().executeUpdate("delete from " + getMetadataRepository().getTableNameByLabel("Actions") +
                 " where SCRIPT_ID = " + SQLTools.getStringForSQL(scriptKey.getScriptId()) +
                 " and SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptKey.getScriptVersion()) + ";");

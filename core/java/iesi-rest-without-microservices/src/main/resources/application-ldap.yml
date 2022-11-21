@@ -1,5 +1,5 @@
 server:
-  disabled: false
+  disabled: true
   url: ldap://localhost:10389
   base: dc=example,dc=com
 authentication:

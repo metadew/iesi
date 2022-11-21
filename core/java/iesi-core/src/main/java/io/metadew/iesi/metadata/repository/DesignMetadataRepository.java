@@ -1,6 +1,7 @@
 package io.metadew.iesi.metadata.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
@@ -17,7 +18,6 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import lombok.extern.log4j.Log4j2;
 
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -68,7 +68,7 @@ public class DesignMetadataRepository extends MetadataRepository {
             // if a script does not have a security group, it is linked to the PUBLIC security group
             if (script.getSecurityGroupKey() == null) {
                 log.warn("{0} not linked to a security group, linking it to the public security group");
-                SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
+                SecurityGroup publicSecurityGroup = SpringContext.getBean(SecurityGroupService.class).get("PUBLIC")
                         .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
                 script.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
                 script.setSecurityGroupName(publicSecurityGroup.getName());
@@ -76,22 +76,22 @@ public class DesignMetadataRepository extends MetadataRepository {
 
             script.getVersion().setCreatedBy("admin");
             script.getVersion().setCreatedAt(LocalDateTime.now().toString());
-            ScriptConfiguration.getInstance().insert(script);
+            SpringContext.getBean(ScriptConfiguration.class).insert(script);
         } catch (MetadataAlreadyExistsException e) {
             log.info(MessageFormat.format("Script {0}-{1} already exists in design repository. Updating to new definition", script.getName(), script.getVersion().getNumber()));
             script.getVersion().setLastModifiedBy("admin");
             script.getVersion().setLastModifiedAt(LocalDateTime.now().toString());
-            ScriptConfiguration.getInstance().update(script);
+            SpringContext.getBean(ScriptConfiguration.class).update(script);
         }
     }
 
     public void save(Template template) {
         log.info(MessageFormat.format("Saving {0} into design repository", template));
         try {
-            TemplateConfiguration.getInstance().insert(template);
+            SpringContext.getBean(TemplateConfiguration.class).insert(template);
         } catch (Exception e) {
             log.info(MessageFormat.format("Template {0} already exists in design repository. Updating to new definition", template));
-            TemplateConfiguration.getInstance().update(template);
+            SpringContext.getBean(TemplateConfiguration.class).update(template);
         }
 
     }
@@ -101,16 +101,16 @@ public class DesignMetadataRepository extends MetadataRepository {
         try {
             if (component.getSecurityGroupKey() == null) {
                 log.warn("{0} not linked to a security group, linking it to the public security group");
-                SecurityGroup publicSecurityGroup = SecurityGroupService.getInstance().get("PUBLIC")
+                SecurityGroup publicSecurityGroup = SpringContext.getBean(SecurityGroupService.class).get("PUBLIC")
                         .orElseThrow(() -> new RuntimeException("Could not find security group with name PUBLIC"));
                 component.setSecurityGroupKey(publicSecurityGroup.getMetadataKey());
                 component.setSecurityGroupName(publicSecurityGroup.getName());
             }
 
-            ComponentConfiguration.getInstance().insert(component);
+            SpringContext.getBean(ComponentConfiguration.class).insert(component);
         } catch (MetadataAlreadyExistsException e) {
             log.warn(MessageFormat.format("{0} already exists in design repository. Updating to new definition", component));
-            ComponentConfiguration.getInstance().update(component);
+            SpringContext.getBean(ComponentConfiguration.class).update(component);
         }
     }
 

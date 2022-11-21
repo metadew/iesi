@@ -1,6 +1,9 @@
 package io.metadew.iesi.server.rest.template.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 @Data

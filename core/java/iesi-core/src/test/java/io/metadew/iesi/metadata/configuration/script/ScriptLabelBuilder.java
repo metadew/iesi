@@ -3,11 +3,9 @@ package io.metadew.iesi.metadata.configuration.script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
-import org.apache.commons.codec.cli.Digest;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public class ScriptLabelBuilder {
 

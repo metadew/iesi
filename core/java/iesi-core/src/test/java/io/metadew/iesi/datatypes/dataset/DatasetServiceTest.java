@@ -1,7 +1,7 @@
 package io.metadew.iesi.datatypes.dataset;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationKey;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
@@ -11,11 +11,13 @@ import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementat
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,37 +30,29 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = { SecurityGroupService.class, SecurityGroupConfiguration.class, DatasetService.class, DatasetConfiguration.class, DatasetImplementationConfiguration.class  })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext
+@ActiveProfiles("test")
 class DatasetServiceTest {
 
     SecurityGroupKey securityGroupKey = new SecurityGroupKey(UUID.randomUUID());
 
-    @BeforeEach
-    void prepare() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
+    @Autowired
+    private SecurityGroupConfiguration securityGroupConfiguration;
 
-        SecurityGroupConfiguration.getInstance().insert(new SecurityGroup(securityGroupKey, "PUBLIC", new HashSet<>(), new HashSet<>()));
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
+    @Autowired
+    private DatasetService datasetService;
 
     @Test
     void importDatasetsTestJson() {
         try {
+            securityGroupConfiguration.insert(new SecurityGroup(
+                    new SecurityGroupKey(UUID.randomUUID()),
+                    "PUBLIC",
+                    new HashSet<>(),
+                    new HashSet<>()
+            ));
             String filePath = getClass().getClassLoader().getResource("io.metadew.iesi.datatypes.dataset/dataset_single.json").getFile();
             String jsonContent = new String(Files.readAllBytes(Paths.get(filePath)));
             DatasetKey datasetKey = new DatasetKey();
@@ -85,7 +79,7 @@ class DatasetServiceTest {
                     )).collect(Collectors.toSet())
             );
 
-            List<Dataset> datasets = DatasetService.getInstance().importDatasets(jsonContent);
+            List<Dataset> datasets = datasetService.importDatasets(jsonContent);
             List<Dataset> expectedDatasets = Stream.of(dataset).collect(Collectors.toList());
 
             expectedDataset = expectedDatasets.stream().findFirst().get();

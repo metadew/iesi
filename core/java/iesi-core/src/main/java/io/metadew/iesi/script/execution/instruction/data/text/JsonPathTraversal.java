@@ -3,6 +3,7 @@ package io.metadew.iesi.script.execution.instruction.data.text;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
@@ -10,6 +11,9 @@ import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +24,8 @@ public class JsonPathTraversal implements DataInstruction {
     private final ExecutionRuntime executionRuntime;
     private static final String TEXT = "text";
     private static final String JSON_PATH = "jsonPath";
+
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
 
     public JsonPathTraversal(ExecutionRuntime executionRuntime) {
         this.executionRuntime = executionRuntime;
@@ -36,7 +42,7 @@ public class JsonPathTraversal implements DataInstruction {
 
     @Override
     public String generateOutput(String parameters) {
-        DataType resolvedParameters = DataTypeHandler.getInstance().resolve(parameters, executionRuntime);
+        DataType resolvedParameters = dataTypeHandler.resolve(parameters, executionRuntime);
         if (!(resolvedParameters instanceof Text)) {
             throw new IllegalArgumentException(MessageFormat.format("text cannot be a type of", resolvedParameters.getClass()));
         }
@@ -60,5 +66,23 @@ public class JsonPathTraversal implements DataInstruction {
         else {
             throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), resolvedParameters));
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        StringBuilder json = new StringBuilder();
+
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(JsonPathTraversal.class.getClassLoader().getResourceAsStream("myJsonArray.json")))) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                json.append(line);
+            }
+        }
+
+
+
+
+        String jsonPath = "/1/code";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(json.toString());
     }
 }

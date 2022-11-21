@@ -4,20 +4,20 @@ import io.metadew.iesi.metadata.configuration.component.trace.ComponentTraceConf
 import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.http.*;
 import io.metadew.iesi.script.execution.ActionExecution;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Service
 public class HttpComponentTraceService {
 
     private static final String COMPONENT_TYPE = "http.request";
-    private static HttpComponentTraceService INSTANCE;
 
-    public synchronized static HttpComponentTraceService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpComponentTraceService();
-        }
-        return INSTANCE;
+    private final ComponentTraceConfiguration componentTraceConfiguration;
+
+    public HttpComponentTraceService(ComponentTraceConfiguration componentTraceConfiguration) {
+        this.componentTraceConfiguration = componentTraceConfiguration;
     }
 
     public HttpComponentTrace convert(HttpComponent httpComponent,
@@ -43,7 +43,7 @@ public class HttpComponentTraceService {
     }
 
     public void trace(HttpComponent httpComponent, ActionExecution actionExecution, String actionParameterName) {
-        ComponentTraceConfiguration.getInstance().insert(convert(httpComponent, actionExecution, actionParameterName));
+        componentTraceConfiguration.insert(convert(httpComponent, actionExecution, actionParameterName));
     }
 
     private HttpComponentHeaderTrace convertHeaders(HttpHeader httpHeader, UUID id) {

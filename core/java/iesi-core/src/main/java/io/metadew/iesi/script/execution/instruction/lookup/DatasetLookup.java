@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
@@ -23,7 +24,10 @@ public class DatasetLookup implements LookupInstruction {
             .compile("\\s*\"?(?<" + DATASET_NAME_KEY + ">(\\w|\\.)+)\"?\\s*,\\s*(?<" + DATASET_ITEM_NAME_KEY + ">(\\w|\\.)+)\\s*");
 
     private final ExecutionRuntime executionRuntime;
+    private final DataTypeHandler dataTypeHandler = SpringContext.getBean(DataTypeHandler.class);
+
     private static final Logger LOGGER = LogManager.getLogger();
+
 
     public DatasetLookup(ExecutionRuntime executionRuntime) {
         this.executionRuntime = executionRuntime;
@@ -39,8 +43,8 @@ public class DatasetLookup implements LookupInstruction {
         // TODO: parse with antlr
 
         String[] arguments = splitInput(parameters);
-        DatasetImplementation dataset = getDataset(DataTypeHandler.getInstance().resolve(arguments[0].trim(), executionRuntime));
-        DataType lookupVariable = convertLookupVariable(DataTypeHandler.getInstance().resolve(arguments[1].trim(), executionRuntime));
+        DatasetImplementation dataset = getDataset(dataTypeHandler.resolve(arguments[0].trim(), executionRuntime));
+        DataType lookupVariable = convertLookupVariable(dataTypeHandler.resolve(arguments[1].trim(), executionRuntime));
         Optional<DataType> matchedDataItem;
         if (lookupVariable instanceof Text) {
             matchedDataItem = DatasetImplementationHandler.getInstance().getDataItem(dataset, ((Text) lookupVariable).getString(), executionRuntime);

@@ -1,17 +1,21 @@
 iesi:
   guard:
     authenticate: N
-#  script:
-#    execution:
-#       runtime: ''
+  #  script:
+  #    execution:
+  #       runtime: ''
   server:
-#    mode: off
+    #    mode: off
     mode: standalone
     threads:
       timeout: 30
   home: '.'
   security:
     enabled: true
+    keystore:
+      location: ''
+      store-password: ''
+      key-password: ''
     jwt:
       secret: secret
       expiry-date: 10

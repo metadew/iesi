@@ -11,7 +11,9 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,20 +24,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Component
 public class ConnectionConfiguration extends Configuration<Connection, ConnectionKey> {
 
-    private static ConnectionConfiguration INSTANCE;
     private static final Logger LOGGER = LogManager.getLogger();
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final ConnectionParameterConfiguration connectionParameterConfiguration;
 
-    public synchronized static ConnectionConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ConnectionConfiguration();
-        }
-        return INSTANCE;
+    public ConnectionConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration, ConnectionParameterConfiguration connectionParameterConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.connectionParameterConfiguration = connectionParameterConfiguration;
     }
 
-    private ConnectionConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getControlMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getControlMetadataRepository());
     }
 
     @Override
@@ -52,7 +55,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                 LOGGER.warn(MessageFormat.format("Found multiple implementations for Connection {0}. Returning first implementation", connectionKey.toString()));
             }
             cachedRowSet.next();
-            List<ConnectionParameter> connectionParameters = ConnectionParameterConfiguration.getInstance().getByConnection(connectionKey);
+            List<ConnectionParameter> connectionParameters = connectionParameterConfiguration.getByConnection(connectionKey);
             if (connectionParameters.isEmpty()) {
                 return Optional.empty();
             } else {
@@ -91,7 +94,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
                             crs.getString("SECURITY_GROUP_NM"),
                             crs.getString("CONN_TYP_NM"),
                             crs.getString("CONN_DSC"),
-                            ConnectionParameterConfiguration.getInstance().getByConnection(connectionKey)));
+                            connectionParameterConfiguration.getByConnection(connectionKey)));
                 }
             }
             crs.close();
@@ -110,7 +113,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
         if (!exists(connectionKey)) {
             throw new MetadataDoesNotExistException(connectionKey);
         }
-        ConnectionParameterConfiguration.getInstance().deleteByConnection(connectionKey);
+        connectionParameterConfiguration.deleteByConnection(connectionKey);
 
         getDeleteQuery(connectionKey).ifPresent(getMetadataRepository()::executeUpdate);
     }
@@ -143,7 +146,7 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
             throw new MetadataAlreadyExistsException(connection);
         }
         connection.getParameters()
-                .forEach(connectionParameter -> ConnectionParameterConfiguration.getInstance().insert(connectionParameter));
+                .forEach(connectionParameter -> connectionParameterConfiguration.insert(connectionParameter));
         insertStatement(connection).ifPresent(getMetadataRepository()::executeUpdate);
     }
 
@@ -250,11 +253,11 @@ public class ConnectionConfiguration extends Configuration<Connection, Connectio
     }
 
     public void update(Connection connection) {
-        ConnectionParameterConfiguration.getInstance().deleteByConnection(
+        connectionParameterConfiguration.deleteByConnection(
                 connection.getMetadataKey()
         );
         for (ConnectionParameter connectionParameter : connection.getParameters()) {
-            ConnectionParameterConfiguration.getInstance().insert(connectionParameter);
+            connectionParameterConfiguration.insert(connectionParameter);
         }
         getMetadataRepository().executeUpdate("UPDATE " + getMetadataRepository().getTableNameByLabel("Connections") +
                 " SET CONN_TYP_NM = " + SQLTools.getStringForSQL(connection.getType()) +

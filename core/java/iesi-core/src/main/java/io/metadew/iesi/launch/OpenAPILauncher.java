@@ -1,11 +1,15 @@
-package io.metadew.iesi.openapi;
+package io.metadew.iesi.launch;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
+import io.metadew.iesi.openapi.OpenAPIGenerator;
+import io.metadew.iesi.openapi.TransformResult;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
+@Component
+@Lazy
 @Log4j2
 public class OpenAPILauncher {
 
@@ -13,7 +17,13 @@ public class OpenAPILauncher {
     private static final String TARGET = "target";
     private static final String LOAD = "load";
 
-    public static void main(String[] args) throws ParseException {
+    private final OpenAPIGenerator openApiGenerator;
+
+    public OpenAPILauncher(OpenAPIGenerator openApiGenerator) {
+        this.openApiGenerator = openApiGenerator;
+    }
+
+    public void execute(String[] args) throws ParseException {
         ThreadContext.clearAll();
         Options options = new Options()
                 .addOption(Option.builder(SOURCE).hasArg().required(true).desc("File that contains openapi documentation").build())
@@ -22,10 +32,7 @@ public class OpenAPILauncher {
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
 
-        Configuration.getInstance();
-        FrameworkCrypto.getInstance();
-
-        TransformResult transformResult = OpenAPIGenerator.getInstance().transformFromFile(line.getOptionValue(SOURCE));
-        OpenAPIGenerator.getInstance().generate(transformResult, line.getOptionValue(TARGET),line.hasOption(LOAD));
+        TransformResult transformResult = openApiGenerator.transformFromFile(line.getOptionValue(SOURCE));
+        openApiGenerator.generate(transformResult, line.getOptionValue(TARGET),line.hasOption(LOAD));
     }
 }

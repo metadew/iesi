@@ -5,29 +5,28 @@ import io.metadew.iesi.metadata.configuration.action.trace.ActionTraceConfigurat
 import io.metadew.iesi.metadata.definition.action.trace.ActionTrace;
 import io.metadew.iesi.script.execution.ActionExecution;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
+
 @Log4j2
+@Service
 public class ActionTraceService {
 
-    private static ActionTraceService instance;
+    private final ActionTraceConfiguration actionTraceConfiguration;
+    private final ActionParameterTraceService actionParameterTraceService;
 
-    public static ActionTraceService getInstance() {
-        if (instance == null) {
-            instance = new ActionTraceService();
-        }
-        return instance;
-    }
-
-    private ActionTraceService() {
+    public ActionTraceService(ActionTraceConfiguration actionTraceConfiguration, ActionParameterTraceService actionParameterTraceService) {
+        this.actionTraceConfiguration = actionTraceConfiguration;
+        this.actionParameterTraceService = actionParameterTraceService;
     }
 
     public void trace(ActionExecution actionExecution, Map<String, DataType> actionParameterMap) {
         try {
-            ActionTraceConfiguration.getInstance().insert(new ActionTrace(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction()));
-            ActionParameterTraceService.getInstance().trace(actionExecution, actionParameterMap);
+            actionTraceConfiguration.insert(new ActionTrace(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction()));
+            actionParameterTraceService.trace(actionExecution, actionParameterMap);
         } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));

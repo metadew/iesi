@@ -1,10 +1,10 @@
 package io.metadew.iesi.connection.database.oracle;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
-import io.metadew.iesi.metadata.definition.MetadataFieldType;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
 import java.util.Optional;
@@ -38,28 +38,28 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
 
     @Override
     public OracleDatabase getDatabase(Connection connection) {
-        String userName = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, userKey);
-        String userPassword = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, passwordKey);
-        Optional<String> schemaName = DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, schemaKey);
+        String userName = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, userKey);
+        String userPassword = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, passwordKey);
+        Optional<String> schemaName = SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, schemaKey);
         OracleDatabaseConnection oracleDatabaseConnection;
-        if (DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
+        if (SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).isPresent()) {
             oracleDatabaseConnection = new OracleDatabaseConnection(
-                    DatabaseHandler.getInstance().getOptionalParameterWithKey(connection, connectionUrlKey).get(),
+                    SpringContext.getBean(DatabaseHandler.class).getOptionalParameterWithKey(connection, connectionUrlKey).get(),
                     userName,
                     userPassword,
                     null,
                     schemaName.orElse(null));
             return new OracleDatabase(oracleDatabaseConnection, schemaName.orElse(null));
         }
-        String mode = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, modeKey);
-        String host = DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, hostKey);
-        int port = Integer.parseInt(DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, portKey));
+        String mode = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, modeKey);
+        String host = SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, hostKey);
+        int port = Integer.parseInt(SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, portKey));
         switch (mode) {
             case tnsAliasModeKey:
                 oracleDatabaseConnection = new TnsAliasOracleDatabaseConnection(
                         host,
                         port,
-                        DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, tnsAliasKey),
+                        SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, tnsAliasKey),
                         userName,
                         userPassword,
                         null,
@@ -69,7 +69,7 @@ public class OracleDatabaseService extends SchemaDatabaseService<OracleDatabase>
                 oracleDatabaseConnection = new ServiceNameOracleDatabaseConnection(
                         host,
                         port,
-                        DatabaseHandler.getInstance().getMandatoryParameterWithKey(connection, serviceKey),
+                        SpringContext.getBean(DatabaseHandler.class).getMandatoryParameterWithKey(connection, serviceKey),
                         userName,
                         userPassword,
                         null,

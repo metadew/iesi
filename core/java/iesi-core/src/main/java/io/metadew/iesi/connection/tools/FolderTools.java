@@ -213,20 +213,11 @@ public final class FolderTools {
 
         // if the directory does not exist, create it
         if (!folder.exists()) {
-            // System.out.println("creating directory: " + folder);
-            boolean result = false;
-
             try {
                 folder.mkdir();
-                result = true;
             } catch (SecurityException se) {
                 // handle
             }
-            if (result) {
-                // System.out.println("Directory created");
-            }
-        } else {
-            // handle
         }
     }
 

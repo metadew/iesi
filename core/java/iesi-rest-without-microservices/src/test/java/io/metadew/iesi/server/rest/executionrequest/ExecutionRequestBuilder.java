@@ -41,9 +41,10 @@ public class ExecutionRequestBuilder {
                                                                int labelCount, int scriptExecutionRequestCount,
                                                                String scriptName, Long scriptVersion, String scriptSecurityGroup,
                                                                String environment, int scriptExecutionRequestImpersonationCount,
-                                                               int scriptExecutionRequestParameterCount) {
+                                                               int scriptExecutionRequestParameterCount, String username) {
         Map<String, Object> info = new HashMap<>();
         UUID executionRequestId = UUID.randomUUID();
+        String userId = UUID.randomUUID().toString();
         info.put("executionRequestUUID", executionRequestId);
         ExecutionRequest executionRequest = AuthenticatedExecutionRequest.builder()
                 .executionRequestKey(new ExecutionRequestKey(executionRequestId.toString()))
@@ -114,8 +115,8 @@ public class ExecutionRequestBuilder {
                                     info.put(String.format("scriptExecutionRequest%d%d", executionRequestIndex, scriptExecutionRequestIndex), scriptNameExecutionRequest);
                                     return scriptNameExecutionRequest;
                                 }).collect(Collectors.toList()))
-                .userID("userId")
-                .username("username")
+                .userID(userId)
+                .username(username)
                 .build();
         info.put("executionRequest", executionRequest);
 
@@ -133,7 +134,7 @@ public class ExecutionRequestBuilder {
                 ).collect(Collectors.toList()))
                 .parameters(new ArrayList<>())
                 .name(scriptName)
-                .version(new ScriptVersion(scriptName, scriptVersion, "description", "username", LocalDateTime.now().toString(), null, null))
+                .version(new ScriptVersion(scriptName, scriptVersion, "description", "spring", LocalDateTime.now().toString(), null, null))
                 .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                 .securityGroupName(scriptSecurityGroup)
                 .build();
@@ -147,8 +148,8 @@ public class ExecutionRequestBuilder {
                 .description("description")
                 .email("email")
                 .name("name")
-                .userId("userId")
-                .username("username")
+                .userId(userId)
+                .username(username)
                 .executionRequestLabels(IntStream.range(0, labelCount).boxed()
                         .map(labelIndex -> {
                                     ExecutionRequestLabelDto executionRequestLabelDto = ExecutionRequestLabelDto.builder()

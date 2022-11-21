@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.data;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes._null.Null;
@@ -59,9 +60,9 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
     }
 
     protected boolean executeAction() throws IOException {
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName("PUBLIC")
+        SecurityGroup securityGroup = SpringContext.getBean(SecurityGroupConfiguration.class).getByName("PUBLIC")
                 .orElseThrow(() -> new RuntimeException("As the dataset doesn't exist, tried to create new one with the security group PUBLIC, but the group doesn't exist"));
-        DatasetKey datasetKey = DatasetConfiguration.getInstance()
+        DatasetKey datasetKey = SpringContext.getBean(DatasetConfiguration.class)
                 .getIdByName(datasetName)
                 .orElseGet(() -> {
                     log.warn(MessageFormat.format("Dataset {0} does not exists. Creating dataset now.", datasetName));
@@ -72,7 +73,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                             .name(datasetName)
                             .datasetImplementations(new HashSet<>())
                             .build();
-                    DatasetConfiguration.getInstance().insert(newDataset);
+                    SpringContext.getBean(DatasetConfiguration.class).insert(newDataset);
                     return newDataset.getMetadataKey();
                 });
 
@@ -95,7 +96,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
                                         .map(s -> new DatasetImplementationLabel(new DatasetImplementationLabelKey(), datasetImplementationKey, s))
                                         .collect(Collectors.toSet()),
                                 new HashSet<>());
-                        DatasetImplementationConfiguration.getInstance().insert(newDatabaseDatasetImplementation);
+                        SpringContext.getBean(DatasetImplementationConfiguration.class).insert(newDatabaseDatasetImplementation);
                         return newDatabaseDatasetImplementation;
                     });
         } else if (datasetType != null && datasetType.equals("in_memory")) {
@@ -134,7 +135,7 @@ public class DataSetDatasetConnection extends ActionTypeExecution {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeHandler.getInstance().resolve(datasetLabel.trim(), getExecutionControl().getExecutionRuntime()))));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(SpringContext.getBean(DataTypeHandler.class).resolve(datasetLabel.trim(), getExecutionControl().getExecutionRuntime()))));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()

@@ -15,8 +15,6 @@ public interface IUserService {
 
     Optional<UserDto> get(UUID uuid);
 
-    Optional<UUID> getUuidByName(String username);
-
     Page<UserDto> getAll(Pageable pageable, Set<UserFilter> userFilters);
 
     List<User> getAll();
@@ -28,8 +26,11 @@ public interface IUserService {
     void addUser(User user);
 
     Optional<User> getRawUser(String username);
+    Optional<User> getRawUser(UserKey userKey);
 
     void update(User user);
+
+    void updatePassword(String password, UUID uuid);
 
     void delete(UserKey userKey);
 

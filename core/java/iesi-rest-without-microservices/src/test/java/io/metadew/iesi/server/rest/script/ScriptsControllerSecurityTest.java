@@ -1,15 +1,10 @@
 package io.metadew.iesi.server.rest.script;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;
-import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
-import io.metadew.iesi.metadata.definition.audit.key.ScriptDesignAuditKey;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
-import io.metadew.iesi.server.rest.script.ScriptService;
-import io.metadew.iesi.server.rest.script.ScriptsController;
 import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditService;
 import io.metadew.iesi.server.rest.script.dto.*;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
@@ -35,7 +30,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Log4j2

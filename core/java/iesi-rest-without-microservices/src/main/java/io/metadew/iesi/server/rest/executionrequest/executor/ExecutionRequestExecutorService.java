@@ -48,7 +48,7 @@ public class ExecutionRequestExecutorService {
     @Async("executionRequestTaskExecutor")
     public CompletableFuture<Boolean> execute(ExecutionRequest executionRequest) {
         executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.SUBMITTED);
-        ExecutionRequestConfiguration.getInstance().update(executionRequest);
+        executionRequestConfiguration.update(executionRequest);
         try {
             Optional<IExecutionRequestExecutor> executionRequestExecutor = getExecutionRequestExecutor(executionRequest);
             if (!executionRequestExecutor.isPresent()) {
@@ -59,7 +59,7 @@ public class ExecutionRequestExecutorService {
                 log.info(MessageFormat.format("Executing request {0}", executionRequest.getMetadataKey().getId()));
                 executionRequestExecutor.get().execute(executionRequest);
                 ExecutionRequestKey executionRequestKey = executionRequest.getMetadataKey();
-                executionRequest = ExecutionRequestConfiguration.getInstance().get(executionRequestKey)
+                executionRequest = executionRequestConfiguration.get(executionRequestKey)
                         .orElseThrow(() -> new RuntimeException(String.format("Could not find execution request %s", executionRequestKey)));
                 executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
                 executionRequestConfiguration.update(executionRequest);
@@ -71,7 +71,7 @@ public class ExecutionRequestExecutorService {
             log.info("exception=" + e);
             log.debug("exception.stacktrace=" + stackTrace.toString());
             executionRequest.setExecutionRequestStatus(ExecutionRequestStatus.STOPPED);
-            ExecutionRequestConfiguration.getInstance().update(executionRequest);
+            executionRequestConfiguration.update(executionRequest);
             return CompletableFuture.completedFuture(false);
         }
         return CompletableFuture.completedFuture(true);

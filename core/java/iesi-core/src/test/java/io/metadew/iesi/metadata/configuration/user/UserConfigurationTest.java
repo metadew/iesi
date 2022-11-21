@@ -1,10 +1,15 @@
 package io.metadew.iesi.metadata.configuration.user;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
+import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.user.*;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -14,6 +19,10 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest(classes = { UserConfiguration.class, TeamListResultSetExtractor.class, RoleListResultSetExtractor.class, SecurityGroupConfiguration.class, })
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class UserConfigurationTest {
 
     private UUID uuid1;
@@ -30,28 +39,8 @@ class UserConfigurationTest {
     private Privilege privilege3;
     private Privilege privilege4;
 
-    @BeforeAll
-    static void prepare() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
+    @Autowired
+    private UserConfiguration userConfiguration;
 
     @BeforeEach
     void setup() {
@@ -126,129 +115,129 @@ class UserConfigurationTest {
 
     @Test
     void userDoesNotExistsTest() {
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1))).isFalse();
+        assertThat(userConfiguration.exists(new UserKey(uuid1))).isFalse();
     }
 
     @Test
     void userExistsTest() {
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1))).isTrue();
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.exists(new UserKey(uuid1))).isTrue();
     }
 
     @Test
     void userExistsByNameTest() {
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().exists(user1.getUsername())).isTrue();
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.exists(user1.getUsername())).isTrue();
     }
 
     @Test
     void userGetDoesNotExistsTest() {
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1))).isEmpty();
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid2))).isEmpty();
+        assertThat(userConfiguration.get(new UserKey(uuid1))).isEmpty();
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.get(new UserKey(uuid2))).isEmpty();
     }
 
     @Test
     void userGetByNameDoesNotExistsTest() {
-        assertThat(UserConfiguration.getInstance().getByName(user1.getUsername())).isEmpty();
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().getByName(user2.getUsername())).isEmpty();
+        assertThat(userConfiguration.getByName(user1.getUsername())).isEmpty();
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.getByName(user2.getUsername())).isEmpty();
     }
 
     @Test
     void userGetExistsTest() {
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1)))
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.get(new UserKey(uuid1)))
                 .isPresent()
                 .hasValue(user1);
     }
 
     @Test
     void userGetByNameExistsTest() {
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().getByName(user1.getUsername()))
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.getByName(user1.getUsername()))
                 .isPresent()
                 .hasValue(user1);
     }
 
     @Test
     void userInsertTest() {
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isFalse();
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isTrue();
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1)))
+        assertThat(userConfiguration.get(new UserKey(uuid1)))
                 .isPresent()
                 .hasValue(user1);
     }
 
     @Test
     void userInsertAlreadyExistingTest() {
-        UserConfiguration.getInstance().insert(user1);
-        assertThatThrownBy(() -> UserConfiguration.getInstance().insert(user1))
+        userConfiguration.insert(user1);
+        assertThatThrownBy(() -> userConfiguration.insert(user1))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     void userInsertMultipleUsersTest() {
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isFalse();
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isTrue();
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1)))
+        assertThat(userConfiguration.get(new UserKey(uuid1)))
                 .isPresent()
                 .hasValue(user1);
-        UserConfiguration.getInstance().insert(user2);
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid2)))
+        userConfiguration.insert(user2);
+        assertThat(userConfiguration.exists(new UserKey(uuid2)))
                 .isTrue();
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isTrue();
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid2)))
+        assertThat(userConfiguration.get(new UserKey(uuid2)))
                 .isPresent()
                 .hasValue(user2);
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1)))
+        assertThat(userConfiguration.get(new UserKey(uuid1)))
                 .isPresent()
                 .hasValue(user1);
     }
 
     @Test
     void userDeleteDoesNotExistTest() {
-        UserConfiguration.getInstance().delete(user1.getMetadataKey());
+        userConfiguration.delete(user1.getMetadataKey());
     }
 
     @Test
     void userDeleteByNameDoesNotExistTest() {
-        UserConfiguration.getInstance().delete(user1.getUsername());
+        userConfiguration.delete(user1.getUsername());
     }
 
     @Test
     void userDeleteTest() {
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isTrue();
-        UserConfiguration.getInstance().delete(user1.getMetadataKey());
+        userConfiguration.delete(user1.getMetadataKey());
 
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isFalse();
     }
 
     @Test
     void userDeleteByNameTest() {
-        UserConfiguration.getInstance().insert(user1);
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        userConfiguration.insert(user1);
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isTrue();
-        UserConfiguration.getInstance().delete(user1.getUsername());
+        userConfiguration.delete(user1.getUsername());
 
-        assertThat(UserConfiguration.getInstance().exists(new UserKey(uuid1)))
+        assertThat(userConfiguration.exists(new UserKey(uuid1)))
                 .isFalse();
     }
 
     @Test
     void userUpdateTest() {
-        UserConfiguration.getInstance().insert(user1);
-        Optional<User> user = UserConfiguration.getInstance().get(new UserKey(uuid1));
+        userConfiguration.insert(user1);
+        Optional<User> user = userConfiguration.get(new UserKey(uuid1));
         assertThat(user)
                 .isPresent()
                 .hasValue(user1);
@@ -256,23 +245,23 @@ class UserConfigurationTest {
                 .isTrue();
 
         user1.setEnabled(false);
-        UserConfiguration.getInstance().update(user1);
+        userConfiguration.update(user1);
 
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1)).get().isEnabled())
+        assertThat(userConfiguration.get(new UserKey(uuid1)).get().isEnabled())
                 .isFalse();
     }
 
     @Test
     void userUpdateMultipleTest() {
-        UserConfiguration.getInstance().insert(user1);
-        UserConfiguration.getInstance().insert(user2);
-        Optional<User> fetchedUser1 = UserConfiguration.getInstance().get(new UserKey(uuid1));
+        userConfiguration.insert(user1);
+        userConfiguration.insert(user2);
+        Optional<User> fetchedUser1 = userConfiguration.get(new UserKey(uuid1));
         assertThat(fetchedUser1)
                 .isPresent()
                 .hasValue(user1);
         assertThat(fetchedUser1.get().isEnabled())
                 .isTrue();
-        Optional<User> fetchedUser2 = UserConfiguration.getInstance().get(new UserKey(uuid2));
+        Optional<User> fetchedUser2 = userConfiguration.get(new UserKey(uuid2));
         assertThat(fetchedUser2)
                 .isPresent()
                 .hasValue(user2);
@@ -280,11 +269,11 @@ class UserConfigurationTest {
                 .isTrue();
 
         user1.setEnabled(false);
-        UserConfiguration.getInstance().update(user1);
+        userConfiguration.update(user1);
 
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid1)).get().isEnabled())
+        assertThat(userConfiguration.get(new UserKey(uuid1)).get().isEnabled())
                 .isFalse();
-        assertThat(UserConfiguration.getInstance().get(new UserKey(uuid2)).get().isEnabled())
+        assertThat(userConfiguration.get(new UserKey(uuid2)).get().isEnabled())
                 .isTrue();
     }
 

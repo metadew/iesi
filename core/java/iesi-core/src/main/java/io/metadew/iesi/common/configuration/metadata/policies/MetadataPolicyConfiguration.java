@@ -9,29 +9,30 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.script.Script;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@org.springframework.context.annotation.Configuration
 @Log4j2
 public class MetadataPolicyConfiguration {
-    private static MetadataPolicyConfiguration instance;
     private static final String POLICIES = "policies";
 
     private List<ScriptPolicyDefinition> scriptsPolicyDefinitions;
     private List<ExecutionRequestPolicyDefinition> executionRequestsPolicyDefinitions;
 
-    public static synchronized MetadataPolicyConfiguration getInstance() {
-        if (instance == null) {
-            instance = new MetadataPolicyConfiguration();
-        }
-        return instance;
+    private final Configuration configuration;
+
+    public MetadataPolicyConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
-    private MetadataPolicyConfiguration() {
+    @PostConstruct
+    private void postConstruct() {
         if (containsConfiguration()) {
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<?, ?> frameworkSettingsConfiguration = (Map<?, ?>) ((Map<?, ?>) Configuration.getInstance().getProperties()
+            Map<?, ?> frameworkSettingsConfiguration = (Map<?, ?>) ((Map<?, ?>) this.configuration.getProperties()
                     .get(MetadataConfiguration.configurationKey))
                     .get(POLICIES);
 
@@ -41,10 +42,10 @@ public class MetadataPolicyConfiguration {
     }
 
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(MetadataConfiguration.configurationKey) &&
-                (Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
-                ((Map<?, ?>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).containsKey(POLICIES) &&
-                ((Map<?, ?>) Configuration.getInstance().getProperties().get(MetadataConfiguration.configurationKey)).get(POLICIES) instanceof Map;
+        return configuration.getProperties().containsKey(MetadataConfiguration.configurationKey) &&
+                (configuration.getProperties().get(MetadataConfiguration.configurationKey) instanceof Map) &&
+                ((Map<?, ?>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).containsKey(POLICIES) &&
+                ((Map<?, ?>) configuration.getProperties().get(MetadataConfiguration.configurationKey)).get(POLICIES) instanceof Map;
     }
 
     public void verifyScriptPolicies(Script script) {

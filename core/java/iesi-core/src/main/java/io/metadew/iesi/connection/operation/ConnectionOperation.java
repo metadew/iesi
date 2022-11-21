@@ -11,6 +11,7 @@ import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
 import io.metadew.iesi.metadata.definition.connection.ConnectionTypeParameter;
+import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -18,18 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class ConnectionOperation {
 
-    private static ConnectionOperation instance;
+    private final FrameworkControl frameworkControl;
+    private final FrameworkCrypto frameworkCrypto;
+    private final ConnectionTypeConfiguration connectionTypeConfiguration;
 
-    public static synchronized ConnectionOperation getInstance() {
-        if (instance == null) {
-            instance = new ConnectionOperation();
-        }
-        return instance;
-    }
-
-    public ConnectionOperation() {
+    public ConnectionOperation(FrameworkControl frameworkControl,
+                               FrameworkCrypto frameworkCrypto,
+                               ConnectionTypeConfiguration connectionTypeConfiguration) {
+        this.frameworkControl = frameworkControl;
+        this.frameworkCrypto = frameworkCrypto;
+        this.connectionTypeConfiguration = connectionTypeConfiguration;
     }
 
     public HostConnection getHostConnection(Connection connection) {
@@ -43,10 +45,10 @@ public class ConnectionOperation {
             for (ConnectionParameter connectionParameter : connection.getParameters()) {
                 if (connectionParameter.getName().equalsIgnoreCase("host")) {
                     hostName = (connectionParameter.getValue());
-                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
+                    hostName = frameworkControl.resolveConfiguration(hostName);
                 } else if (connectionParameter.getName().equalsIgnoreCase("temppath")) {
                     tempPath = connectionParameter.getValue();
-                    tempPath = FrameworkControl.getInstance().resolveConfiguration(tempPath);
+                    tempPath = frameworkControl.resolveConfiguration(tempPath);
                 }
             }
 
@@ -73,9 +75,9 @@ public class ConnectionOperation {
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isEncrypted()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("host")) {
-                        hostName = FrameworkCrypto.getInstance().decryptIfNeeded(hostName);
+                        hostName = frameworkCrypto.decryptIfNeeded(hostName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("temppath")) {
-                        tempPath = FrameworkCrypto.getInstance().decryptIfNeeded(tempPath);
+                        tempPath = frameworkCrypto.decryptIfNeeded(tempPath);
                     }
                 }
             }
@@ -94,30 +96,30 @@ public class ConnectionOperation {
             for (ConnectionParameter connectionParameter : connection.getParameters()) {
                 if (connectionParameter.getName().equalsIgnoreCase("host")) {
                     hostName = (connectionParameter.getValue());
-                    hostName = FrameworkControl.getInstance().resolveConfiguration(hostName);
+                    hostName = frameworkControl.resolveConfiguration(hostName);
                 } else if (connectionParameter.getName().equalsIgnoreCase("port")) {
                     portNumber = Integer.parseInt(connectionParameter.getValue());
                 } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
                     userName = connectionParameter.getValue();
-                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
+                    userName = frameworkControl.resolveConfiguration(userName);
                 } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                     userPassword = connectionParameter.getValue();
-                    userPassword = FrameworkControl.getInstance()
+                    userPassword = frameworkControl
                             .resolveConfiguration(userPassword);
                 } else if (connectionParameter.getName().equalsIgnoreCase("temppath")) {
                     tempPath = connectionParameter.getValue();
-                    tempPath = FrameworkControl.getInstance().resolveConfiguration(tempPath);
+                    tempPath = frameworkControl.resolveConfiguration(tempPath);
                 } else if (connectionParameter.getName().equalsIgnoreCase("simulateterminal")) {
                     terminalFlag = connectionParameter.getValue();
-                    terminalFlag = FrameworkControl.getInstance()
+                    terminalFlag = frameworkControl
                             .resolveConfiguration(terminalFlag);
                 } else if (connectionParameter.getName().equalsIgnoreCase("jumphostconnections")) {
                     jumpHostConnectionName = connectionParameter.getValue();
-                    jumpHostConnectionName = FrameworkControl.getInstance()
+                    jumpHostConnectionName = frameworkControl
                             .resolveConfiguration(jumpHostConnectionName);
                 } else if (connectionParameter.getName().equalsIgnoreCase("allowlocalhostexecution")) {
                     allowLocalhostExecution = connectionParameter.getValue();
-                    allowLocalhostExecution = FrameworkControl.getInstance()
+                    allowLocalhostExecution = frameworkControl
                             .resolveConfiguration(allowLocalhostExecution);
                 }
             }
@@ -163,20 +165,20 @@ public class ConnectionOperation {
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isEncrypted()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("host")) {
-                        hostName = FrameworkCrypto.getInstance().decryptIfNeeded(hostName);
+                        hostName = frameworkCrypto.decryptIfNeeded(hostName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("user")) {
-                        userName = FrameworkCrypto.getInstance().decryptIfNeeded(userName);
+                        userName = frameworkCrypto.decryptIfNeeded(userName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("password")) {
-                        userPassword = FrameworkCrypto.getInstance().decryptIfNeeded(userPassword);
+                        userPassword = frameworkCrypto.decryptIfNeeded(userPassword);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("temppath")) {
-                        tempPath = FrameworkCrypto.getInstance().decryptIfNeeded(tempPath);
+                        tempPath = frameworkCrypto.decryptIfNeeded(tempPath);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("simulateterminal")) {
-                        terminalFlag = FrameworkCrypto.getInstance().decryptIfNeeded(terminalFlag);
+                        terminalFlag = frameworkCrypto.decryptIfNeeded(terminalFlag);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("jumphostconnections")) {
-                        jumpHostConnectionName = FrameworkCrypto.getInstance()
+                        jumpHostConnectionName = frameworkCrypto
                                 .decryptIfNeeded(jumpHostConnectionName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("allowLocalhostexecution")) {
-                        allowLocalhostExecution = FrameworkCrypto.getInstance()
+                        allowLocalhostExecution = frameworkCrypto
                                 .decryptIfNeeded(allowLocalhostExecution);
                     }
                 }
@@ -202,18 +204,18 @@ public class ConnectionOperation {
             for (ConnectionParameter connectionParameter : connection.getParameters()) {
                 if (connectionParameter.getName().equalsIgnoreCase("url")) {
                     connectionURL = (connectionParameter.getValue());
-                    connectionURL = FrameworkControl.getInstance()
+                    connectionURL = frameworkControl
                             .resolveConfiguration(connectionURL);
                 } else if (connectionParameter.getName().equalsIgnoreCase("user")) {
                     userName = connectionParameter.getValue();
-                    userName = FrameworkControl.getInstance().resolveConfiguration(userName);
+                    userName = frameworkControl.resolveConfiguration(userName);
                 } else if (connectionParameter.getName().equalsIgnoreCase("password")) {
                     userPassword = connectionParameter.getValue();
-                    userPassword = FrameworkControl.getInstance()
+                    userPassword = frameworkControl
                             .resolveConfiguration(userPassword);
                 } else if (connectionParameter.getName().equalsIgnoreCase("repository")) {
                     repositoryName = connectionParameter.getValue();
-                    repositoryName = FrameworkControl.getInstance()
+                    repositoryName = frameworkControl
                             .resolveConfiguration(repositoryName);
                 }
             }
@@ -247,13 +249,13 @@ public class ConnectionOperation {
             for (Map.Entry<String, ConnectionTypeParameter> connectionTypeParameter : connectionType.getParameters().entrySet()) {
                 if (connectionTypeParameter.getValue().isEncrypted()) {
                     if (connectionTypeParameter.getKey().equalsIgnoreCase("url")) {
-                        connectionURL = FrameworkCrypto.getInstance().decryptIfNeeded(connectionURL);
+                        connectionURL = frameworkCrypto.decryptIfNeeded(connectionURL);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("user")) {
-                        userName = FrameworkCrypto.getInstance().decryptIfNeeded(userName);
+                        userName = frameworkCrypto.decryptIfNeeded(userName);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("password")) {
-                        userPassword = FrameworkCrypto.getInstance().decryptIfNeeded(userPassword);
+                        userPassword = frameworkCrypto.decryptIfNeeded(userPassword);
                     } else if (connectionTypeParameter.getKey().equalsIgnoreCase("repository")) {
-                        repositoryName = FrameworkCrypto.getInstance().decryptIfNeeded(repositoryName);
+                        repositoryName = frameworkCrypto.decryptIfNeeded(repositoryName);
                     }
                 }
             }
@@ -275,7 +277,6 @@ public class ConnectionOperation {
     }
 
     public ConnectionType getConnectionType(String connectionTypeName) {
-        ConnectionTypeConfiguration connectionTypeConfiguration = new ConnectionTypeConfiguration();
         return connectionTypeConfiguration.getConnectionType(connectionTypeName);
     }
 

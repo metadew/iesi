@@ -4,8 +4,6 @@ package io.metadew.iesi.server.rest.script.dto.action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.key.ActionParameterKey;
 import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

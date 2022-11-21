@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.fho;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.FileConnection;
 import io.metadew.iesi.connection.HostConnection;
 import io.metadew.iesi.connection.operation.ConnectionOperation;
@@ -46,7 +47,7 @@ public class FhoFolderExists extends ActionTypeExecution {
         String path = convertPath(getParameterResolvedValue(FOLDER_PATH_KEY));
         String folder = convertFolder(getParameterResolvedValue(FOLDER_NAME_KEY));
         String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_NAME_KEY));
-        boolean isOnLocalhost = HostConnectionTools.isOnLocalhost(
+        boolean isOnLocalhost = SpringContext.getBean(HostConnectionTools.class).isOnLocalhost(
                 connectionName, this.getExecutionControl().getEnvName());
 
         String subjectFolderPath = "";
@@ -79,10 +80,10 @@ public class FhoFolderExists extends ActionTypeExecution {
                 }
             }
         } else {
-            Connection connection = ConnectionConfiguration.getInstance()
+            Connection connection = SpringContext.getBean(ConnectionConfiguration.class)
                     .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
                     .get();
-            HostConnection hostConnection = ConnectionOperation.getInstance().getHostConnection(connection);
+            HostConnection hostConnection = SpringContext.getBean(ConnectionOperation.class).getHostConnection(connection);
 
             for (FileConnection fileConnection : FileConnectionTools.getFileConnections(hostConnection,
                     FilenameUtils.separatorsToUnix(file.getParent()), FilenameUtils.separatorsToUnix(file.getName()), true)) {

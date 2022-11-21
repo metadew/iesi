@@ -1,6 +1,7 @@
 package io.metadew.iesi.common.configuration.plugin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.Configuration;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -8,9 +9,11 @@ import lombok.extern.log4j.Log4j2;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Log4j2
 @Getter
 public class PluginConfiguration {
+
 
     private static PluginConfiguration INSTANCE;
     private static final String pluginsKey = "plugins";
@@ -24,11 +27,12 @@ public class PluginConfiguration {
         return INSTANCE;
     }
 
+
     @SuppressWarnings("unchecked")
     private PluginConfiguration() {
         frameworkPluginMap = new HashMap<>();
         if (containsConfiguration()) {
-            Map<String, Object> frameworkPluginsConfigurations = (Map<String, Object>) Configuration.getInstance().getProperties()
+            Map<String, Object> frameworkPluginsConfigurations = (Map<String, Object>) SpringContext.getBean(Configuration.class).getProperties()
                     .get(pluginsKey);
             ObjectMapper objectMapper = new ObjectMapper();
             for (Map.Entry<String, Object> entry : frameworkPluginsConfigurations.entrySet()) {
@@ -41,8 +45,7 @@ public class PluginConfiguration {
 
 
     private boolean containsConfiguration() {
-        return Configuration.getInstance().getProperties().containsKey(PluginConfiguration.pluginsKey) &&
-                (Configuration.getInstance().getProperties().get(PluginConfiguration.pluginsKey) instanceof Map);
+        return SpringContext.getBean(Configuration.class).getProperties().containsKey(PluginConfiguration.pluginsKey) &&
+                (SpringContext.getBean(Configuration.class).getProperties().get(PluginConfiguration.pluginsKey) instanceof Map);
     }
-
 }

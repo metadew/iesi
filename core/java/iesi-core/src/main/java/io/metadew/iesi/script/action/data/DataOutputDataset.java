@@ -1,13 +1,12 @@
 package io.metadew.iesi.script.action.data;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -67,7 +66,7 @@ public class DataOutputDataset extends ActionTypeExecution {
         List<String> labels = new ArrayList<>();
         if (datasetLabels instanceof Text) {
             Arrays.stream(datasetLabels.toString().split(","))
-                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(DataTypeHandler.getInstance().resolve(datasetLabel.trim(), executionRuntime), executionRuntime)));
+                    .forEach(datasetLabel -> labels.add(convertDatasetLabel(SpringContext.getBean(DataTypeHandler.class).resolve(datasetLabel.trim(), executionRuntime), executionRuntime)));
             return labels;
         } else if (datasetLabels instanceof Array) {
             ((Array) datasetLabels).getList()

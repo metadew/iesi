@@ -1,19 +1,15 @@
 package io.metadew.iesi.server.rest.script;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
 import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
-import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.ScriptLabel;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import io.metadew.iesi.metadata.definition.script.key.ScriptKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptLabelKey;
 import io.metadew.iesi.metadata.definition.script.key.ScriptVersionKey;
-import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
 import io.metadew.iesi.server.rest.builder.script.ScriptDtoBuilder;
 import io.metadew.iesi.server.rest.configuration.IesiConfiguration;
@@ -44,7 +40,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
 
 import java.util.*;
 import java.util.stream.Collectors;

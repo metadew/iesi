@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,24 +20,20 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Log4j2
+@Component
 public class ConnectionParser implements Parser<Connection> {
-    private static ConnectionParser instance;
 
-    private ConnectionParser() {
-    }
+    private final SecurityGroupService securityGroupService;
 
-    public static synchronized ConnectionParser getInstance() {
-        if (instance == null) {
-            instance = new ConnectionParser();
-        }
-        return instance;
+    public ConnectionParser(SecurityGroupService securityGroupService) {
+        this.securityGroupService = securityGroupService;
     }
 
     public List<Connection> parse(OpenAPI openAPI) {
         String name = openAPI.getInfo().getTitle();
         String description = openAPI.getInfo().getDescription();
         List<URL> addresses = getAddresses(openAPI.getServers());
-        SecurityGroupKey securityGroupKey = SecurityGroupService.getInstance().get("PUBLIC")
+        SecurityGroupKey securityGroupKey = securityGroupService.get("PUBLIC")
                 .map(Metadata::getMetadataKey)
                 .orElseThrow(() -> new RuntimeException("could not find Security Group " + "PUBLIC"));
         return IntStream.range(0, addresses.size()).boxed()

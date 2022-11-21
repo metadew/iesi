@@ -16,7 +16,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.rowset.CachedRowSet;
@@ -30,11 +29,13 @@ import java.util.stream.Collectors;
 @ConditionalOnWebApplication
 public class ScriptExecutionDtoRepository implements IScriptExecutionDtoRepository {
 
-    MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
+    private final MetadataTablesConfiguration metadataTablesConfiguration;
 
     @Autowired
-    ScriptExecutionDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+    ScriptExecutionDtoRepository(MetadataRepositoryConfiguration metadataRepositoryConfiguration, MetadataTablesConfiguration metadataTablesConfiguration) {
         this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
+        this.metadataTablesConfiguration = metadataTablesConfiguration;
     }
 
     @Override
@@ -279,33 +280,33 @@ public class ScriptExecutionDtoRepository implements IScriptExecutionDtoReposito
                 "action_res_output.OUT_VAL ACTION_OUTPUT_VAL, " +
                 "auth_execution_requests.USER_ID USER_ID, " +
                 "auth_execution_requests.USERNAME USERNAME " +
-                "FROM " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_exec " +
+                "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptResults").getName() + " results " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_exec " +
                 "on results.RUN_ID = script_exec.RUN_ID AND results.PRC_ID = -1 " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_exec_req_par " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequestParameters").getName() + " script_exec_req_par " +
                 "on script_exec_req_par.SCRIPT_EXEC_REQ_ID = script_exec.SCRPT_REQUEST_ID " +
-                "LEFT OUTER  JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptLabelDesignTraces").getName() + " trc_des_script_lbl " +
+                "LEFT OUTER  JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptLabelDesignTraces").getName() + " trc_des_script_lbl " +
                 "on results.RUN_ID = trc_des_script_lbl.RUN_ID AND results.PRC_ID = trc_des_script_lbl.PRC_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptResultOutputs").getName() + " script_output " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptResultOutputs").getName() + " script_output " +
                 "on results.RUN_ID = script_output.RUN_ID AND results.PRC_ID = script_output.PRC_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " IESER " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " IESER " +
                 "on script_exec.SCRPT_REQUEST_ID = IESER.SCRPT_REQUEST_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequests").getName() + " IER " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequests").getName() + " IER " +
                 "on IESER.ID = IER.REQUEST_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
                 "on IER.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " script_exec_lbl " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequestLabels").getName() + " script_exec_lbl " +
                 "on IER.REQUEST_ID = script_exec_lbl.REQUEST_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ActionResults").getName() + " action_res " +
                 "on results.RUN_ID = action_res.RUN_ID AND results.PRC_ID = action_res.SCRIPT_PRC_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionDesignTraces").getName() + " action_trc " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ActionDesignTraces").getName() + " action_trc " +
                 "on results.RUN_ID = action_trc.RUN_ID AND action_trc.PRC_ID = action_res.PRC_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameterDesignTraces").getName() + " action_des_trc_par " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ActionParameterDesignTraces").getName() + " action_des_trc_par " +
                 "on action_trc.RUN_ID = action_des_trc_par.RUN_ID AND action_trc.PRC_ID = action_des_trc_par.PRC_ID " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionParameterTraces").getName() + " action_trc_par " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ActionParameterTraces").getName() + " action_trc_par " +
                 "on action_trc.RUN_ID = action_trc_par.RUN_ID AND action_trc.PRC_ID = action_trc_par.PRC_ID " +
                 "AND action_trc_par.ACTION_PAR_NM = action_des_trc_par.ACTION_PAR_NM " +
-                "LEFT OUTER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ActionResultOutputs").getName() + " action_res_output " +
+                "LEFT OUTER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ActionResultOutputs").getName() + " action_res_output " +
                 "on action_res.RUN_ID = action_res_output.RUN_ID AND action_res.PRC_ID = action_res_output.PRC_ID " +
                 getWhereClause(authentication, runId, processId).orElse("") + ";";
 

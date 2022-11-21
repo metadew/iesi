@@ -1,5 +1,7 @@
 package io.metadew.iesi.common.configuration.metadata.policies.definitions.executionRequests;
 
+import io.metadew.iesi.SpringContext;
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.common.configuration.framework.FrameworkConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
@@ -8,8 +10,8 @@ import io.metadew.iesi.metadata.definition.execution.ExecutionRequestLabel;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestLabelKey;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashSet;
 import java.util.List;
@@ -19,13 +21,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+@SpringBootTest(classes = {Configuration.class, SpringContext.class, FrameworkConfiguration.class, MetadataPolicyConfiguration.class })
 public class ExecutionRequestPolicyDefinitionTest {
-
-    @BeforeAll
-    static void beforeAll() {
-        FrameworkConfiguration.getInstance();
-        MetadataPolicyConfiguration.getInstance();
-    }
 
     @Test
     void alignsWithOneDefinitionAndOneLabelPolicy() {

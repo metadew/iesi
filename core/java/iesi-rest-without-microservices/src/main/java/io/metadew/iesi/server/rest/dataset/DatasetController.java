@@ -26,7 +26,6 @@ import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationD
 import io.metadew.iesi.server.rest.dataset.implementation.DatasetImplementationPostDto;
 import io.metadew.iesi.server.rest.dataset.implementation.database.DatabaseDatasetImplementationPostDto;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.io.ByteArrayResource;
@@ -45,7 +44,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,6 +63,7 @@ public class DatasetController {
     private final IDatabaseDatasetImplementationService datasetImplementationService;
     private final IesiSecurityChecker iesiSecurityChecker;
     private final ObjectMapper objectMapper;
+    private final SecurityGroupConfiguration securityGroupConfiguration;
 
 
     @Autowired
@@ -74,7 +73,8 @@ public class DatasetController {
                              PagedResourcesAssembler<DatasetDto> datasetPagedResourcesAssembler,
                              IDatasetDtoService datasetDtoService,
                              IesiSecurityChecker iesiSecurityChecker,
-                             ObjectMapper objectMapper) {
+                             ObjectMapper objectMapper,
+                             SecurityGroupConfiguration securityGroupConfiguration) {
         this.datasetDtoModelAssembler = datasetDtoModelAssembler;
         this.datasetService = datasetService;
         this.datasetImplementationService = datasetImplementationService;
@@ -82,6 +82,7 @@ public class DatasetController {
         this.datasetDtoService = datasetDtoService;
         this.iesiSecurityChecker = iesiSecurityChecker;
         this.objectMapper = objectMapper;
+        this.securityGroupConfiguration = securityGroupConfiguration;
     }
 
     @SuppressWarnings("unchecked")
@@ -245,7 +246,7 @@ public class DatasetController {
             throw new MetadataDoesNotExistException(new DatasetKey(uuid));
         }
 
-        SecurityGroup securityGroup = SecurityGroupConfiguration.getInstance().getByName(datasetPutDto.getSecurityGroupName())
+        SecurityGroup securityGroup = securityGroupConfiguration.getByName(datasetPutDto.getSecurityGroupName())
                 .orElseThrow(() -> new RuntimeException("Could not find security group with name + " + datasetPutDto.getSecurityGroupName()));
 
         Dataset dataset = new Dataset(

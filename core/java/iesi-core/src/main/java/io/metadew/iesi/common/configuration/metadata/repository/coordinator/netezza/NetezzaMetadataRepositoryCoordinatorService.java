@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.netezza;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -63,7 +64,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
             netezzaDatabaseConnection = new NetezzaDatabaseConnection(
                     netezzaRepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     netezzaRepositoryCoordinatorDefinition.getInitSql());
             netezzaRepositoryCoordinatorDefinition.getSchema().ifPresent(netezzaDatabaseConnection::setSchema);
         } else {
@@ -72,7 +73,7 @@ public class NetezzaMetadataRepositoryCoordinatorService implements IMetadataRep
                     netezzaRepositoryCoordinatorDefinition.getPort(),
                     netezzaRepositoryCoordinatorDefinition.getDatabase(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     netezzaRepositoryCoordinatorDefinition.getInitSql()
             );
             netezzaRepositoryCoordinatorDefinition.getSchema().ifPresent(netezzaDatabaseConnection::setSchema);

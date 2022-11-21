@@ -1,5 +1,6 @@
 package io.metadew.iesi.common.configuration.metadata.repository.coordinator.h2;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.IMetadataRepositoryCoordinatorService;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinatorProfileDefinition;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
@@ -67,7 +68,7 @@ public class H2MetadataRepositoryCoordinatorService implements IMetadataReposito
             databaseConnection = new H2DatabaseConnection(
                     h2RepositoryCoordinatorDefinition.getConnection().get(),
                     metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                    FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                    SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                     h2RepositoryCoordinatorDefinition.getInitSql());
             h2RepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
             return databaseConnection;
@@ -77,7 +78,7 @@ public class H2MetadataRepositoryCoordinatorService implements IMetadataReposito
             case "embedded":
                 databaseConnection = new H2EmbeddedDatabaseConnection(h2RepositoryCoordinatorDefinition.getFile(),
                         metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                        SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                         h2RepositoryCoordinatorDefinition.getInitSql());
                 h2RepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                 break;
@@ -86,14 +87,14 @@ public class H2MetadataRepositoryCoordinatorService implements IMetadataReposito
                         h2RepositoryCoordinatorDefinition.getPort(),
                         h2RepositoryCoordinatorDefinition.getFile(),
                         metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                        SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                         h2RepositoryCoordinatorDefinition.getInitSql());
                 h2RepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                 break;
             case "memory":
                 databaseConnection = new H2MemoryDatabaseConnection(h2RepositoryCoordinatorDefinition.getDatabaseName(),
                         metadataRepositoryCoordinatorProfileDefinition.getUser(),
-                        FrameworkCrypto.getInstance().decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
+                        SpringContext.getBean(FrameworkCrypto.class).decryptIfNeeded(metadataRepositoryCoordinatorProfileDefinition.getPassword()),
                         h2RepositoryCoordinatorDefinition.getInitSql());
                 h2RepositoryCoordinatorDefinition.getSchema().ifPresent(databaseConnection::setSchema);
                 break;

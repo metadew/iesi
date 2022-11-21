@@ -3,29 +3,21 @@ package io.metadew.iesi.common;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
-
-import java.io.IOException;
+import org.springframework.stereotype.Component;
 
 @Log4j2
+@Component
 public class FrameworkInstance {
 
-    private static FrameworkInstance INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static FrameworkInstance getInstance() throws IOException {
-        if (INSTANCE == null) {
-            INSTANCE = new FrameworkInstance();
-        }
-        return INSTANCE;
+    public FrameworkInstance(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
-
-    private FrameworkInstance() throws IOException {
-        FrameworkRuntime.getInstance().init();
-    }
-
 
     public void shutdown() {
         log.debug("closing framework instance");
-        for (MetadataRepository metadataRepository : MetadataRepositoryConfiguration.getInstance().getMetadataRepositories()) {
+        for (MetadataRepository metadataRepository : metadataRepositoryConfiguration.getMetadataRepositories()) {
             if (metadataRepository != null) {
                 metadataRepository.shutdown();
             }

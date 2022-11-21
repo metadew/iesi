@@ -2,10 +2,12 @@ package io.metadew.iesi.datatypes.dataset;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.dataset.implementation.*;
-import io.metadew.iesi.datatypes.dataset.implementation.database.*;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValue;
+import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueKey;
 import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationKeyValue;
 import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationKeyValueKey;
@@ -20,7 +22,6 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -49,11 +50,11 @@ public class DatasetJsonComponent {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             String name = Optional.ofNullable(node.get(Field.NAME_KEY.value())).map(JsonNode::asText)
                     .orElseThrow(() -> new RuntimeException("Name field is a mandatory parameter"));
-            DatasetKey datasetKey = DatasetConfiguration.getInstance().getByName(name)
+            DatasetKey datasetKey = SpringContext.getBean(DatasetConfiguration.class).getByName(name)
                     .map(Metadata::getMetadataKey)
                     .orElse(new DatasetKey());
             String securityGroupName = Optional.ofNullable(node.get(Field.SECURITY_GROUP_NAME_KEY.value())).map(JsonNode::asText).orElse("PUBLIC");
-            SecurityGroupKey securityGroupKey = SecurityGroupConfiguration.getInstance().getByName(securityGroupName)
+            SecurityGroupKey securityGroupKey = SpringContext.getBean(SecurityGroupConfiguration.class).getByName(securityGroupName)
                     .map(Metadata::getMetadataKey)
                     .orElseThrow(() -> new RuntimeException("Could not find security group with name " + securityGroupName));
             Set<DatasetImplementation> datasetImplementations = new HashSet<>();

@@ -9,10 +9,11 @@ import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.key.ComponentAttributeKey;
 import io.metadew.iesi.metadata.definition.component.key.ComponentKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -20,21 +21,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+@Component
 public class ComponentAttributeConfiguration extends Configuration<ComponentAttribute, ComponentAttributeKey> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static ComponentAttributeConfiguration INSTANCE;
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration;
 
-    public synchronized static ComponentAttributeConfiguration getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ComponentAttributeConfiguration();
-        }
-        return INSTANCE;
+    public ComponentAttributeConfiguration(MetadataRepositoryConfiguration metadataRepositoryConfiguration) {
+        this.metadataRepositoryConfiguration = metadataRepositoryConfiguration;
     }
 
-    private ComponentAttributeConfiguration() {
-        setMetadataRepository(MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository());
+    @PostConstruct
+    private void postConstruct() {
+        setMetadataRepository(metadataRepositoryConfiguration.getDesignMetadataRepository());
     }
 
     @Override

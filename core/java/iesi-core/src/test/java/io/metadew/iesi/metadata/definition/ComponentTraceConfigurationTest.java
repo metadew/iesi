@@ -1,12 +1,16 @@
 package io.metadew.iesi.metadata.definition;
 
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
+import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.metadata.configuration.component.trace.ComponentTraceConfiguration;
-import io.metadew.iesi.metadata.definition.component.trace.*;
+import io.metadew.iesi.metadata.definition.component.trace.ComponentTraceKey;
 import io.metadew.iesi.metadata.definition.component.trace.http.*;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +18,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(classes = ComponentTraceConfiguration.class)
+@ContextConfiguration(classes = TestConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 public class ComponentTraceConfigurationTest {
 
 
@@ -22,28 +30,8 @@ public class ComponentTraceConfigurationTest {
     private UUID componentUuid;
     private UUID componentUuid2;
 
-    @BeforeAll
-    static void prepare() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::createAllTables);
-    }
-
-    @AfterEach
-    void clearDatabase() {
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::cleanAllTables);
-    }
-
-    @AfterAll
-    static void teardown() {
-        Configuration.getInstance();
-        MetadataRepositoryConfiguration.getInstance()
-                .getMetadataRepositories()
-                .forEach(MetadataRepository::dropAllTables);
-    }
+    @Autowired
+    private ComponentTraceConfiguration componentTraceConfiguration;
 
     @BeforeEach
     void initializeTemplates() {
@@ -145,23 +133,23 @@ public class ComponentTraceConfigurationTest {
 
     @Test
     void testGetAllEmpty() {
-        assertThat(ComponentTraceConfiguration.getInstance().getAll())
+        assertThat(componentTraceConfiguration.getAll())
                 .isEmpty();
     }
 
     @Test
     void testInsert() {
-        ComponentTraceConfiguration.getInstance().insert(httpComponentTrace);
-        assertThat(ComponentTraceConfiguration.getInstance().get(httpComponentTrace.getMetadataKey()))
+        componentTraceConfiguration.insert(httpComponentTrace);
+        assertThat(componentTraceConfiguration.get(httpComponentTrace.getMetadataKey()))
                 .hasValue(httpComponentTrace);
         assertThat(httpComponentTrace.getRunId()).isEqualTo("testRunid");
     }
 
     @Test
     void testGetAll() {
-        ComponentTraceConfiguration.getInstance().insert(httpComponentTrace);
-        ComponentTraceConfiguration.getInstance().insert(httpComponentTrace2);
-        assertThat(ComponentTraceConfiguration.getInstance().getAll())
+        componentTraceConfiguration.insert(httpComponentTrace);
+        componentTraceConfiguration.insert(httpComponentTrace2);
+        assertThat(componentTraceConfiguration.getAll())
                 .containsOnly(httpComponentTrace, httpComponentTrace2);
     }
 }

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.operation;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.script.execution.ActionExecution;
@@ -27,6 +28,8 @@ public class AttributeOperation {
     private String type;
     private String name;
 
+    private final MetadataRepositoryConfiguration metadataRepositoryConfiguration = SpringContext.getBean(MetadataRepositoryConfiguration.class);
+
     // Constructors
     public AttributeOperation(ExecutionControl executionControl, ActionExecution actionExecution, String type, String name) {
         this.setExecutionControl(executionControl);
@@ -41,16 +44,16 @@ public class AttributeOperation {
         String query = "";
         if (this.getType().equals("component")) {
             query = "select a.comp_id, a.comp_att_nm, a.comp_att_val from "
-                    + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
+                    + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("ComponentAttributes")
                     + " a inner join "
-                    + MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().getTableNameByLabel("Components")
+                    + metadataRepositoryConfiguration.getDesignMetadataRepository().getTableNameByLabel("Components")
                     + " b on a.comp_id = b.comp_id where b.comp_nm = '" + this.getName() + "'";
         }
 
         // Set attribute values
         CachedRowSet crs = null;
         this.getExecutionControl().logMessage("component.name=" + name, Level.DEBUG);
-        crs = MetadataRepositoryConfiguration.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
+        crs = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 String key = crs.getString("COMP_ATT_NM");

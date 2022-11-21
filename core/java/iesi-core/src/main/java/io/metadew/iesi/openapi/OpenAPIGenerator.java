@@ -17,18 +17,22 @@ import java.io.IOException;
 import java.util.List;
 
 @Log4j2
+@org.springframework.stereotype.Component
 public class OpenAPIGenerator {
-    private static OpenAPIGenerator instance;
 
-    private OpenAPIGenerator() {
-    }
+    private final ComponentConfiguration componentConfiguration;
+    private final ConnectionConfiguration connectionConfiguration;
+    private final ComponentParser componentParser;
+    private final ConnectionParser connectionParser;
 
-
-    public static synchronized OpenAPIGenerator getInstance() {
-        if (instance == null) {
-            instance = new OpenAPIGenerator();
-        }
-        return instance;
+    public OpenAPIGenerator(ComponentConfiguration componentConfiguration,
+                            ConnectionConfiguration connectionConfiguration,
+                            ComponentParser componentParser,
+                            ConnectionParser connectionParser) {
+        this.componentConfiguration = componentConfiguration;
+        this.connectionConfiguration = connectionConfiguration;
+        this.componentParser = componentParser;
+        this.connectionParser = connectionParser;
     }
 
     public TransformResult transformFromFile(String path) throws SwaggerParserException {
@@ -37,8 +41,8 @@ public class OpenAPIGenerator {
         checkForMessages(result.getMessages());
 
         return new TransformResult(
-                ConnectionParser.getInstance().parse(result.getOpenAPI()),
-                ComponentParser.getInstance().parse(result.getOpenAPI()),
+                connectionParser.parse(result.getOpenAPI()),
+                componentParser.parse(result.getOpenAPI()),
                 result.getOpenAPI().getInfo().getTitle(),
                 result.getOpenAPI().getInfo().getVersion()
         );
@@ -49,8 +53,8 @@ public class OpenAPIGenerator {
         checkForMessages(result.getMessages());
 
         return new TransformResult(
-                ConnectionParser.getInstance().parse(result.getOpenAPI()),
-                ComponentParser.getInstance().parse(result.getOpenAPI()),
+                connectionParser.parse(result.getOpenAPI()),
+                componentParser.parse(result.getOpenAPI()),
                 result.getOpenAPI().getInfo().getTitle(),
                 result.getOpenAPI().getInfo().getVersion()
         );
@@ -103,17 +107,17 @@ public class OpenAPIGenerator {
 
     private void saveComponent(Component component) {
         try {
-            ComponentConfiguration.getInstance().insert(component);
+            componentConfiguration.insert(component);
         } catch (MetadataAlreadyExistsException e) {
-            ComponentConfiguration.getInstance().update(component);
+            componentConfiguration.update(component);
         }
     }
 
     private void saveConnection(Connection connection) {
         try {
-            ConnectionConfiguration.getInstance().insert(connection);
+            connectionConfiguration.insert(connection);
         } catch (MetadataAlreadyExistsException e) {
-            ConnectionConfiguration.getInstance().update(connection);
+            connectionConfiguration.update(connection);
         }
     }
 

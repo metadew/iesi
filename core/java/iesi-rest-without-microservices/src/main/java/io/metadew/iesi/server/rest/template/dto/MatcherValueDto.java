@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
-import javax.validation.constraints.NotNull;
-
 @Data
 @EqualsAndHashCode(callSuper = false)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")

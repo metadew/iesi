@@ -12,6 +12,10 @@ iesi:
   home: '.'
   security:
     enabled: true
+    keystore:
+      location: ''
+      store-password: ''
+      key-password: ''
     jwt:
       secret: secret
       expiry-date: 10

@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.http;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.component.http.*;
 import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.request.HttpRequest;
@@ -28,7 +29,10 @@ import org.apache.http.Header;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,19 +46,23 @@ import java.util.stream.Collectors;
 @Getter
 public class HttpExecuteRequest extends ActionTypeExecution {
 
-    private static final String ACTION_TYPE = "http.executeRequest";
-    private static final String REQUEST_KEY = "request";
-    private static final String REQUEST_VERSION = "requestVersion";
-    private static final String BODY_KEY = "body";
-    private static final String PROXY_KEY = "proxy";
-    private static final String SET_DATASET_KEY = "setDataset";
-    private static final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
-    private static final String HEADERS_KEY = "headers";
-    private static final String QUERY_PARAMETERS_KEY = "queryParameters";
+    private final String ACTION_TYPE = "http.executeRequest";
+    private final String REQUEST_KEY = "request";
+    private final String REQUEST_VERSION = "requestVersion";
+    private final String BODY_KEY = "body";
+    private final String PROXY_KEY = "proxy";
+    private final String SET_DATASET_KEY = "setDataset";
+    private final String EXPECTED_STATUS_CODES_KEY = "expectedStatusCodes";
+    private final String HEADERS_KEY = "headers";
+    private final String QUERY_PARAMETERS_KEY = "queryParameters";
+
+    private final String M_TLS_KEY = "mutualTLS";
 
     private HttpRequest httpRequest;
     private DatasetImplementation outputDataset;
     private ProxyConnection proxyConnection;
+
+    private boolean mutualTLS;
     private List<String> expectedStatusCodes;
 
     private static final Pattern INFORMATION_STATUS_CODE = Pattern.compile("1\\d\\d");
@@ -65,6 +73,10 @@ public class HttpExecuteRequest extends ActionTypeExecution {
     @SuppressWarnings("unused")
     private static final Pattern CLIENT_ERROR_STATUS_CODE = Pattern.compile("5\\d\\d");
 
+    private final HttpComponentService httpComponentService = SpringContext.getBean(HttpComponentService.class);
+    private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+    private final ActionPerformanceLogger actionPerformanceLogger = SpringContext.getBean(ActionPerformanceLogger.class);
+
     public HttpExecuteRequest(ExecutionControl executionControl,
                               ScriptExecution scriptExecution, ActionExecution actionExecution) {
         super(executionControl, scriptExecution, actionExecution);
@@ -74,9 +86,9 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         Long componentVersion = convertHttpRequestVersion(getParameterResolvedValue(REQUEST_VERSION));
         HttpComponent httpComponent;
         if (componentVersion == null) {
-            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, REQUEST_VERSION);
+            httpComponent = httpComponentService.getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, REQUEST_VERSION);
         } else {
-            httpComponent = HttpComponentService.getInstance().getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
+            httpComponent = httpComponentService.getAndTrace(convertHttpRequestName(getParameterResolvedValue(REQUEST_KEY)), getActionExecution(), REQUEST_KEY, componentVersion);
         }
 
         Optional<String> body = convertHttpRequestBody(getParameterResolvedValue(BODY_KEY));
@@ -89,12 +101,13 @@ public class HttpExecuteRequest extends ActionTypeExecution {
 
         if (body.isPresent()) {
             getActionExecution().getActionControl().logOutput("request.body", body.get());
-            httpRequest = HttpComponentService.getInstance().buildHttpRequest(
+            httpRequest = httpComponentService.buildHttpRequest(
                     httpComponent,
                     body.get());
         } else {
-            httpRequest = HttpComponentService.getInstance().buildHttpRequest(httpComponent);
+            httpRequest = httpComponentService.buildHttpRequest(httpComponent);
         }
+
         getActionExecution().getActionControl().logOutput("request.uri", httpRequest.getHttpRequest().getURI().toString());
         getActionExecution().getActionControl().logOutput("request.method", httpRequest.getHttpRequest().getMethod());
 
@@ -106,18 +119,18 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         expectedStatusCodes = convertExpectStatusCodes(getParameterResolvedValue(EXPECTED_STATUS_CODES_KEY));
         proxyConnection = convertProxyName(getParameterResolvedValue(PROXY_KEY));
         outputDataset = convertOutputDatasetReferenceName(getParameterResolvedValue(SET_DATASET_KEY));
-
+        mutualTLS = convertUseCertificates(getParameterResolvedValue(M_TLS_KEY));
     }
 
-    protected boolean executeAction() throws NoSuchAlgorithmException, IOException, KeyManagementException, InterruptedException {
+    protected boolean executeAction() throws NoSuchAlgorithmException, IOException, KeyManagementException, InterruptedException, UnrecoverableKeyException, KeyStoreException, CertificateException {
         HttpResponse httpResponse;
         if (getProxyConnection().isPresent()) {
-            httpResponse = HttpRequestService.getInstance().send(httpRequest, proxyConnection);
+            httpResponse = SpringContext.getBean(HttpRequestService.class).send(httpRequest, proxyConnection, mutualTLS);
         } else {
-            httpResponse = HttpRequestService.getInstance().send(httpRequest);
+            httpResponse = SpringContext.getBean(HttpRequestService.class).send(httpRequest, mutualTLS);
         }
         outputResponse(httpResponse);
-        ActionPerformanceLogger.getInstance().log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());
+        actionPerformanceLogger.log(getActionExecution(), "response", httpResponse.getRequestTimestamp(), httpResponse.getResponseTimestamp());
         checkStatusCode(httpResponse);
         return true;
     }
@@ -136,6 +149,21 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         return actionLevelParameters;
     }
 
+    private boolean convertUseCertificates(DataType dataType) {
+        if (dataType == null || dataType instanceof Null) {
+            return false;
+        } else if (dataType instanceof Text) {
+            if (((Text) dataType).getString().equalsIgnoreCase("Y")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for certificates parameter"),
+                    dataType.getClass()));
+            return false;
+        }
+    }
 
     private List<HttpHeader> convertHeaderParameters(DataType dataType) {
         if (dataType == null || dataType instanceof Null) {
@@ -252,7 +280,7 @@ public class HttpExecuteRequest extends ActionTypeExecution {
         if (connectionName == null || connectionName instanceof Null) {
             return null;
         } else if (connectionName instanceof Text) {
-            return ConnectionConfiguration.getInstance()
+            return connectionConfiguration
                     .get(new ConnectionKey(((Text) connectionName).getString(), getExecutionControl().getEnvName()))
                     .map(ProxyConnection::from)
                     .orElseThrow(() -> new RuntimeException(MessageFormat.format("Cannot find connection {0}", ((Text) connectionName).getString())));

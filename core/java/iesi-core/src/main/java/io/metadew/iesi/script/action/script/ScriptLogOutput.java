@@ -1,5 +1,6 @@
 package io.metadew.iesi.script.action.script;
 
+import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.text.Text;
@@ -25,6 +26,8 @@ public class ScriptLogOutput extends ActionTypeExecution {
     private static final String VALUE_KEY = "value";
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private final FrameworkCrypto frameworkCrypto = SpringContext.getBean(FrameworkCrypto.class);
+    private final ScriptResultOutputConfiguration scriptResultOutputConfiguration = SpringContext.getBean(ScriptResultOutputConfiguration.class);
 
     public ScriptLogOutput(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -43,13 +46,13 @@ public class ScriptLogOutput extends ActionTypeExecution {
         getActionExecution().getActionControl().logOutput("output.value", value);
 
         // log the output in the script
-        value = FrameworkCrypto.getInstance().redact(value);
+        value = frameworkCrypto.redact(value);
         log.info("action.output=" + name + ":" + value, Level.INFO);
         ScriptResultOutput scriptResultOutput = new ScriptResultOutput(
                 new ScriptResultOutputKey(getExecutionControl().getRunId(), getExecutionControl().getProcessId(), name),
                 getScriptExecution().getScript().getMetadataKey().getScriptId(),
                 value);
-        ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
+        scriptResultOutputConfiguration.insert(scriptResultOutput);
 
         getActionExecution().getActionControl().increaseSuccessCount();
         return true;

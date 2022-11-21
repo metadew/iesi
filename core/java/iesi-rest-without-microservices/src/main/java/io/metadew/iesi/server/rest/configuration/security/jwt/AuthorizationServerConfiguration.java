@@ -4,16 +4,21 @@ import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.token.*;
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
@@ -27,6 +32,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     private final AuthenticationManager authenticationManager;
     private final IesiUserAuthenticationConverter iesiUserAuthenticationConverter;
     private final DataSource dataSource;
+    private final PasswordEncoder passwordEncoder;
+    private final Environment environment;
 
     @Value("${iesi.security.jwt.access-token-validity}")
     private int accessTokenValidityInSeconds;
@@ -42,33 +49,40 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
             IesiUserDetailsManager iesiUserDetailsManager,
             AuthenticationManager authenticationManager,
             IesiUserAuthenticationConverter iesiUserAuthenticationConverter,
-            DataSource dataSource
-    ) {
+            DataSource dataSource,
+            PasswordEncoder passwordEncoder,
+            Environment environment) {
         this.iesiUserDetailsManager = iesiUserDetailsManager;
         this.authenticationManager = authenticationManager;
         this.iesiUserAuthenticationConverter = iesiUserAuthenticationConverter;
         this.dataSource = dataSource;
+        this.passwordEncoder = passwordEncoder;
+        this.environment = environment;
     }
 
-    @Bean
-    public TokenStore tokenStore() {
-        final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        final AuthenticationKeyGenerator authenticationKeyGenerator = new DefaultAuthenticationKeyGenerator();
-        return new JdbcTokenStore(dataSource) {
+    @Bean("tokenStore")
+    @Profile("!test & !sqlite")
+    public TokenStore jdbcTokenStore() {
+        return new JdbcTokenStore(dataSource);
+    }
 
-            @Override
-            public void storeAccessToken(final OAuth2AccessToken token, final OAuth2Authentication authentication) {
-                final String key = authenticationKeyGenerator.extractKey(authentication);
-                jdbcTemplate.update("delete from oauth_access_token where authentication_id = ?", key);
-                super.storeAccessToken(token, authentication);
-            }
-        };
+    @Bean("tokenStore")
+    @Profile({ "test", "sqlite"})
+    public TokenStore inMemoryTokenStore() {
+        return new InMemoryTokenStore();
     }
 
     @Bean
     public AuthorizationServerTokenServices tokenServices() {
         final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-        defaultTokenServices.setTokenStore(tokenStore());
+        if (environment.acceptsProfiles(Profiles.of("test", "sqlite"))) {
+            defaultTokenServices.setTokenStore(inMemoryTokenStore());
+        } else {
+            defaultTokenServices.setTokenStore(jdbcTokenStore());
+        }
+
+
+
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setTokenEnhancer(accessTokenConverter());
         defaultTokenServices.setReuseRefreshToken(false);
@@ -90,22 +104,37 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         endpoints
                 .accessTokenConverter(accessTokenConverter())
                 .authenticationManager(authenticationManager)
-                .tokenStore(tokenStore())
                 .tokenServices(tokenServices())
                 .userDetailsService(iesiUserDetailsManager);
+
+        if (environment.acceptsProfiles(Profiles.of("test", "sqlite"))) {
+            endpoints.tokenStore(inMemoryTokenStore());
+        } else {
+            endpoints.tokenStore(jdbcTokenStore());
+        }
     }
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer serverSecurity) {
         serverSecurity
                 .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
+                .checkTokenAccess("permitAll()")
                 .allowFormAuthenticationForClients();
     }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.jdbc(dataSource);
+        if (environment.acceptsProfiles(Profiles.of("test", "sqlite"))) {
+            clients.inMemory()
+                    .withClient("iesi").secret(passwordEncoder.encode("iesi"))
+                    .accessTokenValiditySeconds(accessTokenValidityInSeconds)
+                    .refreshTokenValiditySeconds(refreshTokenValidityInSeconds)
+                    .authorizedGrantTypes("password","refresh_token")
+                    .scopes("write-read")
+                    .autoApprove(true);
+        } else {
+            clients.jdbc(dataSource);
+        }
     }
 
 }

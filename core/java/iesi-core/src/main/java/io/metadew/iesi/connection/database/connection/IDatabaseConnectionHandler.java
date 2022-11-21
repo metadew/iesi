@@ -1,7 +1,6 @@
 package io.metadew.iesi.connection.database.connection;
 
 import com.zaxxer.hikari.HikariConfig;
-import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
 
 import javax.sql.rowset.CachedRowSet;

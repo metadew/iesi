@@ -10,7 +10,6 @@ import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
 import io.metadew.iesi.metadata.definition.action.trace.ActionParameterTrace;
-import io.metadew.iesi.metadata.definition.action.trace.ActionTrace;
 import io.metadew.iesi.metadata.definition.action.trace.key.ActionParameterTraceKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecution;
 import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionKey;

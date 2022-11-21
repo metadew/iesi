@@ -22,7 +22,5 @@ public class CacheTest {
 
         String username = (String) parser.parseExpression("#user.username").getValue(context);
         UUID uuid = (UUID) parser.parseExpression("#user.metadataKey.uuid").getValue(context);
-        System.out.println("USERNAME: "+ username);
-        System.out.println("UUID: " + uuid);
     }
 }

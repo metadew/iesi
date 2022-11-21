@@ -6,7 +6,6 @@ import io.metadew.iesi.common.configuration.Configuration;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 

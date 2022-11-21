@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -9,8 +9,6 @@ import io.metadew.iesi.server.rest.configuration.security.MethodSecurityConfigur
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import io.metadew.iesi.server.rest.connection.ConnectionService;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
-import io.metadew.iesi.server.rest.environment.EnvironmentService;
-import io.metadew.iesi.server.rest.environment.EnvironmentsController;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDto;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDtoResourceAssembler;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDtoService;

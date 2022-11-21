@@ -2,7 +2,6 @@ package io.metadew.iesi.server.rest.user;
 
 import io.metadew.iesi.metadata.definition.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;

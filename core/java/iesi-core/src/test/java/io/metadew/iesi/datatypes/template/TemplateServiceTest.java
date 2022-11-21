@@ -1,16 +1,11 @@
 package io.metadew.iesi.datatypes.template;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.TestConfiguration;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
-import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
 import io.metadew.iesi.metadata.configuration.template.matcher.MatcherConfiguration;
 import io.metadew.iesi.metadata.configuration.template.matcher.value.MatcherValueConfiguration;
@@ -22,13 +17,11 @@ import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherAnyValu
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherFixedValue;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherTemplate;
 import io.metadew.iesi.metadata.definition.template.matcher.value.MatcherValueKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.LookupResult;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

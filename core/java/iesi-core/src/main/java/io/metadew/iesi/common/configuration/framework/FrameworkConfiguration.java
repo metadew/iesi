@@ -3,7 +3,6 @@ package io.metadew.iesi.common.configuration.framework;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.common.configuration.Configuration;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import java.text.MessageFormat;

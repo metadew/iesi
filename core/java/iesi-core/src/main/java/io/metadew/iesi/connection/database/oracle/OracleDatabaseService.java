@@ -5,7 +5,6 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
-import io.metadew.iesi.metadata.definition.MetadataFieldType;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 
 import java.util.Optional;

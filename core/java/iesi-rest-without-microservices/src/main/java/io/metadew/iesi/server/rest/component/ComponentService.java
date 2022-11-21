@@ -2,7 +2,6 @@ package io.metadew.iesi.server.rest.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.component.ComponentConfiguration;
-import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.configuration.type.ComponentTypeConfiguration;
 import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.Component;

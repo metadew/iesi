@@ -1,11 +1,13 @@
 package io.metadew.iesi.server.rest.configuration;
 
-import io.metadew.iesi.server.rest.configuration.security.providers.ldap.*;
+import io.metadew.iesi.server.rest.configuration.security.providers.ldap.LdapAuthentication;
+import io.metadew.iesi.server.rest.configuration.security.providers.ldap.LdapGroupMapping;
+import io.metadew.iesi.server.rest.configuration.security.providers.ldap.LdapRoleMapping;
+import io.metadew.iesi.server.rest.configuration.security.providers.ldap.LdapServer;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;

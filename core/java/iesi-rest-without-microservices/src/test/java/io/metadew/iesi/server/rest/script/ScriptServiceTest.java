@@ -1,10 +1,7 @@
 package io.metadew.iesi.server.rest.script;
 
-import io.metadew.iesi.common.configuration.metadata.policies.MetadataPolicyConfiguration;
 import io.metadew.iesi.common.configuration.metadata.policies.definitions.PolicyVerificationException;
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.metadata.configuration.audit.ScriptDesignAuditConfiguration;
-import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAudit;
 import io.metadew.iesi.metadata.definition.audit.ScriptDesignAuditAction;
@@ -18,16 +15,12 @@ import io.metadew.iesi.metadata.tools.IdentifierTools;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.builder.script.ScriptBuilder;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
-import io.metadew.iesi.server.rest.script.audit.IScriptDesignAuditService;
 import io.metadew.iesi.server.rest.script.audit.ScriptDesignAuditService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -35,7 +28,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.powermock.reflect.Whitebox;
 
 import java.util.HashSet;
 import java.util.UUID;

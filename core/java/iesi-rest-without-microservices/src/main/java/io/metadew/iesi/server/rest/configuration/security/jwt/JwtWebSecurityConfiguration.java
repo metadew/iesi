@@ -1,7 +1,7 @@
 package io.metadew.iesi.server.rest.configuration.security.jwt;
 
-import io.metadew.iesi.server.rest.configuration.security.providers.IesiProviderManager;
 import io.metadew.iesi.server.rest.configuration.security.IesiUserDetailsManager;
+import io.metadew.iesi.server.rest.configuration.security.providers.IesiProviderManager;
 import io.metadew.iesi.server.rest.configuration.security.providers.ldap.LdapAuthenticationProvider;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

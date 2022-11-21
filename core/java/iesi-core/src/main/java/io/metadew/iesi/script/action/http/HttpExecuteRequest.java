@@ -28,7 +28,10 @@ import org.apache.http.Header;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.security.*;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.text.MessageFormat;
 import java.util.ArrayList;

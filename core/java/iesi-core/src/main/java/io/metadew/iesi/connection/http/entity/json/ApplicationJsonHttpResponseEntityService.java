@@ -97,9 +97,6 @@ public class ApplicationJsonHttpResponseEntityService implements IHttpResponseEn
 
             JsonNode jsonNode = NullNode.getInstance();
             try {
-                log.info("S: " + s);
-                log.info("CHARSET: " + charset);
-                log.info("NEW STRING: " + new String(s, charset));
                 jsonNode = objectMapper.readTree(new String(s, charset));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();

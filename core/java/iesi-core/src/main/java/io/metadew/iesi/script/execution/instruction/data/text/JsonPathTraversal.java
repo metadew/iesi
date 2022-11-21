@@ -84,9 +84,5 @@ public class JsonPathTraversal implements DataInstruction {
         String jsonPath = "/1/code";
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(json.toString());
-
-        System.out.println("JsonNode: " + jsonNode.toString());
-
-        System.out.println("VALUE: " + jsonNode.at(jsonPath).asText());
     }
 }

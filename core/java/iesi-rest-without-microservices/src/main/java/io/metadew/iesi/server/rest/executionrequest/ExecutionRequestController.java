@@ -82,7 +82,6 @@ public class ExecutionRequestController {
                                                   @RequestParam(required = false, name = "requester") String requester
     ) {
         List<ExecutionRequestFilter> executionRequestFilters = extractScriptFilterOptions(script, version, environment, labelKeyCombination, runId, runStatus, requester);
-        System.out.println("TEST: " + executionRequestFilters);
         Page<ExecutionRequestDto> executionRequestDtoPage = executionRequestService
                 .getAll(SecurityContextHolder.getContext().getAuthentication(), pageable, executionRequestFilters);
         if (executionRequestDtoPage.hasContent())

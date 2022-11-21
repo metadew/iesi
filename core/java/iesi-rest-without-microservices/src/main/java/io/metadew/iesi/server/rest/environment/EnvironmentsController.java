@@ -3,14 +3,9 @@ package io.metadew.iesi.server.rest.environment;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
-import io.metadew.iesi.server.rest.connection.ConnectionFilter;
-import io.metadew.iesi.server.rest.connection.ConnectionFilterOption;
 import io.metadew.iesi.server.rest.connection.ConnectionService;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
-import io.metadew.iesi.server.rest.dataset.DatasetFiltersBuilder;
-import io.metadew.iesi.server.rest.dataset.dto.DatasetDto;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDto;
 import io.metadew.iesi.server.rest.environment.dto.EnvironmentDtoResourceAssembler;
 import io.metadew.iesi.server.rest.environment.dto.IEnvironmentDtoService;
@@ -21,12 +16,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 

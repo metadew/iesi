@@ -4,7 +4,6 @@ import io.metadew.iesi.common.configuration.ScriptRunStatus;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.tools.IdentifierTools;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 

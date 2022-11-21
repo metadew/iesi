@@ -7,8 +7,6 @@ import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.array.Array;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementation;
 import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationService;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementation;
-import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatasetImplementationService;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.action.ActionTypeExecution;
 import io.metadew.iesi.script.execution.ActionExecution;

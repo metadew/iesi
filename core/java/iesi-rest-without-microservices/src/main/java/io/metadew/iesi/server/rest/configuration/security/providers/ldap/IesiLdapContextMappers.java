@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
-import org.springframework.ldap.core.support.LdapContextSource;
 
-import javax.naming.Context;
 import javax.naming.NamingException;
 
 public class IesiLdapContextMappers {

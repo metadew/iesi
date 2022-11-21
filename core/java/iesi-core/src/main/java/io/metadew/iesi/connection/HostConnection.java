@@ -283,9 +283,6 @@ public class HostConnection {
                         assignedPort = session.setPortForwardingL(0, hostConnection.getHostName(),
                                 hostConnection.getPortNumber());
                     }
-                    // System.out.println("portforwarding: " + "localhost:" + assignedPort + " -> "
-                    // + dcHost.getHostName()
-                    // + ":" + assignedPort);
 
                     if (i == 0) {
                         sessions[i] = session = this.sessionConnect(jsch, hostConnection.getHostName(), assignedPort,
@@ -294,10 +291,6 @@ public class HostConnection {
                         sessions[i] = session = this.sessionJumpConnect(jsch, hostConnection.getHostName(),
                                 assignedPort, hostConnection.getUserName(), hostConnection.getUserPassword());
                     }
-
-                    // System.out.println("The session has been established to " +
-                    // dcHost.getUserName() + "@" + dcHost.getHostName());
-
                 }
 
             }
@@ -433,9 +426,6 @@ public class HostConnection {
                         assignedPort = session.setPortForwardingL(0, hostConnection.getHostName(),
                                 hostConnection.getPortNumber());
                     }
-                    // System.out.println("portforwarding: " + "localhost:" + assignedPort + " -> "
-                    // + dcHost.getHostName()
-                    // + ":" + assignedPort);
 
                     if (i == 0) {
                         sessions[i] = session = this.sessionConnect(jsch, hostConnection.getHostName(), assignedPort,
@@ -444,10 +434,6 @@ public class HostConnection {
                         sessions[i] = session = this.sessionJumpConnect(jsch, hostConnection.getHostName(),
                                 assignedPort, hostConnection.getUserName(), hostConnection.getUserPassword());
                     }
-
-                    // System.out.println("The session has been established to " +
-                    // dcHost.getUserName() + "@" + dcHost.getHostName());
-
                 }
 
             }

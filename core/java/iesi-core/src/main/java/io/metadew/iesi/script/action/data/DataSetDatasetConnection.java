@@ -17,7 +17,6 @@ import io.metadew.iesi.datatypes.dataset.implementation.in.memory.InMemoryDatase
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabel;
 import io.metadew.iesi.datatypes.dataset.implementation.label.DatasetImplementationLabelKey;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.script.action.ActionTypeExecution;

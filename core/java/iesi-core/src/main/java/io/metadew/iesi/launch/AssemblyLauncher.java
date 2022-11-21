@@ -1,9 +1,6 @@
 package io.metadew.iesi.launch;
 
 import io.metadew.iesi.assembly.execution.AssemblyService;
-import io.metadew.iesi.common.FrameworkControl;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.crypto.FrameworkCrypto;
 import org.apache.commons.cli.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

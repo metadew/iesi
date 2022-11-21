@@ -11,7 +11,6 @@ import io.metadew.iesi.server.rest.error.PasswordsMisMatchException;
 import io.metadew.iesi.server.rest.user.team.TeamsController;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

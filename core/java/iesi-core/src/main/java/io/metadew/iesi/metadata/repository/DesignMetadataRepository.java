@@ -18,7 +18,6 @@ import io.metadew.iesi.metadata.repository.coordinator.RepositoryCoordinator;
 import io.metadew.iesi.metadata.service.security.SecurityGroupService;
 import lombok.extern.log4j.Log4j2;
 
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Collections;

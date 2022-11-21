@@ -2,7 +2,6 @@ package io.metadew.iesi.script.action.fho;
 
 import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.HostConnection;
-import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.host.ShellCommandResult;
 import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.ConnectionOperation;

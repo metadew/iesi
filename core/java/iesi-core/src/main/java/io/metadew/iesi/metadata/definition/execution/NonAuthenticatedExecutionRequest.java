@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.definition.execution;
 
 import io.metadew.iesi.metadata.definition.execution.key.ExecutionRequestKey;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

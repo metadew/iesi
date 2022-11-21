@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.script;
 
 import io.metadew.iesi.TestConfiguration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.definition.script.ScriptVersion;
 import org.junit.jupiter.api.BeforeEach;

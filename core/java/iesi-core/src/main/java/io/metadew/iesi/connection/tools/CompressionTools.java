@@ -83,15 +83,11 @@ public final class CompressionTools {
 
             if (tarEntry.isDirectory()) {
 
-                //System.out.println("outputFile Directory ---- " + outputFile.getAbsolutePath());
                 if (!outputFile.exists()) {
                     outputFile.mkdirs();
                 }
             } else {
-                // File outputFile = new File(destFile + File.separator + tarEntry.getScriptName());
-                // System.out.println("outputFile File ---- " + outputFile.getAbsolutePath());
                 outputFile.getParentFile().mkdirs();
-                // outputFile.createNewFile();
                 FileOutputStream fos = new FileOutputStream(outputFile);
                 IOUtils.copy(tis, fos);
                 fos.close();

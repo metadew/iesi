@@ -1,7 +1,10 @@
 package io.metadew.iesi.metadata.definition.component.key;
 
 import io.metadew.iesi.metadata.definition.key.MetadataKey;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 @EqualsAndHashCode(callSuper = false)

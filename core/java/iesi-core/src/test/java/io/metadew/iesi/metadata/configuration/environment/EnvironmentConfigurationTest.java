@@ -1,9 +1,6 @@
 package io.metadew.iesi.metadata.configuration.environment;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.TestConfiguration;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.environment.Environment;

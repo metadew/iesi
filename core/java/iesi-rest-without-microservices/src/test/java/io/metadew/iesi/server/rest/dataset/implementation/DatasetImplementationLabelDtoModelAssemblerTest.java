@@ -15,7 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.useDefaultDateFormatsOnly;
 
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ContextConfiguration(classes = TestConfiguration.class)

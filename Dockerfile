@@ -43,7 +43,8 @@ COPY --from=staging /app/docker/application.yml.template /opt/iesi/conf/applicat
 COPY --from=staging /app/docker/application-repository.yml.template /opt/iesi/conf/application-repository.yml
 
 ENV DATABASE_TYPE mysql
-ENV DATABASE_CONNECTION_URL jdbc:mysql://iesimysqldb-hqjlu7hnwtcte.mysql.database.azure.com
+ENV DATABASE_CONNECTION_URL iesimysqldb-hqjlu7hnwtcte.mysql.database.azure.com
+ENV DATABASE_PORT 3306
 ENV DATABASE_SCHEMA iesidb
 ENV DATABASE_INIT_SQL ""
 ENV DATABASE_USER dbadmin@iesimysqldb-hqjlu7hnwtcte

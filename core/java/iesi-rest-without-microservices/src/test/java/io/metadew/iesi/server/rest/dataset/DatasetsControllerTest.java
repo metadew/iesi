@@ -345,6 +345,8 @@ class DatasetsControllerTest {
                         .map(e -> e.getUuid())
                         .collect(Collectors.toSet()))
                 .build();
+
+        when(datasetDtoService.convertToEntity(datasetPostDto)).thenReturn(expectedDataset);
         when(datasetDtoModelAssembler.toModel((Dataset) any()))
                 .thenReturn(datasetDto);
         when(datasetService.exists("dataset"))

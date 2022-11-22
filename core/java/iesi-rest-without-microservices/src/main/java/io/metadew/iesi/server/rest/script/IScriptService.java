@@ -1,29 +1,28 @@
 package io.metadew.iesi.server.rest.script;
 
 import io.metadew.iesi.metadata.definition.script.Script;
-import io.metadew.iesi.server.rest.script.dto.ScriptPostDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IScriptService {
 
-    public List<Script> getAll();
+    List<Script> getAll();
 
-    public List<Script> getByName(String name);
+    List<Script> getByName(String name);
 
-    public Optional<Script> getByNameAndVersion(String name, long version);
+    Optional<Script> getByNameAndVersion(String name, long version);
 
-    public void createScript(ScriptPostDto scriptDto);
+    void createScript(Script script);
+    List<Script> importScripts(String textPlain);
 
-    public void updateScript(ScriptPostDto scriptPostDto);
+    void updateScript(Script script);
 
-    public void updateScripts(List<ScriptPostDto> scriptPostDtos);
+    void updateScripts(List<Script> scripts);
 
-    public void deleteAll();
+    void deleteAll();
 
-    public void deleteByName(String name);
+    void deleteByName(String name);
 
-    public void deleteByNameAndVersion(String name, long version);
-
+    void deleteByNameAndVersion(String name, long version);
 }

@@ -60,14 +60,6 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
     }
 
     private String getBaseQuery(Authentication authentication, Pageable pageable, List<ComponentFilter> componentFilters) {
-        System.out.println( "select distinct component_designs.COMP_ID, component_designs.SECURITY_GROUP_NM, versions.COMP_VRS_NB " +
-                "from " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("Components").getName() + " component_designs " +
-                "INNER JOIN " + MetadataTablesConfiguration.getInstance().getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
-                "on component_designs.COMP_ID = versions.COMP_ID" +
-                getWhereClause(authentication, componentFilters) +
-                getOrderByClause(pageable) +
-                getLimitAndOffsetClause(pageable));
-
         return "select distinct component_designs.COMP_ID, component_designs.SECURITY_GROUP_NM, versions.COMP_VRS_NB " +
                 "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
@@ -143,21 +135,20 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Components").getName() + " component_designs " +
                 "INNER JOIN " + metadataTablesConfiguration.getMetadataTableNameByLabel("ComponentVersions").getName() + " versions " +
                 "on component_designs.COMP_ID = versions.COMP_ID " +
-                
-		getWhereClause(authentication, componentFilters) +
-                ") filtered_components;";
+                getWhereClause(authentication, componentFilters) +
+                ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");
     }
 
     private String getOrderByClause(Pageable pageable) {
-        if (pageable.getSort().isUnsorted()) return " ORDER BY component_designs.COMP_ID ";
+        if (pageable.getSort().isUnsorted()) return " ORDER BY component_designs.COMP_ID ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "component_designs.COMP_NM" + " " + order.getDirection();
-		    } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
-                        return "versions.COMP_VRS_NB" + " " + order.getDirection();
+                        return "lower(component_designs.COMP_NM) " + order.getDirection();
+                    } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
+                        return "versions.COMP_VRS_NB " + order.getDirection();
                     } else {
                         return null;
                     }
@@ -165,7 +156,7 @@ public class ComponentDtoRepository extends PaginatedRepository implements IComp
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return "ORDER BY component_designs.COMP_ID";
+            sorting.add("ORDER BY component_designs.COMP_ID ASC");
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

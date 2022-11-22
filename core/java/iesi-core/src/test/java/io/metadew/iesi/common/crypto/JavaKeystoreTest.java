@@ -1,11 +1,8 @@
 package io.metadew.iesi.common.crypto;
 
-import io.metadew.iesi.common.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -13,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
-import java.util.Optional;
 import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;

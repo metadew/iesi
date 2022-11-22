@@ -1,7 +1,6 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionParameterConfiguration;
 import io.metadew.iesi.metadata.definition.connection.ConnectionParameter;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;

@@ -96,8 +96,10 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
     }
 
     private String getBaseQuery(Authentication authentication, Pageable pageable, List<ExecutionRequestFilter> executionRequestFilters) {
-        return "SELECT distinct execution_requests.REQUEST_ID, execution_requests.REQUEST_TMS, name_script_execution_requests.SCRPT_NAME, name_script_execution_requests.SCRPT_VRS " +
+        return "SELECT distinct execution_requests.REQUEST_ID, execution_requests.REQUEST_TMS, name_script_execution_requests.SCRPT_NAME, name_script_execution_requests.SCRPT_VRS, auth_execution_requests.USERNAME " +
                 "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
+                "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
                 "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
                 "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
                 "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
@@ -133,6 +135,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                         return " script_executions.RUN_ID " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
                     } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.STATUS)) {
                         return " script_executions.ST_NM " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
+                    } else if (executionRequestFilter.getExecutionRequestFilterOption().equals(ExecutionRequestFilterOption.REQUESTER)) {
+                        return " auth_execution_requests.USERNAME " + (executionRequestFilter.isExactMatch() ? "=" : "LIKE") + " '" + (executionRequestFilter.isExactMatch() ? "" : "%") + executionRequestFilter.getValue() + (executionRequestFilter.isExactMatch() ? "" : "%") + "' ";
                     }
                     else {
                         return null;
@@ -165,7 +169,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         List<String> sorting = pageable.getSort().stream().map(order -> {
             // add further sort on the ScriptAndScriptVersionTable here
             if (order.getProperty().equalsIgnoreCase("SCRIPT")) {
-                return "name_script_execution_requests.SCRPT_NAME " + order.getDirection();
+                return "lower(name_script_execution_requests.SCRPT_NAME) " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("REQUEST_TIMESTAMP")) {
                 return "execution_requests.REQUEST_TMS " + order.getDirection();
             } else if (order.getProperty().equalsIgnoreCase("VERSION")) {
@@ -187,6 +191,8 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
         String query = "select count(*) as row_count from (" +
                 "SELECT distinct execution_requests.REQUEST_ID " +
                 "FROM " + metadataTablesConfiguration.getMetadataTableNameByLabel("ExecutionRequests").getName() + " execution_requests " +
+                "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("AuthenticatedExecutionRequests").getName() + " auth_execution_requests " +
+                "on execution_requests.REQUEST_ID = auth_execution_requests.REQUEST_ID " +
                 "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutionRequests").getName() + " script_execution_requests " +
                 "on execution_requests.REQUEST_ID = script_execution_requests.ID " +
                 "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptFileExecutionRequests").getName() + " file_script_execution_requests " +
@@ -200,7 +206,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
-                ") filtered_execution_requests;";
+                ");";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

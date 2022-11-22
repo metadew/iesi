@@ -1,10 +1,7 @@
 package io.metadew.iesi.server.rest.template;
 
 import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.metadata.configuration.template.TemplateConfiguration;
-import io.metadew.iesi.metadata.configuration.template.matcher.MatcherConfiguration;
 import io.metadew.iesi.metadata.definition.template.Template;
-import io.metadew.iesi.metadata.definition.template.TemplateKey;
 import io.metadew.iesi.metadata.service.template.ITemplateService;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.builder.template.TemplateBuilder;

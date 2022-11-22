@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -64,6 +65,45 @@ class DatasetDtoRepositoryTest {
     @AfterEach
     void cleanup() {
         metadataRepositoryConfiguration.clearAllTables();
+    }
+
+    @Test
+    void getAllSortedCaseTest() {
+        Dataset dataset1 = Dataset.builder()
+                .metadataKey(new DatasetKey(UUID.randomUUID()))
+                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
+                .securityGroupName("PUBLIC")
+                .name("a")
+                .datasetImplementations(new HashSet<>())
+                .build();
+        DatasetDto dataset1Dto = DatasetDto.builder()
+                .uuid(dataset1.getMetadataKey().getUuid())
+                .name("a")
+                .securityGroupName("PUBLIC")
+                .implementations(new HashSet<>())
+                .build();
+        Dataset dataset2 = Dataset.builder()
+                .metadataKey(new DatasetKey(UUID.randomUUID()))
+                .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
+                .securityGroupName("PUBLIC")
+                .name("Z")
+                .datasetImplementations(new HashSet<>())
+                .build();
+        DatasetDto dataset2Dto = DatasetDto.builder()
+                .uuid(dataset2.getMetadataKey().getUuid())
+                .name("Z")
+                .securityGroupName("PUBLIC")
+                .implementations(new HashSet<>())
+                .build();
+
+        datasetConfiguration.insert(dataset1);
+        datasetConfiguration.insert(dataset2);
+
+        Pageable pageableASC = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
+        Pageable pageableDESC = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
+
+        assertThat(datasetDtoRepository.fetchAll(null, pageableASC, new HashSet<>())).containsExactly(dataset1Dto, dataset2Dto);
+        assertThat(datasetDtoRepository.fetchAll(null, pageableDESC, new HashSet<>())).containsExactly(dataset2Dto, dataset1Dto);
     }
 
     @Test

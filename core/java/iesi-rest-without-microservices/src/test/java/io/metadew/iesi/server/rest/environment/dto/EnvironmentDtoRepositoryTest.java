@@ -7,6 +7,7 @@ import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.EnvironmentParameter;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
+import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,7 +54,9 @@ class EnvironmentDtoRepositoryTest {
 
     @Test
     void getAllNoResultsTest() {
-        assertThat(environmentDtoRepository.getAll(Pageable.unpaged())).isEmpty();
+        //assertThat(environmentDtoRepository.getAll(Pageable.unpaged())).isEmpty();
+        assertThat(environmentDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>())).isEmpty();
+
     }
 
     @Test
@@ -63,12 +67,27 @@ class EnvironmentDtoRepositoryTest {
         environmentConfiguration.insert(environment2);
         EnvironmentDto environmentDto1 = environmentDtoResourceAssembler.toModel(environment1);
         EnvironmentDto environmentDto2 = environmentDtoResourceAssembler.toModel(environment2);
-        assertThat(environmentDtoRepository.getAll(Pageable.unpaged())).containsOnly(
+        //assertThat(environmentDtoRepository.getAll(Pageable.unpaged())).containsOnly(
+        assertThat(environmentDtoRepository.getAll(null, Pageable.unpaged(), new ArrayList<>())).containsOnly(
                 environmentDto1,
                 environmentDto2
         );
     }
 
+    @Test
+    void getAllSortedCaseTest() {
+        Environment environment1 = createEnvironment("a");
+        Environment environment2 = createEnvironment("Z");
+        environmentConfiguration.insert(environment1);
+        environmentConfiguration.insert(environment2);
+        EnvironmentDto environmentDto1 = environmentDtoResourceAssembler.toModel(environment1);
+        EnvironmentDto environmentDto2 = environmentDtoResourceAssembler.toModel(environment2);
+        Pageable pageableASC = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
+        Pageable pageableDESC = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
+
+        assertThat(environmentDtoRepository.getAll(null,pageableASC,new ArrayList<>())).containsExactly(environmentDto1, environmentDto2);
+        assertThat(environmentDtoRepository.getAll(null,pageableDESC, new ArrayList<>())).containsExactly(environmentDto2, environmentDto1);
+    }
     @Test
     void getAllPaginatedAllInclusiveTest() {
         Environment environment1 = createEnvironment("iesi-dev");
@@ -86,15 +105,15 @@ class EnvironmentDtoRepositoryTest {
         Pageable page1 = PageRequest.of(0, 2);
         Pageable page2 = PageRequest.of(1, 2);
         Pageable page3 = PageRequest.of(0, 4);
-        assertThat(environmentDtoRepository.getAll(page1)).containsOnly(
+        assertThat(environmentDtoRepository.getAll(null,page1,new ArrayList<>())).containsOnly(
                 environmentDto1,
                 environmentDto2
         );
-        assertThat(environmentDtoRepository.getAll(page2)).containsOnly(
+        assertThat(environmentDtoRepository.getAll(null,page2,new ArrayList<>())).containsOnly(
                 environmentDto3,
                 environmentDto4
         );
-        assertThat(environmentDtoRepository.getAll(page3)).containsOnly(
+        assertThat(environmentDtoRepository.getAll(null,page3,new ArrayList<>())).containsOnly(
                 environmentDto1,
                 environmentDto2,
                 environmentDto3,
@@ -120,8 +139,8 @@ class EnvironmentDtoRepositoryTest {
         PageRequest pageable1 = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
         PageRequest pageable2 = PageRequest.of(1, 2, Sort.by(Sort.Direction.ASC, "name"));
 
-        Page<EnvironmentDto> page1 = environmentDtoRepository.getAll(pageable1);
-        Page<EnvironmentDto> page2 = environmentDtoRepository.getAll(pageable2);
+        Page<EnvironmentDto> page1 = environmentDtoRepository.getAll(null,pageable1,new ArrayList<>());
+        Page<EnvironmentDto> page2 = environmentDtoRepository.getAll(null,pageable2,new ArrayList<>());
 
         assertThat(page1).containsExactly(
                 environmentDto1,
@@ -154,8 +173,11 @@ class EnvironmentDtoRepositoryTest {
         PageRequest pageable1 = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
         PageRequest pageable2 = PageRequest.of(1, 2, Sort.by(Sort.Direction.DESC, "name"));
 
-        Page<EnvironmentDto> page1 = environmentDtoRepository.getAll(pageable1);
-        Page<EnvironmentDto> page2 = environmentDtoRepository.getAll(pageable2);
+        //Page<EnvironmentDto> page1 = environmentDtoRepository.getAll(pageable1);
+        //Page<EnvironmentDto> page2 = environmentDtoRepository.getAll(pageable2);
+
+        Page<EnvironmentDto> page1 = environmentDtoRepository.getAll(null, pageable1, new ArrayList<>());
+        Page<EnvironmentDto> page2 = environmentDtoRepository.getAll(null, pageable2, new ArrayList<>());
 
         assertThat(page1).containsExactly(
                 environmentDto4,

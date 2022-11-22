@@ -1,7 +1,10 @@
 package io.metadew.iesi.server.rest.dataset.implementation;
 
 import io.metadew.iesi.server.rest.script.dto.NoEmptyLinksRepresentationModel;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.Set;

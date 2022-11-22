@@ -4,12 +4,12 @@ import io.metadew.iesi.script.execution.ActionExecution;
 
 public interface IHttpConnectionService {
 
-    public HttpConnection get(String httpConnectionReferenceName,  ActionExecution actionExecution);
+    HttpConnection get(String httpConnectionReferenceName,  ActionExecution actionExecution);
 
-    public HttpConnection getAndTrace(String httpConnectionReferenceName, ActionExecution actionExecution, String actionParameterName);
+    HttpConnection getAndTrace(String httpConnectionReferenceName, ActionExecution actionExecution, String actionParameterName);
 
-    public String getBaseUri(HttpConnection httpConnection);
+    String getBaseUri(HttpConnection httpConnection);
 
-    public HttpConnection convert(HttpConnectionDefinition httpConnectionDefinition);
+    HttpConnection convert(HttpConnectionDefinition httpConnectionDefinition);
 
 }

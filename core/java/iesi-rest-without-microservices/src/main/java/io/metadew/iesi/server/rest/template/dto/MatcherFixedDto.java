@@ -1,6 +1,7 @@
 package io.metadew.iesi.server.rest.template.dto;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)

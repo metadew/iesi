@@ -3,7 +3,6 @@ package io.metadew.iesi.server.rest.environment;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.connection.Connection;
-import io.metadew.iesi.metadata.definition.environment.Environment;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import io.metadew.iesi.server.rest.connection.ConnectionService;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
@@ -17,14 +16,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +41,7 @@ public class EnvironmentsController {
     private EnvironmentDtoResourceAssembler environmentDtoResourceAssembler;
     private ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
     private IEnvironmentDtoService environmentDtoService;
+
     private PagedResourcesAssembler<EnvironmentDto> environmentDtoPagedResourcesAssembler;
 
     @Autowired
@@ -57,23 +58,36 @@ public class EnvironmentsController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
-    public PagedModel<EnvironmentDto> getAll(Pageable pageable) {
-        Page<EnvironmentDto> environmentDtoPage = environmentDtoService.getAll(pageable);
+    public PagedModel<EnvironmentDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
+        List<EnvironmentFilter> environmentFilters = extractEnvironmentFilterOptions(name);
+        Page<EnvironmentDto> environmentDtoPage = environmentDtoService.getAll(
+                SecurityContextHolder.getContext().getAuthentication(),
+                pageable,
+                environmentFilters);
 
-        if (environmentDtoPage.hasContent())
+        if (environmentDtoPage.hasContent()) {
             return environmentDtoPagedResourcesAssembler.toModel(environmentDtoPage, environmentDtoResourceAssembler::toModel);
+        }
         return (PagedModel<EnvironmentDto>) environmentDtoPagedResourcesAssembler.toEmptyModel(environmentDtoPage, EnvironmentDto.class);
-    }
 
+    }
+    private List<EnvironmentFilter> extractEnvironmentFilterOptions(String name) {
+        List<EnvironmentFilter> environmentFilters = new ArrayList<>();
+        if (name != null) {
+            environmentFilters.add(new EnvironmentFilter(EnvironmentFilterOption.NAME, name, false));
+        }
+        return environmentFilters;
+    }
+    /*
     @GetMapping("/list")
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
     public HalMultipleEmbeddedResource<EnvironmentDto> getAll() {
-        Page<EnvironmentDto> environmentDtoPage = environmentDtoService.getAll(Pageable.unpaged());
+        Page<EnvironmentDto> environmentDtoPage = environmentDtoService.getAll();
         HalMultipleEmbeddedResource<EnvironmentDto> halMultipleEmbeddedResource = new HalMultipleEmbeddedResource<>();
         environmentDtoPage.getContent().forEach(halMultipleEmbeddedResource::embedResource);
         return halMultipleEmbeddedResource;
     }
-
+    */
     @GetMapping("/{name}")
     @PreAuthorize("hasPrivilege('ENVIRONMENTS_READ')")
     public EnvironmentDto getByName(@PathVariable String name) throws MetadataDoesNotExistException {

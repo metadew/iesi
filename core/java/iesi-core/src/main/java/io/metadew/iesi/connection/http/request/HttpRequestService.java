@@ -1,5 +1,6 @@
 package io.metadew.iesi.connection.http.request;
 
+import io.metadew.iesi.common.configuration.Configuration;
 import io.metadew.iesi.connection.http.ProxyConnection;
 import io.metadew.iesi.connection.http.response.HttpResponse;
 import lombok.extern.log4j.Log4j2;
@@ -7,39 +8,42 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
+import org.springframework.stereotype.Service;
 
-import javax.net.ssl.*;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
-import java.net.Socket;
 import java.security.KeyManagementException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 
+@Service
 @Log4j2
 public class HttpRequestService implements IHttpRequestService {
 
-    private static HttpRequestService instance;
+    private final Configuration configuration;
 
-    public static synchronized HttpRequestService getInstance() {
-        if (instance == null) {
-            instance = new HttpRequestService();
-        }
-        return instance;
+    public HttpRequestService(Configuration configuration) {
+        this.configuration = configuration;
     }
 
-    private HttpRequestService() {
-    }
-
-    public HttpResponse send(HttpRequest httpRequest) throws IOException, KeyManagementException, NoSuchAlgorithmException {
-        CloseableHttpClient httpClient = noSSLCertificateVerification();
+    public HttpResponse send(HttpRequest httpRequest, boolean mutualTLS) throws IOException, KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException, CertificateException {
+        CloseableHttpClient httpClient = noSSLCertificateVerification(mutualTLS);
         return send(httpRequest, httpClient);
     }
 
-    public HttpResponse send(HttpRequest httpRequest, ProxyConnection proxyConnection) throws IOException, KeyManagementException, NoSuchAlgorithmException {
-        CloseableHttpClient httpClient = noSSLCertificateVerification(proxyConnection);
+    public HttpResponse send(HttpRequest httpRequest, ProxyConnection proxyConnection, boolean mutualTLS) throws IOException, KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException, CertificateException {
+        CloseableHttpClient httpClient = noSSLCertificateVerification(proxyConnection, mutualTLS);
         return send(httpRequest, httpClient);
     }
 
@@ -52,40 +56,22 @@ public class HttpRequestService implements IHttpRequestService {
         return httpResponse;
     }
 
-    private static CloseableHttpClient noSSLCertificateVerification() throws NoSuchAlgorithmException, KeyManagementException {
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509ExtendedTrustManager() {
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-            }
+    private CloseableHttpClient noSSLCertificateVerification(boolean mutualTLS) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException, CertificateException, IOException {
+        SSLContextBuilder sslContextBuilder = SSLContexts.custom()
+                .loadTrustMaterial(new TrustAllStrategy());
 
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-            }
+        if (mutualTLS) {
+            String keystoreLocation = (String) configuration.getProperty("iesi.security.keystore.location")
+                    .orElse("");
+            String storePassword = (String) configuration.getProperty("iesi.security.keystore.store-password")
+                    .orElse("");
+            String keyPassword = (String) configuration.getProperty("iesi.security.keystore.key-password")
+                    .orElse(storePassword);
 
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
+            sslContextBuilder.loadKeyMaterial(new File(keystoreLocation), storePassword.toCharArray(), keyPassword.toCharArray());
+        }
 
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1, Socket arg2) {
-            }
-
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1, SSLEngine arg2) {
-            }
-
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1, Socket arg2) {
-            }
-
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1, SSLEngine arg2) {
-            }
-        }};
-
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        SSLContext sslContext= sslContextBuilder.build();
 
         // we can optionally disable hostname verification.
         // if you don't want to further weaken the security, you don't have to include this.
@@ -98,40 +84,22 @@ public class HttpRequestService implements IHttpRequestService {
         return HttpClients.custom().setSSLSocketFactory(connectionFactory).build();
     }
 
-    private static CloseableHttpClient noSSLCertificateVerification(ProxyConnection proxyConnection) throws NoSuchAlgorithmException, KeyManagementException {
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509ExtendedTrustManager() {
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-            }
+    private CloseableHttpClient noSSLCertificateVerification(ProxyConnection proxyConnection, boolean mutualTLS) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException, CertificateException, IOException {
+        SSLContextBuilder sslContextBuilder = SSLContexts.custom()
+                .loadTrustMaterial(new TrustAllStrategy());
 
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-            }
+        if (mutualTLS) {
+            String keystoreLocation = (String) configuration.getProperty("iesi.security.keystore.location")
+                    .orElse("");
+            String storePassword = (String) configuration.getProperty("iesi.security.keystore.store-password")
+                    .orElse("");
+            String keyPassword = (String) configuration.getProperty("iesi.security.keystore.key-password")
+                    .orElse(storePassword);
 
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
+            sslContextBuilder.loadKeyMaterial(new File(keystoreLocation), storePassword.toCharArray(), keyPassword.toCharArray());
+        }
 
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1, Socket arg2) {
-            }
-
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] arg0, String arg1, SSLEngine arg2) {
-            }
-
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1, Socket arg2) {
-            }
-
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] arg0, String arg1, SSLEngine arg2) {
-            }
-        }};
-
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        SSLContext sslContext= sslContextBuilder.build();
 
         // we can optionally disable hostname verification.
         // if you don't want to further weaken the security, you don't have to include this.

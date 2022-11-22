@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -48,6 +49,10 @@ public class ScriptDtoModelAssembler extends RepresentationModelAssemblerSupport
     @Override
     public ScriptDto toModel(Script script) {
         return convertToDto(script);
+    }
+
+    public List<ScriptDto> toModel(List<Script> scripts) {
+        return scripts.stream().map(this::toModel).collect(Collectors.toList());
     }
 
     public ScriptDto toModel(ScriptDto scriptDto) {

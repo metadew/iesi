@@ -1,13 +1,10 @@
 package io.metadew.iesi.script.execution.instruction.lookup;
 
 import io.metadew.iesi.SpringContext;
-import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes._null.Null;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
-import org.mozilla.javascript.EvaluatorException;
-import org.springframework.expression.EvaluationException;
 
 import java.util.Arrays;
 import java.util.Optional;

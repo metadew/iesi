@@ -9,9 +9,7 @@ import io.metadew.iesi.server.rest.script.dto.label.ScriptLabelDto;
 import io.metadew.iesi.server.rest.script.dto.parameter.ScriptParameterDto;
 import io.metadew.iesi.server.rest.script.dto.version.ScriptVersionDto;
 import lombok.*;
-
 import org.springframework.hateoas.server.core.Relation;
-
 
 import java.util.HashSet;
 import java.util.Set;

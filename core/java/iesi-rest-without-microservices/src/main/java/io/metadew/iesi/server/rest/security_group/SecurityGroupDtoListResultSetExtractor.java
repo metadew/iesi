@@ -1,7 +1,5 @@
 package io.metadew.iesi.server.rest.security_group;
 
-import io.metadew.iesi.metadata.definition.user.TeamKey;
-
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -9,7 +7,7 @@ import java.util.*;
 public class SecurityGroupDtoListResultSetExtractor {
 
     public List<SecurityGroupDto> extractData(CachedRowSet rs) throws SQLException {
-        Map<UUID, SecurityGroupDto> securityGroupMap = new HashMap<>();
+        LinkedHashMap<UUID, SecurityGroupDto> securityGroupMap = new LinkedHashMap<>();
         SecurityGroupDto securityGroup;
         while (rs.next()) {
             UUID uuid = UUID.fromString(rs.getString("security_groups_id"));

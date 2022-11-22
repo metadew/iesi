@@ -11,9 +11,9 @@ Eager to learn about the framework and concepts? Have a look at our detailed doc
     * [Connection types](/{{site.repository}}/pages/iesicoreconcepts/DefineTheSystemLandscapeConnectionTypes.html)
     * [Component types](/{{site.repository}}/pages/iesicoreconcepts/DefineTheSystemLandscapeComponentTypes.html)
   * **Configure your script** <br/>
-    * [Introduction](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptIntroduction.html)
+    * [Introduction](/{{site.repository}}/pages/iesicoreconcepts/ConfigureScriptIntroduction.html)
     * [Using Action Types](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptUsingActionTypes.html)
-    * [Using Variables](/{{site.repository}}/pages/iesicoreconcepts/ConfigureyYourScriptUsingVariables.html)
+    * [Using Variables](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptUsingVariables.html)
     * [Using Subroutines](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptUsingSubroutines.html)
     * [Using Datasets](/{{site.repository}}/pages/iesicoreconcepts/ConfigureYourScriptUsingDatasets.html)
     * Using Expected Error

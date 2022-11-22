@@ -4,6 +4,7 @@ import io.metadew.iesi.TestConfiguration;
 import io.metadew.iesi.common.configuration.metadata.actiontypes.MetadataActionTypesConfiguration;
 import io.metadew.iesi.component.http.*;
 import io.metadew.iesi.connection.http.HttpConnection;
+import io.metadew.iesi.connection.http.HttpConnectionDefinitionService;
 import io.metadew.iesi.connection.http.HttpConnectionService;
 import io.metadew.iesi.datatypes.DataTypeHandler;
 import io.metadew.iesi.datatypes.text.Text;
@@ -30,17 +31,20 @@ import io.metadew.iesi.metadata.service.connection.trace.http.HttpConnectionTrac
 import io.metadew.iesi.metadata.service.metadata.MetadataFieldService;
 import io.metadew.iesi.script.execution.*;
 import io.metadew.iesi.script.service.ActionParameterService;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +58,8 @@ import static org.mockito.Mockito.*;
         HttpConnectionService.class, HttpComponentTraceService.class, HttpConnectionTraceService.class, HttpComponentDefinitionService.class, HttpQueryParameterService.class,
         DataTypeHandler.class, ComponentVersionConfiguration.class, ComponentParameterConfiguration.class, ComponentAttributeConfiguration.class, ComponentTraceConfiguration.class,
         ConnectionTraceConfiguration.class, HttpComponentDesignTraceService.class, ComponentDesignTraceConfiguration.class, DataTypeHandler.class, MetadataFieldService.class, ConnectionConfiguration.class,
-        ConnectionParameterConfiguration.class, HttpHeaderService.class, ActionTypeParameterConfiguration.class, MetadataActionTypesConfiguration.class, ActionPerformanceLogger.class, ActionPerformanceConfiguration.class})
+        ConnectionParameterConfiguration.class, HttpHeaderService.class, ActionTypeParameterConfiguration.class, MetadataActionTypesConfiguration.class, ActionPerformanceLogger.class, ActionPerformanceConfiguration.class,
+        HttpComponentService.class, HttpConnectionDefinitionService.class })
 @ContextConfiguration(classes = TestConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
@@ -120,7 +125,7 @@ class HttpExecuteRequestTest {
     void prepareDefaultHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "X-API-KEY=1234");
+        ActionParameter headersActionParameter = createActionParameter("headers", "X-API-KEY=\"1234\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
         HttpHeader defaultHeader = new HttpHeader("Accept", "application/xml");
 
@@ -146,7 +151,7 @@ class HttpExecuteRequestTest {
     void prepareOverrideHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/xml");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/xml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
         HttpHeader existingHeader = new HttpHeader("Accept", "application/json");
 
@@ -172,7 +177,7 @@ class HttpExecuteRequestTest {
     void prepareHeaderAndNoQueries() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
 
         when(actionExecution.getAction())
@@ -196,7 +201,7 @@ class HttpExecuteRequestTest {
     void prepareHeadersAndNoQuery() throws Exception {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json,X-API-KEY=12345");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json;version=1.2\",Content-Type=\"application/json,application/xml,application/yml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
 
         when(actionExecution.getAction())
@@ -213,15 +218,15 @@ class HttpExecuteRequestTest {
         HttpRequestBase httpRequest = httpExecuteRequest.getHttpRequest().getHttpRequest();
 
         assertThat(httpRequest.getAllHeaders()).hasSize(2);
-        assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json");
-        assertThat(httpRequest.getFirstHeader("X-API-KEY").getValue()).isEqualTo("12345");
+        assertThat(httpRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json;version=1.2");
+        assertThat(httpRequest.getFirstHeader("Content-Type").getValue()).isEqualTo("application/json,application/xml,application/yml");
     }
 
     @Test
     void prepareWrongHeadersAndNoQueries() {
 
         ActionParameter requestActionParameter = createActionParameter("request", "request");
-        ActionParameter headersActionParameter = createActionParameter("headers", "Accept======application/json,X-API-KEY12345");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept======\"application/json\",Content-Type\"application/json,application/xml,application/yml\"");
         Action action = createAction(requestActionParameter, headersActionParameter);
 
         when(actionExecution.getAction())
@@ -234,7 +239,47 @@ class HttpExecuteRequestTest {
 
         HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
 
-        assertThrows(KeyValuePairException.class, httpExecuteRequest::prepare);
+        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
+    }
+
+    @Test
+    void prepareWrongHeadersNoFirstQuoteAndNoQueries() {
+
+        ActionParameter requestActionParameter = createActionParameter("request", "request");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=application/json\", Content-Type=application/json,application/xml,application/yml\"");
+        Action action = createAction(requestActionParameter, headersActionParameter);
+
+        when(actionExecution.getAction())
+                .thenReturn(action);
+
+        mockResolvedValues(requestActionParameter, headersActionParameter);
+
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
+        mockGetAndTraceHttpComponent(httpComponent);
+
+        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
+
+        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
+    }
+
+    @Test
+    void prepareWrongHeadersNoLastQuoteAndNoQueries() {
+
+        ActionParameter requestActionParameter = createActionParameter("request", "request");
+        ActionParameter headersActionParameter = createActionParameter("headers", "Accept=\"application/json\", Content-Type=\"application/json,application/xml,application/yml");
+        Action action = createAction(requestActionParameter, headersActionParameter);
+
+        when(actionExecution.getAction())
+                .thenReturn(action);
+
+        mockResolvedValues(requestActionParameter, headersActionParameter);
+
+        HttpComponent httpComponent = createBaseComponent(new ArrayList<>(), new ArrayList<>());
+        mockGetAndTraceHttpComponent(httpComponent);
+
+        HttpExecuteRequest httpExecuteRequest = new HttpExecuteRequest(executionControl, scriptExecution, actionExecution);
+
+        assertThrows(QuoteCharException.class, httpExecuteRequest::prepare);
     }
 
     @Test
@@ -399,6 +444,17 @@ class HttpExecuteRequestTest {
 
         assertThat(httpExecuteRequest.getExpectedStatusCodes()).isNotEmpty();
         assertThat(httpExecuteRequest.getExpectedStatusCodes()).get().isEqualTo(expectedStatusCode);
+    }
+
+    @Test
+    void executeRequestWithCertificate() throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        String urlOverHttps = "https://21c1d51e-7944-4ea3-8d72-1f6de5c07295.mock.pstmn.io/big-decimal";
+        HttpGet httpGet = new HttpGet(urlOverHttps);
+
+        CloseableHttpResponse response = httpClient.execute(httpGet);
+
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
     }
 
 

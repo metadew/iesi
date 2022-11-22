@@ -24,6 +24,11 @@ iesi:
             type: boolean
             mandatory: true
             encrypted: false
+          certificate:
+            description: Signed certificate file to be sent to the targeted server
+            type: string
+            mandatory: false
+            encrypted: false
       db.db2:
         description: IBM DB2 Database Connection
         parameters:

@@ -26,9 +26,7 @@ import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.server.rest.Application;
 import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +121,8 @@ class ScriptExecutionDtoRepositoryTest {
                         -1L,
                         1,
                         2,
-                        "Create");
+                        "Create",
+                        "spring");
 
         executionRequestConfiguration.insert((ExecutionRequest) scriptExecutionMap.get("executionRequest"));
         scriptConfiguration.insert((Script) scriptExecutionMap.get("script"));

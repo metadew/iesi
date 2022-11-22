@@ -1,21 +1,13 @@
 package io.metadew.iesi.metadata.configuration.securitygroup;
 
-import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.TestConfiguration;
-import io.metadew.iesi.common.configuration.Configuration;
-import io.metadew.iesi.common.configuration.metadata.repository.MetadataRepositoryConfiguration;
-import io.metadew.iesi.datatypes.DataTypeHandler;
-import io.metadew.iesi.datatypes.dataset.DatasetConfiguration;
-import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationConfiguration;
-import io.metadew.iesi.datatypes.dataset.implementation.database.DatabaseDatasetImplementationKeyValueConfiguration;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
 import io.metadew.iesi.metadata.definition.security.SecurityGroup;
 import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
-import io.metadew.iesi.metadata.definition.user.Team;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
-import io.metadew.iesi.metadata.repository.MetadataRepository;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -45,9 +37,7 @@ class SecurityGroupConfigurationTest {
 
 
     private TeamKey teamKey1;
-    private Team team1;
     private TeamKey teamKey2;
-    private Team team2;
 
     @Autowired
     private SecurityGroupConfiguration securityGroupConfiguration;
@@ -58,16 +48,7 @@ class SecurityGroupConfigurationTest {
         securityGroupKey2 = new SecurityGroupKey(UUID.randomUUID());
         teamKey1 = new TeamKey(UUID.randomUUID());
         teamKey2 = new TeamKey(UUID.randomUUID());
-        team1 = Team.builder()
-                .teamKey(teamKey1)
-                .teamName("team1")
-                .securityGroupKeys(Stream.of(securityGroupKey1, securityGroupKey2).collect(Collectors.toSet()))
-                .build();
-        team2 = Team.builder()
-                .teamKey(teamKey2)
-                .teamName("team2")
-                .securityGroupKeys(Stream.of(securityGroupKey2).collect(Collectors.toSet()))
-                .build();
+
         securityGroup1 = SecurityGroup.builder()
                 .metadataKey(securityGroupKey1)
                 .name("group1")

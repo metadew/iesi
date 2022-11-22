@@ -5,11 +5,12 @@ import io.metadew.iesi.metadata.definition.security.SecurityGroupKey;
 import io.metadew.iesi.metadata.definition.user.TeamKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Service("restSecurityGroupService")
@@ -33,8 +34,8 @@ public class SecurityGroupService implements ISecurityGroupService {
         return securityGroupDtoRepository.get(id);
     }
 
-    public Set<SecurityGroupDto> getAll() {
-        return securityGroupDtoRepository.getAll();
+    public Page<SecurityGroupDto> getAll(Pageable pageable, List<SecurityGroupFilter> securityGroupFilters) {
+        return securityGroupDtoRepository.getAll(pageable, securityGroupFilters);
     }
 
     @Override

@@ -71,6 +71,10 @@
         </Console>
     </Appenders>
     <Loggers>
+        <Logger name="org.apache.http" additivity="false" level="all">
+            <AppenderRef ref="STDOUT" level="info" />
+            <AppenderRef ref="default" level="debug" />
+        </Logger>
         <Logger name="io.metadew.iesi" additivity="false" level="all">
             <AppenderRef ref="STDOUT" level="info" />
             <AppenderRef ref="default" level="debug" />

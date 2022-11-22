@@ -821,6 +821,13 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
+          mutualTLS:
+            description: Indicate if IESI has to send certificate to the trust store of the targeted server
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
         status: stable
       mod.soapui:
         className: io.metadew.iesi.script.action.mod.ModSoapui

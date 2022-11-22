@@ -1,9 +1,7 @@
 package io.metadew.iesi.server.rest.component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.security.SecurityGroupConfiguration;
-import io.metadew.iesi.metadata.definition.Metadata;
 import io.metadew.iesi.metadata.definition.component.Component;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.metadata.definition.component.ComponentVersion;
@@ -21,7 +19,6 @@ import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.dataset.FilterService;
 import io.metadew.iesi.server.rest.error.CustomGlobalExceptionHandler;
-import io.metadew.iesi.server.rest.security_group.ISecurityGroupDtoRepository;
 import io.metadew.iesi.server.rest.security_group.SecurityGroupDtoRepository;
 import io.metadew.iesi.server.rest.security_group.SecurityGroupService;
 import org.junit.jupiter.api.Test;

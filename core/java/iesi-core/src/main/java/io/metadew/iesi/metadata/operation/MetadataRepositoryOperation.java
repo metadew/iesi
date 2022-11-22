@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -18,38 +19,8 @@ public class MetadataRepositoryOperation {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Constructors
-
     public MetadataRepositoryOperation() {
     }
-
-    // Methods
-//    public void cleanAllTables() {
-//        LOGGER.info("metadata.clean.start");
-//        LOGGER.trace("metadata.clean.query=" + "");
-//        this.getMetadataRepository().cleanAllTables();
-//        LOGGER.info("metadata.clean.end");
-//
-//    }
-
-    // Drop the metadata data store
-//    public void drop() {
-//        this.dropAllTables();
-//    }
-
-//    public void dropAllTables() {
-//        LOGGER.info("metadata.drop.start");
-//        this.getMetadataRepository().dropAllTables(FrameworkLog.getInstance());
-//        LOGGER.info("metadata.drop.end");
-//
-//    }
-
-    // Create the metadata data store
-//    public void create(boolean generateDdl) {
-//        this.setAction("create");
-//        this.setGenerateDdl(generateDdl);
-//        this.getMetadataRepository().createAllTables();
-//    }
 
     public void loadMetadataRepository(List<MetadataRepository> metadataRepositoryList) {
         this.loadMetadataRepository(metadataRepositoryList, "");
@@ -72,7 +43,7 @@ public class MetadataRepositoryOperation {
                 .getMandatoryFrameworkFolder("metadata.in.done")
                 .getAbsolutePath().toString();
 
-        System.out.println(inputFolder);
+        LOGGER.info(inputFolder);
 
         // Load files
         if (input.trim().equalsIgnoreCase("")) {
@@ -157,7 +128,7 @@ public class MetadataRepositoryOperation {
         File workFile = new File(FilenameUtils.normalize(workFolder + File.separator + file.getName()));
         if (!workFile.isDirectory()) {
             LOGGER.info("metadata.file=" + file.getName());
-            DataObjectOperation dataObjectOperation = new DataObjectOperation(workFile.getAbsolutePath());
+            DataObjectOperation dataObjectOperation = new DataObjectOperation(Paths.get(workFile.getAbsolutePath()));
             dataObjectOperation.saveToMetadataRepository(metadataRepositories);
 
             // Move file to archive folder
@@ -172,65 +143,4 @@ public class MetadataRepositoryOperation {
         }
 
     }
-
-//    private void createMetadataRepository(File file, String archiveFolder, String errorFolder, UUID uuid) {
-//
-//        boolean moveToArchiveFolder = false;
-//        boolean moveToErrorFolder = false;
-//
-//        if (!archiveFolder.trim().equalsIgnoreCase(""))
-//            moveToArchiveFolder = true;
-//        if (!errorFolder.trim().equalsIgnoreCase(""))
-//            moveToErrorFolder = true;
-//
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-//        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
-//
-//        if (file.isDirectory()) {
-//            // Ignore
-//        } else {
-//            try {
-//                LOGGER.info("metadata.file=" + file.getName());
-//                DataObjectOperation dataObjectOperation = new DataObjectOperation(this.getMetadataRepository(), file.getAbsolutePath());
-//                dataObjectOperation.saveToMetadataRepository();
-//
-//                // Move file to archive folder
-//                if (moveToArchiveFolder) {
-//                    String archiveFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-//                            + uuid + "-" + file.getName();
-//                    FileTools.copyFromFileToFile(file.getAbsolutePath(),
-//                            archiveFolder + File.separator + archiveFileName);
-//                    FileTools.delete(file.getAbsolutePath());
-//                }
-//
-//            } catch (Exception e) {
-//
-//                // Move file to archive folder
-//                if (moveToErrorFolder) {
-//                    String errorFileName = dateFormat.format(new Date()) + "-" + timeFormat.format(new Date()) + "-"
-//                            + uuid + "-" + file.getName();
-//                    FileTools.copyFromFileToFile(file.getAbsolutePath(), errorFolder + File.separator + errorFileName);
-//                    FileTools.delete(file.getAbsolutePath());
-//                }
-//
-//            }
-//        }
-//
-//    }
-
-//    private void saveMetadataRepositoryDDL(String ddl) {
-//        StringBuilder targetFilePath = new StringBuilder();
-//        targetFilePath.append(FrameworkConfiguration.getInstance().getFrameworkFolder(.getInstance().getFolderAbsolutePath("metadata.out.ddl"));
-//        targetFilePath.append(File.separator);
-//        targetFilePath.append(this.getMetadataRepository().getName());
-//        targetFilePath.append("_");
-//        targetFilePath.append(this.getMetadataRepository().getCategory());
-//        targetFilePath.append("_");
-//        targetFilePath.append("create");
-//        targetFilePath.append(".ddl");
-//        FileTools.delete(targetFilePath.toString());
-//        FileTools.appendToFile(targetFilePath.toString(), "", ddl);
-//    }
-
-
 }

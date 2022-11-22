@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScriptDtoBuilder {
+
     public static ScriptDto simpleScriptDto(String name, long n) {
         return ScriptDto.builder()
                 .name(name)

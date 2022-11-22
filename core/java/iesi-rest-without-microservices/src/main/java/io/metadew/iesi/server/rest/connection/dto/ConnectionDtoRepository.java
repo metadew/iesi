@@ -114,7 +114,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         if (pageable.getSort().isUnsorted()) return " ORDER BY connections.CONN_NM ASC ";
         List<String> sorting = pageable.getSort().stream().map(order -> {
                     if (order.getProperty().equalsIgnoreCase("NAME")) {
-                        return "connections.CONN_NM" + " " + order.getDirection();
+                        return "lower(connections.CONN_NM)" + order.getDirection();
                     } else {
                         return null;
                     }
@@ -122,7 +122,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (sorting.isEmpty()) {
-            return " ORDER BY connections.CONN_NM ASC";
+            return " ORDER BY lower(connections.CONN_NM) ASC";
         }
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }

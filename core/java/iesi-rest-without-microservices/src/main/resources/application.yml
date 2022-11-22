@@ -13,13 +13,17 @@ spring:
     web:
       pageable:
         one-indexed-parameters: true #Allow the UI to query page 1 instead of 0
-
 iesi:
   security:
     enabled: true
+    cors:
+      allowed-origin: 'http://localhost:3000'
+    client_id: iesi
+    client_secret: iesi
     jwt:
       secret: secret
-      expiry-date: 3600
+      access-token-validity: 1800
+      refresh-token-validity: 86400
   debug: true
 management:
   endpoints:

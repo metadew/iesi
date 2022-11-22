@@ -6,6 +6,10 @@ import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionParameterKey;
 import io.metadew.iesi.metadata.definition.environment.key.EnvironmentKey;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,7 +17,12 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { HttpConnectionDefinitionService.class })
 class HttpConnectionDefinitionServiceTest {
+
+    @Autowired
+    HttpConnectionDefinitionService httpConnectionDefinitionService;
 
     @Test
     void convertWrongTypeTest() {
@@ -57,7 +66,7 @@ class HttpConnectionDefinitionServiceTest {
                                         .build())
                                 .collect(Collectors.toList()))
                 .build();
-        assertThatThrownBy(() -> HttpConnectionDefinitionService.getInstance().convert(connection))
+        assertThatThrownBy(() -> httpConnectionDefinitionService.convert(connection))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert " + connection.toString() + " to http connection");
     }
@@ -145,7 +154,7 @@ class HttpConnectionDefinitionServiceTest {
                                 .collect(Collectors.toList()))
                 .build();
 
-        assertThat(HttpConnectionDefinitionService.getInstance().convert(tlsEnabledConnection))
+        assertThat(httpConnectionDefinitionService.convert(tlsEnabledConnection))
                 .as("Http connection definition with all parameters explicitly defined. Tls is true")
                 .isEqualTo(new HttpConnectionDefinition(
                         "connection1",
@@ -157,7 +166,7 @@ class HttpConnectionDefinitionServiceTest {
                         true
                 ));
 
-        assertThat(HttpConnectionDefinitionService.getInstance().convert(tlsDisabledConnection))
+        assertThat(httpConnectionDefinitionService.convert(tlsDisabledConnection))
                 .as("Http connection definition with all parameters explicitly defined. Tls is false")
                 .isEqualTo(new HttpConnectionDefinition(
                         "connection1",
@@ -208,7 +217,7 @@ class HttpConnectionDefinitionServiceTest {
                                 .collect(Collectors.toList()))
                 .build();
 
-        assertThatThrownBy(() -> HttpConnectionDefinitionService.getInstance().convert(connection))
+        assertThatThrownBy(() -> httpConnectionDefinitionService.convert(connection))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Http connection " + connection.toString() + " does not contain a host");
     }
@@ -249,7 +258,7 @@ class HttpConnectionDefinitionServiceTest {
                                 .collect(Collectors.toList()))
                 .build();
 
-        assertThatThrownBy(() -> HttpConnectionDefinitionService.getInstance().convert(connection))
+        assertThatThrownBy(() -> httpConnectionDefinitionService.convert(connection))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Http connection " + connection.toString() + " does not contain a tls setting");
     }
@@ -292,7 +301,7 @@ class HttpConnectionDefinitionServiceTest {
                                 .collect(Collectors.toList()))
                 .build();
 
-        assertThat(HttpConnectionDefinitionService.getInstance().convert(connection))
+        assertThat(httpConnectionDefinitionService.convert(connection))
                 .isEqualTo(new HttpConnectionDefinition(
                         "connection1",
                         "description",
@@ -340,7 +349,7 @@ class HttpConnectionDefinitionServiceTest {
                                 .collect(Collectors.toList()))
                 .build();
 
-        assertThat(HttpConnectionDefinitionService.getInstance().convert(connection))
+        assertThat(httpConnectionDefinitionService.convert(connection))
                 .isEqualTo(new HttpConnectionDefinition(
                         "connection1",
                         "description",

@@ -18,7 +18,6 @@ import io.metadew.iesi.server.rest.configuration.TestConfiguration;
 import io.metadew.iesi.server.rest.configuration.security.WithIesiUser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -29,7 +28,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,8 +38,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, properties = {"spring.main.allow-bean-definition-overriding=true"})
 @ContextConfiguration(classes = TestConfiguration.class)
 @ActiveProfiles("test")
@@ -188,6 +184,22 @@ class ComponentRepositoryDtoTest {
         assertThat(page1.getNumberOfElements()).isEqualTo(2);
         assertThat(page1.getTotalElements()).isEqualTo(5);
         assertThat(page1.getTotalPages()).isEqualTo(3);
+    }
+
+    @Test
+    void getAllSortedCaseTest() {
+        Component component1 = createComponent("a", "1", "PUBLIC");
+        Component component2 = createComponent("Z", "2", "PUBLIC");
+        componentConfiguration.insert(component1);
+        componentConfiguration.insert(component2);
+        ComponentDto component1Dto = componentDtoResourceAssembler.toModel(component1);
+        ComponentDto component2Dto = componentDtoResourceAssembler.toModel(component2);
+
+        PageRequest pageableASC = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
+        PageRequest pageabledESC = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "name"));
+
+        assertThat(componentDtoRepository.getAll(null, pageableASC, new ArrayList<>())).containsExactly(component1Dto, component2Dto);
+        assertThat(componentDtoRepository.getAll(null, pageabledESC, new ArrayList<>())).containsExactly(component2Dto, component1Dto);
     }
 
     @Test

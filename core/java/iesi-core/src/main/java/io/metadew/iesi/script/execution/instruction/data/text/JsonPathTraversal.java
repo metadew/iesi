@@ -11,6 +11,9 @@ import io.metadew.iesi.script.execution.ExecutionRuntime;
 import io.metadew.iesi.script.execution.instruction.data.DataInstruction;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,5 +66,23 @@ public class JsonPathTraversal implements DataInstruction {
         else {
             throw new IllegalArgumentException(String.format("Illegal arguments provided to %s:%s", this.getKeyword(), resolvedParameters));
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        StringBuilder json = new StringBuilder();
+
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(JsonPathTraversal.class.getClassLoader().getResourceAsStream("myJsonArray.json")))) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                json.append(line);
+            }
+        }
+
+
+
+
+        String jsonPath = "/1/code";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(json.toString());
     }
 }

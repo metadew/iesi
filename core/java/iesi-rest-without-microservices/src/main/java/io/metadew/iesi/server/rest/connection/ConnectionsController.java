@@ -1,9 +1,13 @@
 package io.metadew.iesi.server.rest.connection;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.component.Component;
+import io.metadew.iesi.metadata.definition.connection.Connection;
 import io.metadew.iesi.metadata.definition.connection.key.ConnectionKey;
 import io.metadew.iesi.metadata.service.user.IESIPrivilege;
+import io.metadew.iesi.server.rest.component.dto.ComponentDto;
 import io.metadew.iesi.server.rest.configuration.security.IesiSecurityChecker;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDto;
 import io.metadew.iesi.server.rest.connection.dto.ConnectionDtoResourceAssembler;
@@ -16,17 +20,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/connections")
@@ -38,18 +48,21 @@ public class ConnectionsController {
     private final ConnectionDtoResourceAssembler connectionDtoResourceAssembler;
     private final PagedResourcesAssembler<ConnectionDto> connectionDtoPagedResourcesAssembler;
     private final IesiSecurityChecker iesiSecurityChecker;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     ConnectionsController(ConnectionService connectionService,
                           ConnectionDtoService connectionDtoService,
                           ConnectionDtoResourceAssembler connectionDtoResourceAssembler,
                           PagedResourcesAssembler<ConnectionDto> connectionDtoPagedResourcesAssembler,
-                          IesiSecurityChecker iesiSecurityChecker) {
+                          IesiSecurityChecker iesiSecurityChecker,
+                          ObjectMapper objectMapper) {
         this.connectionService = connectionService;
         this.connectionDtoService = connectionDtoService;
         this.connectionDtoResourceAssembler = connectionDtoResourceAssembler;
         this.connectionDtoPagedResourcesAssembler = connectionDtoPagedResourcesAssembler;
         this.iesiSecurityChecker = iesiSecurityChecker;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("")
@@ -88,6 +101,41 @@ public class ConnectionsController {
         return connectionDtoResourceAssembler.toModel(connection);
     }
 
+    @GetMapping("/{name}/download")
+    @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
+    public void getFile(@PathVariable String name, HttpServletResponse httpServletResponse) {
+        ConnectionDto connectionDto = connectionDtoService.getByName(SecurityContextHolder.getContext().getAuthentication(),
+                        name).orElseThrow(() -> new MetadataDoesNotExistException(
+                        new ConnectionKey(name, "")));
+        List<Connection> connections = connectionDtoService.convertToEntity(connectionDto);
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+                .filename(String.format("connection_%s.zip", name))
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentDisposition(contentDisposition);
+
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(httpServletResponse.getOutputStream())) {
+            for (Connection connection : connections) {
+                String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(connection);
+                byte[] jsonData = jsonString.getBytes();
+
+                String environment = connection.getMetadataKey().getEnvironmentKey().getName();
+                ZipEntry zipEntry = new ZipEntry(String.format("connection_%s_%s.json", name, environment));
+                zipEntry.setSize(jsonData.length);
+                zipOutputStream.putNextEntry(zipEntry);
+                StreamUtils.copy(jsonData, zipOutputStream);
+                zipOutputStream.closeEntry();
+            }
+            zipOutputStream.finish();
+            httpServletResponse.setContentType("application/octet-stream");
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            httpServletResponse.setHeader("Content-Disposition", String.format("attachment;filename=connection_%s.zip", name));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     @PostMapping("")
     @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE', #connectionDto.securityGroupName)")
     public ResponseEntity<ConnectionDto> post(@Valid @RequestBody ConnectionDto connectionDto) {
@@ -99,6 +147,26 @@ public class ConnectionsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Connection " + connectionDto.getName() + " already exists");
         }
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
+    public ResponseEntity<List<ConnectionDto>> importConnections(@RequestParam(value = "file") MultipartFile multipartFile) {
+        try {
+            String textPlain = new String(multipartFile.getBytes());
+            List<Connection> connections = connectionService.importConnections(textPlain);
+            return ResponseEntity.ok(connectionDtoResourceAssembler.toModel(connections));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.TEXT_PLAIN_VALUE)
+    @PreAuthorize("hasPrivilege('CONNECTIONS_WRITE')")
+    public ResponseEntity<List<ConnectionDto>> importConnection(@RequestBody String textPlain) {
+        List<Connection> connections = connectionService.importConnections(textPlain);
+        return ResponseEntity.ok(connectionDtoResourceAssembler.toModel(connections));
     }
 
     @PutMapping("")

@@ -13,6 +13,8 @@ public interface IConnectionService {
 
     List<Connection> getByEnvironment(String name);
 
+    List<Connection> importConnections(String textPlain);
+
     void createConnection(ConnectionDto connectionDto);
 
     void updateConnection(ConnectionDto connectionDto);

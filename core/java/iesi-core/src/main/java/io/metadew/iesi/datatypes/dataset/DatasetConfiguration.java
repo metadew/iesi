@@ -116,8 +116,8 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
 
     private String updateQuery() {
         return  "UPDATE " + metadataTablesConfiguration.getMetadataTableNameByLabel("Datasets").getName() +
-                " SET NAME={0} " +
-                "WHERE ID={1}";
+                " SET NAME={0}, SECURITY_GROUP_NM={1}" +
+                "WHERE ID={2}";
     }
 
     private String deleteQuery() {
@@ -254,6 +254,7 @@ public class DatasetConfiguration extends Configuration<Dataset, DatasetKey> {
     public void update(Dataset dataset) {
         getMetadataRepository().executeUpdate(MessageFormat.format(updateQuery(),
                 SQLTools.getStringForSQL(dataset.getName()),
+                SQLTools.getStringForSQL(dataset.getSecurityGroupName()),
                 SQLTools.getStringForSQL(dataset.getMetadataKey().getUuid())));
         datasetImplementationConfiguration.deleteByDatasetId(dataset.getMetadataKey());
         dataset.getDatasetImplementations()

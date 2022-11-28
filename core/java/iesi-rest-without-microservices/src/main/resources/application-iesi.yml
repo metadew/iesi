@@ -9,7 +9,7 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '/Users/hkhattabi/Documents/work/iesi/core/java/iesi-core'
+  home: '.'
   security:
     enabled: true
     keystore:

@@ -133,6 +133,7 @@ public class DatasetJsonComponent {
             jsonGenerator.writeObjectFieldStart(MetadataJsonComponent.Field.DATA_KEY.value());
 
             jsonGenerator.writeStringField(DatasetJsonComponent.Field.NAME_KEY.value(), dataset.getName());
+            jsonGenerator.writeStringField(Field.SECURITY_GROUP_NAME_KEY.value(), dataset.getSecurityGroupName());
             jsonGenerator.writeArrayFieldStart(Field.IMPLEMENTATIONS_KEY.value());
             for (DatasetImplementation datasetImplementation : dataset.getDatasetImplementations()) {
                 jsonGenerator.writeStartObject();

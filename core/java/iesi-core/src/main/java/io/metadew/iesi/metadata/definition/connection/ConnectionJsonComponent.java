@@ -20,6 +20,7 @@ public class ConnectionJsonComponent {
     public enum Field {
         TYPE("connection"),
         CONNECTION_TYPE_KEY("type"),
+        SECURITY_GROUP_KEY("securityGroup"),
         DESCRIPTION_KEY("description"),
         NAME_KEY("name"),
         ENVIRONMENT_KEY("environment"),
@@ -80,6 +81,7 @@ public class ConnectionJsonComponent {
 
             jsonGenerator.writeStringField(Field.NAME_KEY.value(), connection.getMetadataKey().getName());
             jsonGenerator.writeStringField(Field.CONNECTION_TYPE_KEY.value(), connection.getType());
+            jsonGenerator.writeStringField(Field.SECURITY_GROUP_KEY.value(), connection.getSecurityGroupName());
             jsonGenerator.writeStringField(Field.DESCRIPTION_KEY.value(), connection.getDescription());
             jsonGenerator.writeStringField(Field.ENVIRONMENT_KEY.value(), connection.getMetadataKey().getEnvironmentKey().getName());
             jsonGenerator.writeArrayFieldStart(Field.PARAMETERS_KEY.value());

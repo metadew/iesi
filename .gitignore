@@ -3,3 +3,4 @@ workspace/*
 core/java/logs/
 core/logs
 dev/
+.DS_Store

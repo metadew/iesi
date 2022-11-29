@@ -17,7 +17,7 @@ iesi:
   security:
     enabled: true
     cors:
-      allowed-origin: 'http://localhost:3000'
+      allowed-origin: '*'
     client_id: iesi
     client_secret: iesi
     jwt:

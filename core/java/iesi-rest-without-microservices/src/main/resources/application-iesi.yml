@@ -9,13 +9,13 @@ iesi:
     mode: standalone
     threads:
       timeout: 30
-  home: '/home/hkhattabi/metadew/iesi/core/java/iesi-core'
+  home: '.'
   security:
     enabled: true
     keystore:
-      location: /home/hkhattabi/metadew/iesi/core/java/iesi-core/src/main/resources/client-keystore.p12
-      store-password: changeit
-      key-password: changeit
+      location: ""
+      store-password: ""
+      key-password: ""
     jwt:
       secret: secret
       expiry-date: 10

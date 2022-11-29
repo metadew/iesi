@@ -70,8 +70,8 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getAllTest() {
-        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
         environmentConfiguration.insert(createEnvironment("env1"));
         environmentConfiguration.insert(createEnvironment("env2"));
         insert(connection1);
@@ -86,9 +86,9 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getAllPaginatedAllInclusiveTest() {
-        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection3 = createConnection("connection3", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection3 = createConnection("connection3", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
         environmentConfiguration.insert(createEnvironment("env1"));
         environmentConfiguration.insert(createEnvironment("env2"));
         insert(connection1);
@@ -109,11 +109,11 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getAllPaginatedSortedAscTest() {
-        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection3 = createConnection("connection3", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection4 = createConnection("connection4", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection5 = createConnection("connection5", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection3 = createConnection("connection3", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection4 = createConnection("connection4", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection5 = createConnection("connection5", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
         environmentConfiguration.insert(createEnvironment("env1"));
         environmentConfiguration.insert(createEnvironment("env2"));
         insert(connection1);
@@ -154,11 +154,11 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getAllPaginatedSortedDescTest() {
-        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection3 = createConnection("connection3", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection4 = createConnection("connection4", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection5 = createConnection("connection5", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection3 = createConnection("connection3", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection4 = createConnection("connection4", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection5 = createConnection("connection5", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
         environmentConfiguration.insert(createEnvironment("env1"));
         environmentConfiguration.insert(createEnvironment("env2"));
         insert(connection1);
@@ -197,8 +197,8 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getAllUpperCaseSortTest() {
-        List<Connection> connection1 = createConnection("a", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection2 = createConnection("Z", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection1 = createConnection("a", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection2 = createConnection("Z", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
 
         environmentConfiguration.insert(createEnvironment("env1"));
         environmentConfiguration.insert(createEnvironment("env2"));
@@ -217,8 +217,8 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getAllFilteredOnNameTest() {
-        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
         environmentConfiguration.insert(createEnvironment("env1"));
         environmentConfiguration.insert(createEnvironment("env2"));
         insert(connection1);
@@ -243,6 +243,37 @@ class ConnectionDtoRepositoryTest {
     }
 
     @Test
+    void getAllFilterOnTypeTest() {
+        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "db.oracle");
+        List<Connection> connection2 = createConnection("connection2", Stream.of("env1").collect(Collectors.toList()), "PUBLIC", "db.mysql");
+
+        environmentConfiguration.insert(createEnvironment("env1"));
+        environmentConfiguration.insert(createEnvironment("env2"));
+        insert(connection1);
+        insert(connection2);
+
+        ConnectionDto connection1Dto = createConnectionDto(connection1);
+        ConnectionDto connection2Dto = createConnectionDto(connection2);
+
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(), Stream.of(
+                new ConnectionFilter(ConnectionFilterOption.TYPE, "db", false)
+        ).collect(Collectors.toList()))).containsOnly(connection1Dto, connection2Dto);
+
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(), Stream.of(
+                new ConnectionFilter(ConnectionFilterOption.TYPE, "db.o", false)
+        ).collect(Collectors.toList()))).containsOnly(connection1Dto);
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(), Stream.of(
+                new ConnectionFilter(ConnectionFilterOption.TYPE, "db.oracle", false)
+        ).collect(Collectors.toList()))).containsOnly(connection1Dto);
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(), Stream.of(
+                new ConnectionFilter(ConnectionFilterOption.TYPE, "db.mys", false)
+        ).collect(Collectors.toList()))).containsOnly(connection2Dto);
+        assertThat(connectionDtoRepository.getAll(null, Pageable.unpaged(), Stream.of(
+                new ConnectionFilter(ConnectionFilterOption.TYPE, "db.mysql", false)
+        ).collect(Collectors.toList()))).containsOnly(connection2Dto);
+    }
+
+    @Test
     @WithIesiUser(username = "userA", authorities = {
             "CONNECTIONS_READ@GROUPA"
     })
@@ -260,8 +291,8 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupB);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
         insert(connectionA);
         insert(connectionB);
 
@@ -293,8 +324,8 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupB);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
         insert(connectionA);
         insert(connectionB);
 
@@ -331,9 +362,9 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupC);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
-        List<Connection> connectionC = createConnection(connectionBameC, Stream.of("env0").collect(Collectors.toList()), securityGroupCName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
+        List<Connection> connectionC = createConnection(connectionBameC, Stream.of("env0").collect(Collectors.toList()), securityGroupCName, "http");
         insert(connectionA);
         insert(connectionB);
         insert(connectionC);
@@ -367,8 +398,8 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupB);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
         insert(connectionA);
         insert(connectionB);
 
@@ -396,8 +427,8 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupB);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
         insert(connectionA);
         insert(connectionB);
 
@@ -411,8 +442,8 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getByNameTest() {
-        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
         environmentConfiguration.insert(createEnvironment("env1"));
         environmentConfiguration.insert(createEnvironment("env2"));
         insert(connection1);
@@ -428,8 +459,8 @@ class ConnectionDtoRepositoryTest {
 
     @Test
     void getByNameNoResultsTest() {
-        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
-        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC");
+        List<Connection> connection1 = createConnection("connection1", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
+        List<Connection> connection2 = createConnection("connection2", Stream.of("env1", "env2").collect(Collectors.toList()), "PUBLIC", "http");
         environmentConfiguration.insert(createEnvironment("env1"));
         environmentConfiguration.insert(createEnvironment("env2"));
         insert(connection1);
@@ -457,8 +488,8 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupB);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
         insert(connectionA);
         insert(connectionB);
 
@@ -495,8 +526,8 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupB);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
         insert(connectionA);
         insert(connectionB);
 
@@ -538,9 +569,9 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupC);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
-        List<Connection> connectionC = createConnection(connectionBameC, Stream.of("env0").collect(Collectors.toList()), securityGroupCName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
+        List<Connection> connectionC = createConnection(connectionBameC, Stream.of("env0").collect(Collectors.toList()), securityGroupCName, "http");
         insert(connectionA);
         insert(connectionB);
         insert(connectionC);
@@ -586,8 +617,8 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupB);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
         insert(connectionA);
         insert(connectionB);
 
@@ -620,8 +651,8 @@ class ConnectionDtoRepositoryTest {
         securityGroupConfiguration.insert(securityGroupB);
         environmentConfiguration.insert(createEnvironment("env0"));
 
-        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName);
-        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName);
+        List<Connection> connectionA = createConnection(connectionNameA, Stream.of("env0").collect(Collectors.toList()), securityGroupAName, "http");
+        List<Connection> connectionB = createConnection(connectionNameB, Stream.of("env0").collect(Collectors.toList()), securityGroupBName, "http");
         insert(connectionA);
         insert(connectionB);
 
@@ -638,12 +669,12 @@ class ConnectionDtoRepositoryTest {
         assertThat(fetchedConnectionDtoB).isNotPresent();
     }
 
-    List<Connection> createConnection(String name, List<String> environments, String securityGroupName) {
+    List<Connection> createConnection(String name, List<String> environments, String securityGroupName, String type) {
         return environments.stream().map(environment -> {
             ConnectionKey connectionKey = new ConnectionKey(name, environment);
             return Connection.builder()
                     .connectionKey(connectionKey)
-                    .type("http")
+                    .type(type)
                     .description("connection description")
                     .securityGroupKey(new SecurityGroupKey(UUID.randomUUID()))
                     .securityGroupName(securityGroupName)

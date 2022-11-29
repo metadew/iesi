@@ -127,11 +127,13 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         return " ORDER BY " + String.join(", ", sorting) + " ";
     }
 
-    private String getWhereClause(Authentication authentication, List<ConnectionFilter> componentFilters) {
-        String filterStatements = componentFilters.stream()
-                .map(componentFilter -> {
-                    if (componentFilter.getFilterOption().equals(ConnectionFilterOption.NAME)) {
-                        return filterService.getStringCondition("connections.CONN_NM", componentFilter);
+    private String getWhereClause(Authentication authentication, List<ConnectionFilter> connectionFilters) {
+        String filterStatements = connectionFilters.stream()
+                .map(connectionFilter -> {
+                    if (connectionFilter.getFilterOption().equals(ConnectionFilterOption.NAME)) {
+                        return filterService.getStringCondition("connections.CONN_NM", connectionFilter);
+                    } else if (connectionFilter.getFilterOption().equals(ConnectionFilterOption.TYPE)) {
+                        return filterService.getStringCondition("connections.CONN_TYP_NM", connectionFilter);
                     } else {
                         return null;
                     }

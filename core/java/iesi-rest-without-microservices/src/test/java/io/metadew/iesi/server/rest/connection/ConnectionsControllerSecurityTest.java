@@ -57,7 +57,7 @@ class ConnectionsControllerSecurityTest {
 
     @Test
     void testGetAllNoUser() {
-        assertThatThrownBy(() -> connectionsController.getAll(Pageable.unpaged(), ""))
+        assertThatThrownBy(() -> connectionsController.getAll(Pageable.unpaged(), "", ""))
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
@@ -89,7 +89,7 @@ class ConnectionsControllerSecurityTest {
                     "DATASETS_READ@PUBLIC",
                     "DATASETS_WRITE@PUBLIC"})
     void testGetAllNoConnectionReadPrivilege() {
-        assertThatThrownBy(() -> connectionsController.getAll(Pageable.unpaged(), ""))
+        assertThatThrownBy(() -> connectionsController.getAll(Pageable.unpaged(), "", ""))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -99,7 +99,7 @@ class ConnectionsControllerSecurityTest {
     void testGetConnectionReadPrivilege() {
         when(connectionDtoService.getAll(SecurityContextHolder.getContext().getAuthentication(), Pageable.unpaged(), new ArrayList<>()))
                 .thenReturn(new PageImpl<>(new ArrayList<>(), Pageable.unpaged(), 0));
-        connectionsController.getAll(Pageable.unpaged(), null);
+        connectionsController.getAll(Pageable.unpaged(), null, null);
     }
 
     @Test

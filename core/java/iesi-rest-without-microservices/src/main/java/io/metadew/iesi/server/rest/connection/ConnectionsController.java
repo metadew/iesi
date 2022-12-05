@@ -67,8 +67,10 @@ public class ConnectionsController {
 
     @GetMapping("")
     @PreAuthorize("hasPrivilege('CONNECTIONS_READ')")
-    public PagedModel<ConnectionDto> getAll(Pageable pageable, @RequestParam(required = false, name = "name") String name) {
-        List<ConnectionFilter> connectionFilters = extractConnectionFilterOptions(name);
+    public PagedModel<ConnectionDto> getAll(Pageable pageable,
+                                            @RequestParam(required = false, name = "name") String name,
+                                            @RequestParam(required = false, name = "type") String type) {
+        List<ConnectionFilter> connectionFilters = extractConnectionFilterOptions(name, type);
         Page<ConnectionDto> connectionDtoPage = connectionDtoService
                 .getAll(SecurityContextHolder.getContext().getAuthentication(),
                         pageable,
@@ -81,12 +83,15 @@ public class ConnectionsController {
     }
 
 
-    private List<ConnectionFilter> extractConnectionFilterOptions(String name) {
-        List<ConnectionFilter> componentFilters = new ArrayList<>();
+    private List<ConnectionFilter> extractConnectionFilterOptions(String name, String type) {
+        List<ConnectionFilter> connectionFilters = new ArrayList<>();
         if (name != null) {
-            componentFilters.add(new ConnectionFilter(ConnectionFilterOption.NAME, name, false));
+            connectionFilters.add(new ConnectionFilter(ConnectionFilterOption.NAME, name, false));
         }
-        return componentFilters;
+        if (type != null) {
+            connectionFilters.add(new ConnectionFilter(ConnectionFilterOption.TYPE, type, false));
+        }
+        return connectionFilters;
     }
 
     @GetMapping("/{name}")

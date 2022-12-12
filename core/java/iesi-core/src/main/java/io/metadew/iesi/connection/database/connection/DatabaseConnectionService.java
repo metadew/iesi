@@ -21,7 +21,7 @@ public abstract class DatabaseConnectionService<T extends DatabaseConnection> im
             Connection connection;
             connection = DriverManager.getConnection(databaseConnection.getConnectionURL(), databaseConnection.getUserName(), databaseConnection.getUserPassword());
             connection.setAutoCommit(false);
-            if (databaseConnection.getConnectionInitSql() != null) {
+            if (databaseConnection.getConnectionInitSql() != null && !databaseConnection.getConnectionInitSql().isEmpty()) {
                 connection.createStatement().execute(databaseConnection.getConnectionURL());
             }
             return connection;

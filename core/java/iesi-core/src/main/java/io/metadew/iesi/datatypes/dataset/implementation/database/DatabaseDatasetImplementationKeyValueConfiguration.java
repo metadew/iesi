@@ -71,7 +71,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
 
     private String insertQuery() {
         return "insert into " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-                " (ID, IMPL_MEM_ID, KEY, VALUE) " +
+                " (ID, IMPL_MEM_ID, \"KEY\", \"VALUE\") " +
                 "VALUES ({0}, {1}, {2}, {3});";
     }
 
@@ -88,7 +88,7 @@ public class DatabaseDatasetImplementationKeyValueConfiguration extends Configur
 
     private String updateQuery() {
         return "UPDATE " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-                " SET IMPL_MEM_ID = {0}, KEY ={1}, VALUE = {2}" +
+                " SET IMPL_MEM_ID = {0}, \"KEY\" ={1}, \"VALUE\" = {2}" +
                 " WHERE ID = {3};";
     }
 

@@ -24,7 +24,7 @@ public class MatcherConfiguration extends Configuration<Matcher, MatcherKey> {
     private final MatcherValueConfiguration matcherValueConfiguration;
 
     private String insertMatcherQuery() {
-        return "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("Matchers").getName() + " (ID, KEY, TEMPLATE_ID) VALUES ({0}, {1}, {2});";
+        return "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("Matchers").getName() + " (ID, \"KEY\", TEMPLATE_ID) VALUES ({0}, {1}, {2});";
     }
 
     private String deleteMatchersByTemplateIdQuery() {

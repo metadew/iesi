@@ -143,7 +143,7 @@ public class EnvironmentDtoRepository extends PaginatedRepository implements IEn
         String query = "select count(*) as row_count from (select distinct environments.ENV_NM " +
                 "from " + metadataTablesConfiguration.getMetadataTableNameByLabel(ENVIRONMENT_TABLE_LABEL).getName() + " environments " +
                 getWhereClause(authentication, environmentFilters) +
-                ");";
+                ") envs;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

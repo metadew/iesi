@@ -5,7 +5,12 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.ISchemaDatabaseService;
 import io.metadew.iesi.connection.database.SchemaDatabaseService;
 import io.metadew.iesi.metadata.definition.MetadataField;
+import io.metadew.iesi.metadata.definition.MetadataTable;
 import io.metadew.iesi.metadata.definition.connection.Connection;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> implements ISchemaDatabaseService<MysqlDatabase> {
@@ -77,6 +82,30 @@ public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> i
     }
 
     @Override
+    public Optional<String> getPrimaryKeyConstraints(MysqlDatabase database, MetadataTable metadataTable) {
+        Map<String, MetadataField> primaryKeyMetadataFields = metadataTable.getFields().entrySet().stream()
+                .filter(entry -> entry.getValue().isPrimaryKey())
+                .collect(Collectors.toMap((entry) -> "\"" + entry.getKey() + "\"", Map.Entry::getValue));
+        if (primaryKeyMetadataFields.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of("CONSTRAINT pk_" + metadataTable.getName() + " PRIMARY KEY (" + String.join(", ", primaryKeyMetadataFields.keySet()) + ")");
+        }
+    }
+
+    @Override
+    public Optional<String> getUniqueConstraints(MetadataTable metadataTable) {
+        Map<String, MetadataField> primaryKeyMetadataFields = metadataTable.getFields().entrySet().stream()
+                .filter(entry -> entry.getValue().isUnique())
+                .collect(Collectors.toMap((entry) -> "\"" + entry.getKey() + "\"", Map.Entry::getValue));
+        if (primaryKeyMetadataFields.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of("CONSTRAINT uc_" + metadataTable.getName() + " UNIQUE  (" + String.join(", ", primaryKeyMetadataFields.keySet()) + ")");
+        }
+    }
+
+    @Override
     public String createQueryExtras(MysqlDatabase mysqlDatabase) {
         return "";
     }
@@ -92,10 +121,14 @@ public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> i
         // Data Types
         switch (field.getType()) {
             case STRING:
+                if (field.getLength() > 255) {
+                    fieldQuery.append("VARCHAR (255)");
+                    break;
+                }
                 fieldQuery.append("VARCHAR (").append(field.getLength()).append(")");
                 break;
             case CLOB:
-                fieldQuery.append("CLOB (").append(field.getLength()).append(")");
+                fieldQuery.append("LONGTEXT");
                 break;
             case FLAG:
                 fieldQuery.append("CHAR (").append(field.getLength()).append(")");
@@ -127,7 +160,7 @@ public class MysqlDatabaseService extends SchemaDatabaseService<MysqlDatabase> i
 
 
     public String fieldNameToQueryString(MysqlDatabase database, String fieldName) {
-        return "`" + fieldName + "`";
+        return "\"" + fieldName + "\"";
     }
 
 }

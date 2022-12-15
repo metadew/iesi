@@ -28,7 +28,7 @@ public class MatcherValueConfiguration extends Configuration<MatcherValue, Match
     }
 
     private String insertMatcherFixedValueQuery() {
-        return "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("FixedMatcherValues").getName() + " (ID, VALUE) VALUES ({0}, {1});";
+        return "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("FixedMatcherValues").getName() + " (ID, \"VALUE\") VALUES ({0}, {1});";
     }
 
     private String insertMatcherTemplateValueQuery() {

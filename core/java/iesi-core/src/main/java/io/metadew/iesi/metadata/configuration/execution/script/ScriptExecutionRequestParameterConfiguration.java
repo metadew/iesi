@@ -35,7 +35,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     @Override
     public Optional<ScriptExecutionRequestParameter> get(ScriptExecutionRequestParameterKey scriptExecutionRequestKey) {
         try {
-            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE FROM " +
+            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, \"VALUE\" FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
                     " WHERE ID = " + SQLTools.getStringForSQL(scriptExecutionRequestKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
@@ -48,7 +48,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
             return Optional.of(new ScriptExecutionRequestParameter(scriptExecutionRequestKey,
                     new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                     cachedRowSet.getString("NAME"),
-                    SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")));
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "\"VALUE\"")));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -59,7 +59,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     public List<ScriptExecutionRequestParameter> getAll() {
         try {
             List<ScriptExecutionRequestParameter> scriptExecutionRequests = new ArrayList<>();
-            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE FROM " +
+            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, \"VALUE\" FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -67,7 +67,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
                         new ScriptExecutionRequestParameterKey(cachedRowSet.getString("ID")),
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                         cachedRowSet.getString("NAME"),
-                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "\"VALUE\"")));
             }
 
             return scriptExecutionRequests;
@@ -97,7 +97,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
 
     public String insertStatement(ScriptExecutionRequestParameter scriptExecutionRequest) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
-                " (ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE) VALUES (" +
+                " (ID, SCRIPT_EXEC_REQ_ID, NAME, \"VALUE\") VALUES (" +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getScriptExecutionRequestKey().getId()) + ", " +
                 SQLTools.getStringForSQL(scriptExecutionRequest.getName()) + "," +
@@ -110,7 +110,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     public Set<ScriptExecutionRequestParameter> getByScriptExecutionRequest(ScriptExecutionRequestKey executionRequestKey) {
         try {
             List<ScriptExecutionRequestParameter> scriptExecutionRequestParameters = new ArrayList<>();
-            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, VALUE FROM " +
+            String query = "SELECT ID, SCRIPT_EXEC_REQ_ID, NAME, \"VALUE\" FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") +
                     " WHERE SCRIPT_EXEC_REQ_ID = " + SQLTools.getStringForSQL(executionRequestKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
@@ -119,7 +119,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
                         new ScriptExecutionRequestParameterKey(cachedRowSet.getString("ID")),
                         new ScriptExecutionRequestKey(cachedRowSet.getString("SCRIPT_EXEC_REQ_ID")),
                         cachedRowSet.getString("NAME"),
-                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")));
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "\"VALUE\"")));
             }
             return new HashSet<>(scriptExecutionRequestParameters);
         } catch (SQLException e) {
@@ -154,7 +154,7 @@ public class ScriptExecutionRequestParameterConfiguration extends Configuration<
     public String updateStatement(ScriptExecutionRequestParameter scriptExecutionRequest) {
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ScriptExecutionRequestParameters") + " SET " +
                 "NAME=" + SQLTools.getStringForSQL(scriptExecutionRequest.getName()) + "," +
-                "VALUE=" + SQLTools.getStringForSQLClob(scriptExecutionRequest.getValue(),
+                "\"VALUE\"=" + SQLTools.getStringForSQLClob(scriptExecutionRequest.getValue(),
                         getMetadataRepository().getRepositoryCoordinator().getDatabases().values().stream()
                                 .findFirst()
                                 .orElseThrow(RuntimeException::new)) +

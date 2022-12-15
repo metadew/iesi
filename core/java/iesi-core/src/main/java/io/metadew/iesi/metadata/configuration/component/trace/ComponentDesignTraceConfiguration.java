@@ -148,7 +148,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
         metadata.getHttpComponentHeaderDesigns().forEach(httpComponentHeaderTrace ->
                 getMetadataRepository().executeUpdate(
                         "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponentHeaderDesign").getName() +
-                                " (ID, HTTP_COMP_DES_ID, NAME, VALUE ) VALUES " +
+                                " (ID, HTTP_COMP_DES_ID, NAME, \"VALUE\" ) VALUES " +
                                 " ( " +
                                 SQLTools.getStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
                                 SQLTools.getStringForSQL(httpComponentHeaderTrace.getHttpComponentDesignID().getUuid().toString()) + ", " +
@@ -162,7 +162,7 @@ public class ComponentDesignTraceConfiguration extends Configuration<HttpCompone
         metadata.getHttpComponentQueryDesigns().forEach(httpComponentQueryTrace ->
                 getMetadataRepository().executeUpdate(
                         "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponentQueryDesign").getName() +
-                                " (ID, HTTP_COMP_DES_ID,  NAME, VALUE )  VALUES " +
+                                " (ID, HTTP_COMP_DES_ID,  NAME, \"VALUE\" )  VALUES " +
                                 " ( " +
                                 SQLTools.getStringForSQL(httpComponentQueryTrace.getMetadataKey().getUuid().toString()) + ", " +
                                 SQLTools.getStringForSQL(httpComponentQueryTrace.getHttpComponentQueryDesignID().getUuid().toString()) + ", " +

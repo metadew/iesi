@@ -150,7 +150,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
             ((HttpComponentTrace) metadata).getHttpComponentHeaderTrace().forEach(httpComponentHeaderTrace ->
                     getMetadataRepository().executeUpdate(
                             "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponentHeader").getName() +
-                                    " (ID, HTTP_COMP_ID, NAME, VALUE ) VALUES ( " +
+                                    " (ID, HTTP_COMP_ID, NAME, \"VALUE\" ) VALUES ( " +
                                     SQLTools.getStringForSQL(httpComponentHeaderTrace.getMetadataKey().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentHeaderTrace.getHttpComponentHeaderID().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentHeaderTrace.getName()) + ", " +
@@ -162,7 +162,7 @@ public class ComponentTraceConfiguration extends Configuration<ComponentTrace, C
             ((HttpComponentTrace) metadata).getHttpComponentQueries().forEach(httpComponentTrace ->
                     getMetadataRepository().executeUpdate(
                             "INSERT INTO " + metadataTablesConfiguration.getMetadataTableNameByLabel("TraceHttpComponentQuery").getName() +
-                                    " (ID, HTTP_COMP_ID,  NAME, VALUE ) VALUES  ( " +
+                                    " (ID, HTTP_COMP_ID,  NAME, \"VALUE\" ) VALUES  ( " +
                                     SQLTools.getStringForSQL(httpComponentTrace.getMetadataKey().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentTrace.getHttpComponentQueryID().getUuid().toString()) + ", " +
                                     SQLTools.getStringForSQL(httpComponentTrace.getName()) + ", " +

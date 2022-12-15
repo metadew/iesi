@@ -170,7 +170,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     private String insertDatasetImplementationLabelQuery() {
         return "insert into " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetImplementationLabels").getName() +
-                " (ID, DATASET_IMPL_ID, VALUE) " +
+                " (ID, DATASET_IMPL_ID, \"VALUE\") " +
                 "VALUES ({0}, {1}, {2});";
     }
 
@@ -182,7 +182,7 @@ public class DatasetImplementationConfiguration extends Configuration<DatasetImp
 
     private String insertInMemorydatasetImplementationKeyValueQuery() {
         return "insert into " + metadataTablesConfiguration.getMetadataTableNameByLabel("DatasetInMemoryImplementationKeyValues").getName() +
-                " (ID, IMPL_MEM_ID, KEY, VALUE) " +
+                " (ID, IMPL_MEM_ID, \"KEY\", \"VALUE\") " +
                 "VALUES ({0}, {1}, {2}, {3});";
     }
 

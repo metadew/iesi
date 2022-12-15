@@ -11,8 +11,7 @@ iesi:
         coordinator:
           # init_sql: alter  current....
           type: $DATABASE_TYPE
-          host: $DATABASE_CONNECTION_URL
-          port: $DATABASE_PORT
+          connection: $DATABASE_JDBC_URL
           schema: $DATABASE_SCHEMA
           init_sql: "$DATABASE_INIT_SQL"
           owner:

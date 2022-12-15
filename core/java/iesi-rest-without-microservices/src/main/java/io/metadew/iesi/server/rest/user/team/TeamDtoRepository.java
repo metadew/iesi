@@ -153,7 +153,7 @@ public class TeamDtoRepository extends PaginatedRepository implements ITeamDtoRe
         String query = "select count(*) as row_count from (select distinct teams.id " +
                 "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Teams").getName() + " teams " +
                 getWhereClause(teamFilters) +
-                ");";
+                ") teams;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

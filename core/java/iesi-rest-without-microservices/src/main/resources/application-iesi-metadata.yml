@@ -144,7 +144,7 @@ iesi:
             description: label key
             order: 2
             type: STRING
-            length: 2000
+            length: 255
             nullable: false
             unique: true
           VALUE:
@@ -709,7 +709,7 @@ iesi:
             description: key to match the matcher against
             order: 1
             type: STRING
-            length: 2000
+            length: 255
             unique: true
             nullable: false
           TEMPLATE_ID:

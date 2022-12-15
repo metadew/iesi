@@ -206,7 +206,7 @@ public class ExecutionRequestDtoRepository extends PaginatedRepository implement
                 "left outer join " + metadataTablesConfiguration.getMetadataTableNameByLabel("ScriptExecutions").getName() + " script_executions " +
                 "on script_execution_requests.SCRPT_REQUEST_ID = script_executions.SCRPT_REQUEST_ID " +
                 getWhereClause(authentication, executionRequestFilters) +
-                ");";
+                ") execution_requests;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

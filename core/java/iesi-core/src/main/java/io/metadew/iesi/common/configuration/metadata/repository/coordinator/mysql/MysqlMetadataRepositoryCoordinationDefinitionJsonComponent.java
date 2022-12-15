@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.metadew.iesi.common.configuration.metadata.repository.coordinator.MetadataRepositoryCoordinationDefinitionJsonComponent;
+import io.metadew.iesi.common.configuration.metadata.repository.coordinator.oracle.OracleMetadataRepositoryCoordinationDefinitionJsonComponent;
 
 import java.io.IOException;
 
@@ -35,10 +36,17 @@ public class MysqlMetadataRepositoryCoordinationDefinitionJsonComponent {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             MysqlMetadataRepositoryCoordinatorDefinition repositoryCoordinatorDefinition = new MysqlMetadataRepositoryCoordinatorDefinition();
             MetadataRepositoryCoordinationDefinitionJsonComponent.setDefaultInformation(repositoryCoordinatorDefinition, node, jsonParser);
-            repositoryCoordinatorDefinition.setHost(node.get(Field.HOST.value()).asText());
-            repositoryCoordinatorDefinition.setPort(Integer.parseInt(node.get(Field.PORT.value()).asText()));
-            repositoryCoordinatorDefinition.setSchema(node.get(Field.SCHEMA.value()).asText());
 
+            if (!MetadataRepositoryCoordinationDefinitionJsonComponent.hasConnectionUrlSet(node)) {
+
+                repositoryCoordinatorDefinition.setHost(node.get(Field.HOST.value()).asText());
+                repositoryCoordinatorDefinition.setPort(Integer.parseInt(node.get(Field.PORT.value()).asText()));
+                repositoryCoordinatorDefinition.setSchema(node.get(Field.SCHEMA.value()).asText());
+            }
+
+            if (node.hasNonNull(MysqlMetadataRepositoryCoordinationDefinitionJsonComponent.Field.SCHEMA.value())) {
+                repositoryCoordinatorDefinition.setSchema(node.get(MysqlMetadataRepositoryCoordinationDefinitionJsonComponent.Field.SCHEMA.value()).asText());
+            }
             return repositoryCoordinatorDefinition;
         }
     }

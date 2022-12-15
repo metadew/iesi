@@ -118,7 +118,7 @@ public class SecurityGroupDtoRepository extends PaginatedRepository implements I
         String query = "select count(*) as row_count from (select distinct security_groups.id " +
                 "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("SecurityGroups").getName() + " security_groups " +
                 getWhereClause(securityGroupFilters) +
-                ");";
+                ") security_groups;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getDesignMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

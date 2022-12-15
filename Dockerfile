@@ -1,65 +1,59 @@
-#Stage 1 - Install dependencies and build the app
 FROM maven:3-jdk-8 AS staging
-ENV APP /app
-WORKDIR $APP
-# Set working directory
 WORKDIR /app
-# Copy all files from current directory to working dir in image
 
-ADD docker $APP/docker
-ADD build/ext $APP/build/ext
-ADD core/assembly $APP/core/assembly
-ADD core/bin $APP/core/bin
-ADD core/data $APP/core/data
-ADD core/conf $APP/core/conf
-ADD core/java/iesi-core $APP/core/java/iesi-core
-ADD core/java/iesi-rest-without-microservices $APP/core/java/iesi-rest-without-microservices
-ADD licenses $APP/licenses
-ADD LICENSE $APP/LICENSE
+ADD docker /app/docker
+ADD licenses /app/licenses
+ADD LICENSE /app/LICENSE
+ADD build/ext /app/build/ext
+ADD core/assembly /app/core/assembly
+ADD core/bin /app/core/bin
+ADD core/conf /app/core/conf
+ADD core/data /app/core/data
+ADD build/ext /app/build/ext
+ADD core/java/iesi-core/pom.xml /app/core-pom.xml
+ADD core/java/iesi-core /app/core/java/iesi-core
+
+ADD core/java/iesi-rest-without-microservices/pom.xml /app/rest-pom.xml
+ADD core/java/iesi-rest-without-microservices /app/core/java/iesi-rest-without-microservices
 
 
-RUN mvn install:install-file -Dfile=build/ext/xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
-RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
-RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
-RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar
-RUN mvn install:install-file -Dfile=build/ext/artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
-WORKDIR $APP/core/java/iesi-core
-RUN mvn versions:set -DnewVersion=0.10.0-SNAPSHOT
-RUN mvn -P dependencies clean install project-info-reports:dependencies -Dmaven.test.skip=true -Dmaven.deploy.skip=true -Dgpg.skip
-WORKDIR $APP/core/java/iesi-rest-without-microservices
-RUN mvn versions:set -DnewVersion=0.10.0-SNAPSHOT
-RUN mvn clean install project-info-reports:dependencies -Diesi-rest.version=0.10.0-SNAPSHOT -Dmaven.test.skip=true
-WORKDIR $APP/core/java/iesi-core/target
-RUN java  -jar iesi-core-0.10.0-SNAPSHOT-exec.jar -launcher assembly -repository /app -sandbox /app/sandbox -instance assembly -version 0.10.0-SNAPSHOT
-WORKDIR /app/sandbox/0.10.0-SNAPSHOT/assembly
+WORKDIR /app/build/ext
+RUN mvn install:install-file -Dfile=xeger-1.0.jar -DgroupId=nl.flotsam -DartifactId=xeger -Dversion=1.0 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=artifactory-java-client-api-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=api -Dversion=2.6.0 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=artifactory-java-client-httpClient-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=httpClient -Dversion=2.6.0 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=artifactory-java-client-ning-services-2.5.1.jar -DgroupId=artifactory-java-client -DartifactId=ning-services -Dversion=2.5.1 -Dpackaging=jar
+RUN mvn install:install-file -Dfile=artifactory-java-client-services-2.6.0.jar -DgroupId=artifactory-java-client -DartifactId=services -Dversion=2.6.0 -Dpackaging=jar
+
+WORKDIR /app
+RUN mvn verify --fail-never
+
+WORKDIR /app/core/java/iesi-core
+RUN mvn install -Dmaven.test.skip=true -Dmaven.deploy.skip=true -Dgpg.skip
+
+WORKDIR /app/core/java/iesi-rest-without-microservices
+RUN mvn install -Dmaven.test.skip=true -Dmaven.deploy.skip=true -Dgpg.skip
+
+WORKDIR /app/core/java/iesi-core/target
+RUN java -jar iesi-core-0.11.0-SNAPSHOT-exec.jar -launcher assembly -repository /app -sandbox /app/sandbox -instance assembly -version 0.11.0-SNAPSHOT
+
+WORKDIR /app/sandbox/0.11.0-SNAPSHOT/assembly
 RUN chmod ug+x bin/*.sh
 
 FROM debian:10
 RUN apt-get update && apt-get -y install software-properties-common gettext-base procps
 RUN apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main' && apt-get update
 RUN apt-get -y install openjdk-8-jdk
-COPY --from=staging /app/sandbox/0.10.0-SNAPSHOT/assembly /opt/iesi
+COPY --from=staging /app/sandbox/0.11.0-SNAPSHOT/assembly /opt/iesi
 COPY --from=staging /app/docker/application.yml.template /opt/iesi/conf/application.yml
 COPY --from=staging /app/docker/application-repository.yml.template /opt/iesi/conf/application-repository.yml
 
-ENV DATABASE_TYPE mysql
-ENV DATABASE_CONNECTION_URL iesimysqldb-hqjlu7hnwtcte.mysql.database.azure.com
-ENV DATABASE_PORT 3306
-ENV DATABASE_SCHEMA iesidb
-ENV DATABASE_INIT_SQL ""
-ENV DATABASE_USER dbadmin@iesimysqldb-hqjlu7hnwtcte
-ENV DATABASE_PASSWORD BuFAa6GZk8W1zBVyHgQv
-
+ENV PORT 8080
 ENV IESI_HOME /opt/iesi
 ENV IESI_WORKER_PATH /opt/iesi
 ENV IESI_MASTER_PATH /opt/iesi
-
-ENV PORT 8080
-ENV HOST 0.0.0.0
-
-RUN . ~/.bashrc
-RUN /bin/bash -c "envsubst < /opt/iesi/conf/application-repository.yml | tee /opt/iesi/conf/application-repository.yml"
-RUN /bin/bash -c "envsubst < /opt/iesi/conf/application.yml | tee /opt/iesi/conf/application.yml"
+ENV IESI_MASTER_USER ""
+ENV IESI_MASTER_PASSWORD ""
+ENV HOST http://127.0.0.1:$PORT
 
 EXPOSE $PORT
-CMD sh -c "/opt/iesi/bin/iesi-rest.sh"
+ENTRYPOINT ["/opt/iesi/bin/rest-docker.sh"]

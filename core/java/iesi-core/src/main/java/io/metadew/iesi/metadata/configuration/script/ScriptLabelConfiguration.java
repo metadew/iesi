@@ -39,7 +39,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
     @Override
     public Optional<ScriptLabel> get(ScriptLabelKey scriptLabelKey) {
         try {
-            String queryScriptLabel = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
+            String queryScriptLabel = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, \"VALUE\" from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
                     + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptLabel, "reader");
             if (cachedRowSet.size() == 0) {
@@ -51,7 +51,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
             return Optional.of(new ScriptLabel(scriptLabelKey,
                     new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                     cachedRowSet.getString("NAME"),
-                    SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+                    SQLTools.getStringFromSQLClob(cachedRowSet, "\"VALUE\"")
             ));
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -69,7 +69,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                         new ScriptLabelKey(cachedRowSet.getString("ID")),
                         new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                         cachedRowSet.getString("NAME"),
-                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "\"VALUE\"")
                 ));
 
             }
@@ -102,7 +102,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
             throw new MetadataAlreadyExistsException(scriptLabel);
         }
         getMetadataRepository().executeUpdate("INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptLabels") +
-                " (ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE) VALUES (" +
+                " (ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, \"VALUE\") VALUES (" +
                 SQLTools.getStringForSQL(scriptLabel.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(scriptLabel.getScriptKey().getScriptId()) + "," +
                 SQLTools.getStringForSQL(scriptLabel.getScriptKey().getScriptVersion()) + "," +
@@ -115,7 +115,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
     }
 
     public boolean exists(ScriptLabelKey scriptLabelKey) {
-        String queryScriptParameter = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
+        String queryScriptParameter = "select ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, \"VALUE\" from " + getMetadataRepository().getTableNameByLabel("ScriptLabels")
                 + " where ID = " + SQLTools.getStringForSQL(scriptLabelKey.getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
@@ -142,7 +142,7 @@ public class ScriptLabelConfiguration extends Configuration<ScriptLabel, ScriptL
                         new ScriptLabelKey(cachedRowSet.getString("ID")),
                         new ScriptKey(cachedRowSet.getString("SCRIPT_ID"), cachedRowSet.getLong("SCRIPT_VRS_NB")),
                         cachedRowSet.getString("NAME"),
-                        SQLTools.getStringFromSQLClob(cachedRowSet, "VALUE")
+                        SQLTools.getStringFromSQLClob(cachedRowSet, "\"VALUE\"")
                 ));
 
             }

@@ -37,7 +37,7 @@ public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrac
     @Override
     public Optional<ScriptLabelTrace> get(ScriptLabelTraceKey scriptLabelTraceKey) {
         try {
-            String query = "SELECT SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE FROM " +
+            String query = "SELECT SCRIPT_ID, SCRIPT_VRS_NB, NAME, \"VALUE\" FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptLabelTraces") +
                     " WHERE " +
                     " RUN_ID = " + SQLTools.getStringForSQL(scriptLabelTraceKey.getRunId()) + " AND " +
@@ -63,7 +63,7 @@ public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrac
     public List<ScriptLabelTrace> getAll() {
         try {
             List<ScriptLabelTrace> scriptLabelDesignTraces = new ArrayList<>();
-            String query = "SELECT RUN_ID, PRC_ID, SCRIPT_LBL_ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE FROM " +
+            String query = "SELECT RUN_ID, PRC_ID, SCRIPT_LBL_ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, \"VALUE\" FROM " +
                     getMetadataRepository().getTableNameByLabel("ScriptLabelTraces") + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(query, "reader");
             while (cachedRowSet.next()) {
@@ -114,7 +114,7 @@ public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrac
 
     private String insertStatement(ScriptLabelTrace scriptLabelTrace) {
         return "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ScriptLabelTraces") +
-                " (RUN_ID, PRC_ID, SCRIPT_LBL_ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, VALUE) VALUES (" +
+                " (RUN_ID, PRC_ID, SCRIPT_LBL_ID, SCRIPT_ID, SCRIPT_VRS_NB, NAME, \"VALUE\") VALUES (" +
                 SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getRunId()) + "," +
                 SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getProcessId()) + "," +
                 SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getScriptLabelKey().getId()) + "," +
@@ -137,7 +137,7 @@ public class ScriptLabelTraceConfiguration extends Configuration<ScriptLabelTrac
                 " SCRIPT_ID = " + SQLTools.getStringForSQL(scriptLabelTrace.getScriptKey().getScriptId()) + ", " +
                 " SCRIPT_VRS_NB = " + SQLTools.getStringForSQL(scriptLabelTrace.getScriptKey().getScriptVersion()) + ", " +
                 " NAME = " + SQLTools.getStringForSQL(scriptLabelTrace.getName()) + ", " +
-                " VALUE = " + SQLTools.getStringForSQL(scriptLabelTrace.getValue()) +
+                " \"VALUE\" = " + SQLTools.getStringForSQL(scriptLabelTrace.getValue()) +
                 " WHERE RUN_ID = " + SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getRunId()) +
                 " AND PRC_ID = " + SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getProcessId()) +
                 " AND SCRIPT_LBL_ID = " + SQLTools.getStringForSQL(scriptLabelTrace.getMetadataKey().getScriptLabelKey().getId()) + ";";

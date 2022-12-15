@@ -104,7 +104,7 @@ public class ConnectionDtoRepository extends PaginatedRepository implements ICon
         String query = "select count(*) as row_count from (select distinct connections.CONN_NM " +
                 "from " + metadataTablesConfiguration.getMetadataTableNameByLabel("Connections").getName() + " connections " +
                 getWhereClause(authentication, connectionFilters) +
-                ");";
+                ") connections;";
         CachedRowSet cachedRowSet = metadataRepositoryConfiguration.getConnectivityMetadataRepository().executeQuery(query, "reader");
         cachedRowSet.next();
         return cachedRowSet.getLong("row_count");

@@ -35,7 +35,7 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
     @Override
     public Optional<ExecutionRequestLabel> get(ExecutionRequestLabelKey executionRequestLabelKey) {
         try {
-            String queryScriptLabel = "select ID, REQUEST_ID, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
+            String queryScriptLabel = "select ID, REQUEST_ID, NAME, \"VALUE\" from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
                     + " where ID = " + SQLTools.getStringForSQL(executionRequestLabelKey.getId()) + ";";
             CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptLabel, "reader");
             if (cachedRowSet.size() == 0) {
@@ -96,7 +96,7 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
             throw new MetadataAlreadyExistsException(executionRequestLabel);
         }
         getMetadataRepository().executeUpdate( "INSERT INTO " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") +
-                " (ID, REQUEST_ID, NAME, VALUE) VALUES (" +
+                " (ID, REQUEST_ID, NAME, \"VALUE\") VALUES (" +
                 SQLTools.getStringForSQL(executionRequestLabel.getMetadataKey().getId()) + "," +
                 SQLTools.getStringForSQL(executionRequestLabel.getExecutionRequestKey().getId()) + "," +
                 SQLTools.getStringForSQL(executionRequestLabel.getName()) + "," +
@@ -105,7 +105,7 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
     }
 
     public boolean exists(ExecutionRequestLabelKey executionRequestLabelKey) {
-        String queryScriptParameter = "select ID, REQUEST_ID, NAME, VALUE from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
+        String queryScriptParameter = "select ID, REQUEST_ID, NAME, \"VALUE\" from " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels")
                 + " where ID = " + SQLTools.getStringForSQL(executionRequestLabelKey.getId()) + ";";
         CachedRowSet cachedRowSet = getMetadataRepository().executeQuery(queryScriptParameter, "reader");
         return cachedRowSet.size() >= 1;
@@ -150,7 +150,7 @@ public class ExecutionRequestLabelConfiguration extends Configuration<ExecutionR
         return "UPDATE " + getMetadataRepository().getTableNameByLabel("ExecutionRequestLabels") + " SET " +
                 "REQUEST_ID=" + SQLTools.getStringForSQL(executionRequestLabel.getExecutionRequestKey().getId()) + "," +
                 "NAME=" + SQLTools.getStringForSQL(executionRequestLabel.getName()) + "," +
-                "VALUE=" + SQLTools.getStringForSQL(executionRequestLabel.getValue()) +
+                "\"VALUE\"=" + SQLTools.getStringForSQL(executionRequestLabel.getValue()) +
                 " WHERE " +
                 "REQUEST_ID =" + SQLTools.getStringForSQL(executionRequestLabel.getMetadataKey().getId()) + ";";
     }

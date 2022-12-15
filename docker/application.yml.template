@@ -20,7 +20,7 @@ iesi:
       timeout: 30
   master:
     path: '$IESI_MASTER_PATH'
-    host: 'http://localhost:8080'
+    host:  '$HOST'
     credentials:
-      user: admin
-      password: admin
+      user: $IESI_MASTER_USER
+      password: $IESI_MASTER_PASSWORD

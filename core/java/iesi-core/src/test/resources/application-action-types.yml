@@ -772,6 +772,13 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
+          requestVersion:
+            description: Version of the request
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
           setRuntimeVariables:
             description: Flag indicating if an expected result will be set as a runtime variable
             type: string
@@ -816,6 +823,13 @@ iesi:
             impersonate: false
           queryParameters:
             description: Additional query parameters as key=value pair or dataset
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
+          mutualTLS:
+            description: Indicate if IESI has to send certificate to the trust store of the targeted server
             type: string
             mandatory: false
             encrypted: false
@@ -1000,6 +1014,13 @@ iesi:
             impersonate: false
           appendOutput:
             description: Flag indicating if previous output needs to be removed
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
+          outputResult:
+            description: Flag indicating if sql results should be displayed
             type: string
             mandatory: false
             encrypted: false

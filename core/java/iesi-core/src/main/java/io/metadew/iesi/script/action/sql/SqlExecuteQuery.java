@@ -9,6 +9,7 @@ import io.metadew.iesi.connection.tools.sql.SqlResultService;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes._null.Null;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -22,18 +23,20 @@ import lombok.extern.log4j.Log4j2;
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 @Log4j2
 public class SqlExecuteQuery extends ActionTypeExecution {
 
     // Parameters
-    private static final String QUERY_KEY = "query";
-    private static final String CONNECTION_KEY = "connection";
-    private static final String APPEND_OUTPUT_KEY = "appendOutput";
-    private static final String OUTPUT_DATASET_KEY = "outputDataset";
-
+    private final String QUERY_KEY = "query";
+    private final String CONNECTION_KEY = "connection";
+    private final String OUTPUT_DATASET_KEY = "outputDataset";
+    private final String OUTPUT_RESULT = "outputResult";
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
     private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+
+    private DatasetImplementation outputDataset;
 
     public SqlExecuteQuery(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -41,6 +44,49 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     }
 
     public void prepareAction() {
+    }
+
+    protected boolean executeAction() throws SQLException, InterruptedException {
+        String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
+        boolean outputResult = convertOutputResult(getParameterResolvedValue(OUTPUT_RESULT));
+        // Get Connection
+        Connection connection = connectionConfiguration
+                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
+
+        Database database = databaseHandler.getDatabase(connection);
+
+        if (!query.trim().endsWith(";")) {
+            query = query + ";";
+        }
+
+        outputDataset = convertOutputDatasetReferenceName(getParameterResolvedValue(OUTPUT_DATASET_KEY));
+        try {
+            CachedRowSet crs = databaseHandler.executeQuery(database, query);
+            ArrayNode result = SpringContext.getBean(SqlResultService.class).convert(crs);
+
+            outputResponse(result);
+
+            this.getActionExecution().getActionControl().increaseSuccessCount();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
+    private void outputResponse(ArrayNode result) {
+        Optional<DatasetImplementation> outputDataset = getOutputDataset();
+        if (outputDataset.isPresent()) {
+            if (!DatasetImplementationHandler.getInstance().isEmpty(outputDataset.get())) {
+                log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
+                DatasetImplementationHandler.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
+            }
+            SpringContext.getBean(SqlResultService.class).writeToDataset(outputDataset.get(), result, this.getExecutionControl().getExecutionRuntime());
+        }
+
+        SpringContext.getBean(SqlResultService.class).traceOutput(result,this.getActionExecution().getActionControl());
     }
 
     private String convertConnectionName(DataType connectionName) {
@@ -76,49 +122,6 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         }
     }
 
-    protected boolean executeAction() throws SQLException, InterruptedException {
-        String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
-        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
-        boolean appendOutput = convertAppendOutput(getParameterResolvedValue(APPEND_OUTPUT_KEY));
-        // Get Connection
-        Connection connection = connectionConfiguration
-                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
-
-        Database database = databaseHandler.getDatabase(connection);
-
-        // Run the action
-        // Make sure the SQL statement is ended with a ;
-        if (!query.trim().endsWith(";")) {
-            query = query + ";";
-        }
-
-        SqlScriptResult sqlScriptResult;
-
-        DatasetImplementation dataset = convertOutputDatasetReferenceName(getParameterResolvedValue(OUTPUT_DATASET_KEY));
-        CachedRowSet crs = databaseHandler.executeQuery(database, query);
-        this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
-        // TODO resolve for files and resolve inside
-        if (dataset != null) {
-
-            ArrayNode result = SpringContext.getBean(SqlResultService.class).convert(crs);
-            SpringContext.getBean(SqlResultService.class).writeToDataset(dataset, result, this.getExecutionControl().getExecutionRuntime());
-        }
-
-        sqlScriptResult = new SqlScriptResult(0, "sql.execute.complete", "");
-
-        // Evaluate result
-        this.getActionExecution().getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());
-
-        if (sqlScriptResult.getReturnCode() != 0) {
-            this.getActionExecution().getActionControl().logOutput("err.out", sqlScriptResult.getErrorOutput());
-            throw new RuntimeException("Error execting SQL query");
-        }
-
-        this.getActionExecution().getActionControl().increaseSuccessCount();
-        return true;
-    }
-
     private DatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
         if (outputDatasetReferenceName == null || outputDatasetReferenceName instanceof Null) {
             return null;
@@ -133,6 +136,26 @@ public class SqlExecuteQuery extends ActionTypeExecution {
                     outputDatasetReferenceName.getClass()));
             throw new RuntimeException(MessageFormat.format("Output dataset does not allow type ''{0}''", outputDatasetReferenceName.getClass()));
         }
+    }
+
+    private boolean convertOutputResult(DataType dataType) {
+        if (dataType == null || dataType instanceof Null) {
+            return false;
+        } else if (dataType instanceof Text) {
+            if (((Text) dataType).getString().equalsIgnoreCase("Y")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for certificates parameter"),
+                    dataType.getClass()));
+            return false;
+        }
+    }
+
+    private Optional<DatasetImplementation> getOutputDataset() {
+        return Optional.ofNullable(outputDataset);
     }
 
     @Override

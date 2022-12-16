@@ -1,12 +1,15 @@
 package io.metadew.iesi.script.action.sql;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.connection.database.Database;
 import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sql.SqlScriptResult;
+import io.metadew.iesi.connection.tools.sql.SqlResultService;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementation;
 import io.metadew.iesi.datatypes._null.Null;
+import io.metadew.iesi.datatypes.dataset.implementation.DatasetImplementationHandler;
 import io.metadew.iesi.datatypes.text.Text;
 import io.metadew.iesi.metadata.configuration.connection.ConnectionConfiguration;
 import io.metadew.iesi.metadata.definition.connection.Connection;
@@ -26,13 +29,14 @@ import java.util.Optional;
 public class SqlExecuteQuery extends ActionTypeExecution {
 
     // Parameters
-    private static final String QUERY_KEY = "query";
-    private static final String CONNECTION_KEY = "connection";
-    private static final String APPEND_OUTPUT_KEY = "appendOutput";
-    private static final String OUTPUT_DATASET_KEY = "outputDataset";
-
+    private final String QUERY_KEY = "query";
+    private final String CONNECTION_KEY = "connection";
+    private final String OUTPUT_DATASET_KEY = "outputDataset";
+    private final String OUTPUT_RESULT = "outputResult";
     private final DatabaseHandler databaseHandler = SpringContext.getBean(DatabaseHandler.class);
     private final ConnectionConfiguration connectionConfiguration = SpringContext.getBean(ConnectionConfiguration.class);
+
+    private DatasetImplementation outputDataset;
 
     public SqlExecuteQuery(ExecutionControl executionControl,
                            ScriptExecution scriptExecution, ActionExecution actionExecution) {
@@ -40,6 +44,49 @@ public class SqlExecuteQuery extends ActionTypeExecution {
     }
 
     public void prepareAction() {
+    }
+
+    protected boolean executeAction() throws SQLException, InterruptedException {
+        String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
+        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
+        boolean outputResult = convertOutputResult(getParameterResolvedValue(OUTPUT_RESULT));
+        // Get Connection
+        Connection connection = connectionConfiguration
+                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
+                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
+
+        Database database = databaseHandler.getDatabase(connection);
+
+        if (!query.trim().endsWith(";")) {
+            query = query + ";";
+        }
+
+        outputDataset = convertOutputDatasetReferenceName(getParameterResolvedValue(OUTPUT_DATASET_KEY));
+        try {
+            CachedRowSet crs = databaseHandler.executeQuery(database, query);
+            ArrayNode result = SpringContext.getBean(SqlResultService.class).convert(crs);
+
+            outputResponse(result);
+
+            this.getActionExecution().getActionControl().increaseSuccessCount();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
+    private void outputResponse(ArrayNode result) {
+        Optional<DatasetImplementation> outputDataset = getOutputDataset();
+        if (outputDataset.isPresent()) {
+            if (!DatasetImplementationHandler.getInstance().isEmpty(outputDataset.get())) {
+                log.warn(String.format("Output dataset %s already contains data items. Clearing old data items before writing output", outputDataset.get()));
+                DatasetImplementationHandler.getInstance().clean(outputDataset.get(), getExecutionControl().getExecutionRuntime());
+            }
+            SpringContext.getBean(SqlResultService.class).writeToDataset(outputDataset.get(), result, this.getExecutionControl().getExecutionRuntime());
+        }
+
+        SpringContext.getBean(SqlResultService.class).traceOutput(result,this.getActionExecution().getActionControl());
     }
 
     private String convertConnectionName(DataType connectionName) {
@@ -75,61 +122,40 @@ public class SqlExecuteQuery extends ActionTypeExecution {
         }
     }
 
-    private String convertDatasetReferenceName(DataType datasetReferenceName) {
-        if (datasetReferenceName == null || datasetReferenceName instanceof Null){
+    private DatasetImplementation convertOutputDatasetReferenceName(DataType outputDatasetReferenceName) {
+        if (outputDatasetReferenceName == null || outputDatasetReferenceName instanceof Null) {
             return null;
-        }
-        else if (datasetReferenceName instanceof Text) {
-            return datasetReferenceName.toString();
+        } else if (outputDatasetReferenceName instanceof Text) {
+            return getExecutionControl().getExecutionRuntime()
+                    .getDataset(((Text) outputDatasetReferenceName).getString())
+                    .orElseThrow(() -> new RuntimeException(MessageFormat.format("No dataset found with name ''{0}''", ((Text) outputDatasetReferenceName).getString())));
+        } else if (outputDatasetReferenceName instanceof DatasetImplementation) {
+            return (DatasetImplementation) outputDatasetReferenceName;
         } else {
-            log.warn(MessageFormat.format(this.getActionExecution().getAction().getType() + " does not accept {0} as type for dataset reference name",
-                    datasetReferenceName.getClass()));
-            return datasetReferenceName.toString();
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType() + " does not accept {0} as type for OutputDatasetReferenceName",
+                    outputDatasetReferenceName.getClass()));
+            throw new RuntimeException(MessageFormat.format("Output dataset does not allow type ''{0}''", outputDatasetReferenceName.getClass()));
         }
     }
 
-    protected boolean executeAction() throws SQLException, InterruptedException {
-        String query = convertQuery(getParameterResolvedValue(QUERY_KEY));
-        String connectionName = convertConnectionName(getParameterResolvedValue(CONNECTION_KEY));
-        String outputDatasetReferenceName = convertDatasetReferenceName(getParameterResolvedValue(OUTPUT_DATASET_KEY));
-        boolean appendOutput = convertAppendOutput(getParameterResolvedValue(APPEND_OUTPUT_KEY));
-        // Get Connection
-        Connection connection = connectionConfiguration
-                .get(new ConnectionKey(connectionName, this.getExecutionControl().getEnvName()))
-                .orElseThrow(() -> new RuntimeException("Unknown connection name: " + connectionName));
-
-        Database database = databaseHandler.getDatabase(connection);
-
-        // Run the action
-        // Make sure the SQL statement is ended with a ;
-        if (!query.trim().endsWith(";")) {
-            query = query + ";";
+    private boolean convertOutputResult(DataType dataType) {
+        if (dataType == null || dataType instanceof Null) {
+            return false;
+        } else if (dataType instanceof Text) {
+            if (((Text) dataType).getString().equalsIgnoreCase("Y")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            log.warn(MessageFormat.format(getActionExecution().getAction().getType().concat(" does not accept {0} as type for certificates parameter"),
+                    dataType.getClass()));
+            return false;
         }
+    }
 
-        SqlScriptResult sqlScriptResult;
-
-        Optional<DatasetImplementation> dataset = this.getExecutionControl().getExecutionRuntime()
-                .getDataset(outputDatasetReferenceName);
-        CachedRowSet crs = databaseHandler.executeQuery(database, query);
-        this.getActionExecution().getActionControl().logOutput("sql.execute.size", Integer.toString(crs.size()));
-        // TODO resolve for files and resolve inside
-        if (dataset.isPresent()) {
-            //SQLDataTransfer.transferData(crs, dataset.get().getDatasetDatabase(), dataset.get().getName(), appendOutput);
-            sqlScriptResult = new SqlScriptResult(0, "data.transfer.complete", "");
-        }
-
-        sqlScriptResult = new SqlScriptResult(0, "sql.execute.complete", "");
-
-        // Evaluate result
-        this.getActionExecution().getActionControl().logOutput("sys.out", sqlScriptResult.getSystemOutput());
-
-        if (sqlScriptResult.getReturnCode() != 0) {
-            this.getActionExecution().getActionControl().logOutput("err.out", sqlScriptResult.getErrorOutput());
-            throw new RuntimeException("Error execting SQL query");
-        }
-
-        this.getActionExecution().getActionControl().increaseSuccessCount();
-        return true;
+    private Optional<DatasetImplementation> getOutputDataset() {
+        return Optional.ofNullable(outputDataset);
     }
 
     @Override

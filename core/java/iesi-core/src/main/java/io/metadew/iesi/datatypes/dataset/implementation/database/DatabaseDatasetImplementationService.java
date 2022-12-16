@@ -247,6 +247,7 @@ public class DatabaseDatasetImplementationService extends DatasetImplementationS
                     .map(DatasetImplementationLabel::getValue)
                     .collect(Collectors.toList());
             labels.add(UUID.randomUUID().toString());
+            labels.add(keyPrefix);
             return createNewDatasetImplementation(databaseDatasetImplementation.getDatasetKey(), databaseDatasetImplementation.getName(), labels, executionRuntime);
         } else {
             return databaseDatasetImplementation;

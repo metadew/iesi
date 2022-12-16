@@ -1019,6 +1019,13 @@ iesi:
             encrypted: false
             subroutine:
             impersonate: false
+          outputResult:
+            description: Flag indicating if sql results should be displayed
+            type: string
+            mandatory: false
+            encrypted: false
+            subroutine:
+            impersonate: false
         status: stable
       sql.executeStatement:
         className: io.metadew.iesi.script.action.sql.SqlExecuteStatement

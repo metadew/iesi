@@ -72,8 +72,7 @@ public abstract class ActionTypeExecution {
             getActionExecution().getActionControl().increaseErrorCount();
 
             getActionExecution().getActionControl().logOutput("action.error", e.getMessage());
-            getActionExecution().getActionControl().logOutput("action.exception", StackTrace.toString());
-
+            // getActionExecution().getActionControl().logOutput("action.exception", StackTrace.toString());
             return false;
         }
     }

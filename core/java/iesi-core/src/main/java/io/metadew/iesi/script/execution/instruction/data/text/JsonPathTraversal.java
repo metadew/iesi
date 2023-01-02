@@ -3,6 +3,9 @@ package io.metadew.iesi.script.execution.instruction.data.text;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.JsonPathException;
+import com.jayway.jsonpath.PathNotFoundException;
 import io.metadew.iesi.SpringContext;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.DataTypeHandler;
@@ -54,11 +57,9 @@ public class JsonPathTraversal implements DataInstruction {
                 String text = inputParameter.group(TEXT);
                 String jsonPath = inputParameter.group(JSON_PATH);
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode jsonNode = objectMapper.readTree(text);
-                return jsonNode.at(jsonPath).asText();
+                return JsonPath.read(text, jsonPath);
             }
-            catch (JsonProcessingException e) {
+            catch (JsonPathException e) {
                 log.error(e.getMessage());
                 throw new IllegalArgumentException(String.format("%s %s:%s", e.getMessage(), this.getKeyword(), resolvedParameters));
             }

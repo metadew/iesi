@@ -15,6 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
@@ -42,7 +43,7 @@ public class JsonPathTraversalTest {
     void jsonPathValidParametersOne() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "{\"tutorials\": [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";
-        String jsonPath = "/tutorials/0/title";
+        String jsonPath = "$['tutorials'][0]['title']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
         String result = jsonPathTraversal.generateOutput(jsonString + "," + jsonPath);
@@ -54,7 +55,7 @@ public class JsonPathTraversalTest {
     void jsonPathValidParametersTwo() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "{\"tutorials\": [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";
-        String jsonPath = "/tutorials/0/description";
+        String jsonPath = "$['tutorials'][0]['description']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
         String result = jsonPathTraversal.generateOutput(jsonString + "," + jsonPath);
@@ -66,7 +67,7 @@ public class JsonPathTraversalTest {
     void jsonPathValidParametersThree() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "{\"tutorials\": [{\"title\": \"guava\", \"test\": {\"id\": 1}}]}";
-        String jsonPath = "/tutorials/0/title";
+        String jsonPath = "$['tutorials'][0]['title']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
         String result = jsonPathTraversal.generateOutput(jsonString + "," + jsonPath);
@@ -78,7 +79,7 @@ public class JsonPathTraversalTest {
     void jsonPathValidParametersFour() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "{\"menu\": {\"id\": \"file\",\"value\": \"File\", \"popup\": { \"menuitem\": [{\"value\": \"New\", \"onclick\": \"CreateNewDoc()\"},{\"value\": \"Open\", \"onclick\": \"OpenDoc()\"},{\"value\":\"Close\",\"onclick\":\"CloseDoc()\"}]}}}";
-        String jsonPath = "/menu/id";
+        String jsonPath = "$['menu']['id']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
         String result = jsonPathTraversal.generateOutput(jsonString + "," + jsonPath);
@@ -90,7 +91,7 @@ public class JsonPathTraversalTest {
     void jsonPathMissingCommaBetweenParametersShouldThrowException() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "{tutorials: [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";
-        String jsonPath = "/tutorials/0/description";
+        String jsonPath = "$['tutorials'][0]['description']";
 
         doReturn(new Text((jsonString + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + jsonPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> jsonPathTraversal.generateOutput(jsonString + jsonPath));
@@ -108,7 +109,7 @@ public class JsonPathTraversalTest {
     @Test
     void jsonPathMissingJsonStringShouldThrowException() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
-        String jsonPath = "/tutorials/0/description";
+        String jsonPath = "$['tutorials'][0]['description']";
 
         doReturn(new Text((jsonPath))).when(dataTypeHandlerSpy).resolve(jsonPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> jsonPathTraversal.generateOutput(jsonPath));
@@ -118,27 +119,29 @@ public class JsonPathTraversalTest {
     void jsonPathMalformedJsonStringShouldThrowException() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "tutorials: [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";
-        String jsonPath = "/tutorials/0/description";
+        String jsonPath = "$['tutorials'][0]['description']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> jsonPathTraversal.generateOutput(jsonString + "," + jsonPath));
     }
 
     @Test
-    void jsonPathMalformedJsonPathShouldThrowException() {
+    void JsonMalformed() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "{tutorials: [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";
-        String jsonPath = "/tutorials/0/description";
+        String jsonPath = "$['tutorials'][0]['description']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
-        assertThrows(IllegalArgumentException.class, () -> jsonPathTraversal.generateOutput(jsonString + "," + jsonPath));
+        String result = jsonPathTraversal.generateOutput(jsonString + "," + jsonPath);
+
+        assertEquals("Introduction to Guava", result);
     }
 
     @Test
     void jsonPathInvalidJsonStringWrongParentNameShouldThrowException() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "tutorials: [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";
-        String jsonPath = "/tutoria/0/description";
+        String jsonPath = "$['tutoria'][0]['description']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> jsonPathTraversal.generateOutput(jsonString + "," + jsonPath));
@@ -148,7 +151,7 @@ public class JsonPathTraversalTest {
     void jsonPathInvalidJsonStringWrongChildNameShouldThrowException() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "tutorials: [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";
-        String jsonPath = "/tutorials/0/descrion";
+        String jsonPath = "$['tutorials'][0]['descrip']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> jsonPathTraversal.generateOutput(jsonString + "," + jsonPath));
@@ -158,7 +161,7 @@ public class JsonPathTraversalTest {
     void jsonPathInvalidJsonStringNonExistingArrayIndexShouldThrowException() {
         JsonPathTraversal jsonPathTraversal = new JsonPathTraversal(executionRuntime);
         String jsonString = "tutorials: [{\"title\": \"Guava\",\"description\": \"Introduction to Guava\"}]}";
-        String jsonPath = "/tutorials/1/description";
+        String jsonPath = "$['tutorials'][1]['description']";
 
         doReturn(new Text((jsonString + "," + jsonPath))).when(dataTypeHandlerSpy).resolve(jsonString + "," + jsonPath, executionRuntime);
         assertThrows(IllegalArgumentException.class, () -> jsonPathTraversal.generateOutput(jsonString + "," + jsonPath));
